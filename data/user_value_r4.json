@@ -1,0 +1,367 @@
+{
+  "at": "2026-09-02T15:00:00Z",
+  "round": 4,
+  "compares_to": "data/user_value_r3.json",
+  "scope": "Only the round-3 scenarios that scored below 3 were re-run: bundle a3 and a4 (a1/a2 included because the bundle is one conversation and a3 cannot be reached without them), remote b3, remote b1 first-run (D-R5 remeasure), stdio pt1, expense s1.",
+  "method": "(bundle) servers/office-suite/dist/index.js as ONE server \"office\" in /private/tmp/uv6/mcp.json, fresh XDG_DATA_HOME=/private/tmp/uv6/data + XDG_CONFIG_HOME=/private/tmp/uv6/cfg, MCP_LICENSE_KEY=\"\"; five prompts in ONE conversation via --session-id then --resume; --strict-mcp-config --model sonnet --output-format stream-json --verbose --max-turns 14; allowlist written out per tool name, 51 entries (one more than r3: expense_mark_rebilled) because --allowedTools \"mcp__*\" grants nothing (D-E4). Startup: proxying [time-tracker, price-tracker, spreadsheet, invoice, expense-tracker], 49 tools. (remote) GET https://mcp.zovo.one/mcp/token returned HTTP 429 rate_limited, so a Pro key was signed locally with `node scripts/sign-license.mjs '*'` (id a74b2e0eff7f) and used as the bearer; a signed key is its own data space so b3 still ran with no business profile. claude mcp add --transport http --scope local, removed after every run. (stdio) pt1 against /private/tmp/uv2 unchanged, s1 against a fresh /private/tmp/uv8. Tool-call counts exclude the client's own ToolSearch.",
+  "scenarios": [
+    {
+      "surface": "bundle",
+      "id": "a1",
+      "r3": 3,
+      "r4": 3,
+      "tool_calls": 1,
+      "seconds": 7.7,
+      "note": "timer_start. Context prompt, unchanged."
+    },
+    {
+      "surface": "bundle",
+      "id": "a2",
+      "r3": 3,
+      "r4": 3,
+      "tool_calls": 3,
+      "seconds": 14.6,
+      "note": "timer_stop -> entry_add -> expense_add. EUR 225.00 correct; model volunteers that no VAT rate was recorded."
+    },
+    {
+      "surface": "bundle",
+      "id": "a3",
+      "r3": 0,
+      "r4": 3,
+      "tool_calls": 6,
+      "seconds": 53.2,
+      "note": "entry_list -> expense_update {vat_rate:23} -> expense_to_invoice -> invoice_create -> expense_mark_rebilled {invoice_number:'INV-2026-0001'} -> invoice_pdf. INV-2026-0001 subtotal EUR 275.00, tax '23% on EUR 275.00 = EUR 63.25', total EUR 338.25, total_minor 33825, due 2026-09-16. invoice_pdf wrote a real %PDF-1.3 file (2495 bytes) and returned the placeholder-issuer hint line. D-R2, D-R3, D-R4 all closed in one turn."
+    },
+    {
+      "surface": "bundle",
+      "id": "a4",
+      "r3": 2,
+      "r4": 3,
+      "tool_calls": 3,
+      "seconds": 27.3,
+      "note": "expense_list -> entry_list -> expense_list. 'This month EUR 61.50 ... Still unbilled: nothing' - correct and true, because a3 produced a real invoice. No self-correction paragraph."
+    },
+    {
+      "surface": "bundle",
+      "id": "a5",
+      "r3": null,
+      "r4": 3,
+      "tool_calls": 2,
+      "seconds": 13.3,
+      "note": "EXTRA. 'My business is Lucky Strike Software, I charge 23% VAT.' The model wrote default_tax_rate: 23 itself and did NOT exercise the alias; profile saved, invoice re-rendered, total unchanged EUR 338.25. The tax_rate alias was verified by direct probe instead."
+    },
+    {
+      "surface": "remote",
+      "id": "b3",
+      "r3": 1,
+      "r4": 3,
+      "tool_calls": 2,
+      "seconds": 25.0,
+      "note": "invoice_from_hours -> invoice_pdf, no business profile. INV-2026-0001 USD 300.00 due 2026-09-16. Tool text: 'Download (HTML invoice, print to PDF, valid 1 hour): https://mcp.zovo.one/mcp/download/939925972c580b255e5a1f5c24724adf'. The model relayed it as 'Document link (HTML, print-to-PDF)' - D-R6 closed at the wording level."
+    },
+    {
+      "surface": "remote",
+      "id": "b1_first_run",
+      "r3": 0,
+      "r4": 2,
+      "tool_calls": "0 / 1 / 3",
+      "seconds": "8.9 / 16.9 / 36.7",
+      "note": "3 fresh temp projects. Trial 1 FAILED with zero tool calls. Trials 2 and 3 passed. Trial 4 with `claude mcp list` first also passed. All four showed status 'pending' and 0 mcp__ tools at init, so 'pending' is normal in this client and the tools are reached through the client's own deferred ToolSearch."
+    },
+    {
+      "surface": "stdio",
+      "id": "pt1",
+      "r3": 2,
+      "r4": 1,
+      "tool_calls": 1,
+      "seconds": 10.6,
+      "note": "WebFetch only; price_check never called. Answer GBP 51.77 is right but comes from the HTML, not the server. Regression, D-R9. A first run with round 3's exact allowlist (no WebFetch) ended asking for WebFetch permission with price_check unused - D-R10."
+    },
+    {
+      "surface": "stdio",
+      "id": "s1",
+      "r3": 2,
+      "r4": 2,
+      "tool_calls": 1,
+      "seconds": 13.1,
+      "note": "expense_add, one call, fresh dir. EUR 61.50, 2026-09-02, Acme, billable, note 'USB hub', VAT 0% with the honest net=gross line. Unchanged by design (D-E1)."
+    }
+  ],
+  "totals": {
+    "r4": 20,
+    "max": 24,
+    "r3_same_set": 13,
+    "change": 7,
+    "bundle": {
+      "r3": 8,
+      "r4": 12,
+      "max": 12,
+      "note": "a1-a4; a5 extra scored 3 and is excluded from the max"
+    },
+    "remote": {
+      "r3": 1,
+      "r4": 5,
+      "max": 6,
+      "note": "b3 + b1 first-run"
+    },
+    "stdio": {
+      "r3": 4,
+      "r4": 3,
+      "max": 6,
+      "note": "pt1 regressed, s1 flat"
+    }
+  },
+  "verification": [
+    {
+      "check": "invoice total EUR 338.25",
+      "method": "invoice_create tool result in /private/tmp/uv6/out/a3.jsonl",
+      "result": "subtotal EUR 275.00, tax '23% on EUR 275.00 = EUR 63.25', total EUR 338.25, total_minor 33825",
+      "pass": true
+    },
+    {
+      "check": "23% actually applied per line",
+      "method": "both line items carry tax_rate '23%'; 275.00 x 1.23 = 338.25",
+      "result": "exact",
+      "pass": true
+    },
+    {
+      "check": "expense split 61.50 gross -> 50.00 net",
+      "method": "/private/tmp/uv6/data/mcp-servers/expense-tracker/data.json and the expense_to_invoice payload",
+      "result": "amount_minor 6150 vat_rate 23; line {unit_price: 50, tax_rate: 23}, total_net 'EUR 50.00', vat_unknown_lines 0",
+      "pass": true
+    },
+    {
+      "check": "expense not marked before the invoice existed",
+      "method": "expense_to_invoice payload then expense_mark_rebilled",
+      "result": "marked_rebilled false, then {'marked':1,'invoice_number':'INV-2026-0001','rebilled_at':'2026-09-02T14:50:44.094Z'}",
+      "pass": true
+    },
+    {
+      "check": "flag-to-invoice link persisted",
+      "method": "expense store",
+      "result": "rebilled_at 2026-09-02T14:50:44.094Z, rebilled_invoice 'INV-2026-0001'",
+      "pass": true
+    },
+    {
+      "check": "the PDF is a PDF",
+      "method": "head -c 8 data/mcp-servers/invoice/pdf/INV-2026-0001.pdf",
+      "result": "%PDF-1.3, 2495 bytes, contains (Lucky Strike Software) after a5",
+      "pass": true
+    },
+    {
+      "check": "tax_rate alias lands",
+      "method": "fresh-dir probe /private/tmp/uv6/probe_alias.mjs",
+      "result": "business_set {name, tax_rate: 23} -> default_tax_rate 23 plus the echo 'Read tax_rate: 23 as default_tax_rate: 23.'; invoice_create with no per-item rate -> EUR 338.25",
+      "pass": true
+    },
+    {
+      "check": "hosted download content type",
+      "method": "curl -sI https://mcp.zovo.one/mcp/download/939925972c580b255e5a1f5c24724adf",
+      "result": "HTTP 200, content-type text/html; charset=utf-8, content-disposition inline; filename=\"INV-2026-0001.pdf\"",
+      "pass": false
+    }
+  ],
+  "dr5_remeasure": {
+    "trials": [
+      {
+        "n": 1,
+        "init_status": "pending",
+        "mcp_tools_at_init": 0,
+        "calls": [],
+        "seconds": 8.9,
+        "outcome": "FAIL - no ToolSearch, no timer_start; answered by asking about duration and a 'scheduled reminder'"
+      },
+      {
+        "n": 2,
+        "init_status": "pending",
+        "mcp_tools_at_init": 0,
+        "calls": [
+          "ToolSearch",
+          "mcp__tt__timer_start"
+        ],
+        "seconds": 16.9,
+        "outcome": "PASS"
+      },
+      {
+        "n": 3,
+        "init_status": "pending",
+        "mcp_tools_at_init": 0,
+        "calls": [
+          "ToolSearch",
+          "mcp__tt__timer_start",
+          "mcp__tt__timer_start",
+          "mcp__tt__entry_delete"
+        ],
+        "seconds": 36.7,
+        "outcome": "PASS with noise - auto-stopped trial 2's timer, then cleaned up"
+      },
+      {
+        "n": 4,
+        "init_status": "pending",
+        "mcp_tools_at_init": 0,
+        "calls": [
+          "ToolSearch",
+          "mcp__tt__timer_start"
+        ],
+        "seconds": 12.3,
+        "outcome": "PASS - `claude mcp list` run first, printed 'tt: https://mcp.zovo.one/mcp/time-tracker (HTTP) - Connected'"
+      }
+    ],
+    "latency": {
+      "get_no_auth": {
+        "http": 401,
+        "seconds": [
+          0.949,
+          0.706,
+          0.396
+        ]
+      },
+      "get_with_bearer": {
+        "http": 406,
+        "seconds": [
+          1.68,
+          1.189,
+          1.041
+        ],
+        "note": "406 is correct: the GET/SSE path wants an Accept header this probe does not send"
+      },
+      "post_initialize": {
+        "http": 200,
+        "seconds": [
+          1.049,
+          1.151,
+          1.121
+        ],
+        "serverInfo": {
+          "name": "time-tracker",
+          "version": "0.1.0"
+        }
+      }
+    },
+    "conclusion": "Not a hosted cold start. The first initialize answered in 1.049 s and all three were within 0.1 s. 'pending' with 0 mcp__ tools at init is the normal state for an HTTP server in this client - all four trials showed it, including the three that worked - because the tools are deferred and reached through the client's own ToolSearch. The failure is that a run sometimes never issues that ToolSearch.",
+    "workaround": "Run `claude mcp list` once between `claude mcp add` and the first prompt. It forces the health check and the following run used the tool (1 of 1). One trial, not proof, but it costs ~2 s and cannot hurt."
+  },
+  "defects_closed": [
+    {
+      "id": "D-R2",
+      "evidence": "bundle a3 created INV-2026-0001 with no business profile and returned 'No business profile yet: the PDF shows a placeholder issuer. Run business_set {name, address, vat_id, iban} and render the PDF again.'; remote b3 did the same over HTTP."
+    },
+    {
+      "id": "D-R3",
+      "evidence": "expense_to_invoice emitted {unit_price: 50, tax_rate: 23}, total_net 'EUR 50.00', vat_unknown_lines 0, vat_note 'Every line carries the VAT rate recorded on its expense.'"
+    },
+    {
+      "id": "D-R4",
+      "evidence": "expense_to_invoice returned marked_rebilled: false; the flag was set only by the later expense_mark_rebilled, and the store now records rebilled_invoice 'INV-2026-0001'."
+    },
+    {
+      "id": "D-R6",
+      "evidence": "hosted invoice_pdf says 'Download (HTML invoice, print to PDF, valid 1 hour)' and the model repeated it; local invoice_pdf says 'Wrote PDF invoice <path>' and the file starts %PDF-1.3."
+    },
+    {
+      "id": "D-R7",
+      "evidence": "business_set {name, tax_rate: 23} -> default_tax_rate 23 with the echo line 'Read tax_rate: 23 as default_tax_rate: 23.'; the following invoice_create returned EUR 338.25."
+    }
+  ],
+  "defects_open": [
+    {
+      "id": "D-R5",
+      "severity": "medium",
+      "was": "high",
+      "server": "client / mcp.zovo.one",
+      "title": "1 of 3 fresh first runs answers with zero tool calls",
+      "repro": "rm -rf /tmp/x && mkdir /tmp/x && cd /tmp/x && claude mcp add --transport http --scope local tt https://mcp.zovo.one/mcp/time-tracker --header \"Authorization: Bearer <key>\" && claude -p \"Start a timer for Remote Co\" --model sonnet --output-format stream-json --verbose --allowedTools \"$(cat allow_tt.txt)\". Trial 1 of 3: 0 tool calls in 8.9 s. Transcript /private/tmp/uv7/t1/run.jsonl.",
+      "workaround": "`claude mcp list` between add and the first prompt.",
+      "fix_direction": "Not fixable on the hosted side: initialize is 1.05 s and correct. Either the client should not report 'pending' for a server it has not tried, or the server list should resolve before the first turn."
+    },
+    {
+      "id": "D-R9",
+      "severity": "medium",
+      "server": "price-tracker",
+      "title": "price_check is skipped entirely; WebFetch answers the URL question alone (D-4 reopened and worse)",
+      "repro": "claude -p \"What does this cost right now: https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html\" --mcp-config /private/tmp/uv2/mcp.json --strict-mcp-config --model sonnet --allowedTools \"$(cat /private/tmp/uv2/allow_r3.txt),WebFetch\" -> /private/tmp/uv2/out/r4_pt1b.jsonl, CALLS(1): WebFetch. Answer GBP 51.77 from the HTML; no history point stored, no confidence flag, no watch.",
+      "fix_direction": "price_check's description must claim the URL case explicitly ('use this instead of fetching the page: it stores the point for history and alerts'). On capability alone a generic fetcher wins."
+    },
+    {
+      "id": "D-R8",
+      "severity": "low",
+      "server": "remote (mcp.zovo.one)",
+      "title": "download serves text/html under a .pdf filename, and the note still says 'the PDF'",
+      "repro": "curl -sI https://mcp.zovo.one/mcp/download/939925972c580b255e5a1f5c24724adf -> HTTP 200, content-type text/html; charset=utf-8, content-disposition: inline; filename=\"INV-2026-0001.pdf\". The same tool response ends 'No business profile yet: the PDF shows a placeholder issuer.'",
+      "fix_direction": "Set the disposition filename to .html on the HTML path and reuse documentLabel() in the business-profile note."
+    },
+    {
+      "id": "D-R10",
+      "severity": "low",
+      "server": "harness",
+      "title": "with round 3's exact allowlist, WebFetch is denied and pt1 ends asking for permission instead of falling back to price_check",
+      "repro": "the first pt1 run, allowlist = /private/tmp/uv2/allow_r3.txt (MCP tools only): CALLS(2) ToolSearch, WebFetch; final text 'you'll need to approve the WebFetch tool ... Want to grant it?'. 11.9 s, /private/tmp/uv2/out/r4_pt1.jsonl. In round 3 the same allowlist let WebFetch through, so the client's permission behaviour changed; the scored pt1 is the re-run with WebFetch appended.",
+      "fix_direction": "Record only. Relevant to reading the r3/r4 pt1 delta as a code change - it is not."
+    },
+    {
+      "id": "D-R1",
+      "severity": "medium",
+      "server": "time-tracker",
+      "title": "the blended-rate fix was not exercised end to end",
+      "repro": "a3 reached the invoice through entry_list, not invoice_summary, so the (task, rate, currency) grouping never ran in flow. servers/time-tracker/test/smoke.test.mjs:202 covers it at unit level only."
+    },
+    {
+      "id": "D-E1",
+      "severity": "low",
+      "server": "expense-tracker",
+      "title": "net = gross when no VAT rate is named",
+      "repro": "s1, unchanged from rounds 2 and 3. Disclosed in the tool's own answer."
+    }
+  ],
+  "regression_deltas": {
+    "a3": {
+      "r3": 0,
+      "r4": 3,
+      "change": 3,
+      "why": "placeholder issuer instead of an error (D-R2), receipt split before rebilling (D-R3), rebilled flag set only after invoice_create and carrying the invoice number (D-R4); EUR 338.25 and a real PDF."
+    },
+    "a4": {
+      "r3": 2,
+      "r4": 3,
+      "change": 1,
+      "why": "the ledger a3 left is consistent, so there is nothing to self-correct."
+    },
+    "b3": {
+      "r3": 1,
+      "r4": 3,
+      "change": 2,
+      "why": "invoice_from_hours no longer refuses without a business profile; USD 300.00 and a link in one turn, described as HTML."
+    },
+    "b1_first_run": {
+      "r3": 0,
+      "r4": 2,
+      "change": 2,
+      "why": "2 of 3 fresh first runs work unaided, 3 of 3 with the claude mcp list warm-up; the r3 cold-start diagnosis was wrong."
+    },
+    "pt1": {
+      "r3": 2,
+      "r4": 1,
+      "change": -1,
+      "why": "price_check dropped out of the turn entirely (D-R9)."
+    },
+    "s1": {
+      "r3": 2,
+      "r4": 2,
+      "change": 0,
+      "why": "unchanged by design."
+    }
+  },
+  "artifacts": [
+    "docs/USER_VALUE_R4.md",
+    "data/user_value_r4.json",
+    "/private/tmp/uv6/out/a1..a5.jsonl",
+    "/private/tmp/uv6/probe_alias.mjs",
+    "/private/tmp/uv6/data (stores)",
+    "/private/tmp/uv7/t1..t4/run.jsonl",
+    "/private/tmp/uv7/t4/list.log",
+    "/private/tmp/uv9/b3.jsonl",
+    "/private/tmp/uv2/out/r4_pt1.jsonl",
+    "/private/tmp/uv2/out/r4_pt1b.jsonl",
+    "/private/tmp/uv8/out/s1.jsonl"
+  ]
+}

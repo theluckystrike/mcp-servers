@@ -20,6 +20,7 @@ const organic = js("data/organic.json", { surfaces: [], servers: [], measured: [
 const uv = js("data/user_value.json", null);
 const uv2 = js("data/user_value_r2.json", null);
 const uv3 = js("data/user_value_r3.json", null);
+const uv4 = js("data/user_value_r4.json", null);
 const metrics = js("data/metrics.json", { snapshots: [] });
 const m = metrics.snapshots.at(-1);
 const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
@@ -113,7 +114,7 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : uv ? ` (${uv.totals.score}/${uv.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
+<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv4 ? ` (R4 ${uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
 <div class="tab on" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
@@ -215,6 +216,9 @@ ${promo.actions.slice().sort((a, b) => b.impact - a.impact).map(a => `<tr><td cl
 <div class="tab" id="tab-uservalue">
 ${uv ? `<p class="dim">${esc(uv.method || "")} Run at ${esc(uv.at)}. Full report: <a href="docs/USER_VALUE.md">docs/USER_VALUE.md</a>.</p>
 <div class="kpis"><div class="kpi"><div class="n">${uv.totals.score}/${uv.totals.max}</div><div class="k">scenario points (0-3 each, real MCP client)</div></div><div class="kpi"><div class="n">${Math.round(uv.totals.hit_rate * 100)}%</div><div class="k">real retailer price hit rate (${esc(uv.totals.hit_rate_of_reachable)})</div></div><div class="kpi"><div class="n">${esc(uv.pdf.verdict)}</div><div class="k">invoice PDF visual check</div></div><div class="kpi"><div class="n">${(uv.free_tier.limits_hit || []).length}</div><div class="k">free limits hit in first session</div></div></div>
+${uv4 ? `<h2>Round 4 after the round-3 fixes: ${uv4.totals?.score ?? ""}/${uv4.totals?.max ?? ""} on the scenarios that had failed (round 3: ${uv4.totals?.r3_score ?? "13"}/${uv4.totals?.max ?? 24})</h2>
+<div class="tw"><table><tr><th>Surface</th><th>User said</th><th>R3</th><th>R4</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${(uv4.scenarios || []).map(x => `<tr><td class="mono">${esc(x.surface || "")}</td><td>${esc(x.prompt)}</td><td class="num">${x.r3_score ?? x.prev_score ?? ""}</td><td class="num"><b>${x.score}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
+<p class="dim">Report: <a href="docs/USER_VALUE_R4.md">docs/USER_VALUE_R4.md</a>. Verified in the stores: invoice INV-2026-0001 total EUR 338.25 from 2.5 h x 90 plus a 50.00 net receipt at 23% VAT; the expense was marked rebilled only after the invoice existed.</p>` : ""}
 ${uv3 ? `<h2>Round 3: bundle, hosted endpoints, cross-server flow: ${uv3.totals?.score ?? ""}/${uv3.totals?.max ?? ""}</h2>
 <div class="tw"><table><tr><th>Surface</th><th>User said</th><th>Score</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${(uv3.scenarios || []).map(x => `<tr><td class="mono">${esc(x.surface || "")}</td><td>${esc(x.prompt)}</td><td class="num"><b>${x.score}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
 <p class="dim">Report: <a href="docs/USER_VALUE_R3.md">docs/USER_VALUE_R3.md</a>. The model never left the bundle in the cross-server flow (all tool calls stayed inside office-suite). Defects found are being fixed for v0.2.1.</p>` : ""}
