@@ -75,7 +75,7 @@ Text comparisons ignore case and surrounding whitespace. Values like `$1,250.00`
 
 | | Free | Pro |
 | --- | --- | --- |
-| `sheet_info`, `sheet_read`, `sheet_query`, `sheet_stats`, `sheet_find` | Files up to 5 MB and 5,000 rows | No limit (up to the 50 MB file ceiling) |
+| Every tool that reads a file (`sheet_info`, `sheet_read`, `sheet_query`, `sheet_stats`, `sheet_find`, `sheet_add_column`, `sheet_convert`) | Files up to 5 MB and 5,000 rows | No limit (up to the 50 MB file ceiling) |
 | `sheet_write`, `sheet_add_column`, `sheet_convert` | 200 rows written per file | No limit |
 | Sheets, formats, expression language | All | All |
 

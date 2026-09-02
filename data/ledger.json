@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T12:59:24.598Z",
+  "generated_at": "2026-09-02T13:01:29.110Z",
   "session": {
-    "count": 5,
+    "count": 6,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -22,6 +22,10 @@
       {
         "at": "2026-09-02T12:59:24.589Z",
         "note": "billing hardened (Codex review), validation db 82/82, tabbed main dashboard"
+      },
+      {
+        "at": "2026-09-02T13:01:29.102Z",
+        "note": "mcpb bundles released on GitHub v0.1.0"
       }
     ]
   },

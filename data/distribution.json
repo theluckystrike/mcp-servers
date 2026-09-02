@@ -1,20 +1,80 @@
 {
   "updated_at": "2026-09-02T13:05:00Z",
   "surfaces": {
-    "github": { "status": "published", "url": "https://github.com/theluckystrike/mcp-servers", "note": "public, topics set" },
-    "billing": { "status": "published", "url": "https://mcp.zovo.one", "note": "Stripe LIVE, custom domain, webhook registered" },
-    "npm": { "status": "blocked", "url": "https://www.npmjs.com/~theluckystrike", "note": "npm token dead (401); run: npm login --auth-type=web" },
-    "registry": { "status": "blocked", "url": "https://registry.modelcontextprotocol.io", "note": "mcp-publisher 1.8.1 installed; needs npm package first (mcpName ownership check)" },
-    "smithery": { "status": "pending", "url": "https://smithery.ai", "note": "smithery.yaml in each server; connect repo via GitHub OAuth (one click)" },
-    "glama": { "status": "pending", "url": "https://glama.ai/mcp/servers", "note": "auto-indexes public repo; add glama.json + claim" },
-    "mcpb": { "status": "pending", "url": "bundles/", "note": "Claude Desktop one-click bundles being built" },
-    "awesome-mcp-servers": { "status": "pending", "url": "https://github.com/punkpeye/awesome-mcp-servers", "note": "PR after npm publish" },
-    "mcp.so / PulseMCP / mcpservers.org": { "status": "pending", "url": "https://mcp.so/submit", "note": "web forms, human step" }
+    "github": {
+      "status": "published",
+      "url": "https://github.com/theluckystrike/mcp-servers",
+      "note": "public, topics set, release v0.1.0"
+    },
+    "billing": {
+      "status": "published",
+      "url": "https://mcp.zovo.one",
+      "note": "Stripe LIVE, custom domain, webhook registered"
+    },
+    "npm": {
+      "status": "blocked",
+      "url": "https://www.npmjs.com/~theluckystrike",
+      "note": "npm token dead (401); run: npm login --auth-type=web"
+    },
+    "registry": {
+      "status": "blocked",
+      "url": "https://registry.modelcontextprotocol.io",
+      "note": "mcp-publisher 1.8.1 installed; needs npm package first (mcpName ownership check)"
+    },
+    "smithery": {
+      "status": "pending",
+      "url": "https://smithery.ai",
+      "note": "smithery.yaml in each server; connect repo via GitHub OAuth (one click)"
+    },
+    "glama": {
+      "status": "pending",
+      "url": "https://glama.ai/mcp/servers",
+      "note": "auto-indexes public repo; add glama.json + claim"
+    },
+    "mcpb": {
+      "status": "published",
+      "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.1.0",
+      "note": "4 .mcpb bundles on GitHub release v0.1.0; directory submission pending"
+    },
+    "awesome-mcp-servers": {
+      "status": "pending",
+      "url": "https://github.com/punkpeye/awesome-mcp-servers",
+      "note": "PR after npm publish"
+    },
+    "mcp.so / PulseMCP / mcpservers.org": {
+      "status": "pending",
+      "url": "https://mcp.so/submit",
+      "note": "web forms, human step"
+    }
   },
   "per_server": {
-    "time-tracker": { "npm": "missing", "registry": "missing", "github": "published", "smithery": "pending", "glama": "pending" },
-    "price-tracker": { "npm": "missing", "registry": "missing", "github": "published", "smithery": "pending", "glama": "pending" },
-    "spreadsheet": { "npm": "missing", "registry": "missing", "github": "published", "smithery": "pending", "glama": "pending" },
-    "invoice": { "npm": "missing", "registry": "missing", "github": "published", "smithery": "pending", "glama": "pending" }
+    "time-tracker": {
+      "npm": "missing",
+      "registry": "missing",
+      "github": "published",
+      "smithery": "pending",
+      "glama": "pending"
+    },
+    "price-tracker": {
+      "npm": "missing",
+      "registry": "missing",
+      "github": "published",
+      "smithery": "pending",
+      "glama": "pending"
+    },
+    "spreadsheet": {
+      "npm": "missing",
+      "registry": "missing",
+      "github": "published",
+      "smithery": "pending",
+      "glama": "pending"
+    },
+    "invoice": {
+      "npm": "missing",
+      "registry": "missing",
+      "github": "published",
+      "smithery": "pending",
+      "glama": "pending"
+    }
   }
 }
