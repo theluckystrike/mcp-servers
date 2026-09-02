@@ -1,26 +1,66 @@
 {
   "updated_at": "2026-09-02",
-  "model": "Organic score = 100 x listed x findable x reach. listed: 1 live, 0.5 PR or submission pending, 0.2 blocked on a human step, 0 skipped. findable: measured chance a user browsing or searching that surface encounters one of our servers (registry probes below; catalog sizes from the research crawl). reach: relative audience weight of the surface, 0 to 1, estimate. Scores are a model over measured inputs; the inputs are listed per row.",
+  "model": "Organic score = 100 x listed x findable x reach. listed: 1 live, 0.5 PR or submission pending, 0.2 blocked on a human step, 0 skipped. findable for registry-backed surfaces is now MEASURED, not estimated: p(seen | query) = 0 if we do not appear in the result list, else min(1, 10/rank); findable = mean of p over the 34 natural queries in servers[].query_set. Same formula applied before and after the 2026-09-02 rename, so the two are comparable. reach: relative audience weight of the surface, 0 to 1, estimate. Per-server organic = 100 x mean(p) over that server's own query set.",
   "measured": [
     [
       "Registry search is name-substring only",
-      "searching 'billable', 'VAT', 'xlsx' (words in our descriptions) returns 0 of ours; 'theluckystrike' returns all 4",
+      "searching 'billable', 'VAT', 'xlsx' (words in our descriptions) returned 0 of ours before the rename; 'theluckystrike' returns all of ours",
       "measured 2026-09-02 via /v0/servers?search="
     ],
     [
-      "Natural language queries return nothing",
-      "'time tracker' 0 results, 'time tracking' 0, 'price tracker' 0: the hyphen in server names breaks two-word queries",
+      "Search is case-insensitive",
+      "TIMESHEET, Timesheet and timesheet each return the same 1 result (2 after the rename)",
+      "measured 2026-09-02"
+    ],
+    [
+      "Search matches across the slash",
+      "search='theluckystrike/time' returns io.github.theluckystrike/time-tracker; search='luckystrike/invoice' returns our invoice server",
+      "measured 2026-09-02"
+    ],
+    [
+      "Natural language queries return nothing for anyone",
+      "'time tracker' 0, 'time tracking' 0, 'price tracker' 0: any query containing a space returns 0 results registry-wide",
       "measured"
     ],
     [
-      "Hyphenated queries find us",
-      "'time-tracker' 3 results, ours rank 3; 'price-tracker' 6 results, ours rank 5; 'spreadsheet' 13 results, ours rank 13; 'invoice' 91 results, ours rank 82",
+      "Sort is alphabetical by the FULL name, so the slug cannot buy rank",
+      "io.github.theluckystrike/* sorts after ai.*, app.*, cn.*, co.*, com.* and most io.github.*; renaming changed WHICH queries we appear in, not our position inside them ('time' rank 214 before, 216 after)",
+      "measured before and after the rename"
+    ],
+    [
+      "Renaming bought token coverage, not rank",
+      "matched natural queries went from 7 of 34 to 18 of 34; measured findable 0.092 -> 0.239",
+      "measured 2026-09-02, data/registry_rank.json before/after"
+    ],
+    [
+      "Near-empty tokens exist and are worth more than crowded ones",
+      "billable 0 competitors, timesheet 1, hours 1, invoices 0, freelance 6, receipt 15, csv 16, xlsx 18: our new names now rank 1, 1, 2, 17, 19 on billable, timesheet, hours, csv, xlsx",
+      "measured 2026-09-02"
+    ],
+    [
+      "Crowded tokens stay useless even when matched",
+      "pdf 281 results (we rank 258), excel 163 (we rank 160), watch 138 (128), drop 164 (159), data 1200 (no match): being on page 26 is the same as not being listed",
+      "measured 2026-09-02"
+    ],
+    [
+      "mcp-publisher has a status subcommand and it needs a piped confirmation",
+      "'mcp-publisher status --status deprecated --all-versions <name>' prompts 'Continue? [y/N]' and dies with 'failed to read response: EOF' under a non-tty; 'yes y | mcp-publisher status ...' succeeded for all 4",
+      "measured 2026-09-02"
+    ],
+    [
+      "Deprecation does NOT remove an entry from search results",
+      "after deprecating all 8 old versions, search=theluckystrike still returns 12 rows (4 old-name servers x 2 versions + 4 new); the status flag is metadata only",
+      "measured 2026-09-02 after the status calls"
+    ],
+    [
+      "Every published version is a separate search row",
+      "0.1.0 and 0.1.1 of each server both appear, so each server occupied 2 of the results in every list it matched",
       "measured"
     ],
     [
-      "Sort is alphabetical by full name",
-      "'io.github.theluckystrike/...' sorts after 'ai.*', 'app.*', 'cn.*', 'co.*', 'com.*' and most io.github.* names, so we sit at the bottom of every list we appear in",
-      "measured"
+      "Registry search index lags a publish by 1-3 minutes",
+      "the first re-probe after publishing missed our new name on 'csv' (16 results) and 'pdf' (280); the second probe found it at rank 17 of 17 and 258 of 281",
+      "measured 2026-09-02"
     ],
     [
       "The empty slots are closing",
@@ -48,21 +88,23 @@
       "surface": "Official MCP registry (API)",
       "status": "live",
       "listed": 1.0,
-      "findable": 0.3,
+      "findable": 0.239,
       "reach": 1.0,
-      "evidence": "found only by hyphenated or exact-name queries; bottom of alphabetical lists; 4 of 26,098",
-      "fix": "republish with names that contain the words users type: e.g. io.github.theluckystrike/time-tracker-timesheet-billing (name-substring search rewards long descriptive names)",
-      "score": 30
+      "evidence": "measured: matched 18 of 34 natural queries after the 2026-09-02 rename (7 of 34 before); mean p(seen)=0.239 vs 0.092 before. The old 0.3 findable was an estimate; this one is measured.",
+      "fix": "rank cannot be improved (alphabetical on the full name, and the io.github.theluckystrike prefix is fixed). Remaining levers: publish under additional near-empty tokens only if honest, and drive installs on surfaces that rank by installs.",
+      "score": 24,
+      "score_before_rename": 9
     },
     {
       "surface": "VS Code MCP gallery (reads the registry)",
       "status": "live",
       "listed": 1.0,
-      "findable": 0.3,
+      "findable": 0.239,
       "reach": 0.9,
-      "evidence": "same search index as the registry",
+      "evidence": "same search index as the registry; findable copied from the measured registry number",
       "fix": "same as registry",
-      "score": 27
+      "score": 22,
+      "score_before_rename": 8
     },
     {
       "surface": "Claude Desktop extensions directory",
@@ -78,11 +120,12 @@
       "surface": "Cursor and Claude Code pickers (registry-backed)",
       "status": "live",
       "listed": 1.0,
-      "findable": 0.25,
+      "findable": 0.2,
       "reach": 0.7,
-      "evidence": "same index; users type natural language",
-      "fix": "names with the plain words",
-      "score": 18
+      "evidence": "same index, but picker users type multi-word natural language, which returns 0 registry-wide; discounted 17% from the measured registry findable",
+      "fix": "nothing further from naming: a space in the query returns 0 results for every server in the registry",
+      "score": 14,
+      "score_before_rename": 6
     },
     {
       "surface": "Docker MCP catalog",
@@ -178,37 +221,129 @@
   "servers": [
     {
       "id": "time-tracker",
-      "registry_slot": "'time-tracker' 3 results, rank 3; 'time tracker' 0 results",
-      "competitors_in_slot": 2,
-      "organic": 42,
-      "why": "a searcher who types the hyphen finds 3 servers and sees ours last; most type a space and see nothing"
+      "registry_slot": "'time' 216 of 296; 'timesheet' 1 of 2; 'hours' 2 of 2; 'billable' 1 of 1; 'time-tracker' 5 of 5; 'timer', 'tracking', 'time tracker' no match",
+      "organic": 51,
+      "why": "matched 5 of 8 natural queries, up from 2 of 8; it now owns the three near-empty tokens (billable 0 prior competitors, timesheet 1, hours 1) outright, which is where the whole gain comes from",
+      "old_registry_name": "io.github.theluckystrike/time-tracker (deprecated 2026-09-02, all versions)",
+      "registry_name": "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+      "query_set": [
+        "time",
+        "timer",
+        "timesheet",
+        "hours",
+        "billable",
+        "tracking",
+        "time-tracker",
+        "time tracker"
+      ],
+      "organic_before": 13,
+      "competitors_in_matched_slots": {
+        "time": 296,
+        "timer": 12,
+        "timesheet": 2,
+        "hours": 2,
+        "billable": 1,
+        "tracking": 24,
+        "time-tracker": 5,
+        "time tracker": 0
+      }
     },
     {
       "id": "price-tracker",
-      "registry_slot": "'price-tracker' 6 results, rank 5; 'price' 100 results, rank 98",
-      "competitors_in_slot": 5,
-      "organic": 34,
-      "why": "same shape, one more competitor; 'price' is a crowded token"
+      "registry_slot": "'price' 100 of 114; 'drop' 159 of 164; 'alert' 35 of 43; 'watch' 128 of 138; 'price-tracker' 7 of 8; 'prices', 'deal', 'product', 'shop' no match",
+      "organic": 15,
+      "why": "matched 5 of 10 natural queries, up from 2 of 10, but every token it gained is crowded: only 'alert' (rank 35 of 43) is close enough to a first page to matter",
+      "old_registry_name": "io.github.theluckystrike/price-tracker (deprecated 2026-09-02, all versions)",
+      "registry_name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
+      "query_set": [
+        "price",
+        "prices",
+        "deal",
+        "drop",
+        "alert",
+        "watch",
+        "product",
+        "shop",
+        "price-tracker",
+        "price tracker"
+      ],
+      "organic_before": 11,
+      "competitors_in_matched_slots": {
+        "price": 114,
+        "prices": 21,
+        "deal": 99,
+        "drop": 164,
+        "alert": 43,
+        "watch": 138,
+        "product": 126,
+        "shop": 113,
+        "price-tracker": 8,
+        "price tracker": 0
+      }
     },
     {
       "id": "spreadsheet",
-      "registry_slot": "'spreadsheet' 13 results, rank 13; 'excel' 100+, not found; 'xlsx' 18, not found",
-      "competitors_in_slot": 12,
-      "organic": 22,
-      "why": "users search excel or xlsx, neither is in our name"
+      "registry_slot": "'spreadsheet' 13 of 15; 'excel' 160 of 163; 'xlsx' 19 of 19; 'csv' 17 of 17; 'sheet' 107 of 113; 'sheets', 'table', 'data' no match",
+      "organic": 25,
+      "why": "matched 5 of 8 natural queries, up from 2 of 8; xlsx (19 total) and csv (17 total) are short enough lists that last place is still on the first screen; 'excel' at 160 of 163 is worthless",
+      "old_registry_name": "io.github.theluckystrike/spreadsheet (deprecated 2026-09-02, all versions)",
+      "registry_name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+      "query_set": [
+        "spreadsheet",
+        "excel",
+        "xlsx",
+        "csv",
+        "sheet",
+        "sheets",
+        "table",
+        "data"
+      ],
+      "organic_before": 11,
+      "competitors_in_matched_slots": {
+        "spreadsheet": 15,
+        "excel": 163,
+        "xlsx": 19,
+        "csv": 17,
+        "sheet": 113,
+        "sheets": 80,
+        "table": 129,
+        "data": 1200
+      }
     },
     {
       "id": "invoice",
-      "registry_slot": "'invoice' 91 results, rank 82",
-      "competitors_in_slot": 90,
-      "organic": 12,
-      "why": "crowded token, alphabetical bottom; wins only via the time-tracker pairing and Google"
+      "registry_slot": "'invoice' 84 of 93; 'billing' 28 of 28; 'pdf' 258 of 281; 'invoices', 'invoicing', 'receipt', 'quote', 'freelance' no match",
+      "organic": 6,
+      "why": "the weakest of the four: 'invoice' and 'pdf' are crowded and alphabetical order pins us near the end. 'invoicing' (68 results) is unreachable because the name contains 'invoice', not 'invoicing'; 'invoices' has 0 competitors and is likewise unmatched",
+      "old_registry_name": "io.github.theluckystrike/invoice (deprecated 2026-09-02, all versions)",
+      "registry_name": "io.github.theluckystrike/invoice-pdf-billing-generator",
+      "query_set": [
+        "invoice",
+        "invoices",
+        "invoicing",
+        "billing",
+        "pdf",
+        "receipt",
+        "quote",
+        "freelance"
+      ],
+      "organic_before": 2,
+      "competitors_in_matched_slots": {
+        "invoice": 93,
+        "invoices": 0,
+        "invoicing": 68,
+        "billing": 28,
+        "pdf": 281,
+        "receipt": 15,
+        "quote": 55,
+        "freelance": 6
+      }
     }
   ],
   "fleet": {
-    "max_surface": 30,
-    "mean_live": 14,
+    "max_surface": 24,
+    "mean_live": 12,
     "fleet_score": 78,
-    "verdict": "Listed almost everywhere that is free, but findable almost nowhere: the fleet is at the alphabetical bottom of name-only searches and has zero installs on install-ranked directories. Renaming to word-rich names is the single highest-leverage fix and costs one republish."
+    "verdict": "The 2026-09-02 rename raised measured registry findability from 0.092 to 0.239 by widening token coverage from 7 to 18 of 34 natural queries. It did not and cannot improve rank: results are sorted alphabetically by the full name and the io.github.theluckystrike prefix pins every entry near the bottom of any list longer than ~20. The gain is concentrated in near-empty tokens (billable, timesheet, hours, xlsx, csv), where a bottom placement is still on the first screen. On crowded tokens (pdf 281, excel 163, watch 138, invoice 93) we are matched but unreachable. Deprecating the 4 old names did not remove them from search, so the fleet still shows 12 rows for 4 products. The next lever is not naming: it is installs on the surfaces that rank by installs."
   }
 }

@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/price-tracker",
+  "name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
   "description": "Check a shop page price now, keep a watch list, see history and target alerts. All data stays local.",
   "version": "0.1.1",
   "repository": {

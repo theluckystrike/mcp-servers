@@ -1,118 +1,588 @@
 {
+ "measured_at": "2026-09-02",
+ "endpoint": "https://registry.modelcontextprotocol.io/v0/servers?search=<q>&limit=100 (cursor paginated)",
+ "search_semantics": [
+  "NAME substring only; descriptions are not searched",
+  "case-insensitive: TIMESHEET, Timesheet and timesheet all return 1 result",
+  "matches across the slash: search=theluckystrike/time returns io.github.theluckystrike/time-tracker",
+  "any two-word query with a space returns 0 for every server in the registry",
+  "results are sorted alphabetically by the FULL name, so io.github.theluckystrike/* always sits near the bottom regardless of the slug",
+  "every server appears once per published version (0.1.0 and 0.1.1 are two rows)",
+  "index lag after publish is 1-3 minutes: csv and pdf missed our new names on the first re-probe and matched on the second"
+ ],
+ "visibility_model": "p(seen | query) = 0 if we do not appear, else min(1, 10/rank). Server organic = 100 x mean(p) over that server's natural query set (listed in data/organic.json servers[].query_set). Applied identically to before and after.",
+ "legacy_probe_2026-09-02_pre_rename": {
   "time tracker": {
-    "results": 0,
-    "count_meta": 0,
-    "our_rank": [],
-    "top3": []
+   "results": 0,
+   "count_meta": 0,
+   "our_rank": [],
+   "top3": []
   },
   "time tracking": {
-    "results": 0,
-    "count_meta": 0,
-    "our_rank": [],
-    "top3": []
+   "results": 0,
+   "count_meta": 0,
+   "our_rank": [],
+   "top3": []
   },
   "price tracker": {
-    "results": 0,
-    "count_meta": 0,
-    "our_rank": [],
-    "top3": []
+   "results": 0,
+   "count_meta": 0,
+   "our_rank": [],
+   "top3": []
   },
   "price": {
-    "results": 100,
-    "count_meta": 100,
-    "our_rank": [
-      [
-        98,
-        "io.github.theluckystrike/price-tracker"
-      ]
-    ],
-    "top3": [
-      "ai.smithery/truss44-mcp-crypto-price",
-      "ai.wem3/wem-price-compare",
-      "ai.wem3/wem-price-compare"
+   "results": 100,
+   "count_meta": 100,
+   "our_rank": [
+    [
+     98,
+     "io.github.theluckystrike/price-tracker"
     ]
+   ],
+   "top3": [
+    "ai.smithery/truss44-mcp-crypto-price",
+    "ai.wem3/wem-price-compare",
+    "ai.wem3/wem-price-compare"
+   ]
   },
   "spreadsheet": {
-    "results": 13,
-    "count_meta": 13,
-    "our_rank": [
-      [
-        13,
-        "io.github.theluckystrike/spreadsheet"
-      ]
-    ],
-    "top3": [
-      "io.github.ManddarinShop/spreadsheet-db-mcp",
-      "io.github.PSU3D0/agent-spreadsheet",
-      "io.github.PSU3D0/agent-spreadsheet"
+   "results": 13,
+   "count_meta": 13,
+   "our_rank": [
+    [
+     13,
+     "io.github.theluckystrike/spreadsheet"
     ]
+   ],
+   "top3": [
+    "io.github.ManddarinShop/spreadsheet-db-mcp",
+    "io.github.PSU3D0/agent-spreadsheet",
+    "io.github.PSU3D0/agent-spreadsheet"
+   ]
   },
   "excel": {
-    "results": 100,
-    "count_meta": 100,
-    "our_rank": [],
-    "top3": [
-      "cn.com.grapecity/gcexcel",
-      "cn.com.grapecity/gcexcel",
-      "com.ranovam/invoice-to-excel"
-    ]
+   "results": 100,
+   "count_meta": 100,
+   "our_rank": [],
+   "top3": [
+    "cn.com.grapecity/gcexcel",
+    "cn.com.grapecity/gcexcel",
+    "com.ranovam/invoice-to-excel"
+   ]
   },
   "csv": {
-    "results": 16,
-    "count_meta": 16,
-    "our_rank": [],
-    "top3": [
-      "io.dedyn.kai-system-agent/csv-profiler",
-      "io.github.Bishop81/csvto-mcp",
-      "io.github.Br0ski777/csv-to-json"
-    ]
+   "results": 16,
+   "count_meta": 16,
+   "our_rank": [],
+   "top3": [
+    "io.dedyn.kai-system-agent/csv-profiler",
+    "io.github.Bishop81/csvto-mcp",
+    "io.github.Br0ski777/csv-to-json"
+   ]
   },
   "invoice": {
-    "results": 91,
-    "count_meta": 91,
-    "our_rank": [
-      [
-        82,
-        "io.github.theluckystrike/invoice"
-      ]
-    ],
-    "top3": [
-      "app.wishpool/argentina-invoice-mcp",
-      "app.wishpool/belgium-invoice-mcp",
-      "app.wishpool/brazil-invoice-mcp"
+   "results": 91,
+   "count_meta": 91,
+   "our_rank": [
+    [
+     82,
+     "io.github.theluckystrike/invoice"
     ]
+   ],
+   "top3": [
+    "app.wishpool/argentina-invoice-mcp",
+    "app.wishpool/belgium-invoice-mcp",
+    "app.wishpool/brazil-invoice-mcp"
+   ]
   },
   "invoicing": {
-    "results": 68,
-    "count_meta": 68,
-    "our_rank": [],
-    "top3": [
-      "com.howtocalculateaninvoice.www/invoicing",
-      "io.github.Evozim/automated-xml-invoicing-mcp",
-      "io.github.cmendezs/mcp-einvoicing-ae"
-    ]
+   "results": 68,
+   "count_meta": 68,
+   "our_rank": [],
+   "top3": [
+    "com.howtocalculateaninvoice.www/invoicing",
+    "io.github.Evozim/automated-xml-invoicing-mcp",
+    "io.github.cmendezs/mcp-einvoicing-ae"
+   ]
   },
   "theluckystrike": {
-    "results": 4,
-    "count_meta": 4,
-    "our_rank": [
-      [
-        1,
-        "io.github.theluckystrike/invoice"
-      ],
-      [
-        2,
-        "io.github.theluckystrike/price-tracker"
-      ],
-      [
-        3,
-        "io.github.theluckystrike/spreadsheet"
-      ]
+   "results": 4,
+   "count_meta": 4,
+   "our_rank": [
+    [
+     1,
+     "io.github.theluckystrike/invoice"
     ],
-    "top3": [
-      "io.github.theluckystrike/invoice",
-      "io.github.theluckystrike/price-tracker",
-      "io.github.theluckystrike/spreadsheet"
+    [
+     2,
+     "io.github.theluckystrike/price-tracker"
+    ],
+    [
+     3,
+     "io.github.theluckystrike/spreadsheet"
     ]
+   ],
+   "top3": [
+    "io.github.theluckystrike/invoice",
+    "io.github.theluckystrike/price-tracker",
+    "io.github.theluckystrike/spreadsheet"
+   ]
   }
+ },
+ "before": {
+  "time": {
+   "results": 295,
+   "our_rank": [
+    [
+     214,
+     "io.github.theluckystrike/time-tracker"
+    ]
+   ]
+  },
+  "timer": {
+   "results": 12,
+   "our_rank": []
+  },
+  "timesheet": {
+   "results": 1,
+   "our_rank": []
+  },
+  "hours": {
+   "results": 1,
+   "our_rank": []
+  },
+  "billable": {
+   "results": 0,
+   "our_rank": []
+  },
+  "tracking": {
+   "results": 24,
+   "our_rank": []
+  },
+  "price": {
+   "results": 113,
+   "our_rank": [
+    [
+     98,
+     "io.github.theluckystrike/price-tracker"
+    ]
+   ]
+  },
+  "prices": {
+   "results": 21,
+   "our_rank": []
+  },
+  "deal": {
+   "results": 99,
+   "our_rank": []
+  },
+  "drop": {
+   "results": 163,
+   "our_rank": []
+  },
+  "alert": {
+   "results": 42,
+   "our_rank": []
+  },
+  "watch": {
+   "results": 137,
+   "our_rank": []
+  },
+  "product": {
+   "results": 126,
+   "our_rank": []
+  },
+  "shop": {
+   "results": 113,
+   "our_rank": []
+  },
+  "spreadsheet": {
+   "results": 14,
+   "our_rank": [
+    [
+     13,
+     "io.github.theluckystrike/spreadsheet"
+    ]
+   ]
+  },
+  "excel": {
+   "results": 162,
+   "our_rank": []
+  },
+  "xlsx": {
+   "results": 18,
+   "our_rank": []
+  },
+  "csv": {
+   "results": 16,
+   "our_rank": []
+  },
+  "sheet": {
+   "results": 111,
+   "our_rank": [
+    [
+     107,
+     "io.github.theluckystrike/spreadsheet"
+    ]
+   ]
+  },
+  "sheets": {
+   "results": 80,
+   "our_rank": []
+  },
+  "table": {
+   "results": 129,
+   "our_rank": []
+  },
+  "data": {
+   "results": 1200,
+   "our_rank": []
+  },
+  "invoice": {
+   "results": 92,
+   "our_rank": [
+    [
+     82,
+     "io.github.theluckystrike/invoice"
+    ]
+   ]
+  },
+  "invoices": {
+   "results": 0,
+   "our_rank": []
+  },
+  "invoicing": {
+   "results": 68,
+   "our_rank": []
+  },
+  "billing": {
+   "results": 27,
+   "our_rank": []
+  },
+  "pdf": {
+   "results": 280,
+   "our_rank": []
+  },
+  "receipt": {
+   "results": 15,
+   "our_rank": []
+  },
+  "quote": {
+   "results": 55,
+   "our_rank": []
+  },
+  "freelance": {
+   "results": 6,
+   "our_rank": []
+  },
+  "time-tracker": {
+   "results": 3,
+   "our_rank": [
+    [
+     3,
+     "io.github.theluckystrike/time-tracker"
+    ]
+   ]
+  },
+  "price-tracker": {
+   "results": 6,
+   "our_rank": [
+    [
+     5,
+     "io.github.theluckystrike/price-tracker"
+    ]
+   ]
+  },
+  "time tracker": {
+   "results": 0,
+   "our_rank": []
+  },
+  "price tracker": {
+   "results": 0,
+   "our_rank": []
+  },
+  "time tracking": {
+   "results": 0,
+   "our_rank": []
+  }
+ },
+ "after": {
+  "time": {
+   "results": 296,
+   "our_rank": [
+    [
+     214,
+     "io.github.theluckystrike/time-tracker (deprecated)"
+    ],
+    [
+     215,
+     "io.github.theluckystrike/time-tracker (deprecated)"
+    ],
+    [
+     216,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+    ]
+   ],
+   "top3": []
+  },
+  "timer": {
+   "results": 12,
+   "our_rank": [],
+   "top3": []
+  },
+  "timesheet": {
+   "results": 2,
+   "our_rank": [
+    [
+     1,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+    ]
+   ],
+   "top3": []
+  },
+  "hours": {
+   "results": 2,
+   "our_rank": [
+    [
+     2,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+    ]
+   ],
+   "top3": []
+  },
+  "billable": {
+   "results": 1,
+   "our_rank": [
+    [
+     1,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+    ]
+   ],
+   "top3": []
+  },
+  "tracking": {
+   "results": 24,
+   "our_rank": [],
+   "top3": []
+  },
+  "price": {
+   "results": 114,
+   "our_rank": [
+    [
+     100,
+     "io.github.theluckystrike/price-tracker-drop-alert-watch"
+    ]
+   ],
+   "top3": []
+  },
+  "prices": {
+   "results": 21,
+   "our_rank": [],
+   "top3": []
+  },
+  "deal": {
+   "results": 99,
+   "our_rank": [],
+   "top3": []
+  },
+  "drop": {
+   "results": 164,
+   "our_rank": [
+    [
+     159,
+     "io.github.theluckystrike/price-tracker-drop-alert-watch"
+    ]
+   ],
+   "top3": []
+  },
+  "alert": {
+   "results": 43,
+   "our_rank": [
+    [
+     35,
+     "io.github.theluckystrike/price-tracker-drop-alert-watch"
+    ]
+   ],
+   "top3": []
+  },
+  "watch": {
+   "results": 138,
+   "our_rank": [
+    [
+     128,
+     "io.github.theluckystrike/price-tracker-drop-alert-watch"
+    ]
+   ],
+   "top3": []
+  },
+  "product": {
+   "results": 126,
+   "our_rank": [],
+   "top3": []
+  },
+  "shop": {
+   "results": 113,
+   "our_rank": [],
+   "top3": []
+  },
+  "spreadsheet": {
+   "results": 15,
+   "our_rank": [
+    [
+     13,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+    ]
+   ],
+   "top3": []
+  },
+  "excel": {
+   "results": 163,
+   "our_rank": [
+    [
+     160,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+    ]
+   ],
+   "top3": []
+  },
+  "xlsx": {
+   "results": 19,
+   "our_rank": [
+    [
+     19,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+    ]
+   ],
+   "top3": []
+  },
+  "csv": {
+   "results": 17,
+   "our_rank": [
+    [
+     17,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+    ]
+   ],
+   "top3": []
+  },
+  "sheet": {
+   "results": 113,
+   "our_rank": [
+    [
+     107,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+    ],
+    [
+     110,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+    ]
+   ],
+   "top3": []
+  },
+  "sheets": {
+   "results": 80,
+   "our_rank": [],
+   "top3": []
+  },
+  "table": {
+   "results": 129,
+   "our_rank": [],
+   "top3": []
+  },
+  "data": {
+   "results": 1200,
+   "our_rank": [],
+   "top3": []
+  },
+  "invoice": {
+   "results": 93,
+   "our_rank": [
+    [
+     84,
+     "io.github.theluckystrike/invoice-pdf-billing-generator"
+    ]
+   ],
+   "top3": []
+  },
+  "invoices": {
+   "results": 0,
+   "our_rank": [],
+   "top3": []
+  },
+  "invoicing": {
+   "results": 68,
+   "our_rank": [],
+   "top3": []
+  },
+  "billing": {
+   "results": 28,
+   "our_rank": [
+    [
+     28,
+     "io.github.theluckystrike/invoice-pdf-billing-generator"
+    ]
+   ],
+   "top3": []
+  },
+  "pdf": {
+   "results": 281,
+   "our_rank": [
+    [
+     258,
+     "io.github.theluckystrike/invoice-pdf-billing-generator"
+    ]
+   ],
+   "top3": []
+  },
+  "receipt": {
+   "results": 15,
+   "our_rank": [],
+   "top3": []
+  },
+  "quote": {
+   "results": 55,
+   "our_rank": [],
+   "top3": []
+  },
+  "freelance": {
+   "results": 6,
+   "our_rank": [],
+   "top3": []
+  },
+  "time-tracker": {
+   "results": 5,
+   "our_rank": [
+    [
+     5,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+    ]
+   ],
+   "top3": []
+  },
+  "price-tracker": {
+   "results": 8,
+   "our_rank": [
+    [
+     7,
+     "io.github.theluckystrike/price-tracker-drop-alert-watch"
+    ]
+   ],
+   "top3": []
+  },
+  "time tracker": {
+   "results": 0,
+   "our_rank": [],
+   "top3": []
+  },
+  "price tracker": {
+   "results": 0,
+   "our_rank": [],
+   "top3": []
+  },
+  "time tracking": {
+   "results": 0,
+   "our_rank": [],
+   "top3": []
+  }
+ }
 }
