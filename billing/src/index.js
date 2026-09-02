@@ -274,6 +274,9 @@ export default {
       const urls = ["/", ...Object.keys(PAGES).map((k) => `/s/${k}`)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
+    if (path === "/22fad93b71a88e2e60acae203c4288ae.txt") {
+      return new Response("22fad93b71a88e2e60acae203c4288ae", { headers: { "content-type": "text/plain" } });
+    }
     if (path === "/robots.txt") {
       return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });
     }
