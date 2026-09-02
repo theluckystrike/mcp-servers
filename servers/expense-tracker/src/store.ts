@@ -24,7 +24,8 @@ export interface Expense {
   billable: boolean;
   vat_rate?: number;            // percent, the amount is VAT-inclusive
   mileage?: Mileage;
-  rebilled_at?: string;         // ISO timestamp, set by expense_to_invoice
+  rebilled_at?: string;         // ISO timestamp, set by expense_mark_rebilled (or expense_to_invoice with mark_rebilled)
+  rebilled_invoice?: string;    // Invoice number the expense was billed on, when known
   created: string;
 }
 

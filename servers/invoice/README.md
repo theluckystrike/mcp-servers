@@ -63,7 +63,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 
 | Tool | What it does |
 | --- | --- |
-| `business_set` | Store the issuer profile: name, address, email, VAT id, IBAN, bank, logo, default currency, default tax rate, payment terms, invoice prefix |
+| `business_set` | Store the issuer profile: name, address, email, VAT id, IBAN, bank, logo, default currency, default tax rate, payment terms, invoice prefix. `tax_rate`, `vat_rate` and `vat` are accepted as aliases for `default_tax_rate`, and any unrecognised field is reported back rather than dropped |
 | `client_add` | Add or update a client (name, address, email, VAT id) |
 | `client_list` | List stored clients with their ids |
 | `invoice_create` | Create an invoice from line items; allocates the next number, computes discount, tax per rate and total. If the client is created from a bare name the response says the BILL TO block has no address and how to add one |
@@ -71,7 +71,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `invoice_list` | List invoices, filtered by status, client and issue-date range |
 | `invoice_get` | Full stored record for one invoice number |
 | `invoice_mark_paid` | Record a payment in full or in part; reports the balance due |
-| `invoice_pdf` | Render the A4 PDF and return the file path |
+| `invoice_pdf` | Render the A4 PDF and return the file path. The response calls the file a PDF only when it is one |
 | `overdue_report` | Unpaid invoices past due, days overdue, outstanding totals per currency. Free |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |
@@ -185,6 +185,9 @@ always be regenerated from the stored records with `invoice_pdf`.
 - **Using the clone path**: the server binary is `servers/invoice/dist/index.js` after `npm run build`.
   Point your client's `command` at `node` with that absolute path as the only argument.
 - **Node version**: requires Node >= 18. Check with `node -v`.
+- **No business profile yet**: invoicing is never blocked by it. `invoice_create` and `invoice_from_hours`
+  issue the document with the placeholder issuer "Your business" and say so in one line; run
+  `business_set {name, address, vat_id, iban}` and render the PDF again to replace it.
 - **PDF render fails or looks wrong**: `invoice_pdf` uses `pdfkit`, a pure-JS renderer with no native
   dependency, so failures are almost always a missing or malformed `business_set` field (check
   `invoice_get` first) rather than an environment issue.

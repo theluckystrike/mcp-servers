@@ -170,7 +170,8 @@ test("stdio: initialize, tools/list, expenses, rules, summary, mileage, rebill",
   assert.equal(eurItems[0].tax_rate, 23);
   const plnItems = rebill.line_items_per_currency.find((g) => g.currency === "PLN").items;
   assert.equal(plnItems.length, 2);                      // Orlen plus the PL mileage
-  // rebilled expenses are not offered twice
+  // rebilled expenses are not offered twice, once they are actually marked (D-R4)
+  await c.call("expense_mark_rebilled", { project: "Acme", from: daysAgo(10), to: today });
   const again = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: daysAgo(10), to: today })).text);
   assert.equal(again.count, 0);
 

@@ -78,7 +78,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `project_set_rate` | Set the hourly rate and currency used for money totals (currency accepts codes or words: EUR, euros, pounds, zl). |
 | `report` | Hours and money for a period, grouped by project, day, task or tag; table, JSON or CSV. |
 | `export_csv` | Write entries to a CSV file and return the path. |
-| `invoice_summary` | Invoice-ready line items for one project: hours, rate, amount, total, in the currency the time was logged in. Free for the last 7 days, Pro for any period from full history. |
+| `invoice_summary` | Invoice-ready line items for one project: hours, rate, amount, total, in the currency the time was logged in. One line per task and rate, so no line ever shows a blended rate nobody agreed. Free for the last 7 days, Pro for any period from full history. |
 | `license_status` | Free or Pro, and where to upgrade. |
 | `license_activate` | Activate a Pro key (verified offline). |
 

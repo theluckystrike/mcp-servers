@@ -198,3 +198,34 @@ test("pro tier: a signed key unlocks full invoice history, tag grouping and full
     c.close();
   }
 });
+
+test("D-R1: invoice_summary prints one line per (task, rate), never a blended rate", async () => {
+  const c = client({});
+  try {
+    await c.init();
+    const today = new Date().toISOString().slice(0, 10);
+    // The exact shape from the user-value run: one 2.50 h entry at EUR 90.00 and one
+    // 0.01 h entry with no rate, both with no task. The old code printed EUR 89.82.
+    await c.call("entry_add", { project: "Acme", start: `${today}T09:00:00`, minutes: 150, rate: 90, currency: "EUR" });
+    await c.call("entry_add", { project: "Acme", start: `${today}T12:00:00`, minutes: 0.6 });
+    await c.call("entry_add", { project: "Acme", task: "Design review", start: `${today}T13:00:00`, minutes: 60, rate: 120, currency: "EUR" });
+    await c.call("entry_add", { project: "Acme", task: "Design review", start: `${today}T14:00:00`, minutes: 60, rate: 90, currency: "EUR" });
+
+    const inv = await c.call("invoice_summary", { project: "Acme", from: `${today}T00:00:00`, to: `${today}T23:59:59` });
+    assert.equal(inv.isError, false, inv.text);
+    assert.doesNotMatch(inv.text, /89\.8/, "no blended rate");
+    assert.doesNotMatch(inv.text, /mixed/);
+    const rows = inv.text.split("\n").filter(l => /^\(no task\)|^Design review/.test(l.trim()));
+    assert.equal(rows.length, 4, `expected 4 lines, got:\n${inv.text}`);
+    // the rated and the unrated no-task entries are separate lines
+    assert.match(inv.text, /\(no task\)\s+2\.50\s+EUR 90\.00\/h\s+EUR 225\.00/);
+    assert.match(inv.text, /\(no task\)\s+0\.01\s+-\s+-/);
+    // one task at two rates is two lines, not one average
+    assert.match(inv.text, /Design review\s+1\.00\s+EUR 120\.00\/h\s+EUR 120\.00/);
+    assert.match(inv.text, /Design review\s+1\.00\s+EUR 90\.00\/h\s+EUR 90\.00/);
+    // and the total still matches: 225 + 120 + 90
+    assert.match(inv.text, /TOTAL 4\.5\d h  EUR 435\.00/);
+  } finally {
+    c.close();
+  }
+});

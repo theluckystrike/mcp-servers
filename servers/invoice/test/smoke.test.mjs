@@ -265,3 +265,92 @@ test("D-8: every money value carries its currency code, and a bare client is fla
   assert.equal(p.isError, false);
   assert.ok(statSync(out).size > 1024);
 });
+
+test("D-R2: a missing business profile never blocks an invoice, and the PDF renders", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  // No business_set at all.
+  const r = await c.call("invoice_create", {
+    client: "Acme",
+    items: [{ description: "Design review", quantity: 2.5, unit_price: 90 }],
+    issue_date: "2026-09-02",
+  });
+  assert.equal(r.isError, false, r.text);
+  assert.match(r.text, /Created invoice INV-2026-0001/);
+  assert.match(r.text, /No business profile yet: the PDF shows a placeholder issuer\. Run business_set \{name, address, vat_id, iban\} and render the PDF again\./);
+  assert.match(r.text, /"total": "EUR 225\.00"/);
+
+  const h = await c.call("invoice_from_hours", { client: "Acme", hours: 3, rate: 100, currency: "USD", issue_date: "2026-09-02" });
+  assert.equal(h.isError, false, h.text);
+  assert.match(h.text, /"total": "USD 300\.00"/);
+  assert.match(h.text, /No business profile yet/);
+
+  // The PDF renders with the placeholder issuer.
+  const out = join(c.home, "placeholder.pdf");
+  const p = await c.call("invoice_pdf", { number: "INV-2026-0001", out_path: out });
+  assert.equal(p.isError, false, p.text);
+  assert.equal(readFileSync(out).subarray(0, 5).toString(), "%PDF-");
+  assert.ok(statSync(out).size > 1024);
+  assert.match(p.text, /No business profile yet/);
+  assert.match(p.text, /Wrote PDF invoice/);
+  const pdf = readFileSync(out, "latin1");
+  assert.ok(pdf.includes("Your business"), "the placeholder issuer is printed on the page");
+
+  // Once the profile exists the note is gone.
+  await c.call("business_set", { name: "Zovo Studio" });
+  const p2 = await c.call("invoice_pdf", { number: "INV-2026-0001", out_path: out });
+  assert.doesNotMatch(p2.text, /No business profile yet/);
+});
+
+test("D-R7: business_set accepts tax_rate aliases and warns about unknown keys", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  const b = await c.call("business_set", { name: "Zovo Studio", tax_rate: 23 });
+  assert.equal(b.isError, false, b.text);
+  assert.match(b.text, /"default_tax_rate": 23/);
+  assert.match(b.text, /Read tax_rate: 23 as default_tax_rate: 23\./);
+
+  const r = await c.call("invoice_create", {
+    client: "Acme",
+    items: [{ description: "Design review", quantity: 2.5, unit_price: 90 }, { description: "Expenses", quantity: 1, unit_price: 50 }],
+    issue_date: "2026-09-02",
+  });
+  assert.match(r.text, /"total": "EUR 338\.25"/);
+
+  // vat_rate and vat are aliases too
+  assert.match((await c.call("business_set", { name: "Zovo Studio", vat_rate: 19 })).text, /"default_tax_rate": 19/);
+  assert.match((await c.call("business_set", { name: "Zovo Studio", vat: 7 })).text, /"default_tax_rate": 7/);
+
+  // an unknown key is reported, not dropped in silence
+  const u = await c.call("business_set", { name: "Zovo Studio", company_vat: 23, iban_number: "PL01" });
+  assert.match(u.text, /Warning: ignored unknown fields company_vat, iban_number\./);
+  assert.match(u.text, /Accepted fields: name, address, email, vat_id, iban, bank, logo_path, default_currency, default_tax_rate, payment_terms_days, invoice_prefix/);
+
+  // items take the same alias
+  await c.call("business_set", { name: "Zovo Studio", default_tax_rate: 0 });
+  const i = await c.call("invoice_create", {
+    client: "Acme",
+    items: [{ description: "Work", quantity: 1, unit_price: 100, vat_rate: 23 }],
+    issue_date: "2026-09-03",
+  });
+  assert.match(i.text, /"tax_rate": "23%"/);
+  assert.match(i.text, /"total": "EUR 123\.00"/);
+});
+
+test("D-R6: the wording says PDF only when the file is a PDF", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("business_set", { name: "Zovo Studio" });
+  await c.call("invoice_create", { client: "Acme", items: [{ description: "Work", quantity: 1, unit_price: 10 }], issue_date: "2026-09-02" });
+  const pdf = join(c.home, "ok.pdf");
+  const a = await c.call("invoice_pdf", { number: "INV-2026-0001", out_path: pdf });
+  assert.match(a.text, /Wrote PDF invoice/);
+  assert.doesNotMatch(a.text, /HTML invoice/);
+  const html = join(c.home, "wrong.html");
+  const b = await c.call("invoice_pdf", { number: "INV-2026-0001", out_path: html });
+  assert.match(b.text, /Wrote HTML invoice \(print to PDF\)/);
+  assert.match(b.text, /holds PDF bytes despite the \.html name\. Use a \.pdf path\./);
+});

@@ -183,5 +183,60 @@ test("markup rebill is free and keeps the tax_rate on the net line", async (t) =
   assert.equal(item.unit_price, 55);      // net 50.00 + 10% markup
   assert.equal(item.tax_rate, 23);        // the invoice recomputes the VAT, never on the gross
   assert.equal(out.markup_percent, 10);
-  assert.equal(out.marked_rebilled, true);
+  // D-R4: the preview does not touch the ledger.
+  assert.equal(out.marked_rebilled, false);
+});
+
+test("D-R4: expense_to_invoice does not mark rebilled, expense_mark_rebilled does", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("expense_add", { amount: 61.5, currency: "EUR", project: "Acme", billable: true, merchant: "Media Markt", vat_rate: 23 });
+  const first = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  assert.equal(first.marked_rebilled, false);
+  assert.match(first.next_step, /expense_mark_rebilled/);
+  // still unbilled: the same call offers it again
+  const again = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  assert.equal(again.count, 1);
+  const marked = await c.call("expense_mark_rebilled", { project: "Acme", from: today, to: today, invoice_number: "INV-2026-0001" });
+  assert.ok(!marked.isError, marked.text);
+  const m = JSON.parse(marked.text);
+  assert.equal(m.marked, 1);
+  assert.equal(m.invoice_number, "INV-2026-0001");
+  const third = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  assert.equal(third.count, 0);
+  assert.ok((await c.call("expense_mark_rebilled", { ids: ["nope"] })).isError);
+  assert.ok((await c.call("expense_mark_rebilled", {})).isError);
+});
+
+test("D-R3: an expense with no VAT rate is never emitted as a silent net line", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("expense_add", { amount: 61.5, currency: "EUR", project: "Acme", billable: true, merchant: "Media Markt" });
+  const unknown = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  const u = unknown.line_items_per_currency[0].items[0];
+  assert.equal(u.unit_price, 61.5);   // gross rebilled as-is
+  assert.equal(u.tax_rate, 0);
+  assert.match(u.description, /tax_rate: 0 \(VAT unknown, gross rebilled as-is; set expense_settings default_vat_rate to split\)/);
+  assert.equal(unknown.vat_unknown_lines, 1);
+  assert.match(unknown.vat_note, /taxed twice/);
+  // with a default rate the gross is split retroactively at rebill time
+  await c.call("expense_settings", { default_vat_rate: 23 });
+  const split = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  const s = split.line_items_per_currency[0].items[0];
+  assert.equal(s.unit_price, 50);
+  assert.equal(s.tax_rate, 23);
+  assert.match(s.description, /\[vat assumed 23%\]/);
+  assert.equal(split.vat_assumed_lines, 1);
+});
+
+test("D-R3: expense_add accepts tax_rate and vat as aliases for vat_rate", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  const a = await c.call("expense_add", { amount: 61.5, currency: "EUR", tax_rate: 23, merchant: "A" });
+  assert.match(a.text, /Net EUR 50\.00, VAT EUR 11\.50 at 23%/);
+  const b = await c.call("expense_add", { amount: 61.5, currency: "EUR", vat: 23, merchant: "B" });
+  assert.match(b.text, /Net EUR 50\.00, VAT EUR 11\.50 at 23%/);
 });

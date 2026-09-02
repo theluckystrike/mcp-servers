@@ -201,3 +201,76 @@ insight:
   was then rolled back. Rounds 1 and 2 could not see this class at all, because one prompt per
   conversation never lets two servers touch the same record.
 ```
+
+## Round-3 fixes
+
+Six of the seven defects above had a code fix in `servers/invoice`, `servers/expense-tracker` and
+`servers/time-tracker`. D-R5 is a hosted cold-start and lives in `remote/`, which another agent owns.
+Every fix carries a test that fails against the old behaviour.
+
+| Defect | Fix | Code | Test |
+|---|---|---|---|
+| D-R2 high, invoice | A missing business profile no longer ends the turn. `createInvoice` drops the `hasBusiness()` guard, issues the document with the placeholder issuer `"Your business"`, and both `invoice_create` and `invoice_from_hours` return the line `No business profile yet: the PDF shows a placeholder issuer. Run business_set {name, address, vat_id, iban} and render the PDF again.` `invoice_pdf` renders with the same placeholder and repeats the line. | `servers/invoice/src/index.ts:45` (`PLACEHOLDER_ISSUER`), `:46` (`NO_BUSINESS_NOTE`), `:54` (`issuer()`), `:254` (guard removed), `:317` (`businessNote`), `:460` (pdf note) | `servers/invoice/test/smoke.test.mjs:269` |
+| D-R7 med, invoice | `business_set` takes `tax_rate` / `vat_rate` / `vat` as aliases for `default_tax_rate` and echoes `Read tax_rate: 23 as default_tax_rate: 23.`; its schema is a `passthrough()` object so an unrecognised key produces `Warning: ignored unknown fields ... Accepted fields: name, address, email, vat_id, iban, bank, logo_path, default_currency, default_tax_rate, payment_terms_days, invoice_prefix, ...` instead of vanishing. `invoice_create` items take `vat_rate` / `vat` as aliases for `tax_rate` through a schema transform. | `servers/invoice/src/index.ts:137` (aliases + warning), `:232` (item alias transform) | `servers/invoice/test/smoke.test.mjs:306` |
+| D-R6 low, invoice | `invoice_pdf` names the file for what it holds: `Wrote PDF invoice <path>`, or `Wrote HTML invoice (print to PDF) <path>` plus `holds PDF bytes despite the .html name. Use a .pdf path.` when the out path ends in `.html`. `documentLabel(path, html?)` takes an explicit flag so a caller that serves HTML can pass one. | `servers/invoice/src/index.ts:64` (`documentLabel`), `:460` | `servers/invoice/test/smoke.test.mjs:342` |
+| D-R3 high, expense-tracker | `expense_to_invoice` no longer emits a gross receipt as a net line. With `expense_settings.default_vat_rate` set, an expense with no recorded rate is split retroactively at rebill time and its description carries `[vat assumed 23%]`. Without one, `unit_price` is the gross, `tax_rate` is 0, and the description carries `[tax_rate: 0 (VAT unknown, gross rebilled as-is; set expense_settings default_vat_rate to split)]`, with `vat_unknown_lines` and a `vat_note` naming the double-tax risk in the payload. `expense_add` also accepts `tax_rate` and `vat` as aliases for `vat_rate`. | `servers/expense-tracker/src/index.ts:646` (split/gross rules), `:665` (suffix), `:690` (`vat_unknown_lines`), `:189` (expense_add aliases) | `servers/expense-tracker/test/adversarial.test.mjs:212`, `:234` |
+| D-R4 med, expense-tracker | `expense_to_invoice` is a preview: `mark_rebilled` defaults to **false**, `marked_rebilled` reports it, and `next_step` names the two calls in order. New tool `expense_mark_rebilled {ids[] \| project+from+to, invoice_number?}` sets `rebilled_at` (and `rebilled_invoice`) once the invoice exists. | `servers/expense-tracker/src/index.ts:675` (default off), `:711` (`expense_mark_rebilled`), `servers/expense-tracker/src/store.ts:28` (`rebilled_invoice`) | `servers/expense-tracker/test/adversarial.test.mjs:190`, `servers/expense-tracker/test/smoke.test.mjs:174` |
+| D-R1 med, time-tracker | `invoice_summary` groups by (task, rate, currency) instead of task alone, so the EUR 89.82 blend cannot occur: the 2.50 h at EUR 90.00 and the 0.01 h with no rate are two lines, and one task logged at two rates is two lines. The rate column prints `EUR 90.00/h` or `-`, never an average, and the total is unchanged. | `servers/time-tracker/src/index.ts:710` | `servers/time-tracker/test/smoke.test.mjs:202` |
+
+Behaviour changes a caller can see: `expense_to_invoice` no longer marks anything rebilled (call
+`expense_mark_rebilled` after `invoice_create`), and `invoice_create` / `invoice_from_hours` no longer
+return `isError` when no business profile exists. READMEs for the three servers were updated to match.
+
+### Verbatim test summaries
+
+`npm run build` clean for all three. `npm test -w servers/<name>`:
+
+```
+### invoice
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1358.471709
+### expense-tracker
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1663.463375
+### time-tracker
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 581.191
+```
+
+`node scripts/validate.mjs` (run 15, `data/validation.json`), no probe lines changed:
+
+```
+expense-tracker: 22/22 in 471 ms
+time-tracker: 18/18 in 234 ms
+price-tracker: 18/18 in 286 ms
+spreadsheet: 18/18 in 396 ms
+invoice: 20/20 in 391 ms
+remote: 2/7
+billing: 11/11
+validation db: /Users/mike/mcp-servers/data/validation.json run 15: 109/114
+```
+
+All five stdio servers and billing are green (96/96 and 11/11); the `expense_to_invoice` and
+`invoice_create` probes pass unchanged. The remote block is not a code regression: it fails at the
+first step, `GET https://mcp.zovo.one/mcp/token` ->
+`{"error":"rate_limited","message":"This address has minted 10 anonymous tokens in the last hour ..."}`,
+so the three `tools/list over HTTP` checks run with no token and see 0 tools. Runs 12 and 13 scored
+remote 7/7 from this machine; `remote/` is being changed concurrently by another agent.

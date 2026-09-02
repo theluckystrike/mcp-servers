@@ -71,7 +71,8 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `expense_summary` | Totals for a range grouped by category, project, month or merchant, with the gross, net and VAT per currency |
 | `mileage_add` | Log a trip in km or miles and price it from the rate table (or your own rate) |
 | `expense_export` | Write the range to csv, xlsx or json and return the path. Never writes a partial file |
-| `expense_to_invoice` | Turn a project's unbilled billable expenses into `invoice_create` line items, per currency, with an optional markup |
+| `expense_to_invoice` | Preview a project's unbilled billable expenses as `invoice_create` line items, per currency, with an optional markup. Marks nothing as rebilled |
+| `expense_mark_rebilled` | Mark expenses rebilled once the invoice exists, by ids or by project and date range, optionally recording the invoice number |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |
 
@@ -92,7 +93,7 @@ With no `region`, miles use the US rate and kilometres the EU rate. `rate_per_km
 
 ## Pairs with the rest of the collection
 
-`expense_to_invoice` returns `{description, quantity, unit_price, tax_rate}` objects, which is exactly the `items` array [mcp-invoice](../invoice) takes. `unit_price` is the net amount, `tax_rate` is the VAT rate, so the invoice recomputes the same tax rather than double-charging it. Because one invoice carries one currency, the result is grouped per currency and you pass one group. [mcp-time-tracker](../time-tracker) bills the hours on the same project; this server bills what the project cost you.
+`expense_to_invoice` returns `{description, quantity, unit_price, tax_rate}` objects, which is exactly the `items` array [mcp-invoice](../invoice) takes. `unit_price` is the net amount, `tax_rate` is the VAT rate, so the invoice recomputes the same tax rather than double-charging it. An expense recorded with no VAT rate holds a gross amount: if `expense_settings` has a `default_vat_rate` the gross is split at that rate at rebill time and the line says `[vat assumed 23%]`; if it does not, the gross is rebilled as-is with `tax_rate: 0` and the description carries `tax_rate: 0 (VAT unknown, gross rebilled as-is; set expense_settings default_vat_rate to split)` so a default rate on the invoice cannot tax the receipt twice. Nothing is marked rebilled by that call: create the invoice first, then call `expense_mark_rebilled`. Because one invoice carries one currency, the result is grouped per currency and you pass one group. [mcp-time-tracker](../time-tracker) bills the hours on the same project; this server bills what the project cost you.
 
 ## Free vs Pro
 
