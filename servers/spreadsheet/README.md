@@ -76,6 +76,70 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 
 Resource template: `sheet://<path>` returns the `sheet_info` summary for that file.
 
+## What you can say
+
+| You say | Tool |
+| --- | --- |
+| "Open sales.xlsx and tell me what's in it." | `sheet_info` |
+| "Show me the first 50 rows." | `sheet_read` |
+| "Which rep sold the most units in the North region? Top 5 with totals." | `sheet_query` (`group_by` + `aggregate`) |
+| "How many empty cells are in the Email column, and what's the median order size?" | `sheet_stats` |
+| "Find every row that mentions 'refund'." | `sheet_find` |
+| "Write this as a new sheet called Q3 Results." | `sheet_write` |
+| "Add a Revenue column that's Units times Unit Price, save it as a CSV next to the original." | `sheet_add_column` |
+| "Convert this xlsx to JSON." | `sheet_convert` |
+| "Am I on the free plan or Pro?" | `license_status` |
+| "Here's my license key, activate it." | `license_activate` |
+
+## Worked example
+
+From `docs/USER_VALUE_R2.md`, a 400-row fixture with a title row and a blank row above the real header
+(row 3), sheets `Sales` / `Reps` / `Notes`, prices stored as strings like `"1,516.16"`. One call, ground
+truth confirmed against the generator: Turing 650, Hopper 567, Linus T 551, Lovelace 486, Liskov 290.
+
+```
+You: Which rep sold the most units in the North region? Top 5 with totals.
+
+  sheet_query {
+    path: "/Users/you/sales.xlsx", sheet: "Sales",
+    where: "[Region] = \"North\"",
+    group_by: ["Rep"],
+    aggregate: [{ col: "Units", fn: "sum", as: "total_units" }],
+    sort: { col: "total_units", dir: "desc" },
+    limit: 5
+  }
+
+Assistant: Query: where [Region] = "North"; group by Rep; sum Units as total_units;
+sort total_units desc; limit 5
+5 groups from 102 of 400 rows, showing 5
+
+Alan Turing     650
+Grace Hopper    567
+Linus T         551
+Ada Lovelace    486
+Barbara Liskov  290
+```
+
+The response now echoes the exact query it ran (the `Query:` line) before the numbers, so a filter you
+did not ask for -- an accidental `AND [Status] = "Closed"`, say -- is visible instead of silently
+narrowing the answer.
+
+A second example, adding a column and saving without touching the source:
+
+```
+You: Add a Revenue column and save it as a CSV next to the original.
+
+  sheet_add_column {
+    path: "/Users/you/sales.xlsx", sheet: "Sales",
+    name: "Revenue", formula: "[Units] * [Unit Price]",
+    out_path: "/Users/you/sales.csv"
+  }
+
+Assistant: Wrote 400 rows (401 lines with header) to sales.csv.
+Revenue = Units * Unit Price on every row, total 10,142,542.04.
+Source file untouched.
+```
+
 ### The `where` and `formula` language
 
 A small expression language, parsed and evaluated directly. There is no `eval` and no code execution: a bare word is always a column name, never a JavaScript value.
@@ -109,9 +173,46 @@ Over a free read limit the tool still does the work and returns the part it is a
 
 $19 one-time for this server, $39 for every server, lifetime: https://mcp.zovo.one/buy/spreadsheet
 
-## Privacy
+## How it stores data
 
-All data stays local. Files are read from and written to your own disk, license keys are verified offline with an embedded public key, and the server makes no network requests at all.
+This server keeps no database of its own -- it reads and writes the spreadsheet files you point it at,
+directly on your disk, and nothing else. Every write (`sheet_write`, `sheet_add_column`, `sheet_convert`
+in `overwrite` mode) goes to a temporary file in the same directory first, then is renamed into place, so
+an interrupted write leaves either the untouched original or the complete new file, never a truncated
+one. Because there is no shared state file, there is no advisory lock to take: two calls writing to two
+different output paths cannot collide, and a call to `overwrite` the same file twice in a row is simply
+two writes in sequence. To back up your data, back up the spreadsheet files themselves -- there is
+nothing else to copy.
+
+## Limits and honest caveats
+
+- Free reads cap at 5,000 rows and 5 MB; free writes cap at 500 rows per file and **refuse rather than
+  truncate** -- you get an error naming the row count and the cap, never a shorter file that looks
+  complete.
+- The hard ceiling is 50 MB regardless of tier; a file over that is refused outright with a clear message
+  rather than risking memory exhaustion.
+- The `where`/`formula` language is intentionally small: no regular expressions, no custom functions,
+  no cross-sheet references in a single formula. It covers comparisons, boolean logic and arithmetic,
+  nothing more.
+- `sheet_info`'s header-row guess is a heuristic (looks for the first row with lower emptiness and higher
+  text density than the rows above it). It handles a title row and a blank row above the header; it is
+  not proof against every layout, and you can always confirm what it picked before querying.
+
+## Troubleshooting
+
+- **`npx` hangs or fails to find the package**: npm publish for this package is pending. Use the `.mcpb`
+  bundle or the clone-and-build path above until it lands.
+- **Using the `.mcpb` bundle**: it installs into Claude Desktop directly; there is no separate config
+  step.
+- **Using the clone path**: the server binary is `servers/spreadsheet/dist/index.js` after
+  `npm run build`. Point your client's `command` at `node` with that absolute path as the only argument.
+- **Node version**: requires Node >= 18. Check with `node -v`.
+- **"Path does not exist"**: the message includes the resolved absolute path (with `~` expanded) -- check
+  it against where the file actually lives, especially inside a sandboxed or containerized client.
+- **A write is refused with a row-count message**: you hit the free 500-row write cap. Filter the data
+  down with `sheet_query` first, write in batches, or activate Pro.
+- **Nothing shows up / silent failures**: logs go to stderr only, never stdout. In Claude Desktop check
+  Settings -> Developer -> the server's log file; in Claude Code check the terminal or `--mcp-debug`.
 
 ## Safety
 
@@ -120,5 +221,40 @@ All data stays local. Files are read from and written to your own disk, license 
 - `sheet_add_column` and `sheet_convert` write to a new file and refuse to clobber an existing one unless you pass `out_path` yourself.
 - `sheet_write` with `mode: "new_file"` refuses to write over an existing file. Only `mode: "overwrite"` replaces file contents.
 - Output files are written to a temporary name and renamed into place, so an interrupted write cannot truncate a file.
+
+## Privacy
+
+All data stays local. Files are read from and written to your own disk, license keys are verified offline with an embedded public key, and the server makes no network requests at all.
+
+## Pairs with
+
+- [mcp-time-tracker](../time-tracker/README.md) -- export a CSV with `export_csv`, then query and reshape it here.
+- [mcp-invoice](../invoice/README.md) -- pull line items out of a spreadsheet before turning them into an invoice.
+- [mcp-price-tracker](../price-tracker/README.md) -- analyze exported price history as a sheet.
+- [office-suite](../office-suite/README.md) -- all four servers behind one install, one config entry.
+- Guide: [Ask questions about an Excel or CSV file from Cursor or Claude](https://mcp.zovo.one/guides/read-excel-in-cursor)
+
+## FAQ
+
+**Does it handle a spreadsheet with a title row above the headers?**
+Yes. `sheet_info` guesses the header row and reports which row it picked, so an export with a title line
+and a blank line above the real headers opens correctly without you specifying anything.
+
+**Can it group and sum, or does it only filter?**
+It groups. `sheet_query` takes `group_by` plus `aggregate` with sum, count, avg, min or max, and can sort
+by an aggregate alias, so top-N-by-category questions are a single call.
+
+**Will it overwrite my original file?**
+No, not unless you explicitly pass an output path that points at the source. `sheet_add_column` and
+`sheet_convert` write a new file next to the original by default.
+
+**What happens on the free tier with a file bigger than the limit?**
+Reads return the first 5,000 rows with a note naming what was omitted. Writes over 500 rows are refused
+outright rather than producing a truncated file, and the message tells you the row count, the cap and a
+free way round.
+
+**Is my data sent anywhere?**
+No. The server runs locally on your machine and reads your files directly. It makes no network requests,
+and it stores nothing of its own beyond the files you ask it to write.
 
 Built by [theluckystrike](https://github.com/theluckystrike). Support: support@zovo.one

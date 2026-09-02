@@ -80,6 +80,40 @@ Resource: `prices://watches` - JSON of every watch with its latest price.
 
 Prompt: `check_prices` - refreshes every watch and summarises the drops and target hits in one command.
 
+## What you can say
+
+| You say | Tool |
+| --- | --- |
+| "What does this cost right now: \<url\>?" | `price_check` |
+| "Watch that page and alert me if it goes under 40." | `watch_add` |
+| "Show me everything I'm watching and whether anything dropped." | `watch_refresh` (all) then `watch_list` |
+| "Stop tracking that laptop, I bought it elsewhere." | `watch_remove` |
+| "Refresh my watches." | `watch_refresh` |
+| "What's the price history on the bookshelf I'm watching?" | `price_history` |
+| "I checked myself, it's 39.99 GBP in-store, log that." | `price_add_manual` |
+| "Has anything I'm watching hit its target or dropped a lot?" | `alerts_pending` |
+| "Am I on the free plan or Pro?" | `license_status` |
+| "Here's my license key, activate it." | `license_activate` |
+
+## Worked example
+
+A real run against `books.toscrape.com`, from `docs/USER_VALUE_R2.md`, with `WebFetch`/`WebSearch`
+disallowed so the price-tracker's own tools had to answer:
+
+```
+You: What does this cost right now: https://books.toscrape.com/catalogue/...?
+
+  price_check { url: "https://books.toscrape.com/catalogue/..." }
+  -> price 51.77, currency GBP, source regex-fallback, confidence low
+
+Assistant: GBP 51.77. Confidence: low (regex-fallback) -- this page has no
+structured price data, so I read it from the visible text.
+```
+
+The confidence label is not decoration: `books.toscrape.com` carries no JSON-LD or microdata, so this is
+the one case in testing where the regex fallback was the only path to a number, and the model relayed the
+"low" label to the user unprompted rather than stating 51.77 as a fact.
+
 ## Alerts: nothing runs in the background
 
 There is no scheduler and no daemon. A watch is a stored history, not a subscription: prices are re-read only when `watch_refresh` runs, and `alerts_pending` reports on what is already stored. The working pattern is to say **"refresh my watches"** at the start of a session (or run the `check_prices` prompt), then ask what dropped.
@@ -107,10 +141,84 @@ Prices are stored as decimal strings in the major unit with a `.` decimal separa
 
 Every reading carries a **confidence**: `high` for JSON-LD, microdata, `meta itemprop` and Open Graph; `medium` for `data-price` attributes and price class or id hints; `low` for the regex fallback. A `low` reading on a page with no product title is reported but never stored.
 
-Pages are fetched with a desktop browser User-Agent, a 12 second timeout, redirects followed, and a 2 MB body cap. After the fetch the final URL is compared with the one you asked for: if the shop redirected off the product path - a different path depth, a category or home page, or a generic title such as "Products", "Home", the shop name alone, or "not found" - you get `the shop redirected to <finalUrl>, which is not a product page` instead of the cheapest item on the listing it landed on.
+Pages are fetched with a desktop browser User-Agent, a 12 second timeout, redirects followed, and a 2 MB body cap. After the fetch the final URL is compared with the one you asked for: if the shop redirected off the product path - a different path depth, a category or home page, or a generic title such as "Products", "Home", the shop name alone, or "not found" - you get `the shop redirected to <finalUrl>, which is not a product page` instead of the cheapest item on the listing it landed on. A redirect that only inserts a canonical slug in front of the same product id or path (Newegg, Amazon `/dp/`, Zalando-style URLs) is accepted, not refused.
+
+## How it stores data
+
+Watches and their price history live in one JSON file:
+`${XDG_DATA_HOME:-~/.local/share}/mcp-servers/price-tracker/watches.json`. Every mutation (`watch_add`,
+`watch_remove`, `watch_refresh`, `price_add_manual`) happens under an advisory lock file,
+`.../price-tracker/.lock`, held across the load-mutate-save cycle so two refreshes running at once cannot
+interleave. `price_check` and read-only tools do not need the lock. Saves write to a temporary file and
+rename it into place, so an interrupted write cannot leave a half-written file. To back up your watch
+history, copy `watches.json`.
+
+## Limits and honest caveats
+
+- **Real-world extraction success is roughly 5 of 12** on a mixed sample of major retailers: five sites
+  returned an outright bot-wall 403 (H&M, Allegro, MediaMarkt, Home Depot, Etsy), one timed out (Best
+  Buy), and the rest split between correct prices and one intentionally refused reading (a redirect off
+  the product page). This is a property of the open web, not a bug the server can fix -- there is no
+  headless browser or CAPTCHA solver here, by design (no native deps, no paid API). `price_add_manual`
+  is the working answer for a blocked shop.
+- **There is no background job.** Nothing checks prices unless you (or your client, via a scheduled
+  script you run yourself) call `watch_refresh`. This is not a missing feature; a local stdio server has
+  no business running a daemon on your machine.
+- Free tier caps watches at 3 and history at the last 30 observations per watch; `price_check` and
+  `alerts_pending` are unlimited on free.
+- A `low`-confidence regex reading is still reported, but never silently treated as certain -- pass it on
+  to the user as an estimate, not a fact.
+
+## Troubleshooting
+
+- **`npx` hangs or fails to find the package**: npm publish for this package is pending. Use the `.mcpb`
+  bundle or the clone-and-build path above until it lands.
+- **Using the `.mcpb` bundle**: it installs into Claude Desktop directly; there is no separate config
+  step.
+- **Using the clone path**: the server binary is `servers/price-tracker/dist/index.js` after
+  `npm run build`. Point your client's `command` at `node` with that absolute path as the only argument.
+- **Node version**: requires Node >= 18. Check with `node -v`.
+- **A watch always errors "not a product page"**: the shop redirected you off the URL you gave it (a
+  category page, home page, or a generic title). Fetch the exact product URL again from the shop and
+  re-add the watch, or use `price_add_manual` if the shop keeps redirecting.
+- **A shop returns 403 every time**: it is blocking automated requests. This is expected for a subset of
+  large retailers (see Limits above); use `price_add_manual`.
+- **Nothing shows up / silent failures**: logs go to stderr only, never stdout. In Claude Desktop check
+  Settings -> Developer -> the server's log file; in Claude Code check the terminal or `--mcp-debug`.
 
 ## Privacy
 
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/price-tracker/watches.json`. The only network requests are to the product pages you name. License keys verify offline; nothing is sent anywhere.
+
+## Pairs with
+
+- [mcp-invoice](../invoice/README.md) -- bill a client for something you bought after tracking its price.
+- [mcp-spreadsheet](../spreadsheet/README.md) -- export `price_history` and analyze it as a sheet.
+- [mcp-time-tracker](../time-tracker/README.md) -- track the hours you spend shopping around, if that is somehow billable.
+- [office-suite](../office-suite/README.md) -- all four servers behind one install, one config entry.
+- Guide: [Watch a product price with Claude and get told when it drops](https://mcp.zovo.one/guides/price-drop-alerts-with-claude)
+
+## FAQ
+
+**Why didn't it check the price automatically overnight?**
+There is no scheduler in this server. Prices are only re-read when `watch_refresh` runs, which happens
+when you ask for it (or when a cron/launchd job you set up yourself calls it).
+
+**Why does it refuse to give me a price on some pages?**
+Either the shop returned a bot-wall response (403) or the request redirected off the product page onto a
+listing, category or home page. Both are reported honestly instead of returning a wrong number; use
+`price_add_manual` to keep the history going by hand.
+
+**What does "confidence: low" mean?**
+The price came from a text-pattern fallback rather than the page's own structured data (JSON-LD,
+microdata, Open Graph). It is usually right but has not been verified against a machine-readable field.
+
+**Can I track a price in a currency different from what the page shows?**
+`watch_add` and `price_add_manual` accept an explicit `currency`, but the number you store should match
+what you actually read -- the server does not convert currencies.
+
+**Does it ever send my watch list anywhere?**
+No. The only outbound requests are to the product URLs you add, to fetch their pages. There is no
+telemetry and no account.
 
 MIT licensed.

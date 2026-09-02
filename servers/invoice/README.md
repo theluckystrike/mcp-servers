@@ -78,6 +78,56 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 
 Resource: `invoices://open` returns every unpaid or partly paid invoice as JSON.
 
+## What you can say
+
+| You say | Tool |
+| --- | --- |
+| "Set up my business: Acme Consulting, EUR, 23% VAT, 14 day terms." | `business_set` |
+| "Add a client: Beta Corp, their VAT id is..., email billing@beta.example." | `client_add` |
+| "List my clients." | `client_list` |
+| "Invoice Acme for 12 hours at 90 EUR plus 300 EUR setup, 23% VAT, PDF." | `invoice_create` + `invoice_pdf` |
+| "Bill Beta Corp for 5 hours at 120 EUR." | `invoice_from_hours` |
+| "Show me every unpaid invoice from August." | `invoice_list` |
+| "Pull up invoice INV-2026-0007." | `invoice_get` |
+| "Mark INV-2026-0007 as paid in full." | `invoice_mark_paid` |
+| "Which invoices are unpaid and overdue?" | `overdue_report` |
+| "Am I on the free plan or Pro?" | `license_status` |
+
+## Worked example
+
+From `docs/USER_VALUE_R2.md`, the exact request tested end to end and independently checked against the
+arithmetic.
+
+```
+You: Invoice Acme for 12 hours of API work at 90 EUR plus a 300 EUR setup fee,
+23% VAT, due in 14 days, and give me the PDF.
+
+  invoice_create {
+    client: "Acme", currency: "EUR", due_days: 14,
+    items: [
+      { description: "API work",  quantity: 12, unit_price: 90,  tax_rate: 23 },
+      { description: "Setup fee", quantity: 1,  unit_price: 300, tax_rate: 23 }
+    ]
+  }
+  -> INV-2026-0001, client "Acme" created with no address on file
+
+  invoice_pdf { number: "INV-2026-0001" }
+  -> /Users/you/.../invoice/pdf/INV-2026-0001.pdf
+
+Assistant: Created INV-2026-0001 for Acme.
+  API work    12 h  x  EUR 90.00   =  EUR 1080.00
+  Setup fee    1    x  EUR 300.00  =  EUR 300.00
+  Subtotal                            EUR 1380.00
+  Tax 23% on EUR 1380.00               EUR 317.40
+  Total                                EUR 1697.40
+Note: Acme was created from a bare name with no address. Add one with
+client_add before you send this. PDF: INV-2026-0001.pdf
+```
+
+The arithmetic: 12 x 90 = 1080.00, plus 300.00 = 1380.00 subtotal; 23% of 1380.00 = 317.40; total
+1697.40 EUR. Every amount on the PDF and in the text response carries its currency code -- nothing is
+ever shown as a bare number.
+
 ## Free vs Pro
 
 | | Free | Pro |
@@ -101,8 +151,81 @@ Every money value printed anywhere - line unit prices, line amounts, subtotal, d
 
 All amounts are held as integer minor units (cents, or whole yen for zero-decimal currencies such as JPY). Rounding is per line, then summed: each line's gross is rounded first, an invoice-level `discount_percent` is applied and rounded per line, tax is computed and rounded per line and then grouped into one line per rate, and the totals are plain integer sums of those already-rounded values. A printed total can therefore never disagree with the printed lines. Dates are ISO `YYYY-MM-DD`.
 
+## How it stores data
+
+Business profile, clients, invoices and the number counter live under
+`${XDG_DATA_HOME:-~/.local/share}/mcp-servers/invoice/` as separate JSON files, plus a `pdf/` subfolder
+holding the rendered PDFs. Every mutating call (`business_set`, `client_add`, `invoice_create`,
+`invoice_from_hours`, `invoice_mark_paid`) runs inside `locked()`, which takes an advisory lock file at
+`.../invoice/.lock` for the duration of the call -- this is what makes number allocation safe when two
+invoices are created in the same second, since the counter read, increment and invoice write all happen
+under one lock. Saves go to a temporary file and are renamed into place. To back up your invoicing data,
+copy the whole `invoice/` data directory, including `pdf/` if you want the rendered files too -- they can
+always be regenerated from the stored records with `invoice_pdf`.
+
+## Limits and honest caveats
+
+- Free tier allows 3 invoices per calendar month; the counter resets on the 1st. `overdue_report` and
+  everything else (clients, tax lines, discounts, payments, multi-currency) is unrestricted on free.
+- Free PDFs carry a small "Generated with mcp-invoice" footer line; Pro removes it and adds a logo.
+- Creating an invoice for a client name the server has never seen creates that client with no address --
+  the response says so and names `client_add` as the fix, but nothing blocks you from sending a PDF with
+  a bare-name BILL TO block if you ignore the note.
+- There is no email-sending, payment-link or accounting-software sync in this server: it produces the PDF
+  and the record; getting it to the client is up to you.
+- Currency conversion is not performed anywhere -- an invoice's currency is fixed at creation and every
+  line must use amounts already in that currency.
+
+## Troubleshooting
+
+- **`npx` hangs or fails to find the package**: npm publish for this package is pending. Use the `.mcpb`
+  bundle or the clone-and-build path above until it lands.
+- **Using the `.mcpb` bundle**: it installs into Claude Desktop directly; there is no separate config
+  step.
+- **Using the clone path**: the server binary is `servers/invoice/dist/index.js` after `npm run build`.
+  Point your client's `command` at `node` with that absolute path as the only argument.
+- **Node version**: requires Node >= 18. Check with `node -v`.
+- **PDF render fails or looks wrong**: `invoice_pdf` uses `pdfkit`, a pure-JS renderer with no native
+  dependency, so failures are almost always a missing or malformed `business_set` field (check
+  `invoice_get` first) rather than an environment issue.
+- **"3 invoices this month" hit unexpectedly**: the free cap is per calendar month across all clients,
+  not per client. `invoice_list` shows what already counted against it.
+- **Nothing shows up / silent failures**: logs go to stderr only, never stdout. In Claude Desktop check
+  Settings -> Developer -> the server's log file; in Claude Code check the terminal or `--mcp-debug`.
+
 ## Privacy
 
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/invoice/`. There are no network calls: license keys are verified offline with a public key compiled into the package, and PDFs are rendered on your machine.
+
+## Pairs with
+
+- [mcp-time-tracker](../time-tracker/README.md) -- `invoice_summary` output there maps directly onto `invoice_create` line items here.
+- [mcp-spreadsheet](../spreadsheet/README.md) -- pull line items or client lists out of a sheet before invoicing.
+- [mcp-price-tracker](../price-tracker/README.md) -- invoice a client for something you tracked the price of.
+- [office-suite](../office-suite/README.md) -- all four servers behind one install, one config entry.
+- Guide: [Create an invoice PDF from a chat message with an MCP server](https://mcp.zovo.one/guides/invoice-pdf-from-chat)
+
+## FAQ
+
+**Can I put several VAT rates on one invoice?**
+Yes. Tax rate is per line item. The totals block prints one tax line per distinct rate, so a 23% line
+and a 0% reverse-charge line appear separately and the total adds up.
+
+**Is the PDF good enough to send to a client's accounts department?**
+It is a single page A4 with issuer and client blocks, dates, a line table with per-line tax, subtotal,
+tax lines, total, and payment details with IBAN and reference. Add the client's address with `client_add`
+first, otherwise BILL TO shows only the name.
+
+**What is the invoice number format and can I change it?**
+`INV-YYYY-NNNN`, allocated in sequence and never reused. The prefix is configurable with `business_set`;
+a prefix other than `INV` is a Pro feature.
+
+**Does anything get uploaded when the PDF is rendered?**
+No. Rendering is local with `pdfkit`, and the invoice records live in
+`~/.local/share/mcp-servers/invoice/`. The server makes no network calls at all.
+
+**How exact is the money arithmetic?**
+Amounts are integer minor units. Each line is rounded once, then lines are summed, so 12 h at 90 EUR
+plus 300 EUR with 23% VAT gives 1380.00 plus 317.40 = 1697.40 with no floating point residue.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
