@@ -1,0 +1,11 @@
+{
+  "name": "@theluckystrike/mcp-invoice",
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-license": "^0.1.0",
+    "pdfkit": "^0.15.0",
+    "zod": "^3.25.0"
+  }
+}

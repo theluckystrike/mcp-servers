@@ -1,0 +1,89 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-spreadsheet",
+  "display_name": "Spreadsheet",
+  "version": "0.1.0",
+  "description": "Open, inspect, query, edit and convert xlsx and csv files locally from your AI assistant",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "sheet_info",
+      "description": "Open an xlsx or csv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading or querying."
+    },
+    {
+      "name": "sheet_read",
+      "description": "Read rows from a sheet as a text table, JSON records or CSV. Use limit/offset to page through big files, or range for an A1 block like B2:F40."
+    },
+    {
+      "name": "sheet_query",
+      "description": "Filter, pick columns and sort rows without writing any code. where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. Column names with spaces go in brackets: [Unit Price] > 10 AND [Region] contains \"north\". Strings use single or double quotes."
+    },
+    {
+      "name": "sheet_stats",
+      "description": "Per-column count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too."
+    },
+    {
+      "name": "sheet_find",
+      "description": "Search every cell for text (case insensitive) and return cell addresses with a preview of the row it is on."
+    },
+    {
+      "name": "sheet_write",
+      "description": "Write rows to a spreadsheet. rows may be objects (keys become headers) or arrays (first array is the header row). mode new_file writes a brand new file and refuses to clobber an existing one; append adds the rows under the existing data; overwrite replaces the file contents. Format follows the extension of out_path (.xlsx, .csv, .tsv, .json)."
+    },
+    {
+      "name": "sheet_add_column",
+      "description": "Add a computed column and save the result to a NEW file (the source is never modified unless out_path points at it). formula uses the same expression language as sheet_query over the columns of each row, e.g. \"[Qty] * [Unit Price]\" or '[Country] = \"PL\"'. Alternatively pass values, one per data row."
+    },
+    {
+      "name": "sheet_convert",
+      "description": "Convert a sheet to csv, xlsx or json. Writes a new file next to the source unless out_path is given."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "spreadsheet",
+    "xlsx",
+    "csv",
+    "excel",
+    "modelcontextprotocol"
+  ]
+}

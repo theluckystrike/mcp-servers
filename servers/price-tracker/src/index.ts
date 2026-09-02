@@ -152,6 +152,19 @@ server.registerTool(
     }
     try {
       const o = await observe(url);
+      // observe() awaits the network, so the db read above is stale: another
+      // in-flight watch_add would be overwritten and the free limit bypassed.
+      // Re-read and re-check both conditions against the current file.
+      const fresh = load();
+      const raced = findWatch(fresh, url) ?? findWatch(fresh, canonicalUrl(o.finalUrl));
+      if (raced) return text(`Already watching that URL as ${raced.id}${raced.label ? ` (${raced.label})` : ""}. Use watch_refresh to update it.`);
+      if (!gate.isPro() && fresh.watches.length >= FREE_WATCH_LIMIT) {
+        return text(
+          `The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${fresh.watches.length}. ` +
+          `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches")}`
+        );
+      }
+      db.watches = fresh.watches;
       const w: Watch = {
         id: newId(),
         url: canonicalUrl(o.finalUrl),
@@ -255,6 +268,12 @@ server.registerTool(
         errors.push(`${w.id}: ${e instanceof FetchError ? e.message : String((e as Error)?.message ?? e)}`);
       }
     }
+    // The loop above awaited the network. Merge the refreshed watches into the
+    // current file instead of writing back a snapshot taken before the fetches,
+    // so a watch added meanwhile is not dropped.
+    const current = load();
+    const byId = new Map(targets.map((w) => [w.id, w]));
+    db.watches = current.watches.map((w) => byId.get(w.id) ?? w);
     save(db);
     const rows = targets.map(watchRow);
     const hits = rows.filter((r) => r.target_hit).map((r) => r.id);

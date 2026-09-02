@@ -1,0 +1,154 @@
+{
+  "time-tracker": [
+    {
+      "name": "timer_start",
+      "description": "Start tracking time on a project. Only one timer runs at a time: starting a new one stops and logs the previous one."
+    },
+    {
+      "name": "timer_stop",
+      "description": "Stop the running timer and log it as a time entry. Returns the duration and the entry id."
+    },
+    {
+      "name": "timer_status",
+      "description": "Show the running timer, how long it has been running, and today's total so far."
+    },
+    {
+      "name": "entry_add",
+      "description": "Log time you already worked. Give start plus either end or minutes."
+    },
+    {
+      "name": "entry_list",
+      "description": "List logged time entries as a compact table. Free tier shows the last 7 days."
+    },
+    {
+      "name": "entry_delete",
+      "description": "Delete one time entry by id."
+    },
+    {
+      "name": "entry_edit",
+      "description": "Change fields of an existing entry. Only the fields you pass are changed."
+    },
+    {
+      "name": "project_set_rate",
+      "description": "Set the hourly rate used to turn tracked hours into money for a project."
+    },
+    {
+      "name": "report",
+      "description": "Total tracked hours and money for a period, grouped by project, day, task or tag. Free tier covers the last 7 days."
+    },
+    {
+      "name": "export_csv",
+      "description": "Write time entries to a CSV file you can hand to a bookkeeper or import into a spreadsheet. Free tier exports the last 7 days."
+    },
+    {
+      "name": "invoice_summary",
+      "description": "Turn tracked time into invoice line items for one project: hours, rate, amount per task, plus the total."
+    }
+  ],
+  "price-tracker": [
+    {
+      "name": "price_check",
+      "description": "Fetch a product page right now and report its price, currency and title, plus the change against the last price stored for that URL. Does not create a watch."
+    },
+    {
+      "name": "watch_add",
+      "description": "Start tracking a product page. Fetches it once and stores the first observation. Optionally set a target price to be alerted about."
+    },
+    {
+      "name": "watch_list",
+      "description": "Show every tracked item with its current price, target and last check time."
+    },
+    {
+      "name": "watch_remove",
+      "description": "Stop tracking an item, by watch id or by URL. Its history is deleted."
+    },
+    {
+      "name": "watch_refresh",
+      "description": "Re-fetch one watch or every watch, append the new observations and show current, previous, min, max, change % and target hits."
+    },
+    {
+      "name": "price_history",
+      "description": "List the stored observations for one watch, newest last. Free shows the last 10."
+    },
+    {
+      "name": "price_add_manual",
+      "description": "Store a price you read yourself, for shops that block automated requests. Creates the watch if it does not exist yet."
+    },
+    {
+      "name": "alerts_pending",
+      "description": "Show watches whose latest price is at or below the target, or which dropped ${DROP_ALERT_PCT}% or more against the previous observation."
+    }
+  ],
+  "spreadsheet": [
+    {
+      "name": "sheet_info",
+      "description": "Open an xlsx or csv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading or querying."
+    },
+    {
+      "name": "sheet_read",
+      "description": "Read rows from a sheet as a text table, JSON records or CSV. Use limit/offset to page through big files, or range for an A1 block like B2:F40."
+    },
+    {
+      "name": "sheet_query",
+      "description": "Filter, pick columns and sort rows without writing any code. where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. "
+    },
+    {
+      "name": "sheet_stats",
+      "description": "Per-column count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too."
+    },
+    {
+      "name": "sheet_find",
+      "description": "Search every cell for text (case insensitive) and return cell addresses with a preview of the row it is on."
+    },
+    {
+      "name": "sheet_write",
+      "description": "Write rows to a spreadsheet. rows may be objects (keys become headers) or arrays (first array is the header row). "
+    },
+    {
+      "name": "sheet_add_column",
+      "description": "Convert a sheet to csv, xlsx or json. Writes a new file next to the source unless out_path is given."
+    }
+  ],
+  "invoice": [
+    {
+      "name": "business_set",
+      "description": "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices."
+    },
+    {
+      "name": "client_add",
+      "description": "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details."
+    },
+    {
+      "name": "client_list",
+      "description": "List every stored client with their id, address, email and VAT id."
+    },
+    {
+      "name": "invoice_create",
+      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is"
+    },
+    {
+      "name": "invoice_from_hours",
+      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice."
+    },
+    {
+      "name": "invoice_list",
+      "description": "List invoices, optionally filtered by status (unpaid, paid, partial), client, and an issue-date range."
+    },
+    {
+      "name": "invoice_get",
+      "description": "Return the full stored record for one invoice number, including every line and tax breakdown."
+    },
+    {
+      "name": "invoice_mark_paid",
+      "description": "Record a payment. Without an amount the invoice is marked fully paid; a smaller amount marks it partial and reports the remaining balance."
+    },
+    {
+      "name": "invoice_pdf",
+      "description": "Render an invoice as an A4 PDF you can send: issuer block, client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Returns the file path."
+    },
+    {
+      "name": "overdue_report",
+      "description": "List every unpaid or partly paid invoice past its due date with days overdue, plus outstanding totals per currency. Pro."
+    }
+  ]
+}

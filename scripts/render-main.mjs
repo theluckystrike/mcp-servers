@@ -12,6 +12,9 @@ const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").
 const ledger = js("data/ledger.json", { servers: [], session: { count: 0, history: [] } });
 const facts = js("data/facts.json", {});
 const dist = js("data/distribution.json", { surfaces: {}, per_server: {} });
+const toolsDb = js("data/tools.json", {});
+const valDb = js("data/validation.json", { runs: [] });
+const lastRun = valDb.runs.at(-1);
 
 // ---- sprint results: every RESULT.md ----
 function findResults(dir, out = []) {
@@ -45,7 +48,7 @@ const locTotal = servers.reduce((a, s) => a + (s.loc || 0), 0);
 const surfaces = Object.entries(dist.surfaces || {});
 const live = surfaces.filter(([, v]) => v.status === "published").length;
 const revenue = ledger.revenue?.stripe_live_sales ?? 0;
-const pill = (s) => { const c = /published|DONE|ok|live/i.test(s) ? "ok" : /blocked|fail|missing/i.test(s) ? "bad" : "pend"; return `<span class="pill ${c}">${esc(s)}</span>`; };
+const pill = (s) => { const f = String(s).match(/^(\d+)\/(\d+)$/); const c = (f && f[1] === f[2]) ? "ok" : f ? "bad" : /published|DONE|ok|live/i.test(s) ? "ok" : /blocked|fail|missing/i.test(s) ? "bad" : "pend"; return `<span class="pill ${c}">${esc(s)}</span>`; };
 
 // ---- next actions (derived) ----
 const next = [];
@@ -91,11 +94,19 @@ ol,ul{margin:0;padding-left:20px;color:var(--tx2)}li{margin-bottom:6px}
 code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--line);padding:1px 4px;border-radius:3px}
 .foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--tx3);font-size:12px}
 .links a{margin-right:14px}
+.tabs{display:flex;gap:4px;margin:22px 0 6px;border-bottom:1px solid var(--line)}.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;font:inherit;font-weight:600;color:var(--tx3);cursor:pointer}.tabs button.on{color:var(--tx);border-bottom-color:var(--acc)}
+.tab{display:none}.tab.on{display:block}
+.srv{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}.srv h3{margin:0 0 2px;font-size:18px}.srv .tag{color:var(--tx3);margin-bottom:10px}.srv p{margin:6px 0;color:var(--tx2)}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:4px 12px;font-size:13px;margin:10px 0}.kv b{color:var(--tx3);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+.chk{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}.chk .p{color:var(--good)}.chk .f{color:var(--bad)}
+details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 </style></head><body><div class="wrap">
 <h1>MCP Servers Command Dashboard</h1>
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
+<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button></div>
+<div class="tab on" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
 <div class="kpi"><div class="n">${servers.length}</div><div class="k">servers built</div></div>
@@ -152,7 +163,36 @@ ${(facts.gates || []).map(g => `<tr><td>${esc(g[0])}</td><td class="mono dim">${
 <div><h2>Session log</h2><div class="card"><ul>${(ledger.session?.history || []).slice(-12).reverse().map(h => `<li><span class="mono dim">${esc(h.at)}</span> ${esc(h.note)}</li>`).join("")}</ul></div></div>
 </div>
 
-<div class="foot">Regenerate: <code>node scripts/update-dashboard.mjs --note "..." &amp;&amp; node scripts/render-main.mjs</code>. Data: data/ledger.json, data/facts.json, data/distribution.json. Built by theluckystrike. https://github.com/theluckystrike</div>
+</div>
+
+<div class="tab" id="tab-servers">
+${Object.entries(facts.servers || {}).map(([id, v]) => {
+  const tools = toolsDb[id] || []; const d = dist.per_server?.[id] || {};
+  return `<div class="srv"><h3>${esc(v.title)} <span class="mono dim">@theluckystrike/mcp-${esc(id)}</span></h3><div class="tag">${esc(v.tagline)}</div>
+<p><b>What it does.</b> ${esc(v.does)}</p><p><b>Who it is for.</b> ${esc(v.for)}</p><p><b>Example.</b> <span class="dim">${esc(v.example)}</span></p>
+<div class="kv"><b>Free</b><span>${esc(v.free)}</span><b>Pro $${facts.pricing?.single_usd ?? 19}</b><span>${esc(v.pro)} <a href="https://mcp.zovo.one/buy/${esc(id)}">Buy</a></span><b>Data stays</b><span>${esc(v.storage)}</span>
+<b>Install</b><span class="mono">claude mcp add ${esc(id)} -- npx -y @theluckystrike/mcp-${esc(id)}</span>
+<b>Status</b><span>npm ${pill(d.npm || "unknown")} registry ${pill(d.registry || "unknown")} github ${pill(d.github || "unknown")} validation ${pill(lastRun ? (() => { const r = lastRun.results.find(x => x.id === id); return r ? `${r.pass}/${r.total}` : "pending"; })() : "pending")}</span></div>
+<div class="tw"><table><tr><th>Tool</th><th>What it does</th></tr>${tools.map(t => `<tr><td class="mono">${esc(t.name)}</td><td class="dim">${esc(t.description)}</td></tr>`).join("")}</table></div>
+<p class="dim"><a href="servers/${esc(id)}/README.md">README</a> &middot; <a href="servers/${esc(id)}/RESULT.md">build sprint</a> &middot; <a href="servers/${esc(id)}/src/index.ts">source</a></p></div>`; }).join("")}
+</div>
+
+<div class="tab" id="tab-validation">
+<p class="dim">Every run spawns each server over stdio in a fresh sandbox, exercises real tools in free and Pro mode, then probes the live billing worker. Run: <code>node scripts/validate.mjs</code>. Database: data/validation.json (${valDb.runs.length} runs kept).</p>
+${lastRun ? `<div class="kpis"><div class="kpi"><div class="n">${lastRun.pass}/${lastRun.total}</div><div class="k">checks passing, latest run</div></div><div class="kpi"><div class="n">${lastRun.results.length}</div><div class="k">units validated</div></div><div class="kpi"><div class="n">${esc(lastRun.sdk)}</div><div class="k">@modelcontextprotocol/sdk</div></div><div class="kpi"><div class="n">${esc(lastRun.node)}</div><div class="k">node</div></div><div class="kpi"><div class="n">${esc(lastRun.at.slice(0, 16).replace("T", " "))}</div><div class="k">run at (UTC)</div></div></div>
+<h2>Latest run, every check</h2>
+${lastRun.results.map(r => `<div class="card" style="margin-bottom:10px"><b>${esc(r.id)}</b> ${pill(`${r.pass}/${r.total}`)} <span class="dim">${r.ms} ms</span>
+<div class="chk" style="margin-top:8px">${r.checks.map(c => `<div><span class="${c.pass ? "p" : "f"}">${c.pass ? "PASS" : "FAIL"}</span> ${esc(c.name)} <span class="dim">${esc(c.detail)}</span></div>`).join("")}</div></div>`).join("")}
+<h2>Unit test suites (from each server's own npm test)</h2>
+<div class="tw"><table><tr><th>Server</th><th>Summary</th></tr>${(lastRun.unit_tests || []).map(u => `<tr><td class="mono">${esc(u.id)}</td><td class="mono">${esc(u.summary)}</td></tr>`).join("")}</table></div>
+<h2>Run history</h2>
+<div class="tw"><table><tr><th>At</th><th>Pass</th><th>Total</th><th>Per unit</th></tr>${valDb.runs.slice().reverse().map(r => `<tr><td class="mono">${esc(r.at)}</td><td class="num">${r.pass}</td><td class="num">${r.total}</td><td class="dim">${r.results.map(x => `${x.id.split(" ")[0]} ${x.pass}/${x.total}`).join(" &middot; ")}</td></tr>`).join("")}</table></div>` : `<p>No validation run yet. Execute <code>node scripts/validate.mjs</code>.</p>`}
+</div>
+<script>
+for (const b of document.querySelectorAll(".tabs button")) b.addEventListener("click", () => { document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b)); document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.id === "tab-" + b.dataset.tab)); location.hash = b.dataset.tab; });
+if (location.hash) { const b = document.querySelector('.tabs button[data-tab="' + location.hash.slice(1) + '"]'); if (b) b.click(); }
+</script>
+<div class="foot">Regenerate: <code>node scripts/validate.mjs &amp;&amp; node scripts/update-dashboard.mjs --note "..." &amp;&amp; node scripts/render-main.mjs</code>. Data: data/ledger.json, data/facts.json, data/distribution.json. Built by theluckystrike. https://github.com/theluckystrike</div>
 </div></body></html>`;
 
 writeFileSync(join(ROOT, "index.html"), html);

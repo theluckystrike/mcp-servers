@@ -1,0 +1,101 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-time-tracker",
+  "display_name": "Time Tracker",
+  "version": "0.1.0",
+  "description": "Track billable time without leaving your AI chat. Timers, entries, reports, CSV export and invoice line items, all stored locally.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "timer_start",
+      "description": "Start tracking time on a project. Only one timer runs at a time: starting a new one stops and logs the previous one."
+    },
+    {
+      "name": "timer_stop",
+      "description": "Stop the running timer and log it as a time entry. Returns the duration and the entry id."
+    },
+    {
+      "name": "timer_status",
+      "description": "Show the running timer, how long it has been running, and today's total so far."
+    },
+    {
+      "name": "entry_add",
+      "description": "Log time you already worked. Give start plus either end or minutes."
+    },
+    {
+      "name": "entry_list",
+      "description": "List logged time entries as a compact table. Free tier shows the last 7 days."
+    },
+    {
+      "name": "entry_delete",
+      "description": "Delete one time entry by id."
+    },
+    {
+      "name": "entry_edit",
+      "description": "Change fields of an existing entry. Only the fields you pass are changed."
+    },
+    {
+      "name": "project_set_rate",
+      "description": "Set the hourly rate used to turn tracked hours into money for a project."
+    },
+    {
+      "name": "report",
+      "description": "Total tracked hours and money for a period, grouped by project, day, task or tag. Free tier covers the last 7 days."
+    },
+    {
+      "name": "export_csv",
+      "description": "Write time entries to a CSV file you can hand to a bookkeeper or import into a spreadsheet. Free tier exports the last 7 days."
+    },
+    {
+      "name": "invoice_summary",
+      "description": "Turn tracked time into invoice line items for one project: hours, rate, amount per task, plus the total."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "time-tracking",
+    "timesheet",
+    "invoicing",
+    "freelance"
+  ]
+}

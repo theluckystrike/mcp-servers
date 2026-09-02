@@ -1,0 +1,98 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-invoice",
+  "display_name": "Invoice",
+  "version": "0.1.0",
+  "description": "Make real, sendable PDF invoices from a sentence. Clients, numbering that never repeats, VAT lines, discounts and overdue reports, all stored locally.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "business_set",
+      "description": "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices."
+    },
+    {
+      "name": "client_add",
+      "description": "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details."
+    },
+    {
+      "name": "client_list",
+      "description": "List every stored client with their id, address, email and VAT id."
+    },
+    {
+      "name": "invoice_create",
+      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed."
+    },
+    {
+      "name": "invoice_from_hours",
+      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice."
+    },
+    {
+      "name": "invoice_list",
+      "description": "List invoices, optionally filtered by status (unpaid, paid, partial), client, and an issue-date range."
+    },
+    {
+      "name": "invoice_get",
+      "description": "Return the full stored record for one invoice number, including every line and tax breakdown."
+    },
+    {
+      "name": "invoice_mark_paid",
+      "description": "Record a payment. Without an amount the invoice is marked fully paid; a smaller amount marks it partial and reports the remaining balance."
+    },
+    {
+      "name": "invoice_pdf",
+      "description": "Render an invoice as an A4 PDF you can send: issuer block, client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Returns the file path."
+    },
+    {
+      "name": "overdue_report",
+      "description": "List every unpaid or partly paid invoice past its due date with days overdue, plus outstanding totals per currency. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "invoice",
+    "invoicing",
+    "pdf",
+    "vat",
+    "freelance"
+  ]
+}

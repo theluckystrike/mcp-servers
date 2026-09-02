@@ -1,6 +1,6 @@
 import { mintLicense, verifyLicenseKey, hex } from "./license.js";
 
-const PRODUCTS = {
+export const PRODUCTS = {
   "time-tracker": { desc: "Track billable time from chat: timers, entries, reports, CSV, invoice-ready totals.", free: "Free: unlimited timers, last 7 days of reports, 2 rated projects.", pro: "Pro: full history, invoice summaries, group by tag, unlimited projects.", name: "MCP Time Tracker Pro", price: "price_1UBDU5JKCamubEm1wPMZI8Zf", usd: 19, pkg: "@theluckystrike/mcp-time-tracker", bin: "mcp-time-tracker", payload: "time-tracker" },
   "price-tracker": { desc: "Check and watch product prices on ordinary shop pages, with history and target alerts.", free: "Free: unlimited price checks, 3 watches, 10 observations each.", pro: "Pro: unlimited watches, full history, refresh all, pending alerts.", name: "MCP Price Tracker Pro", price: "price_1UBDU6JKCamubEm1ufsEKwSS", usd: 19, pkg: "@theluckystrike/mcp-price-tracker", bin: "mcp-price-tracker", payload: "price-tracker" },
   spreadsheet: { desc: "Read, query, add columns to and convert xlsx and csv files without corrupting them.", free: "Free: read, query and stats up to 5,000 rows; writes capped at 200 rows.", pro: "Pro: no limits.", name: "MCP Spreadsheet Pro", price: "price_1UBDU7JKCamubEm1LZTfrsMd", usd: 19, pkg: "@theluckystrike/mcp-spreadsheet", bin: "mcp-spreadsheet", payload: "spreadsheet" },
@@ -9,6 +9,44 @@ const PRODUCTS = {
 };
 
 const REPO = "https://github.com/theluckystrike/mcp-servers";
+
+/**
+ * Pure fulfillment decision (review #3, #8). No I/O: the caller passes a Checkout
+ * Session already retrieved with expand[]=line_items.
+ * Mint only when the session is a completed one-time payment for exactly the
+ * Price ID configured for `product`, at the expected amount. A 100% promotion
+ * code yields payment_status "no_payment_required" with amount_total 0; that is
+ * accepted only when the recorded discount equals the full expected amount.
+ */
+export function fulfillmentAllowed(session, product) {
+  const p = PRODUCTS[product];
+  if (!p) return { ok: false, reason: `unknown product: ${product}` };
+  if (!session || typeof session !== "object") return { ok: false, reason: "no session" };
+  if (session.mode !== "payment") return { ok: false, reason: `mode is ${session.mode}, not payment` };
+  if (session.status !== "complete") return { ok: false, reason: `session status is ${session.status}, not complete` };
+  if (session.metadata?.product !== product) return { ok: false, reason: "session metadata product mismatch" };
+
+  const items = session.line_items?.data;
+  if (!Array.isArray(items) || items.length !== 1) return { ok: false, reason: "expected exactly one line item" };
+  const item = items[0];
+  if (item.quantity !== 1) return { ok: false, reason: `quantity is ${item.quantity}, not 1` };
+  if (item.price?.id !== p.price) return { ok: false, reason: `price ${item.price?.id} is not the price for ${product}` };
+
+  const expected = p.usd * 100;
+  if (item.price?.unit_amount !== expected) return { ok: false, reason: "price unit_amount changed" };
+  if ((session.currency || item.currency) !== "usd") return { ok: false, reason: "currency is not usd" };
+
+  if (session.payment_status === "paid") {
+    if (session.amount_total !== expected) return { ok: false, reason: `amount_total ${session.amount_total} is not ${expected}` };
+    return { ok: true, reason: "paid" };
+  }
+  if (session.payment_status === "no_payment_required") {
+    if (session.amount_total !== 0) return { ok: false, reason: "zero-total session with a nonzero amount_total" };
+    if (session.total_details?.amount_discount !== expected) return { ok: false, reason: "discount does not cover the full price" };
+    return { ok: true, reason: "100% promotion code" };
+  }
+  return { ok: false, reason: `payment_status is ${session.payment_status}` };
+}
 
 function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -75,13 +113,20 @@ async function createCheckout(env, host, productId) {
   return s;
 }
 
-/** Idempotent mint: the key for a session is derived once and cached in KV. */
-async function keyForSession(env, session) {
+class MintError extends Error {}
+
+/**
+ * Idempotent mint: the key for a session is derived once and cached in KV.
+ * The caller must have run fulfillmentAllowed() first; productId is the checked id.
+ * Review #14: every freshly minted key is verified against the embedded public key
+ * before it is stored or returned, so a private/public key mismatch fails loudly
+ * instead of charging a customer for an unusable key.
+ */
+async function keyForSession(env, session, productId) {
   const cached = await env.LICENSES.get(`session:${session.id}`);
   if (cached) return cached;
-  const productId = session.metadata?.product;
   const p = PRODUCTS[productId];
-  if (!p) throw new Error(`unknown product in session metadata: ${productId}`);
+  if (!p) throw new Error(`unknown product: ${productId}`);
   const email = session.customer_details?.email || session.customer_email || "";
   const { key } = await mintLicense(env.LICENSE_PRIVATE_KEY_PEM, {
     product: p.payload,
@@ -89,11 +134,21 @@ async function keyForSession(env, session) {
     iat: session.created || Math.floor(Date.now() / 1000),
     email,
   });
+  const check = await verifyLicenseKey(key, productId);
+  if (!check.ok) {
+    console.error(`mint verification failed for session ${session.id} product ${productId}: ${check.reason}`);
+    throw new MintError(check.reason);
+  }
   // Store-if-absent: re-read to keep a concurrent webhook and /success in agreement.
   const again = await env.LICENSES.get(`session:${session.id}`);
   if (again) return again;
   await env.LICENSES.put(`session:${session.id}`, key, { metadata: { product: productId, email } });
   return key;
+}
+
+/** Retrieve a Checkout Session with its line items expanded (review #3). */
+async function retrieveSession(env, sid) {
+  return stripe(env, `checkout/sessions/${encodeURIComponent(sid)}?expand[]=line_items`, null, "GET");
 }
 
 function installSnippet(productId) {
@@ -122,7 +177,9 @@ function successPage(key, productId, session) {
 <p>${esc(p.name)} - $${p.usd} one-time, lifetime.</p>
 <h2>Your license key</h2>
 <pre class="key"><code>${esc(key)}</code></pre>
-<p class="muted">Save this. It is also on the receipt email address ${esc(session.customer_details?.email || "you used")}. Reloading this page always shows the same key.</p>
+<p class="muted">Save this key now; it is shown again only at this URL. No email is sent with the key.
+Reloading this page always shows the same key. If you lose it, email support@zovo.one with your Stripe receipt
+(it carries the session id) and the key can be recovered from <code>/recover?session_id=...</code>.</p>
 <h2>Activate it</h2>
 <p>In Claude: run <code>license_activate</code> with this key.</p>
 <p>Alternative, set an environment variable before starting the server:</p>
@@ -132,21 +189,44 @@ ${installSnippet(productId)}
 <p>Docs: <a href="${REPO}">${REPO}</a></p>`);
 }
 
-async function verifySig(env, body, header) {
-  const parts = Object.fromEntries(String(header || "").split(",").map((kv) => kv.split("=").map((x) => x.trim())).filter((a) => a.length === 2));
-  const t = parts.t;
-  const v1 = parts.v1;
-  if (!t || !v1) return false;
+/** Constant-time comparison of two equal-length hex strings. */
+function ctEqual(a, b) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+/**
+ * Stripe signature check. Review #9: a header may carry several v1 values during
+ * secret rotation, so every one is kept and each is compared in constant time.
+ * Review #10: the timestamp must be a safe integer, otherwise Number(t) is NaN
+ * and the replay-window comparison passes.
+ */
+export async function verifySig(env, body, header) {
+  let t = null;
+  const v1s = [];
+  for (const field of String(header || "").split(",")) {
+    const i = field.indexOf("=");
+    if (i < 0) continue;
+    const k = field.slice(0, i).trim();
+    const v = field.slice(i + 1).trim();
+    if (k === "t" && t === null) t = v;
+    else if (k === "v1") v1s.push(v);
+  }
+  if (t === null || v1s.length === 0) return false;
+  if (!/^\d{1,15}$/.test(t)) return false;
+  const ts = Number(t);
+  if (!Number.isSafeInteger(ts)) return false;
+  if (Math.abs(Math.floor(Date.now() / 1000) - ts) > 300) return false;
+
   const enc = new TextEncoder();
   const mac = await crypto.subtle.importKey("raw", enc.encode(env.STRIPE_WEBHOOK_SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const sig = new Uint8Array(await crypto.subtle.sign("HMAC", mac, enc.encode(`${t}.${body}`)));
   const expected = [...sig].map((b) => b.toString(16).padStart(2, "0")).join("");
-  if (expected.length !== v1.length) return false;
-  let diff = 0;
-  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ v1.charCodeAt(i);
-  if (diff !== 0) return false;
-  if (Math.abs(Math.floor(Date.now() / 1000) - Number(t)) > 300) return false;
-  return true;
+  let matched = false;
+  for (const v1 of v1s) if (ctEqual(expected, v1)) matched = true; // no early exit
+  return matched;
 }
 
 export default {
@@ -193,15 +273,54 @@ export default {
     if (path === "/success" && method === "GET") {
       const sid = url.searchParams.get("session_id");
       if (!sid) return Response.redirect(`https://${host}/`, 303);
+      let session;
       try {
-        const session = await stripe(env, `checkout/sessions/${encodeURIComponent(sid)}`, null, "GET");
-        if (session.payment_status !== "paid") {
-          return new Response(page("Payment not complete", `<h1>Payment not complete</h1><p>Status: ${esc(session.payment_status)}. If you just paid, reload in a few seconds.</p><p><a href="/">Back to products</a></p>`), { status: 402, headers: { "content-type": "text/html; charset=utf-8" } });
-        }
-        const key = await keyForSession(env, session);
-        return new Response(successPage(key, session.metadata?.product, session), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+        session = await retrieveSession(env, sid);
       } catch (e) {
-        return new Response(page("Error", `<h1>Could not load your session</h1><p>${esc(e.message)}</p><p>Email support@zovo.one with your receipt.</p>`), { status: 500, headers: { "content-type": "text/html; charset=utf-8" } });
+        console.error(`session retrieve failed for ${sid}: ${e.message}`);
+        return new Response(page("Session not found", `<h1>We could not load that checkout session</h1>
+<p>The link may be mistyped or expired. If you have paid, email support@zovo.one with your Stripe receipt and your key will be sent back.</p>
+<p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+      }
+      const productId = session.metadata?.product;
+      const decision = fulfillmentAllowed(session, productId);
+      if (!decision.ok) {
+        return new Response(page("Payment not complete", `<h1>Payment not complete</h1>
+<p>${esc(decision.reason)}. If you have just paid, reload this page in a few seconds.</p>
+<p>Still stuck? Email support@zovo.one with your Stripe receipt.</p><p><a href="/">Back to products</a></p>`), { status: 402, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+      }
+      try {
+        const key = await keyForSession(env, session, productId);
+        return new Response(successPage(key, productId, session), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+      } catch (e) {
+        console.error(`mint failed for ${sid}: ${e.message}`);
+        return new Response(page("Key could not be issued", `<h1>Your payment went through, the key did not</h1>
+<p>Nothing further is needed from you. Email support@zovo.one with your Stripe receipt and the key will be issued by hand, or refunded.</p>`), { status: 500, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+      }
+    }
+
+    // Review #15: the documented recovery path. Same fulfillment checks as /success;
+    // returns the stored key for a paid session and nothing otherwise.
+    if (path === "/recover" && method === "GET") {
+      const sid = url.searchParams.get("session_id");
+      const nostore = { "cache-control": "no-store" };
+      if (!sid) return Response.json({ ok: false, reason: "session_id required" }, { status: 400, headers: nostore });
+      let session;
+      try {
+        session = await retrieveSession(env, sid);
+      } catch (e) {
+        console.error(`recover retrieve failed for ${sid}: ${e.message}`);
+        return Response.json({ ok: false, reason: "session not found" }, { status: 404, headers: nostore });
+      }
+      const productId = session.metadata?.product;
+      const decision = fulfillmentAllowed(session, productId);
+      if (!decision.ok) return Response.json({ ok: false, reason: decision.reason }, { status: 402, headers: nostore });
+      try {
+        const key = await keyForSession(env, session, productId);
+        return Response.json({ ok: true, product: productId, key, support: "support@zovo.one" }, { headers: nostore });
+      } catch (e) {
+        console.error(`recover mint failed for ${sid}: ${e.message}`);
+        return Response.json({ ok: false, reason: "key could not be issued, email support@zovo.one" }, { status: 500, headers: nostore });
       }
     }
 
@@ -216,14 +335,24 @@ export default {
       } catch {
         return new Response("bad json", { status: 400 });
       }
-      if (event.type === "checkout.session.completed") {
-        const session = event.data.object;
-        if (session.payment_status === "paid") {
-          try {
-            await keyForSession(env, session);
-          } catch (e) {
-            return new Response(`mint failed: ${e.message}`, { status: 500 });
+      // Review #7: delayed payment methods complete via async_payment_succeeded,
+      // which is fulfilled on exactly the same terms as a synchronous completion.
+      if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+        const sid = event.data?.object?.id;
+        if (!sid) return Response.json({ received: true });
+        try {
+          // The event payload has no line_items; re-retrieve so price binding is checked.
+          const session = await retrieveSession(env, sid);
+          const productId = session.metadata?.product;
+          const decision = fulfillmentAllowed(session, productId);
+          if (!decision.ok) {
+            console.error(`webhook ${event.type} not fulfilled for ${sid}: ${decision.reason}`);
+            return Response.json({ received: true, fulfilled: false, reason: decision.reason });
           }
+          await keyForSession(env, session, productId);
+        } catch (e) {
+          console.error(`webhook ${event.type} mint failed for ${sid}: ${e.message}`);
+          return new Response(`mint failed: ${e.message}`, { status: 500 });
         }
       }
       return Response.json({ received: true });

@@ -66,7 +66,7 @@ server.registerTool("business_set", {
     iban: z.string().optional().describe("IBAN or account number for payment"),
     bank: z.string().optional().describe("Bank name / BIC"),
     logo_path: z.string().optional().describe("Path to a PNG or JPG logo (Pro)"),
-    default_currency: z.string().optional().describe("ISO code, e.g. EUR, USD, JPY. Default EUR"),
+    default_currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("ISO code, e.g. EUR, USD, JPY. Default EUR"),
     default_tax_rate: z.number().optional().describe("Default VAT percent applied to items without their own rate"),
     payment_terms_days: z.number().optional().describe("Default days until due. Default 14"),
     invoice_prefix: z.string().optional().describe("Invoice number prefix, default INV (custom prefix is Pro)"),
@@ -141,11 +141,17 @@ server.registerTool("client_list", {
 
 /* ------------------------------------------------------------------ invoices */
 
+// Amounts are bounded so a line can never produce Infinity/NaN minor units and
+// persist an invoice whose totals serialize to null.
+const MAX_AMOUNT = 1e12;
+const amount = (what: string) =>
+  z.number().finite().min(-MAX_AMOUNT, `${what} is out of range`).max(MAX_AMOUNT, `${what} is out of range`);
+
 const itemSchema = z.object({
   description: z.string(),
-  quantity: z.number().describe("Hours, units or 1 for a flat fee"),
-  unit_price: z.number().describe("Price per unit in major units, e.g. 90 for 90 EUR"),
-  tax_rate: z.number().optional().describe("VAT percent for this line, overrides the business default"),
+  quantity: amount("quantity").describe("Hours, units or 1 for a flat fee"),
+  unit_price: amount("unit_price").describe("Price per unit in major units, e.g. 90 for 90 EUR"),
+  tax_rate: z.number().finite().min(-100).max(1000).optional().describe("VAT percent for this line, overrides the business default"),
 });
 
 function monthLimitBlocked(issueDate: string): string | null {
@@ -174,12 +180,27 @@ function createInvoice(a: {
   }
 
   const issue = a.issue_date ?? isoDate();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(issue)) return { error: `issue_date must be YYYY-MM-DD, got "${issue}".` };
+  // Shape and calendar validity are both checked here, before nextNumber() is
+  // called: a date like 2026-13-45 passes the regex but throws later in
+  // addDays(), which would burn an invoice number and leave a gap.
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(issue) || !Number.isFinite(Date.parse(`${issue}T00:00:00Z`))
+      || new Date(`${issue}T00:00:00Z`).toISOString().slice(0, 10) !== issue) {
+    return { error: `issue_date must be a real calendar date as YYYY-MM-DD, got "${issue}".` };
+  }
+  if (typeof a.due_days === "number" && !Number.isInteger(a.due_days)) {
+    return { error: `due_days must be a whole number of days, got ${a.due_days}.` };
+  }
   const gated = monthLimitBlocked(issue);
   if (gated) return { gated };
 
   const currency = (a.currency ?? biz.default_currency).toUpperCase();
+  if (!/^[A-Z]{3}$/.test(currency)) return { error: `currency must be a 3-letter ISO code such as EUR or USD, got "${currency}".` };
   const totals = computeTotals(a.items, currency, a.discount_percent ?? 0, biz.default_tax_rate);
+  // Guard against a total that has left the exactly-representable integer range;
+  // past this point the printed lines and the stored minor units can disagree.
+  if (!Number.isSafeInteger(totals.total_minor)) {
+    return { error: "the invoice total is too large to represent exactly. Split it into smaller invoices." };
+  }
   const number = nextNumber(biz.invoice_prefix, issue.slice(0, 4));
 
   const inv: Invoice = {
@@ -207,11 +228,11 @@ server.registerTool("invoice_create", {
   inputSchema: {
     client: z.string().describe("Client name or id. Unknown names are added automatically"),
     items: z.array(itemSchema).describe("Line items"),
-    currency: z.string().optional(),
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional(),
     issue_date: z.string().optional().describe("YYYY-MM-DD, defaults to today"),
     due_days: z.number().optional().describe("Days until due, defaults to your payment terms"),
     notes: z.string().optional().describe("Free text printed under the totals"),
-    discount_percent: z.number().optional().describe("Discount applied to every line before tax"),
+    discount_percent: z.number().finite().min(0).max(100).optional().describe("Discount percent applied to every line before tax, 0-100"),
   },
 }, async (a) => {
   try {
@@ -227,15 +248,15 @@ server.registerTool("invoice_from_hours", {
   description: "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice.",
   inputSchema: {
     client: z.string(),
-    hours: z.number(),
-    rate: z.number().describe("Hourly rate in major units"),
+    hours: amount("hours"),
+    rate: amount("rate").describe("Hourly rate in major units"),
     description: z.string().optional().describe("Line description, default 'Consulting services'"),
-    tax_rate: z.number().optional(),
-    currency: z.string().optional(),
+    tax_rate: z.number().finite().min(-100).max(1000).optional(),
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional(),
     issue_date: z.string().optional(),
     due_days: z.number().optional(),
     notes: z.string().optional(),
-    discount_percent: z.number().optional(),
+    discount_percent: z.number().finite().min(0).max(100).optional(),
   },
 }, async (a) => {
   try {
