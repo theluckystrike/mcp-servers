@@ -64,9 +64,13 @@ export async function mintLicense(pem, { product, id, iat, email }) {
   if (email) payload.h = (await sha256Hex(email.trim().toLowerCase())).slice(0, 12);
   const body = bytesToB64url(enc.encode(JSON.stringify(payload)));
   const key = await importPrivate(pem);
-  const sig = new Uint8Array(await crypto.subtle.sign("Ed25519" in crypto.subtle ? "Ed25519" : { name: "Ed25519" }, key, enc.encode(body)).catch(async () => {
-    return await crypto.subtle.sign({ name: "NODE-ED25519" }, key, enc.encode(body));
-  }));
+  let sigBuf;
+  try {
+    sigBuf = await crypto.subtle.sign({ name: "Ed25519" }, key, enc.encode(body));
+  } catch {
+    sigBuf = await crypto.subtle.sign({ name: "NODE-ED25519" }, key, enc.encode(body));
+  }
+  const sig = new Uint8Array(sigBuf);
   return { key: `MCPL1.${body}.${bytesToB64url(sig)}`, payload };
 }
 

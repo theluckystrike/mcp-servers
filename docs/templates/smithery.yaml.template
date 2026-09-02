@@ -1,0 +1,15 @@
+runtime: "typescript"
+build:
+  buildCommand: "npm run build"
+  entryPoint: "./dist/index.js"
+name: mcp-<NAME>
+displayName: "<DISPLAY NAME>"
+description: "<ONE SENTENCE>"
+category: productivity
+publisher: theluckystrike
+repository: https://github.com/theluckystrike/mcp-<NAME>
+license: MIT
+keywords:
+  - mcp
+  - model-context-protocol
+  - <NAME>

@@ -166,7 +166,7 @@ export function truthy(v: unknown): boolean {
 }
 
 function lookup(row: Row, name: string): unknown {
-  if (name in row) return row[name];
+  if (Object.prototype.hasOwnProperty.call(row, name)) return row[name];
   const lower = name.toLowerCase().trim();
   for (const k of Object.keys(row)) if (k.toLowerCase().trim() === lower) return row[k];
   return null;

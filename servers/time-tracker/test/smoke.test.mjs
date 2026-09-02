@@ -1,0 +1,189 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { spawn, execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync, existsSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const ENTRY = join(here, "..", "dist", "index.js");
+const REPO = join(here, "..", "..", "..");
+
+/** Minimal stdio JSON-RPC client for one server process. */
+function client(env) {
+  const sandbox = mkdtempSync(join(tmpdir(), "mcp-tt-"));
+  const child = spawn(process.execPath, [ENTRY], {
+    stdio: ["pipe", "pipe", "pipe"],
+    env: {
+      ...process.env,
+      XDG_DATA_HOME: join(sandbox, "data"),
+      XDG_CONFIG_HOME: join(sandbox, "config"),
+      MCP_LICENSE_KEY: "",
+      ...env,
+    },
+  });
+  let buf = "";
+  const pending = new Map();
+  child.stdout.on("data", chunk => {
+    buf += chunk.toString();
+    let i;
+    while ((i = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, i).trim();
+      buf = buf.slice(i + 1);
+      if (!line) continue;
+      const msg = JSON.parse(line);
+      const r = pending.get(msg.id);
+      if (r) { pending.delete(msg.id); r(msg); }
+    }
+  });
+  let id = 0;
+  const send = (method, params) => new Promise((res, rej) => {
+    const mid = ++id;
+    pending.set(mid, res);
+    child.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: mid, method, params }) + "\n");
+    const t = setTimeout(() => { if (pending.has(mid)) { pending.delete(mid); rej(new Error(`timeout on ${method}`)); } }, 10000);
+    t.unref();
+  });
+  const notify = (method, params) =>
+    child.stdin.write(JSON.stringify({ jsonrpc: "2.0", method, params }) + "\n");
+  return {
+    send, notify, sandbox,
+    async call(name, args) {
+      const r = await send("tools/call", { name, arguments: args ?? {} });
+      assert.ok(r.result, `tools/call ${name} returned no result: ${JSON.stringify(r.error)}`);
+      return { text: r.result.content.map(c => c.text).join("\n"), isError: r.result.isError === true };
+    },
+    async init() {
+      const r = await send("initialize", {
+        protocolVersion: "2024-11-05",
+        capabilities: {},
+        clientInfo: { name: "smoke", version: "0.0.0" },
+      });
+      assert.equal(r.result.serverInfo.name, "time-tracker");
+      notify("notifications/initialized");
+      return r.result;
+    },
+    close() {
+      child.kill();
+      try { rmSync(sandbox, { recursive: true, force: true }); } catch {}
+    },
+  };
+}
+
+test("free tier: initialize, tools/list, timer, report, gating", async () => {
+  const c = client({});
+  try {
+    await c.init();
+
+    const list = await c.send("tools/list", {});
+    const names = list.result.tools.map(t => t.name).sort();
+    for (const n of [
+      "timer_start", "timer_stop", "timer_status", "entry_add", "entry_list", "entry_delete",
+      "entry_edit", "project_set_rate", "report", "export_csv", "invoice_summary",
+      "license_status", "license_activate",
+    ]) assert.ok(names.includes(n), `missing tool ${n}`);
+
+    const res = await c.send("resources/list", {});
+    assert.ok(res.result.resources.some(r => r.uri === "timetracker://today"));
+    const prm = await c.send("prompts/list", {});
+    assert.ok(prm.result.prompts.some(p => p.name === "daily_standup"));
+
+    const status = await c.call("license_status");
+    assert.match(status.text, /"tier": "free"/);
+
+    const start = await c.call("timer_start", { project: "acme", task: "api work" });
+    assert.match(start.text, /Started timer for "acme"/);
+    const running = await c.call("timer_status");
+    assert.match(running.text, /Running: "acme"/);
+    const stop = await c.call("timer_stop", { note: "smoke" });
+    assert.match(stop.text, /Stopped "acme"/);
+    assert.equal(stop.isError, false);
+
+    // manual entry with an explicit rate, then a money report
+    await c.call("project_set_rate", { project: "acme", hourly_rate: 100 });
+    const today = new Date().toISOString().slice(0, 10);
+    await c.call("entry_add", { project: "acme", task: "spec", start: `${today}T09:00:00`, minutes: 90 });
+
+    const rep = await c.call("report", { from: `${today}T00:00:00`, to: `${today}T23:59:59`, group_by: "project", format: "json" });
+    const parsed = JSON.parse(rep.text.split("\n\nNote:")[0]);
+    assert.equal(parsed.rows[0].key, "acme");
+    assert.ok(parsed.total.hours >= 1.5, `expected >= 1.5 h, got ${parsed.total.hours}`);
+    assert.equal(parsed.total.amount_cents >= 15000, true);
+    assert.equal(parsed.tier, "free");
+
+    // free gates: invoice_summary blocked, group_by tag blocked, 3rd rated project blocked
+    const inv = await c.call("invoice_summary", { project: "acme", from: `${today}T00:00:00`, to: `${today}T23:59:59` });
+    assert.equal(inv.isError, false, "gated feature must not be an error");
+    assert.match(inv.text, /Pro feature/);
+    assert.match(inv.text, /mcp\.zovo\.one\/buy\/time-tracker/);
+
+    const tagRep = await c.call("report", { from: `${today}T00:00:00`, to: `${today}T23:59:59`, group_by: "tag" });
+    assert.match(tagRep.text, /Pro feature/);
+
+    await c.call("project_set_rate", { project: "beta", hourly_rate: 50 });
+    const third = await c.call("project_set_rate", { project: "gamma", hourly_rate: 50 });
+    assert.match(third.text, /Pro feature/);
+
+    // free history clamp
+    const old = await c.call("entry_list", { from: "2020-01-01T00:00:00" });
+    assert.match(old.text, /free tier shows the last 7 days/);
+
+    const listed = await c.call("entry_list", {});
+    assert.match(listed.text, /acme/);
+
+    const exp = await c.call("export_csv", {});
+    assert.match(exp.text, /Wrote \d+ entries to .*\.csv/);
+    const path = exp.text.replace(/^Wrote \d+ entries to /, "").split("\n")[0].trim();
+    assert.ok(existsSync(path), `csv not written: ${path}`);
+  } finally {
+    c.close();
+  }
+});
+
+test("pro tier: a signed key unlocks invoice_summary, tag grouping and full history", async () => {
+  const key = execFileSync(process.execPath, [join(REPO, "scripts", "sign-license.mjs"), "time-tracker"], { encoding: "utf8" }).trim();
+  assert.match(key, /^MCPL1\./);
+  const c = client({ MCP_LICENSE_KEY: key });
+  try {
+    await c.init();
+    const status = await c.call("license_status");
+    assert.match(status.text, /"tier": "pro"/);
+
+    const today = new Date().toISOString().slice(0, 10);
+    await c.call("project_set_rate", { project: "acme", hourly_rate: 120 });
+    await c.call("entry_add", { project: "acme", task: "build", start: `${today}T10:00:00`, minutes: 120, tags: ["dev"] });
+    await c.call("entry_add", { project: "acme", task: "call", start: `${today}T13:00:00`, minutes: 30, tags: ["meeting"] });
+
+    // more than 2 rated projects allowed
+    for (const p of ["beta", "gamma", "delta"]) {
+      const r = await c.call("project_set_rate", { project: p, hourly_rate: 60 });
+      assert.doesNotMatch(r.text, /Pro feature/, `project ${p} should be allowed on pro`);
+    }
+
+    const tagRep = await c.call("report", { from: `${today}T00:00:00`, to: `${today}T23:59:59`, group_by: "tag", format: "json" });
+    const tags = JSON.parse(tagRep.text).rows.map(r => r.key).sort();
+    assert.deepEqual(tags, ["dev", "meeting"]);
+
+    const inv = await c.call("invoice_summary", { project: "acme", from: `${today}T00:00:00`, to: `${today}T23:59:59` });
+    assert.equal(inv.isError, false);
+    assert.match(inv.text, /Invoice summary - acme/);
+    assert.match(inv.text, /USD 120\.00/);      // rate
+    assert.match(inv.text, /TOTAL 2\.50 h  USD 300\.00/);
+
+    // full history: no free-tier note
+    const hist = await c.call("entry_list", { from: "2020-01-01T00:00:00" });
+    assert.doesNotMatch(hist.text, /free tier shows the last 7 days/);
+
+    const csv = await c.call("export_csv", { from: "2020-01-01T00:00:00" });
+    assert.doesNotMatch(csv.text, /free tier shows the last 7 days/);
+
+    // resource + prompt work end to end
+    const rr = await c.send("resources/read", { uri: "timetracker://today" });
+    assert.match(rr.result.contents[0].text, /acme/);
+    const pg = await c.send("prompts/get", { name: "daily_standup", arguments: { audience: "client" } });
+    assert.match(pg.result.messages[0].content.text, /TODAY/);
+  } finally {
+    c.close();
+  }
+});

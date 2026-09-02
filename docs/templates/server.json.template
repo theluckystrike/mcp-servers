@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/mcp-<NAME>",
+  "description": "<ONE SENTENCE, USER LANGUAGE, NO PLACEHOLDER TEXT>",
+  "version": "<SEMVER, MUST MATCH package.json>",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-<NAME>",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@theluckystrike/mcp-<NAME>",
+      "version": "<SEMVER, MUST MATCH package.json>",
+      "transport": { "type": "stdio" }
+    }
+  ]
+}

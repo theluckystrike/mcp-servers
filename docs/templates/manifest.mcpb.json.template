@@ -1,0 +1,16 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-<NAME>",
+  "version": "<SEMVER, MUST MATCH package.json>",
+  "description": "<ONE SENTENCE>",
+  "author": { "name": "theluckystrike", "url": "https://github.com/theluckystrike" },
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["dist/index.js"]
+    }
+  }
+}
