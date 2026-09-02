@@ -18,6 +18,8 @@ const lastRun = valDb.runs.at(-1);
 const promo = js("data/promotion.json", { actions: [] });
 const organic = js("data/organic.json", { surfaces: [], servers: [], measured: [] });
 const uv = js("data/user_value.json", null);
+const metrics = js("data/metrics.json", { snapshots: [] });
+const m = metrics.snapshots.at(-1);
 const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
 
 // ---- sprint results: every RESULT.md ----
@@ -121,7 +123,9 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="kpi"><div class="n">$${facts.pricing?.single_usd ?? 19} / $${facts.pricing?.bundle_usd ?? 39}</div><div class="k">Pro price, single / bundle</div></div>
 <div class="kpi"><div class="n">$${revenue}</div><div class="k">Stripe live sales (${esc(ledger.revenue?.note || "")})</div></div>
 <div class="kpi"><div class="n">${sprints.length}</div><div class="k">sprint units reported</div></div>
+${m ? `<div class="kpi"><div class="n">${m.release_downloads_total}</div><div class="k">bundle downloads (GitHub releases)</div></div><div class="kpi"><div class="n">${m.github.views_14d ?? 0} / ${m.github.uniques_14d ?? 0}</div><div class="k">repo views / uniques, 14d</div></div><div class="kpi"><div class="n">${m.github.stars ?? 0}</div><div class="k">stars</div></div>` : ""}
 </div>
+${metrics.snapshots.length > 1 ? `<p class="dim">Organic metrics history (${metrics.snapshots.length} snapshots, scripts/measure.mjs): ${metrics.snapshots.slice(-8).map(x => `${x.at.slice(5, 16).replace("T", " ")} dl ${x.release_downloads_total} views ${x.github.views_14d ?? 0} stars ${x.github.stars ?? 0}`).join(" | ")}</p>` : ""}
 
 <h2>Servers</h2>
 <div class="tw"><table><tr><th>Server</th><th>Tools</th><th>LOC</th><th>Build / tests</th><th>Distribution</th><th>Tool names</th><th>Links</th></tr>${serverRows}</table></div>
