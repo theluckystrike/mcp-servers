@@ -178,5 +178,6 @@
       "how": "scripts/validate.mjs + weekly: npm downloads API, Stripe sessions vs paid, GitHub traffic API (gh api repos/.../traffic/views)",
       "impact": 70
     }
-  ]
+  ],
+  "rule": "Operator rule 2026-09-02: paid submissions are ignored. Only free listings, PRs, forms and APIs; any listing fee, featured slot or paid review is skipped."
 }
