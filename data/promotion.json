@@ -31,7 +31,7 @@
       "reach": "estimate: largest non-IDE MCP surface; PR-based, no login beyond gh",
       "terminal": "yes",
       "human": "none",
-      "status": "submitted",
+      "status": "PR open docker/mcp-registry#4892",
       "how": "SUBMITTED 2026-09-02: fork theluckystrike/mcp-registry, branch add-theluckystrike-mcp-servers, servers/<name>/server.yaml + tools.json for all four, pinned to commit 7998ce2; go run ./cmd/validate passes 11/11 per server; PR https://github.com/docker/mcp-registry/pull/4892. Free, no listing fee.",
       "impact": 88
     },
@@ -42,7 +42,7 @@
       "reach": "estimate: Cline has 1M+ VS Code installs; marketplace is an issue-form, fully scriptable",
       "terminal": "yes",
       "human": "none",
-      "status": "submitted",
+      "status": "issues 2397-2400 open",
       "how": "SUBMITTED 2026-09-02: four issues on cline/mcp-marketplace using their MCP Server Submission form fields (#2397 time-tracker, #2398 price-tracker, #2399 spreadsheet, #2400 invoice); 400x400 PNG logos in assets/, llms-install.md per server. Free, no listing fee. Label server-submission could not be set (no repo write access).",
       "impact": 85
     },
@@ -53,7 +53,7 @@
       "reach": "the most-starred MCP list; PR-based",
       "terminal": "yes",
       "human": "maintainer merge",
-      "status": "in progress",
+      "status": "PR open #13473",
       "how": "fork, add 4 lines, gh pr create",
       "impact": 80
     },
@@ -108,7 +108,7 @@
       "reach": "estimate: long-tail search for 'time tracker mcp', 'invoice mcp claude'; articles rank for MCP how-to queries",
       "terminal": "yes",
       "human": "one API key per platform",
-      "status": "ready",
+      "status": "partial: 5 guides live on mcp.zovo.one/guides (own domain); dev.to/Hashnode need API keys",
       "how": "4 how-to posts generated from READMEs + the research numbers; POST /api/articles",
       "impact": 55
     },
@@ -177,6 +177,28 @@
       "status": "continuous",
       "how": "scripts/validate.mjs + weekly: npm downloads API, Stripe sessions vs paid, GitHub traffic API (gh api repos/.../traffic/views)",
       "impact": 70
+    },
+    {
+      "rank": 17,
+      "action": "Hosted streamable-HTTP endpoints (in progress)",
+      "channel": "mcp.zovo.one/mcp/<server>, registry remotes[], Smithery use counts",
+      "reach": "MEASURED: 15/15 top-used servers in our categories are hosted; stdio-only servers cannot accrue use",
+      "terminal": "yes",
+      "human": "none",
+      "status": "in progress",
+      "how": "remote/ worker, KV per tenant, bearer = license key or anonymous token",
+      "impact": 90
+    },
+    {
+      "rank": 18,
+      "action": "Word-rich registry names (done)",
+      "channel": "official registry name-substring search",
+      "reach": "MEASURED: matched query tokens 7/34 -> 18/34; rank unchanged (alphabetical prefix)",
+      "terminal": "yes",
+      "human": "none",
+      "status": "done",
+      "how": "republish under new names, deprecate old",
+      "impact": 60
     }
   ],
   "rule": "Operator rule 2026-09-02: paid submissions are ignored. Only free listings, PRs, forms and APIs; any listing fee, featured slot or paid review is skipped."

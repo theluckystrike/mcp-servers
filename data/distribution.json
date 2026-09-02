@@ -19,7 +19,7 @@
     "registry": {
       "status": "published",
       "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
-      "note": "4 servers live as io.github.theluckystrike/* v0.1.1 (mcpb packages from GitHub release v0.1.1); search is name-only"
+      "note": "8 rows: 4 new word-rich names (time-tracker-timesheet-billable-hours, price-tracker-drop-alert-watch, excel-spreadsheet-xlsx-csv, invoice-pdf-billing-generator) v0.1.1 + 4 deprecated old names; matched tokens 7/34 -> 18/34"
     },
     "smithery": {
       "status": "blocked",
@@ -55,6 +55,11 @@
       "status": "submitted",
       "url": "https://github.com/cline/mcp-marketplace/issues/2397",
       "note": "four submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install"
+    },
+    "guides": {
+      "status": "published",
+      "url": "https://mcp.zovo.one/guides",
+      "note": "5 long-form guides + index, FAQPage JSON-LD, sitemap 11 URLs, IndexNow pinged"
     }
   },
   "per_server": {
