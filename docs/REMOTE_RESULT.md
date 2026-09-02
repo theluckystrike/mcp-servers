@@ -624,3 +624,20 @@ link you can fetch" for expense-tracker exports, spreadsheet conversions and tim
 `spreadsheet` went from the one server documented as unhostable to a 13-tool endpoint whose
 only genuinely new code is `sheet_load` and a 15-line `expandPath`. The path argument was
 never the obstacle - the missing byte channel in both directions was.
+
+## D-R8
+
+The invoice download was HTML but shipped an `INV-....pdf` filename in
+`content-disposition`, and `invoice_pdf`'s response text still called it a PDF
+(including the placeholder-issuer hint line), so a caller opening the file got
+an unrenderable "PDF" and a misleading hint. Fixed in `remote/build-vendor.mjs`:
+the vendored `invoice_pdf` handler now renders `${inv.number}.html` (the
+existing content-type of `text/html; charset=utf-8` and `inline` disposition
+were already correct for a non-base64 download), and every remote-only
+response string that named "the PDF" - the free-tier note and the shared
+`NO_BUSINESS_NOTE` / client-address note - now says "HTML invoice" / "render
+it again". Verified with curl against a Pro key: `invoice_pdf`'s tool text
+contains "PDF" only inside "print to PDF", and `curl -I` on the download URL
+returns `content-type: text/html; charset=utf-8` and
+`content-disposition: inline; filename="INV-2026-0001.html"`. `remote` stayed
+14/14 in `node scripts/validate.mjs`.

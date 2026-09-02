@@ -18,6 +18,11 @@ import {
 
 export function createServer() {
 const FREE_INVOICES_PER_MONTH = 3;
+const BUSINESS_FIELDS = [
+  "name", "address", "email", "vat_id", "iban", "bank", "logo_path",
+  "default_currency", "default_tax_rate", "payment_terms_days", "invoice_prefix",
+  "tax_rate", "vat_rate", "vat",
+];
 const gate = createLicenseGate({ product: "invoice" });
 
 /**
@@ -32,6 +37,33 @@ function locked<T>(fn: () => T | Promise<T>): Promise<T> {
 const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
 const fail = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true as const });
 const json = (v: unknown) => ok(JSON.stringify(v, null, 2));
+
+/**
+ * D-R2: a missing business profile must never block the invoice. The document is
+ * created with a placeholder issuer and the response says so in one line.
+ */
+const PLACEHOLDER_ISSUER = "Your business";
+const NO_BUSINESS_NOTE =
+  "No business profile yet: the HTML invoice shows a placeholder issuer. " +
+  "Run business_set {name, address, vat_id, iban} and render it again.";
+
+function businessMissing(): boolean {
+  return !hasBusiness() || !getBusiness().name.trim();
+}
+/** The issuer block used on every document: the stored profile, or the placeholder. */
+function issuer(): Business {
+  const b = getBusiness();
+  return b.name.trim() ? b : { ...b, name: PLACEHOLDER_ISSUER };
+}
+
+/**
+ * D-R6: only call a file a PDF when it is one. The stdio server always writes PDF
+ * bytes; an .html path (or an HTML link handed over by another transport) is
+ * described as a printable HTML invoice instead.
+ */
+function documentLabel(pathOrLink: string, html?: boolean): string {
+  return (html ?? /\.html?(\?|#|$)/i.test(pathOrLink)) ? "HTML invoice (print to PDF)" : "PDF invoice";
+}
 
 function summarize(inv: Invoice) {
   return {
@@ -82,7 +114,7 @@ const server = new McpServer(
 server.registerTool("business_set", {
   title: "Set your business details",
   description: "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices.",
-  inputSchema: {
+  inputSchema: z.object({
     name: z.string().describe("Your business or freelancer name"),
     address: z.string().optional().describe("Postal address, newlines allowed"),
     email: z.string().optional(),
@@ -94,11 +126,25 @@ server.registerTool("business_set", {
     default_tax_rate: z.number().optional().describe("Default VAT percent applied to items without their own rate"),
     payment_terms_days: z.number().optional().describe("Default days until due. Default 14"),
     invoice_prefix: z.string().optional().describe("Invoice number prefix, default INV (custom prefix is Pro)"),
-  },
-}, async (a) => {
+    tax_rate: z.number().optional().describe("Alias for default_tax_rate"),
+    vat_rate: z.number().optional().describe("Alias for default_tax_rate"),
+    vat: z.number().optional().describe("Alias for default_tax_rate"),
+  }).passthrough(),
+}, async (a: Record<string, any>) => {
   try {
     return await locked(() => {
     const prev = getBusiness();
+    // D-R7: "tax rate" is what users and models say; default_tax_rate is what the
+    // field is called. Accept the aliases, and never drop a key in silence.
+    const aliasKey = (["tax_rate", "vat_rate", "vat"] as const).find((k) => typeof a[k] === "number");
+    const taxRate = a.default_tax_rate ?? (aliasKey ? (a[aliasKey] as number) : undefined);
+    const unknown = Object.keys(a).filter((k) => !BUSINESS_FIELDS.includes(k));
+    let warn = "";
+    if (aliasKey) warn += `\n\nRead ${aliasKey}: ${a[aliasKey]} as default_tax_rate: ${taxRate}.`;
+    if (unknown.length) {
+      warn += `\n\nWarning: ignored unknown field${unknown.length > 1 ? "s" : ""} ${unknown.join(", ")}. ` +
+        `Accepted fields: ${BUSINESS_FIELDS.join(", ")}.`;
+    }
     let prefix = a.invoice_prefix ?? prev.invoice_prefix;
     let note = "";
     if (a.invoice_prefix && a.invoice_prefix !== "INV" && !gate.isPro()) {
@@ -114,12 +160,12 @@ server.registerTool("business_set", {
       bank: a.bank ?? prev.bank,
       logo_path: a.logo_path ?? prev.logo_path,
       default_currency: (a.default_currency ?? prev.default_currency).toUpperCase(),
-      default_tax_rate: a.default_tax_rate ?? prev.default_tax_rate,
+      default_tax_rate: taxRate ?? prev.default_tax_rate,
       payment_terms_days: a.payment_terms_days ?? prev.payment_terms_days,
       invoice_prefix: prefix.replace(/[^A-Za-z0-9_-]/g, "") || "INV",
     };
     setBusiness(biz);
-    return ok(`Business profile saved to ${dataDir()}.\n\n${JSON.stringify(biz, null, 2)}${note}`);
+    return ok(`Business profile saved to ${dataDir()}.\n\n${JSON.stringify(biz, null, 2)}${note}${warn}`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -175,12 +221,19 @@ const MAX_AMOUNT = 1e12;
 const amount = (what: string) =>
   z.number().finite().min(-MAX_AMOUNT, `${what} is out of range`).max(MAX_AMOUNT, `${what} is out of range`);
 
+const rate = z.number().finite().min(-100).max(1000).optional();
 const itemSchema = z.object({
   description: z.string(),
   quantity: amount("quantity").describe("Hours, units or 1 for a flat fee"),
   unit_price: amount("unit_price").describe("Price per unit in major units, e.g. 90 for 90 EUR"),
-  tax_rate: z.number().finite().min(-100).max(1000).optional().describe("VAT percent for this line, overrides the business default"),
-});
+  tax_rate: rate.describe("VAT percent for this line, overrides the business default"),
+  vat_rate: rate.describe("Alias for tax_rate"),
+  vat: rate.describe("Alias for tax_rate"),
+  // D-R7: an item's rate must not vanish because the caller spelled it vat_rate.
+}).transform((i) => ({
+  description: i.description, quantity: i.quantity, unit_price: i.unit_price,
+  tax_rate: i.tax_rate ?? i.vat_rate ?? i.vat,
+}));
 
 function monthLimitBlocked(issueDate: string): string | null {
   if (gate.isPro()) return null;
@@ -194,10 +247,12 @@ function monthLimitBlocked(issueDate: string): string | null {
 function createInvoice(a: {
   client: string; items: z.infer<typeof itemSchema>[]; currency?: string;
   issue_date?: string; due_days?: number; notes?: string; discount_percent?: number;
-}): { error?: string; gated?: string; invoice?: Invoice; clientNote?: string } {
-  if (!hasBusiness()) return { error: "no business profile yet. Call business_set first." };
+}): { error?: string; gated?: string; invoice?: Invoice; clientNote?: string; businessNote?: string } {
   if (!a.items.length) return { error: "an invoice needs at least one item." };
-  const biz = getBusiness();
+  // D-R2: no business profile is not a reason to lose the work. Issue the document
+  // with a placeholder issuer and say so in the response.
+  const noBusiness = businessMissing();
+  const biz = issuer();
 
   let client = findClient(a.client);
   let clientCreated = false;
@@ -256,10 +311,10 @@ function createInvoice(a: {
       (clientCreated
         ? `that client did not exist yet and was created from the name alone, with no address. `
         : `that client has no address stored. `) +
-      `Add one with client_add {name: "${client.name}", address: "...", email: "...", vat_id: "..."} and render the PDF again, ` +
+      `Add one with client_add {name: "${client.name}", address: "...", email: "...", vat_id: "..."} and render it again, ` +
       `so the invoice carries a complete billing address.`
     : undefined;
-  return { invoice: inv, clientNote };
+  return { invoice: inv, clientNote, businessNote: noBusiness ? NO_BUSINESS_NOTE : undefined };
 }
 
 server.registerTool("invoice_create", {
@@ -282,7 +337,7 @@ server.registerTool("invoice_create", {
     return ok(
       `Created invoice ${r.invoice!.number}.\n\n` +
       `${JSON.stringify({ ...summarize(r.invoice!), lines: lineRows(r.invoice!) }, null, 2)}\n\n` +
-      `Render it with invoice_pdf.${r.clientNote ? `\n\n${r.clientNote}` : ""}`
+      `Render it with invoice_pdf.${r.businessNote ? `\n\n${r.businessNote}` : ""}${r.clientNote ? `\n\n${r.clientNote}` : ""}`
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -318,6 +373,7 @@ server.registerTool("invoice_from_hours", {
     return ok(
       `Created invoice ${r.invoice!.number}.\n\n` +
       `${JSON.stringify({ ...summarize(r.invoice!), lines: lineRows(r.invoice!) }, null, 2)}` +
+      `${r.businessNote ? `\n\n${r.businessNote}` : ""}` +
       `${r.clientNote ? `\n\n${r.clientNote}` : ""}`
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -396,17 +452,25 @@ server.registerTool("invoice_pdf", {
   try {
     const inv = getInvoices().find((i) => i.number === a.number);
     if (!inv) return fail(`no invoice numbered ${a.number}.`);
-    const biz = getBusiness();
+    const biz = issuer();
     const pro = gate.isPro();
-    const out = await renderInvoicePdf(inv, biz, `${inv.number}.pdf`, { branded: !pro, logo: pro });
+    const out = await renderInvoicePdf(inv, biz, `${inv.number}.html`, { branded: !pro, logo: pro });
     let note = "";
+    // D-R6: this server always writes PDF bytes, so only an .html out_path could
+    // make the wording wrong. Name the file for what it actually contains.
+    // D-R2: and say once more that the issuer block is a placeholder.
+    let extra = "";
+    if (documentLabel(out) !== "PDF invoice") {
+      extra += `\n\nNote: ${out} holds PDF bytes despite the .html name. Use a .pdf path.`;
+    }
+    if (businessMissing()) extra += `\n\n${NO_BUSINESS_NOTE}`;
     if (!pro) {
-      note = `\n\nFree tier: the PDF carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +
-        gate.upgradeText("unbranded PDFs with your logo");
+      note = `\n\nFree tier: the HTML invoice carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +
+        gate.upgradeText("unbranded HTML invoices with your logo");
     } else if (biz.logo_path && !existsSync(biz.logo_path)) {
       note = `\n\nNote: logo_path ${biz.logo_path} does not exist, rendered without it.`;
     }
-    return ok(`Invoice ${inv.number} rendered. Download (HTML, valid 1 hour): ${out}${note}`);
+    return ok(`Invoice ${inv.number} rendered. Download (HTML invoice, print to PDF, valid 1 hour): ${out}${note}${extra}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 

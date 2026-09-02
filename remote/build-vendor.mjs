@@ -55,11 +55,26 @@ function patchInvoiceIndex(src) {
     'import { renderInvoicePdf } from "../../shims/pdf.js";', "invoice pdf import");
   src = must(src,
     "    const out = expandPath(a.out_path ?? join(dataDir(), \"pdf\", `${inv.number}.pdf`));\n    await renderInvoicePdf(inv, biz, out, { branded: !pro, logo: pro });",
-    "    const out = await renderInvoicePdf(inv, biz, `${inv.number}.pdf`, { branded: !pro, logo: pro });",
+    "    const out = await renderInvoicePdf(inv, biz, `${inv.number}.html`, { branded: !pro, logo: pro });",
     "invoice pdf call");
   src = must(src, "return ok(`Wrote ${documentLabel(out)} ${out}${note}${extra}`);",
     "return ok(`Invoice ${inv.number} rendered. Download (HTML invoice, print to PDF, valid 1 hour): ${out}${note}${extra}`);",
     "invoice pdf result text");
+  // D-R8: the hosted document is always HTML (there is no PDF renderer on Workers),
+  // so every response string that calls it a PDF is wrong here even though it is
+  // correct in the stdio server. Reword the shared notes to the HTML wording.
+  src = must(src,
+    '  "No business profile yet: the PDF shows a placeholder issuer. " +\n  "Run business_set {name, address, vat_id, iban} and render the PDF again.";',
+    '  "No business profile yet: the HTML invoice shows a placeholder issuer. " +\n  "Run business_set {name, address, vat_id, iban} and render it again.";',
+    "invoice placeholder-issuer note");
+  src = must(src,
+    '`Add one with client_add {name: "${client.name}", address: "...", email: "...", vat_id: "..."} and render the PDF again, ` +',
+    '`Add one with client_add {name: "${client.name}", address: "...", email: "...", vat_id: "..."} and render it again, ` +',
+    "invoice client-note wording");
+  src = must(src,
+    'note = `\\n\\nFree tier: the PDF carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +\n        gate.upgradeText("unbranded PDFs with your logo");',
+    'note = `\\n\\nFree tier: the HTML invoice carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +\n        gate.upgradeText("unbranded HTML invoices with your logo");',
+    "invoice free-tier note wording");
   return src;
 }
 

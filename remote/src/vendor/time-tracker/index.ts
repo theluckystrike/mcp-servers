@@ -707,16 +707,32 @@ server.registerTool("invoice_summary", {
   if (entries.length === 0) {
     return ok(`No billable time for "${a.project}" in that period.` + (!pro && w.clamped ? FREE_WINDOW_NOTE : ""));
   }
-  const lines = aggregate(db, entries, "task");
-  const totalSec = lines.reduce((s, b) => s + b.seconds, 0);
-  const totals = totalAmounts(lines);
-  const rows = lines.map(b => {
-    const parts = nonZero(b.amounts);
-    const rate = parts.length === 1 && b.seconds > 0
-      ? money(Math.round((parts[0][1] * 3600) / b.seconds), parts[0][0])
-      : parts.length > 1 ? "mixed" : "-";
-    return [b.key, hours(b.seconds), rate, moneyOf(b.amounts)];
-  });
+  // D-R1: one line per (task, rate, currency). Grouping by task alone blends two
+  // rates into an average - EUR 89.82 for work agreed at EUR 90.00 - which is a
+  // number nobody signed and cannot go on an invoice. Entries with no task get
+  // their own line per rate for the same reason.
+  interface Line { task: string; rateCents: number; currency: string; seconds: number; cents: number }
+  const byRate = new Map<string, Line>();
+  for (const e of entries) {
+    const rateCents = rateForEntry(db, e);
+    const currency = currencyForEntry(db, e);
+    const task = e.task ?? "(no task)";
+    const key = `${task}\u0000${rateCents}\u0000${currency}`;
+    const l = byRate.get(key) ?? { task, rateCents, currency, seconds: 0, cents: 0 };
+    l.seconds += e.seconds;
+    l.cents += amountCents(e.seconds, rateCents);
+    byRate.set(key, l);
+  }
+  const lines = [...byRate.values()].sort((a, b) => b.seconds - a.seconds);
+  const totalSec = lines.reduce((s, l) => s + l.seconds, 0);
+  const totals = new Map<string, number>() as Amounts;
+  for (const l of lines) addAmount(totals, l.currency, l.cents);
+  const rows = lines.map(l => [
+    l.task,
+    hours(l.seconds),
+    l.rateCents > 0 ? `${money(l.rateCents, l.currency)}/h` : "-",
+    l.cents > 0 ? money(l.cents, l.currency) : "-",
+  ]);
   const body = table(["description", "hours", "rate", "amount"], rows);
   const days = [...new Set(entries.map(e => dayKey(e.start)))].sort();
   return ok(

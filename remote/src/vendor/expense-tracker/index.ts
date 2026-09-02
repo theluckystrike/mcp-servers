@@ -149,6 +149,8 @@ server.registerTool("expense_add", {
     receipt_path: text(4096).optional().describe("Absolute path to the receipt file; it is checked and hashed"),
     billable: z.boolean().optional().describe("Rebillable to the client, default false"),
     vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent already included in amount"),
+    tax_rate: z.number().finite().min(0).max(100).optional().describe("Alias for vat_rate"),
+    vat: z.number().finite().min(0).max(100).optional().describe("Alias for vat_rate"),
   },
 }, async (a) => {
   try {
@@ -179,8 +181,10 @@ server.registerTool("expense_add", {
             gate.upgradeText("unlimited projects"));
         }
       }
-      const vatRate = typeof a.vat_rate === "number" ? a.vat_rate : db.settings.default_vat_rate;
-      const vatFromDefault = typeof a.vat_rate !== "number" && typeof vatRate === "number";
+      // D-R3: accept the names a caller actually uses for the same number.
+      const givenRate = [a.vat_rate, a.tax_rate, a.vat].find((v) => typeof v === "number");
+      const vatRate = typeof givenRate === "number" ? givenRate : db.settings.default_vat_rate;
+      const vatFromDefault = typeof givenRate !== "number" && typeof vatRate === "number";
       const e: Expense = {
         id: newId(), date, amount_minor: minor, currency, category,
         merchant: a.merchant, project: a.project, note: a.note,
@@ -607,14 +611,14 @@ server.registerTool("expense_export", {
 
 server.registerTool("expense_to_invoice", {
   title: "Rebill expenses to an invoice",
-  description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate, so the invoice recomputes the same tax. Line items are grouped per currency because one invoice carries one currency. The expenses are marked as rebilled.",
+  description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate, so the invoice recomputes the same tax. An expense with no VAT rate is split at the expense_settings default_vat_rate if one is set, and otherwise rebilled gross with tax_rate 0 and a warning in its description, so a downstream default rate cannot tax it twice. Line items are grouped per currency because one invoice carries one currency. This is a read-only preview: nothing is marked rebilled unless mark_rebilled is true, or expense_mark_rebilled is called once the invoice exists.",
   inputSchema: {
     project: text().describe("Project or client to rebill"),
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
     markup_percent: z.number().finite().min(0).max(1000).optional().describe("Percent added to each net amount. Pro"),
     include_rebilled: z.boolean().optional().describe("Include expenses already marked as rebilled, default false"),
-    mark_rebilled: z.boolean().optional().describe("Mark the expenses as rebilled, default true"),
+    mark_rebilled: z.boolean().optional().describe("Mark the expenses as rebilled, default false. Prefer expense_mark_rebilled after the invoice exists"),
   },
 }, async (a) => {
   try {
@@ -634,21 +638,37 @@ server.registerTool("expense_to_invoice", {
         return gated(`There are ${rows.length} billable expenses to rebill and the free tier converts ${FREE_REBILL_ITEMS} at a time. Nothing was changed. Narrow the date range.\n\n` + gate.upgradeText("unlimited rebill items"));
       }
       const byCurrency: Record<string, { description: string; quantity: number; unit_price: number; tax_rate: number }[]> = {};
+      // D-R3: an expense with no recorded VAT rate holds a GROSS amount. Emitting it as a
+      // net line with tax_rate 0 lets a downstream invoice default rate tax it a second
+      // time. Either split it retroactively at the stored default, or rebill the gross and
+      // say so in the line itself.
+      const fallback = db.settings.default_vat_rate;
+      let assumed = 0, unknownVat = 0;
       for (const e of rows) {
-        const s = vatSplit(e.amount_minor, e.vat_rate);
+        const known = typeof e.vat_rate === "number" && e.vat_rate > 0;
+        const useAssumed = !known && typeof fallback === "number" && fallback > 0;
+        const rate = known ? e.vat_rate! : useAssumed ? fallback! : 0;
+        const s = vatSplit(e.amount_minor, rate);
         const netWithMarkup = roundHalfUp(s.net_minor * (100 + markup) / 100);
-        const label = e.mileage
+        const base = e.mileage
           ? `${e.date} mileage ${e.mileage.distance} ${e.mileage.unit} - ${e.mileage.purpose}`
           : `${e.date} ${e.merchant ?? e.category ?? "expense"}${e.note ? ` - ${e.note}` : ""}`;
+        let label = base;
+        if (useAssumed) { assumed++; label = `${base} [vat assumed ${rate}%]`; }
+        else if (!known) {
+          unknownVat++;
+          label = `${base} [tax_rate: 0 (VAT unknown, gross rebilled as-is; set expense_settings default_vat_rate to split)]`;
+        }
         (byCurrency[e.currency] ??= []).push({
           description: label,
           quantity: 1,
           unit_price: toMajor(netWithMarkup, e.currency),
-          tax_rate: e.vat_rate ?? 0,
+          tax_rate: rate,
         });
       }
       const stamp = new Date().toISOString();
-      if (a.mark_rebilled !== false) {
+      // D-R4: the rebilled flag belongs to an invoice that exists. Default off.
+      if (a.mark_rebilled === true) {
         for (const e of rows) e.rebilled_at = stamp;
         save(db);
       }
@@ -660,13 +680,70 @@ server.registerTool("expense_to_invoice", {
         project: a.project, from: w.from, to: a.to,
         markup_percent: markup,
         count: rows.length,
-        marked_rebilled: a.mark_rebilled !== false,
+        marked_rebilled: a.mark_rebilled === true,
+        vat_assumed_lines: assumed,
+        vat_unknown_lines: unknownVat,
+        vat_note: assumed
+          ? `${assumed} line(s) had no VAT rate recorded and were split at the expense_settings default of ${fallback}%, flagged "vat assumed ${fallback}%" in the description.`
+          : unknownVat
+            ? `${unknownVat} line(s) had no VAT rate recorded: the gross amount is rebilled as-is with tax_rate 0 and the description says so. Do not apply a default tax rate to those lines on the invoice, or the receipt is taxed twice. Set expense_settings {default_vat_rate: <percent>} and run this again to split them instead.`
+            : "Every line carries the VAT rate recorded on its expense.",
         currencies: groups.map((g) => g.currency),
         line_items_per_currency: groups,
         next_step: groups.length
-          ? `Pass one group's items straight to invoice_create {client: "...", currency: "${groups[0].currency}", items: <line_items_per_currency[0].items>}.`
+          ? `1. Pass one group's items straight to invoice_create {client: "...", currency: "${groups[0].currency}", items: <line_items_per_currency[0].items>}. ` +
+            `2. Once that invoice exists, call expense_mark_rebilled {project: "${a.project}", from: "${w.from}", to: "${a.to}", invoice_number: "<the number>"} ` +
+            `so these expenses stop showing as unbilled.${a.mark_rebilled === true ? " (mark_rebilled was true, so step 2 is already done.)" : ""}`
           : "Nothing to rebill in that range.",
         note: w.note,
+      });
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* ------------------------------------------------------ expense_mark_rebilled */
+
+server.registerTool("expense_mark_rebilled", {
+  title: "Mark expenses as rebilled",
+  description: "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the ids from expense_to_invoice, or the same project and date range. Optionally record the invoice number on each expense. This is the step expense_to_invoice no longer does for you.",
+  inputSchema: {
+    ids: z.array(text(64)).optional().describe("Expense ids. Takes precedence over project/from/to"),
+    project: text().optional().describe("Project rebilled, used with from and to"),
+    from: text(10).optional().describe("ISO date, inclusive"),
+    to: text(10).optional().describe("ISO date, inclusive"),
+    invoice_number: text(64).optional().describe("Invoice the expenses were billed on, stored on each expense"),
+  },
+}, async (a) => {
+  try {
+    if (!a.ids?.length && !(a.project && a.from && a.to)) {
+      return fail("pass either ids, or project with from and to.");
+    }
+    if (a.from && !isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
+    if (a.to && !isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
+    return await locked(() => {
+      const db = load();
+      let rows: Expense[];
+      if (a.ids?.length) {
+        const want = new Set(a.ids);
+        rows = db.expenses.filter((e) => want.has(e.id));
+        const missing = a.ids.filter((id) => !rows.some((e) => e.id === id));
+        if (missing.length) return fail(`no expense with id ${missing.join(", ")}. Nothing was changed.`);
+      } else {
+        rows = select(db, { from: a.from!, to: a.to!, project: a.project, billable: true })
+          .filter((e) => !e.rebilled_at);
+      }
+      if (!rows.length) return ok("Nothing to mark: no matching unbilled billable expense.");
+      const stamp = new Date().toISOString();
+      for (const e of rows) {
+        e.rebilled_at = stamp;
+        if (a.invoice_number) e.rebilled_invoice = a.invoice_number;
+      }
+      save(db);
+      return json({
+        marked: rows.length,
+        invoice_number: a.invoice_number ?? null,
+        ids: rows.map((e) => e.id),
+        rebilled_at: stamp,
       });
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
