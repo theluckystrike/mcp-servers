@@ -1,0 +1,50 @@
+{
+  "at": "2026-09-02T20:40:00Z",
+  "method": "claude CLI 2.1.258 as MCP client, --strict-mcp-config, model sonnet, fresh XDG_DATA_HOME=/private/tmp/uv/data (free tier)",
+  "scenarios": [
+    {"server":"time-tracker","id":"tt1","prompt":"Start tracking time for the Acme website project.","score":3,"tool_calls":1,"seconds":8.6,"note":"timer_start, project \"Acme website\". Correct, one call."},
+    {"server":"time-tracker","id":"tt2","prompt":"Stop the timer and tell me how long I worked.","score":3,"tool_calls":1,"seconds":9.4,"note":"timer_stop returned 8 s / 0.00 h, correct for the real elapsed time."},
+    {"server":"time-tracker","id":"tt3","prompt":"Log 2.5 hours yesterday for Acme, design review, at 90 euros an hour.","score":2,"tool_calls":1,"seconds":10.0,"note":"150 min logged on 2026-09-01 at rate 90. EUR silently dropped: entry_add has no currency parameter."},
+    {"server":"time-tracker","id":"tt4","prompt":"How much do I bill Acme this week? Give me invoice lines.","score":2,"tool_calls":3,"seconds":29.0,"note":"2.50 h / 225.00 correct, but rendered as $225.00 USD not EUR, and hours were split across two projects (\"Acme website\" vs \"Acme\")."},
+    {"server":"price-tracker","id":"pt1","prompt":"What does this cost right now: https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html","score":1,"tool_calls":1,"seconds":11.9,"note":"Client answered with built-in WebFetch. price_check was never called; the server delivered zero value in the natural run."},
+    {"server":"price-tracker","id":"pt1b","prompt":"same, WebFetch disallowed","score":3,"tool_calls":1,"seconds":14.0,"note":"Control run. price_check returned GBP 51.77, correct. Establishes the ceiling."},
+    {"server":"price-tracker","id":"pt2","prompt":"Watch that page and alert me if it goes under 40.","score":2,"tool_calls":2,"seconds":null,"note":"watch_add succeeded (id 3fade106, target 40). No alerting mechanism exists, so the agent tried to build a cron job with the external schedule skill. Original run had no URL referent across sessions (harness artifact); rerun as pt2b with the URL inline."},
+    {"server":"price-tracker","id":"pt3","prompt":"Show me everything I'm watching and whether anything dropped.","score":1,"tool_calls":2,"seconds":11.1,"note":"watch_list works; the \"whether anything dropped\" half is unanswerable on free because alerts_pending is fully Pro-gated."},
+    {"server":"spreadsheet","id":"ss1","prompt":"Open /private/tmp/uv/sales.xlsx and tell me what's in it.","score":3,"tool_calls":3,"seconds":16.5,"note":"3 sheets, 400 rows, headerRow=2 detected past the title+blank rows, correct column types and value ranges."},
+    {"server":"spreadsheet","id":"ss2","prompt":"Which rep sold the most units in the North region? Show the top 5 with totals.","score":2,"tool_calls":5,"seconds":71.4,"note":"Answer matches ground truth (Turing 650, Hopper 567, Linus 551, Lovelace 486, Liskov 290) but only via a Bash/python fallback: sheet_query filters and selects, it cannot group or sum."},
+    {"server":"spreadsheet","id":"ss3","prompt":"Add a Revenue column (units times unit price) and save it as a CSV next to the original.","score":1,"tool_calls":2,"seconds":null,"note":"sheet_add_column computed Revenue correctly including string prices (\"1,516.16\" x 35 = 53065.6) but the free 200-row cap wrote 200 of 400 rows to a file that looks complete. Agent abandoned the MCP server and produced the CSV with python."},
+    {"server":"invoice","id":"iv1","prompt":"Set up my business: Lucky Strike Software, Warsaw, VAT PL1234567890, IBAN PL...874, EUR, 23% VAT, 14 day terms.","score":3,"tool_calls":1,"seconds":13.9,"note":"business_set, every field parsed from free text in one call."},
+    {"server":"invoice","id":"iv2","prompt":"Invoice Acme for 12 hours of API work at 90 EUR and a 300 EUR setup fee, due in 14 days, and give me the PDF.","score":3,"tool_calls":2,"seconds":15.4,"note":"INV-2026-0001: subtotal EUR 1380.00, 23% tax EUR 317.40, total EUR 1697.40. Matches the independent check exactly. PDF written."},
+    {"server":"invoice","id":"iv3","prompt":"Which invoices are unpaid and overdue?","score":2,"tool_calls":2,"seconds":11.1,"note":"overdue_report returned the Pro upgrade text; the correct answer came from the invoice_list fallback."}
+  ],
+  "price_hits": [
+    {"url":"https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html","status":200,"price":"51.77","currency":"GBP","source":"regex-fallback","correct":true},
+    {"url":"https://www.apple.com/shop/buy-mac/macbook-air","status":200,"price":"1299","currency":"USD","source":"json-ld","correct":true},
+    {"url":"https://www2.hm.com/en_us/productpage.1227154001.html","status":403,"price":null,"currency":null,"source":null,"correct":false},
+    {"url":"https://www.ikea.com/us/en/p/billy-bookcase-white-00263850/","status":200,"price":"39","currency":"USD","source":"json-ld","correct":false},
+    {"url":"https://www.bestbuy.com/site/apple-airpods-pro-2/6447382.p","status":null,"price":null,"currency":null,"source":null,"correct":false},
+    {"url":"https://www.walmart.com/ip/Great-Value-Whole-Vitamin-D-Milk-Gallon-128-fl-oz/10450114","status":200,"price":"3.52","currency":"USD","source":"microdata","correct":true},
+    {"url":"https://allegro.pl/oferta/lego-classic-11030-mnostwo-bialych-klockow-14090271770","status":403,"price":null,"currency":null,"source":null,"correct":false},
+    {"url":"https://mediamarkt.pl/agd-male/ekspres-cisnieniowy-delonghi-ecam-220-22-cb","status":403,"price":null,"currency":null,"source":null,"correct":false},
+    {"url":"https://www.homedepot.com/p/Husky-46-in-9-Drawer-Tool-Chest/319127775","status":403,"price":null,"currency":null,"source":null,"correct":false},
+    {"url":"https://www.newegg.com/p/N82E16819113877","status":200,"price":"469","currency":"USD","source":"class:product-price","correct":true},
+    {"url":"https://www.etsy.com/","status":403,"price":null,"currency":null,"source":null,"correct":false},
+    {"url":"https://www.gap.com/browse/product.do?pid=440760012","status":200,"price":"49.95","currency":"USD","source":"class:price","correct":true}
+  ],
+  "pdf": {
+    "verdict": "PASS",
+    "png": "docs/assets/invoice-sample.png",
+    "detail": "A4 single page, clean grid. Header (business name left, INVOICE + number right), issue/due/status block, BILL TO, 4-column line table with per-line tax, right-aligned Subtotal/Tax/Total with Total in EUR, payment details with IBAN and reference, free-tier footer. Nothing cut off, nothing overlapping, totals readable at 80 dpi. Two cosmetic gaps: line amounts carry no currency symbol (only the Total does), and BILL TO shows only the client name because invoice_create auto-created Acme with no address."
+  },
+  "free_tier": {
+    "hit_in_first_session": true,
+    "limits_hit": [
+      {"server":"spreadsheet","limit":"200-row write cap","where":"sheet_add_column on a 400-row sheet","severity":"high","message_clear":true,"note":"Message is clear but the tool still reports success and writes a file that looks complete. Data loss risk."},
+      {"server":"price-tracker","limit":"alerts_pending is Pro-only","where":"\"whether anything dropped\"","severity":"high","message_clear":true,"note":"Blocks the core promise of a price tracker on free."},
+      {"server":"invoice","limit":"overdue_report is Pro-only","where":"\"which invoices are overdue\"","severity":"medium","message_clear":true,"note":"invoice_list covers it, so the free user still gets an answer."}
+    ],
+    "not_hit": ["time-tracker 7-day window", "spreadsheet 5,000-row / 5 MB read cap", "invoice 3 invoices per month"],
+    "upgrade_message_verdict": "Clear. Names the feature, the price ($19 / $39 bundle), the checkout URL, the activation step, and states keys verify offline."
+  },
+  "totals": {"score": 28, "max": 39, "hit_rate": 0.4167, "hit_rate_of_reachable": "5 of 7 pages that returned HTML"}
+}

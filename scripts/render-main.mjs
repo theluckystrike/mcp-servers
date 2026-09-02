@@ -17,6 +17,7 @@ const valDb = js("data/validation.json", { runs: [] });
 const lastRun = valDb.runs.at(-1);
 const promo = js("data/promotion.json", { actions: [] });
 const organic = js("data/organic.json", { surfaces: [], servers: [], measured: [] });
+const uv = js("data/user_value.json", null);
 const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
 
 // ---- sprint results: every RESULT.md ----
@@ -108,7 +109,7 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
+<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv ? ` (${uv.totals.score}/${uv.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
 <div class="tab on" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
@@ -205,6 +206,17 @@ ${promo.actions.slice().sort((a, b) => b.impact - a.impact).map(a => `<tr><td cl
 <li><b>Budget rule.</b> After two weeks, keep only channels with at least one measured click to mcp.zovo.one or one install; drop the rest.</li>
 </ul></div>
 </div>
+<div class="tab" id="tab-uservalue">
+${uv ? `<p class="dim">${esc(uv.method || "")} Run at ${esc(uv.at)}. Full report: <a href="docs/USER_VALUE.md">docs/USER_VALUE.md</a>.</p>
+<div class="kpis"><div class="kpi"><div class="n">${uv.totals.score}/${uv.totals.max}</div><div class="k">scenario points (0-3 each, real MCP client)</div></div><div class="kpi"><div class="n">${Math.round(uv.totals.hit_rate * 100)}%</div><div class="k">real retailer price hit rate (${esc(uv.totals.hit_rate_of_reachable)})</div></div><div class="kpi"><div class="n">${esc(uv.pdf.verdict)}</div><div class="k">invoice PDF visual check</div></div><div class="kpi"><div class="n">${(uv.free_tier.limits_hit || []).length}</div><div class="k">free limits hit in first session</div></div></div>
+<h2>Scenarios, phrased as a user would, through the claude CLI as MCP client</h2>
+<div class="tw"><table><tr><th>Server</th><th>User said</th><th>Score</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${uv.scenarios.map(x => `<tr><td class="mono">${esc(x.server)}</td><td>${esc(x.prompt)}</td><td class="num"><b>${x.score}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
+<h2>Price extraction on real retailer pages</h2>
+<div class="tw"><table><tr><th>URL</th><th>HTTP</th><th>Price</th><th>Currency</th><th>Source</th><th>Correct</th></tr>${uv.price_hits.map(x => `<tr><td class="mono dim">${esc(String(x.url).slice(0, 70))}</td><td class="num">${esc(x.status)}</td><td class="num">${esc(x.price ?? "")}</td><td>${esc(x.currency ?? "")}</td><td class="dim">${esc(x.source ?? "")}</td><td>${pill(x.correct === true ? "ok" : x.correct === false ? "fail" : "n/a")}</td></tr>`).join("")}</table></div>
+<div class="grid2"><div><h2>Invoice PDF</h2><div class="card"><p>${esc(uv.pdf.detail || "")}</p><a href="${esc(uv.pdf.png)}"><img src="${esc(uv.pdf.png)}" alt="invoice sample" style="max-width:100%;border:1px solid var(--line);border-radius:6px"></a></div></div>
+<div><h2>Free tier in a first session</h2><div class="card"><ul>${(uv.free_tier.limits_hit || []).map(l => `<li><b>${esc(l.server)}</b>: ${esc(l.limit)} at ${esc(l.where)} (${esc(l.severity)}). ${esc(l.note)}</li>`).join("")}</ul></div></div></div>` : `<p>No user-value run yet.</p>`}
+</div>
+
 <div class="tab" id="tab-organic">
 <div class="kpis"><div class="kpi"><div class="n">${orgHeadline}/100</div><div class="k">fleet organic traffic rating (reach-weighted mean of surface scores)</div></div><div class="kpi"><div class="n">${organic.fleet?.max_surface ?? 0}</div><div class="k">best single surface</div></div><div class="kpi"><div class="n">${organic.fleet?.fleet_score ?? 0}%</div><div class="k">chance at least one surface yields any organic visit (noisy-OR, model)</div></div><div class="kpi"><div class="n">${organic.surfaces.filter(s => s.listed >= 1).length}/${organic.surfaces.length}</div><div class="k">surfaces where the fleet is live</div></div></div>
 <div class="card" style="margin-top:12px"><b>Verdict.</b> ${esc(organic.fleet?.verdict || "")}</div>
