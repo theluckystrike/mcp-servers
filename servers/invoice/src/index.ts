@@ -52,6 +52,21 @@ function summarize(inv: Invoice) {
   };
 }
 
+/**
+ * Line detail for the text response. Every money value carries its currency
+ * code (D-8, user-value audit 2026-09-02) so no amount on an invoice is ever
+ * printed as a bare number.
+ */
+function lineRows(inv: Invoice) {
+  return inv.lines.map((l) => ({
+    description: l.description,
+    quantity: l.quantity,
+    unit_price: formatMoney(l.unit_price_minor, inv.currency),
+    tax_rate: `${l.tax_rate}%`,
+    amount: formatMoney(l.gross_minor, inv.currency),
+  }));
+}
+
 function expandPath(p: string): string {
   const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
   return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
@@ -179,17 +194,19 @@ function monthLimitBlocked(issueDate: string): string | null {
 function createInvoice(a: {
   client: string; items: z.infer<typeof itemSchema>[]; currency?: string;
   issue_date?: string; due_days?: number; notes?: string; discount_percent?: number;
-}): { error?: string; gated?: string; invoice?: Invoice } {
+}): { error?: string; gated?: string; invoice?: Invoice; clientNote?: string } {
   if (!hasBusiness()) return { error: "no business profile yet. Call business_set first." };
   if (!a.items.length) return { error: "an invoice needs at least one item." };
   const biz = getBusiness();
 
   let client = findClient(a.client);
+  let clientCreated = false;
   if (!client) {
     const clients = getClients();
     client = { id: randomBytes(4).toString("hex"), name: a.client.trim(), created: isoDate() };
     clients.push(client);
     setClients(clients);
+    clientCreated = true;
   }
 
   const issue = a.issue_date ?? isoDate();
@@ -232,7 +249,17 @@ function createInvoice(a: {
   const all = getInvoices();
   all.push(inv);
   setInvoices(all);
-  return { invoice: inv };
+  // The BILL TO block on the PDF is the first thing a client's accounts
+  // department reads. Say so when it will only carry a bare name (D-8).
+  const clientNote = !client.address
+    ? `Note: the BILL TO block will show only "${client.name}" - ` +
+      (clientCreated
+        ? `that client did not exist yet and was created from the name alone, with no address. `
+        : `that client has no address stored. `) +
+      `Add one with client_add {name: "${client.name}", address: "...", email: "...", vat_id: "..."} and render the PDF again, ` +
+      `so the invoice carries a complete billing address.`
+    : undefined;
+  return { invoice: inv, clientNote };
 }
 
 server.registerTool("invoice_create", {
@@ -252,7 +279,11 @@ server.registerTool("invoice_create", {
     const r = await locked(() => createInvoice(a));
     if (r.error) return fail(r.error);
     if (r.gated) return ok(r.gated);
-    return ok(`Created invoice ${r.invoice!.number}.\n\n${JSON.stringify(summarize(r.invoice!), null, 2)}\n\nRender it with invoice_pdf.`);
+    return ok(
+      `Created invoice ${r.invoice!.number}.\n\n` +
+      `${JSON.stringify({ ...summarize(r.invoice!), lines: lineRows(r.invoice!) }, null, 2)}\n\n` +
+      `Render it with invoice_pdf.${r.clientNote ? `\n\n${r.clientNote}` : ""}`
+    );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -284,7 +315,11 @@ server.registerTool("invoice_from_hours", {
     }));
     if (r.error) return fail(r.error);
     if (r.gated) return ok(r.gated);
-    return ok(`Created invoice ${r.invoice!.number}.\n\n${JSON.stringify(summarize(r.invoice!), null, 2)}`);
+    return ok(
+      `Created invoice ${r.invoice!.number}.\n\n` +
+      `${JSON.stringify({ ...summarize(r.invoice!), lines: lineRows(r.invoice!) }, null, 2)}` +
+      `${r.clientNote ? `\n\n${r.clientNote}` : ""}`
+    );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -352,7 +387,7 @@ server.registerTool("invoice_mark_paid", {
 
 server.registerTool("invoice_pdf", {
   title: "Render invoice PDF",
-  description: "Render an invoice as an A4 PDF you can send: issuer block, client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Returns the file path.",
+  description: "Render an invoice as an A4 PDF you can send: issuer block, BILL TO client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Every money value on the page carries its currency code. Returns the file path.",
   inputSchema: {
     number: z.string(),
     out_path: z.string().optional().describe("Where to write the PDF. Defaults to the data directory"),
@@ -378,11 +413,10 @@ server.registerTool("invoice_pdf", {
 
 server.registerTool("overdue_report", {
   title: "Overdue report",
-  description: "List every unpaid or partly paid invoice past its due date with days overdue, plus outstanding totals per currency. Pro.",
+  description: "Answer \"which invoices are overdue?\": every unpaid or partly paid invoice past its due date, with days overdue, the outstanding amount per invoice and the outstanding total per currency. Free and unlimited.",
   inputSchema: { as_of: z.string().optional().describe("YYYY-MM-DD, defaults to today") },
 }, async (a) => {
   try {
-    if (!gate.isPro()) return ok(gate.upgradeText("overdue_report"));
     const today = a.as_of ?? isoDate();
     const rows = getInvoices()
       .filter((i) => i.status !== "paid" && i.due_date < today)

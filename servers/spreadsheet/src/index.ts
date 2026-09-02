@@ -15,7 +15,7 @@ import { compile, compilePredicate, truthy, ExprError } from "./expr.js";
 import {
   Cell, FREE_MAX_BYTES, FREE_MAX_ROWS, FREE_WRITE_ROWS, LoadedSheet, Table, UserError,
   colLetter, expandPath, guessHeaderRow, headerNames, inferType, loadWorkbook, outputPath,
-  parseRange, renderTable, toTable,
+  parseRange, renderTable, toNumber, toTable,
 } from "./sheet.js";
 
 const gate = createLicenseGate({ product: "spreadsheet" });
@@ -53,12 +53,18 @@ function withNotes(notes: string[], body: string) {
   return text(notes.length ? notes.join("\n") + "\n\n" + body : body);
 }
 
-function capRows<T>(rows: T[]): { rows: T[]; note?: string } {
-  if (gate.isPro() || rows.length <= FREE_WRITE_ROWS) return { rows };
-  return {
-    rows: rows.slice(0, FREE_WRITE_ROWS),
-    note: `Free tier writes at most ${FREE_WRITE_ROWS} rows per file; ${rows.length} rows were requested so the first ${FREE_WRITE_ROWS} were written. ${gate.upgradeText("unlimited writes")}`,
-  };
+/**
+ * D-1: the free write cap must never produce a partial file that looks complete.
+ * Over the cap we write nothing at all and return the reason plus a free workaround.
+ */
+function writeCapRefusal(rowCount: number, what: string, workaround: string): string | null {
+  if (gate.isPro() || rowCount <= FREE_WRITE_ROWS) return null;
+  return [
+    `Nothing was written. ${what} would be ${rowCount} rows and the free tier writes at most ${FREE_WRITE_ROWS} rows per file.`,
+    `No file was created, so you do not have a truncated file that looks complete. The source file is untouched.`,
+    `Free workaround: ${workaround}`,
+    gate.upgradeText(`writing more than ${FREE_WRITE_ROWS} rows`),
+  ].join("\n\n");
 }
 
 function writeAtomic(file: string, data: Buffer | string) {
@@ -136,14 +142,14 @@ async function infoText(path: string): Promise<string> {
 
 server.registerTool("sheet_info", {
   title: "Spreadsheet overview",
-  description: "Open an xlsx or csv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading or querying.",
+  description: "Open an excel (xlsx/xlsm/xlsb/ods) or csv/tsv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading, querying or summing anything in a spreadsheet.",
   inputSchema: { path: z.string().describe("Path to the .xlsx/.xlsm/.xlsb/.ods/.csv/.tsv file (~ is expanded)") },
 }, guard(async ({ path }: { path: string }) => text(await infoText(path))));
 
 // ---------------------------------------------------------------- sheet_read
 server.registerTool("sheet_read", {
   title: "Read rows",
-  description: "Read rows from a sheet as a text table, JSON records or CSV. Use limit/offset to page through big files, or range for an A1 block like B2:F40.",
+  description: "Read rows from an excel or csv sheet as a text table, JSON records or CSV text. Use limit/offset to page through big files, or range for an A1 block like B2:F40. For totals or per-group sums use sheet_query with group_by instead.",
   inputSchema: {
     path: z.string(),
     sheet: z.string().optional().describe("Sheet name; defaults to the first sheet"),
@@ -173,21 +179,86 @@ server.registerTool("sheet_read", {
 }));
 
 // --------------------------------------------------------------- sheet_query
+const AGG_FNS = ["sum", "count", "avg", "min", "max"] as const;
+type AggFn = typeof AGG_FNS[number];
+interface AggSpec { col: string; fn: AggFn; as?: string }
+
+function resolveCol(headers: string[], name: string): string {
+  const k = headers.find((h) => h.toLowerCase().trim() === String(name).toLowerCase().trim());
+  if (!k) throw new UserError(`column ${JSON.stringify(name)} not found. Columns: ${headers.join(", ")}`);
+  return k;
+}
+
+function aggValue(fn: AggFn, vals: Cell[]): Cell {
+  const nonEmpty = vals.filter((v) => v !== null && String(v).trim() !== "");
+  if (fn === "count") return nonEmpty.length;
+  const nums = nonEmpty.map((v) => toNumber(v)).filter((n): n is number => n !== null);
+  if (nums.length === 0) {
+    if (fn === "min" || fn === "max") {
+      const strs = nonEmpty.map((v) => String(v)).sort();
+      return strs.length ? (fn === "min" ? strs[0] : strs[strs.length - 1]) : null;
+    }
+    return fn === "sum" ? 0 : null;
+  }
+  const round = (n: number) => Number(n.toFixed(10));
+  if (fn === "sum") return round(nums.reduce((a, b) => a + b, 0));
+  if (fn === "avg") return round(nums.reduce((a, b) => a + b, 0) / nums.length);
+  if (fn === "min") return round(Math.min(...nums));
+  return round(Math.max(...nums));
+}
+
+/** Group records by the given columns and compute the aggregates; returns records keyed by group cols + aliases. */
+function groupRecords(headers: string[], recs: Record<string, Cell>[], groupBy: string[], aggs: AggSpec[]) {
+  const gcols = groupBy.map((g) => resolveCol(headers, g));
+  const specs = (aggs.length ? aggs : [{ col: "*", fn: "count" as AggFn, as: "count" }]).map((a) => {
+    const isStar = String(a.col).trim() === "*";
+    const col = isStar ? "*" : resolveCol(headers, a.col);
+    return { col, fn: a.fn, as: a.as && a.as.trim() ? a.as.trim() : (isStar ? "count" : `${a.fn}_${col}`) };
+  });
+  const groups = new Map<string, { key: Cell[]; rows: Record<string, Cell>[] }>();
+  for (const r of recs) {
+    const key = gcols.map((c) => r[c] ?? null);
+    const k = key.map((v) => (v === null ? "\u0000" : String(v))).join("\u0001");
+    const g = groups.get(k) ?? { key, rows: [] };
+    g.rows.push(r);
+    groups.set(k, g);
+  }
+  const out = [...groups.values()].map((g) => {
+    const rec: Record<string, Cell> = {};
+    gcols.forEach((c, i) => { rec[c] = g.key[i]; });
+    for (const sp of specs) {
+      rec[sp.as] = sp.col === "*" ? g.rows.length : aggValue(sp.fn, g.rows.map((r) => r[sp.col] ?? null));
+    }
+    return rec;
+  });
+  return { headers: [...gcols, ...specs.map((s) => s.as)], rows: out };
+}
+
 server.registerTool("sheet_query", {
-  title: "Filter and sort rows",
+  title: "Filter, group and sort rows",
   description:
-    "Filter, pick columns and sort rows without writing any code. where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. " +
-    'Column names with spaces go in brackets: [Unit Price] > 10 AND [Region] contains "north". Strings use single or double quotes.',
+    "Query an excel (xlsx) or csv file without writing any code: filter rows, group by a column, sum/count/average, sort and limit. " +
+    "where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. " +
+    'Column names with spaces go in brackets: [Unit Price] > 10 AND [Region] contains "north". Strings use single or double quotes. ' +
+    'Use group_by + aggregate for questions like "which rep sold the most units in the North region": ' +
+    'where \'[Region] = "North"\', group_by ["Rep"], aggregate [{"col":"Units","fn":"sum","as":"total_units"}], sort {"col":"total_units","dir":"desc"}, limit 5. ' +
+    'Aggregate functions: sum, count, avg, min, max. Numbers written as text ("1,250.00", "$1,250.00") are counted as numbers. sort may name an aggregate alias.',
   inputSchema: {
-    path: z.string(),
+    path: z.string().describe("Path to the .xlsx or .csv file"),
     sheet: z.string().optional(),
     where: z.string().optional().describe('Filter, e.g. [Qty] >= 5 AND ([Status] = "open" OR [Status] = "new")'),
-    select: z.array(z.string()).optional().describe("Column names to return; default all"),
-    sort: z.object({ col: z.string(), dir: z.enum(["asc", "desc"]).optional() }).optional(),
+    select: z.array(z.string()).optional().describe("Column names to return; default all (with group_by, defaults to the group columns plus the aggregates)"),
+    group_by: z.array(z.string()).optional().describe('Group rows by these columns before aggregating, e.g. ["Rep"] or ["Region","Rep"]'),
+    aggregate: z.array(z.object({
+      col: z.string().describe('Column to aggregate, or "*" to count rows'),
+      fn: z.enum(AGG_FNS).describe("sum | count | avg | min | max"),
+      as: z.string().optional().describe("Output name for this aggregate, e.g. total_units"),
+    })).optional().describe('Aggregates per group, e.g. [{"col":"Units","fn":"sum","as":"total_units"}]. Defaults to a row count when group_by is given.'),
+    sort: z.object({ col: z.string(), dir: z.enum(["asc", "desc"]).optional() }).optional().describe("Sort column; may be an aggregate alias such as total_units"),
     limit: z.number().int().min(1).max(100000).optional().describe("Default 100"),
     as: z.enum(["table", "json", "csv"]).optional(),
   },
-}, guard(async ({ path, sheet, where, select, sort, limit, as }: any) => {
+}, guard(async ({ path, sheet, where, select, group_by, aggregate, sort, limit, as }: any) => {
   const o = open(path, sheet);
   let recs = o.table.records();
   const total = recs.length;
@@ -195,9 +266,18 @@ server.registerTool("sheet_query", {
     const pred = compilePredicate(where);
     recs = recs.filter((r) => pred(r));
   }
+  const filtered = recs.length;
+  let cols = o.table.headers;
+  let grouped = false;
+  if ((group_by && group_by.length) || (aggregate && aggregate.length)) {
+    const g = groupRecords(o.table.headers, recs, group_by ?? [], (aggregate ?? []) as AggSpec[]);
+    cols = g.headers;
+    recs = g.rows;
+    grouped = true;
+  }
   if (sort) {
-    const key = o.table.headers.find((h) => h.toLowerCase().trim() === String(sort.col).toLowerCase().trim());
-    if (!key) throw new UserError(`sort column ${JSON.stringify(sort.col)} not found. Columns: ${o.table.headers.join(", ")}`);
+    const key = cols.find((h) => h.toLowerCase().trim() === String(sort.col).toLowerCase().trim());
+    if (!key) throw new UserError(`sort column ${JSON.stringify(sort.col)} not found. Columns: ${cols.join(", ")}`);
     const dir = sort.dir === "desc" ? -1 : 1;
     recs = recs.slice().sort((a, b) => {
       const x = a[key], y = b[key];
@@ -212,17 +292,13 @@ server.registerTool("sheet_query", {
     });
   }
   const matched = recs.length;
-  let headers = o.table.headers;
-  if (select && select.length) {
-    headers = select.map((s: string) => {
-      const k = o.table.headers.find((h) => h.toLowerCase().trim() === s.toLowerCase().trim());
-      if (!k) throw new UserError(`column ${JSON.stringify(s)} not found. Columns: ${o.table.headers.join(", ")}`);
-      return k;
-    });
-  }
+  let headers = cols;
+  if (select && select.length) headers = select.map((sname: string) => resolveCol(cols, sname));
   const shown = recs.slice(0, limit ?? 100);
   const rows = shown.map((r) => headers.map((h) => r[h] ?? null));
-  const head = `${matched} of ${total} rows match, showing ${rows.length}`;
+  const head = grouped
+    ? `${matched} groups from ${filtered} of ${total} rows, showing ${rows.length}`
+    : `${matched} of ${total} rows match, showing ${rows.length}`;
   const fmt = as ?? "table";
   if (fmt === "json") return withNotes(o.notes, JSON.stringify(shown.map((r) => Object.fromEntries(headers.map((h) => [h, r[h] ?? null]))), null, 2));
   if (fmt === "csv") return withNotes(o.notes, toCsv([headers as unknown as Cell[], ...rows]));
@@ -232,7 +308,7 @@ server.registerTool("sheet_query", {
 // --------------------------------------------------------------- sheet_stats
 server.registerTool("sheet_stats", {
   title: "Column statistics",
-  description: "Per-column count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too.",
+  description: "Whole-column statistics for an excel or csv sheet: count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too. For a sum per group (per rep, per region, per month) use sheet_query with group_by and aggregate.",
   inputSchema: { path: z.string(), sheet: z.string().optional(), columns: z.array(z.string()).optional().describe("Limit to these columns; default all") },
 }, guard(async ({ path, sheet, columns }: any) => {
   const o = open(path, sheet);
@@ -314,7 +390,7 @@ server.registerTool("sheet_find", {
 server.registerTool("sheet_write", {
   title: "Write rows",
   description:
-    "Write rows to a spreadsheet. rows may be objects (keys become headers) or arrays (first array is the header row). " +
+    "Write rows to an excel (xlsx) or csv/tsv/json file. rows may be objects (keys become headers) or arrays (first array is the header row). " +
     "mode new_file writes a brand new file and refuses to clobber an existing one; append adds the rows under the existing data; overwrite replaces the file contents. " +
     "Format follows the extension of out_path (.xlsx, .csv, .tsv, .json).",
   inputSchema: {
@@ -345,12 +421,12 @@ server.registerTool("sheet_write", {
     target = out_path ? expandPath(out_path) : o.wb.path;
     notes.push(...o.notes);
   }
-  const capped = capRows(matrix);
-  if (capped.note) notes.push(capped.note);
   if (extname(target) === "") throw new UserError(`out_path ${target} has no file extension; use .xlsx, .csv, .tsv or .json`);
-  writeMatrix(target, headers, capped.rows, sheetName);
+  const refusal = writeCapRefusal(matrix.length, "This write", `write the rows in batches of ${FREE_WRITE_ROWS} or fewer to separate files, or filter the data down first (sheet_query with a where filter) and write only the rows you need.`);
+  if (refusal) return withNotes(notes, refusal);
+  writeMatrix(target, headers, matrix, sheetName);
   const size = statSync(target).size;
-  return withNotes(notes, `Wrote ${capped.rows.length} rows x ${headers.length} columns to ${target} (${size} bytes, mode ${mode}).\nColumns: ${headers.join(", ")}`);
+  return withNotes(notes, `Wrote ${matrix.length} rows x ${headers.length} columns to ${target} (${size} bytes, mode ${mode}).\nColumns: ${headers.join(", ")}`);
 }));
 
 // ---------------------------------------------------------- sheet_add_column
@@ -391,19 +467,19 @@ server.registerTool("sheet_add_column", {
   }
   headers.push(String(name));
   const matrix = o.table.rows.map((r, i) => [...r, computed[i] ?? null]);
-  const capped = capRows(matrix);
-  if (capped.note) notes.push(capped.note);
   const target = out_path ? expandPath(out_path) : outputPath(o.wb.path, undefined, `-plus-${String(name).replace(/[^A-Za-z0-9_-]+/g, "_")}`);
   if (!out_path && existsSync(target)) throw new UserError(`${target} already exists; pass out_path to choose another name`);
-  writeMatrix(target, headers, capped.rows, o.ls.name);
-  const preview = renderTable(headers, capped.rows.slice(0, 5));
-  return withNotes(notes, `Added column ${JSON.stringify(name)} and wrote ${capped.rows.length} rows to ${target}. The original file was not changed.\n\n${preview}`);
+  const refusal = writeCapRefusal(matrix.length, `The file with the new column`, `narrow the sheet first with sheet_query (for example a where filter on the rows you care about, as: "csv", saved with sheet_write), then add the column to that smaller file; or use sheet_stats / sheet_query aggregates if you only need the totals rather than the whole file.`);
+  if (refusal) return withNotes(notes, refusal);
+  writeMatrix(target, headers, matrix, o.ls.name);
+  const preview = renderTable(headers, matrix.slice(0, 5));
+  return withNotes(notes, `Added column ${JSON.stringify(name)} and wrote ${matrix.length} rows to ${target}. The original file was not changed.\n\n${preview}`);
 }));
 
 // ------------------------------------------------------------- sheet_convert
 server.registerTool("sheet_convert", {
   title: "Convert file",
-  description: "Convert a sheet to csv, xlsx or json. Writes a new file next to the source unless out_path is given.",
+  description: "Convert a sheet between excel (xlsx), csv and json. Writes a new file next to the source unless out_path is given; the source is never modified.",
   inputSchema: {
     path: z.string(), to: z.enum(["csv", "xlsx", "json"]),
     sheet: z.string().optional(),
@@ -412,13 +488,13 @@ server.registerTool("sheet_convert", {
 }, guard(async ({ path, to, sheet, out_path }: any) => {
   const o = open(path, sheet);
   const notes = [...o.notes];
-  const capped = capRows(o.table.rows);
-  if (capped.note) notes.push(capped.note);
   const target = out_path ? expandPath(out_path) : outputPath(o.wb.path, undefined, "", `.${to}`);
   if (target === o.wb.path) throw new UserError("the converted file would overwrite the source; pass out_path");
   if (!out_path && existsSync(target)) throw new UserError(`${target} already exists; pass out_path to choose another name`);
-  writeMatrix(target, o.table.headers, capped.rows, o.ls.name);
-  return withNotes(notes, `Converted ${o.wb.path} [${o.ls.name}] to ${target} (${capped.rows.length} rows, ${o.table.headers.length} columns).`);
+  const refusal = writeCapRefusal(o.table.rows.length, "The converted file", `filter first with sheet_query (where + limit, as: "csv") and save that subset, or convert the sheet in ${FREE_WRITE_ROWS}-row slices.`);
+  if (refusal) return withNotes(notes, refusal);
+  writeMatrix(target, o.table.headers, o.table.rows, o.ls.name);
+  return withNotes(notes, `Converted ${o.wb.path} [${o.ls.name}] to ${target} (${o.table.rows.length} rows, ${o.table.headers.length} columns).`);
 }));
 
 // ------------------------------------------------------------------ resource

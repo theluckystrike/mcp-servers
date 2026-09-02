@@ -152,11 +152,13 @@ test("stdio: initialize, tools/list, full invoice lifecycle, PDF", async (t) => 
   for (const m of r.text.matchAll(/INV-2026-\d{4}/g)) numbers.add(m[0]);
   assert.equal(numbers.size, 2);
 
-  // overdue_report is Pro: free returns the upgrade text as plain text, not an error
+  // overdue_report is free (D-5 style fix, D-8): it must answer, not sell
   r = await c.call("overdue_report", {});
   assert.equal(r.isError, false);
-  assert.match(r.text, /Pro feature/);
-  assert.match(r.text, /mcp\.zovo\.one\/buy\/invoice/);
+  assert.doesNotMatch(r.text, /Pro feature/);
+  assert.doesNotMatch(r.text, /mcp\.zovo\.one\/buy\/invoice/);
+  const free_rep = JSON.parse(r.text);
+  assert.equal(typeof free_rep.count, "number");
 });
 
 test("free tier blocks a 4th invoice in a calendar month; Pro allows it", async (t) => {
@@ -201,7 +203,7 @@ test("free tier blocks a 4th invoice in a calendar month; Pro allows it", async 
   const proList = await pro.call("invoice_list", {});
   assert.equal(JSON.parse(proList.text).count, 4);
 
-  // Pro-only extras
+  // overdue_report is free, and identical on Pro
   const rep = await pro.call("overdue_report", { as_of: "2026-06-01" });
   assert.equal(rep.isError, false);
   const parsed = JSON.parse(rep.text);
@@ -216,5 +218,50 @@ test("free tier blocks a 4th invoice in a calendar month; Pro allows it", async 
   assert.doesNotMatch(pr.text, /Generated with mcp-invoice/);
   const bytes = readFileSync(out).toString("latin1");
   assert.ok(bytes.startsWith("%PDF-"));
+  assert.ok(statSync(out).size > 1024);
+});
+
+test("D-8: every money value carries its currency code, and a bare client is flagged", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("business_set", { name: "Solo Dev", default_currency: "EUR", default_tax_rate: 23 });
+
+  // Client named but never added: created from the name alone, no address.
+  const r = await c.call("invoice_create", {
+    client: "Acme",
+    items: [{ description: "API work", quantity: 12, unit_price: 90 }],
+    issue_date: "2026-05-04",
+  });
+  assert.equal(r.isError, false);
+
+  // Line amounts, not just the total, carry the code.
+  assert.match(r.text, /"unit_price": "EUR 90\.00"/);
+  assert.match(r.text, /"amount": "EUR 1080\.00"/);
+  assert.match(r.text, /"subtotal": "EUR 1080\.00"/);
+  assert.match(r.text, /"total": "EUR 1328\.40"/);
+  assert.match(r.text, /"balance_due": "EUR 1328\.40"/);
+  // no bare money value is printed without a code
+  assert.doesNotMatch(r.text, /"(unit_price|amount|subtotal|total|balance_due)": "[0-9]/);
+
+  // The auto-created client is named, and the fix is spelled out.
+  assert.match(r.text, /BILL TO block will show only "Acme"/);
+  assert.match(r.text, /created from the name alone, with no address/);
+  assert.match(r.text, /client_add \{name: "Acme", address:/);
+
+  // Once the address exists the note is gone.
+  await c.call("client_add", { name: "Acme", address: "Hauptstr. 5\nBerlin" });
+  const r2 = await c.call("invoice_create", {
+    client: "Acme",
+    items: [{ description: "API work", quantity: 1, unit_price: 10 }],
+    issue_date: "2026-05-05",
+  });
+  assert.doesNotMatch(r2.text, /BILL TO block will show only/);
+
+  // The PDF prints the code on the line amounts too.
+  const out = join(c.home, "codes.pdf");
+  const number = r.text.match(/INV-2026-\d{4}/)[0];
+  const p = await c.call("invoice_pdf", { number, out_path: out });
+  assert.equal(p.isError, false);
   assert.ok(statSync(out).size > 1024);
 });

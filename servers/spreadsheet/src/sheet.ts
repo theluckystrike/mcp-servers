@@ -7,7 +7,7 @@ import { parseCsv, coerce } from "./csv.js";
 export const MAX_FILE_BYTES = 50 * 1024 * 1024;
 export const FREE_MAX_ROWS = 5000;
 export const FREE_MAX_BYTES = 5 * 1024 * 1024;
-export const FREE_WRITE_ROWS = 200;
+export const FREE_WRITE_ROWS = 500;
 
 export class UserError extends Error {}
 
@@ -140,6 +140,31 @@ export function headerNames(m: Cell[][], headerRow: number): string[] {
     names.push(n);
   }
   return names;
+}
+
+/**
+ * Coerce a cell to a number for aggregation: accepts real numbers and text such as
+ * "1,250.00", "$1,250.00", "EUR 1 250,00", "(300)" and "12.5%". Returns null when there is no number.
+ */
+export function toNumber(v: unknown): number | null {
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  if (typeof v === "boolean") return v ? 1 : 0;
+  if (v === null || v === undefined) return null;
+  let s = String(v).trim();
+  if (s === "") return null;
+  let sign = 1;
+  if (/^\(.*\)$/.test(s)) { sign = -1; s = s.slice(1, -1).trim(); }
+  const pct = s.endsWith("%");
+  if (pct) s = s.slice(0, -1).trim();
+  s = s.replace(/[^0-9.,+\-eE]/g, "").trim();
+  s = s.replace(/(^|[^0-9])[eE]/g, "$1"); // drop currency letters, keep 1e3 exponents
+  // 1.250,00 (European) vs 1,250.00 (English)
+  if (/,\d{1,2}$/.test(s) && /[.\s]/.test(s.slice(0, s.lastIndexOf(",")))) s = s.replace(/\./g, "").replace(",", ".");
+  else s = s.replace(/,/g, "");
+  if (s === "" || s === "-" || s === "+") return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return null;
+  return sign * (pct ? n / 100 : n);
 }
 
 export function colLetter(i: number): string {

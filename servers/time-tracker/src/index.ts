@@ -22,6 +22,7 @@ interface Running {
   task?: string;
   tags: string[];
   rateCents?: number;
+  currency?: string;
   start: string;
 }
 interface Entry {
@@ -35,6 +36,7 @@ interface Entry {
   note?: string;
   billable: boolean;
   rateCents?: number;
+  currency?: string;
 }
 interface ProjectMeta { rateCents: number; currency: string }
 interface DB {
@@ -108,6 +110,49 @@ function localDayStart(daysBack = 0): Date {
 }
 
 function toCents(v: number): number { return Math.round(v * 100); }
+
+/* ------------------------------------------------------------- currency */
+
+const CURRENCY_WORDS: Record<string, string> = {
+  usd: "USD", dollar: "USD", dollars: "USD", "$": "USD", buck: "USD", bucks: "USD",
+  eur: "EUR", euro: "EUR", euros: "EUR", "\u20ac": "EUR",
+  gbp: "GBP", pound: "GBP", pounds: "GBP", sterling: "GBP", "\u00a3": "GBP",
+  pln: "PLN", zl: "PLN", "z\u0142": "PLN", zloty: "PLN", zlotys: "PLN", zloties: "PLN",
+  chf: "CHF", cad: "CAD", aud: "AUD", sek: "SEK", nok: "NOK", dkk: "DKK", czk: "CZK",
+  jpy: "JPY", yen: "JPY", inr: "INR", rupee: "INR", rupees: "INR",
+};
+
+/** "euros" -> EUR, "90 EUR" -> EUR, "eur" -> EUR. Unknown 3-letter codes pass through uppercased. */
+function normCurrency(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  const s = String(raw).trim().toLowerCase();
+  if (!s) return undefined;
+  if (CURRENCY_WORDS[s]) return CURRENCY_WORDS[s];
+  for (const w of s.split(/[^a-z\u20ac\u00a3$\u0142]+/).filter(Boolean)) {
+    if (CURRENCY_WORDS[w]) return CURRENCY_WORDS[w];
+  }
+  const code = s.replace(/[^a-z]/g, "");
+  if (code.length === 3) return code.toUpperCase();
+  return undefined;
+}
+
+/**
+ * The model may pass rate as a number (90) or as the words the user said ("90 euros an hour").
+ * Returns the numeric rate plus any currency found in the text.
+ */
+function parseRate(rate: number | string | undefined): { rate?: number; currency?: string } {
+  if (rate === undefined || rate === null) return {};
+  if (typeof rate === "number") {
+    if (!Number.isFinite(rate) || rate < 0) throw new Error(`rate must be a non-negative number: ${rate}`);
+    return { rate };
+  }
+  const txt = String(rate).trim();
+  const m = txt.match(/-?\d+(?:[.,]\d+)?/);
+  if (!m) throw new Error(`rate must contain a number, got ${JSON.stringify(txt)}`);
+  const n = Number(m[0].replace(",", "."));
+  if (!Number.isFinite(n) || n < 0) throw new Error(`rate must be a non-negative number, got ${JSON.stringify(txt)}`);
+  return { rate: n, currency: normCurrency(txt.replace(m[0], " ")) };
+}
 function money(cents: number, currency: string): string {
   const sign = cents < 0 ? "-" : "";
   const a = Math.abs(cents);
@@ -130,6 +175,71 @@ function rateForEntry(db: DB, e: Entry): number {
 }
 function currencyFor(db: DB, project: string): string {
   return db.projects[project]?.currency ?? "USD";
+}
+/** D-3: the currency stored on the entry wins over the project default. */
+function currencyForEntry(db: DB, e: Entry): string {
+  return e.currency ?? currencyFor(db, e.project);
+}
+
+/** Sum of money split by currency, so mixed-currency periods are never added together. */
+type Amounts = Map<string, number>;
+function addAmount(m: Amounts, currency: string, cents: number): void {
+  if (cents === 0 && !m.has(currency)) return;
+  m.set(currency, (m.get(currency) ?? 0) + cents);
+}
+function mergeAmounts(into: Amounts, from: Amounts): void {
+  for (const [c, v] of from) addAmount(into, c, v);
+}
+function nonZero(m: Amounts): [string, number][] {
+  return [...m.entries()].filter(([, c]) => c !== 0).sort((a, b) => b[1] - a[1]);
+}
+/** "EUR 225.00", or "EUR 225.00 + USD 90.00" when a bucket mixes currencies. */
+function moneyOf(m: Amounts): string {
+  const parts = nonZero(m);
+  return parts.length ? parts.map(([c, v]) => money(v, c)).join(" + ") : "-";
+}
+function primaryOf(m: Amounts): { cents: number; currency: string } {
+  const parts = nonZero(m);
+  return parts.length ? { cents: parts[0][1], currency: parts[0][0] } : { cents: 0, currency: [...m.keys()][0] ?? "USD" };
+}
+
+/* ------------------------------------------------------- project matching */
+
+function knownProjects(db: DB): string[] {
+  const s = new Set<string>(Object.keys(db.projects));
+  for (const e of db.entries) s.add(e.project);
+  if (db.running) s.add(db.running.project);
+  return [...s];
+}
+
+type Resolved =
+  | { kind: "use"; project: string; note?: string }
+  | { kind: "ambiguous"; candidates: string[] };
+
+/**
+ * D-7: "Acme" should land on the existing "Acme website" project instead of silently
+ * creating a second one. Exact (case-insensitive) match wins; otherwise a prefix or
+ * containment match is used only when exactly one existing project matches.
+ */
+function resolveProject(db: DB, input: string): Resolved {
+  const given = String(input).trim();
+  const q = given.toLowerCase();
+  const known = knownProjects(db);
+  const exact = known.find(p => p.toLowerCase() === q);
+  if (exact) return { kind: "use", project: exact, note: exact === given ? undefined : `Matched the existing project "${exact}".` };
+  if (!q) return { kind: "use", project: given };
+  const near = known.filter(p => {
+    const k = p.toLowerCase();
+    return k.startsWith(q) || q.startsWith(k) || k.includes(q) || q.includes(k);
+  });
+  if (near.length === 1) return { kind: "use", project: near[0], note: `Used the existing project "${near[0]}" (you said "${given}").` };
+  if (near.length > 1) return { kind: "ambiguous", candidates: near.sort() };
+  return { kind: "use", project: given };
+}
+
+function ambiguousText(given: string, candidates: string[]): string {
+  return `"${given}" matches ${candidates.length} existing projects: ${candidates.map(c => `"${c}"`).join(", ")}. ` +
+    `Nothing was logged. Repeat the request with the exact project name you mean.`;
 }
 
 function table(headers: string[], rows: string[][]): string {
@@ -197,6 +307,7 @@ function stopRunning(db: DB, endDate: Date, note?: string): Entry {
     id: newId(), project: r.project, task: r.task, tags: r.tags,
     start: iso(start), end: iso(endDate), seconds, note, billable: true,
     ...(typeof r.rateCents === "number" ? { rateCents: r.rateCents } : {}),
+    ...(r.currency ? { currency: r.currency } : {}),
   };
   db.entries.push(entry);
   db.running = null;
@@ -205,26 +316,34 @@ function stopRunning(db: DB, endDate: Date, note?: string): Entry {
 
 server.registerTool("timer_start", {
   title: "Start timer",
-  description: "Start tracking time on a project. Only one timer runs at a time: starting a new one stops and logs the previous one.",
+  description: "Start a stopwatch for billable work on a project or client (timesheet / hours per project). Only one timer runs at a time: starting a new one stops and logs the previous one. Accepts an hourly rate and a currency, e.g. rate '90 euros'.",
   inputSchema: {
-    project: z.string().min(1).describe("Project or client name, e.g. 'acme-website'"),
+    project: z.string().min(1).describe("Project or client name, e.g. 'acme-website'. A partial name that matches exactly one existing project is used as that project."),
     task: z.string().optional().describe("What you are working on right now"),
     tags: z.array(z.string()).optional().describe("Free-form tags, e.g. ['dev','meeting']"),
-    rate: z.number().nonnegative().optional().describe("Hourly rate for this timer only; defaults to the project rate"),
+    rate: z.union([z.number().nonnegative(), z.string()]).optional().describe("Hourly rate for this timer only; a number (90) or the words the user said ('90 euros an hour'). Defaults to the project rate."),
+    currency: z.string().optional().describe("Currency of the rate: EUR, USD, GBP, PLN, or words like 'euros'. Defaults to the project currency, else USD."),
   },
-}, guard(async ({ project, task, tags, rate }: { project: string; task?: string; tags?: string[]; rate?: number }) => {
+}, guard(async ({ project, task, tags, rate, currency }: { project: string; task?: string; tags?: string[]; rate?: number | string; currency?: string }) => {
   return withFileLock(LOCK, async () => {
   const db = load();
+  const r = resolveProject(db, project);
+  if (r.kind === "ambiguous") return ok(ambiguousText(project, r.candidates));
+  const parsed = parseRate(rate);
+  const cur = normCurrency(currency) ?? parsed.currency;
   const now = new Date();
   let stopped: Entry | null = null;
   if (db.running) stopped = stopRunning(db, now, "auto-stopped by timer_start");
   db.running = {
-    id: newId(), project, task, tags: tags ?? [],
-    ...(typeof rate === "number" ? { rateCents: toCents(rate) } : {}),
+    id: newId(), project: r.project, task, tags: tags ?? [],
+    ...(typeof parsed.rate === "number" ? { rateCents: toCents(parsed.rate) } : {}),
+    ...(cur ? { currency: cur } : {}),
     start: iso(now),
   };
   save(db);
-  const lines = [`Started timer for "${project}"${task ? ` - ${task}` : ""} at ${db.running.start}.`];
+  const lines = [`Started timer for "${r.project}"${task ? ` - ${task}` : ""} at ${db.running.start}.`];
+  if (typeof parsed.rate === "number") lines.push(`Rate ${money(toCents(parsed.rate), cur ?? currencyFor(db, r.project))} per hour.`);
+  if (r.note) lines.unshift(r.note);
   if (stopped) lines.unshift(`Stopped "${stopped.project}" after ${hms(stopped.seconds)} (entry ${stopped.id}).`);
   return ok(lines.join("\n"));
   });
@@ -241,7 +360,7 @@ server.registerTool("timer_stop", {
   const e = stopRunning(db, new Date(), note);
   save(db);
   const rc = rateForEntry(db, e);
-  const cur = currencyFor(db, e.project);
+  const cur = currencyForEntry(db, e);
   const amount = rc > 0 ? `  ${money(amountCents(e.seconds, rc), cur)}` : "";
   return ok(`Stopped "${e.project}"${e.task ? ` - ${e.task}` : ""}. Duration ${hms(e.seconds)} (${hours(e.seconds)} h).${amount}\nEntry id ${e.id}.`);
   });
@@ -249,7 +368,7 @@ server.registerTool("timer_stop", {
 
 server.registerTool("timer_status", {
   title: "Timer status",
-  description: "Show the running timer, how long it has been running, and today's total so far.",
+  description: "Show the running timer, how long it has been running, and today's total hours so far.",
   inputSchema: {},
 }, guard(async () => {
   const db = load();
@@ -269,9 +388,9 @@ server.registerTool("timer_status", {
 
 server.registerTool("entry_add", {
   title: "Add time entry",
-  description: "Log time you already worked. Give start plus either end or minutes.",
+  description: "Log billable (or non-billable) time you already worked on a project - a timesheet entry. Give start plus either end or minutes, and optionally the hourly rate and its currency, e.g. rate '90 euros an hour' -> EUR.",
   inputSchema: {
-    project: z.string().min(1).describe("Project or client name"),
+    project: z.string().min(1).describe("Project or client name. A partial name that matches exactly one existing project is used as that project."),
     task: z.string().optional().describe("What the work was"),
     start: z.string().describe("ISO 8601 start time, e.g. 2026-09-02T09:00:00"),
     end: z.string().optional().describe("ISO 8601 end time (or use minutes)"),
@@ -279,9 +398,10 @@ server.registerTool("entry_add", {
     note: z.string().optional().describe("Optional note"),
     tags: z.array(z.string()).optional().describe("Optional tags"),
     billable: z.boolean().optional().describe("Default true; set false for non-billable work"),
-    rate: z.number().nonnegative().optional().describe("Hourly rate override for this entry"),
+    rate: z.union([z.number().nonnegative(), z.string()]).optional().describe("Hourly rate for this entry; a number (90) or the words the user said ('90 euros an hour')"),
+    currency: z.string().optional().describe("Currency of the rate: EUR, USD, GBP, PLN, or words like 'euros'. Defaults to the project currency, else USD."),
   },
-}, guard(async (a: { project: string; task?: string; start: string; end?: string; minutes?: number; note?: string; tags?: string[]; billable?: boolean; rate?: number }) => {
+}, guard(async (a: { project: string; task?: string; start: string; end?: string; minutes?: number; note?: string; tags?: string[]; billable?: boolean; rate?: number | string; currency?: string }) => {
   return withFileLock(LOCK, async () => {
   const start = parseTime(a.start, "start");
   let end: Date;
@@ -291,21 +411,31 @@ server.registerTool("entry_add", {
   const seconds = Math.round((end.getTime() - start.getTime()) / 1000);
   if (seconds <= 0) throw new Error("end must be after start");
   const db = load();
+  const r = resolveProject(db, a.project);
+  if (r.kind === "ambiguous") return ok(ambiguousText(a.project, r.candidates));
+  const parsed = parseRate(a.rate);
+  const cur = normCurrency(a.currency) ?? parsed.currency;
   const e: Entry = {
-    id: newId(), project: a.project, task: a.task, tags: a.tags ?? [],
+    id: newId(), project: r.project, task: a.task, tags: a.tags ?? [],
     start: iso(start), end: iso(end), seconds, note: a.note,
     billable: a.billable !== false,
-    ...(typeof a.rate === "number" ? { rateCents: toCents(a.rate) } : {}),
+    ...(typeof parsed.rate === "number" ? { rateCents: toCents(parsed.rate) } : {}),
+    ...(cur ? { currency: cur } : {}),
   };
   db.entries.push(e);
   save(db);
-  return ok(`Added entry ${e.id}: "${e.project}"${e.task ? ` - ${e.task}` : ""}, ${hms(seconds)} (${hours(seconds)} h), ${e.billable ? "billable" : "non-billable"}.`);
+  const rc = rateForEntry(db, e);
+  const ecur = currencyForEntry(db, e);
+  const amount = rc > 0 && e.billable ? ` ${money(rc, ecur)}/h, ${money(amountCents(e.seconds, rc), ecur)}.` : "";
+  const lines = [`Added entry ${e.id}: "${e.project}"${e.task ? ` - ${e.task}` : ""}, ${hms(seconds)} (${hours(seconds)} h), ${e.billable ? "billable" : "non-billable"}.${amount}`];
+  if (r.note) lines.unshift(r.note);
+  return ok(lines.join("\n"));
   });
 }));
 
 server.registerTool("entry_list", {
   title: "List time entries",
-  description: "List logged time entries as a compact table. Free tier shows the last 7 days.",
+  description: "List logged time entries (timesheet rows) as a compact table, with hours, billable flag and project. Free tier shows the last 7 days.",
   inputSchema: {
     from: z.string().optional().describe("ISO date/time lower bound"),
     to: z.string().optional().describe("ISO date/time upper bound"),
@@ -361,9 +491,10 @@ server.registerTool("entry_edit", {
     note: z.string().optional(),
     tags: z.array(z.string()).optional(),
     billable: z.boolean().optional(),
-    rate: z.number().nonnegative().optional().describe("Hourly rate override for this entry"),
+    rate: z.union([z.number().nonnegative(), z.string()]).optional().describe("Hourly rate override for this entry, a number or words like '90 euros'"),
+    currency: z.string().optional().describe("Currency of the rate, e.g. EUR"),
   },
-}, guard(async (a: { id: string; project?: string; task?: string; start?: string; end?: string; minutes?: number; note?: string; tags?: string[]; billable?: boolean; rate?: number }) => {
+}, guard(async (a: { id: string; project?: string; task?: string; start?: string; end?: string; minutes?: number; note?: string; tags?: string[]; billable?: boolean; rate?: number | string; currency?: string }) => {
   return withFileLock(LOCK, async () => {
   const db = load();
   const e = db.entries.find(x => x.id === a.id);
@@ -373,7 +504,15 @@ server.registerTool("entry_edit", {
   if (a.note !== undefined) e.note = a.note;
   if (a.tags !== undefined) e.tags = a.tags;
   if (a.billable !== undefined) e.billable = a.billable;
-  if (a.rate !== undefined) e.rateCents = toCents(a.rate);
+  if (a.rate !== undefined) {
+    const parsed = parseRate(a.rate);
+    if (typeof parsed.rate === "number") e.rateCents = toCents(parsed.rate);
+    if (parsed.currency) e.currency = parsed.currency;
+  }
+  if (a.currency !== undefined) {
+    const c = normCurrency(a.currency);
+    if (c) e.currency = c;
+  }
   if (a.start !== undefined) e.start = iso(parseTime(a.start, "start"));
   if (a.end !== undefined) e.end = iso(parseTime(a.end, "end"));
   if (a.minutes !== undefined) e.end = iso(new Date(new Date(e.start).getTime() + a.minutes * 60000));
@@ -387,20 +526,25 @@ server.registerTool("entry_edit", {
 
 server.registerTool("project_set_rate", {
   title: "Set project rate",
-  description: "Set the hourly rate used to turn tracked hours into money for a project.",
+  description: "Set the hourly rate and currency used to turn tracked hours into money for a project or client.",
   inputSchema: {
     project: z.string().min(1).describe("Project or client name"),
-    hourly_rate: z.number().nonnegative().describe("Hourly rate, e.g. 85"),
-    currency: z.string().optional().describe("Currency code, default USD"),
+    hourly_rate: z.union([z.number().nonnegative(), z.string()]).describe("Hourly rate: a number (85) or the words the user said ('90 euros an hour')"),
+    currency: z.string().optional().describe("Currency: a code (EUR, USD, GBP, PLN) or a word ('euros', 'pounds', 'zl'). Default USD."),
   },
-}, guard(async (a: { project: string; hourly_rate: number; currency?: string }) => {
+}, guard(async (a: { project: string; hourly_rate: number | string; currency?: string }) => {
   return withFileLock(LOCK, async () => {
   const db = load();
   const isNew = !(a.project in db.projects);
   if (isNew && !gate.isPro() && Object.keys(db.projects).length >= FREE_RATED_PROJECTS) {
     return gated(`more than ${FREE_RATED_PROJECTS} projects with rates`);
   }
-  db.projects[a.project] = { rateCents: toCents(a.hourly_rate), currency: (a.currency ?? "USD").toUpperCase() };
+  const parsed = parseRate(a.hourly_rate);
+  if (typeof parsed.rate !== "number") throw new Error("hourly_rate must contain a number");
+  db.projects[a.project] = {
+    rateCents: toCents(parsed.rate),
+    currency: normCurrency(a.currency) ?? parsed.currency ?? "USD",
+  };
   save(db);
   const m = db.projects[a.project];
   return ok(`Rate for "${a.project}" set to ${money(m.rateCents, m.currency)} per hour.`);
@@ -417,26 +561,32 @@ function groupsOf(e: Entry, by: Group): string[] {
   return e.tags.length ? e.tags : ["(no tag)"];
 }
 
-interface Bucket { key: string; seconds: number; billableSeconds: number; cents: number; currency: string }
+interface Bucket { key: string; seconds: number; billableSeconds: number; amounts: Amounts }
 
 function aggregate(db: DB, entries: Entry[], by: Group): Bucket[] {
   const m = new Map<string, Bucket>();
   for (const e of entries) {
     const rc = rateForEntry(db, e);
-    const cur = currencyFor(db, e.project);
+    const cur = currencyForEntry(db, e);
     for (const k of groupsOf(e, by)) {
-      const b = m.get(k) ?? { key: k, seconds: 0, billableSeconds: 0, cents: 0, currency: cur };
+      const b = m.get(k) ?? { key: k, seconds: 0, billableSeconds: 0, amounts: new Map<string, number>() as Amounts };
       b.seconds += e.seconds;
-      if (e.billable) { b.billableSeconds += e.seconds; b.cents += amountCents(e.seconds, rc); }
+      if (e.billable) { b.billableSeconds += e.seconds; addAmount(b.amounts, cur, amountCents(e.seconds, rc)); }
       m.set(k, b);
     }
   }
   return [...m.values()].sort((a, b) => b.seconds - a.seconds);
 }
 
+function totalAmounts(buckets: Bucket[]): Amounts {
+  const t = new Map<string, number>() as Amounts;
+  for (const b of buckets) mergeAmounts(t, b.amounts);
+  return t;
+}
+
 server.registerTool("report", {
   title: "Time report",
-  description: "Total tracked hours and money for a period, grouped by project, day, task or tag. Free tier covers the last 7 days.",
+  description: "Timesheet report: total tracked hours and billable money for a period, grouped by (group by) project, day, task or tag - hours per project, how much to bill. Money is grouped by currency and never mixes EUR with USD. Free tier covers the last 7 days.",
   inputSchema: {
     from: z.string().describe("ISO date/time start of the period"),
     to: z.string().describe("ISO date/time end of the period"),
@@ -452,8 +602,10 @@ server.registerTool("report", {
   const entries = select(db, w, a.project);
   const buckets = aggregate(db, entries, a.group_by);
   const totalSec = buckets.reduce((s, b) => s + b.seconds, 0);
-  const totalCents = buckets.reduce((s, b) => s + b.cents, 0);
-  const currency = buckets[0]?.currency ?? "USD";
+  const totals = totalAmounts(buckets);
+  const totalPrimary = primaryOf(totals);
+  const totalCents = totalPrimary.cents;
+  const currency = totalPrimary.currency;
   const fmt = a.format ?? "table";
   const note = !pro && w.clamped ? FREE_WINDOW_NOTE : "";
 
@@ -462,31 +614,45 @@ server.registerTool("report", {
       from: Number.isFinite(w.fromMs) ? iso(new Date(w.fromMs)) : null,
       to: Number.isFinite(w.toMs) ? iso(new Date(w.toMs)) : null,
       group_by: a.group_by,
-      rows: buckets.map(b => ({
-        key: b.key, hours: Number(hours(b.seconds)), seconds: b.seconds,
-        billable_hours: Number(hours(b.billableSeconds)), amount_cents: b.cents, currency: b.currency,
-      })),
-      total: { hours: Number(hours(totalSec)), seconds: totalSec, amount_cents: totalCents, currency },
+      rows: buckets.map(b => {
+        const p = primaryOf(b.amounts);
+        return {
+          key: b.key, hours: Number(hours(b.seconds)), seconds: b.seconds,
+          billable_hours: Number(hours(b.billableSeconds)), amount_cents: p.cents, currency: p.currency,
+          amounts: nonZero(b.amounts).map(([c, cents]) => ({ currency: c, amount_cents: cents })),
+        };
+      }),
+      total: {
+        hours: Number(hours(totalSec)), seconds: totalSec, amount_cents: totalCents, currency,
+        amounts: nonZero(totals).map(([c, cents]) => ({ currency: c, amount_cents: cents })),
+      },
       tier: pro ? "pro" : "free",
     }, null, 2) + note);
   }
   if (fmt === "csv") {
     const lines = [["key", "hours", "billable_hours", "amount", "currency"].join(",")];
-    for (const b of buckets) lines.push([b.key, hours(b.seconds), hours(b.billableSeconds), (b.cents / 100).toFixed(2), b.currency].map(csvCell).join(","));
-    lines.push(["TOTAL", hours(totalSec), "", (totalCents / 100).toFixed(2), currency].map(csvCell).join(","));
+    for (const b of buckets) {
+      const parts = nonZero(b.amounts);
+      if (parts.length === 0) lines.push([b.key, hours(b.seconds), hours(b.billableSeconds), "0.00", currencyFor(db, b.key)].map(csvCell).join(","));
+      // one line per currency: mixed currencies must never be added together
+      for (const [cur, cents] of parts) lines.push([b.key, hours(b.seconds), hours(b.billableSeconds), (cents / 100).toFixed(2), cur].map(csvCell).join(","));
+    }
+    for (const [cur, cents] of (nonZero(totals).length ? nonZero(totals) : [[currency, 0] as [string, number]])) {
+      lines.push(["TOTAL", hours(totalSec), "", (cents / 100).toFixed(2), cur].map(csvCell).join(","));
+    }
     return ok(lines.join("\n") + note);
   }
   if (buckets.length === 0) return ok(`No time tracked in that period.${note}`);
   const body = table(
     [a.group_by, "hours", "billable h", "amount"],
-    buckets.map(b => [b.key, hours(b.seconds), hours(b.billableSeconds), b.cents > 0 ? money(b.cents, b.currency) : "-"]),
+    buckets.map(b => [b.key, hours(b.seconds), hours(b.billableSeconds), moneyOf(b.amounts)]),
   );
-  return ok(`${body}\n\nTotal ${hours(totalSec)} h, ${money(totalCents, currency)}.${note}`);
+  return ok(`${body}\n\nTotal ${hours(totalSec)} h, ${moneyOf(totals)}.${note}`);
 }));
 
 server.registerTool("export_csv", {
   title: "Export entries to CSV",
-  description: "Write time entries to a CSV file you can hand to a bookkeeper or import into a spreadsheet. Free tier exports the last 7 days.",
+  description: "Export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Free tier exports the last 7 days.",
   inputSchema: {
     from: z.string().optional().describe("ISO date/time lower bound"),
     to: z.string().optional().describe("ISO date/time upper bound"),
@@ -502,7 +668,7 @@ server.registerTool("export_csv", {
   const lines = [header.join(",")];
   for (const e of entries) {
     const rc = rateForEntry(db, e);
-    const cur = currencyFor(db, e.project);
+    const cur = currencyForEntry(db, e);
     lines.push([
       e.id, e.project, e.task ?? "", e.start, e.end, hours(e.seconds), String(e.seconds),
       e.billable ? "true" : "false", (rc / 100).toFixed(2), cur,
@@ -525,7 +691,7 @@ server.registerTool("export_csv", {
 
 server.registerTool("invoice_summary", {
   title: "Invoice summary",
-  description: "Turn tracked time into invoice line items for one project: hours, rate, amount per task, plus the total.",
+  description: "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00).",
   inputSchema: {
     project: z.string().min(1).describe("Project or client to invoice"),
     from: z.string().describe("ISO date/time start of the billing period"),
@@ -537,20 +703,22 @@ server.registerTool("invoice_summary", {
   const w = windowFor(a.from, a.to, true);
   const entries = select(db, w, a.project).filter(e => e.billable);
   if (entries.length === 0) return ok(`No billable time for "${a.project}" in that period.`);
-  const currency = currencyFor(db, entries[0].project);
   const lines = aggregate(db, entries, "task");
   const totalSec = lines.reduce((s, b) => s + b.seconds, 0);
-  const totalCents = lines.reduce((s, b) => s + b.cents, 0);
+  const totals = totalAmounts(lines);
   const rows = lines.map(b => {
-    const rate = b.seconds > 0 ? Math.round((b.cents * 3600) / b.seconds) : 0;
-    return [b.key, hours(b.seconds), money(rate, b.currency), money(b.cents, b.currency)];
+    const parts = nonZero(b.amounts);
+    const rate = parts.length === 1 && b.seconds > 0
+      ? money(Math.round((parts[0][1] * 3600) / b.seconds), parts[0][0])
+      : parts.length > 1 ? "mixed" : "-";
+    return [b.key, hours(b.seconds), rate, moneyOf(b.amounts)];
   });
   const body = table(["description", "hours", "rate", "amount"], rows);
   const days = [...new Set(entries.map(e => dayKey(e.start)))].sort();
   return ok(
     `Invoice summary - ${a.project}\n` +
     `Period ${dayKey(a.from)} to ${dayKey(a.to)} (${days.length} working days, ${entries.length} entries)\n\n` +
-    `${body}\n\nTOTAL ${hours(totalSec)} h  ${money(totalCents, currency)}`,
+    `${body}\n\nTOTAL ${hours(totalSec)} h  ${moneyOf(totals)}`,
   );
 }));
 
@@ -561,10 +729,9 @@ function daySummary(db: DB, key: string): string {
   const sec = entries.reduce((s, e) => s + e.seconds, 0);
   if (entries.length === 0) return `${key}: nothing tracked.`;
   const byProject = aggregate(db, entries, "project");
-  const cents = byProject.reduce((s, b) => s + b.cents, 0);
-  const cur = byProject[0]?.currency ?? "USD";
-  const detail = byProject.map(b => `  ${b.key}: ${hours(b.seconds)} h${b.cents > 0 ? ` (${money(b.cents, b.currency)})` : ""}`).join("\n");
-  return `${key}: ${hours(sec)} h across ${entries.length} entries${cents > 0 ? `, ${money(cents, cur)}` : ""}\n${detail}`;
+  const totals = totalAmounts(byProject);
+  const detail = byProject.map(b => `  ${b.key}: ${hours(b.seconds)} h${nonZero(b.amounts).length ? ` (${moneyOf(b.amounts)})` : ""}`).join("\n");
+  return `${key}: ${hours(sec)} h across ${entries.length} entries${nonZero(totals).length ? `, ${moneyOf(totals)}` : ""}\n${detail}`;
 }
 
 server.registerResource("today", "timetracker://today", {

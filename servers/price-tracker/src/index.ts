@@ -3,8 +3,9 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
-import { extractPrice, normalizeNumber, currencyFrom } from "./extract.js";
+import { extractPrice, normalizeNumber, currencyFrom, type Confidence } from "./extract.js";
 import { fetchPage, FetchError } from "./fetch.js";
+import { checkRedirect } from "./redirect.js";
 import {
   canonicalUrl, dataDir, dbPath, findWatch, latest, load, newId, nowIso, pctChange, previous, save,
   type Observation, type Watch,
@@ -19,7 +20,7 @@ import { join } from "node:path";
 const LOCK = join(dataDir(), ".lock");
 
 const FREE_WATCH_LIMIT = 3;
-const FREE_HISTORY_LIMIT = 10;
+const FREE_HISTORY_LIMIT = 30;
 const DROP_ALERT_PCT = 5;
 
 const gate = createLicenseGate({ product: "price-tracker" });
@@ -46,9 +47,24 @@ function fmt(n: number): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(2);
 }
 
-async function observe(url: string): Promise<Observation & { title: string | null; finalUrl: string }> {
+type Sighting = Observation & { title: string | null; finalUrl: string; redirected: boolean };
+
+/**
+ * Fetch a page and read a price off it.
+ *
+ * Two guards sit between the fetch and the number, both from the 2026-09-02
+ * user-value audit (D-2):
+ *  - the final URL must still look like the product page that was asked for,
+ *    otherwise a shop that redirects a dead product to its category listing
+ *    silently yields the cheapest item on that listing;
+ *  - the extraction carries a confidence, so callers can refuse to store a
+ *    number that came from a bare text scan of a page with no product title.
+ */
+async function observe(url: string): Promise<Sighting> {
   const page = await fetchPage(url);
   const found = extractPrice(page.html, page.finalUrl);
+  const verdict = checkRedirect(page.requestedUrl, page.finalUrl, found?.title ?? null);
+  if (!verdict.ok) throw new FetchError(verdict.reason!);
   if (!found) {
     throw new FetchError(
       `no price found on ${page.finalUrl}. The page loaded but carries no machine-readable price. ` +
@@ -60,9 +76,30 @@ async function observe(url: string): Promise<Observation & { title: string | nul
     price: found.price,
     currency: found.currency,
     source: found.source,
+    confidence: found.confidence,
     title: found.title,
     finalUrl: page.finalUrl,
+    redirected: page.redirected,
   };
+}
+
+/**
+ * A low-confidence number on a page with no product title is not evidence of a
+ * price. Report it, never store it.
+ */
+function unstorable(o: Sighting): string | null {
+  if (o.confidence === "low" && !o.title) {
+    return (
+      `refusing to store a price for ${o.finalUrl}: the number ${money(o.price, o.currency)} came from a plain-text scan ` +
+      `(confidence low, source ${o.source}) and the page carries no product title, so it may not be the product price. ` +
+      `Read the price in your browser and record it with price_add_manual {url, price, currency}.`
+    );
+  }
+  return null;
+}
+
+function confidenceLine(o: { confidence?: Confidence | string | null; source: string }): string {
+  return `Confidence: ${o.confidence ?? "unknown"} (source ${o.source})`;
 }
 
 function watchRow(w: Watch): Record<string, unknown> {
@@ -83,6 +120,8 @@ function watchRow(w: Watch): Record<string, unknown> {
     change_pct: change === null ? null : `${change >= 0 ? "+" : ""}${change.toFixed(2)}%`,
     target: w.target_price ? money(w.target_price, w.currency) : null,
     target_hit: targetHit,
+    confidence: last?.confidence ?? null,
+    source: last?.source ?? null,
     observations: w.observations.length,
     last_checked: last?.ts ?? null,
   };
@@ -96,7 +135,10 @@ server.registerTool(
   {
     title: "Check a price now",
     description:
-      "Fetch a product page right now and report its price, currency and title, plus the change against the last price stored for that URL. Does not create a watch.",
+      "Use this instead of fetching the page yourself: returns the structured price, currency, product title, extraction confidence, " +
+      "and the change since the last check; handles EU/US number formats and JSON-LD/Open Graph/microdata. " +
+      "It also verifies the shop did not redirect off the product page, so a dead item reports a clear failure rather than the cheapest thing on a category listing. " +
+      "Reading the raw HTML gives you none of that. Does not create a watch - use watch_add for that.",
     inputSchema: { url: z.string().describe("Product page URL, including https://") },
   },
   async ({ url }): Promise<ToolResult> => {
@@ -108,10 +150,12 @@ server.registerTool(
       const lines = [
         `Title: ${o.title ?? "(unknown)"}`,
         `Price: ${money(o.price, o.currency)}`,
-        `Source: ${o.source}`,
+        confidenceLine(o),
         `URL: ${o.finalUrl}`,
         `Checked: ${o.ts}`,
       ];
+      const weak = unstorable(o);
+      if (weak) lines.push(`Warning: ${weak}`);
       if (last) {
         const ch = pctChange(last.price, o.price);
         const dir = Number(o.price) < Number(last.price) ? "down" : Number(o.price) > Number(last.price) ? "up" : "unchanged";
@@ -135,11 +179,13 @@ server.registerTool(
   {
     title: "Watch a price",
     description:
-      "Start tracking a product page. Fetches it once and stores the first observation. Optionally set a target price to be alerted about.",
+      "Start tracking a product page: fetches it once, stores the first observation with its extraction confidence, and optionally records a target price. " +
+      "There is no background job - prices are only re-read when watch_refresh runs, and alerts_pending then reports drops and target hits. " +
+      "Ask \"refresh my watches\" at the start of a session.",
     inputSchema: {
       url: z.string().describe("Product page URL"),
       label: z.string().optional().describe("Short name for this item"),
-      target_price: z.union([z.string(), z.number()]).optional().describe("Alert when the price is at or below this (positive number)"),
+      target_price: z.union([z.string(), z.number()]).optional().describe("Report this watch in alerts_pending when the price is at or below this (positive number)"),
       currency: z.string().optional().describe("ISO code such as USD or EUR, if the page does not say"),
     },
   },
@@ -160,6 +206,8 @@ server.registerTool(
     }
     try {
       const o = await observe(url);
+      const weak = unstorable(o);
+      if (weak) return fail(weak);
       // observe() awaits the network, so the db read above is stale: another
       // in-flight watch_add would be overwritten and the free limit bypassed.
       // Re-read and re-check both conditions against the current file.
@@ -183,7 +231,7 @@ server.registerTool(
         target_price: target,
         currency: currencyFrom(currency ?? null) ?? o.currency ?? null,
         created_at: nowIso(),
-        observations: [{ ts: o.ts, price: o.price, currency: o.currency, source: o.source }],
+        observations: [{ ts: o.ts, price: o.price, currency: o.currency, source: o.source, confidence: o.confidence }],
       };
       db.watches.push(w);
       save(db);
@@ -191,8 +239,11 @@ server.registerTool(
       return text(
         [
           `Watching ${w.label ?? w.url} as ${w.id}.`,
-          `Price now: ${money(o.price, o.currency)} (via ${o.source})`,
+          `Price now: ${money(o.price, o.currency)}`,
+          confidenceLine(o),
           target ? `Target: ${money(target, w.currency)}${hit ? " - already at or below target." : ""}` : "No target price set.",
+          `Checks run when you ask: there is no background job and nothing polls this page. ` +
+          `Say "refresh my watches" (watch_refresh) at the start of a session, then alerts_pending lists the drops and target hits.`,
           `Stored in ${dbPath()}`,
         ].join("\n")
       );
@@ -208,7 +259,7 @@ server.registerTool(
   "watch_list",
   {
     title: "List watches",
-    description: "Show every tracked item with its current price, target and last check time.",
+    description: "Show every tracked item with its current price, previous price, min, max, change %, target, extraction confidence and last check time. Prices are as of the last watch_refresh, not live.",
     inputSchema: {},
   },
   async (): Promise<ToolResult> => {
@@ -251,10 +302,11 @@ server.registerTool(
   {
     title: "Refresh prices",
     description:
-      "Re-fetch one watch or every watch, append the new observations and show current, previous, min, max, change % and target hits.",
+      "This is what actually checks prices: re-fetches one watch or every watch, appends the new observations and returns current, previous, min, max, change %, extraction confidence and target hits. " +
+      "Nothing runs in the background, so run this whenever the user asks about prices, drops or alerts - typically once at the start of a session, then read alerts_pending.",
     inputSchema: {
       id: z.string().optional().describe("Watch id or URL. Omit and set all=true to refresh everything."),
-      all: z.boolean().optional().describe("Refresh every watch (Pro)"),
+      all: z.boolean().optional().describe("Refresh every watch in one call (Pro; on free, refresh one id at a time)"),
     },
   },
   async ({ id, all }): Promise<ToolResult> => {
@@ -276,7 +328,9 @@ server.registerTool(
     for (const w of targets) {
       try {
         const o = await observe(w.url);
-        w.observations.push({ ts: o.ts, price: o.price, currency: o.currency, source: o.source });
+        const weak = unstorable(o);
+        if (weak) { errors.push(`${w.id}: ${weak}`); continue; }
+        w.observations.push({ ts: o.ts, price: o.price, currency: o.currency, source: o.source, confidence: o.confidence });
         if (!w.currency && o.currency) w.currency = o.currency;
       } catch (e) {
         errors.push(`${w.id}: ${e instanceof FetchError ? e.message : String((e as Error)?.message ?? e)}`);
@@ -305,7 +359,7 @@ server.registerTool(
   "price_history",
   {
     title: "Price history",
-    description: "List the stored observations for one watch, newest last. Free shows the last 10.",
+    description: `List the stored observations for one watch, newest last, each with its price, currency, source and extraction confidence. Free shows the last ${FREE_HISTORY_LIMIT}.`,
     inputSchema: {
       id: z.string().optional().describe("Watch id"),
       url: z.string().optional().describe("Watch URL"),
@@ -367,7 +421,7 @@ server.registerTool(
       db.watches.push(w);
     } else if (label?.trim()) w.label = label.trim();
     if (!w.currency && cur) w.currency = cur;
-    const o: Observation = { ts: nowIso(), price: p, currency: cur ?? w.currency, source: "manual" };
+    const o: Observation = { ts: nowIso(), price: p, currency: cur ?? w.currency, source: "manual", confidence: "high" };
     w.observations.push(o);
     save(db);
     return text(
@@ -383,11 +437,11 @@ server.registerTool(
   {
     title: "Pending alerts",
     description:
-      `Show watches whose latest price is at or below the target, or which dropped ${DROP_ALERT_PCT}% or more against the previous observation.`,
+      `Answer "did anything I watch get cheaper?": lists every watch whose latest price is at or below its target, or which dropped ${DROP_ALERT_PCT}% or more against the previous observation, with the change % and the confidence of the reading. ` +
+      `Free and unlimited. It reads stored observations, so run watch_refresh first if the prices are stale.`,
     inputSchema: {},
   },
   async (): Promise<ToolResult> => {
-    if (!gate.isPro()) return text(gate.upgradeText("alerts_pending"));
     const db = load();
     const alerts: Record<string, unknown>[] = [];
     for (const w of db.watches) {
@@ -405,10 +459,13 @@ server.registerTool(
         change_pct: ch === null ? null : `${ch >= 0 ? "+" : ""}${ch.toFixed(2)}%`,
         target: w.target_price ? money(w.target_price, w.currency) : null,
         reason: [targetHit ? "target hit" : null, dropped ? `dropped ${Math.abs(ch!).toFixed(2)}%` : null].filter(Boolean).join(" and "),
+        confidence: last.confidence ?? null,
+        source: last.source,
         at: last.ts,
       });
     }
-    if (!alerts.length) return text("No pending alerts. Run watch_refresh first if the prices are stale.");
+    if (!db.watches.length) return text("No watches yet, so nothing can be alerted on. Add one with watch_add {url, target_price}.");
+    if (!alerts.length) return text(`No pending alerts across ${db.watches.length} watch(es). Prices are only re-read when watch_refresh runs, so run that first if the last check is old.`);
     return text(JSON.stringify(alerts, null, 2));
   }
 );
@@ -428,6 +485,31 @@ server.registerResource(
       }],
     };
   }
+);
+
+/* ---------------- prompt: check_prices ---------------- */
+server.registerPrompt(
+  "check_prices",
+  {
+    title: "Check my prices",
+    description: "Refresh every watch and summarise which items dropped and which hit their target. One command for a whole price check.",
+  },
+  () => ({
+    messages: [{
+      role: "user" as const,
+      content: {
+        type: "text" as const,
+        text:
+          "Check my tracked prices with the price-tracker server.\n" +
+          "1. Call watch_list to see what is tracked.\n" +
+          "2. Refresh every watch: call watch_refresh {all: true}. If that reports it is a Pro feature, call watch_refresh {id} once per watch id from step 1.\n" +
+          "3. Call alerts_pending.\n" +
+          "Then summarise in plain language: which items got cheaper and by how much, which hit their target price, " +
+          "which are unchanged, and note any watch that could not be refreshed and why. " +
+          "Give each price with its currency, and flag any reading whose confidence is not high.",
+      },
+    }],
+  })
 );
 
 gate.registerTools(server);

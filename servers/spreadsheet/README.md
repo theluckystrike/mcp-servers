@@ -41,7 +41,7 @@ With a Pro key, add `"env": { "MCP_LICENSE_KEY": "MCPL1...." }`, or just run the
 | --- | --- |
 | `sheet_info` | Sheet names, size, guessed header row, per-column type, sample values, empty counts |
 | `sheet_read` | Read rows as a text table, JSON records or CSV; `limit`/`offset` paging or an A1 `range` |
-| `sheet_query` | Filter with `where`, pick columns with `select`, `sort`, `limit` |
+| `sheet_query` | Filter with `where`, `group_by` + `aggregate` (sum, count, avg, min, max), pick columns with `select`, `sort` (aggregate aliases too), `limit` |
 | `sheet_stats` | count, empty, distinct, min, max, sum, mean, median per column (top values for text columns) |
 | `sheet_find` | Find text anywhere in the workbook; returns cell addresses and a row preview |
 | `sheet_write` | Write rows (objects or arrays) as a new file, an append, or an explicit overwrite |
@@ -76,10 +76,10 @@ Text comparisons ignore case and surrounding whitespace. Values like `$1,250.00`
 | | Free | Pro |
 | --- | --- | --- |
 | Every tool that reads a file (`sheet_info`, `sheet_read`, `sheet_query`, `sheet_stats`, `sheet_find`, `sheet_add_column`, `sheet_convert`) | Files up to 5 MB and 5,000 rows | No limit (up to the 50 MB file ceiling) |
-| `sheet_write`, `sheet_add_column`, `sheet_convert` | 200 rows written per file | No limit |
+| `sheet_write`, `sheet_add_column`, `sheet_convert` | Up to 500 rows written per file; over that nothing is written and the tool says so | No limit |
 | Sheets, formats, expression language | All | All |
 
-Over a free limit the tool still does the work and returns the part it is allowed to return (the first 5,000 rows read, the first 200 rows written), with a note saying what was left out. Nothing fails silently.
+Over a free read limit the tool still does the work and returns the part it is allowed to return (the first 5,000 rows), with a note saying what was left out. Over the free write limit nothing at all is written: a partial file that looks complete is worse than no file, so the tool refuses, tells you the row count and the cap, and suggests a free workaround (filter the rows down first, or write in 500-row batches). Nothing fails silently.
 
 ## Get Pro
 

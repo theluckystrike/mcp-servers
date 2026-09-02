@@ -76,9 +76,18 @@ const PROBES = {
     const info = await c.tool("sheet_info", { path: csv }); ok(`${tier}: sheet_info`, !info.isError && /300/.test(info.text), info.text);
     const q = await c.tool("sheet_query", { path: csv, where: '[Qty] >= 5 AND [Status] = "open"', limit: 5 }); ok(`${tier}: sheet_query expression`, !q.isError && /open/.test(q.text), q.text);
     const out = join(tmp, "out.csv");
-    const w = await c.tool("sheet_convert", { path: csv, to: "csv", out_path: out });
+    await c.tool("sheet_convert", { path: csv, to: "csv", out_path: out });
     const lines = existsSync(out) ? readFileSync(out, "utf8").trim().split("\n").length : 0;
-    ok(`${tier}: convert 300 rows -> ${tier === "pro" ? "301 lines" : "capped 201 lines + upgrade"}`, tier === "pro" ? lines === 301 : (lines === 201 && /mcp\.zovo\.one/.test(w.text)), `${lines} lines`);
+    ok(`${tier}: convert 300 rows -> 301 lines (under the 500-row free write cap)`, lines === 301, `${lines} lines`);
+    // D-1: over the free write cap nothing is written at all - no partial file that looks complete
+    const csv600 = join(tmp, "orders600.csv");
+    writeFileSync(csv600, "Customer,Qty,Unit Price,Status\n" + Array.from({ length: 600 }, (_, i) => `C${i},${i % 7},${(i % 5) + 0.5},${i % 2 ? "open" : "closed"}`).join("\n") + "\n");
+    const out600 = join(tmp, "out600.csv");
+    const w6 = await c.tool("sheet_convert", { path: csv600, to: "csv", out_path: out600 });
+    const lines600 = existsSync(out600) ? readFileSync(out600, "utf8").trim().split("\n").length : 0;
+    ok(`${tier}: convert 600 rows -> ${tier === "pro" ? "601 lines" : "refused, zero bytes written + upgrade"}`,
+      tier === "pro" ? lines600 === 601 : (lines600 === 0 && !w6.isError && /Nothing was written/.test(w6.text) && /mcp\.zovo\.one/.test(w6.text)),
+      `${lines600} lines`);
   },
   invoice: async (c, tmp, tier, ok) => {
     const b = await c.tool("business_set", { name: "Validator Ltd", default_currency: "EUR", default_tax_rate: 23 }); ok(`${tier}: business_set`, !b.isError, b.text);

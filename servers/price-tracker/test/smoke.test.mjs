@@ -35,6 +35,37 @@ function startShop() {
   });
 }
 
+/** A shop whose product URL 302s to a generic category listing (D-2). */
+function startRedirectingShop() {
+  const CATEGORY = `<!doctype html><html><head><meta charset="utf-8"><title>Products</title></head>
+<body><h1>Products</h1><ul><li>Cheap thing 10.00 USD</li><li>Other thing 250.00 USD</li></ul></body></html>`;
+  const NO_TITLE = `<!doctype html><html><head><meta charset="utf-8"></head><body><div>Some page 42.00 USD</div></body></html>`;
+  const srv = createServer((req, res) => {
+    if (req.url.startsWith("/p/gone")) {
+      res.writeHead(302, { location: "/cat/products-products/" });
+      res.end();
+      return;
+    }
+    if (req.url.startsWith("/cat/")) {
+      res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+      res.end(CATEGORY);
+      return;
+    }
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    res.end(NO_TITLE);
+  });
+  return new Promise((resolve) => {
+    srv.listen(0, "127.0.0.1", () => {
+      const base = `http://127.0.0.1:${srv.address().port}`;
+      resolve({
+        goneUrl: `${base}/p/gone/billy-bookcase`,
+        untitledUrl: `${base}/p/untitled/thing`,
+        close: () => new Promise((r) => srv.close(r)),
+      });
+    });
+  });
+}
+
 function client(env = {}) {
   const dir = mkdtempSync(join(tmpdir(), "pt-"));
   const child = spawn(process.execPath, [entry], {
@@ -163,7 +194,9 @@ test("free tier caps watches at 3 and gates pro tools without isError", async (t
 
   const alerts = await c.send("tools/call", { name: "alerts_pending", arguments: {} });
   assert.equal(alerts.result.isError, undefined);
-  assert.match(textOf(alerts), /"alerts_pending" is a Pro feature/);
+  assert.doesNotMatch(textOf(alerts), /Pro feature/);
+  assert.doesNotMatch(textOf(alerts), /mcp\.zovo\.one/);
+  assert.match(textOf(alerts), /No pending alerts across 3 watch\(es\)/);
 
   const refreshAll = await c.send("tools/call", { name: "watch_refresh", arguments: { all: true } });
   assert.equal(refreshAll.result.isError, undefined);
@@ -206,9 +239,109 @@ test("pro history is not truncated at 10 observations", async (t) => {
   const c = client({ MCP_LICENSE_KEY: key });
   t.after(() => c.stop());
   await init(c);
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 34; i++) {
     await c.send("tools/call", { name: "price_add_manual", arguments: { url: "https://example.com/many", price: String(100 + i), currency: "USD" } });
   }
   const hist = await c.send("tools/call", { name: "price_history", arguments: { url: "https://example.com/many" } });
-  assert.match(textOf(hist), /14 of 14 observation/);
+  assert.match(textOf(hist), /34 of 34 observation/);
+});
+
+test("D-2: a redirect to a category page fails instead of returning a price", async (t) => {
+  const shop = await startRedirectingShop();
+  const c = client();
+  t.after(async () => { c.stop(); await shop.close(); });
+  await init(c);
+
+  const check = await c.send("tools/call", { name: "price_check", arguments: { url: shop.goneUrl } });
+  assert.equal(check.result.isError, true);
+  const ct = textOf(check);
+  assert.match(ct, /the shop redirected to http:\/\/127\.0\.0\.1:\d+\/cat\/products-products\//);
+  assert.match(ct, /which is not a product page/);
+  assert.doesNotMatch(ct, /Price: /);
+
+  const add = await c.send("tools/call", { name: "watch_add", arguments: { url: shop.goneUrl } });
+  assert.equal(add.result.isError, true);
+  assert.match(textOf(add), /which is not a product page/);
+
+  const list = await c.send("tools/call", { name: "watch_list", arguments: {} });
+  assert.match(textOf(list), /No watches yet/);
+});
+
+test("D-2: a low-confidence price on an untitled page is reported but never stored", async (t) => {
+  const shop = await startRedirectingShop();
+  const c = client();
+  t.after(async () => { c.stop(); await shop.close(); });
+  await init(c);
+
+  const check = await c.send("tools/call", { name: "price_check", arguments: { url: shop.untitledUrl } });
+  assert.equal(check.result.isError, undefined);
+  const ct = textOf(check);
+  assert.match(ct, /Confidence: low \(source regex-fallback\)/);
+  assert.match(ct, /Warning: refusing to store a price/);
+
+  const add = await c.send("tools/call", { name: "watch_add", arguments: { url: shop.untitledUrl } });
+  assert.equal(add.result.isError, true);
+  assert.match(textOf(add), /refusing to store a price/);
+
+  const list = await c.send("tools/call", { name: "watch_list", arguments: {} });
+  assert.match(textOf(list), /No watches yet/);
+});
+
+test("confidence and source are exposed in price_check, watch_add and watch_list", async (t) => {
+  const shop = await startShop();
+  const c = client();
+  t.after(async () => { c.stop(); await shop.close(); });
+  await init(c);
+
+  const check = await c.send("tools/call", { name: "price_check", arguments: { url: shop.url } });
+  assert.match(textOf(check), /Confidence: high \(source json-ld\)/);
+
+  const add = await c.send("tools/call", { name: "watch_add", arguments: { url: shop.url } });
+  assert.match(textOf(add), /Confidence: high \(source json-ld\)/);
+  assert.match(textOf(add), /no background job/);
+  assert.match(textOf(add), /refresh my watches/);
+
+  const list = await c.send("tools/call", { name: "watch_list", arguments: {} });
+  const lt = textOf(list);
+  assert.match(lt, /"confidence": "high"/);
+  assert.match(lt, /"source": "json-ld"/);
+});
+
+test("D-5: alerts_pending is free and the check_prices prompt exists", async (t) => {
+  const shop = await startShop();
+  const c = client();
+  t.after(async () => { c.stop(); await shop.close(); });
+  await init(c);
+
+  await c.send("tools/call", { name: "watch_add", arguments: { url: shop.url, target_price: "150", label: "Gadget" } });
+  shop.setPrice("120.00");
+  const wid = (await c.send("tools/call", { name: "watch_list", arguments: {} })).result.content[0].text.match(/"id": "([0-9a-f]{8})"/)[1];
+  await c.send("tools/call", { name: "watch_refresh", arguments: { id: wid } });
+
+  const alerts = await c.send("tools/call", { name: "alerts_pending", arguments: {} });
+  assert.equal(alerts.result.isError, undefined);
+  const at = textOf(alerts);
+  assert.doesNotMatch(at, /Pro feature/);
+  assert.match(at, /target hit/);
+  assert.match(at, /"confidence": "high"/);
+
+  const prompts = await c.send("prompts/list", {});
+  assert.ok(prompts.result.prompts.some((p) => p.name === "check_prices"), "check_prices prompt missing");
+  const got = await c.send("prompts/get", { name: "check_prices", arguments: {} });
+  const pt = got.result.messages.map((m) => m.content.text).join("\n");
+  assert.match(pt, /watch_refresh/);
+  assert.match(pt, /alerts_pending/);
+});
+
+test("free history keeps the last 30 observations", async (t) => {
+  const c = client();
+  t.after(() => c.stop());
+  await init(c);
+  for (let i = 0; i < 34; i++) {
+    await c.send("tools/call", { name: "price_add_manual", arguments: { url: "https://example.com/many", price: String(100 + i), currency: "USD" } });
+  }
+  const hist = await c.send("tools/call", { name: "price_history", arguments: { url: "https://example.com/many" } });
+  const ht = textOf(hist);
+  assert.match(ht, /30 of 34 observation/);
+  assert.match(ht, /Free shows the last 30 observations/);
 });

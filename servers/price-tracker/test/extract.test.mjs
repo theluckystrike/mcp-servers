@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { extractPrice, normalizeNumber, currencyFrom, visibleText } from "../dist/extract.js";
+import { extractPrice, normalizeNumber, currencyFrom, visibleText, confidenceOf } from "../dist/extract.js";
 
 const page = (head, body) => `<!doctype html><html><head><meta charset="utf-8">${head}</head><body>${body}</body></html>`;
 
@@ -18,6 +18,7 @@ test("1 json-ld Product with Offer", () => {
   assert.equal(r.currency, "USD");
   assert.equal(r.title, "Acme Widget Pro");
   assert.equal(r.source, "json-ld");
+  assert.equal(r.confidence, "high");
 });
 
 test("2 open graph price meta tags", () => {
@@ -33,6 +34,7 @@ test("2 open graph price meta tags", () => {
   assert.equal(r.currency, "GBP");
   assert.equal(r.title, "Blue Jacket, medium");
   assert.equal(r.source, "opengraph");
+  assert.equal(r.confidence, "high");
 });
 
 test("3 microdata itemprop with content attribute", () => {
@@ -79,6 +81,7 @@ test("6 amazon-like a-price markup", () => {
   assert.equal(r.price, "1299.00");
   assert.equal(r.currency, "USD");
   assert.equal(r.source, "class:a-offscreen");
+  assert.equal(r.confidence, "medium");
 });
 
 test("7 json-ld AggregateOffer lowPrice", () => {
@@ -94,6 +97,7 @@ test("7 json-ld AggregateOffer lowPrice", () => {
   assert.equal(r.price, "89.00");
   assert.equal(r.currency, "CAD");
   assert.equal(r.source, "json-ld");
+  assert.equal(r.confidence, "high");
 });
 
 test("8 script-injected price in a data-price attribute", () => {
@@ -107,6 +111,7 @@ test("8 script-injected price in a data-price attribute", () => {
   assert.equal(r.price, "249.95");
   assert.equal(r.currency, "AUD");
   assert.equal(r.source, "data-attr");
+  assert.equal(r.confidence, "medium");
 });
 
 test("9 regex fallback picks the largest currency-adjacent number", () => {
@@ -116,6 +121,7 @@ test("9 regex fallback picks the largest currency-adjacent number", () => {
   );
   const r = extractPrice(html, "https://example.com/camera");
   assert.equal(r.source, "regex-fallback");
+  assert.equal(r.confidence, "low");
   assert.equal(r.price, "2499.00");
   assert.equal(r.currency, "USD");
 });
@@ -155,4 +161,14 @@ test("12 currency symbol mapping honours country tld for the dollar sign", () =>
 test("13 visibleText strips scripts and styles", () => {
   const t = visibleText(`<style>.a{color:red}</style><p>Hello&nbsp;&amp; welcome</p><script>var p=99;</script>`);
   assert.equal(t, "Hello & welcome");
+});
+
+test("confidence tiers: structured data high, markup hints medium, regex low", () => {
+  assert.equal(confidenceOf("json-ld"), "high");
+  assert.equal(confidenceOf("microdata"), "high");
+  assert.equal(confidenceOf("meta-itemprop"), "high");
+  assert.equal(confidenceOf("opengraph"), "high");
+  assert.equal(confidenceOf("data-attr"), "medium");
+  assert.equal(confidenceOf("class:product-price"), "medium");
+  assert.equal(confidenceOf("regex-fallback"), "low");
 });

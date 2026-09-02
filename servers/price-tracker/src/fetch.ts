@@ -20,7 +20,23 @@ function blockedText(url: string, status: number): string {
   );
 }
 
-export interface FetchedPage { html: string; finalUrl: string; status: number }
+/**
+ * A fetched page. `finalUrl` is the URL after every redirect was followed and
+ * `status` is the HTTP status of that final response; callers compare
+ * `finalUrl` against `requestedUrl` to detect a redirect off the product page
+ * (see redirect.ts).
+ */
+export interface FetchedPage {
+  html: string;
+  /** the URL asked for, normalised by the URL parser */
+  requestedUrl: string;
+  /** the URL actually served, after redirects */
+  finalUrl: string;
+  /** HTTP status of the final response */
+  status: number;
+  /** true when finalUrl differs from requestedUrl */
+  redirected: boolean;
+}
 
 /** Fetch a page as a desktop browser would. Throws FetchError with user-facing text. */
 export async function fetchPage(url: string, timeoutMs = TIMEOUT_MS): Promise<FetchedPage> {
@@ -64,7 +80,9 @@ export async function fetchPage(url: string, timeoutMs = TIMEOUT_MS): Promise<Fe
   if (/captcha|are you a human|enable javascript and cookies|access denied|unusual traffic/i.test(html.slice(0, 4000))) {
     throw new FetchError(blockedText(res.url || parsed.toString(), res.status), res.status, true);
   }
-  return { html, finalUrl: res.url || parsed.toString(), status: res.status };
+  const requestedUrl = parsed.toString();
+  const finalUrl = res.url || requestedUrl;
+  return { html, requestedUrl, finalUrl, status: res.status, redirected: finalUrl !== requestedUrl };
 }
 
 async function readCapped(res: Response): Promise<string> {

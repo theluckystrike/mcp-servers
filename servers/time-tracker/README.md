@@ -47,17 +47,17 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 
 | Tool | What it does |
 | --- | --- |
-| `timer_start` | Start a timer on a project (optional task, tags, rate). Starting a new one stops and logs the old one. |
+| `timer_start` | Start a timer on a project (optional task, tags, rate, currency). Starting a new one stops and logs the old one. A partial project name that matches exactly one existing project is used as that project. |
 | `timer_stop` | Stop the running timer, write the entry, return the duration. |
 | `timer_status` | What is running, for how long, and today's total. |
-| `entry_add` | Log time you already worked (start plus end or minutes). |
+| `entry_add` | Log time you already worked (start plus end or minutes), with an optional rate and currency: rate "90 euros an hour" bills as EUR 225.00 for 2.5 h. Partial project names resolve like `timer_start`. |
 | `entry_list` | Compact table of entries, filtered by date range and project. |
 | `entry_edit` | Change any field of an entry. |
 | `entry_delete` | Delete an entry by id. |
-| `project_set_rate` | Set the hourly rate and currency used for money totals. |
+| `project_set_rate` | Set the hourly rate and currency used for money totals (currency accepts codes or words: EUR, euros, pounds, zl). |
 | `report` | Hours and money for a period, grouped by project, day, task or tag; table, JSON or CSV. |
 | `export_csv` | Write entries to a CSV file and return the path. |
-| `invoice_summary` | Invoice-ready line items for one project: hours, rate, amount, total. |
+| `invoice_summary` | Invoice-ready line items for one project: hours, rate, amount, total, in the currency the time was logged in. |
 | `license_status` | Free or Pro, and where to upgrade. |
 | `license_activate` | Activate a Pro key (verified offline). |
 

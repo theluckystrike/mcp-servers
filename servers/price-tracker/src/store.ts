@@ -9,7 +9,10 @@ export interface Observation {
   /** decimal string, major unit, "." decimal separator */
   price: string;
   currency: string | null;
+  /** which strategy produced the price: json-ld, microdata, class:price, regex-fallback, manual, ... */
   source: string;
+  /** how far the source can be trusted; absent on records written before 2026-09 */
+  confidence?: "high" | "medium" | "low";
 }
 
 export interface Watch {

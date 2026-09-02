@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawn, execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, readFileSync, existsSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -200,12 +200,13 @@ test("safety: missing files, clobbering and bad expressions are refused with a c
   assert.match(badCol.text, /not found/);
 });
 
-test("pro gate: a 300-row write is capped at 200 free and complete with a license key", async (t) => {
+test("free write cap: 300 rows write in full, 600 rows write nothing at all", async (t) => {
   const { root, env } = tmpHome();
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const rows = Array.from({ length: 300 }, (_, i) => ({ n: i + 1, label: `row ${i + 1}` }));
+  const big = Array.from({ length: 600 }, (_, i) => ({ n: i + 1, label: `row ${i + 1}` }));
 
-  // free
+  // free: 300 rows is under the 500-row free cap, so the file is complete
   const free = new Client(env);
   t.after(() => free.stop());
   await free.init();
@@ -214,9 +215,35 @@ test("pro gate: a 300-row write is capped at 200 free and complete with a licens
   const freeOut = join(root, "free.csv");
   const fr = await free.call("sheet_write", { path: freeOut, mode: "new_file", rows });
   assert.equal(fr.isError, false, fr.text);
-  assert.match(fr.text, /Free tier writes at most 200 rows/);
-  assert.match(fr.text, /mcp\.zovo\.one\/buy\/spreadsheet/);
-  assert.equal(readFileSync(freeOut, "utf8").trim().split("\n").length, 201);
+  assert.doesNotMatch(fr.text, /Nothing was written/);
+  assert.equal(readFileSync(freeOut, "utf8").trim().split("\n").length, 301);
+
+  // free: 600 rows is over the cap - D-1: refuse, write zero bytes, no partial file
+  const bigOut = join(root, "free-600.csv");
+  const br = await free.call("sheet_write", { path: bigOut, mode: "new_file", rows: big });
+  assert.equal(br.isError, false, "an over-cap write is a gated message, not an error");
+  assert.match(br.text, /Nothing was written/);
+  assert.match(br.text, /600 rows/);
+  assert.match(br.text, /at most 500 rows/);
+  assert.match(br.text, /Free workaround:/);
+  assert.match(br.text, /mcp\.zovo\.one\/buy\/spreadsheet/);
+  assert.equal(existsSync(bigOut), false, "no file may be created when the write is refused");
+
+  // the same refusal for sheet_convert, and the source is left alone
+  const conv = await free.call("sheet_convert", { path: freeOut, to: "json", out_path: join(root, "free-conv.json") });
+  assert.equal(conv.isError, false);
+  assert.doesNotMatch(conv.text, /Nothing was written/, "300 rows converts fine on free");
+  const src600 = join(root, "src600.csv");
+  writeFileSync(src600, "n,label\n" + big.map((r) => `${r.n},${r.label}`).join("\n") + "\n");
+  const convOut = join(root, "src600.json");
+  const cv = await free.call("sheet_convert", { path: src600, to: "json", out_path: convOut });
+  assert.match(cv.text, /Nothing was written/);
+  assert.equal(existsSync(convOut), false);
+  const addOut = join(root, "src600-plus.csv");
+  const ac = await free.call("sheet_add_column", { path: src600, name: "double", formula: "[n] * 2", out_path: addOut });
+  assert.match(ac.text, /Nothing was written/);
+  assert.equal(existsSync(addOut), false);
+  assert.equal(readFileSync(src600, "utf8").trim().split("\n").length, 601, "the source must be untouched");
 
   // pro
   const key = execFileSync(process.execPath, [join(REPO, "scripts", "sign-license.mjs"), "spreadsheet"], { encoding: "utf8" }).trim();
@@ -227,8 +254,8 @@ test("pro gate: a 300-row write is capped at 200 free and complete with a licens
   const pstatus = JSON.parse((await pro.call("license_status", {})).text);
   assert.equal(pstatus.tier, "pro");
   const proOut = join(root, "pro.csv");
-  const pr = await pro.call("sheet_write", { path: proOut, mode: "new_file", rows });
+  const pr = await pro.call("sheet_write", { path: proOut, mode: "new_file", rows: big });
   assert.equal(pr.isError, false, pr.text);
-  assert.doesNotMatch(pr.text, /Free tier/);
-  assert.equal(readFileSync(proOut, "utf8").trim().split("\n").length, 301);
+  assert.doesNotMatch(pr.text, /Nothing was written/);
+  assert.equal(readFileSync(proOut, "utf8").trim().split("\n").length, 601);
 });

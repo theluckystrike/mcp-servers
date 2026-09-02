@@ -15,6 +15,23 @@ export interface Extracted {
   title: string | null;
   /** which strategy produced the price */
   source: string;
+  /**
+   * How much the number can be trusted.
+   *  high   - structured product data: JSON-LD, microdata, meta itemprop, Open Graph.
+   *  medium - markup hints: data-price attributes, price class / id names.
+   *  low    - a regex over the visible text; the number may not be the product price.
+   */
+  confidence: Confidence;
+}
+
+export type Confidence = "high" | "medium" | "low";
+
+/** Confidence for a strategy name as produced by extractPrice(). */
+export function confidenceOf(source: string): Confidence {
+  if (/^(json-ld|microdata|meta-itemprop|opengraph)$/.test(source)) return "high";
+  if (source === "manual") return "high";
+  if (source === "data-attr" || source.startsWith("class:")) return "medium";
+  return "low";
 }
 
 const SYMBOL_TO_CODE: Record<string, string> = {
@@ -232,6 +249,7 @@ function fromJsonLd(html: string, url: string): Extracted | null {
     currency: best.currency ?? currencyFromText(html, url),
     title: productName ?? extractTitle(html),
     source: "json-ld",
+    confidence: "high",
   };
 }
 
@@ -258,7 +276,7 @@ function fromMicrodata(html: string, url: string): Extracted | null {
       currencyFrom(attrNear(html, m.index, "priceCurrency"), url) ??
       currencyFrom(firstCurrencyToken(raw ?? ""), url) ??
       currencyFromText(html, url);
-    return { price, currency: cur, title: extractTitle(html), source: tagName === "meta" ? "meta-itemprop" : "microdata" };
+    return { price, currency: cur, title: extractTitle(html), source: tagName === "meta" ? "meta-itemprop" : "microdata", confidence: "high" };
   }
   return null;
 }
@@ -283,7 +301,7 @@ function fromOpenGraph(html: string, url: string): Extracted | null {
       currencyFrom(metaContent(html, "property", curKey) ?? metaContent(html, "name", curKey), url) ??
       currencyFrom(firstCurrencyToken(amount), url) ??
       currencyFromText(html, url);
-    return { price, currency: cur, title: extractTitle(html), source: "opengraph" };
+    return { price, currency: cur, title: extractTitle(html), source: "opengraph", confidence: "high" };
   }
   return null;
 }
@@ -309,7 +327,7 @@ function fromDataAttrs(html: string, url: string): Extracted | null {
       currencyFrom(curM ? (curM[2] ?? curM[3]) : null, url) ??
       currencyFrom(firstCurrencyToken(raw), url) ??
       currencyFromText(html, url);
-    return { price, currency: cur, title: extractTitle(html), source: "data-attr" };
+    return { price, currency: cur, title: extractTitle(html), source: "data-attr", confidence: "medium" };
   }
   return null;
 }
@@ -322,7 +340,7 @@ function fromClassHints(html: string, url: string): Extracted | null {
       const after = html.slice(m.index + m[0].length, m.index + m[0].length + 600);
       const text = visibleText(after);
       const hit = firstPriceInText(text, url);
-      if (hit) return { price: hit.price, currency: hit.currency ?? currencyFromText(html, url), title: extractTitle(html), source: `class:${hint}` };
+      if (hit) return { price: hit.price, currency: hit.currency ?? currencyFromText(html, url), title: extractTitle(html), source: `class:${hint}`, confidence: "medium" };
     }
   }
   return null;
@@ -380,7 +398,7 @@ function fromRegexFallback(html: string, url: string): Extracted | null {
     if (!best || value > best.value) best = { price, currency: currencyFrom(sym, url), value };
   }
   if (!best) return null;
-  return { price: best.price, currency: best.currency, title: extractTitle(html), source: "regex-fallback" };
+  return { price: best.price, currency: best.currency, title: extractTitle(html), source: "regex-fallback", confidence: "low" };
 }
 
 /* ---------------- entry point ---------------- */

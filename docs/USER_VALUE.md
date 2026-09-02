@@ -149,3 +149,249 @@ a currency that exists in the user's sentence but not in the schema (D-3). Fix t
 goes from 28/39 to roughly 34/39 without a single new feature.
 
 Artifacts: `data/user_value.json`, `docs/assets/invoice-sample.png`, transcripts in `/private/tmp/uv/out/`.
+
+## Value fixes 2026-09-02 (price-tracker, invoice)
+
+Four defects from the audit above, fixed with tests. Scope: `servers/price-tracker` and
+`servers/invoice` only (D-1, D-3, D-6, D-7 belong to spreadsheet and time-tracker).
+
+### D-2 (high, price-tracker) — a redirect off the product page still returned a price
+
+- New `servers/price-tracker/src/redirect.ts:71` `checkRedirect(requestedUrl, finalUrl, title)`.
+  A redirect is refused when the final URL lands on the home page, changes path depth family,
+  enters a category/listing segment the request was not already in (`cat`, `category`, `collections`,
+  `products`, `search`, ...), or when the page title is generic (`Products`, `Home`, `Search results`),
+  is only the shop name, or contains "not found" / "404". The message is
+  `the shop redirected to <finalUrl>, which is not a product page (<why>)`, plus what to do next.
+  A non-redirect is always allowed, whatever the title says.
+- `servers/price-tracker/src/fetch.ts:29-39,85` — `FetchedPage` now carries `requestedUrl`,
+  `finalUrl`, `status` and `redirected`.
+- `servers/price-tracker/src/index.ts:63-84` `observe()` runs the redirect check before it returns a
+  price, and throws the failure instead.
+- Confidence: `servers/price-tracker/src/extract.ts:9-35` adds `Extracted.confidence` and
+  `confidenceOf()`; `:252` json-ld high, `:279` microdata / meta-itemprop high, `:304` opengraph high,
+  `:330` data-attr medium, `:343` class hints medium, `:401` regex-fallback low.
+  `servers/price-tracker/src/store.ts:15` persists it on every observation.
+- Refusal to store: `servers/price-tracker/src/index.ts:90-99` `unstorable()` — a `low` confidence
+  reading on a page with no product title is reported but never written. Wired into `watch_add`
+  (`:209-210`) and `watch_refresh` (`:331-332`); `price_check` reports it as a `Warning:` line (`:157-158`).
+- Exposure: `price_check` prints `Confidence: <level> (source <strategy>)`
+  (`servers/price-tracker/src/index.ts:101-103,153`); `watch_add` prints the same line;
+  `watchRow` adds `confidence` and `source` (`:123-124`), as does `alerts_pending` (`:462-463`).
+- Tests: `servers/price-tracker/test/redirect.test.mjs` (8 unit cases) and three stdio tests in
+  `test/smoke.test.mjs` driven by a local http server whose `/p/gone/...` 302s to
+  `/cat/products-products/` with the title `Products`.
+
+### D-4 (medium, price-tracker) — the server lost tool selection to a generic web fetch
+
+Rewritten descriptions, `servers/price-tracker/src/index.ts`:
+- `price_check` (`:137-141`): "Use this instead of fetching the page yourself: returns the structured
+  price, currency, product title, extraction confidence, and the change since the last check; handles
+  EU/US number formats and JSON-LD/Open Graph/microdata." plus the redirect guarantee and
+  "Reading the raw HTML gives you none of that."
+- `watch_add` (`:181-184`), `watch_refresh` (`:304-306`), `alerts_pending` (`:438-441`),
+  `watch_list` (`:262`), `price_history` (`:362`) restated in the same concrete terms.
+
+### D-5 (medium, price-tracker) — `watch_add` stored a watch nothing ever checked
+
+- Honesty: `watch_add`'s description and its response now state that checks run only when
+  `watch_refresh` runs, that nothing polls the page, and suggest saying "refresh my watches" at the
+  start of a session (`servers/price-tracker/src/index.ts:181-184,245-246`).
+- `alerts_pending` is now FREE: the `gate.isPro()` early return is gone
+  (`servers/price-tracker/src/index.ts:436-448`), and the empty case distinguishes "no watches" from
+  "no alerts, refresh first" (`:467-468`).
+- New prompt `check_prices` (`servers/price-tracker/src/index.ts:490-514`): list watches, refresh all
+  (falling back to per-id on free), read `alerts_pending`, then summarise drops and target hits.
+- Free history raised 10 -> 30 observations (`servers/price-tracker/src/index.ts:23`).
+  Free watch limit unchanged at 3. Pro keeps unlimited watches, full history and refresh-all.
+
+### D-8 (low, invoice) — no currency on line amounts, silent address-less client
+
+- `servers/invoice/src/pdf.ts:27` — the PDF's `money()` now uses `formatMoney` (code included) rather
+  than `formatAmount`; columns re-laid out at `:18-19` so `EUR 1080.00` fits in UNIT and AMOUNT.
+  Verified by rendering: UNIT `EUR 90.00`, AMOUNT `EUR 1080.00`, `Tax 23% on EUR 1080.00`,
+  `Total EUR 1382.40`, nothing clipped or overlapping.
+- `servers/invoice/src/index.ts:55-68` `lineRows()` puts the currency code on every line
+  `unit_price` and `amount` in the text response of `invoice_create` (`:283-286`) and
+  `invoice_from_hours` (`:317-322`); `summarize()` already coded subtotal, tax, total and balance.
+- `servers/invoice/src/index.ts:254-262` — when the invoice's client has no address, the response says
+  the BILL TO block will show only the name, whether the client was auto-created from the name alone,
+  and gives the exact fix: `client_add {name, address, email, vat_id}` then render the PDF again.
+- `overdue_report` is now FREE (`servers/invoice/src/index.ts:414-421`); Pro keeps unlimited invoices,
+  no footer, logo and custom prefix.
+- Tests: `servers/invoice/test/smoke.test.mjs` — the free-tier lifecycle test now asserts
+  `overdue_report` answers with JSON and never mentions Pro, and a new test asserts every money key
+  matches `EUR ...`, that no money value starts with a digit, and that the bare-client note appears
+  and then disappears once `client_add` supplies an address.
+
+READMEs updated: `servers/price-tracker/README.md` free/pro table (`alerts_pending` free, history 30,
+redirect check and confidence rows) plus a new "Alerts: nothing runs in the background" section;
+`servers/invoice/README.md` free/pro table (`overdue_report` free) and a money-formatting paragraph.
+
+### Verification (verbatim)
+
+`npm run build -w servers/price-tracker -w servers/invoice` — clean, no output beyond the tsc lines.
+
+`npm test -w servers/price-tracker`:
+
+```
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1848.166958
+```
+
+`npm test -w servers/invoice`:
+
+```
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 824.334709
+```
+
+`node scripts/validate.mjs`:
+
+```
+time-tracker: 18/18 in 217 ms
+price-tracker: 18/18 in 256 ms
+spreadsheet: 15/16 in 353 ms
+invoice: 20/20 in 364 ms
+billing: 10/10
+validation db: /Users/mike/mcp-servers/data/validation.json run 6: 81/82
+```
+
+No probe in `scripts/validate.mjs` needed editing: the price-tracker probe never tested
+`alerts_pending` gating and the invoice probe tests the 4th-invoice-per-month gate, which is
+unchanged. The single failure is `free: convert 300 rows -> capped 201 lines + upgrade` (301 lines),
+which is spreadsheet D-1, owned by the concurrent agent.
+
+## Value fixes 2026-09-02 (spreadsheet, time-tracker)
+
+Four defects from the audit above, fixed in `servers/spreadsheet` and `servers/time-tracker`.
+
+### D-1 (high, spreadsheet) - the free write cap no longer writes a partial file
+
+The cap is now 500 rows (real files are bigger than toy files), and over the cap the tool writes
+nothing at all instead of a truncated file that looks complete. The refusal is `isError: false` text
+that names the row count, the cap, the upgrade path and a free workaround (filter the rows down first
+with `sheet_query`, or write in 500-row batches). The source file is never touched.
+
+- `servers/spreadsheet/src/sheet.ts:10` - `FREE_WRITE_ROWS` 200 -> 500.
+- `servers/spreadsheet/src/index.ts:56-68` - `capRows()` (which sliced the data) replaced by
+  `writeCapRefusal(rowCount, what, workaround)`, which returns the refusal text or `null`.
+- `servers/spreadsheet/src/index.ts:425` (`sheet_write`), `:472` (`sheet_add_column`), `:494`
+  (`sheet_convert`) - refuse and return before `writeMatrix`, so zero bytes are written.
+- `servers/spreadsheet/README.md:79,82` - free/pro table and the note under it.
+- `servers/spreadsheet/test/smoke.test.mjs:203` - the old "capped at 200" test became
+  "300 rows write in full, 600 rows write nothing at all": 300 rows -> 301 lines on free,
+  600 rows -> refusal text, `existsSync(out) === false` for `sheet_write`, `sheet_convert` and
+  `sheet_add_column`, source still 601 lines, and 601 lines on pro.
+- `scripts/validate.mjs:81-90` - the spreadsheet probe now expects 301 lines from the 300-row convert
+  in both tiers, plus a 600-row convert that is refused with zero bytes on free and 601 lines on pro.
+
+### D-6 (medium, spreadsheet) - `sheet_query` aggregates
+
+`sheet_query` takes `group_by: string[]` and `aggregate: [{col, fn: sum|count|avg|min|max, as?}]`,
+`sort` accepts an aggregate alias, and `limit` applies to groups. "Which rep sold the most units in
+the North region, top 5" is one call: `where '[Region] = "North"'`, `group_by ["Rep"]`,
+`aggregate [{col:"Units", fn:"sum", as:"total_units"}]`, `sort {col:"total_units", dir:"desc"}`,
+`limit 5`. `col: "*"` counts rows; `group_by` without `aggregate` defaults to a row count.
+
+- `servers/spreadsheet/src/sheet.ts:149` - `toNumber()` coerces "1,250.00", "$1,250.00",
+  "EUR 1.250,00", "(300)" and "12.5%" so text money aggregates correctly.
+- `servers/spreadsheet/src/index.ts:192` `aggValue()`, `:211` `groupRecords()`, `:238-330` the
+  rewritten `sheet_query` tool (schema, grouping, sort over aggregate aliases, group-aware header line).
+- `servers/spreadsheet/README.md:44` - tool table row.
+- `servers/spreadsheet/test/query.test.mjs` - new file: `toNumber` coercion (`:68`) and the top-5
+  question end to end over stdio (`:80`), plus multi-aggregate, two group columns, default count,
+  and clear errors for an unknown group column or sort alias.
+
+### D-3 (high, time-tracker) - money carries its currency
+
+`entry_add`, `timer_start`, `entry_edit` and `project_set_rate` take `currency`, and `rate` /
+`hourly_rate` also accept the words the user said ("90 euros an hour"), from which the currency is
+parsed (euro/euros/eur, usd/dollars, gbp/pounds, pln/zl and other codes). The currency is stored on
+the entry and wins over the project default. Reports, `export_csv` and `invoice_summary` use the
+entry currency, group money by currency when a period mixes them ("EUR 225.00 + USD 100.00", one CSV
+line per currency) and never print "$" for non-USD. "Log 2.5 hours at 90 euros an hour" answers
+`EUR 90.00/h, EUR 225.00`.
+
+- `servers/time-tracker/src/index.ts:25,39` - `currency?` on `Running` and `Entry`.
+- `:126` `normCurrency()`, `:143` `parseRate()`, `:180` `currencyForEntry()`, `:186-205` per-currency
+  `Amounts` helpers (`addAmount`, `mergeAmounts`, `nonZero`, `moneyOf`, `primaryOf`).
+- `:564` `Bucket.amounts` replaces the single `cents`/`currency` pair; `report` (table, json with an
+  `amounts` array, csv with one line per currency), `export_csv`, `invoice_summary` and the
+  `timetracker://today` resource all read it.
+- `:327` `timer_start`, `:404` `entry_add`, `:497` `entry_edit`, `:535` `project_set_rate` - schema
+  and handler changes; `entry_add` now prints the rate and the amount.
+- `servers/time-tracker/README.md:50,53,57,60` - tool table.
+- `servers/time-tracker/test/currency.test.mjs:61,111` - "2.5 hours at 90 euros an hour" -> EUR 225.00,
+  mixed EUR/USD kept apart in table, json, csv and export, rates stated in words, and
+  `invoice_summary` billing in EUR with no "$" and no "USD" anywhere.
+
+### D-7 (low, time-tracker) - partial project names
+
+`timer_start` and `entry_add` resolve a project name that case-insensitively equals, prefixes or is
+contained in exactly one existing project ("Acme" -> "Acme website") and say so in the response. When
+two or more match, nothing is logged and the candidates are listed.
+
+- `servers/time-tracker/src/index.ts:206-243` - `knownProjects()`, `resolveProject()`,
+  `ambiguousText()`; called at `:330` (`timer_start`) and `:414` (`entry_add`).
+- `servers/time-tracker/test/currency.test.mjs:125` - prefix match used and announced, timer too,
+  then a second "Acme mobile" project makes "Acme" ambiguous: both candidates listed, nothing written.
+
+### Tool descriptions
+
+Rewritten so a model picks the right tool from natural language: the spreadsheet tools name
+"excel", "xlsx", "csv" and point group/sum questions at `sheet_query` ("group by", "sum", aggregate
+aliases); the time-tracker tools name "billable", "timesheet", "hours per project" and the currency
+behaviour. `servers/spreadsheet/src/index.ts:145,152,238,311,393,482`,
+`servers/time-tracker/src/index.ts:319,391,438,589,655,694`.
+
+### Test summaries (verbatim)
+
+`npm test -w servers/spreadsheet`
+
+```
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 846.147625
+```
+
+`npm test -w servers/time-tracker`
+
+```
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 379.8385
+```
+
+`node scripts/validate.mjs`
+
+```
+time-tracker: 18/18 in 236 ms
+price-tracker: 18/18 in 255 ms
+spreadsheet: 18/18 in 360 ms
+invoice: 20/20 in 375 ms
+billing: 10/10
+validation db: /Users/mike/mcp-servers/data/validation.json run 8: 84/84
+```
