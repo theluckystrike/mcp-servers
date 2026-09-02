@@ -19,7 +19,7 @@
     "registry": {
       "status": "published",
       "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
-      "note": "4 servers live as io.github.theluckystrike/{time-tracker,price-tracker,spreadsheet,invoice} v0.1.0, mcpb packages from GitHub release v0.1.0"
+      "note": "4 servers live as io.github.theluckystrike/* v0.1.1 (mcpb packages from GitHub release v0.1.1); search is name-only"
     },
     "smithery": {
       "status": "blocked",
@@ -33,8 +33,8 @@
     },
     "mcpb": {
       "status": "published",
-      "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.1.0",
-      "note": "4 .mcpb bundles on GitHub release v0.1.0; directory submission pending"
+      "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.1.1",
+      "note": "4 .mcpb bundles on release v0.1.1 (value fixes)"
     },
     "awesome-mcp-servers": {
       "status": "submitted",
