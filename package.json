@@ -3,9 +3,15 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "workspaces": ["packages/*", "servers/*"],
+  "workspaces": [
+    "packages/*",
+    "servers/*"
+  ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "marked": "^18.0.11"
   }
 }

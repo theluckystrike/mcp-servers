@@ -1,4 +1,5 @@
 import { mintLicense, verifyLicenseKey, hex } from "./license.js";
+import { PAGES } from "./pages.js";
 
 export const PRODUCTS = {
   "time-tracker": { desc: "Track billable time from chat: timers, entries, reports, CSV, invoice-ready totals.", free: "Free: unlimited timers, last 7 days of reports, 2 rated projects.", pro: "Pro: full history, invoice summaries, group by tag, unlimited projects.", name: "MCP Time Tracker Pro", price: "price_1UBDU5JKCamubEm1wPMZI8Zf", usd: 19, pkg: "@theluckystrike/mcp-time-tracker", bin: "mcp-time-tracker", payload: "time-tracker" },
@@ -75,7 +76,7 @@ footer{margin-top:48px;font-size:14px;opacity:.7}
 
 function home() {
   const rows = Object.entries(PRODUCTS).map(([id, p]) =>
-    `<tr><td><strong>${esc(p.name)}</strong><br>${esc(p.desc)}<br><span class="muted">${esc(p.free)} ${esc(p.pro)}</span>${p.pkg ? `<br><span class="muted">Install: <code>npx -y ${esc(p.pkg)}</code> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}#readme">docs</a></span>` : ""}</td>
+    `<tr><td><strong>${p.pkg ? `<a href="/s/${esc(id)}">${esc(p.name)}</a>` : esc(p.name)}</strong><br>${esc(p.desc)}<br><span class="muted">${esc(p.free)} ${esc(p.pro)}</span>${p.pkg ? `<br><span class="muted">Install: <code>npx -y ${esc(p.pkg)}</code> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}#readme">docs</a></span>` : ""}</td>
 <td>$${p.usd}</td><td><a class="buy" href="/buy/${id}">Buy</a></td></tr>`).join("\n");
   return page("MCP Servers Pro licenses", `<h1>MCP Servers Pro licenses</h1>
 <p>Practical MCP servers for Claude, Cursor and any MCP client. Every server has a genuinely useful free tier; Pro is a one-time payment for a lifetime key. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
@@ -257,6 +258,28 @@ export default {
 
     if (path === "/" && method === "GET") {
       return new Response(home(), { headers: { "content-type": "text/html; charset=utf-8" } });
+    }
+
+    if (path.startsWith("/s/") && method === "GET") {
+      const id = path.slice(3);
+      const pg = PAGES[id];
+      if (!pg) return new Response(page("Not found", `<h1>Unknown server</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+      const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/s/${esc(id)}">
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "SoftwareApplication", name: pg.title, applicationCategory: "DeveloperApplication", operatingSystem: "macOS, Windows, Linux", description: pg.description, url: `https://mcp.zovo.one/s/${id}`, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, offers: [{ "@type": "Offer", price: "0", priceCurrency: "USD", name: "Free tier" }, { "@type": "Offer", price: String(PRODUCTS[id].usd), priceCurrency: "USD", name: "Pro, lifetime", url: `https://mcp.zovo.one/buy/${id}` }] })}</script>`;
+      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}">Buy Pro $${PRODUCTS[id].usd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a> &middot; <a href="${REPO}/releases/tag/v0.1.0">Claude Desktop bundle (.mcpb)</a></p>${pg.html}`;
+      return new Response(page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
+    if (path === "/sitemap.xml") {
+      const urls = ["/", ...Object.keys(PAGES).map((k) => `/s/${k}`)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
+    }
+    if (path === "/robots.txt") {
+      return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });
+    }
+    if (path === "/llms.txt") {
+      const lines = Object.entries(PAGES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline} Install: npx -y @theluckystrike/mcp-${k}`).join("\n");
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {
