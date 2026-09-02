@@ -19,6 +19,7 @@ const promo = js("data/promotion.json", { actions: [] });
 const organic = js("data/organic.json", { surfaces: [], servers: [], measured: [] });
 const uv = js("data/user_value.json", null);
 const uv2 = js("data/user_value_r2.json", null);
+const uv3 = js("data/user_value_r3.json", null);
 const metrics = js("data/metrics.json", { snapshots: [] });
 const m = metrics.snapshots.at(-1);
 const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
@@ -214,6 +215,9 @@ ${promo.actions.slice().sort((a, b) => b.impact - a.impact).map(a => `<tr><td cl
 <div class="tab" id="tab-uservalue">
 ${uv ? `<p class="dim">${esc(uv.method || "")} Run at ${esc(uv.at)}. Full report: <a href="docs/USER_VALUE.md">docs/USER_VALUE.md</a>.</p>
 <div class="kpis"><div class="kpi"><div class="n">${uv.totals.score}/${uv.totals.max}</div><div class="k">scenario points (0-3 each, real MCP client)</div></div><div class="kpi"><div class="n">${Math.round(uv.totals.hit_rate * 100)}%</div><div class="k">real retailer price hit rate (${esc(uv.totals.hit_rate_of_reachable)})</div></div><div class="kpi"><div class="n">${esc(uv.pdf.verdict)}</div><div class="k">invoice PDF visual check</div></div><div class="kpi"><div class="n">${(uv.free_tier.limits_hit || []).length}</div><div class="k">free limits hit in first session</div></div></div>
+${uv3 ? `<h2>Round 3: bundle, hosted endpoints, cross-server flow: ${uv3.totals?.score ?? ""}/${uv3.totals?.max ?? ""}</h2>
+<div class="tw"><table><tr><th>Surface</th><th>User said</th><th>Score</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${(uv3.scenarios || []).map(x => `<tr><td class="mono">${esc(x.surface || "")}</td><td>${esc(x.prompt)}</td><td class="num"><b>${x.score}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
+<p class="dim">Report: <a href="docs/USER_VALUE_R3.md">docs/USER_VALUE_R3.md</a>. The model never left the bundle in the cross-server flow (all tool calls stayed inside office-suite). Defects found are being fixed for v0.2.1.</p>` : ""}
 ${uv2 ? `<h2>Round 2 after the value fixes (v0.1.1): ${uv2.totals.score}/${uv2.totals.max}, round 1 was ${uv.totals.score}/${uv.totals.max}</h2>
 <div class="tw"><table><tr><th>Server</th><th>User said</th><th>R1</th><th>R2</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${uv2.scenarios.map((x, i) => { const r1 = uv.scenarios.find(y => y.id === x.id) || uv.scenarios[i] || {}; return `<tr><td class="mono">${esc(x.server)}</td><td>${esc(x.prompt)}</td><td class="num">${r1.score ?? ""}</td><td class="num"><b>${x.score}</b></td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`; }).join("")}</table></div>
 <p class="dim">Report: <a href="docs/USER_VALUE_R2.md">docs/USER_VALUE_R2.md</a>. Real-retailer hit rate round 2: ${Math.round((uv2.totals.hit_rate || 0) * 100)}%. PDF: ${esc(uv2.pdf?.verdict || "")}.</p>` : ""}
