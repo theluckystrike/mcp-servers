@@ -1,26 +1,48 @@
 {
   "name": "@theluckystrike/mcp-spreadsheet",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Open, inspect, query, edit and convert xlsx and csv files locally from your AI assistant",
   "type": "module",
-  "bin": { "mcp-spreadsheet": "dist/index.js" },
+  "bin": {
+    "mcp-spreadsheet": "dist/index.js"
+  },
   "main": "dist/index.js",
-  "files": ["dist", "README.md", "LICENSE", "server.json"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json && node -e \"require('fs').chmodSync('dist/index.js',0o755)\"",
     "test": "node --test test/*.test.mjs"
   },
-  "keywords": ["mcp", "spreadsheet", "xlsx", "csv", "excel", "modelcontextprotocol"],
+  "keywords": [
+    "mcp",
+    "spreadsheet",
+    "xlsx",
+    "csv",
+    "excel",
+    "modelcontextprotocol"
+  ],
   "license": "MIT",
   "author": "theluckystrike",
-  "repository": { "type": "git", "url": "https://github.com/theluckystrike/mcp-servers" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/spreadsheet",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@theluckystrike/mcp-license": "^0.1.0",
     "xlsx": "^0.18.5",
     "zod": "^3.25.0"
   },
-  "devDependencies": { "typescript": "^5.6.0", "@types/node": "^22.0.0" }
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
 }

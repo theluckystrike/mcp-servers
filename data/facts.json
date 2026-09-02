@@ -144,7 +144,7 @@
       "does": "Starts and stops timers, records manual entries, sets hourly rates per project, and turns the log into reports grouped by project, day, task or tag, CSV exports and invoice-ready line items. Money is computed from seconds and integer cents in one rounding step so totals always add up.",
       "for": "Freelancers, consultants and developers who already work inside Claude Code, Cursor or Claude Desktop and bill by the hour.",
       "example": "\"Start a timer for Acme, task: API refactor\" ... \"Stop it and show me this week's hours per project with amounts.\"",
-      "free": "Unlimited timers and entries; reports, lists and CSV cover the last 7 days; 2 projects with rates.",
+      "free": "Unlimited timers and entries; reports, lists and CSV cover the last 7 days; 2 projects with rates. Currency per entry (EUR, USD, GBP, PLN).",
       "pro": "Full history, invoice_summary, group by tag, unlimited rated projects.",
       "storage": "~/.local/share/mcp-servers/time-tracker/"
     },
@@ -154,8 +154,8 @@
       "does": "Fetches a product page and extracts the price from JSON-LD, microdata, Open Graph tags, common price markup or a currency-aware text fallback, normalising 1.299,00 EUR and 1,299.00 USD alike. Stores watches with a price history, refreshes them, computes min, max and change, and flags target hits and drops of 5% or more. Manual entry covers pages that block bots.",
       "for": "Anyone who asks their assistant what something costs now, whether it dropped, or to keep an eye on it.",
       "example": "\"What does this laptop cost right now?\" ... \"Watch it and tell me when it drops under 900.\"",
-      "free": "Unlimited price checks; 3 watches with the last 10 observations each.",
-      "pro": "Unlimited watches, full history, refresh all, pending alerts.",
+      "free": "Unlimited price checks with extraction confidence; 3 watches with 30 observations each; alerts_pending free; redirects off product pages are refused.",
+      "pro": "Unlimited watches, full history, refresh all.",
       "storage": "~/.local/share/mcp-servers/price-tracker/watches.json"
     },
     "spreadsheet": {
@@ -164,7 +164,7 @@
       "does": "Opens xlsx, xlsm, xlsb, ods, csv and tsv files, guesses the header row on messy exports, sniffs delimiters, and answers questions with a safe expression language (no eval): filters, sorts, per-column stats, find, computed columns such as [Qty] * [Unit Price], and conversion between formats. It never overwrites the source unless told to.",
       "for": "Anyone who says: open this file, tell me what is in it, filter it, add a column, save it.",
       "example": "\"Open orders.xlsx and show open orders over 5 units sorted by amount\" ... \"Add a Total column and save as CSV.\"",
-      "free": "Read, query, stats and find on files up to 5,000 rows and 5 MB; writes, computed columns and conversions capped at 200 rows.",
+      "free": "Read, query (filters, group by, sum/avg/min/max), stats and find on files up to 5,000 rows; writes up to 500 rows, never a partial file above that.",
       "pro": "No limits.",
       "storage": "Works on the user's own files; nothing else stored."
     },
@@ -174,9 +174,10 @@
       "does": "Stores the issuer profile and clients, allocates invoice numbers that never repeat (INV-YYYY-NNNN), computes per-line rounding, multiple VAT rates and discounts in integer minor units, renders an A4 PDF with pdfkit (multi-page tables, totals, payment details), tracks paid status and reports overdue invoices. Pairs with the time tracker: hours become an invoice in the same chat.",
       "for": "Freelancers and small businesses that want to say: make an invoice for Acme, 12 hours at 90 EUR, due in 14 days.",
       "example": "\"Invoice Acme for 12 h at 90 EUR with 23% VAT, due in 14 days, and give me the PDF.\"",
-      "free": "3 invoices per calendar month; PDF carries a small footer line.",
-      "pro": "Unlimited invoices, no branding, logo, overdue report, custom prefix.",
+      "free": "3 invoices per calendar month; overdue report free; PDF carries a small footer line.",
+      "pro": "Unlimited invoices, no branding, logo, custom prefix.",
       "storage": "~/.local/share/mcp-servers/invoice/"
     }
-  }
+  },
+  "version": "0.1.1"
 }
