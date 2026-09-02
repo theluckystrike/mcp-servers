@@ -74,6 +74,17 @@ export async function mintLicense(pem, { product, id, iat, email }) {
   return { key: `MCPL1.${body}.${bytesToB64url(sig)}`, payload };
 }
 
+/** Reject any payload whose signed fields are missing or the wrong type (review #19). */
+export function payloadShapeError(p) {
+  if (!p || typeof p !== "object" || Array.isArray(p)) return "bad payload";
+  if (p.v !== 1) return "unsupported version";
+  if (typeof p.p !== "string" || p.p.length === 0) return "bad payload";
+  if (typeof p.id !== "string" || p.id.length === 0) return "bad payload";
+  if (!Number.isSafeInteger(p.iat)) return "bad payload";
+  if (p.exp !== undefined && !(Number.isSafeInteger(p.exp) && p.exp > 0)) return "bad payload";
+  return null;
+}
+
 export async function verifyLicenseKey(keyStr, product) {
   if (typeof keyStr !== "string") return { ok: false, reason: "no key" };
   const parts = keyStr.trim().split(".");
@@ -92,9 +103,10 @@ export async function verifyLicenseKey(keyStr, product) {
     sigOk = false;
   }
   if (!sigOk) return { ok: false, reason: "signature invalid" };
-  if (payload.v !== 1) return { ok: false, reason: "unsupported version" };
+  const shape = payloadShapeError(payload);
+  if (shape) return { ok: false, reason: shape };
   if (product && payload.p !== "*" && payload.p !== product) return { ok: false, reason: `key is for ${payload.p}, not ${product}` };
   const now = Math.floor(Date.now() / 1000);
-  if (payload.exp && payload.exp < now) return { ok: false, reason: "expired" };
+  if (payload.exp !== undefined && payload.exp <= now) return { ok: false, reason: "expired" };
   return { ok: true, payload };
 }

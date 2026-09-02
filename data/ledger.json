@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T12:49:13.576Z",
+  "generated_at": "2026-09-02T12:52:39.364Z",
   "session": {
-    "count": 3,
+    "count": 4,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -14,6 +14,10 @@
       {
         "at": "2026-09-02T12:49:13.569Z",
         "note": "final verification run"
+      },
+      {
+        "at": "2026-09-02T12:52:39.358Z",
+        "note": "session 1: 4 servers built, billing live at mcp.zovo.one, repo pushed"
       }
     ]
   },
@@ -215,6 +219,10 @@
     {
       "file": "docs/DISTRIBUTION.md",
       "first_line": "Distribution runbook — 4 MCP servers (theluckystrike)"
+    },
+    {
+      "file": "docs/DISTRIBUTION_RESULT.md",
+      "first_line": "status: DONE"
     }
   ],
   "revenue": {

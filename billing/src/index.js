@@ -1,11 +1,11 @@
 import { mintLicense, verifyLicenseKey, hex } from "./license.js";
 
 const PRODUCTS = {
-  "time-tracker": { name: "MCP Time Tracker Pro", price: "price_1UBDU5JKCamubEm1wPMZI8Zf", usd: 19, pkg: "@theluckystrike/mcp-time-tracker", bin: "mcp-time-tracker", payload: "time-tracker" },
-  "price-tracker": { name: "MCP Price Tracker Pro", price: "price_1UBDU6JKCamubEm1ufsEKwSS", usd: 19, pkg: "@theluckystrike/mcp-price-tracker", bin: "mcp-price-tracker", payload: "price-tracker" },
-  spreadsheet: { name: "MCP Spreadsheet Pro", price: "price_1UBDU7JKCamubEm1LZTfrsMd", usd: 19, pkg: "@theluckystrike/mcp-spreadsheet", bin: "mcp-spreadsheet", payload: "spreadsheet" },
-  invoice: { name: "MCP Invoice Pro", price: "price_1UBDU8JKCamubEm1Ybcp5IUs", usd: 19, pkg: "@theluckystrike/mcp-invoice", bin: "mcp-invoice", payload: "invoice" },
-  bundle: { name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
+  "time-tracker": { desc: "Track billable time from chat: timers, entries, reports, CSV, invoice-ready totals.", free: "Free: unlimited timers, last 7 days of reports, 2 rated projects.", pro: "Pro: full history, invoice summaries, group by tag, unlimited projects.", name: "MCP Time Tracker Pro", price: "price_1UBDU5JKCamubEm1wPMZI8Zf", usd: 19, pkg: "@theluckystrike/mcp-time-tracker", bin: "mcp-time-tracker", payload: "time-tracker" },
+  "price-tracker": { desc: "Check and watch product prices on ordinary shop pages, with history and target alerts.", free: "Free: unlimited price checks, 3 watches, 10 observations each.", pro: "Pro: unlimited watches, full history, refresh all, pending alerts.", name: "MCP Price Tracker Pro", price: "price_1UBDU6JKCamubEm1ufsEKwSS", usd: 19, pkg: "@theluckystrike/mcp-price-tracker", bin: "mcp-price-tracker", payload: "price-tracker" },
+  spreadsheet: { desc: "Read, query, add columns to and convert xlsx and csv files without corrupting them.", free: "Free: read, query and stats up to 5,000 rows; writes capped at 200 rows.", pro: "Pro: no limits.", name: "MCP Spreadsheet Pro", price: "price_1UBDU7JKCamubEm1LZTfrsMd", usd: 19, pkg: "@theluckystrike/mcp-spreadsheet", bin: "mcp-spreadsheet", payload: "spreadsheet" },
+  invoice: { desc: "Numbered invoices with tax lines, rendered to a professional PDF, all local.", free: "Free: 3 invoices a month with a small footer line.", pro: "Pro: unlimited, no branding, logo, overdue report, custom prefix.", name: "MCP Invoice Pro", price: "price_1UBDU8JKCamubEm1Ybcp5IUs", usd: 19, pkg: "@theluckystrike/mcp-invoice", bin: "mcp-invoice", payload: "invoice" },
+  bundle: { desc: "Every server above, one key, lifetime. Saves $37 against buying four.", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
 const REPO = "https://github.com/theluckystrike/mcp-servers";
@@ -37,10 +37,10 @@ footer{margin-top:48px;font-size:14px;opacity:.7}
 
 function home() {
   const rows = Object.entries(PRODUCTS).map(([id, p]) =>
-    `<tr><td><strong>${esc(p.name)}</strong><br><span class="muted">product id: ${esc(id)}</span></td>
+    `<tr><td><strong>${esc(p.name)}</strong><br>${esc(p.desc)}<br><span class="muted">${esc(p.free)} ${esc(p.pro)}</span>${p.pkg ? `<br><span class="muted">Install: <code>npx -y ${esc(p.pkg)}</code> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}#readme">docs</a></span>` : ""}</td>
 <td>$${p.usd}</td><td><a class="buy" href="/buy/${id}">Buy</a></td></tr>`).join("\n");
   return page("MCP Servers Pro licenses", `<h1>MCP Servers Pro licenses</h1>
-<p>One-time payment, lifetime key. Keys verify offline; nothing is sent anywhere after checkout.</p>
+<p>Practical MCP servers for Claude, Cursor and any MCP client. Every server has a genuinely useful free tier; Pro is a one-time payment for a lifetime key. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
 <table><tr><th>Product</th><th>Price</th><th></th></tr>${rows}</table>
 <h2>How activation works</h2>
 <p>After payment you get a key like <code>MCPL1.xxx.yyy</code>. In Claude, run <code>license_activate</code> with the key, or set the environment variable <code>MCP_LICENSE_KEY</code>.</p>

@@ -1,0 +1,118 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP Servers Command Dashboard</title>
+<style>
+:root{color-scheme:light dark;--bg:#fcfcfb;--panel:#fff;--line:#e5e4df;--tx:#0b0b0b;--tx2:#52514e;--tx3:#82817b;--acc:#2a78d6;--good:#1baf7a;--warn:#c98500;--bad:#e34948}
+@media(prefers-color-scheme:dark){:root{--bg:#151514;--panel:#1a1a19;--line:#333330;--tx:#fff;--tx2:#c3c2b7;--tx3:#8d8c83;--acc:#3987e5;--good:#199e70}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums}
+.wrap{max-width:1240px;margin:0 auto;padding:36px 24px 80px}
+h1{font-size:28px;margin:0 0 4px;letter-spacing:-.02em}.sub{color:var(--tx3);font-size:12.5px;margin-bottom:22px}
+h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .n{font-size:24px;font-weight:650;letter-spacing:-.02em;line-height:1.1}.kpi .k{font-size:11.5px;color:var(--tx3);margin-top:4px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--tx3);padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}tr:last-child td{border-bottom:0}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}.num{text-align:right;font-family:ui-monospace,Menlo,monospace}.dim{color:var(--tx3);font-size:11.5px}
+.tools{max-width:340px;font-size:11.5px}
+.pill{display:inline-block;font-size:10px;font-weight:650;letter-spacing:.03em;padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--tx3);margin:1px 2px 1px 0;white-space:nowrap}
+.pill.ok{color:var(--good);border-color:var(--good)}.pill.bad{color:var(--bad);border-color:var(--bad)}.pill.pend{color:var(--warn);border-color:var(--warn)}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+ol,ul{margin:0;padding-left:20px;color:var(--tx2)}li{margin-bottom:6px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--line);padding:1px 4px;border-radius:3px}
+.foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--tx3);font-size:12px}
+.links a{margin-right:14px}
+</style></head><body><div class="wrap">
+<h1>MCP Servers Command Dashboard</h1>
+<div class="sub">theluckystrike &middot; generated 2026-09-02T12:52:39.364Z &middot; session 4 &middot; folder /Users/mike/mcp-servers</div>
+<div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
+
+<h2>Key numbers</h2>
+<div class="kpis">
+<div class="kpi"><div class="n">4</div><div class="k">servers built</div></div>
+<div class="kpi"><div class="n">37</div><div class="k">MCP tools</div></div>
+<div class="kpi"><div class="n">63</div><div class="k">server tests passing</div></div>
+<div class="kpi"><div class="n">3,447</div><div class="k">lines of TypeScript</div></div>
+<div class="kpi"><div class="n">2/9</div><div class="k">distribution surfaces live</div></div>
+<div class="kpi"><div class="n">$19 / $39</div><div class="k">Pro price, single / bundle</div></div>
+<div class="kpi"><div class="n">$0</div><div class="k">Stripe live sales (pending (data/sales.json not found))</div></div>
+<div class="kpi"><div class="n">8</div><div class="k">sprint units reported</div></div>
+</div>
+
+<h2>Servers</h2>
+<div class="tw"><table><tr><th>Server</th><th>Tools</th><th>LOC</th><th>Build / tests</th><th>Distribution</th><th>Tool names</th><th>Links</th></tr><tr><td class="mono"><b>invoice</b><br><span class="dim">@theluckystrike/mcp-invoice 0.1.0</span></td>
+<td class="num">10</td><td class="num">860</td>
+<td><span class="pill ok">build ok</span> <span class="pill bad"># pass 12 / # fail 0</span></td>
+<td>npm <span class="pill bad">missing</span><br>registry <span class="pill bad">missing</span><br>github <span class="pill ok">published</span><br>smithery <span class="pill pend">pending</span><br>glama <span class="pill pend">pending</span></td>
+<td class="tools dim">business_set, client_add, client_list, invoice_create, invoice_from_hours, invoice_list, invoice_get, invoice_mark_paid, invoice_pdf, overdue_report</td>
+<td><a href="https://mcp.zovo.one/buy/invoice">buy</a> &middot; <a href="servers/invoice/README.md">readme</a> &middot; <a href="servers/invoice/RESULT.md">sprint</a></td></tr>
+<tr><td class="mono"><b>price-tracker</b><br><span class="dim">@theluckystrike/mcp-price-tracker 0.1.0</span></td>
+<td class="num">8</td><td class="num">979</td>
+<td><span class="pill ok">build ok</span> <span class="pill bad"># pass 18 / # fail 0</span></td>
+<td>npm <span class="pill bad">missing</span><br>registry <span class="pill bad">missing</span><br>github <span class="pill ok">published</span><br>smithery <span class="pill pend">pending</span><br>glama <span class="pill pend">pending</span></td>
+<td class="tools dim">price_check, watch_add, watch_list, watch_remove, watch_refresh, price_history, price_add_manual, alerts_pending</td>
+<td><a href="https://mcp.zovo.one/buy/price-tracker">buy</a> &middot; <a href="servers/price-tracker/README.md">readme</a> &middot; <a href="servers/price-tracker/RESULT.md">sprint</a></td></tr>
+<tr><td class="mono"><b>spreadsheet</b><br><span class="dim">@theluckystrike/mcp-spreadsheet 0.1.0</span></td>
+<td class="num">8</td><td class="num">1008</td>
+<td><span class="pill ok">build ok</span> <span class="pill bad"># pass 31 / # fail 0</span></td>
+<td>npm <span class="pill bad">missing</span><br>registry <span class="pill bad">missing</span><br>github <span class="pill ok">published</span><br>smithery <span class="pill pend">pending</span><br>glama <span class="pill pend">pending</span></td>
+<td class="tools dim">sheet_info, sheet_read, sheet_query, sheet_stats, sheet_find, sheet_write, sheet_add_column, sheet_convert</td>
+<td><a href="https://mcp.zovo.one/buy/spreadsheet">buy</a> &middot; <a href="servers/spreadsheet/README.md">readme</a> &middot; <a href="servers/spreadsheet/RESULT.md">sprint</a></td></tr>
+<tr><td class="mono"><b>time-tracker</b><br><span class="dim">@theluckystrike/mcp-time-tracker 0.1.0</span></td>
+<td class="num">11</td><td class="num">600</td>
+<td><span class="pill ok">build ok</span> <span class="pill bad"># pass 2 / # fail 0</span></td>
+<td>npm <span class="pill bad">missing</span><br>registry <span class="pill bad">missing</span><br>github <span class="pill ok">published</span><br>smithery <span class="pill pend">pending</span><br>glama <span class="pill pend">pending</span></td>
+<td class="tools dim">timer_start, timer_stop, timer_status, entry_add, entry_list, entry_delete, entry_edit, project_set_rate, report, export_csv, invoice_summary</td>
+<td><a href="https://mcp.zovo.one/buy/time-tracker">buy</a> &middot; <a href="servers/time-tracker/README.md">readme</a> &middot; <a href="servers/time-tracker/RESULT.md">sprint</a></td></tr></table></div>
+
+<h2>Sprint results (one row per agent unit, parsed from RESULT.md)</h2>
+<div class="tw"><table><tr><th>Unit</th><th>Status</th><th>Tests</th><th>Cost</th><th>Failures logged</th><th>Insight</th></tr>
+<tr><td class="mono"><a href="billing/RESULT.md">billing</a></td><td><span class="pill ok">DONE</span></td><td class="mono">6/6</td><td class="dim"></td><td class="num">0</td><td class="dim"></td></tr>
+<tr><td class="mono"><a href="docs/CODEX_REVIEW.md">CODEX_REVIEW</a></td><td><span class="pill pend">REVIEW</span></td><td class="mono"></td><td class="dim"></td><td class="num">0</td><td class="dim"></td></tr>
+<tr><td class="mono"><a href="dashboard/RESULT.md">dashboard</a></td><td><span class="pill ok">DONE</span></td><td class="mono"></td><td class="dim">20 minutes</td><td class="num">1</td><td class="dim">because the script re-reads the previous ledger.json before overwriting it,</td></tr>
+<tr><td class="mono"><a href="docs/DISTRIBUTION_RESULT.md">DISTRIBUTION</a></td><td><span class="pill ok">DONE</span></td><td class="mono"></td><td class="dim">24 wall minutes</td><td class="num">1</td><td class="dim">the official registry's npm-ownership check (mcpName field in package.json) is verifiable by reading the registry's own Go source via `gh api` code search -- the vendor's public docs don't spell this out as clearly as the validator source comment does ("NPM is unaffected because it compares an exact metadata field rather than scanning README text"), so trusting only the written guides here would have left the mcpName</td></tr>
+<tr><td class="mono"><a href="servers/invoice/RESULT.md">servers/invoice</a></td><td><span class="pill ok">DONE</span></td><td class="mono">12/12</td><td class="dim">19 wall minutes</td><td class="num">1</td><td class="dim">The float-stability epsilon in `roundHalfUp` is load-bearing, not decoration. 1.005 * 100 evaluates to 100.49999999999999 in IEEE 754, so a plain `Math.floor(v + 0.5)` rounds a 1.005 unit price down to 100 cents instead of 101. Measured across the money suite this is the only place a naive implementation diverges, and it diverges silently by one cent per affected line, which then compounds through the per-line tax st</td></tr>
+<tr><td class="mono"><a href="servers/price-tracker/RESULT.md">servers/price-tracker</a></td><td><span class="pill ok">DONE</span></td><td class="mono">18/18</td><td class="dim">21 wall minutes</td><td class="num">1</td><td class="dim">Structured price data is not the common case on the open web. Of the extraction paths, only</td></tr>
+<tr><td class="mono"><a href="servers/spreadsheet/RESULT.md">servers/spreadsheet</a></td><td><span class="pill ok">DONE</span></td><td class="mono">31/31</td><td class="dim">24 wall minutes</td><td class="num">1</td><td class="dim">Guessing the header row cannot be done on the first row alone and cannot be done on types alone.</td></tr>
+<tr><td class="mono"><a href="servers/time-tracker/RESULT.md">servers/time-tracker</a></td><td><span class="pill ok">DONE</span></td><td class="mono">2/2</td><td class="dim">17 wall minutes</td><td class="num">1</td><td class="dim">Money must be derived from seconds and an integer cents rate in one rounding step, not by</td></tr>
+</table></div>
+
+<div class="grid2">
+<div>
+<h2>Billing (Stripe live)</h2>
+<div class="card">
+<div>Storefront <a href="https://mcp.zovo.one">https://mcp.zovo.one</a> &middot; <a href="https://mcp.zovo.one/health">health</a></div>
+<div class="dim">webhook we_1UBDXNJKCamubEm1bVV0lqnX &middot; KV LICENSES 75f8bf4872a0433285d11575cece8641</div>
+<div class="tw" style="margin-top:10px"><table><tr><th>Product</th><th>Stripe product</th><th>Price id</th><th>USD</th></tr>
+<tr><td class="mono">time-tracker</td><td class="mono dim">prod_VBaes22x8ep6dy</td><td class="mono dim">price_1UBDU5JKCamubEm1wPMZI8Zf</td><td class="num">19</td></tr><tr><td class="mono">price-tracker</td><td class="mono dim">prod_VBaf0G0s9cXwUA</td><td class="mono dim">price_1UBDU6JKCamubEm1ufsEKwSS</td><td class="num">19</td></tr><tr><td class="mono">spreadsheet</td><td class="mono dim">prod_VBafhH6MyyTg6X</td><td class="mono dim">price_1UBDU7JKCamubEm1LZTfrsMd</td><td class="num">19</td></tr><tr><td class="mono">invoice</td><td class="mono dim">prod_VBaftxRo2s4HVY</td><td class="mono dim">price_1UBDU8JKCamubEm1Ybcp5IUs</td><td class="num">19</td></tr><tr><td class="mono">bundle</td><td class="mono dim">prod_VBafU5C9o9d0f3</td><td class="mono dim">price_1UBDU9JKCamubEm1dWgRjtoW</td><td class="num">39</td></tr></table></div>
+</div>
+</div>
+<div>
+<h2>Distribution surfaces</h2>
+<div class="tw"><table><tr><th>Surface</th><th>Status</th><th>Note</th></tr>
+<tr><td><a href="https://github.com/theluckystrike/mcp-servers">github</a></td><td><span class="pill ok">published</span></td><td class="dim">public, topics set</td></tr><tr><td><a href="https://mcp.zovo.one">billing</a></td><td><span class="pill ok">published</span></td><td class="dim">Stripe LIVE, custom domain, webhook registered</td></tr><tr><td><a href="https://www.npmjs.com/~theluckystrike">npm</a></td><td><span class="pill bad">blocked</span></td><td class="dim">npm token dead (401); run: npm login --auth-type=web</td></tr><tr><td><a href="https://registry.modelcontextprotocol.io">registry</a></td><td><span class="pill bad">blocked</span></td><td class="dim">mcp-publisher 1.8.1 installed; needs npm package first (mcpName ownership check)</td></tr><tr><td><a href="https://smithery.ai">smithery</a></td><td><span class="pill pend">pending</span></td><td class="dim">smithery.yaml in each server; connect repo via GitHub OAuth (one click)</td></tr><tr><td><a href="https://glama.ai/mcp/servers">glama</a></td><td><span class="pill pend">pending</span></td><td class="dim">auto-indexes public repo; add glama.json + claim</td></tr><tr><td><a href="bundles/">mcpb</a></td><td><span class="pill pend">pending</span></td><td class="dim">Claude Desktop one-click bundles being built</td></tr><tr><td><a href="https://github.com/punkpeye/awesome-mcp-servers">awesome-mcp-servers</a></td><td><span class="pill pend">pending</span></td><td class="dim">PR after npm publish</td></tr><tr><td><a href="https://mcp.so/submit">mcp.so / PulseMCP / mcpservers.org</a></td><td><span class="pill pend">pending</span></td><td class="dim">web forms, human step</td></tr></table></div>
+</div>
+</div>
+
+<div class="grid2">
+<div>
+<h2>Why these servers (research numbers)</h2>
+<div class="tw"><table><tr><th>Measure</th><th>Value</th><th>Context</th></tr>
+<tr><td>MCP new-entrant capture ratio</td><td class="num">1.17</td><td class="dim">vs Chrome 0.033; 35.5x like-for-like</td></tr><tr><td>MCP servers for 'price tracker'</td><td class="num">0</td><td class="dim">vs 683 Chrome listings</td></tr><tr><td>MCP servers for 'time tracker'</td><td class="num">0</td><td class="dim">vs 897 Chrome listings</td></tr><tr><td>MCP servers for 'spreadsheet'</td><td class="num">4</td><td class="dim">vs 564 Chrome listings</td></tr><tr><td>MCP servers for 'invoice'</td><td class="num">60</td><td class="dim">vs 414 Chrome listings</td></tr><tr><td>Servers first published Aug 2026</td><td class="num">9,355</td><td class="dim">36% of all-time supply in one month</td></tr><tr><td>Sampled servers at zero use</td><td class="num">66.3%</td><td class="dim">of 4,811; distribution is the whole game</td></tr><tr><td>@modelcontextprotocol/sdk major bumps 12mo</td><td class="num">0</td><td class="dim">1.30.0, 29 releases; fastmcp had 2</td></tr><tr><td>Stripe Payment Links conversion (estate)</td><td class="num">0 of 74</td><td class="dim">backend Checkout Sessions 21.3%</td></tr></table></div>
+<p class="dim" style="margin-top:8px">Section 0 allocates 20% of build capacity to MCP servers on the TypeScript SDK; MCP is an option on 2027 with zero native billing, so billing had to be built. Source: <a href="file:///Users/mike/Desktop/platform-analysis-2026/index.html">platform-analysis-2026</a></p>
+</div>
+<div>
+<h2>Validation gates</h2>
+<div class="tw"><table><tr><th>Gate</th><th>Command / file</th><th>When</th></tr>
+<tr><td>Build clean (tsc strict)</td><td class="mono dim">npm run build</td><td class="dim">per server</td></tr><tr><td>Protocol smoke over stdio, free + pro</td><td class="mono dim">npm test</td><td class="dim">per server</td></tr><tr><td>License package</td><td class="mono dim">npm test -w packages/mcp-license</td><td class="dim">6 cases</td></tr><tr><td>Fresh-machine npx start &lt; 5 s</td><td class="mono dim">docs/AUDIT.md section 1</td><td class="dim">after every publish</td></tr><tr><td>Abuse probes (bad input, 1 MB strings, traversal, 0-byte files)</td><td class="mono dim">docs/AUDIT.md section 2</td><td class="dim">before publish</td></tr><tr><td>Concurrency: two writers, valid JSON</td><td class="mono dim">docs/AUDIT.md section 3</td><td class="dim">before publish</td></tr><tr><td>Checkout 303 to Stripe + /verify round trip</td><td class="mono dim">curl mcp.zovo.one</td><td class="dim">after every worker deploy</td></tr><tr><td>Independent model review (Codex)</td><td class="mono dim">docs/CODEX_REVIEW.md</td><td class="dim">per release</td></tr></table></div>
+</div>
+</div>
+
+<div class="grid2">
+<div><h2>Next actions</h2><div class="card"><ol><li>Run <code>npm login --auth-type=web</code> (about one minute, human step), then <code>scripts/publish-all.sh --go</code>.</li><li>After npm publish: <code>mcp-publisher login github</code> and publish each server.json to the official registry.</li><li>Connect the GitHub repo on Smithery and claim the four servers on Glama.</li><li>Make one real $19 purchase to prove /success end to end; record it in data/sales.json.</li><li>Adversarial audit pending (docs/AUDIT.md).</li><li>Submit the .mcpb bundles to the Claude Desktop extensions directory and open the awesome-mcp-servers PR.</li></ol></div></div>
+<div><h2>Session log</h2><div class="card"><ul><li><span class="mono dim">2026-09-02T12:52:39.358Z</span> session 1: 4 servers built, billing live at mcp.zovo.one, repo pushed</li><li><span class="mono dim">2026-09-02T12:49:13.569Z</span> final verification run</li><li><span class="mono dim">2026-09-02T12:48:56.403Z</span> second run check</li><li><span class="mono dim">2026-09-02T12:48:50.865Z</span> dashboard scaffold</li></ul></div></div>
+</div>
+
+<div class="foot">Regenerate: <code>node scripts/update-dashboard.mjs --note "..." &amp;&amp; node scripts/render-main.mjs</code>. Data: data/ledger.json, data/facts.json, data/distribution.json. Built by theluckystrike. https://github.com/theluckystrike</div>
+</div></body></html>

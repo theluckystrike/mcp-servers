@@ -1,0 +1,43 @@
+{
+  "research": {
+    "source": "file:///Users/mike/Desktop/platform-analysis-2026/index.html",
+    "decision": "Section 0 allocates 20% of build capacity to MCP servers on the TypeScript SDK; MCP is an option on 2027 with zero native billing, so billing had to be built.",
+    "numbers": [
+      ["MCP new-entrant capture ratio", "1.17", "vs Chrome 0.033; 35.5x like-for-like"],
+      ["MCP servers for 'price tracker'", "0", "vs 683 Chrome listings"],
+      ["MCP servers for 'time tracker'", "0", "vs 897 Chrome listings"],
+      ["MCP servers for 'spreadsheet'", "4", "vs 564 Chrome listings"],
+      ["MCP servers for 'invoice'", "60", "vs 414 Chrome listings"],
+      ["Servers first published Aug 2026", "9,355", "36% of all-time supply in one month"],
+      ["Sampled servers at zero use", "66.3%", "of 4,811; distribution is the whole game"],
+      ["@modelcontextprotocol/sdk major bumps 12mo", "0", "1.30.0, 29 releases; fastmcp had 2"],
+      ["Stripe Payment Links conversion (estate)", "0 of 74", "backend Checkout Sessions 21.3%"]
+    ]
+  },
+  "pricing": { "single_usd": 19, "bundle_usd": 39, "model": "one-time, lifetime, offline Ed25519 key" },
+  "billing": {
+    "storefront": "https://mcp.zovo.one",
+    "workers_dev": "https://mcp-billing.lipmichal.workers.dev",
+    "health": "https://mcp.zovo.one/health",
+    "stripe_mode": "live",
+    "webhook": "we_1UBDXNJKCamubEm1bVV0lqnX",
+    "kv": "LICENSES 75f8bf4872a0433285d11575cece8641",
+    "products": [
+      ["time-tracker", "prod_VBaes22x8ep6dy", "price_1UBDU5JKCamubEm1wPMZI8Zf", 19],
+      ["price-tracker", "prod_VBaf0G0s9cXwUA", "price_1UBDU6JKCamubEm1ufsEKwSS", 19],
+      ["spreadsheet", "prod_VBafhH6MyyTg6X", "price_1UBDU7JKCamubEm1LZTfrsMd", 19],
+      ["invoice", "prod_VBaftxRo2s4HVY", "price_1UBDU8JKCamubEm1Ybcp5IUs", 19],
+      ["bundle", "prod_VBafU5C9o9d0f3", "price_1UBDU9JKCamubEm1dWgRjtoW", 39]
+    ]
+  },
+  "gates": [
+    ["Build clean (tsc strict)", "npm run build", "per server"],
+    ["Protocol smoke over stdio, free + pro", "npm test", "per server"],
+    ["License package", "npm test -w packages/mcp-license", "6 cases"],
+    ["Fresh-machine npx start < 5 s", "docs/AUDIT.md section 1", "after every publish"],
+    ["Abuse probes (bad input, 1 MB strings, traversal, 0-byte files)", "docs/AUDIT.md section 2", "before publish"],
+    ["Concurrency: two writers, valid JSON", "docs/AUDIT.md section 3", "before publish"],
+    ["Checkout 303 to Stripe + /verify round trip", "curl mcp.zovo.one", "after every worker deploy"],
+    ["Independent model review (Codex)", "docs/CODEX_REVIEW.md", "per release"]
+  ]
+}
