@@ -5,7 +5,7 @@
   "type": "module",
   "bin": { "mcp-price-tracker": "dist/index.js" },
   "main": "dist/index.js",
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": ["dist", "README.md", "LICENSE", "server.json"],
   "engines": { "node": ">=18" },
   "scripts": {
     "build": "tsc -p tsconfig.json && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",

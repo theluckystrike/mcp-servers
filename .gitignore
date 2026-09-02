@@ -4,3 +4,5 @@ dist/
 *.log
 .env
 .wrangler/
+bundles/*.mcpb
+bundles/*/server/

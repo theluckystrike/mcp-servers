@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T12:52:39.364Z",
+  "generated_at": "2026-09-02T12:59:24.598Z",
   "session": {
-    "count": 4,
+    "count": 5,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -18,6 +18,10 @@
       {
         "at": "2026-09-02T12:52:39.358Z",
         "note": "session 1: 4 servers built, billing live at mcp.zovo.one, repo pushed"
+      },
+      {
+        "at": "2026-09-02T12:59:24.589Z",
+        "note": "billing hardened (Codex review), validation db 82/82, tabbed main dashboard"
       }
     ]
   },
@@ -45,7 +49,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 860,
+      "loc": 881,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -82,7 +86,7 @@
       "build_ok": true,
       "test_summary": "# pass 18 / # fail 0",
       "result_status": "DONE",
-      "loc": 979,
+      "loc": 998,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -190,7 +194,9 @@
       "https://mcp.zovo.one/verify?key=$KEY&product=spreadsheet",
       "https://mcp.zovo.one/webhook",
       "https://mcp.zovo.one/success",
-      "https://mcp.zovo.one/success?session_id=cs_live_bogus"
+      "https://mcp.zovo.one/success?session_id=cs_live_bogus",
+      "https://mcp.zovo.one/recover?session_id=cs_live_bogus",
+      "https://mcp.zovo.one/recover"
     ],
     "products": [
       {
@@ -216,6 +222,10 @@
     ]
   },
   "docs": [
+    {
+      "file": "docs/CODEX_REVIEW.md",
+      "first_line": "1. `packages/mcp-license/src/index.ts:94-96` — P0 — Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."
+    },
     {
       "file": "docs/DISTRIBUTION.md",
       "first_line": "Distribution runbook — 4 MCP servers (theluckystrike)"
