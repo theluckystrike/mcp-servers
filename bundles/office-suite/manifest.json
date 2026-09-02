@@ -1,0 +1,269 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-office-suite",
+  "display_name": "Office Suite (all five servers)",
+  "version": "0.2.0",
+  "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "timer_start",
+      "description": "Start a stopwatch for billable work on a project or client (timesheet / hours per project). Only one timer runs at a time: starting a new one stops and logs the previous one. Accepts an hourly rate and a currency, e.g. rate '90 euros'."
+    },
+    {
+      "name": "timer_stop",
+      "description": "Stop the running timer and log it as a time entry. Returns the duration and the entry id."
+    },
+    {
+      "name": "timer_status",
+      "description": "Show the running timer, how long it has been running, and today's total hours so far."
+    },
+    {
+      "name": "entry_add",
+      "description": "Log billable (or non-billable) time you already worked on a project - a timesheet entry. Give start plus either end or minutes, and optionally the hourly rate and its currency, e.g. rate '90 euros an hour' -> EUR."
+    },
+    {
+      "name": "entry_list",
+      "description": "List logged time entries (timesheet rows) as a compact table, with hours, billable flag and project. Free tier shows the last 7 days."
+    },
+    {
+      "name": "entry_delete",
+      "description": "Delete one time entry by id."
+    },
+    {
+      "name": "entry_edit",
+      "description": "Change fields of an existing entry. Only the fields you pass are changed."
+    },
+    {
+      "name": "project_set_rate",
+      "description": "Set the hourly rate and currency used to turn tracked hours into money for a project or client."
+    },
+    {
+      "name": "report",
+      "description": "Timesheet report: total tracked hours and billable money for a period, grouped by (group by) project, day, task or tag - hours per project, how much to bill. Money is grouped by currency and never mixes EUR with USD. Free tier covers the last 7 days."
+    },
+    {
+      "name": "export_csv",
+      "description": "Export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Free tier exports the last 7 days."
+    },
+    {
+      "name": "invoice_summary",
+      "description": "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00). Free for the last 7 days; Pro invoices any period from the full history."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    },
+    {
+      "name": "price_check",
+      "description": "Use this instead of fetching the page yourself: returns the structured price, currency, product title, extraction confidence, and the change since the last check; handles EU/US number formats and JSON-LD/Open Graph/microdata. It also verifies the shop did not redirect off the product page, so a dead item reports a clear failure rather than the cheapest thing on a category listing. Reading the raw HTML gives you none of that. Does not create a watch - use watch_add for that."
+    },
+    {
+      "name": "watch_add",
+      "description": "Start tracking a product page: fetches it once, stores the first observation with its extraction confidence, and optionally records a target price. There is no background job - prices are only re-read when watch_refresh runs, and alerts_pending then reports drops and target hits. Ask \"refresh my watches\" at the start of a session."
+    },
+    {
+      "name": "watch_list",
+      "description": "Show every tracked item with its current price, previous price, min, max, change %, target, extraction confidence and last check time. Prices are as of the last watch_refresh, not live."
+    },
+    {
+      "name": "watch_remove",
+      "description": "Stop tracking an item, by watch id or by URL. Its history is deleted."
+    },
+    {
+      "name": "watch_refresh",
+      "description": "This is what actually checks prices: re-fetches one watch or every watch, appends the new observations and returns current, previous, min, max, change %, extraction confidence and target hits. Nothing runs in the background, so run this whenever the user asks about prices, drops or alerts - typically once at the start of a session, then read alerts_pending."
+    },
+    {
+      "name": "price_history",
+      "description": "List the stored observations for one watch, newest last, each with its price, currency, source and extraction confidence. Free shows the last 30."
+    },
+    {
+      "name": "price_add_manual",
+      "description": "Store a price you read yourself, for shops that block automated requests. Creates the watch if it does not exist yet."
+    },
+    {
+      "name": "alerts_pending",
+      "description": "Answer \"did anything I watch get cheaper?\": lists every watch whose latest price is at or below its target, or which dropped 5% or more against the previous observation, with the change % and the confidence of the reading. Free and unlimited. It reads stored observations, so run watch_refresh first if the prices are stale."
+    },
+    {
+      "name": "sheet_info",
+      "description": "Open an excel (xlsx/xlsm/xlsb/ods) or csv/tsv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading, querying or summing anything in a spreadsheet."
+    },
+    {
+      "name": "sheet_read",
+      "description": "Read rows from an excel or csv sheet as a text table, JSON records or CSV text. Use limit/offset to page through big files, or range for an A1 block like B2:F40. For totals or per-group sums use sheet_query with group_by instead."
+    },
+    {
+      "name": "sheet_query",
+      "description": "Query an excel (xlsx) or csv file without writing any code: filter rows, group by a column, sum/count/average, sort and limit. where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. Column names with spaces go in brackets: [Unit Price] > 10 AND [Region] contains \"north\". Strings use single or double quotes. Use group_by + aggregate for questions like \"which rep sold the most units in the North region\": where '[Region] = \"North\"', group_by [\"Rep\"], aggregate [{\"col\":\"Units\",\"fn\":\"sum\",\"as\":\"total_units\"}], sort {\"col\":\"total_units\",\"dir\":\"desc\"}, limit 5. Aggregate functions: sum, count, avg, min, max. Numbers written as text (\"1,250.00\", \"$1,250.00\") are counted as numbers. sort may name an aggregate alias."
+    },
+    {
+      "name": "sheet_stats",
+      "description": "Whole-column statistics for an excel or csv sheet: count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too. For a sum per group (per rep, per region, per month) use sheet_query with group_by and aggregate."
+    },
+    {
+      "name": "sheet_find",
+      "description": "Search every cell for text (case insensitive) and return cell addresses with a preview of the row it is on."
+    },
+    {
+      "name": "sheet_write",
+      "description": "Write rows to an excel (xlsx) or csv/tsv/json file. rows may be objects (keys become headers) or arrays (first array is the header row). mode new_file writes a brand new file and refuses to clobber an existing one; append adds the rows under the existing data; overwrite replaces the file contents. Format follows the extension of out_path (.xlsx, .csv, .tsv, .json)."
+    },
+    {
+      "name": "sheet_add_column",
+      "description": "Add a computed column and save the result to a NEW file (the source is never modified unless out_path points at it). formula uses the same expression language as sheet_query over the columns of each row, e.g. \"[Qty] * [Unit Price]\" or '[Country] = \"PL\"'. Alternatively pass values, one per data row."
+    },
+    {
+      "name": "sheet_convert",
+      "description": "Convert a sheet between excel (xlsx), csv and json. Writes a new file next to the source unless out_path is given; the source is never modified."
+    },
+    {
+      "name": "business_set",
+      "description": "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices."
+    },
+    {
+      "name": "client_add",
+      "description": "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details."
+    },
+    {
+      "name": "client_list",
+      "description": "List every stored client with their id, address, email and VAT id."
+    },
+    {
+      "name": "invoice_create",
+      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed."
+    },
+    {
+      "name": "invoice_from_hours",
+      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice."
+    },
+    {
+      "name": "invoice_list",
+      "description": "List invoices, optionally filtered by status (unpaid, paid, partial), client, and an issue-date range."
+    },
+    {
+      "name": "invoice_get",
+      "description": "Return the full stored record for one invoice number, including every line and tax breakdown."
+    },
+    {
+      "name": "invoice_mark_paid",
+      "description": "Record a payment. Without an amount the invoice is marked fully paid; a smaller amount marks it partial and reports the remaining balance."
+    },
+    {
+      "name": "invoice_pdf",
+      "description": "Render an invoice as an A4 PDF you can send: issuer block, BILL TO client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Every money value on the page carries its currency code. Returns the file path."
+    },
+    {
+      "name": "overdue_report",
+      "description": "Answer \"which invoices are overdue?\": every unpaid or partly paid invoice past its due date, with days overdue, the outstanding amount per invoice and the outstanding total per currency. Free and unlimited."
+    },
+    {
+      "name": "expense_add",
+      "description": "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. Amounts are integer minor units in the expense's own currency."
+    },
+    {
+      "name": "expense_list",
+      "description": "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed."
+    },
+    {
+      "name": "expense_update",
+      "description": "Change any field of a stored expense by id. Only the fields you pass are changed."
+    },
+    {
+      "name": "expense_delete",
+      "description": "Delete one expense by id. The receipt file itself is left on disk."
+    },
+    {
+      "name": "receipt_attach",
+      "description": "Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed."
+    },
+    {
+      "name": "category_rules",
+      "description": "Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, and rules are applied by expense_add when no category is given."
+    },
+    {
+      "name": "expense_settings",
+      "description": "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to read them. Set default_vat_rate once and every expense gets its net/VAT split without the caller having to repeat the rate."
+    },
+    {
+      "name": "expense_summary",
+      "description": "Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together."
+    },
+    {
+      "name": "mileage_add",
+      "description": "Record a business trip as an expense. Money is distance x rate, using the built-in rate table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) unless you pass your own rate. Give either km or miles."
+    },
+    {
+      "name": "expense_export",
+      "description": "Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all."
+    },
+    {
+      "name": "expense_to_invoice",
+      "description": "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate, so the invoice recomputes the same tax. An expense with no VAT rate is split at the expense_settings default_vat_rate if one is set, and otherwise rebilled gross with tax_rate 0 and a warning in its description, so a downstream default rate cannot tax it twice. Line items are grouped per currency because one invoice carries one currency. This is a read-only preview: nothing is marked rebilled unless mark_rebilled is true, or expense_mark_rebilled is called once the invoice exists."
+    },
+    {
+      "name": "expense_mark_rebilled",
+      "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the ids from expense_to_invoice, or the same project and date range. Optionally record the invoice number on each expense. This is the step expense_to_invoice no longer does for you."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "office",
+    "bundle",
+    "time-tracking",
+    "timesheet",
+    "price-tracking",
+    "price-drop",
+    "shopping",
+    "deals",
+    "spreadsheet",
+    "xlsx",
+    "csv",
+    "excel",
+    "invoice",
+    "invoicing",
+    "pdf",
+    "vat",
+    "expenses",
+    "receipts",
+    "mileage",
+    "freelance"
+  ]
+}
