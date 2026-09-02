@@ -1,0 +1,224 @@
+{
+  "generated_at": "2026-09-02T12:49:13.576Z",
+  "session": {
+    "count": 3,
+    "history": [
+      {
+        "at": "2026-09-02T12:48:50.865Z",
+        "note": "dashboard scaffold"
+      },
+      {
+        "at": "2026-09-02T12:48:56.403Z",
+        "note": "second run check"
+      },
+      {
+        "at": "2026-09-02T12:49:13.569Z",
+        "note": "final verification run"
+      }
+    ]
+  },
+  "servers": [
+    {
+      "id": "invoice",
+      "npm_name": "@theluckystrike/mcp-invoice",
+      "version": "0.1.0",
+      "dir": "servers/invoice",
+      "tools": [
+        "business_set",
+        "client_add",
+        "client_list",
+        "invoice_create",
+        "invoice_from_hours",
+        "invoice_list",
+        "invoice_get",
+        "invoice_mark_paid",
+        "invoice_pdf",
+        "overdue_report"
+      ],
+      "tool_count": 10,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 12 / # fail 0",
+      "result_status": "DONE",
+      "loc": 860,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "price-tracker",
+      "npm_name": "@theluckystrike/mcp-price-tracker",
+      "version": "0.1.0",
+      "dir": "servers/price-tracker",
+      "tools": [
+        "price_check",
+        "watch_add",
+        "watch_list",
+        "watch_remove",
+        "watch_refresh",
+        "price_history",
+        "price_add_manual",
+        "alerts_pending"
+      ],
+      "tool_count": 8,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 18 / # fail 0",
+      "result_status": "DONE",
+      "loc": 979,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "spreadsheet",
+      "npm_name": "@theluckystrike/mcp-spreadsheet",
+      "version": "0.1.0",
+      "dir": "servers/spreadsheet",
+      "tools": [
+        "sheet_info",
+        "sheet_read",
+        "sheet_query",
+        "sheet_stats",
+        "sheet_find",
+        "sheet_write",
+        "sheet_add_column",
+        "sheet_convert"
+      ],
+      "tool_count": 8,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 31 / # fail 0",
+      "result_status": "DONE",
+      "loc": 1008,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "time-tracker",
+      "npm_name": "@theluckystrike/mcp-time-tracker",
+      "version": "0.1.0",
+      "dir": "servers/time-tracker",
+      "tools": [
+        "timer_start",
+        "timer_stop",
+        "timer_status",
+        "entry_add",
+        "entry_list",
+        "entry_delete",
+        "entry_edit",
+        "project_set_rate",
+        "report",
+        "export_csv",
+        "invoice_summary"
+      ],
+      "tool_count": 11,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 2 / # fail 0",
+      "result_status": "DONE",
+      "loc": 600,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    }
+  ],
+  "billing": {
+    "status": "DONE",
+    "urls": [
+      "https://mcp.zovo.one",
+      "https://mcp-billing.lipmichal.workers.dev",
+      "https://mcp.zovo.one/webhook,",
+      "https://mcp.zovo.one/health",
+      "https://mcp.zovo.one/buy/time-tracker",
+      "https://checkout.stripe.com/c/pay/cs_live_b1hy5398lsltSfoQR2MJjsQ14fw3i7OyLl6I83TODfLA7CGRYLgEHzwgFX#...",
+      "https://mcp.zovo.one/buy/nope",
+      "https://mcp.zovo.one/verify?key=$KEY",
+      "https://mcp.zovo.one/verify?key=$KEY&product=spreadsheet",
+      "https://mcp.zovo.one/webhook",
+      "https://mcp.zovo.one/success",
+      "https://mcp.zovo.one/success?session_id=cs_live_bogus"
+    ],
+    "products": [
+      {
+        "id": "invoice",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/invoice"
+      },
+      {
+        "id": "price-tracker",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/price-tracker"
+      },
+      {
+        "id": "spreadsheet",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/spreadsheet"
+      },
+      {
+        "id": "time-tracker",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/time-tracker"
+      }
+    ]
+  },
+  "docs": [
+    {
+      "file": "docs/DISTRIBUTION.md",
+      "first_line": "Distribution runbook — 4 MCP servers (theluckystrike)"
+    }
+  ],
+  "revenue": {
+    "stripe_live_sales": 0,
+    "note": "pending (data/sales.json not found)"
+  }
+}
