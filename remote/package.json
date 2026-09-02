@@ -1,0 +1,9 @@
+{
+  "name": "mcp-remote-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "vendor": "node build-vendor.mjs",
+    "deploy": "node build-vendor.mjs && wrangler deploy"
+  }
+}

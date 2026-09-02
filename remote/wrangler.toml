@@ -1,0 +1,14 @@
+name = "mcp-remote"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+account_id = "dd3f2a29b7707e21a87f26a622c0bb9d"
+workers_dev = true
+
+# mcp-billing owns mcp.zovo.one as a custom domain; a route pattern is more
+# specific than a custom domain, so /mcp* lands here and everything else there.
+routes = [{ pattern = "mcp.zovo.one/mcp*", zone_name = "zovo.one" }]
+
+[[kv_namespaces]]
+binding = "REMOTE_DATA"
+id = "cf848cc5c07d4e0a9c7c65ad1c70055c"
