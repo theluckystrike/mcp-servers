@@ -396,9 +396,113 @@ ${FOOT}`,
       { q: "How do refunds work?", a: "Mail support@zovo.one within 14 days and the payment is refunded. Because the key cannot be revoked remotely, this runs on trust in both directions." },
     ],
   },
+  "expense-tracking-in-claude": {
+    title: "Log expenses and mileage in Claude, split VAT, rebill to an invoice",
+    description: "Say a receipt in one line and get it logged, VAT-split and categorised. Worked example: 61.50 EUR at 23% VAT, Polish mileage, rebill without double tax.",
+    html: `<h1>Log expenses and mileage in Claude, split VAT, rebill to an invoice</h1>
+<p>The usual way to keep a business expense ledger is a spreadsheet you update days later from a pile of
+receipts, or an app you open, log into and tap through. The MCP Expense Tracker puts the ledger in the
+chat window: say "61.50 euros at Adobe, software, 23% VAT, billable to Acme" and it is logged with the
+VAT already split out, categorised from a rule you set once, and marked ready to rebill. Everything is a
+plain JSON file on your own machine.</p>
+
+<h2>Install it</h2>
+<p>One command for Claude Code:</p>
+<pre><code>claude mcp add expense-tracker -- npx -y @theluckystrike/mcp-expense-tracker</code></pre>
+<p>Cursor reads the same kind of config. Add this to <code>~/.cursor/mcp.json</code> (or the project-level
+<code>.cursor/mcp.json</code>), then restart Cursor:</p>
+<pre><code>{
+  "mcpServers": {
+    "expense-tracker": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-expense-tracker"]
+    }
+  }
+}</code></pre>
+<p>Claude Desktop uses <code>claude_desktop_config.json</code> with the same block. There is no account, no
+API key and no login step: the server runs locally over stdio and writes to
+<code>~/.local/share/mcp-servers/expense-tracker/</code>.</p>
+
+<h2>Log a receipt and watch the VAT split</h2>
+<p>Every amount you say is the gross figure printed on the receipt. <code>vat_rate</code> does the rest:
+<code>net = round(gross * 100 / (100 + rate))</code> and <code>vat = gross - net</code>, so net plus VAT
+is always exactly the gross, to the cent. Take the line above: 61.50 EUR gross at 23% VAT splits to
+net 50.00 EUR and VAT 11.50 EUR. Money is stored as integer minor units in the expense's own currency, so
+that split has no floating point residue and a summary of many expenses adds up to the same total you
+would get by hand.</p>
+<p>An empty category is not left blank. If you have told the server that Adobe means software, the same
+sentence without a category still files it under software, because <code>expense_add</code> checks the
+stored merchant rules before it gives up and leaves the field empty.</p>
+
+<h2>Categories that learn from you, not from a fixed list</h2>
+<p><code>category_rules</code> holds a list of match-to-category pairs. Each match is tried first as a
+case-insensitive regular expression and, if that is not valid regex, as a plain substring, so "adobe" or
+"amazon.*office" both work without escaping. The first rule that matches wins. Call
+<code>category_rules</code> with no arguments to see what is stored, or replace the whole list at once:
+no machine learning, no confidence score, just the rule you wrote read back to you exactly.</p>
+
+<h2>Mileage from a rate table, not a guess</h2>
+<p>"Log a 45 km trip in Poland for a client meeting in Krakow, billable to Acme" prices itself:
+<code>mileage_add</code> multiplies distance by the region's rate and rounds once. The built-in table is
+PL 1.15 PLN per km, UK 0.45 GBP per mile, US 0.70 USD per mile and EU 0.30 EUR per km. 45 km at the Polish
+rate is 45 x 1.15 = 51.75 PLN, stored as an expense in PLN with no VAT rate, because mileage allowances are
+not usually VAT-bearing. With no region given, kilometres default to the EU rate and miles to the US rate;
+<code>rate_per_km</code> overrides the table entirely if your own employer or tax authority sets a
+different figure. These are convenience defaults, not tax advice: check the rate your own authority allows
+for the year before you rely on it.</p>
+
+<h2>Receipts you can prove later</h2>
+<p><code>receipt_attach</code> takes a path to the receipt file, checks that it exists, and stores the path
+together with a sha256 of its bytes. That hash is the part worth having: if the file on disk is ever
+edited or replaced, the stored hash no longer matches it, so an audit later has a way to prove the receipt
+attached to an expense is the same file that was there when the expense was logged.</p>
+
+<h2>Summaries, always per currency</h2>
+<p>"How much did I spend on software this quarter, and what is still billable to Acme" runs
+<code>expense_summary</code> grouped by category, project, month or merchant, reporting the gross, the net
+and the VAT for each group. Currencies are never mixed: an expense in PLN and one in EUR appear as two
+lines under the same category rather than one wrong total. <code>expense_list</code> answers narrower
+questions the same way, with totals per currency for whatever date range and filters you gave it.</p>
+
+<h2>Rebilling without taxing twice</h2>
+<p>The point of marking an expense billable is to get it onto a client's invoice, and the wiring to
+<a href="/guides/invoice-pdf-from-chat">the invoice server</a> is the part worth being precise about.
+<code>expense_to_invoice</code> takes a project and a date range and returns line items shaped exactly as
+<code>invoice_create</code> expects: <code>{description, quantity, unit_price, tax_rate}</code>. The
+<code>unit_price</code> it sends is the <strong>net</strong> amount, not the gross, and <code>tax_rate</code>
+carries the VAT rate along with it. The invoice server then computes its own tax line from
+<code>unit_price</code> and <code>tax_rate</code>, which lands on the same 11.50 EUR of VAT the expense
+already split out. If the rebill sent the gross 61.50 EUR as the unit price instead, the invoice would add
+23% VAT on top of an amount that already included VAT once, over-charging the client by the whole VAT
+figure. Because one invoice carries one currency, expenses in more than one currency come back grouped by
+currency, and you pass one group per invoice. Expenses are marked rebilled once sent, so asking again for
+the same project and range does not bill the client twice; <code>include_rebilled</code> and
+<code>mark_rebilled</code> exist for the times you want to override that.</p>
+
+<h2>Export and free tier</h2>
+<p><code>expense_export</code> writes a date range to csv, xlsx or json and never writes a partial file: if
+a limit would be exceeded, nothing is created at all and the tool says why. Free covers unlimited logging
+of expenses, mileage and receipts, a 30-day window on <code>expense_list</code> and
+<code>expense_summary</code>, 3 projects, 5 category rules, csv and json export up to 200 rows, and
+<code>expense_to_invoice</code> for up to 20 items at cost price. Pro ($19 once) opens full history,
+unlimited projects and rules, xlsx export, and a <code>markup_percent</code> on the rebill. Full comparison
+in <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>. Product page:
+<a href="/s/expense-tracker">MCP Expense Tracker</a>, which pairs with
+<a href="/s/invoice">MCP Invoice</a> for the rebill above and
+<a href="/s/time-tracker">MCP Time Tracker</a> for the hours on the same project, covered in
+<a href="/guides/track-time-in-claude-code">the time tracking guide</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "How exactly is VAT split out of a receipt amount?", a: "The amount you give is the gross figure on the receipt. net = round(gross * 100 / (100 + vat_rate)) and vat = gross - net, so net plus VAT always equals the gross exactly. 61.50 EUR at 23% VAT splits to net 50.00 EUR and VAT 11.50 EUR." },
+      { q: "What are the mileage rates and can I use my own?", a: "The built-in table is PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km, with EU used by default for kilometres and US for miles. rate_per_km overrides the table with your own figure and currency. These are convenience defaults, not tax advice." },
+      { q: "Does rebilling an expense charge VAT twice?", a: "No. expense_to_invoice sends the net amount as unit_price and the original rate as tax_rate, so invoice_create computes the same VAT figure once. Sending the gross amount instead would tax an already-taxed figure a second time, which is why the server sends net." },
+      { q: "How does it prove a receipt file has not been altered?", a: "receipt_attach stores the file's path together with a sha256 hash of its bytes at the moment you attach it. If the file is later edited or swapped, the stored hash no longer matches it, which is what an audit checks." },
+      { q: "Is anything uploaded when I log an expense or export a report?", a: "No. All data is stored in a plain JSON file under ~/.local/share/mcp-servers/expense-tracker/, and the server makes no network calls at all. Exports write to a local path you choose or the server's own data directory." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: track billable hours, make an invoice PDF from a chat message, query Excel files, watch product prices, and what Pro adds.",
+  description: "Practical guides: track billable hours, make an invoice PDF, log expenses and mileage, query Excel files, watch product prices, and what Pro adds.",
 };

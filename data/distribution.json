@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-02T13:58:30Z",
+  "updated_at": "2026-09-02T14:19:10Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -49,17 +49,17 @@
     "docker-mcp-catalog": {
       "status": "submitted",
       "url": "https://github.com/docker/mcp-registry/pull/4892",
-      "note": "PR adds servers/{time-tracker,price-tracker,spreadsheet,invoice}/server.yaml + tools.json; source.dockerfile=servers/<name>/Dockerfile with repo root as build context; pinned to commit 7998ce2; cmd/validate 11/11 per server; task build not run (no Docker daemon on this machine); awaiting Docker team review"
+      "note": "PR adds servers/{time-tracker,price-tracker,spreadsheet,invoice}/server.yaml + tools.json; source.dockerfile=servers/<name>/Dockerfile with repo root as build context; pinned to commit 7998ce2; cmd/validate 11/11 per server; task build not run (no Docker daemon on this machine); awaiting Docker team review; expense-tracker added same PR (server.yaml+tools.json, commit d82c613, validate 11/11)"
     },
     "cline-marketplace": {
       "status": "submitted",
       "url": "https://github.com/cline/mcp-marketplace/issues/2397",
-      "note": "four submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install"
+      "note": "four submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install; issue 2401 expense-tracker added"
     },
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "5 long-form guides + index, FAQPage JSON-LD, sitemap 11 URLs, IndexNow pinged"
+      "note": "6 long-form guides + index, FAQPage JSON-LD, sitemap 12 URLs, IndexNow pinged (expense-tracking-in-claude added)"
     },
     "mcpservers.org": {
       "status": "submitted",
@@ -196,6 +196,28 @@
       "cline-marketplace": "submitted",
       "mcpservers.org": "submitted",
       "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead"
+    },
+    "expense-tracker": {
+      "npm": "missing",
+      "registry": "pending: v0.2.0",
+      "github": "published",
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "n/a: not in that PR",
+      "mcp.so": "skipped: paid",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "n/a: not in that batch",
+      "mcpmarket.com": "n/a: not in that batch",
       "cursor.directory": "blocked: login",
       "pulsemcp": "blocked: intake paused",
       "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
