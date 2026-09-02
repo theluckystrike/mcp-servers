@@ -94,7 +94,7 @@ Also exposed: the resource `timetracker://today` (today's summary) and the promp
 | Projects with an hourly rate | 2 | Unlimited |
 | CSV export | Last 7 days | All history |
 | `report` grouped by tag | - | Yes |
-| `invoice_summary` | - | Yes |
+| `invoice_summary` | Last 7 days | Any period, full history |
 
 Get Pro: https://mcp.zovo.one/buy/time-tracker ($19 for this server, $39 for every server, lifetime).
 Keys are Ed25519 signed and verified offline.
