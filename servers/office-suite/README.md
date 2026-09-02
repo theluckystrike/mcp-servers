@@ -6,7 +6,7 @@ One install for the whole freelancer office. This MCP server proxies four siblin
 
 ## 60-second install
 
-npm publish for `@theluckystrike/mcp-office-suite` (and its four dependencies) is pending. Until then, the `.mcpb` one-click bundle or a clone+build is the working path -- both are verified below.
+npm publish for `@theluckystrike/mcp-office-suite` (and its four dependencies) is pending. Until then, the `.mcpb` one-click bundle or a clone+build is the working path -- both are verified below. This server is packaged as `office-suite.mcpb` on release v0.2.1 and is listed on the official MCP registry (`io.github.theluckystrike/office-suite-time-invoice-expense-excel-price`).
 
 **One-click (.mcpb):** download `office-suite.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
