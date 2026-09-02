@@ -1,0 +1,650 @@
+#!/usr/bin/env node
+import { createHash, randomBytes } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { z } from "zod";
+import * as XLSX from "xlsx";
+import {
+  currencyDecimals, defaultRegion, formatMoney, isIsoDate, isoDaysAgo, isoToday,
+  MILEAGE_RATES, mileageAmount, roundHalfUp, toMajor, toMinor, vatSplit,
+} from "./money.js";
+import { dataDir, load, lockPath, save, type DB, type Expense, type Rule } from "./store.js";
+
+const PRODUCT = "expense-tracker";
+const FREE_WINDOW_DAYS = 30;
+const FREE_PROJECTS = 3;
+const FREE_RULES = 5;
+const FREE_EXPORT_ROWS = 200;
+const FREE_REBILL_ITEMS = 20;
+
+const gate = createLicenseGate({ product: PRODUCT });
+
+/** Every read-modify-write cycle is serialised across processes on one data dir. */
+function locked<T>(fn: () => T | Promise<T>): Promise<T> {
+  return withFileLock(lockPath(), fn);
+}
+
+const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
+const fail = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true as const });
+const json = (v: unknown) => ok(JSON.stringify(v, null, 2));
+/** A limit hit is information, not a transport error: isError stays false. */
+const gated = (text: string) => ok(text);
+
+function newId(): string { return randomBytes(4).toString("hex"); }
+
+function expandPath(p: string): string {
+  const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
+  return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
+}
+
+function normCurrency(raw: string | undefined, fallback = "EUR"): string {
+  const s = String(raw ?? fallback).trim().toUpperCase();
+  return s;
+}
+
+/* ------------------------------------------------------------------ filtering */
+
+interface Filter { from?: string; to?: string; project?: string; category?: string; billable?: boolean }
+
+function windowNote(from: string | undefined): { from?: string; note?: string } {
+  if (gate.isPro()) return { from };
+  const cutoff = isoDaysAgo(FREE_WINDOW_DAYS);
+  if (from && from >= cutoff) return { from };
+  return {
+    from: cutoff,
+    note: `Free tier reads the last ${FREE_WINDOW_DAYS} days only, so this covers ${cutoff} onwards${from ? ` instead of ${from}` : ""}. ` +
+      gate.upgradeText("full expense history"),
+  };
+}
+
+function select(db: DB, f: Filter): Expense[] {
+  return db.expenses.filter((e) => {
+    if (f.from && e.date < f.from) return false;
+    if (f.to && e.date > f.to) return false;
+    if (f.project && (e.project ?? "").toLowerCase() !== f.project.toLowerCase()) return false;
+    if (f.category && (e.category ?? "").toLowerCase() !== f.category.toLowerCase()) return false;
+    if (typeof f.billable === "boolean" && e.billable !== f.billable) return false;
+    return true;
+  }).sort((a, b) => (a.date === b.date ? a.created.localeCompare(b.created) : a.date.localeCompare(b.date)));
+}
+
+function projectsOf(db: DB): string[] {
+  const s = new Set<string>();
+  for (const e of db.expenses) if (e.project) s.add(e.project);
+  return [...s];
+}
+
+/** A rule matches on the merchant, as a case-insensitive regex, or as a substring if the regex is invalid. */
+function ruleMatches(rule: Rule, merchant: string): boolean {
+  const m = merchant.toLowerCase();
+  try { return new RegExp(rule.match, "i").test(merchant); }
+  catch { return m.includes(rule.match.toLowerCase()); }
+}
+
+function applyRules(db: DB, merchant: string | undefined): string | undefined {
+  if (!merchant) return undefined;
+  for (const r of db.rules) if (ruleMatches(r, merchant)) return r.category;
+  return undefined;
+}
+
+function view(e: Expense) {
+  const s = vatSplit(e.amount_minor, e.vat_rate);
+  return {
+    id: e.id, date: e.date,
+    amount: formatMoney(e.amount_minor, e.currency),
+    currency: e.currency,
+    net: formatMoney(s.net_minor, e.currency),
+    vat: formatMoney(s.vat_minor, e.currency),
+    vat_rate: e.vat_rate ?? 0,
+    category: e.category, merchant: e.merchant, project: e.project,
+    billable: e.billable, note: e.note,
+    receipt: e.receipt_path ? { path: e.receipt_path, sha256: e.receipt_sha256 } : undefined,
+    mileage: e.mileage
+      ? `${e.mileage.distance} ${e.mileage.unit} at ${e.mileage.rate} ${e.currency}/${e.mileage.unit} (${e.mileage.region}) - ${e.mileage.purpose}`
+      : undefined,
+    rebilled_at: e.rebilled_at,
+  };
+}
+
+const server = new McpServer(
+  { name: "mcp-expense-tracker", version: "0.2.0" },
+  { capabilities: { tools: {}, resources: {}, prompts: {} } },
+);
+
+/* ---------------------------------------------------------------- expense_add */
+
+const amount = (name: string) => z.number().finite().refine((n) => n >= 0, `${name} must be zero or positive`);
+
+server.registerTool("expense_add", {
+  title: "Add an expense",
+  description: "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. Amounts are integer minor units in the expense's own currency.",
+  inputSchema: {
+    amount: amount("amount").describe("Gross amount on the receipt, in major units, e.g. 12.34"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("ISO code, default EUR"),
+    category: z.string().optional().describe("Category, e.g. software, travel, office. Omit to let the category rules decide"),
+    merchant: z.string().optional().describe("Who was paid, e.g. Adobe"),
+    date: z.string().optional().describe("ISO date YYYY-MM-DD, default today"),
+    project: z.string().optional().describe("Project or client this belongs to"),
+    note: z.string().optional(),
+    receipt_path: z.string().optional().describe("Absolute path to the receipt file; it is checked and hashed"),
+    billable: z.boolean().optional().describe("Rebillable to the client, default false"),
+    vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent already included in amount"),
+  },
+}, async (a) => {
+  try {
+    const date = a.date ?? isoToday();
+    if (!isIsoDate(date)) return fail(`date must be a real calendar date as YYYY-MM-DD, got "${date}".`);
+    const currency = normCurrency(a.currency);
+    if (!/^[A-Z]{3}$/.test(currency)) return fail(`currency must be a 3-letter ISO code, got "${currency}".`);
+    const minor = toMinor(a.amount, currency);
+    if (!Number.isSafeInteger(minor)) return fail("that amount is too large to represent exactly.");
+
+    let receipt: { path: string; sha256: string } | undefined;
+    if (a.receipt_path) {
+      const p = expandPath(a.receipt_path);
+      if (!existsSync(p) || !statSync(p).isFile()) return fail(`receipt file not found: ${p}`);
+      receipt = { path: p, sha256: createHash("sha256").update(readFileSync(p)).digest("hex") };
+    }
+
+    return await locked(() => {
+      const db = load();
+      const category = a.category ?? applyRules(db, a.merchant);
+      const autoCategorised = !a.category && !!category;
+      if (a.project && !gate.isPro()) {
+        const known = projectsOf(db);
+        if (!known.some((p) => p.toLowerCase() === a.project!.toLowerCase()) && known.length >= FREE_PROJECTS) {
+          return gated(`This would be project number ${known.length + 1} (${known.join(", ")} already exist). ` +
+            `The free tier tracks ${FREE_PROJECTS} projects. The expense was not saved; add it without a project, or reuse one of those.\n\n` +
+            gate.upgradeText("unlimited projects"));
+        }
+      }
+      const e: Expense = {
+        id: newId(), date, amount_minor: minor, currency, category,
+        merchant: a.merchant, project: a.project, note: a.note,
+        receipt_path: receipt?.path, receipt_sha256: receipt?.sha256,
+        billable: a.billable ?? false, vat_rate: a.vat_rate,
+        created: new Date().toISOString(),
+      };
+      db.expenses.push(e);
+      save(db);
+      const s = vatSplit(minor, a.vat_rate);
+      return ok(`Saved ${e.id}: ${formatMoney(minor, currency)} on ${date}` +
+        (e.merchant ? ` at ${e.merchant}` : "") +
+        (category ? ` [${category}${autoCategorised ? ", from a category rule" : ""}]` : " [uncategorised]") +
+        (e.project ? ` for ${e.project}` : "") +
+        (s.vat_minor ? `. Net ${formatMoney(s.net_minor, currency)}, VAT ${formatMoney(s.vat_minor, currency)} at ${s.rate}%` : "") +
+        (e.billable ? ". Billable." : "") +
+        (receipt ? `\nReceipt ${receipt.path} sha256 ${receipt.sha256.slice(0, 16)}...` : ""));
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* --------------------------------------------------------------- expense_list */
+
+server.registerTool("expense_list", {
+  title: "List expenses",
+  description: "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed.",
+  inputSchema: {
+    from: z.string().optional().describe("ISO date, inclusive"),
+    to: z.string().optional().describe("ISO date, inclusive"),
+    project: z.string().optional(),
+    category: z.string().optional(),
+    billable: z.boolean().optional(),
+  },
+}, async (a) => {
+  try {
+    for (const [k, v] of Object.entries({ from: a.from, to: a.to })) {
+      if (v && !isIsoDate(v)) return fail(`${k} must be YYYY-MM-DD, got "${v}".`);
+    }
+    const w = windowNote(a.from);
+    const db = load();
+    const rows = select(db, { ...a, from: w.from });
+    const totals: Record<string, number> = {};
+    for (const e of rows) totals[e.currency] = (totals[e.currency] ?? 0) + e.amount_minor;
+    return json({
+      from: w.from ?? null, to: a.to ?? null, count: rows.length,
+      totals_per_currency: Object.entries(totals).map(([c, v]) => formatMoney(v, c)),
+      expenses: rows.map(view),
+      note: w.note,
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* ------------------------------------------------------- update / delete */
+
+server.registerTool("expense_update", {
+  title: "Update an expense",
+  description: "Change any field of a stored expense by id. Only the fields you pass are changed.",
+  inputSchema: {
+    id: z.string().describe("Expense id from expense_add or expense_list"),
+    amount: amount("amount").optional(),
+    currency: z.string().regex(/^[A-Za-z]{3}$/).optional(),
+    category: z.string().optional(),
+    merchant: z.string().optional(),
+    date: z.string().optional(),
+    project: z.string().optional(),
+    note: z.string().optional(),
+    billable: z.boolean().optional(),
+    vat_rate: z.number().finite().min(0).max(100).optional(),
+    rebilled: z.boolean().optional().describe("false clears the rebilled marker so the expense can be billed again"),
+  },
+}, async (a) => {
+  try {
+    if (a.date && !isIsoDate(a.date)) return fail(`date must be YYYY-MM-DD, got "${a.date}".`);
+    return await locked(() => {
+      const db = load();
+      const e = db.expenses.find((x) => x.id === a.id);
+      if (!e) return fail(`no expense with id ${a.id}.`);
+      if (a.currency) e.currency = normCurrency(a.currency);
+      if (typeof a.amount === "number") e.amount_minor = toMinor(a.amount, e.currency);
+      if (a.category !== undefined) e.category = a.category;
+      if (a.merchant !== undefined) e.merchant = a.merchant;
+      if (a.date) e.date = a.date;
+      if (a.project !== undefined) e.project = a.project;
+      if (a.note !== undefined) e.note = a.note;
+      if (typeof a.billable === "boolean") e.billable = a.billable;
+      if (typeof a.vat_rate === "number") e.vat_rate = a.vat_rate;
+      if (a.rebilled === false) delete e.rebilled_at;
+      save(db);
+      return json({ updated: view(e) });
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+server.registerTool("expense_delete", {
+  title: "Delete an expense",
+  description: "Delete one expense by id. The receipt file itself is left on disk.",
+  inputSchema: { id: z.string() },
+}, async (a) => {
+  try {
+    return await locked(() => {
+      const db = load();
+      const i = db.expenses.findIndex((x) => x.id === a.id);
+      if (i < 0) return fail(`no expense with id ${a.id}.`);
+      const [e] = db.expenses.splice(i, 1);
+      save(db);
+      return ok(`Deleted ${e.id}: ${formatMoney(e.amount_minor, e.currency)} on ${e.date}${e.merchant ? ` at ${e.merchant}` : ""}.`);
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* -------------------------------------------------------------- receipt_attach */
+
+server.registerTool("receipt_attach", {
+  title: "Attach a receipt",
+  description: "Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed.",
+  inputSchema: { id: z.string(), path: z.string().describe("Path to the receipt file") },
+}, async (a) => {
+  try {
+    const p = expandPath(a.path);
+    if (!existsSync(p) || !statSync(p).isFile()) return fail(`receipt file not found: ${p}`);
+    const sha = createHash("sha256").update(readFileSync(p)).digest("hex");
+    return await locked(() => {
+      const db = load();
+      const e = db.expenses.find((x) => x.id === a.id);
+      if (!e) return fail(`no expense with id ${a.id}.`);
+      e.receipt_path = p;
+      e.receipt_sha256 = sha;
+      save(db);
+      return ok(`Attached ${p} to ${e.id}. sha256 ${sha}`);
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* -------------------------------------------------------------- category_rules */
+
+server.registerTool("category_rules", {
+  title: "Category rules",
+  description: "Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, and rules are applied by expense_add when no category is given.",
+  inputSchema: {
+    rules: z.array(z.object({
+      match: z.string().describe("Regex or substring matched against the merchant"),
+      category: z.string(),
+    })).optional().describe("The full rule list. Omit to list the current rules"),
+  },
+}, async (a) => {
+  try {
+    if (!a.rules) {
+      const db = load();
+      return json({ count: db.rules.length, rules: db.rules, free_limit: gate.isPro() ? null : FREE_RULES });
+    }
+    if (!gate.isPro() && a.rules.length > FREE_RULES) {
+      return gated(`That is ${a.rules.length} rules; the free tier stores ${FREE_RULES}. Nothing was changed.\n\n` + gate.upgradeText("unlimited category rules"));
+    }
+    for (const r of a.rules) {
+      if (!r.match.trim()) return fail("a rule needs a non-empty match.");
+      if (!r.category.trim()) return fail("a rule needs a non-empty category.");
+    }
+    return await locked(() => {
+      const db = load();
+      db.rules = a.rules!.map((r) => ({ match: r.match, category: r.category }));
+      save(db);
+      return ok(`Stored ${db.rules.length} category rules:\n` + db.rules.map((r) => `  ${r.match} -> ${r.category}`).join("\n"));
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* ------------------------------------------------------------- expense_summary */
+
+type GroupBy = "category" | "project" | "month" | "merchant";
+
+function groupKey(e: Expense, by: GroupBy): string {
+  if (by === "category") return e.category ?? "uncategorised";
+  if (by === "project") return e.project ?? "no project";
+  if (by === "merchant") return e.merchant ?? "unknown merchant";
+  return e.date.slice(0, 7);
+}
+
+function summarise(rows: Expense[], by: GroupBy) {
+  const perCurrency: Record<string, Record<string, { gross: number; net: number; vat: number; count: number }>> = {};
+  for (const e of rows) {
+    const s = vatSplit(e.amount_minor, e.vat_rate);
+    const c = (perCurrency[e.currency] ??= {});
+    const g = (c[groupKey(e, by)] ??= { gross: 0, net: 0, vat: 0, count: 0 });
+    g.gross += s.gross_minor; g.net += s.net_minor; g.vat += s.vat_minor; g.count += 1;
+  }
+  return Object.entries(perCurrency).map(([currency, groups]) => {
+    const rowsOut = Object.entries(groups)
+      .sort((a, b) => b[1].gross - a[1].gross)
+      .map(([key, g]) => ({
+        key, count: g.count,
+        gross: formatMoney(g.gross, currency),
+        net: formatMoney(g.net, currency),
+        vat: formatMoney(g.vat, currency),
+      }));
+    const t = Object.values(groups).reduce((acc, g) => ({ gross: acc.gross + g.gross, net: acc.net + g.net, vat: acc.vat + g.vat, count: acc.count + g.count }), { gross: 0, net: 0, vat: 0, count: 0 });
+    return {
+      currency, count: t.count, groups: rowsOut,
+      total_gross: formatMoney(t.gross, currency),
+      total_net: formatMoney(t.net, currency),
+      total_vat: formatMoney(t.vat, currency),
+    };
+  }).sort((a, b) => a.currency.localeCompare(b.currency));
+}
+
+server.registerTool("expense_summary", {
+  title: "Summarise expenses",
+  description: "Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together.",
+  inputSchema: {
+    from: z.string().describe("ISO date, inclusive"),
+    to: z.string().describe("ISO date, inclusive"),
+    group_by: z.enum(["category", "project", "month", "merchant"]).describe("How to group the totals"),
+    project: z.string().optional(),
+    billable: z.boolean().optional(),
+  },
+}, async (a) => {
+  try {
+    if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
+    if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
+    const w = windowNote(a.from);
+    const rows = select(load(), { from: w.from, to: a.to, project: a.project, billable: a.billable });
+    return json({ from: w.from, to: a.to, group_by: a.group_by, by_currency: summarise(rows, a.group_by), note: w.note });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* ---------------------------------------------------------------- mileage_add */
+
+server.registerTool("mileage_add", {
+  title: "Add a mileage claim",
+  description: "Record a business trip as an expense. Money is distance x rate, using the built-in rate table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) unless you pass your own rate. Give either km or miles.",
+  inputSchema: {
+    km: amount("km").optional().describe("Distance in kilometres"),
+    miles: amount("miles").optional().describe("Distance in miles"),
+    date: z.string().optional().describe("ISO date, default today"),
+    purpose: z.string().describe("Why the trip was made, e.g. client meeting in Krakow"),
+    project: z.string().optional(),
+    region: z.enum(["PL", "UK", "US", "EU"]).optional().describe("Which rate to use. Default US for miles, EU for km"),
+    rate_per_km: z.number().finite().min(0).optional().describe("Your own rate per supplied unit, overriding the table"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Currency for your own rate, default the region currency"),
+    billable: z.boolean().optional(),
+  },
+}, async (a) => {
+  try {
+    const hasKm = typeof a.km === "number";
+    const hasMiles = typeof a.miles === "number";
+    if (hasKm === hasMiles) return fail("give exactly one of km or miles.");
+    const unit: "km" | "mile" = hasMiles ? "mile" : "km";
+    const distance = (hasMiles ? a.miles : a.km) as number;
+    if (distance <= 0) return fail("distance must be greater than zero.");
+    const date = a.date ?? isoToday();
+    if (!isIsoDate(date)) return fail(`date must be YYYY-MM-DD, got "${date}".`);
+
+    const region = a.region ?? defaultRegion(unit);
+    const table = MILEAGE_RATES[region];
+    const usingOwnRate = typeof a.rate_per_km === "number";
+    const rate = usingOwnRate ? a.rate_per_km! : (table.unit === unit ? table.rate : NaN);
+    if (!Number.isFinite(rate)) {
+      return fail(`the ${region} rate is per ${table.unit}, but you gave ${unit}. Pass ${table.unit === "km" ? "km" : "miles"}, or pass rate_per_km with your own rate for ${unit}.`);
+    }
+    const currency = normCurrency(a.currency, table.currency);
+    const minor = mileageAmount(distance, rate, currency);
+    if (!Number.isSafeInteger(minor)) return fail("that distance is too large to represent exactly.");
+
+    return await locked(() => {
+      const db = load();
+      if (a.project && !gate.isPro()) {
+        const known = projectsOf(db);
+        if (!known.some((p) => p.toLowerCase() === a.project!.toLowerCase()) && known.length >= FREE_PROJECTS) {
+          return gated(`This would be project number ${known.length + 1}. The free tier tracks ${FREE_PROJECTS} projects. Nothing was saved.\n\n` + gate.upgradeText("unlimited projects"));
+        }
+      }
+      const e: Expense = {
+        id: newId(), date, amount_minor: minor, currency, category: "mileage",
+        project: a.project, note: a.purpose, billable: a.billable ?? true,
+        mileage: { distance, unit, rate, region, purpose: a.purpose },
+        created: new Date().toISOString(),
+      };
+      db.expenses.push(e);
+      save(db);
+      return ok(`Saved ${e.id}: ${distance} ${unit}${distance === 1 ? "" : "s"} on ${date} at ${rate} ${currency}/${unit}` +
+        `${usingOwnRate ? " (your rate)" : ` (${region} rate)`} = ${formatMoney(minor, currency)}. ${a.purpose}`);
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* ------------------------------------------------------------- expense_export */
+
+function exportRows(rows: Expense[]) {
+  return rows.map((e) => {
+    const s = vatSplit(e.amount_minor, e.vat_rate);
+    return {
+      id: e.id, date: e.date, currency: e.currency,
+      gross: toMajor(s.gross_minor, e.currency),
+      net: toMajor(s.net_minor, e.currency),
+      vat: toMajor(s.vat_minor, e.currency),
+      vat_rate: s.rate,
+      category: e.category ?? "", merchant: e.merchant ?? "", project: e.project ?? "",
+      billable: e.billable ? "yes" : "no",
+      note: e.note ?? "",
+      receipt_path: e.receipt_path ?? "",
+      receipt_sha256: e.receipt_sha256 ?? "",
+      mileage: e.mileage ? `${e.mileage.distance} ${e.mileage.unit}` : "",
+    };
+  });
+}
+
+const CSV_HEADERS = ["id", "date", "currency", "gross", "net", "vat", "vat_rate", "category", "merchant", "project", "billable", "note", "receipt_path", "receipt_sha256", "mileage"];
+
+function csvCell(v: unknown): string {
+  const s = String(v ?? "");
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+server.registerTool("expense_export", {
+  title: "Export expenses",
+  description: "Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all.",
+  inputSchema: {
+    from: z.string().describe("ISO date, inclusive"),
+    to: z.string().describe("ISO date, inclusive"),
+    format: z.enum(["csv", "xlsx", "json"]),
+    path: z.string().optional().describe("Where to write it. Default is the server data directory"),
+    project: z.string().optional(),
+    category: z.string().optional(),
+    billable: z.boolean().optional(),
+  },
+}, async (a) => {
+  try {
+    if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
+    if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
+    const pro = gate.isPro();
+    if (a.format === "xlsx" && !pro) {
+      return gated(`xlsx export is a Pro format. Nothing was written. Export as csv instead, which the free tier supports up to ${FREE_EXPORT_ROWS} rows.\n\n` + gate.upgradeText("xlsx export"));
+    }
+    const w = windowNote(a.from);
+    const rows = select(load(), { from: w.from, to: a.to, project: a.project, category: a.category, billable: a.billable });
+    if (!pro && rows.length > FREE_EXPORT_ROWS) {
+      // Refuse before opening the file: a truncated export looks complete and is worse than none.
+      return gated(`That range holds ${rows.length} expenses and the free tier exports ${FREE_EXPORT_ROWS} rows. No file was written. Narrow the range or filter by project or category to get under ${FREE_EXPORT_ROWS}.\n\n` + gate.upgradeText(`exports over ${FREE_EXPORT_ROWS} rows`));
+    }
+    const data = exportRows(rows);
+    const target = a.path
+      ? expandPath(a.path)
+      : join(dataDir(), "exports", `expenses-${a.from}-to-${a.to}.${a.format}`);
+    mkdirSync(dirname(target), { recursive: true });
+    const tmp = `${target}.${process.pid}.tmp`;
+    try {
+      if (a.format === "csv") {
+        const lines = [CSV_HEADERS.join(",")];
+        for (const r of data) lines.push(CSV_HEADERS.map((h) => csvCell((r as Record<string, unknown>)[h])).join(","));
+        writeFileSync(tmp, lines.join("\n") + "\n");
+      } else if (a.format === "json") {
+        writeFileSync(tmp, JSON.stringify({ from: w.from, to: a.to, count: data.length, expenses: data }, null, 2));
+      } else {
+        const ws = XLSX.utils.json_to_sheet(data, { header: CSV_HEADERS });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Expenses");
+        XLSX.writeFile(wb, tmp, { bookType: "xlsx" });
+      }
+      renameSync(tmp, target);
+    } catch (err) {
+      try { if (existsSync(tmp)) unlinkSync(tmp); } catch {}
+      throw err;
+    }
+    return ok(`Wrote ${data.length} expenses to ${target} (${a.format}).` + (w.note ? `\n\n${w.note}` : ""));
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* ---------------------------------------------------------- expense_to_invoice */
+
+server.registerTool("expense_to_invoice", {
+  title: "Rebill expenses to an invoice",
+  description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate, so the invoice recomputes the same tax. Line items are grouped per currency because one invoice carries one currency. The expenses are marked as rebilled.",
+  inputSchema: {
+    project: z.string().describe("Project or client to rebill"),
+    from: z.string().describe("ISO date, inclusive"),
+    to: z.string().describe("ISO date, inclusive"),
+    markup_percent: z.number().finite().min(0).max(1000).optional().describe("Percent added to each net amount. Pro"),
+    include_rebilled: z.boolean().optional().describe("Include expenses already marked as rebilled, default false"),
+    mark_rebilled: z.boolean().optional().describe("Mark the expenses as rebilled, default true"),
+  },
+}, async (a) => {
+  try {
+    if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
+    if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
+    const markup = a.markup_percent ?? 0;
+    if (markup > 0 && !gate.isPro()) {
+      return gated(`markup_percent is a Pro feature. Nothing was changed. Re-run without markup_percent to rebill the expenses at cost.\n\n` + gate.upgradeText("rebilling with a markup"));
+    }
+    const w = windowNote(a.from);
+    return await locked(() => {
+      const db = load();
+      let rows = select(db, { from: w.from, to: a.to, project: a.project, billable: true });
+      if (!a.include_rebilled) rows = rows.filter((e) => !e.rebilled_at);
+      if (!gate.isPro() && rows.length > FREE_REBILL_ITEMS) {
+        return gated(`There are ${rows.length} billable expenses to rebill and the free tier converts ${FREE_REBILL_ITEMS} at a time. Nothing was changed. Narrow the date range.\n\n` + gate.upgradeText("unlimited rebill items"));
+      }
+      const byCurrency: Record<string, { description: string; quantity: number; unit_price: number; tax_rate: number }[]> = {};
+      for (const e of rows) {
+        const s = vatSplit(e.amount_minor, e.vat_rate);
+        const netWithMarkup = roundHalfUp(s.net_minor * (100 + markup) / 100);
+        const label = e.mileage
+          ? `${e.date} mileage ${e.mileage.distance} ${e.mileage.unit} - ${e.mileage.purpose}`
+          : `${e.date} ${e.merchant ?? e.category ?? "expense"}${e.note ? ` - ${e.note}` : ""}`;
+        (byCurrency[e.currency] ??= []).push({
+          description: label,
+          quantity: 1,
+          unit_price: toMajor(netWithMarkup, e.currency),
+          tax_rate: e.vat_rate ?? 0,
+        });
+      }
+      const stamp = new Date().toISOString();
+      if (a.mark_rebilled !== false) {
+        for (const e of rows) e.rebilled_at = stamp;
+        save(db);
+      }
+      const groups = Object.entries(byCurrency).map(([currency, items]) => ({
+        currency, items,
+        total_net: formatMoney(items.reduce((n, i) => n + toMinor(i.unit_price * i.quantity, currency), 0), currency),
+      }));
+      return json({
+        project: a.project, from: w.from, to: a.to,
+        markup_percent: markup,
+        count: rows.length,
+        marked_rebilled: a.mark_rebilled !== false,
+        currencies: groups.map((g) => g.currency),
+        line_items_per_currency: groups,
+        next_step: groups.length
+          ? `Pass one group's items straight to invoice_create {client: "...", currency: "${groups[0].currency}", items: <line_items_per_currency[0].items>}.`
+          : "Nothing to rebill in that range.",
+        note: w.note,
+      });
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+/* ----------------------------------------------------------------- resources */
+
+function monthSummary() {
+  const month = isoToday().slice(0, 7);
+  const from = `${month}-01`;
+  const to = isoToday();
+  const rows = select(load(), { from, to });
+  return { month, from, to, count: rows.length, by_currency: summarise(rows, "category") };
+}
+
+server.registerResource("current-month", "expenses://month", {
+  title: "This month's expenses",
+  description: "Totals for the current calendar month so far, grouped by category, per currency.",
+  mimeType: "application/json",
+}, async (uri) => ({
+  contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(monthSummary(), null, 2) }],
+}));
+
+/* ------------------------------------------------------------------- prompts */
+
+server.registerPrompt("monthly_close", {
+  title: "Monthly expense close",
+  description: "Close out a month: totals, unbilled billable expenses and expenses with no receipt attached.",
+  argsSchema: { month: z.string().optional().describe("YYYY-MM, default the current month") },
+}, ({ month }) => {
+  const m = month && /^\d{4}-\d{2}$/.test(month) ? month : isoToday().slice(0, 7);
+  const from = `${m}-01`;
+  const endDate = new Date(Date.UTC(Number(m.slice(0, 4)), Number(m.slice(5, 7)), 0));
+  const to = endDate.toISOString().slice(0, 10);
+  return {
+    messages: [{
+      role: "user" as const,
+      content: {
+        type: "text" as const,
+        text: [
+          `Close the expense month ${m} (${from} to ${to}). Do all of this with the expense tracker tools and report it as one short summary:`,
+          `1. expense_summary {from: "${from}", to: "${to}", group_by: "category"} and again with group_by "project". Report totals per currency, with the VAT split.`,
+          `2. expense_list {from: "${from}", to: "${to}", billable: true} - list every billable expense that has no rebilled_at, per project, with its amount. Those are the ones still to invoice.`,
+          `3. From the same list, name every expense with no receipt attached, with its id, date, merchant and amount, so the receipts can be found before the books close.`,
+          `4. If a project has unbilled billable expenses, offer to run expense_to_invoice for it.`,
+          `Do not add anything up across currencies.`,
+        ].join("\n"),
+      },
+    }],
+  };
+});
+
+gate.registerTools(server as unknown as { registerTool: Function });
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+process.stderr.write(`mcp-expense-tracker ready (${gate.isPro() ? "pro" : "free"}), data in ${dataDir()}\n`);
