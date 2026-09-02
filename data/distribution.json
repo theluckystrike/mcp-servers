@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-02T13:28:41Z",
+  "updated_at": "2026-09-02T13:58:30Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -60,6 +60,61 @@
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
       "note": "5 long-form guides + index, FAQPage JSON-LD, sitemap 11 URLs, IndexNow pinged"
+    },
+    "mcpservers.org": {
+      "status": "submitted",
+      "url": "https://mcpservers.org/submit",
+      "note": "free web form (Premium $39 upgrade declined); 4 servers submitted, each returned 'Submission Successful! ... reviewed within 12 hours'; category productivity (time-tracker, spreadsheet) and finance (price-tracker, invoice); this is also the intake for the wong2/awesome-mcp-servers list, which refuses PRs"
+    },
+    "mcpmarket.com": {
+      "status": "submitted",
+      "url": "https://mcpmarket.com/submit",
+      "note": "free queue selected ($0, avg 4-6 weeks) over the $29 'Get Listed Now' tier; 4 repo subdirectory URLs submitted with support@zovo.one; invoice confirmed by the site's own dedupe ('This repository is already in our queue'); the other three could not be re-queried, site rate limits at ~4 submissions/hour"
+    },
+    "cursor.directory": {
+      "status": "blocked",
+      "url": "https://cursor.directory/plugins/new",
+      "note": "/mcp redirects to the homepage; submit path /plugins/new redirects to /login, GitHub or Google OAuth only. Free but login-gated, stopped per no-signup rule"
+    },
+    "pulsemcp": {
+      "status": "blocked",
+      "url": "https://www.pulsemcp.com/submit",
+      "note": "page loads fine in a real browser (no Cloudflare block); intake itself is disabled: 'submissions and changes are temporarily paused', no form rendered"
+    },
+    "wong2-awesome-mcp-servers": {
+      "status": "not applicable",
+      "url": "https://github.com/wong2/awesome-mcp-servers",
+      "note": "README: 'We do not accept PRs. Please submit your MCP on the website: https://mcpservers.org/submit'. Handled via the mcpservers.org surface"
+    },
+    "appcypher-awesome-mcp-servers": {
+      "status": "blocked",
+      "url": "https://github.com/appcypher/awesome-mcp-servers",
+      "note": "repo is archived (gh api archived=true); PR creation returns 404. Branch add-theluckystrike-mcp-servers with the 4 entries is pushed to theluckystrike/awesome-mcp-servers-1 in case it is ever unarchived"
+    },
+    "mcp-get.com": {
+      "status": "closed",
+      "url": "https://mcp-get.com",
+      "note": "'This registry is an archived snapshot. The site is read-only ... installs, submissions, and analytics are no longer active.'"
+    },
+    "mcpserverfinder.com": {
+      "status": "blocked",
+      "url": "https://www.mcpserverfinder.com",
+      "note": "free, but the only Submit control is mailto:info@mcpserverfinder.com; /submit is 404. No mail channel available to the agent"
+    },
+    "mcpindex.net": {
+      "status": "dead",
+      "url": "https://mcpindex.net",
+      "note": "HTTP 522, empty document in the browser"
+    },
+    "mcp.pizza": {
+      "status": "dead",
+      "url": "https://mcp.pizza",
+      "note": "'This deployment is temporarily paused'"
+    },
+    "mcpcentral.io": {
+      "status": "dead",
+      "url": "https://portal.mcpcentral.io",
+      "note": "DNS does not resolve (DNS_PROBE_POSSIBLE, curl exit 6)"
     }
   },
   "per_server": {
@@ -72,7 +127,18 @@
       "awesome-mcp-servers": "pr-open",
       "mcp.so": "skipped: paid",
       "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted"
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "submitted",
+      "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead"
     },
     "price-tracker": {
       "npm": "missing",
@@ -83,7 +149,18 @@
       "awesome-mcp-servers": "pr-open",
       "mcp.so": "skipped: paid",
       "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted"
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "submitted",
+      "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead"
     },
     "spreadsheet": {
       "npm": "missing",
@@ -94,7 +171,18 @@
       "awesome-mcp-servers": "pr-open",
       "mcp.so": "skipped: paid",
       "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted"
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "submitted",
+      "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead"
     },
     "invoice": {
       "npm": "missing",
@@ -105,7 +193,18 @@
       "awesome-mcp-servers": "pr-open",
       "mcp.so": "skipped: paid",
       "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted"
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "submitted",
+      "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead"
     }
   }
 }
