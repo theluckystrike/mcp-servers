@@ -2,9 +2,19 @@
 
 Say "make an invoice for Acme, 12 hours at 90 EUR, due in 14 days" and get a real PDF you can send. This MCP server stores your business profile and your clients, allocates a sequential invoice number that is never reused, computes the subtotal, any discount, one tax line per VAT rate and the total in integer minor units, and renders an A4 PDF with your issuer and payment details, a wrapping item table and a proper totals block. It also tracks payments and, on Pro, reports what is overdue and by how many days. Everything is stored in plain JSON files on your own machine; nothing is uploaded anywhere.
 
-## Install
+![invoice demo](../../assets/demo-invoice.gif)
 
-Claude Desktop (`claude_desktop_config.json`):
+**Create numbered invoices with tax lines and a real PDF from chat -- no invoicing SaaS required.**
+
+## 60-second install
+
+npm publish for `@theluckystrike/mcp-invoice` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
+is the working path -- both are verified below.
+
+**One-click (.mcpb):** download `invoice.mcpb` from the latest release and double-click it in Claude Desktop:
+https://github.com/theluckystrike/mcp-servers/releases/latest
+
+**Claude Desktop** (`claude_desktop_config.json`):
 
 ```json
 {
@@ -17,13 +27,13 @@ Claude Desktop (`claude_desktop_config.json`):
 }
 ```
 
-Claude Code:
+**Claude Code:**
 
 ```sh
 claude mcp add invoice -- npx -y @theluckystrike/mcp-invoice
 ```
 
-Cursor (`~/.cursor/mcp.json`):
+**Cursor** (`.cursor/mcp.json`):
 
 ```json
 {
@@ -36,7 +46,18 @@ Cursor (`~/.cursor/mcp.json`):
 }
 ```
 
-With a Pro key, add `"env": { "MCP_LICENSE_KEY": "MCPL1...." }` or just run `license_activate` once.
+The `npx` form above starts working the moment the package is published. Until then, use the .mcpb bundle above, or
+build from source with exactly these three commands:
+
+```sh
+git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers
+npm install
+npm run build -w packages/mcp-license -w servers/invoice
+```
+
+Then point your client's `command` at `node` with one arg: the absolute path to `servers/invoice/dist/index.js`.
+
+To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key.
 
 ## Tools
 

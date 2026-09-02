@@ -7,15 +7,38 @@ or a set of invoice line items. Everything is stored as plain JSON on your own m
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
-## Install
+![time-tracker demo](../../assets/demo-time-tracker.gif)
 
-Claude Code:
+**Track billable time from chat and turn it straight into a report or invoice line items -- zero setup, all local.**
+
+## 60-second install
+
+npm publish for `@theluckystrike/mcp-time-tracker` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
+is the working path -- both are verified below.
+
+**One-click (.mcpb):** download `time-tracker.mcpb` from the latest release and double-click it in Claude Desktop:
+https://github.com/theluckystrike/mcp-servers/releases/latest
+
+**Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "time-tracker": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-time-tracker"]
+    }
+  }
+}
+```
+
+**Claude Code:**
 
 ```sh
 claude mcp add time-tracker -- npx -y @theluckystrike/mcp-time-tracker
 ```
 
-Claude Desktop (`claude_desktop_config.json`):
+**Cursor** (`.cursor/mcp.json`):
 
 ```json
 {
@@ -28,18 +51,16 @@ Claude Desktop (`claude_desktop_config.json`):
 }
 ```
 
-Cursor (`.cursor/mcp.json`):
+The `npx` form above starts working the moment the package is published. Until then, use the .mcpb bundle above, or
+build from source with exactly these three commands:
 
-```json
-{
-  "mcpServers": {
-    "time-tracker": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-time-tracker"]
-    }
-  }
-}
+```sh
+git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers
+npm install
+npm run build -w packages/mcp-license -w servers/time-tracker
 ```
+
+Then point your client's `command` at `node` with one arg: the absolute path to `servers/time-tracker/dist/index.js`.
 
 To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key.
 

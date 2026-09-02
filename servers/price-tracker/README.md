@@ -4,9 +4,19 @@ Ask your assistant what something costs right now. Point it at any product page 
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
-## Install
+![price-tracker demo](../../assets/demo-price-tracker.gif)
 
-Claude Desktop (`claude_desktop_config.json`):
+**Watch any product page for price drops from chat -- no scraping service, no account, all local.**
+
+## 60-second install
+
+npm publish for `@theluckystrike/mcp-price-tracker` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
+is the working path -- both are verified below.
+
+**One-click (.mcpb):** download `price-tracker.mcpb` from the latest release and double-click it in Claude Desktop:
+https://github.com/theluckystrike/mcp-servers/releases/latest
+
+**Claude Desktop** (`claude_desktop_config.json`):
 
 ```json
 {
@@ -19,13 +29,13 @@ Claude Desktop (`claude_desktop_config.json`):
 }
 ```
 
-Claude Code:
+**Claude Code:**
 
 ```sh
 claude mcp add price-tracker -- npx -y @theluckystrike/mcp-price-tracker
 ```
 
-Cursor (`.cursor/mcp.json`):
+**Cursor** (`.cursor/mcp.json`):
 
 ```json
 {
@@ -38,7 +48,18 @@ Cursor (`.cursor/mcp.json`):
 }
 ```
 
-To run Pro, add `"env": { "MCP_LICENSE_KEY": "MCPL1...." }` to the entry, or call `license_activate` once.
+The `npx` form above starts working the moment the package is published. Until then, use the .mcpb bundle above, or
+build from source with exactly these three commands:
+
+```sh
+git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers
+npm install
+npm run build -w packages/mcp-license -w servers/price-tracker
+```
+
+Then point your client's `command` at `node` with one arg: the absolute path to `servers/price-tracker/dist/index.js`.
+
+To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key.
 
 ## Tools
 

@@ -2,9 +2,19 @@
 
 Hand your AI assistant a spreadsheet and talk to it. Point it at any `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.ods`, `.csv` or `.tsv` file on your machine and ask what is in it, filter it, compute a new column, or save it in another format. It handles the messy parts of real files for you: it guesses which row holds the headers, sniffs whether a CSV is separated by commas, semicolons or tabs, keeps quoted commas and newlines intact, reads numbers out of `$1,250.00` style text, and reports per-column types and empty counts. It never edits your original file: every write goes to a new path unless you explicitly choose `overwrite`. Nothing leaves the machine, and there is no API key to get.
 
-## Install
+![spreadsheet demo](../../assets/demo-spreadsheet.gif)
 
-Claude Desktop (`claude_desktop_config.json`):
+**Read, query and extend real spreadsheets from chat without ever touching the original file.**
+
+## 60-second install
+
+npm publish for `@theluckystrike/mcp-spreadsheet` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
+is the working path -- both are verified below.
+
+**One-click (.mcpb):** download `spreadsheet.mcpb` from the latest release and double-click it in Claude Desktop:
+https://github.com/theluckystrike/mcp-servers/releases/latest
+
+**Claude Desktop** (`claude_desktop_config.json`):
 
 ```json
 {
@@ -17,23 +27,37 @@ Claude Desktop (`claude_desktop_config.json`):
 }
 ```
 
-Claude Code:
+**Claude Code:**
 
-```bash
+```sh
 claude mcp add spreadsheet -- npx -y @theluckystrike/mcp-spreadsheet
 ```
 
-Cursor (`~/.cursor/mcp.json`):
+**Cursor** (`.cursor/mcp.json`):
 
 ```json
 {
   "mcpServers": {
-    "spreadsheet": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-spreadsheet"] }
+    "spreadsheet": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-spreadsheet"]
+    }
   }
 }
 ```
 
-With a Pro key, add `"env": { "MCP_LICENSE_KEY": "MCPL1...." }`, or just run the `license_activate` tool once.
+The `npx` form above starts working the moment the package is published. Until then, use the .mcpb bundle above, or
+build from source with exactly these three commands:
+
+```sh
+git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers
+npm install
+npm run build -w packages/mcp-license -w servers/spreadsheet
+```
+
+Then point your client's `command` at `node` with one arg: the absolute path to `servers/spreadsheet/dist/index.js`.
+
+To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key.
 
 ## Tools
 
