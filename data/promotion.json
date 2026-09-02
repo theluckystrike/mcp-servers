@@ -31,8 +31,8 @@
       "reach": "estimate: largest non-IDE MCP surface; PR-based, no login beyond gh",
       "terminal": "yes",
       "human": "none",
-      "status": "ready",
-      "how": "gh repo fork docker/mcp-registry; add servers/<name>/server.yaml per their task validate; gh pr create",
+      "status": "submitted",
+      "how": "SUBMITTED 2026-09-02: fork theluckystrike/mcp-registry, branch add-theluckystrike-mcp-servers, servers/<name>/server.yaml + tools.json for all four, pinned to commit 7998ce2; go run ./cmd/validate passes 11/11 per server; PR https://github.com/docker/mcp-registry/pull/4892. Free, no listing fee.",
       "impact": 88
     },
     {
@@ -42,8 +42,8 @@
       "reach": "estimate: Cline has 1M+ VS Code installs; marketplace is an issue-form, fully scriptable",
       "terminal": "yes",
       "human": "none",
-      "status": "ready",
-      "how": "gh issue create -R cline/mcp-marketplace --template with repo URL + logo PNG + llms-install.md in repo",
+      "status": "submitted",
+      "how": "SUBMITTED 2026-09-02: four issues on cline/mcp-marketplace using their MCP Server Submission form fields (#2397 time-tracker, #2398 price-tracker, #2399 spreadsheet, #2400 invoice); 400x400 PNG logos in assets/, llms-install.md per server. Free, no listing fee. Label server-submission could not be set (no repo write access).",
       "impact": 85
     },
     {
