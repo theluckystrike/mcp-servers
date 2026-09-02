@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/invoice",
-  "description": "Create real PDF invoices from your AI chat: clients, sequential numbering, VAT and discounts, payment details, overdue reports. All data stays local.",
+  "description": "Create PDF invoices from your AI chat: clients, numbering, VAT, overdue reports. All data is local.",
   "version": "0.1.0",
   "repository": { "url": "https://github.com/theluckystrike/mcp-servers", "source": "github", "subfolder": "servers/invoice" },
   "websiteUrl": "https://mcp.zovo.one/buy/invoice",

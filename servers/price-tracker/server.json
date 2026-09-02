@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/price-tracker",
-  "description": "Check what a product costs right now from any shop page, keep a watch list, see price history and get told when a target price is hit. All data stays local.",
+  "description": "Check a shop page price now, keep a watch list, see history and target alerts. All data stays local.",
   "version": "0.1.0",
   "repository": { "url": "https://github.com/theluckystrike/mcp-servers", "source": "github", "subfolder": "servers/price-tracker" },
   "websiteUrl": "https://mcp.zovo.one/buy/price-tracker",
