@@ -63,7 +63,7 @@ function readJson<T>(file: string, fallback: T): T {
 
 function writeJson(file: string, value: unknown): void {
   const p = join(dataDir(), file);
-  const tmp = `${p}.tmp`;
+  const tmp = `${p}.${process.pid}.tmp`;
   writeFileSync(tmp, JSON.stringify(value, null, 2));
   renameSync(tmp, p);
 }

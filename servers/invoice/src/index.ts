@@ -5,7 +5,7 @@ import { homedir } from "node:os";
 import { isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createLicenseGate } from "@theluckystrike/mcp-license";
+import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
 import { z } from "zod";
 import {
   addDays, computeTotals, daysBetween, formatMoney, isoDate,
@@ -19,6 +19,15 @@ import {
 
 const FREE_INVOICES_PER_MONTH = 3;
 const gate = createLicenseGate({ product: "invoice" });
+
+/**
+ * Serialise every read-modify-write cycle on the data dir across processes.
+ * Two instances sharing one XDG_DATA_HOME otherwise overwrite each other's
+ * clients.json / invoices.json / counter.json (see docs/AUDIT.md).
+ */
+function locked<T>(fn: () => T | Promise<T>): Promise<T> {
+  return withFileLock(join(dataDir(), ".lock"), fn);
+}
 
 const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
 const fail = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true as const });
@@ -73,6 +82,7 @@ server.registerTool("business_set", {
   },
 }, async (a) => {
   try {
+    return await locked(() => {
     const prev = getBusiness();
     let prefix = a.invoice_prefix ?? prev.invoice_prefix;
     let note = "";
@@ -95,6 +105,7 @@ server.registerTool("business_set", {
     };
     setBusiness(biz);
     return ok(`Business profile saved to ${dataDir()}.\n\n${JSON.stringify(biz, null, 2)}${note}`);
+    });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -111,6 +122,7 @@ server.registerTool("client_add", {
   },
 }, async (a) => {
   try {
+    return await locked(() => {
     const clients = getClients();
     const existing = clients.find((c) => c.name.toLowerCase() === a.name.trim().toLowerCase());
     if (existing) {
@@ -127,6 +139,7 @@ server.registerTool("client_add", {
     clients.push(c);
     setClients(clients);
     return ok(`Added client ${c.name} (${c.id}).`);
+    });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -236,7 +249,7 @@ server.registerTool("invoice_create", {
   },
 }, async (a) => {
   try {
-    const r = createInvoice(a);
+    const r = await locked(() => createInvoice(a));
     if (r.error) return fail(r.error);
     if (r.gated) return ok(r.gated);
     return ok(`Created invoice ${r.invoice!.number}.\n\n${JSON.stringify(summarize(r.invoice!), null, 2)}\n\nRender it with invoice_pdf.`);
@@ -260,7 +273,7 @@ server.registerTool("invoice_from_hours", {
   },
 }, async (a) => {
   try {
-    const r = createInvoice({
+    const r = await locked(() => createInvoice({
       client: a.client,
       items: [{
         description: a.description ?? "Consulting services",
@@ -268,7 +281,7 @@ server.registerTool("invoice_from_hours", {
       }],
       currency: a.currency, issue_date: a.issue_date, due_days: a.due_days,
       notes: a.notes, discount_percent: a.discount_percent,
-    });
+    }));
     if (r.error) return fail(r.error);
     if (r.gated) return ok(r.gated);
     return ok(`Created invoice ${r.invoice!.number}.\n\n${JSON.stringify(summarize(r.invoice!), null, 2)}`);
@@ -320,6 +333,7 @@ server.registerTool("invoice_mark_paid", {
   },
 }, async (a) => {
   try {
+    return await locked(() => {
     const all = getInvoices();
     const inv = all.find((i) => i.number === a.number);
     if (!inv) return fail(`no invoice numbered ${a.number}.`);
@@ -332,6 +346,7 @@ server.registerTool("invoice_mark_paid", {
     const bal = inv.total_minor - inv.paid_minor;
     return ok(`${inv.number} marked ${inv.status} on ${inv.paid_date}. Received ${formatMoney(inv.paid_minor, inv.currency)}` +
       (bal > 0 ? `, balance due ${formatMoney(bal, inv.currency)}.` : "."));
+    });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 

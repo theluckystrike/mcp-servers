@@ -2,13 +2,21 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { createLicenseGate } from "@theluckystrike/mcp-license";
+import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
 import { extractPrice, normalizeNumber, currencyFrom } from "./extract.js";
 import { fetchPage, FetchError } from "./fetch.js";
 import {
-  canonicalUrl, dbPath, findWatch, latest, load, newId, nowIso, pctChange, previous, save,
+  canonicalUrl, dataDir, dbPath, findWatch, latest, load, newId, nowIso, pctChange, previous, save,
   type Observation, type Watch,
 } from "./store.js";
+import { join } from "node:path";
+
+/**
+ * Advisory lock held across the load-mutate-save cycle. Network fetches stay
+ * outside it: two processes on one data dir otherwise discard each other's
+ * writes (see docs/AUDIT.md). Read-only tools stay unlocked.
+ */
+const LOCK = join(dataDir(), ".lock");
 
 const FREE_WATCH_LIMIT = 3;
 const FREE_HISTORY_LIMIT = 10;
@@ -155,6 +163,9 @@ server.registerTool(
       // observe() awaits the network, so the db read above is stale: another
       // in-flight watch_add would be overwritten and the free limit bypassed.
       // Re-read and re-check both conditions against the current file.
+      // The re-read, the limit check and the write all happen under the lock so
+      // another process cannot interleave between them.
+      return await withFileLock(LOCK, async (): Promise<ToolResult> => {
       const fresh = load();
       const raced = findWatch(fresh, url) ?? findWatch(fresh, canonicalUrl(o.finalUrl));
       if (raced) return text(`Already watching that URL as ${raced.id}${raced.label ? ` (${raced.label})` : ""}. Use watch_refresh to update it.`);
@@ -185,6 +196,7 @@ server.registerTool(
           `Stored in ${dbPath()}`,
         ].join("\n")
       );
+      });
     } catch (e) {
       return fail(e instanceof FetchError ? e.message : String((e as Error)?.message ?? e));
     }
@@ -222,12 +234,14 @@ server.registerTool(
   async ({ id, url }): Promise<ToolResult> => {
     const key = (id ?? url ?? "").trim();
     if (!key) return fail("give either id or url");
+    return withFileLock(LOCK, (): ToolResult => {
     const db = load();
     const w = findWatch(db, key);
     if (!w) return fail(`no watch matches "${key}". Run watch_list to see ids.`);
     db.watches = db.watches.filter((x) => x.id !== w.id);
     save(db);
     return text(`Removed ${w.id}${w.label ? ` (${w.label})` : ""} and its ${w.observations.length} observation(s).`);
+    });
   }
 );
 
@@ -271,10 +285,12 @@ server.registerTool(
     // The loop above awaited the network. Merge the refreshed watches into the
     // current file instead of writing back a snapshot taken before the fetches,
     // so a watch added meanwhile is not dropped.
-    const current = load();
-    const byId = new Map(targets.map((w) => [w.id, w]));
-    db.watches = current.watches.map((w) => byId.get(w.id) ?? w);
-    save(db);
+    await withFileLock(LOCK, () => {
+      const current = load();
+      const byId = new Map(targets.map((w) => [w.id, w]));
+      db.watches = current.watches.map((w) => byId.get(w.id) ?? w);
+      save(db);
+    });
     const rows = targets.map(watchRow);
     const hits = rows.filter((r) => r.target_hit).map((r) => r.id);
     const out = [JSON.stringify(rows, null, 2)];
@@ -335,6 +351,7 @@ server.registerTool(
     const p = normalizeNumber(String(price));
     if (!p || !(Number(p) > 0) || Number(p) > 1e12) return fail(`could not read "${price}" as a price. Try 1299.00 or 1.299,00`);
     const cur = currencyFrom(currency ?? null, url) ?? (currency ? currency.trim().toUpperCase() : null);
+    return withFileLock(LOCK, (): ToolResult => {
     const db = load();
     let w = findWatch(db, url);
     if (!w) {
@@ -356,6 +373,7 @@ server.registerTool(
     return text(
       `Recorded ${money(o.price, o.currency)} for ${w.label ?? w.url} (${w.id}) at ${o.ts}. ${w.observations.length} observation(s) stored.`
     );
+    });
   }
 );
 

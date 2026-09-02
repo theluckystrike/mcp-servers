@@ -163,3 +163,5 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
   };
   return gate;
 }
+
+export { withFileLock, STALE_MS } from "./lock.js";

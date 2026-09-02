@@ -184,3 +184,83 @@ insight: |
   logic was correct and the crypto was correct, and the paywall still did not hold, because
   the check and the write were separated by an await. Every measured license bypass in this
   audit was a concurrency bug, not a licensing bug.
+
+---
+
+## Concurrency fix 2026-09-02
+
+Fixes failure 1 above (cross-process lost updates). An advisory lock is now held across the
+whole load-mutate-save cycle in time-tracker, price-tracker and invoice.
+
+`withFileLock<T>(lockPath, fn, opts?)` was added to `packages/mcp-license/src/lock.ts` and is
+exported from the package index. The lock is a directory: `mkdirSync` is atomic, `EEXIST`
+means another process holds it. Waiters retry with 5-25 ms jittered sleeps until `timeoutMs`
+(default 5000) and then throw. A lock directory whose mtime is older than 30 s is treated as
+abandoned by a crashed process and removed. The lock is released in `finally`. Pure node, no
+dependencies.
+
+| File | Change |
+| --- | --- |
+| packages/mcp-license/src/lock.ts | New. `withFileLock`, `STALE_MS`. |
+| packages/mcp-license/src/index.ts | Re-exports `withFileLock` and `STALE_MS`. |
+| servers/time-tracker/src/index.ts | `LOCK = join(dataDir(), ".lock")`; `timer_start`, `timer_stop`, `entry_add`, `entry_delete`, `entry_edit`, `project_set_rate` bodies wrapped in `withFileLock`, so `load()` runs inside the lock. Reads (`timer_status`, `entry_list`, `report`, `export_csv`, `invoice_summary`) stay unlocked. |
+| servers/price-tracker/src/index.ts | `LOCK = join(dataDir(), ".lock")`. `watch_remove` and `price_add_manual` wrapped whole. `watch_add` fetches outside the lock, then takes the lock for the post-fetch re-read, duplicate check, free-limit check and save. `watch_refresh` fetches outside the lock, then takes it for the load-merge-save. `watch_list`, `price_history`, `alerts_pending` and the resource stay unlocked. |
+| servers/invoice/src/index.ts | `locked()` helper over `join(dataDir(), ".lock")`; `business_set`, `client_add`, `invoice_create`, `invoice_from_hours` (both via `createInvoice`, which allocates the invoice number) and `invoice_mark_paid` run inside it. `client_list`, `invoice_list`, `invoice_get`, `invoice_pdf`, `overdue_report` stay unlocked. |
+| servers/invoice/src/store.ts | `writeJson` tmp file is now `<file>.<pid>.tmp`, matching the other two stores. Two processes shared one `.tmp` name and raced `rename`, which produced hard ENOENT tool errors. |
+| packages/mcp-license/test/lock.test.mjs | New, 5 tests. |
+| servers/time-tracker/test/concurrency.test.mjs, servers/price-tracker/test/concurrency.test.mjs, servers/invoice/test/concurrency.test.mjs | New. Each spawns TWO server processes on one `XDG_DATA_HOME` temp dir, fires 20 mutating calls at each concurrently (40 total), waits for all 40 responses, then asserts the stored count is exactly 40, the ids are unique and the JSON file parses. |
+
+### Measured before / after
+
+Same test, same machine. "Before" was measured by replacing the compiled
+`packages/mcp-license/dist/lock.js` with a pass-through `withFileLock` (run the body, no lock)
+and rebuilding afterwards.
+
+| Server | Mutating call | Calls issued | Stored before | Stored after |
+| --- | --- | --- | --- | --- |
+| time-tracker | `entry_add` | 40 (2 x 20) | 26 | 40 |
+| price-tracker | `price_add_manual`, distinct URLs | 40 (2 x 20) | 21 | 40 |
+| invoice | `client_add` | 40 (2 x 20) | 24 | 40 |
+
+The original audit run of the same time-tracker probe stored 20 of 40. The loss count varies
+with scheduling; every unlocked run lost writes, and all 40 tool calls still reported success.
+The stored JSON stayed valid in every case, so the data loss is silent. With the lock, three
+consecutive runs of each of the three tests passed 1/1.
+
+### Test summaries, verbatim
+
+```
+> @theluckystrike/mcp-license@0.1.0 test
+# tests 15
+# pass 15
+# fail 0
+> @theluckystrike/mcp-invoice@0.1.0 test
+# tests 13
+# pass 13
+# fail 0
+> @theluckystrike/mcp-price-tracker@0.1.0 test
+# tests 19
+# pass 19
+# fail 0
+> @theluckystrike/mcp-spreadsheet@0.1.0 test
+# tests 31
+# pass 31
+# fail 0
+> @theluckystrike/mcp-time-tracker@0.1.0 test
+# tests 3
+# pass 3
+# fail 0
+```
+
+`npm run build` at the root: clean, all five workspaces.
+
+`node scripts/validate.mjs`:
+
+```
+time-tracker: 18/18 in 239 ms
+price-tracker: 18/18 in 270 ms
+spreadsheet: 16/16 in 382 ms
+invoice: 20/20 in 371 ms
+billing: 10/10
+validation db: /Users/mike/mcp-servers/data/validation.json run 5: 82/82
+```

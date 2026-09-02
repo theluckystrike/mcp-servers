@@ -6,7 +6,7 @@ import { randomBytes } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { createLicenseGate } from "@theluckystrike/mcp-license";
+import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
 
 const PRODUCT = "time-tracker";
 const FREE_WINDOW_DAYS = 7;
@@ -49,6 +49,13 @@ function dataDir(): string {
   return join(base, "mcp-servers", PRODUCT);
 }
 function dbPath(): string { return join(dataDir(), "data.json"); }
+
+/**
+ * Advisory lock held across the whole load-mutate-save cycle. Without it two
+ * processes sharing one data dir silently discard each other's writes
+ * (see docs/AUDIT.md). Reads (list/report/status/export) stay unlocked.
+ */
+const LOCK = join(dataDir(), ".lock");
 
 const EMPTY: DB = { version: 1, running: null, entries: [], projects: {} };
 
@@ -206,6 +213,7 @@ server.registerTool("timer_start", {
     rate: z.number().nonnegative().optional().describe("Hourly rate for this timer only; defaults to the project rate"),
   },
 }, guard(async ({ project, task, tags, rate }: { project: string; task?: string; tags?: string[]; rate?: number }) => {
+  return withFileLock(LOCK, async () => {
   const db = load();
   const now = new Date();
   let stopped: Entry | null = null;
@@ -219,6 +227,7 @@ server.registerTool("timer_start", {
   const lines = [`Started timer for "${project}"${task ? ` - ${task}` : ""} at ${db.running.start}.`];
   if (stopped) lines.unshift(`Stopped "${stopped.project}" after ${hms(stopped.seconds)} (entry ${stopped.id}).`);
   return ok(lines.join("\n"));
+  });
 }));
 
 server.registerTool("timer_stop", {
@@ -226,6 +235,7 @@ server.registerTool("timer_stop", {
   description: "Stop the running timer and log it as a time entry. Returns the duration and the entry id.",
   inputSchema: { note: z.string().optional().describe("Optional note stored with the entry") },
 }, guard(async ({ note }: { note?: string }) => {
+  return withFileLock(LOCK, async () => {
   const db = load();
   if (!db.running) return ok("No timer is running. Start one with timer_start.");
   const e = stopRunning(db, new Date(), note);
@@ -234,6 +244,7 @@ server.registerTool("timer_stop", {
   const cur = currencyFor(db, e.project);
   const amount = rc > 0 ? `  ${money(amountCents(e.seconds, rc), cur)}` : "";
   return ok(`Stopped "${e.project}"${e.task ? ` - ${e.task}` : ""}. Duration ${hms(e.seconds)} (${hours(e.seconds)} h).${amount}\nEntry id ${e.id}.`);
+  });
 }));
 
 server.registerTool("timer_status", {
@@ -271,6 +282,7 @@ server.registerTool("entry_add", {
     rate: z.number().nonnegative().optional().describe("Hourly rate override for this entry"),
   },
 }, guard(async (a: { project: string; task?: string; start: string; end?: string; minutes?: number; note?: string; tags?: string[]; billable?: boolean; rate?: number }) => {
+  return withFileLock(LOCK, async () => {
   const start = parseTime(a.start, "start");
   let end: Date;
   if (a.end) end = parseTime(a.end, "end");
@@ -288,6 +300,7 @@ server.registerTool("entry_add", {
   db.entries.push(e);
   save(db);
   return ok(`Added entry ${e.id}: "${e.project}"${e.task ? ` - ${e.task}` : ""}, ${hms(seconds)} (${hours(seconds)} h), ${e.billable ? "billable" : "non-billable"}.`);
+  });
 }));
 
 server.registerTool("entry_list", {
@@ -325,12 +338,14 @@ server.registerTool("entry_delete", {
   description: "Delete one time entry by id.",
   inputSchema: { id: z.string().describe("Entry id from entry_list") },
 }, guard(async ({ id }: { id: string }) => {
+  return withFileLock(LOCK, async () => {
   const db = load();
   const i = db.entries.findIndex(e => e.id === id);
   if (i < 0) return err(`no entry with id ${id}`);
   const [e] = db.entries.splice(i, 1);
   save(db);
   return ok(`Deleted entry ${id} ("${e.project}", ${hours(e.seconds)} h).`);
+  });
 }));
 
 server.registerTool("entry_edit", {
@@ -349,6 +364,7 @@ server.registerTool("entry_edit", {
     rate: z.number().nonnegative().optional().describe("Hourly rate override for this entry"),
   },
 }, guard(async (a: { id: string; project?: string; task?: string; start?: string; end?: string; minutes?: number; note?: string; tags?: string[]; billable?: boolean; rate?: number }) => {
+  return withFileLock(LOCK, async () => {
   const db = load();
   const e = db.entries.find(x => x.id === a.id);
   if (!e) return err(`no entry with id ${a.id}`);
@@ -366,6 +382,7 @@ server.registerTool("entry_edit", {
   e.seconds = seconds;
   save(db);
   return ok(`Updated entry ${e.id}: "${e.project}"${e.task ? ` - ${e.task}` : ""}, ${hours(e.seconds)} h, ${e.billable ? "billable" : "non-billable"}.`);
+  });
 }));
 
 server.registerTool("project_set_rate", {
@@ -377,6 +394,7 @@ server.registerTool("project_set_rate", {
     currency: z.string().optional().describe("Currency code, default USD"),
   },
 }, guard(async (a: { project: string; hourly_rate: number; currency?: string }) => {
+  return withFileLock(LOCK, async () => {
   const db = load();
   const isNew = !(a.project in db.projects);
   if (isNew && !gate.isPro() && Object.keys(db.projects).length >= FREE_RATED_PROJECTS) {
@@ -386,6 +404,7 @@ server.registerTool("project_set_rate", {
   save(db);
   const m = db.projects[a.project];
   return ok(`Rate for "${a.project}" set to ${money(m.rateCents, m.currency)} per hour.`);
+  });
 }));
 
 const GROUPS = ["project", "day", "task", "tag"] as const;
