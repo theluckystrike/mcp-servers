@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T14:48:44.557Z",
+  "generated_at": "2026-09-02T14:52:07.225Z",
   "session": {
-    "count": 14,
+    "count": 15,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -58,6 +58,10 @@
       {
         "at": "2026-09-02T14:48:44.534Z",
         "note": "wave 3: all 5 hosted + hardened, round-3 fixes, validation 121/121"
+      },
+      {
+        "at": "2026-09-02T14:52:07.198Z",
+        "note": "v0.2.1: 6 registry entries, 5 hosted, office-suite bundle 51 tools"
       }
     ]
   },
@@ -65,7 +69,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -106,7 +110,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -145,7 +149,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -173,7 +177,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -210,7 +214,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -247,7 +251,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",

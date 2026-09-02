@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/expense-tracker-receipts-mileage",
   "description": "Log expenses, receipts and mileage from chat: auto-categorise, split VAT, summarise, export, rebill.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.2.0/expense-tracker.mcpb",
-      "version": "0.2.0",
-      "fileSha256": "5fceabde0b0f772d8d2e9ba0e455f8f828c24a11bf19407e26bc65788d95d79f",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.2.1/expense-tracker.mcpb",
+      "version": "0.2.1",
+      "fileSha256": "18f46979279205b8f5e9f79dffe882381757a4bf54c0a2caf3862a6902d822db",
       "transport": {
         "type": "stdio"
       },
@@ -23,6 +23,20 @@
           "name": "MCP_LICENSE_KEY",
           "description": "Optional Pro license key (MCPL1....). Verified offline.",
           "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/expense-tracker",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
           "isSecret": true
         }
       ]

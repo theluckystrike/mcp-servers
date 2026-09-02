@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
   "description": "Open, inspect, filter, edit and convert xlsx and csv files from your AI chat. Processing is local.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.2.0/spreadsheet.mcpb",
-      "version": "0.2.0",
-      "fileSha256": "9f6d30776341b6d0d40099240e28f7a87d19770eb69250ff5efe9abbd14e03be",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.2.1/spreadsheet.mcpb",
+      "version": "0.2.1",
+      "fileSha256": "0fa96803e7be4423255ac84412b267eafe926dc395eebedb4003ec4e8b8986aa",
       "transport": {
         "type": "stdio"
       },
@@ -23,6 +23,20 @@
           "name": "MCP_LICENSE_KEY",
           "description": "Optional Pro license key (MCPL1....). Verified offline.",
           "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/spreadsheet",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
           "isSecret": true
         }
       ]
