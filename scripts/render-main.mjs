@@ -15,6 +15,7 @@ const dist = js("data/distribution.json", { surfaces: {}, per_server: {} });
 const toolsDb = js("data/tools.json", {});
 const valDb = js("data/validation.json", { runs: [] });
 const lastRun = valDb.runs.at(-1);
+const promo = js("data/promotion.json", { actions: [] });
 
 // ---- sprint results: every RESULT.md ----
 function findResults(dir, out = []) {
@@ -105,7 +106,7 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button></div>
+<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button></div>
 <div class="tab on" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
@@ -187,6 +188,20 @@ ${lastRun.results.map(r => `<div class="card" style="margin-bottom:10px"><b>${es
 <div class="tw"><table><tr><th>Server</th><th>Summary</th></tr>${(lastRun.unit_tests || []).map(u => `<tr><td class="mono">${esc(u.id)}</td><td class="mono">${esc(u.summary)}</td></tr>`).join("")}</table></div>
 <h2>Run history</h2>
 <div class="tw"><table><tr><th>At</th><th>Pass</th><th>Total</th><th>Per unit</th></tr>${valDb.runs.slice().reverse().map(r => `<tr><td class="mono">${esc(r.at)}</td><td class="num">${r.pass}</td><td class="num">${r.total}</td><td class="dim">${r.results.map(x => `${x.id.split(" ")[0]} ${x.pass}/${x.total}`).join(" &middot; ")}</td></tr>`).join("")}</table></div>` : `<p>No validation run yet. Execute <code>node scripts/validate.mjs</code>.</p>`}
+</div>
+<div class="tab" id="tab-promotion">
+<p class="dim">${esc(promo.method || "")}</p>
+<div class="kpis"><div class="kpi"><div class="n">${promo.actions.filter(a => a.status === "done").length}</div><div class="k">done</div></div><div class="kpi"><div class="n">${promo.actions.filter(a => /ready|in progress/.test(a.status)).length}</div><div class="k">ready or in progress, terminal-only</div></div><div class="kpi"><div class="n">${promo.actions.filter(a => a.terminal === "yes").length}/${promo.actions.length}</div><div class="k">fully terminal</div></div><div class="kpi"><div class="n">${promo.actions.filter(a => a.human !== "none").length}</div><div class="k">need one human step</div></div></div>
+<h2>Actions ranked by expected impact</h2>
+<div class="tw"><table><tr><th>#</th><th>Action</th><th>Channel</th><th>Reach signal</th><th>Terminal</th><th>Human step</th><th>Status</th><th>How (agent runs this)</th><th>Impact</th></tr>
+${promo.actions.slice().sort((a, b) => b.impact - a.impact).map(a => `<tr><td class="num">${a.rank}</td><td><b>${esc(a.action)}</b></td><td class="dim">${esc(a.channel)}</td><td class="dim">${esc(a.reach)}</td><td>${pill(a.terminal)}</td><td class="dim">${esc(a.human)}</td><td>${pill(a.status)}</td><td class="mono dim">${esc(a.how)}</td><td class="num"><b>${a.impact}</b></td></tr>`).join("")}</table></div>
+<h2>Reading the table</h2>
+<div class="card"><ul>
+<li><b>Measured beats estimated.</b> Rows whose reach cell says MEASURED come from this estate's own numbers (X replies earned zero in 86% of 397 cases; LinkedIn buyer share 29-47%; estate clicks ~1,632/28d). Rows marked estimate are ranked below any measured row of similar size.</li>
+<li><b>Registries compound, posts decay.</b> A registry or marketplace entry keeps producing installs for months; a social post is a one-day spike. Every row above impact 60 is a registry, a marketplace, or a search surface.</li>
+<li><b>The pipeline stops at the human steps.</b> Four rows need one click each (npm login, Smithery, Glama, extensions directory). Each is under a minute and unlocks a terminal-only surface behind it.</li>
+<li><b>Budget rule.</b> After two weeks, keep only channels with at least one measured click to mcp.zovo.one or one install; drop the rest.</li>
+</ul></div>
 </div>
 <script>
 for (const b of document.querySelectorAll(".tabs button")) b.addEventListener("click", () => { document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b)); document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.id === "tab-" + b.dataset.tab)); location.hash = b.dataset.tab; });
