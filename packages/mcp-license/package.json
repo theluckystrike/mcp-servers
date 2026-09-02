@@ -1,0 +1,16 @@
+{
+  "name": "@theluckystrike/mcp-license",
+  "version": "0.1.0",
+  "description": "Offline Ed25519 license verification and free/pro gating for MCP servers by theluckystrike",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist", "README.md"],
+  "scripts": { "build": "tsc -p tsconfig.json", "test": "node --test test/*.test.mjs" },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/theluckystrike/mcp-servers" },
+  "homepage": "https://github.com/theluckystrike/mcp-servers",
+  "peerDependencies": { "@modelcontextprotocol/sdk": "^1.30.0", "zod": "^3.25.0" },
+  "devDependencies": { "typescript": "^5.6.0", "@types/node": "^22.0.0", "@modelcontextprotocol/sdk": "^1.30.0", "zod": "^3.25.0" }
+}

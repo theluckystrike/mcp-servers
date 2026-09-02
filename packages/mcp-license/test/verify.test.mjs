@@ -1,0 +1,11 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { verifyLicense } from "../dist/index.js";
+const sign = (...a) => execFileSync("node", [new URL("../../../scripts/sign-license.mjs", import.meta.url).pathname, ...a]).toString().trim();
+test("valid product key verifies", () => { assert.equal(verifyLicense(sign("time-tracker"), "time-tracker").ok, true); });
+test("bundle key verifies for any product", () => { assert.equal(verifyLicense(sign("*"), "spreadsheet").ok, true); });
+test("wrong product rejected", () => { assert.equal(verifyLicense(sign("invoice"), "spreadsheet").ok, false); });
+test("expired rejected", () => { assert.equal(verifyLicense(sign("*", "", "1000"), "invoice").reason, "expired"); });
+test("tampered rejected", () => { const k = sign("*"); assert.equal(verifyLicense(k.slice(0, -2) + "AA", "invoice").ok, false); });
+test("garbage rejected", () => { assert.equal(verifyLicense("hello", "x").ok, false); });
