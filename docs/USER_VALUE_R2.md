@@ -190,3 +190,110 @@ insight:
   because the client resolved WebFetch by name without ever fetching an MCP tool schema.
   Tool-selection losses are won upstream of the description text.
 ```
+
+## Round-2 fixes
+
+Three defects from the list above are closed in code. Build and tests below are verbatim.
+
+**D-9 (price-tracker) — `checkRedirect` accepts slug canonicalisation.**
+`servers/price-tracker/src/redirect.ts:38` `GENERIC_PATH_SEGMENTS` (markers `p`/`dp`/`item`/... plus
+the listing words and, at `:44`, two-letter locales) defines which path segments carry no product
+identity. `servers/price-tracker/src/redirect.ts:57` `productToken` returns the longest purely
+alphanumeric, non-generic segment of the request (>= 5 chars, so slugs with hyphens and short markers
+are excluded). `servers/price-tracker/src/redirect.ts:68` `keepsProductIdentity` is true when every
+non-generic segment of the requested path survives in the final path, or when the product token
+appears anywhere in the final URL including its query string.
+`servers/price-tracker/src/redirect.ts:131` computes that verdict and `:134` makes the path-depth
+rule conditional on it, so `/p/<id>` -> `/<slug>/p/<id>` no longer refuses. The home-page rule at
+`:126` runs before it, and the category/listing rule at `:141` plus the generic/not-found/shop-name
+title rules at `:145`-`:151` still run after it, so identity preservation buys nothing when the final
+page is a listing or has a generic title.
+
+Cases added, `servers/price-tracker/test/redirect.test.mjs:60,69,78,87,97,103`:
+newegg `/p/N82E16819113877` -> same path with `?Item=...` (accept), newegg `/p/N82E16819113877` ->
+`/amd-ryzen-7-9800x3d-processor/p/N82E16819113877` (accept), amazon `/dp/B0XXXX1234` ->
+`/Acme-Widget-Pro-Oak/dp/B0XXXX1234/ref=sr_1_1` (accept), ikea `/us/en/p/billy-bookcase-white-00522047/`
+-> `/us/en/cat/billy-bookcases-58288/` (refuse, `"cat" listing page`), `shop.example.com/item/123` ->
+`/` (refuse, home page), plus a direct `productToken` case.
+
+**D-10 (spreadsheet) — `sheet_query` echoes the query it ran.**
+`servers/spreadsheet/src/index.ts:241` `describeQuery` renders the effective `where`, `group_by`,
+`aggregate` (as `<fn> <col> as <alias>`), `sort` and `limit` as one line; `:326` puts it in front of
+the existing counts line, which stays byte-identical at `:321`. A call with no filter, grouping,
+aggregate, sort or limit prints no query line, so plain reads are unchanged. The first two lines of
+the ss2 call now read:
+
+```
+Query: where [Region] = "North" AND [Status] = "Closed"; group by Rep; sum Units as total_units; sort total_units desc; limit 5
+5 groups from 102 of 400 rows, showing 5
+```
+
+Case added, `servers/spreadsheet/test/query.test.mjs:153`: asserts that exact `Query:` line shape for
+a narrowed grouped query, the bare `Query: where [Region] = "South"` line for an ungrouped filter, and
+that an unfiltered read still starts with `15 of 15 rows match`.
+
+**D-11 (time-tracker) — `invoice_summary` is free inside the 7-day window.**
+`servers/time-tracker/src/index.ts:701` replaces `if (!gate.isPro()) return gated("invoice_summary")`
+with the same `pro` / `windowFor(a.from, a.to, pro)` treatment `entry_list`, `report` and `export_csv`
+already use: free callers get the last 7 days, Pro gets the full history. The clamp note is appended
+at `:726` (and `:708` for an empty period), so a free caller asking for a longer period gets the
+invoice lines it can produce plus `Note: the free tier shows the last 7 days` and the checkout URL,
+instead of only upgrade text. Gate text updated at `:694`: "Free for the last 7 days; Pro invoices any
+period from the full history." Pro keeps full history, `group_by tag` (`:599`) and unlimited rated
+projects (`:540`) — those two gates are untouched.
+
+Test updated, `servers/time-tracker/test/smoke.test.mjs:115`: the free-tier case now asserts
+`doesNotMatch(/Pro feature/)`, `Invoice summary - acme`, the `USD 100.00` rate and a
+`TOTAL 1.5x h  USD 15x.xx` total, then asserts that a 2020-to-today range still answers with the
+7-day note and the `mcp.zovo.one/buy/time-tracker` URL. The pro-tier test is unchanged apart from its
+name (`pro tier: a signed key unlocks full invoice history, tag grouping and full history`).
+
+`servers/time-tracker/README.md` still lists `invoice_summary` as Pro-only (rows 60 and 76); that file
+is owned by another agent this round and was not edited.
+
+### Build
+
+```
+> @theluckystrike/mcp-price-tracker@0.1.1 build
+> tsc -p tsconfig.json && node -e "import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))"
+
+> @theluckystrike/mcp-spreadsheet@0.1.1 build
+> tsc -p tsconfig.json && node -e "require('fs').chmodSync('dist/index.js',0o755)"
+
+> @theluckystrike/mcp-time-tracker@0.1.1 build
+> tsc -p tsconfig.json && node -e "import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))"
+```
+
+### Tests
+
+```
+> @theluckystrike/mcp-price-tracker@0.1.1 test
+# tests 39
+# pass 39
+# fail 0
+> @theluckystrike/mcp-spreadsheet@0.1.1 test
+# tests 34
+# pass 34
+# fail 0
+> @theluckystrike/mcp-time-tracker@0.1.1 test
+# tests 6
+# pass 6
+# fail 0
+```
+
+price-tracker 33 -> 39 tests (6 D-9 cases), spreadsheet 33 -> 34 (1 D-10 case), time-tracker 6
+unchanged (the D-11 case replaced the gate assertion inside the existing free-tier test).
+
+### scripts/validate.mjs
+
+```
+time-tracker: 18/18 in 272 ms
+price-tracker: 18/18 in 278 ms
+spreadsheet: 18/18 in 377 ms
+invoice: 20/20 in 427 ms
+billing: 10/10
+validation db: /Users/mike/mcp-servers/data/validation.json run 9: 84/84
+```
+
+84/84, unchanged. The time-tracker probe does not exercise `invoice_summary` gating, so no probe line
+needed adjusting.

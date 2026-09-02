@@ -691,18 +691,22 @@ server.registerTool("export_csv", {
 
 server.registerTool("invoice_summary", {
   title: "Invoice summary",
-  description: "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00).",
+  description: "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00). Free for the last 7 days; Pro invoices any period from the full history.",
   inputSchema: {
     project: z.string().min(1).describe("Project or client to invoice"),
     from: z.string().describe("ISO date/time start of the billing period"),
     to: z.string().describe("ISO date/time end of the billing period"),
   },
 }, guard(async (a: { project: string; from: string; to: string }) => {
-  if (!gate.isPro()) return gated("invoice_summary");
+  // Free within the 7-day window: this tool is the answer to "give me invoice lines",
+  // and a first free session should not have to rebuild it from entry_list + report (D-11).
+  const pro = gate.isPro();
   const db = load();
-  const w = windowFor(a.from, a.to, true);
+  const w = windowFor(a.from, a.to, pro);
   const entries = select(db, w, a.project).filter(e => e.billable);
-  if (entries.length === 0) return ok(`No billable time for "${a.project}" in that period.`);
+  if (entries.length === 0) {
+    return ok(`No billable time for "${a.project}" in that period.` + (!pro && w.clamped ? FREE_WINDOW_NOTE : ""));
+  }
   const lines = aggregate(db, entries, "task");
   const totalSec = lines.reduce((s, b) => s + b.seconds, 0);
   const totals = totalAmounts(lines);
@@ -718,7 +722,8 @@ server.registerTool("invoice_summary", {
   return ok(
     `Invoice summary - ${a.project}\n` +
     `Period ${dayKey(a.from)} to ${dayKey(a.to)} (${days.length} working days, ${entries.length} entries)\n\n` +
-    `${body}\n\nTOTAL ${hours(totalSec)} h  ${moneyOf(totals)}`,
+    `${body}\n\nTOTAL ${hours(totalSec)} h  ${moneyOf(totals)}` +
+    (!pro && w.clamped ? FREE_WINDOW_NOTE : ""),
   );
 }));
 

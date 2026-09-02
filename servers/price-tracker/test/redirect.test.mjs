@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { checkRedirect, pathSegments } from "../dist/redirect.js";
+import { checkRedirect, pathSegments, productToken } from "../dist/redirect.js";
 
 const PROD = "https://www.ikea.com/us/en/p/billy-bookcase-white-00522047/";
 
@@ -53,4 +53,56 @@ test("a real redirect to another product page is allowed", () => {
 test("pathSegments ignores empty segments", () => {
   assert.deepEqual(pathSegments("https://a.example.com/us/en/p/x/"), ["us", "en", "p", "x"]);
   assert.deepEqual(pathSegments("https://a.example.com/"), []);
+});
+
+/* D-9: slug-canonicalisation redirects keep the product identity and must be accepted. */
+
+test("D-9: newegg /p/<id> keeps its id when tracking params are appended", () => {
+  const v = checkRedirect(
+    "https://www.newegg.com/p/N82E16819113877",
+    "https://www.newegg.com/p/N82E16819113877?Item=N82E16819113877&cm_sp=x",
+    "AMD Ryzen 7 9800X3D - Newegg.com",
+  );
+  assert.equal(v.ok, true, v.reason);
+});
+
+test("D-9: newegg /p/<id> expanding to a slug URL is accepted", () => {
+  const v = checkRedirect(
+    "https://www.newegg.com/p/N82E16819113877",
+    "https://www.newegg.com/amd-ryzen-7-9800x3d-processor/p/N82E16819113877",
+    "AMD Ryzen 7 9800X3D - Newegg.com",
+  );
+  assert.equal(v.ok, true, v.reason);
+});
+
+test("D-9: amazon /dp/<asin> expanding to /Product-Name/dp/<asin> is accepted", () => {
+  const v = checkRedirect(
+    "https://www.amazon.com/dp/B0XXXX1234",
+    "https://www.amazon.com/Acme-Widget-Pro-Oak/dp/B0XXXX1234/ref=sr_1_1",
+    "Amazon.com: Acme Widget Pro, oak",
+  );
+  assert.equal(v.ok, true, v.reason);
+});
+
+test("D-9: an ikea product page redirected to a category listing is still refused", () => {
+  const v = checkRedirect(
+    "https://www.ikea.com/us/en/p/billy-bookcase-white-00522047/",
+    "https://www.ikea.com/us/en/cat/billy-bookcases-58288/",
+    "BILLY Bookcases - IKEA",
+  );
+  assert.equal(v.ok, false);
+  assert.match(v.reason, /"cat" listing page/);
+});
+
+test("D-9: an item page redirected to the home page is still refused", () => {
+  const v = checkRedirect("https://shop.example.com/item/123", "https://shop.example.com/", "Example Shop");
+  assert.equal(v.ok, false);
+  assert.match(v.reason, /home page/);
+});
+
+test("D-9: productToken picks the identifier, not the slug or a marker", () => {
+  assert.equal(productToken("https://www.newegg.com/p/N82E16819113877"), "N82E16819113877");
+  assert.equal(productToken("https://www.amazon.com/dp/B0XXXX1234"), "B0XXXX1234");
+  assert.equal(productToken("https://www.ikea.com/us/en/p/billy-bookcase-white-00522047/"), null);
+  assert.equal(productToken("https://shop.example.com/p/widget-123"), null);
 });

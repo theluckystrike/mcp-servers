@@ -234,6 +234,28 @@ function groupRecords(headers: string[], recs: Record<string, Cell>[], groupBy: 
   return { headers: [...gcols, ...specs.map((s) => s.as)], rows: out };
 }
 
+/**
+ * One line describing the query that was run: the effective where clause, grouping,
+ * aggregates, sort and limit. Empty when the call was a plain read of the sheet.
+ */
+function describeQuery(q: {
+  where?: string;
+  group_by?: string[];
+  aggregate?: AggSpec[];
+  sort?: { col: string; dir?: string };
+  limit?: number;
+}): string {
+  const parts: string[] = [];
+  if (q.where) parts.push(`where ${q.where.trim()}`);
+  if (q.group_by && q.group_by.length) parts.push(`group by ${q.group_by.join(", ")}`);
+  if (q.aggregate && q.aggregate.length) {
+    parts.push(q.aggregate.map((a) => `${a.fn} ${a.col}${a.as ? ` as ${a.as}` : ""}`).join("; "));
+  }
+  if (q.sort) parts.push(`sort ${q.sort.col} ${q.sort.dir === "desc" ? "desc" : "asc"}`);
+  if (q.limit) parts.push(`limit ${q.limit}`);
+  return parts.length ? `Query: ${parts.join("; ")}` : "";
+}
+
 server.registerTool("sheet_query", {
   title: "Filter, group and sort rows",
   description:
@@ -296,9 +318,12 @@ server.registerTool("sheet_query", {
   if (select && select.length) headers = select.map((sname: string) => resolveCol(cols, sname));
   const shown = recs.slice(0, limit ?? 100);
   const rows = shown.map((r) => headers.map((h) => r[h] ?? null));
-  const head = grouped
+  const counts = grouped
     ? `${matched} groups from ${filtered} of ${total} rows, showing ${rows.length}`
     : `${matched} of ${total} rows match, showing ${rows.length}`;
+  // Echo the query that was actually run, so a filter or grouping the user never asked
+  // for is visible in the answer instead of silently narrowing the question (D-10).
+  const head = [describeQuery({ where, group_by, aggregate, sort, limit }), counts].filter(Boolean).join("\n");
   const fmt = as ?? "table";
   if (fmt === "json") return withNotes(o.notes, JSON.stringify(shown.map((r) => Object.fromEntries(headers.map((h) => [h, r[h] ?? null]))), null, 2));
   if (fmt === "csv") return withNotes(o.notes, toCsv([headers as unknown as Cell[], ...rows]));

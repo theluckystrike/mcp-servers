@@ -148,3 +148,38 @@ test("group_by + aggregate + sort by alias answers the top-5 question in one cal
   assert.equal(badSort.isError, true);
   assert.match(badSort.text, /sort column "total_units" not found/);
 });
+
+// D-10: the result echoes the query that was actually run, so an unrequested filter is visible.
+test("D-10: sheet_query echoes where, group_by, aggregate, sort and limit in the first line", async (t) => {
+  const root = mkdtempSync(join(tmpdir(), "mcp-sheet-echo-"));
+  mkdirSync(join(root, "data"), { recursive: true });
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const file = fixture(root);
+  const c = new Client({ XDG_DATA_HOME: join(root, "data"), XDG_CONFIG_HOME: join(root, "data") });
+  t.after(() => c.stop());
+  await c.init();
+
+  const narrowed = await c.call("sheet_query", {
+    path: file,
+    where: '[Region] = "North" AND [Rep] = "Turing"',
+    group_by: ["Rep"],
+    aggregate: [{ col: "Units", fn: "sum", as: "total_units" }],
+    sort: { col: "total_units", dir: "desc" },
+    limit: 5,
+  });
+  assert.equal(narrowed.isError, false, narrowed.text);
+  assert.equal(
+    narrowed.text.split("\n")[0],
+    'Query: where [Region] = "North" AND [Rep] = "Turing"; group by Rep; sum Units as total_units; sort total_units desc; limit 5',
+  );
+  assert.match(narrowed.text.split("\n")[1], /1 groups from 2 of 15 rows/);
+
+  // a plain filter with no grouping still states the filter
+  const plain = await c.call("sheet_query", { path: file, where: '[Region] = "South"' });
+  assert.equal(plain.text.split("\n")[0], 'Query: where [Region] = "South"');
+  assert.match(plain.text.split("\n")[1], /6 of 15 rows match/);
+
+  // an unfiltered read has no query line
+  const all = await c.call("sheet_query", { path: file });
+  assert.match(all.text.split("\n")[0], /^15 of 15 rows match/);
+});

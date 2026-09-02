@@ -112,11 +112,22 @@ test("free tier: initialize, tools/list, timer, report, gating", async () => {
     assert.equal(parsed.total.amount_cents >= 15000, true);
     assert.equal(parsed.tier, "free");
 
-    // free gates: invoice_summary blocked, group_by tag blocked, 3rd rated project blocked
+    // D-11: invoice_summary is free inside the 7-day window - the tool the phrase
+    // "give me invoice lines" names must answer on the free tier.
     const inv = await c.call("invoice_summary", { project: "acme", from: `${today}T00:00:00`, to: `${today}T23:59:59` });
-    assert.equal(inv.isError, false, "gated feature must not be an error");
-    assert.match(inv.text, /Pro feature/);
-    assert.match(inv.text, /mcp\.zovo\.one\/buy\/time-tracker/);
+    assert.equal(inv.isError, false, "invoice_summary must not error on free");
+    assert.doesNotMatch(inv.text, /Pro feature/);
+    assert.match(inv.text, /Invoice summary - acme/);
+    assert.match(inv.text, /USD 100\.00/);          // hourly rate, in the entry currency
+    assert.match(inv.text, /TOTAL 1\.5\d h  USD 15\d\.\d\d/);
+
+    // outside the free window it still answers, clamped, and names the upgrade
+    const invOld = await c.call("invoice_summary", { project: "acme", from: "2020-01-01T00:00:00", to: `${today}T23:59:59` });
+    assert.equal(invOld.isError, false);
+    assert.match(invOld.text, /free tier shows the last 7 days/);
+    assert.match(invOld.text, /mcp\.zovo\.one\/buy\/time-tracker/);
+
+    // free gates that remain: group_by tag blocked, 3rd rated project blocked
 
     const tagRep = await c.call("report", { from: `${today}T00:00:00`, to: `${today}T23:59:59`, group_by: "tag" });
     assert.match(tagRep.text, /Pro feature/);
@@ -141,7 +152,7 @@ test("free tier: initialize, tools/list, timer, report, gating", async () => {
   }
 });
 
-test("pro tier: a signed key unlocks invoice_summary, tag grouping and full history", async () => {
+test("pro tier: a signed key unlocks full invoice history, tag grouping and full history", async () => {
   const key = execFileSync(process.execPath, [join(REPO, "scripts", "sign-license.mjs"), "time-tracker"], { encoding: "utf8" }).trim();
   assert.match(key, /^MCPL1\./);
   const c = client({ MCP_LICENSE_KEY: key });
