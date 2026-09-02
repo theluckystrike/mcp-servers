@@ -25,6 +25,21 @@ test("toMinor and formatMoney respect currency decimals", () => {
   assert.equal(formatMoney(-250, "USD"), "USD -2.50");
 });
 
+test("minor units follow the ISO 4217 table, matching the expense-tracker table", () => {
+  assert.equal(currencyDecimals("KWD"), 3);
+  assert.equal(currencyDecimals("bhd"), 3);
+  assert.equal(currencyDecimals("JPY"), 0);
+  assert.equal(currencyDecimals("ISK"), 0);
+  assert.equal(currencyDecimals("HUF"), 2);
+  assert.equal(currencyDecimals("constructor"), 2);
+  assert.equal(toMinor(1.234, "KWD"), 1234);
+  assert.equal(formatMoney(1234, "KWD"), "KWD 1.234");
+  const t = computeTotals([{ description: "Dev", quantity: 2, unit_price: 1.234, tax_rate: 5 }], "KWD");
+  assert.equal(t.subtotal_minor, 2468);
+  assert.equal(t.tax_minor, 123);
+  assert.equal(formatMoney(t.total_minor, "KWD"), "KWD 2.591");
+});
+
 test("12 hours at 90 EUR with no tax", () => {
   const t = computeTotals([{ description: "Dev", quantity: 12, unit_price: 90 }], "EUR");
   assert.equal(t.subtotal_minor, 108000);

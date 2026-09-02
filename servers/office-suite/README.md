@@ -54,7 +54,7 @@ npm run build
 
 `npm run build` (no `-w`) is required here -- it builds `mcp-license` and all four sibling servers that office-suite spawns as children, then office-suite itself. Then point your client's `command` at `node` with one arg: the absolute path to `servers/office-suite/dist/index.js`.
 
-To run every server in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key -- it is forwarded to all four children.
+To run every server in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key -- it is forwarded to every connected child. Activation is all-or-nothing: the reply is an error unless **every** child accepted the key, and it prints a per-child table (`OK` / `FAILED` with each child's own message) so a bundle that is half Pro cannot look like a success.
 
 ## Why one server instead of four
 
@@ -126,7 +126,7 @@ Tool names are passed through unchanged from each child. If this bundle ever pro
 | Tool | What it does |
 |---|---|
 | `license_status` | Free/Pro status of every proxied server, and the bundle upgrade link |
-| `license_activate` | Activate one Pro bundle key across all four servers at once |
+| `license_activate` | Activate one Pro bundle key across every server at once. Returns an error with a per-child table unless all of them accepted it |
 
 Resources and prompts registered by any child (for example time-tracker's `timetracker://today` resource and `daily_standup` prompt) are also proxied under their original names.
 
@@ -137,6 +137,13 @@ Each child server keeps its own free tier exactly as documented in its own READM
 A single **bundle** Pro key ($39 one-time, lifetime) unlocks Pro on every server in the bundle, instead of buying each server's $19 key separately. Activate it once here and it is forwarded to all four children.
 
 **Get Pro:** https://mcp.zovo.one/buy/bundle
+
+## Child processes
+
+Each child runs as its own stdio process. Two things the proxy does on their behalf:
+
+- **Their stderr is drained into ours**, one line at a time, tagged with the child it came from (`[invoice] ...`). A child's stderr is a pipe with a small OS buffer; left unread, a child that logged more than that buffer blocked in `write()` and the tool call it was answering never returned.
+- **A child that dies rejects its in-flight requests** before the suite tries to restart it, so a proxied call fails fast instead of hanging until the client's timeout, where a retry could repeat a mutation that had already been applied.
 
 ## Privacy
 

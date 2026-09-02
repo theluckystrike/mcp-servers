@@ -141,12 +141,12 @@ test("stdio: initialize, tools/list, expenses, rules, summary, mileage, rebill",
   // mileage: default table
   r = await c.call("mileage_add", { km: 120, region: "PL", date: daysAgo(1), purpose: "client meeting", project: "Acme" });
   assert.equal(r.isError, false);
-  assert.match(r.text, /120 kms on .* at 1\.15 PLN\/km \(PL rate\) = PLN 138\.00/);
+  assert.match(r.text, /120 kms on .* at 1\.15 PLN\/km \(table rate PL 1\.15 PLN\/km, an approximation; pass rate_per_km for your exact scheme\) = PLN 138\.00/);
 
   r = await c.call("mileage_add", { miles: 37, region: "UK", date: daysAgo(1), purpose: "site visit" });
   assert.match(r.text, /GBP 16\.65/);
   r = await c.call("mileage_add", { miles: 214, date: daysAgo(1), purpose: "conference" });
-  assert.match(r.text, /US rate\) = USD 149\.80/);
+  assert.match(r.text, /table rate US 0\.7 USD\/mile, an approximation; pass rate_per_km for your exact scheme\) = USD 149\.80/);
   r = await c.call("mileage_add", { km: 83, region: "EU", date: daysAgo(1), purpose: "supplier" });
   assert.match(r.text, /EUR 24\.90/);
   r = await c.call("mileage_add", { km: 10, miles: 10, purpose: "both" });
@@ -170,8 +170,13 @@ test("stdio: initialize, tools/list, expenses, rules, summary, mileage, rebill",
   assert.equal(eurItems[0].tax_rate, 23);
   const plnItems = rebill.line_items_per_currency.find((g) => g.currency === "PLN").items;
   assert.equal(plnItems.length, 2);                      // Orlen plus the PL mileage
-  // rebilled expenses are not offered twice, once they are actually marked (D-R4)
-  await c.call("expense_mark_rebilled", { project: "Acme", from: daysAgo(10), to: today });
+  // rebilled expenses are not offered twice, once they are actually marked (D-R4).
+  // D-R6: a range is marked one currency at a time, against the invoice that carried it.
+  assert.equal((await c.call("expense_mark_rebilled", { project: "Acme", from: daysAgo(10), to: today, invoice_number: "INV-A" })).isError, true);
+  for (const cur of ["EUR", "PLN"]) {
+    const mk = await c.call("expense_mark_rebilled", { project: "Acme", from: daysAgo(10), to: today, currency: cur, invoice_number: `INV-${cur}` });
+    assert.equal(mk.isError, false, mk.text);
+  }
   const again = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: daysAgo(10), to: today })).text);
   assert.equal(again.count, 0);
 
@@ -190,8 +195,11 @@ test("stdio: initialize, tools/list, expenses, rules, summary, mileage, rebill",
   assert.match(r.text, /Pro/);
   assert.equal(existsSync(xlsxPath), false, "no file may be written when the export is refused");
 
-  // update and delete
-  r = await c.call("expense_update", { id: id1, category: "design", amount: 100 });
+  // update and delete. D-R7: id1 is now on INV-EUR, so a money edit needs unlink_rebill.
+  r = await c.call("expense_update", { id: id1, amount: 100 });
+  assert.equal(r.isError, true);
+  assert.match(r.text, /was rebilled on INV-EUR/);
+  r = await c.call("expense_update", { id: id1, category: "design", amount: 100, unlink_rebill: true });
   assert.match(r.text, /"category": "design"/);
   assert.match(r.text, /EUR 100\.00/);
   r = await c.call("expense_delete", { id: id1 });
@@ -267,6 +275,8 @@ test("pro: full history, xlsx export, markup rebill", async (t) => {
   assert.equal(rebill.count, 2);
   const items = rebill.line_items_per_currency[0].items;
   const old = items.find((i) => i.description.includes("Old"));
-  assert.equal(old.unit_price, 9.16);    // 10.00 gross at 20% -> net 8.33 -> +10% = 9.163 -> 9.16
+  // 10.00 gross at 20% -> VAT 1.67, net 8.33 -> +10% = 9.163. 9.16 + 20% tax is 10.99 against a
+  // marked-up gross of 11.00, so D-R5 nudges unit_price to 9.17, which invoices to exactly 11.00.
+  assert.equal(old.unit_price, 9.17);
   assert.equal(old.tax_rate, 20);
 });

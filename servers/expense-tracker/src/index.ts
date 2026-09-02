@@ -260,7 +260,8 @@ server.registerTool("expense_update", {
     note: text(2000).optional(),
     billable: z.boolean().optional(),
     vat_rate: z.number().finite().min(0).max(100).optional(),
-    rebilled: z.boolean().optional().describe("false clears the rebilled marker so the expense can be billed again"),
+    rebilled: z.boolean().optional().describe("false clears the rebilled marker and the invoice number, so the expense can be billed again"),
+    unlink_rebill: z.boolean().optional().describe("Allow editing amount, currency or vat_rate on a rebilled expense. Clears rebilled_at and rebilled_invoice, because the invoice no longer matches"),
   },
 }, async (a) => {
   try {
@@ -269,6 +270,12 @@ server.registerTool("expense_update", {
       const db = load();
       const e = db.expenses.find((x) => x.id === a.id);
       if (!e) return fail(`no expense with id ${a.id}.`);
+      // D-R7: an expense already on an invoice cannot silently change what that invoice
+      // charged. Money edits either stay out, or break the link explicitly.
+      const moneyEdit = typeof a.amount === "number" || a.currency !== undefined || typeof a.vat_rate === "number";
+      if (moneyEdit && e.rebilled_at && a.unlink_rebill !== true) {
+        return fail(`${e.id} was rebilled${e.rebilled_invoice ? ` on ${e.rebilled_invoice}` : ""} on ${e.rebilled_at}. Changing amount, currency or vat_rate would leave it linked to an invoice that charged something else. Pass unlink_rebill: true to clear the rebill link and edit it, or issue a credit note instead. Nothing was changed.`);
+      }
       if (a.currency) {
         const c = normCurrency(a.currency);
         if (!isKnownCurrency(c)) return fail(`"${c}" is not an ISO 4217 currency code.`);
@@ -287,7 +294,12 @@ server.registerTool("expense_update", {
       if (a.note !== undefined) e.note = a.note;
       if (typeof a.billable === "boolean") e.billable = a.billable;
       if (typeof a.vat_rate === "number") e.vat_rate = a.vat_rate;
-      if (a.rebilled === false) delete e.rebilled_at;
+      // D-R8: clearing rebilled must drop the invoice number too, or the next rebill keeps
+      // pointing at the previous invoice.
+      if (a.rebilled === false || (moneyEdit && a.unlink_rebill === true)) {
+        delete e.rebilled_at;
+        delete e.rebilled_invoice;
+      }
       save(db);
       return json({ updated: view(e) });
     });
@@ -423,15 +435,22 @@ function groupKey(e: Expense, by: GroupBy): string {
 }
 
 function summarise(rows: Expense[], by: GroupBy) {
-  const perCurrency: Record<string, Record<string, { gross: number; net: number; vat: number; count: number }>> = {};
+  // Maps, not object literals: a category or project literally named "__proto__" or
+  // "constructor" is user input. Indexed into a plain object it either vanishes from the
+  // totals or writes through to Object.prototype.
+  interface Acc { gross: number; net: number; vat: number; count: number }
+  const perCurrency = new Map<string, Map<string, Acc>>();
   for (const e of rows) {
     const s = vatSplit(e.amount_minor, e.vat_rate);
-    const c = (perCurrency[e.currency] ??= {});
-    const g = (c[groupKey(e, by)] ??= { gross: 0, net: 0, vat: 0, count: 0 });
+    let c = perCurrency.get(e.currency);
+    if (!c) { c = new Map<string, Acc>(); perCurrency.set(e.currency, c); }
+    const k = groupKey(e, by);
+    let g = c.get(k);
+    if (!g) { g = { gross: 0, net: 0, vat: 0, count: 0 }; c.set(k, g); }
     g.gross += s.gross_minor; g.net += s.net_minor; g.vat += s.vat_minor; g.count += 1;
   }
-  return Object.entries(perCurrency).map(([currency, groups]) => {
-    const rowsOut = Object.entries(groups)
+  return [...perCurrency.entries()].map(([currency, groups]) => {
+    const rowsOut = [...groups.entries()]
       .sort((a, b) => b[1].gross - a[1].gross)
       .map(([key, g]) => ({
         key, count: g.count,
@@ -439,7 +458,7 @@ function summarise(rows: Expense[], by: GroupBy) {
         net: formatMoney(g.net, currency),
         vat: formatMoney(g.vat, currency),
       }));
-    const t = Object.values(groups).reduce((acc, g) => ({ gross: acc.gross + g.gross, net: acc.net + g.net, vat: acc.vat + g.vat, count: acc.count + g.count }), { gross: 0, net: 0, vat: 0, count: 0 });
+    const t = [...groups.values()].reduce((acc, g) => ({ gross: acc.gross + g.gross, net: acc.net + g.net, vat: acc.vat + g.vat, count: acc.count + g.count }), { gross: 0, net: 0, vat: 0, count: 0 });
     return {
       currency, count: t.count, groups: rowsOut,
       total_gross: formatMoney(t.gross, currency),
@@ -473,7 +492,7 @@ server.registerTool("expense_summary", {
 
 server.registerTool("mileage_add", {
   title: "Add a mileage claim",
-  description: "Record a business trip as an expense. Money is distance x rate, using the built-in rate table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) unless you pass your own rate. Give either km or miles.",
+  description: "Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, no vehicle or engine class and no first-10000-mile band, so it is not a tax calculation. Pass rate_per_km for your exact scheme. currency is only accepted together with rate_per_km; a table rate always keeps its own currency. Give either km or miles.",
   inputSchema: {
     km: amount("km").optional().describe("Distance in kilometres"),
     miles: amount("miles").optional().describe("Distance in miles"),
@@ -482,7 +501,7 @@ server.registerTool("mileage_add", {
     project: text().optional(),
     region: z.enum(["PL", "UK", "US", "EU"]).optional().describe("Which rate to use. Default US for miles, EU for km"),
     rate_per_km: z.number().finite().min(0).optional().describe("Your own rate per supplied unit, overriding the table"),
-    currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Currency for your own rate, default the region currency"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Currency for your own rate. Only accepted together with rate_per_km; a table rate keeps the table currency"),
     billable: z.boolean().optional(),
   },
 }, async (a) => {
@@ -499,11 +518,17 @@ server.registerTool("mileage_add", {
     const region = a.region ?? defaultRegion(unit);
     const table = MILEAGE_RATES[region];
     const usingOwnRate = typeof a.rate_per_km === "number";
+    // A table rate is quoted in one currency. Letting the caller relabel PLN 1.15/km as
+    // EUR 1.15/km converts nothing and books a 4x overclaim, so currency is only a
+    // parameter of the caller's own rate.
+    if (a.currency && !usingOwnRate) {
+      return fail(`currency is only accepted together with rate_per_km. The ${region} table rate is ${table.rate} ${table.currency}/${table.unit}; pass rate_per_km with your own ${normCurrency(a.currency)} rate, or drop currency to use the table.`);
+    }
     const rate = usingOwnRate ? a.rate_per_km! : (table.unit === unit ? table.rate : NaN);
     if (!Number.isFinite(rate)) {
       return fail(`the ${region} rate is per ${table.unit}, but you gave ${unit}. Pass ${table.unit === "km" ? "km" : "miles"}, or pass rate_per_km with your own rate for ${unit}.`);
     }
-    const currency = normCurrency(a.currency, table.currency);
+    const currency = usingOwnRate ? normCurrency(a.currency, table.currency) : table.currency;
     if (!isKnownCurrency(currency)) return fail(`"${currency}" is not an ISO 4217 currency code.`);
     const minor = mileageAmount(distance, rate, currency);
     if (!Number.isSafeInteger(minor)) return fail("that distance is too large to represent exactly.");
@@ -524,8 +549,11 @@ server.registerTool("mileage_add", {
       };
       db.expenses.push(e);
       save(db);
-      return ok(`Saved ${e.id}: ${distance} ${unit}${distance === 1 ? "" : "s"} on ${date} at ${rate} ${currency}/${unit}` +
-        `${usingOwnRate ? " (your rate)" : ` (${region} rate)`} = ${formatMoney(minor, currency)}. ${a.purpose}`);
+      const source = usingOwnRate
+        ? "your rate_per_km"
+        : `table rate ${region} ${table.rate} ${table.currency}/${table.unit}, an approximation; pass rate_per_km for your exact scheme`;
+      return ok(`Saved ${e.id}: ${distance} ${unit}${distance === 1 ? "" : "s"} on ${date} at ${rate} ${currency}/${unit} ` +
+        `(${source}) = ${formatMoney(minor, currency)}. ${a.purpose}`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -616,14 +644,14 @@ server.registerTool("expense_export", {
 
 server.registerTool("expense_to_invoice", {
   title: "Rebill expenses to an invoice",
-  description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate, so the invoice recomputes the same tax. An expense with no VAT rate is split at the expense_settings default_vat_rate if one is set, and otherwise rebilled gross with tax_rate 0 and a warning in its description, so a downstream default rate cannot tax it twice. Line items are grouped per currency because one invoice carries one currency. This is a read-only preview: nothing is marked rebilled unless mark_rebilled is true, or expense_mark_rebilled is called once the invoice exists.",
+  description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax and the line total comes back to the receipt gross. A stored rate of 0 is a rate, not a gap. An expense with NO rate recorded is rebilled gross with tax_rate 0 and a warning in its description; the expense_settings default is never applied retroactively, because it would rewrite the tax meaning of receipts entered before it existed. Pass assume_vat_rate explicitly to split those lines instead. Line items are grouped per currency because one invoice carries one currency. This is a read-only preview: marking happens only in expense_mark_rebilled, once the invoice exists.",
   inputSchema: {
     project: text().describe("Project or client to rebill"),
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
     markup_percent: z.number().finite().min(0).max(1000).optional().describe("Percent added to each net amount. Pro"),
     include_rebilled: z.boolean().optional().describe("Include expenses already marked as rebilled, default false"),
-    mark_rebilled: z.boolean().optional().describe("Mark the expenses as rebilled, default false. Prefer expense_mark_rebilled after the invoice exists"),
+    assume_vat_rate: z.number().finite().min(0).max(100).optional().describe("Split expenses that recorded NO VAT rate at this percent, flagged in the description. Only applied when you pass it here"),
   },
 }, async (a) => {
   try {
@@ -642,19 +670,22 @@ server.registerTool("expense_to_invoice", {
       if (!gate.isPro() && rows.length > FREE_REBILL_ITEMS) {
         return gated(`There are ${rows.length} billable expenses to rebill and the free tier converts ${FREE_REBILL_ITEMS} at a time. Nothing was changed. Narrow the date range.\n\n` + gate.upgradeText("unlimited rebill items"));
       }
-      const byCurrency: Record<string, { description: string; quantity: number; unit_price: number; tax_rate: number }[]> = {};
+      interface Line { description: string; quantity: number; unit_price: number; tax_rate: number }
+      const byCurrency = new Map<string, Line[]>();
+      const idsByCurrency = new Map<string, string[]>();
       // D-R3: an expense with no recorded VAT rate holds a GROSS amount. Emitting it as a
       // net line with tax_rate 0 lets a downstream invoice default rate tax it a second
-      // time. Either split it retroactively at the stored default, or rebill the gross and
-      // say so in the line itself.
-      const fallback = db.settings.default_vat_rate;
-      let assumed = 0, unknownVat = 0;
+      // time, so the line says so in its own description. The retroactive split is applied
+      // only when the caller passes assume_vat_rate on THIS call.
+      const assume = typeof a.assume_vat_rate === "number" && a.assume_vat_rate > 0 ? a.assume_vat_rate : undefined;
+      let assumed = 0, unknownVat = 0, adjustments = 0;
       for (const e of rows) {
-        const known = typeof e.vat_rate === "number" && e.vat_rate > 0;
-        const useAssumed = !known && typeof fallback === "number" && fallback > 0;
-        const rate = known ? e.vat_rate! : useAssumed ? fallback! : 0;
+        // A stored 0 is a known rate (exempt, or outside VAT). Only a missing/non-finite
+        // value is unknown.
+        const known = typeof e.vat_rate === "number" && Number.isFinite(e.vat_rate);
+        const useAssumed = !known && assume !== undefined;
+        const rate = known ? e.vat_rate! : useAssumed ? assume! : 0;
         const s = vatSplit(e.amount_minor, rate);
-        const netWithMarkup = roundHalfUp(s.net_minor * (100 + markup) / 100);
         const base = e.mileage
           ? `${e.date} mileage ${e.mileage.distance} ${e.mileage.unit} - ${e.mileage.purpose}`
           : `${e.date} ${e.merchant ?? e.category ?? "expense"}${e.note ? ` - ${e.note}` : ""}`;
@@ -662,43 +693,55 @@ server.registerTool("expense_to_invoice", {
         if (useAssumed) { assumed++; label = `${base} [vat assumed ${rate}%]`; }
         else if (!known) {
           unknownVat++;
-          label = `${base} [tax_rate: 0 (VAT unknown, gross rebilled as-is; set expense_settings default_vat_rate to split)]`;
+          label = `${base} [tax_rate: 0 (VAT unknown, gross rebilled as-is; pass assume_vat_rate to split)]`;
         }
-        (byCurrency[e.currency] ??= []).push({
-          description: label,
-          quantity: 1,
-          unit_price: toMajor(netWithMarkup, e.currency),
-          tax_rate: rate,
-        });
+        // D-R5: the invoice rounds tax again from the net, so net + tax does not always
+        // reproduce the receipt gross (EUR 0.03 at 23% splits 0.02 + 0.01 but the invoice
+        // recomputes 0.00 tax and charges 0.02). Reconcile here: nudge unit_price if that
+        // lands the invoice total exactly, otherwise emit a visible adjustment line.
+        const target = roundHalfUp((s.gross_minor * (100 + markup)) / 100);
+        let netMinor = roundHalfUp((s.net_minor * (100 + markup)) / 100);
+        const lineTotal = (n: number) => n + (rate ? roundHalfUp((n * rate) / 100) : 0);
+        let delta = target - lineTotal(netMinor);
+        if (delta !== 0 && lineTotal(netMinor + delta) === target) { netMinor += delta; delta = 0; }
+        const items = byCurrency.get(e.currency) ?? [];
+        items.push({ description: label, quantity: 1, unit_price: toMajor(netMinor, e.currency), tax_rate: rate });
+        if (delta !== 0) {
+          adjustments++;
+          items.push({
+            description: `${base} [rounding adjustment so the line total is the receipt gross ${formatMoney(s.gross_minor, e.currency)}]`,
+            quantity: 1,
+            unit_price: toMajor(delta, e.currency),
+            tax_rate: 0,
+          });
+        }
+        byCurrency.set(e.currency, items);
+        idsByCurrency.set(e.currency, [...(idsByCurrency.get(e.currency) ?? []), e.id]);
       }
-      const stamp = new Date().toISOString();
-      // D-R4: the rebilled flag belongs to an invoice that exists. Default off.
-      if (a.mark_rebilled === true) {
-        for (const e of rows) e.rebilled_at = stamp;
-        save(db);
-      }
-      const groups = Object.entries(byCurrency).map(([currency, items]) => ({
+      const groups = [...byCurrency.entries()].map(([currency, items]) => ({
         currency, items,
+        expense_ids: idsByCurrency.get(currency) ?? [],
         total_net: formatMoney(items.reduce((n, i) => n + toMinor(i.unit_price * i.quantity, currency), 0), currency),
       }));
       return json({
         project: a.project, from: w.from, to: a.to,
         markup_percent: markup,
         count: rows.length,
-        marked_rebilled: a.mark_rebilled === true,
+        marked_rebilled: false,
         vat_assumed_lines: assumed,
         vat_unknown_lines: unknownVat,
+        rounding_adjustment_lines: adjustments,
         vat_note: assumed
-          ? `${assumed} line(s) had no VAT rate recorded and were split at the expense_settings default of ${fallback}%, flagged "vat assumed ${fallback}%" in the description.`
+          ? `${assumed} line(s) had no VAT rate recorded and were split at the assume_vat_rate you passed (${assume}%), flagged "vat assumed ${assume}%" in the description.`
           : unknownVat
-            ? `${unknownVat} line(s) had no VAT rate recorded: the gross amount is rebilled as-is with tax_rate 0 and the description says so. Do not apply a default tax rate to those lines on the invoice, or the receipt is taxed twice. Set expense_settings {default_vat_rate: <percent>} and run this again to split them instead.`
+            ? `${unknownVat} line(s) had no VAT rate recorded: the gross amount is rebilled as-is with tax_rate 0 and the description says so. Do not apply a default tax rate to those lines on the invoice, or the receipt is taxed twice. Pass assume_vat_rate {percent} to split them instead; the expense_settings default is deliberately not applied retroactively.`
             : "Every line carries the VAT rate recorded on its expense.",
         currencies: groups.map((g) => g.currency),
         line_items_per_currency: groups,
         next_step: groups.length
           ? `1. Pass one group's items straight to invoice_create {client: "...", currency: "${groups[0].currency}", items: <line_items_per_currency[0].items>}. ` +
-            `2. Once that invoice exists, call expense_mark_rebilled {project: "${a.project}", from: "${w.from}", to: "${a.to}", invoice_number: "<the number>"} ` +
-            `so these expenses stop showing as unbilled.${a.mark_rebilled === true ? " (mark_rebilled was true, so step 2 is already done.)" : ""}`
+            `2. Once that invoice exists, mark exactly that group: expense_mark_rebilled {ids: <line_items_per_currency[0].expense_ids>, invoice_number: "<the number>"}. ` +
+            `A range instead of ids needs currency as well, or the other currency groups are marked against an invoice that never carried them.`
           : "Nothing to rebill in that range.",
         note: w.note,
       });
@@ -710,18 +753,24 @@ server.registerTool("expense_to_invoice", {
 
 server.registerTool("expense_mark_rebilled", {
   title: "Mark expenses as rebilled",
-  description: "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the ids from expense_to_invoice, or the same project and date range. Optionally record the invoice number on each expense. This is the step expense_to_invoice no longer does for you.",
+  description: "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range marks only billable, not-yet-rebilled expenses in that one currency, so invoicing the EUR group cannot mark the PLN one. invoice_number is required: the marker records which invoice carries the expense.",
   inputSchema: {
-    ids: z.array(text(64)).optional().describe("Expense ids. Takes precedence over project/from/to"),
-    project: text().optional().describe("Project rebilled, used with from and to"),
+    ids: z.array(text(64)).optional().describe("Expense ids, as returned per currency by expense_to_invoice. Takes precedence over project/from/to"),
+    project: text().optional().describe("Project rebilled, used with from, to and currency"),
     from: text(10).optional().describe("ISO date, inclusive"),
     to: text(10).optional().describe("ISO date, inclusive"),
-    invoice_number: text(64).optional().describe("Invoice the expenses were billed on, stored on each expense"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Required when marking by range: one invoice carries one currency"),
+    invoice_number: text(64).describe("Invoice the expenses were billed on, stored on each expense"),
   },
 }, async (a) => {
   try {
     if (!a.ids?.length && !(a.project && a.from && a.to)) {
       return fail("pass either ids, or project with from and to.");
+    }
+    // D-R6: one invoice carries one currency. A range that spans EUR and PLN would mark
+    // both groups against an invoice that only ever carried one of them.
+    if (!a.ids?.length && !a.currency) {
+      return fail("marking by range needs currency as well: one invoice carries one currency. Pass the expense_ids of one currency group from expense_to_invoice, or add currency.");
     }
     if (a.from && !isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (a.to && !isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
@@ -734,19 +783,22 @@ server.registerTool("expense_mark_rebilled", {
         const missing = a.ids.filter((id) => !rows.some((e) => e.id === id));
         if (missing.length) return fail(`no expense with id ${missing.join(", ")}. Nothing was changed.`);
       } else {
+        const cur = normCurrency(a.currency!);
+        if (!isKnownCurrency(cur)) return fail(`"${cur}" is not an ISO 4217 currency code.`);
         rows = select(db, { from: a.from!, to: a.to!, project: a.project, billable: true })
-          .filter((e) => !e.rebilled_at);
+          .filter((e) => !e.rebilled_at && e.currency === cur);
       }
-      if (!rows.length) return ok("Nothing to mark: no matching unbilled billable expense.");
+      if (!rows.length) return ok(`Nothing to mark: no matching unbilled billable expense${a.currency ? ` in ${normCurrency(a.currency)}` : ""}.`);
       const stamp = new Date().toISOString();
       for (const e of rows) {
         e.rebilled_at = stamp;
-        if (a.invoice_number) e.rebilled_invoice = a.invoice_number;
+        e.rebilled_invoice = a.invoice_number;
       }
       save(db);
       return json({
         marked: rows.length,
-        invoice_number: a.invoice_number ?? null,
+        invoice_number: a.invoice_number,
+        currency: a.ids?.length ? null : normCurrency(a.currency!),
         ids: rows.map((e) => e.id),
         rebilled_at: stamp,
       });

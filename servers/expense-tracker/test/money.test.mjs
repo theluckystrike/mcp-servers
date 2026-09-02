@@ -36,9 +36,10 @@ test("VAT split: net + vat is exactly the gross", () => {
   assert.equal(a.vat_minor, 2300);
   assert.equal(a.net_minor + a.vat_minor, a.gross_minor);
 
-  const b = M.vatSplit(999, 20);                       // odd amount, rounds
-  assert.equal(b.net_minor, 833);
-  assert.equal(b.vat_minor, 166);
+  // The VAT component is what gets rounded: 999 * 20 / 120 = 166.5 -> 167, net is the rest.
+  const b = M.vatSplit(999, 20);
+  assert.equal(b.vat_minor, 167);
+  assert.equal(b.net_minor, 832);
   assert.equal(b.net_minor + b.vat_minor, 999);
 
   for (const gross of [1, 7, 99, 1234, 555555]) {
@@ -47,6 +48,41 @@ test("VAT split: net + vat is exactly the gross", () => {
       assert.equal(s.net_minor + s.vat_minor, gross, `${gross}@${rate}`);
     }
   }
+});
+
+test("D-R1: a half-cent of VAT rounds up, it does not vanish", () => {
+  // Rounding the net first sent these to VAT 0.
+  assert.deepEqual([M.vatSplit(3, 20).net_minor, M.vatSplit(3, 20).vat_minor], [2, 1]);   // 0.5 -> 1
+  assert.deepEqual([M.vatSplit(3, 23).net_minor, M.vatSplit(3, 23).vat_minor], [2, 1]);   // 0.561 -> 1
+  assert.deepEqual([M.vatSplit(6, 20).net_minor, M.vatSplit(6, 20).vat_minor], [5, 1]);   // 1.0
+  assert.deepEqual([M.vatSplit(999, 20).net_minor, M.vatSplit(999, 20).vat_minor], [832, 167]);
+  assert.deepEqual([M.vatSplit(2, 50).net_minor, M.vatSplit(2, 50).vat_minor], [1, 1]);
+  // exactness still holds across a wide sweep, including the half-cent boundary cases
+  for (let gross = 1; gross <= 400; gross++) {
+    for (const rate of [0, 5, 7.5, 8, 19, 20, 21, 23, 25, 27]) {
+      const s = M.vatSplit(gross, rate);
+      assert.equal(s.net_minor + s.vat_minor, gross, `${gross}@${rate}`);
+      assert.ok(s.vat_minor >= 0 && s.net_minor >= 0, `${gross}@${rate}`);
+    }
+  }
+});
+
+test("D-R2: minor units follow the ISO 4217 table, not a 2-decimal guess", () => {
+  assert.equal(M.currencyDecimals("KWD"), 3);
+  assert.equal(M.currencyDecimals("bhd"), 3);
+  assert.equal(M.currencyDecimals("JOD"), 3);
+  assert.equal(M.currencyDecimals("JPY"), 0);
+  assert.equal(M.currencyDecimals("ISK"), 0);
+  assert.equal(M.currencyDecimals("HUF"), 2);   // ISO 4217 gives HUF 2, however it is quoted
+  assert.equal(M.currencyDecimals("EUR"), 2);
+  assert.equal(M.currencyDecimals("constructor"), 2);   // Map lookup, not a prototype hit
+  assert.equal(M.toMinor(1.234, "KWD"), 1234);
+  assert.equal(M.formatMoney(1234, "KWD"), "KWD 1.234");
+  assert.equal(M.toMajor(1234, "KWD"), 1.234);
+  assert.equal(M.toMinor(1080, "JPY"), 1080);
+  assert.equal(M.formatMoney(1080, "JPY"), "JPY 1080");
+  const k = M.vatSplit(M.toMinor(1.234, "KWD"), 5);
+  assert.equal(k.net_minor + k.vat_minor, 1234);
 });
 
 test("VAT split with no rate leaves everything as net", () => {

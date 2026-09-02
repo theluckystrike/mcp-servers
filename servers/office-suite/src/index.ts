@@ -72,6 +72,28 @@ const toolIndex = new Map<string, ProxyTool>(); // bundle tool name -> proxy too
 const resourceOwner = new Map<string, Child>(); // resource uri -> owning child
 const promptOwner = new Map<string, Child>(); // prompt name -> owning child
 
+/**
+ * A child's stderr is a pipe with a finite OS buffer. Nothing read it, so a child that
+ * logged more than the buffer before answering blocked in write() and the tools/call in
+ * flight never returned. Drain it into our own stderr, one prefixed line per child.
+ */
+function drainStderr(child: { def: ChildDef; transport: StdioClientTransport }): void {
+  const stream = child.transport.stderr;
+  if (!stream) return;
+  let buf = "";
+  stream.on("data", (chunk: Buffer | string) => {
+    buf += chunk.toString();
+    let i;
+    while ((i = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, i);
+      buf = buf.slice(i + 1);
+      process.stderr.write(`[${child.def.id}] ${line}\n`);
+    }
+    if (buf.length > 8192) { process.stderr.write(`[${child.def.id}] ${buf}\n`); buf = ""; }
+  });
+  stream.on("error", () => { /* the child is gone; onclose handles it */ });
+}
+
 function childEnv(): Record<string, string> {
   const env: Record<string, string> = {};
   for (const [k, v] of Object.entries(process.env)) if (v !== undefined) env[k] = v;
@@ -96,6 +118,7 @@ async function connectChild(def: ChildDef): Promise<Child | null> {
   const client = new Client({ name: `office-suite-proxy-${def.id}`, version: "0.1.0" }, { capabilities: {} });
   await client.connect(transport);
   const child: Child = { def, entry, client, transport, restarted: false, tools: [], hasResources: false, hasPrompts: false };
+  drainStderr(child);
   await loadChildCapabilities(child);
   wireCrashHandling(child);
   return child;
@@ -103,7 +126,12 @@ async function connectChild(def: ChildDef): Promise<Child | null> {
 
 /** One restart on an unexpected close. A second close is reported, not retried again. */
 function wireCrashHandling(child: Child): void {
+  // The SDK Client installs its own transport.onclose, and that is what rejects every
+  // in-flight request when the child dies. Overwriting it left a proxied tools/call
+  // pending until the caller's timeout, and a retry could repeat a completed mutation.
+  const previous = child.transport.onclose;
   child.transport.onclose = () => {
+    try { previous?.call(child.transport); } catch { /* the client's own teardown */ }
     process.stderr.write(`office-suite: child ${child.def.id} connection closed\n`);
     if (!child.restarted) {
       child.restarted = true;
@@ -128,6 +156,7 @@ async function restartChild(child: Child): Promise<void> {
   await client.connect(transport);
   child.client = client;
   child.transport = transport;
+  drainStderr(child);
   wireCrashHandling(child);
   process.stderr.write(`office-suite: child ${child.def.id} restarted\n`);
 }
@@ -182,19 +211,24 @@ async function aggregateLicenseStatus(): Promise<{ content: { type: "text"; text
 }
 
 async function forwardLicenseActivate(key: string): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }> {
-  const lines: string[] = [];
-  let anyOk = false;
+  // Partial activation is a failure: one child on Pro and one still free is exactly the
+  // state a user cannot see and will not report. Every connected child must accept the key.
+  const rows: { server: string; accepted: boolean; detail: string }[] = [];
   for (const child of children) {
     try {
       const r = await child.client.callTool({ name: "license_activate", arguments: { key } });
       const text = Array.isArray(r.content) ? r.content.map((c: any) => c.text ?? "").join("\n") : "";
-      if (!r.isError) anyOk = true;
-      lines.push(`${child.def.id}: ${text}`);
+      rows.push({ server: child.def.id, accepted: r.isError !== true, detail: text.trim() });
     } catch (e) {
-      lines.push(`${child.def.id}: Error: ${e instanceof Error ? e.message : String(e)}`);
+      rows.push({ server: child.def.id, accepted: false, detail: `Error: ${e instanceof Error ? e.message : String(e)}` });
     }
   }
-  return { content: [{ type: "text", text: lines.join("\n") }], isError: !anyOk };
+  const failed = rows.filter(r => !r.accepted);
+  const table = rows.map(r => `${r.accepted ? "OK     " : "FAILED "} ${r.server}: ${r.detail}`).join("\n");
+  const head = failed.length === 0
+    ? `Activated on all ${rows.length} servers in the bundle.`
+    : `Error: ${failed.length} of ${rows.length} servers did not accept the key (${failed.map(r => r.server).join(", ")}). The bundle is only Pro where the table says OK; fix the key or the failing server and run license_activate again.`;
+  return { content: [{ type: "text", text: `${head}\n\n${table}` }], isError: failed.length > 0 };
 }
 
 /* ---------------------------------------------------------------- server */

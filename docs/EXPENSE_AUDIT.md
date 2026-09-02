@@ -236,3 +236,74 @@ carrying 23% VAT the tool returns net 50.00 x 1.10 = 55.00 with tax_rate 23, whi
 calculation returns 67.65 with tax_rate 0. Both look like an answer. Only one survives being handed
 to invoice_create, which recomputes the tax from tax_rate.
 ```
+
+## Codex v2 fixes
+
+Fixes for docs/CODEX_REVIEW_V2.md, 2026-09-02. Items 3, 5, 6, 7, 14, 16, 17, 19, 20, 21, 22, 23 are deliberately not implemented here.
+
+### expense-tracker
+
+- **#1 VAT split rounds the VAT, not the net.** servers/expense-tracker/src/money.ts:78 `const vat = roundHalfUp((grossMinor * r) / (100 + r));` with `net = gross - vat`. Net plus VAT still reproduces the gross exactly, and a half-cent of VAT now rounds up instead of vanishing: EUR 0.03 at 20% is net 0.02 + VAT 0.01, not 0.03 + 0.00. Tests servers/expense-tracker/test/money.test.mjs:53 (half-cent cases plus a 4,000-case exactness sweep over gross 1..400 x ten rates).
+- **#2 ISO 4217 minor units.** servers/expense-tracker/src/money.ts:22 and servers/invoice/src/money.ts:24 hold the same table: 0 for BIF CLP DJF GNF ISK JPY KMF KRW MGA PYG RWF UGX UYI VND VUV XAF XOF XPF, 3 for BHD IQD JOD KWD LYD OMR TND, 4 for CLF UYW, 2 otherwise. It is a `Map`, so a currency string of `constructor` misses instead of returning a function. HUF stays at 2 because ISO 4217 gives it two minor digits, however it is quoted. Tests servers/expense-tracker/test/money.test.mjs:70 (KWD 1.234 -> 1234 minor, JPY, ISK, HUF, `constructor`) and servers/invoice/test/money.test.mjs:28 (KWD line through computeTotals: 2 x 1.234 at 5% = KWD 2.591).
+- **#4 grouping uses Maps at both levels.** servers/expense-tracker/src/index.ts:442. Test servers/expense-tracker/test/adversarial.test.mjs:334: categories `__proto__`, `constructor` and `office` all appear, the EUR total is 60.00 over 3 expenses, and `{}.rebilled_invoice` is still undefined.
+- **#8 mileage currency.** servers/expense-tracker/src/index.ts:525 refuses `currency` unless `rate_per_km` is supplied; a table rate keeps `table.currency` unconditionally. The reply names the rate used: servers/expense-tracker/src/index.ts:495 and the `table rate <region> <rate>, an approximation; pass rate_per_km for your exact scheme` line. Test servers/expense-tracker/test/adversarial.test.mjs:351.
+- **#5-#7 not implemented as tables.** No year, vehicle-class or threshold tables were added; a table that looks authoritative and is a year stale is worse than one that states its assumption. The four table values are documented with their assumptions in servers/expense-tracker/README.md ("Mileage rates"): PL 1.15 assumes over 900 cm3, UK 0.45 assumes a car within the first 10,000 miles, US 0.70 assumes one calendar year of the IRS standard rate, EU 0.30 is generic. `rate_per_km` is the supported route to an exact scheme.
+- **#9 a stored rate of 0 is known.** servers/expense-tracker/src/index.ts:685 `const known = typeof e.vat_rate === "number" && Number.isFinite(e.vat_rate);`. Test servers/expense-tracker/test/adversarial.test.mjs:250: with `default_vat_rate` 23 and `assume_vat_rate` 23 passed, a EUR 123 expense stored at `vat_rate: 0` still emits `unit_price 123, tax_rate 0`.
+- **#10 defaults apply at insert only.** The `expense_settings` default is read at servers/expense-tracker/src/index.ts:191 (expense_add) and nowhere in the rebill path; servers/expense-tracker/src/index.ts:680 reads only the caller's `assume_vat_rate`. An expense with no rate is emitted as gross with `tax_rate 0` and the existing note, now ending `pass assume_vat_rate to split`. Test servers/expense-tracker/test/adversarial.test.mjs:223 covers all three states: unknown, unknown after a default is set later (still unknown), and split only when `assume_vat_rate` is passed.
+- **#11 the line total reproduces the receipt gross.** servers/expense-tracker/src/index.ts:700-718: the target is the marked-up gross, `unit_price` is nudged by the delta when that lands the invoice exactly, otherwise a `[rounding adjustment ...]` line at `tax_rate 0` is emitted (servers/expense-tracker/src/index.ts:712) and counted in `rounding_adjustment_lines`. Test servers/expense-tracker/test/adversarial.test.mjs:265 replays the invoice server's own per-line arithmetic: 61.50 at 23% -> 6150, 10.00 at 8% -> 1000, 0.03 at 23% -> 3 with one adjustment line.
+- **#12 mark_rebilled is gone.** It is no longer in the `expense_to_invoice` schema and the tool no longer writes to the ledger. Test servers/expense-tracker/test/adversarial.test.mjs:190 asserts the property is absent from `tools/list` and that a caller still sending it changes nothing.
+- **#13 range marking is scoped.** servers/expense-tracker/src/index.ts:770 requires `currency` when `ids` are not given, servers/expense-tracker/src/index.ts:789 filters to that currency, billable and not yet rebilled, and `invoice_number` is now required. Each currency group in the preview carries its own `expense_ids`. Test servers/expense-tracker/test/adversarial.test.mjs:293: marking the EUR group leaves the PLN one offered.
+- **#15 money edits on a rebilled expense.** servers/expense-tracker/src/index.ts:273 refuses `amount`, `currency` and `vat_rate` unless `unlink_rebill: true`, which clears `rebilled_at` and `rebilled_invoice` together (servers/expense-tracker/src/index.ts:301). Test servers/expense-tracker/test/adversarial.test.mjs:311.
+
+### office-suite
+
+- **#18 the SDK close callback is chained.** servers/office-suite/src/index.ts:132 captures `child.transport.onclose` and calls it before logging and restarting, so the client rejects in-flight requests instead of leaving a proxied call pending until the caller's timeout.
+- **#24 license_activate is all-or-nothing.** servers/office-suite/src/index.ts:226: `isError` unless every connected child accepted the key, with an `OK` / `FAILED` line per child carrying that child's own message. Test servers/office-suite/test/proxy.test.mjs:162.
+- **#25 child stderr is drained.** servers/office-suite/src/index.ts:80 `drainStderr`, attached after connect and after restart, forwards each line to our stderr as `[<child-id>] ...`. Test servers/office-suite/test/proxy.test.mjs:145 builds a throwaway `../../<id>/dist/index.js` tree around the real built suite, points it at stub children, and has one child write 200 KB to stderr before answering a `tools/call`. Negative control: with `drainStderr` disabled in the built file, that test fails on timeout; restored, it passes.
+
+### Evidence
+
+```
+### expense-tracker
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3701.611
+### invoice
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1302.207958
+### office-suite
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 841.780833
+```
+
+`node scripts/validate.mjs`, unchanged probes (the expense probe still calls `expense_to_invoice` with markup and expects net 55.00):
+
+```
+expense-tracker: 22/22 in 379 ms
+time-tracker: 18/18 in 213 ms
+price-tracker: 18/18 in 266 ms
+spreadsheet: 18/18 in 406 ms
+invoice: 20/20 in 379 ms
+remote: 14/14
+billing: 11/11
+validation db: /Users/mike/mcp-servers/data/validation.json run 24: 121/121
+```
+
+One measured, non-obvious thing: the #1 rounding change moved a real number in an existing test. A EUR 10.00 receipt at 20% with a 10% markup used to rebill at `unit_price 9.16`; 9.16 taxed at 20% invoices to 10.99 against a marked-up gross of 11.00, so the #11 reconciliation nudges it to 9.17. The two findings are the same bug seen from the two ends of the pipe.

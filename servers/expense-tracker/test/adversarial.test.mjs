@@ -198,15 +198,26 @@ test("D-R4: expense_to_invoice does not mark rebilled, expense_mark_rebilled doe
   // still unbilled: the same call offers it again
   const again = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
   assert.equal(again.count, 1);
-  const marked = await c.call("expense_mark_rebilled", { project: "Acme", from: today, to: today, invoice_number: "INV-2026-0001" });
+  // mark_rebilled is gone from the preview tool entirely: it is not in the schema and it
+  // does not stamp the ledger even when a caller still sends it.
+  const schema = (await c.send("tools/list", {})).result.tools.find((x) => x.name === "expense_to_invoice");
+  assert.equal(schema.inputSchema.properties.mark_rebilled, undefined);
+  assert.ok(schema.inputSchema.properties.assume_vat_rate);
+  const legacy = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today, mark_rebilled: true })).text);
+  assert.equal(legacy.marked_rebilled, false);
+  assert.equal(JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text).count, 1);
+  // a range needs the currency of the invoice that was actually issued
+  assert.match((await c.call("expense_mark_rebilled", { project: "Acme", from: today, to: today, invoice_number: "INV-2026-0001" })).text, /needs currency/);
+  const marked = await c.call("expense_mark_rebilled", { project: "Acme", from: today, to: today, currency: "EUR", invoice_number: "INV-2026-0001" });
   assert.ok(!marked.isError, marked.text);
   const m = JSON.parse(marked.text);
   assert.equal(m.marked, 1);
   assert.equal(m.invoice_number, "INV-2026-0001");
   const third = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
   assert.equal(third.count, 0);
-  assert.ok((await c.call("expense_mark_rebilled", { ids: ["nope"] })).isError);
+  assert.ok((await c.call("expense_mark_rebilled", { ids: ["nope"], invoice_number: "INV-2026-0001" })).isError);
   assert.ok((await c.call("expense_mark_rebilled", {})).isError);
+  assert.ok((await c.call("expense_mark_rebilled", { ids: [m.ids[0]] })).isError, "invoice_number is required");
 });
 
 test("D-R3: an expense with no VAT rate is never emitted as a silent net line", async (t) => {
@@ -218,17 +229,140 @@ test("D-R3: an expense with no VAT rate is never emitted as a silent net line", 
   const u = unknown.line_items_per_currency[0].items[0];
   assert.equal(u.unit_price, 61.5);   // gross rebilled as-is
   assert.equal(u.tax_rate, 0);
-  assert.match(u.description, /tax_rate: 0 \(VAT unknown, gross rebilled as-is; set expense_settings default_vat_rate to split\)/);
+  assert.match(u.description, /tax_rate: 0 \(VAT unknown, gross rebilled as-is; pass assume_vat_rate to split\)/);
   assert.equal(unknown.vat_unknown_lines, 1);
   assert.match(unknown.vat_note, /taxed twice/);
-  // with a default rate the gross is split retroactively at rebill time
+  // D-R9: a default set AFTER the expense was entered does not rewrite it retroactively.
   await c.call("expense_settings", { default_vat_rate: 23 });
-  const split = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  const still = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  assert.equal(still.vat_assumed_lines, 0);
+  assert.equal(still.vat_unknown_lines, 1);
+  assert.equal(still.line_items_per_currency[0].items[0].unit_price, 61.5);
+  // only an explicit assume_vat_rate on this call splits it
+  const split = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today, assume_vat_rate: 23 })).text);
   const s = split.line_items_per_currency[0].items[0];
   assert.equal(s.unit_price, 50);
   assert.equal(s.tax_rate, 23);
   assert.match(s.description, /\[vat assumed 23%\]/);
   assert.equal(split.vat_assumed_lines, 1);
+});
+
+test("D-R9: a stored vat_rate of 0 is a known rate, not a gap", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("expense_settings", { default_vat_rate: 23 });
+  await c.call("expense_add", { amount: 123, currency: "EUR", vat_rate: 0, project: "Acme", billable: true, merchant: "Exempt Ltd" });
+  const r = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today, assume_vat_rate: 23 })).text);
+  const line = r.line_items_per_currency[0].items[0];
+  assert.equal(line.tax_rate, 0);
+  assert.equal(line.unit_price, 123);           // not 100 + 23% tax
+  assert.equal(r.vat_assumed_lines, 0);
+  assert.equal(r.vat_unknown_lines, 0);
+  assert.doesNotMatch(line.description, /vat assumed/);
+});
+
+test("D-R5: an invoice line reproduces the receipt gross exactly", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  // The invoice recomputes tax from the net, so the split has to survive that round trip.
+  const cases = [
+    { amount: 61.5, vat_rate: 23, gross: 6150 },
+    { amount: 10, vat_rate: 8, gross: 1000 },
+    { amount: 0.03, vat_rate: 23, gross: 3 },
+  ];
+  for (const k of cases) {
+    await c.call("expense_add", { ...k, currency: "EUR", project: `P${k.gross}`, billable: true, merchant: "M" });
+    const r = JSON.parse((await c.call("expense_to_invoice", { project: `P${k.gross}`, from: today, to: today })).text);
+    const items = r.line_items_per_currency[0].items;
+    // replay the invoice server's own arithmetic: round per line, then sum
+    const total = items.reduce((n, i) => {
+      const net = M.roundHalfUp(i.quantity * i.unit_price * 100);
+      return n + net + (i.tax_rate ? M.roundHalfUp((net * i.tax_rate) / 100) : 0);
+    }, 0);
+    assert.equal(total, k.gross, `${k.amount} at ${k.vat_rate}% invoiced ${total} minor, receipt is ${k.gross}`);
+  }
+  // 0.03 at 23% cannot be reconciled by unit_price alone, so it carries a visible adjustment
+  const tiny = JSON.parse((await c.call("expense_to_invoice", { project: "P3", from: today, to: today })).text);
+  assert.equal(tiny.rounding_adjustment_lines, 1);
+  assert.equal(tiny.line_items_per_currency[0].items.length, 2);
+  assert.match(tiny.line_items_per_currency[0].items[1].description, /rounding adjustment so the line total is the receipt gross EUR 0\.03/);
+});
+
+test("D-R6: marking a range is scoped to one currency and to unbilled billable rows", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("expense_add", { amount: 61.5, currency: "EUR", vat_rate: 23, project: "Acme", billable: true, merchant: "Media Markt" });
+  await c.call("expense_add", { amount: 23, currency: "PLN", vat_rate: 23, project: "Acme", billable: true, merchant: "Bolt" });
+  await c.call("expense_add", { amount: 9, currency: "EUR", vat_rate: 23, project: "Acme", billable: false, merchant: "Private" });
+  const prev = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  const eur = prev.line_items_per_currency.find((g) => g.currency === "EUR");
+  assert.equal(eur.expense_ids.length, 1);
+  const m = JSON.parse((await c.call("expense_mark_rebilled", { project: "Acme", from: today, to: today, currency: "EUR", invoice_number: "INV-1" })).text);
+  assert.equal(m.marked, 1);
+  assert.deepEqual(m.ids, eur.expense_ids);
+  // the PLN group is untouched and still offered
+  const after = JSON.parse((await c.call("expense_to_invoice", { project: "Acme", from: today, to: today })).text);
+  assert.deepEqual(after.currencies, ["PLN"]);
+});
+
+test("D-R7: money fields cannot be edited on a rebilled expense without unlinking it", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("expense_add", { amount: 100, currency: "EUR", vat_rate: 23, project: "Acme", billable: true, merchant: "M" });
+  const list = JSON.parse((await c.call("expense_list", { from: today, to: today })).text);
+  const eid = list.expenses[0].id;
+  await c.call("expense_mark_rebilled", { ids: [eid], invoice_number: "INV-1" });
+  const blocked = await c.call("expense_update", { id: eid, amount: 200 });
+  assert.ok(blocked.isError);
+  assert.match(blocked.text, /was rebilled on INV-1/);
+  assert.ok((await c.call("expense_update", { id: eid, vat_rate: 8 })).isError);
+  assert.ok((await c.call("expense_update", { id: eid, currency: "PLN", amount: 200 })).isError);
+  // a non-money field is still editable
+  assert.ok(!(await c.call("expense_update", { id: eid, note: "corrected description" })).isError);
+  // unlink_rebill clears BOTH rebill fields, so the next rebill cannot inherit INV-1
+  const un = await c.call("expense_update", { id: eid, amount: 200, unlink_rebill: true });
+  assert.ok(!un.isError, un.text);
+  const after = JSON.parse((await c.call("expense_list", { from: today, to: today })).text).expenses[0];
+  assert.equal(after.rebilled_at ?? null, null);
+  assert.equal(after.rebilled_invoice ?? null, null);
+});
+
+test("D-R10: a category named __proto__ or constructor is counted, not dropped", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("expense_add", { amount: 10, currency: "EUR", category: "__proto__", merchant: "A" });
+  await c.call("expense_add", { amount: 20, currency: "EUR", category: "constructor", merchant: "B" });
+  await c.call("expense_add", { amount: 30, currency: "EUR", category: "office", merchant: "C" });
+  const r = JSON.parse((await c.call("expense_summary", { from: today, to: today, group_by: "category" })).text);
+  const eur = r.by_currency.find((g) => g.currency === "EUR");
+  assert.equal(eur.count, 3);
+  assert.equal(eur.total_gross, "EUR 60.00");
+  assert.deepEqual(eur.groups.map((g) => g.key).sort(), ["__proto__", "constructor", "office"]);
+  assert.equal(eur.groups.find((g) => g.key === "__proto__").gross, "EUR 10.00");
+  assert.equal(eur.groups.find((g) => g.key === "constructor").gross, "EUR 20.00");
+  assert.equal({}.rebilled_invoice, undefined);   // nothing was written through a prototype
+});
+
+test("D-R8: mileage currency is only accepted with your own rate", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  const relabel = await c.call("mileage_add", { km: 100, region: "PL", currency: "EUR", purpose: "client" });
+  assert.ok(relabel.isError);
+  assert.match(relabel.text, /currency is only accepted together with rate_per_km/);
+  const table = await c.call("mileage_add", { km: 100, region: "PL", purpose: "client" });
+  assert.ok(!table.isError, table.text);
+  assert.match(table.text, /PLN 115\.00/);
+  assert.match(table.text, /table rate PL 1\.15 PLN\/km, an approximation; pass rate_per_km for your exact scheme/);
+  const own = await c.call("mileage_add", { km: 100, region: "PL", rate_per_km: 0.25, currency: "EUR", purpose: "client" });
+  assert.ok(!own.isError, own.text);
+  assert.match(own.text, /EUR 25\.00/);
+  assert.match(own.text, /your rate_per_km/);
 });
 
 test("D-R3: expense_add accepts tax_rate and vat as aliases for vat_rate", async (t) => {

@@ -12,14 +12,28 @@
  * more than the rounding already visible on those lines.
  */
 
-/** Decimal places for a currency's minor unit. Zero-decimal currencies are listed explicitly. */
-const ZERO_DECIMAL = new Set([
-  "BIF", "CLP", "DJF", "GNF", "JPY", "KMF", "KRW", "MGA", "PYG",
-  "RWF", "UGX", "VND", "VUV", "XAF", "XOF", "XPF",
-]);
+/**
+ * ISO 4217 minor units. Anything not listed uses 2 decimals.
+ * Kept byte-identical in servers/expense-tracker/src/money.ts: the two servers exchange
+ * amounts, so a currency that is 3-decimal in one and 2-decimal in the other
+ * silently rescales money by 10x.
+ * HUF and ISK: ISO 4217 gives HUF 2 minor digits (it is only *quoted* without
+ * them) and ISK 0, so HUF is deliberately absent from the zero list.
+ */
+// A Map, not an object literal: a currency string of "constructor" must miss, not return a function.
+const MINOR_UNITS = new Map<string, number>(Object.entries({
+  // 0 decimals
+  BIF: 0, CLP: 0, DJF: 0, GNF: 0, ISK: 0, JPY: 0, KMF: 0, KRW: 0, MGA: 0,
+  PYG: 0, RWF: 0, UGX: 0, UYI: 0, VND: 0, VUV: 0, XAF: 0, XOF: 0, XPF: 0,
+  // 3 decimals
+  BHD: 3, IQD: 3, JOD: 3, KWD: 3, LYD: 3, OMR: 3, TND: 3,
+  // 4 decimals
+  CLF: 4, UYW: 4,
+}));
 
 export function currencyDecimals(currency: string): number {
-  return ZERO_DECIMAL.has(currency.toUpperCase()) ? 0 : 2;
+  const d = MINOR_UNITS.get(currency.toUpperCase());
+  return d === undefined ? 2 : d;
 }
 
 /** Half-up rounding that is stable against binary floating point representation error. */
