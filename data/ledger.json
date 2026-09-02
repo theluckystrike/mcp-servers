@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T14:09:39.212Z",
+  "generated_at": "2026-09-02T14:25:00.994Z",
   "session": {
-    "count": 12,
+    "count": 13,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -50,6 +50,10 @@
       {
         "at": "2026-09-02T14:09:39.197Z",
         "note": "wave 2: remote endpoints live (mcp.zovo.one/mcp), expense-tracker + office-suite built, READMEs deepened, forms submitted"
+      },
+      {
+        "at": "2026-09-02T14:25:00.976Z",
+        "note": "v0.2.0: 5 servers, hosted remotes in registry, expense audit 21 tests, 130 unit tests, validation green"
       }
     ]
   },
@@ -66,18 +70,19 @@
         "expense_delete",
         "receipt_attach",
         "category_rules",
+        "expense_settings",
         "expense_summary",
         "mileage_add",
         "expense_export",
         "expense_to_invoice"
       ],
-      "tool_count": 10,
+      "tool_count": 11,
       "free_limits": "pending",
       "price_usd": 19,
       "build_ok": true,
-      "test_summary": "# pass 14 / # fail 0",
+      "test_summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818",
       "result_status": "DONE",
-      "loc": 890,
+      "loc": 958,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -96,7 +101,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -135,7 +140,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -163,7 +168,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -200,7 +205,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -237,7 +242,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -354,6 +359,14 @@
     {
       "file": "docs/DISTRIBUTION_RESULT.md",
       "first_line": "status: DONE"
+    },
+    {
+      "file": "docs/EXPENSE_AUDIT.md",
+      "first_line": "mcp-expense-tracker: adversarial audit and user-value run"
+    },
+    {
+      "file": "docs/EXPENSE_DIST_RESULT.md",
+      "first_line": "Expense tracker distribution: Docker MCP catalog, Cline marketplace, guide"
     },
     {
       "file": "docs/FORMS_RESULT.md",

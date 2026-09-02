@@ -20,6 +20,7 @@ declare -A DISPLAY_NAME=(
   [price-tracker]="Price Tracker"
   [spreadsheet]="Spreadsheet"
   [invoice]="Invoice"
+  [expense-tracker]="Expense Tracker"
 )
 
 declare -A KEYWORDS=(
@@ -27,9 +28,10 @@ declare -A KEYWORDS=(
   [price-tracker]='["mcp","model-context-protocol","price-tracking","price-drop","shopping","deals"]'
   [spreadsheet]='["mcp","spreadsheet","xlsx","csv","excel","modelcontextprotocol"]'
   [invoice]='["mcp","model-context-protocol","invoice","invoicing","pdf","vat","freelance"]'
+  [expense-tracker]='["mcp","model-context-protocol","expenses","receipts","mileage","vat","freelance"]'
 )
 
-for NAME in time-tracker price-tracker spreadsheet invoice; do
+for NAME in time-tracker price-tracker spreadsheet invoice expense-tracker; do
   echo "=== $NAME ==="
   SRC_DIR="$ROOT/servers/$NAME"
   OUT_DIR="$BUNDLES/$NAME"

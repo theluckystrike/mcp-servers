@@ -63,8 +63,7 @@ const PROBES = {
     if (tier === "pro") {
       const mk = await c.tool("expense_to_invoice", { project: "acme", from, to, markup_percent: 10 }); ok(`pro: markup allowed, net 50.00 x 1.10 = 55.00 + tax_rate`, !mk.isError && /55\.00|"unit_price": ?55/.test(mk.text) && /tax_rate/.test(mk.text), mk.text);
     } else {
-      const mk = await c.tool("expense_to_invoice", { project: "acme", from, to, markup_percent: 10 }); ok(`free: markup gated, nothing changed`, /mcp\.zovo\.one/.test(mk.text), mk.text);
-      const inv = await c.tool("expense_to_invoice", { project: "acme", from, to }); ok(`free: expense_to_invoice net unit_price 50.00 + tax_rate`, !inv.isError && /50\.00|"unit_price": ?50/.test(inv.text) && /tax_rate/.test(inv.text), inv.text);
+      const mk = await c.tool("expense_to_invoice", { project: "acme", from, to, markup_percent: 10 }); ok(`free: markup free, net 50.00 x 1.10 = 55.00 + tax_rate`, !mk.isError && /55\.00|"unit_price": ?55/.test(mk.text) && /tax_rate/.test(mk.text), mk.text);
     }
   },
   "time-tracker": async (c, tmp, tier, ok) => {

@@ -185,7 +185,7 @@
       "reach": "MEASURED: 15/15 top-used servers in our categories are hosted; stdio-only servers cannot accrue use",
       "terminal": "yes",
       "human": "none",
-      "status": "in progress",
+      "status": "done: 3 endpoints live, remotes[] published in registry v0.2.0",
       "how": "remote/ worker, KV per tenant, bearer = license key or anonymous token",
       "impact": 90
     },

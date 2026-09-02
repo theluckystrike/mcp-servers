@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/expense-tracker-receipts-mileage",
-  "description": "Log expenses, receipts and mileage from your AI chat: auto-categorise, split VAT, summarise, export and rebill. All data is local.",
+  "description": "Log expenses, receipts and mileage from chat: auto-categorise, split VAT, summarise, export, rebill.",
   "version": "0.2.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
