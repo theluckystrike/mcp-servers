@@ -1,3 +1,55 @@
+/**
+ * SSRF guard for the hosted endpoint (added by remote/build-vendor.mjs).
+ * The worker sits inside a network the caller cannot otherwise reach, so a watch URL
+ * must not be able to point at loopback, private, link-local or metadata addresses.
+ * Only literal addresses and obvious internal names are caught here; a hostname that
+ * resolves to a private address through DNS is not, and is an accepted residual risk.
+ */
+const MAX_REDIRECTS = 5;
+
+function isPrivateIPv4(h: string): boolean {
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(h);
+  if (!m) return false;
+  const [a, b] = [Number(m[1]), Number(m[2])];
+  if ([a, b, Number(m[3]), Number(m[4])].some((n) => n > 255)) return true;
+  if (a === 10 || a === 127 || a === 0) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 169 && b === 254) return true;          // link-local, includes 169.254.169.254
+  if (a === 100 && b >= 64 && b <= 127) return true; // carrier-grade NAT
+  if (a >= 224) return true;                         // multicast and reserved
+  return false;
+}
+
+function isPrivateIPv6(h: string): boolean {
+  const s = h.replace(/^\[|\]$/g, "").toLowerCase();
+  if (!s.includes(":")) return false;
+  if (s === "::" || s === "::1") return true;
+  if (/^f[cd][0-9a-f]{2}:/.test(s)) return true;     // fc00::/7 unique local
+  if (/^fe[89ab][0-9a-f]:/.test(s)) return true;     // fe80::/10 link-local
+  const v4 = /::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/.exec(s);
+  if (v4) return isPrivateIPv4(v4[1]);
+  return false;
+}
+
+export function guardTarget(u: URL): void {
+  if (u.protocol !== "http:" && u.protocol !== "https:") {
+    throw new FetchError(`only http and https URLs can be fetched (got ${u.protocol})`);
+  }
+  const host = u.hostname.toLowerCase().replace(/\.$/, "");
+  const bad =
+    host === "localhost" || host.endsWith(".localhost") ||
+    host === "metadata.google.internal" || host.endsWith(".internal") ||
+    host.endsWith(".local") || host === "" ||
+    isPrivateIPv4(host) || isPrivateIPv6(u.hostname.toLowerCase());
+  if (bad) {
+    throw new FetchError(
+      `${u.hostname} is not a public address, so this hosted endpoint will not fetch it. ` +
+      `Track a public product page instead, or run the price tracker locally over stdio ` +
+      `(npx -y @theluckystrike/mcp-price-tracker), where it can reach your own network.`);
+  }
+}
+
 export const USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -46,27 +98,41 @@ export async function fetchPage(url: string, timeoutMs = TIMEOUT_MS): Promise<Fe
     throw new FetchError(`only http and https URLs are supported (got ${parsed.protocol})`);
   }
 
+  guardTarget(parsed);
+
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   let res: Response;
+  let current = parsed;
   try {
-    res = await fetch(parsed.toString(), {
-      redirect: "follow",
-      signal: ctrl.signal,
-      headers: {
-        "user-agent": USER_AGENT,
-        accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "accept-language": "en-US,en;q=0.9",
-        "accept-encoding": "gzip, deflate, br",
-        "cache-control": "no-cache",
-        "upgrade-insecure-requests": "1",
-      },
-    });
+    for (let hop = 0; ; hop++) {
+      if (hop > MAX_REDIRECTS) throw new FetchError(`too many redirects (over ${MAX_REDIRECTS}) starting at ${parsed.toString()}`);
+      res = await fetch(current.toString(), {
+        redirect: "manual",
+        signal: ctrl.signal,
+        headers: {
+          "user-agent": USER_AGENT,
+          accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "accept-language": "en-US,en;q=0.9",
+          "accept-encoding": "gzip, deflate, br",
+          "cache-control": "no-cache",
+          "upgrade-insecure-requests": "1",
+        },
+      });
+      if (res.status < 300 || res.status > 399) break;
+      const loc = res.headers.get("location");
+      if (!loc) break;
+      let next: URL;
+      try { next = new URL(loc, current); } catch { throw new FetchError(`the shop redirected to something that is not a URL (${loc})`); }
+      guardTarget(next);
+      current = next;
+    }
   } catch (e) {
     clearTimeout(timer);
+    if (e instanceof FetchError) throw e;
     const msg = (e as Error)?.name === "AbortError"
       ? `the page did not answer within ${Math.round(timeoutMs / 1000)}s`
-      : `could not reach ${parsed.hostname} (${(e as Error)?.message ?? "network error"})`;
+      : `could not reach ${current.hostname} (${(e as Error)?.message ?? "network error"})`;
     throw new FetchError(msg);
   }
   clearTimeout(timer);
@@ -81,7 +147,7 @@ export async function fetchPage(url: string, timeoutMs = TIMEOUT_MS): Promise<Fe
     throw new FetchError(blockedText(res.url || parsed.toString(), res.status), res.status, true);
   }
   const requestedUrl = parsed.toString();
-  const finalUrl = res.url || requestedUrl;
+  const finalUrl = current.toString() || res.url || requestedUrl;
   return { html, requestedUrl, finalUrl, status: res.status, redirected: finalUrl !== requestedUrl };
 }
 
