@@ -19,7 +19,7 @@ const snap = {
   github: { stars: repo.stargazers_count, forks: repo.forks_count, watchers: repo.subscribers_count, views_14d: views.count, uniques_14d: views.uniques, clones_14d: clones.count, clone_uniques_14d: clones.uniques },
   release_downloads: releaseDownloads, release_downloads_total: releaseDownloads.reduce((a, r) => a + (r.downloads || 0), 0),
   registry_entries: Array.isArray(reg.servers) ? reg.servers.map((s) => `${s.server.name}@${s.server.version}`) : reg,
-  npm_weekly_downloads: Object.fromEntries(Object.entries(npmDl).map(([k, v]) => [k, v.downloads ?? v.error])),
+  npm_weekly_downloads: Object.fromEntries(Object.entries(npmDl).map(([k, v]) => [k, typeof v.downloads === "number" ? v.downloads : "not published"])),
   billing_health: health.ok === true,
 };
 const p = `${ROOT}/data/metrics.json`;

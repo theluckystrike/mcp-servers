@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T15:18:02.390Z",
+  "generated_at": "2026-09-02T23:45:35.747Z",
   "session": {
-    "count": 16,
+    "count": 17,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -66,6 +66,10 @@
       {
         "at": "2026-09-02T15:18:02.368Z",
         "note": "v0.2.2: Codex correctness fixes; 4h loop closing: 6 products, 6 registry entries, 5 hosted, 121/121 validation, user value R4 20/24"
+      },
+      {
+        "at": "2026-09-02T23:45:35.725Z",
+        "note": "loop 2 wave A: 6 mirror repos, demo GIFs, intel R2 (downloads 79), round 5 26/30"
       }
     ]
   },
@@ -402,8 +406,16 @@
       "first_line": "INTEL - what the used servers do that we do not, and the fifth slot"
     },
     {
+      "file": "docs/INTEL_R2.md",
+      "first_line": "INTEL_R2 — Submission, directory, and registry-slot re-measurement"
+    },
+    {
       "file": "docs/MARKETPLACES_RESULT.md",
       "first_line": "Marketplaces: Docker MCP catalog + Cline marketplace"
+    },
+    {
+      "file": "docs/MIRRORS_RESULT.md",
+      "first_line": "MIRRORS_RESULT.md -- one public repo per server, 2026-09-02"
     },
     {
       "file": "docs/NAMING_RESULT.md",
@@ -440,6 +452,10 @@
     {
       "file": "docs/USER_VALUE_R4.md",
       "first_line": "User value audit, round 4 — 2026-09-02"
+    },
+    {
+      "file": "docs/USER_VALUE_R5.md",
+      "first_line": "User value audit, round 5 — 2026-09-03"
     }
   ],
   "revenue": {

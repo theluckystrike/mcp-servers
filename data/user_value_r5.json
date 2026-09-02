@@ -1,0 +1,213 @@
+{
+  "at": "2026-09-03T00:00:00Z",
+  "round": 5,
+  "compares_to": "data/user_value_r4.json",
+  "scope": "Ten FRESH scenarios, none previously run in rounds 1-4. A normal freelancer week end to end: two backfilled time entries with a rate, a standup, a 250-row supplier CSV query, an xlsx conversion with a VAT column, a price watch and refresh, a foreign-currency expense plus a metric mileage claim, an invoice for everything unbilled, a no-receipt audit, a last-month export against the free-tier window, and licence activation.",
+  "method": "servers/office-suite/dist/index.js registered as ONE server \"office\" so any child can answer. Four independent lanes, each with its own XDG_DATA_HOME/XDG_CONFIG_HOME and MCP_LICENSE_KEY=\"\" (free tier): /private/tmp/uv10 (scenarios 1,2,6,7,8,9 + extra 7b, one conversation), /private/tmp/uv11 (3,4), /private/tmp/uv12 (5, two turns), /private/tmp/uv13 (10, two turns). claude -p --session-id then --resume, --strict-mcp-config --model sonnet --output-format stream-json --verbose --max-turns 16, allowlist written out per tool name (51 entries, round-4 allow.txt) because --allowedTools \"mcp__*\" grants nothing (D-E4). Startup every lane: proxying [time-tracker, price-tracker, spreadsheet, invoice, expense-tracker], 49 tools. Fixture /private/tmp/uv11/costs.csv: 250 rows, header Date,Supplier,Invoice,Amount, dates first, every amount a quoted thousands-separator string; 6 suppliers over 1000 in total and 4 under. Lane D used a key signed with `node scripts/sign-license.mjs '*'`, id e054594dc523. Tool-call counts exclude the client's own ToolSearch.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn or extra noise. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "scenarios": [
+    {
+      "surface": "bundle/time-tracker",
+      "id": "1",
+      "prompt": "I forgot to track yesterday: I worked 9 to 12:30 on the Nova redesign and 2 to 5 on Nova bug fixes, my rate for Nova is 85 USD.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 22.9,
+      "note": "entry_add x2 with explicit start/end/rate/currency. 3.50 h = USD 297.50 and 3.00 h = USD 255.00; entry_list later confirms '2 entries, 6.50 h total'. 6.5 x 85 = USD 552.50, verified again as total_minor 55250 on the invoice. No clarifying question about the ambiguous '2 to 5'."
+    },
+    {
+      "surface": "bundle/time-tracker",
+      "id": "2",
+      "prompt": "Show me a standup summary for yesterday and today.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.3,
+      "note": "entry_list {from 2026-09-02T00:00:00, to 2026-09-03T23:59:59}. Correct split: 6.5 h on Nova yesterday, nothing today. The daily_standup PROMPT was never used - it exists and renders correctly over raw JSON-RPC, but the CLI -p surface never issues prompts/list. See D-R16."
+    },
+    {
+      "surface": "bundle/spreadsheet",
+      "id": "3",
+      "prompt": "Here is my costs sheet /private/tmp/uv11/costs.csv, which suppliers did we pay more than 1000 in total, sorted?",
+      "score": 2,
+      "tool_calls": 9,
+      "seconds": 46.3,
+      "note": "Answer exact against an independent csv.DictReader sum (Initech 18876.83, Acme 17301.09, Stark 16675.33, Globex 16363.61, Northwind 16027.93, Umbrella 15818.79; the other four under 1000). But sheet_query was call 9 of 9: Read, then five blocked Bash attempts (python3 x2, awk x3 including one with dangerouslyDisableSandbox), then ToolSearch, then the tool. D-R11. An earlier run with cwd outside the CSV's tree never reached the spreadsheet tools at all and asked the user to move the file (s3_cwdblocked.jsonl)."
+    },
+    {
+      "surface": "bundle/spreadsheet",
+      "id": "4",
+      "prompt": "Convert that to xlsx and add a column Amount with VAT at 23%.",
+      "score": 2,
+      "tool_calls": 2,
+      "seconds": 12.6,
+      "note": "sheet_convert -> sheet_add_column {formula: '[Amount] * 1.23'}. 250 rows, and 1,250.00 x 1.23 = 1537.50 exactly as required. Two defects in the written file: 245 of 250 VAT cells carry 4 decimals (40.7868, 90.7125, 635.9346) with no rounding option (D-R13), and 5 of 250 Amount cells were written as text t=\"str\" (1,250.00, 403.00, 123.00, 641.00, 703.00) so Excel SUM(D:D) is short by 3,117.00 (D-R12)."
+    },
+    {
+      "surface": "bundle/price-tracker",
+      "id": "5",
+      "prompt": "Watch this page and tell me the current price: https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html  -- then: refresh my watches",
+      "score": 3,
+      "tool_calls": 4,
+      "seconds": 41.5,
+      "note": "Turn 1 (26.2s, 2 calls): watch_add -> price_check, GBP 53.74, confirmed by curl on the page HTML (price_color £53.74). Turn 2 (15.3s, 2 calls): watch_refresh {all:true} -> alerts_pending, unchanged +0.00%, no alerts. watches.json holds 2 observations. The model relayed the low extraction confidence and the 'nothing polls this page in the background' line unprompted. One wasted ToolSearch (D-R17) is excluded from the count."
+    },
+    {
+      "surface": "bundle/expense-tracker",
+      "id": "6",
+      "prompt": "Log a 12.40 EUR train ticket for Nova today, and 30 km driving in the UK for Nova, billable.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 21.6,
+      "note": "expense_add {12.40 EUR, travel, Nova, billable} with the honest 'no VAT rate given, net equals gross' line; then mileage_add {miles: 18.64, region: UK}. 30 km = 18.641 mi, 18.64 x 0.45 = GBP 8.39. The model did the conversion and STATED it ('30 km -> 18.64 miles at UK table rate'). Probed directly, mileage_add {km:30, region:'UK'} refuses with 'the UK rate is per mile, but you gave km. Pass miles, or pass rate_per_km with your own rate for km.' - it does not silently multiply."
+    },
+    {
+      "surface": "bundle/invoice",
+      "id": "7",
+      "prompt": "Invoice Nova for everything unbilled this week in USD, 0% VAT, due in 30 days. Give me the file.",
+      "score": 1,
+      "tool_calls": 2,
+      "seconds": 37.8,
+      "note": "entry_list -> expense_to_invoice. NO invoice and NO file. The unbilled set is USD hours + a EUR expense + a GBP mileage line; expense_to_invoice correctly returns line_items_per_currency and says one invoice carries one currency, invoice_create takes a single currency with no per-line currency, and nothing in the suite converts. The turn ended asking the user for EUR->USD and GBP->USD rates. Refusing to invent an FX rate is right; ending with a question instead of a file when the user asked for one is the failure. D-R14."
+    },
+    {
+      "surface": "bundle/invoice",
+      "id": "7b",
+      "prompt": "EXTRA (recovery turn, not counted in the total): Option 2 please: invoice the hours only, in USD, 0% VAT, due in 30 days. Give me the file.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 18.8,
+      "note": "invoice_from_hours {client: Nova, hours: 6.5, rate: 85, currency: USD, tax_rate: 0, due_days: 30} -> invoice_pdf. INV-2026-0001, subtotal USD 552.50, total_minor 55250, issue 2026-09-02, due 2026-10-02, real PDF written to /private/tmp/uv10/data/mcp-servers/invoice/pdf/. Confirms D-R14 is a missing affordance, not a broken store: the chain recovers in one turn once the currency question is settled."
+    },
+    {
+      "surface": "bundle/expense-tracker",
+      "id": "8",
+      "prompt": "Which of my expenses have no receipt attached?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 14.4,
+      "note": "expense_list. Both expenses correctly identified as receipt-less (the JSON omits the receipt key when receipt_path is unset, expense-tracker/src/index.ts:126), listed with ids, and the free-tier 30-day read window disclosed unprompted. The monthly_close prompt covers exactly this question and was not reachable - see D-R16."
+    },
+    {
+      "surface": "bundle/time-tracker",
+      "id": "9",
+      "prompt": "Export my Nova time as CSV for last month.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 12.4,
+      "note": "HONESTY SCENARIO. export_csv {from 2026-08-01, to 2026-08-31, project: Nova} -> 'Wrote 0 entries' plus the free-tier note. The model LED with 'returned 0 entries', named the 7-day free window as the cause, quoted the Pro price and link, and offered the 7-day export instead. No fabricated August rows, no silent empty file handed over as a success."
+    },
+    {
+      "surface": "bundle/licence",
+      "id": "10",
+      "prompt": "Activate my license MCPL1.garbage  -- then a real key from `node scripts/sign-license.mjs '*'`",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 31.2,
+      "note": "Turn 1 (17.5s): license_activate {key: 'MCPL1.garbage'} -> 'Error: 5 of 5 servers did not accept the key' with a per-server FAILED table ('license not accepted (malformed key)'); the model described the expected key shape and asked for the real one. No partial activation. Turn 2 (13.7s): the signed key -> 'Activated on all 5 servers in the bundle', five OK rows, and /private/tmp/uv13/cfg/mcp-servers/license.json written with the '*' key. All children Pro, verified in the file, not from prose."
+    }
+  ],
+  "totals": {
+    "scored_scenarios": 10,
+    "score": 26,
+    "max": 30,
+    "extras_excluded": ["7b"],
+    "per_server": {
+      "time-tracker": {"scenarios": ["1", "2", "9"], "score": 9, "max": 9},
+      "expense-tracker": {"scenarios": ["6", "8"], "score": 6, "max": 6},
+      "price-tracker": {"scenarios": ["5"], "score": 3, "max": 3},
+      "bundle-licence": {"scenarios": ["10"], "score": 3, "max": 3},
+      "spreadsheet": {"scenarios": ["3", "4"], "score": 4, "max": 6},
+      "invoice": {"scenarios": ["7"], "score": 1, "max": 3}
+    }
+  },
+  "verification": [
+    {"check": "6.5 h x 85 = USD 552.50", "method": "entry_add results 3.50h USD 297.50 + 3.00h USD 255.00; entry_list '6.50 h total'; invoice_from_hours total_minor 55250", "result": "PASS"},
+    {"check": "supplier totals over 1000, sorted", "method": "independent csv.DictReader sum over the 250-row fixture vs the sheet_query group table", "result": "PASS, all 10 groups match to the cent"},
+    {"check": "VAT column 1,250.00 x 1.23 = 1537.50", "method": "xl/worksheets/sheet1.xml row 5: <c r=\"D5\" t=\"str\"><v>1,250.00</v></c><c r=\"E5\"><v>1537.5</v></c>", "result": "PASS"},
+    {"check": "VAT column rounding", "method": "245 of 250 E cells have more than 2 decimals", "result": "FAIL (D-R13)"},
+    {"check": "xlsx Amount column type", "method": "5 of 250 D cells written t=\"str\"; SUM(D:D) short by 3,117.00", "result": "FAIL (D-R12)"},
+    {"check": "coerce length test", "method": "coerce('403.00')->string, coerce('12.00')->string, coerce('0.00')->string, coerce('1,250.00')->string, coerce('33.16')->33.16, coerce('403.10')->403.1", "result": "FAIL (D-R12), csv.ts:72"},
+    {"check": "price GBP 53.74", "method": "curl the page, grep price_color -> £53.74 (the 51.77 on the page is the related-items strip)", "result": "PASS"},
+    {"check": "watch persisted", "method": "/private/tmp/uv12/data/mcp-servers/price-tracker/watches.json: id ef58aa04, 2 observations both 53.74 GBP, source regex-fallback, confidence low", "result": "PASS"},
+    {"check": "30 km in the UK", "method": "30 km = 18.641 mi; stored as '18.64 mile at 0.45 GBP/mile (UK)' = GBP 8.39; model disclosed the conversion", "result": "PASS"},
+    {"check": "the tool would not have guessed", "method": "direct JSON-RPC mileage_add {km:30, region:'UK', purpose:'...'} -> 'Error: the UK rate is per mile, but you gave km. Pass miles, or pass rate_per_km with your own rate for km.'", "result": "PASS"},
+    {"check": "licence really activated", "method": "/private/tmp/uv13/cfg/mcp-servers/license.json holds {\"*\": \"MCPL1.eyJ2IjoxLCJwIjoiKiIsImlkIjoiZTA1NDU5NGRjNTIzIi...\"}; all 5 children returned OK", "result": "PASS"},
+    {"check": "prompts are proxied", "method": "raw prompts/list on the bundle -> daily_standup, check_prices, monthly_close; prompts/get daily_standup renders a full YESTERDAY/TODAY/ENTRIES brief", "result": "PASS on the server, unreachable from the CLI -p surface (D-R16)"},
+    {"check": "cross-server today", "method": "expense_add stored 2026-09-03 while invoice_from_hours stamped issue_date 2026-09-02 and export_csv named its file 2026-09-02T23-38-15, in ONE conversation at 06:36 local UTC+7", "result": "FAIL (D-R15)"}
+  ],
+  "defects": [
+    {
+      "id": "D-R11",
+      "severity": "high",
+      "server": "spreadsheet",
+      "title": "sheet_query loses to generic file tools, and in one configuration is never reached at all",
+      "repro": "Form 1 (never reached): cwd=/Users/mike/mcp-servers with the CSV at /private/tmp/uv6/costs.csv, allowlist = 51 MCP tools + Read. Model calls Bash cat (blocked by the cwd sandbox), then Read (permission prompt), then gives up and asks the user to move the file, with sheet_read/sheet_query/sheet_stats/sheet_info in the allowlist and sheet_query taking an absolute path the sandbox does not restrict. Transcripts /private/tmp/uv11/out/s3_cwdblocked.jsonl and s4_cwdblocked.jsonl. Form 2 (reached last): cd /private/tmp/uv11 && claude -p 'Here is my costs sheet /private/tmp/uv11/costs.csv, which suppliers did we pay more than 1000 in total, sorted?' --mcp-config /private/tmp/uv11/mcp.json --strict-mcp-config --model sonnet --output-format stream-json --verbose --allowedTools \"$(cat /private/tmp/uv11/allow.txt)\" -> /private/tmp/uv11/out/s3.jsonl, CALLS(9): Read, Bash x5, ToolSearch, sheet_query.",
+      "fix_direction": "Same as D-R9. sheet_query and sheet_read must claim the case in their own descriptions: use this on a CSV/XLSX path instead of reading the file or shelling out; it parses quoted thousands separators, groups and aggregates in one call, and works on paths outside the session's working directory. On capability alone a generic file reader wins the first turn."
+    },
+    {
+      "id": "D-R12",
+      "severity": "medium",
+      "server": "spreadsheet",
+      "title": "sheet_convert writes any money value ending in .00 as text",
+      "repro": "node --input-type=module -e 'import {coerce} from \"/Users/mike/mcp-servers/servers/spreadsheet/dist/csv.js\"; console.log(typeof coerce(\"403.00\"))' -> string. servers/spreadsheet/src/csv.ts:72 accepts a number only when String(n).length >= s.length - 1, so 403.00 (String(403) is 3 vs 6) stays a string while 403.10 (String(403.1) is 5 vs 6) becomes a number. In the produced costs.xlsx that is 5 of 250 Amount cells as t=\"str\" (1,250.00, 403.00, 123.00, 641.00, 703.00); Excel SUM(D2:D251) is short by 3,117.00 with nothing on screen to say so. sheet_query itself parses all 250 rows correctly, so the bug is only in what gets written out.",
+      "fix_direction": "Compare on value, not on string length: strip a thousands separator first and stop rejecting trailing zeros."
+    },
+    {
+      "id": "D-R13",
+      "severity": "medium",
+      "server": "spreadsheet",
+      "title": "sheet_add_column has no rounding, so a money formula emits raw floats",
+      "repro": "sheet_add_column {path: costs.xlsx, name: 'Amount with VAT', formula: '[Amount] * 1.23'} -> 40.7868, 90.7125, 635.9346; 245 of 250 cells with more than two decimals. /private/tmp/uv11/out/s4.jsonl. The aggregate path already rounds (servers/spreadsheet/src/index.ts:203) but the derived-column path does not, and there is no decimals argument to ask for it.",
+      "fix_direction": "Add an optional decimals argument or a round(x, n) function in the formula language, and name it in the tool description so a VAT column can be asked for in cents."
+    },
+    {
+      "id": "D-R14",
+      "severity": "high",
+      "server": "invoice + expense-tracker handoff",
+      "title": "a multi-currency unbilled set has no path to an invoice",
+      "repro": "/private/tmp/uv10/out/s7.jsonl. Unbilled set: USD hours, a EUR expense, a GBP mileage line. expense_to_invoice returns line_items_per_currency with EUR and GBP blocks and the note 'one invoice carries one currency'; invoice_create takes a single currency and no per-line currency; no tool in the suite converts. CALLS(2): entry_list, expense_to_invoice, and the final message asks the user for EUR->USD and GBP->USD rates instead of delivering the requested file.",
+      "fix_direction": "Give expense_to_invoice or invoice_create an explicit convert_to {currency, rates: {...}} argument so the caller supplies the rate once and each line carries 'EUR 12.40 at 1.08' in its description. Failing that, the note should name the recoverable move (invoice the matching-currency lines now, rebill the rest separately) rather than leaving the model to invent one. Scenario 7b shows it recovers in a single turn."
+    },
+    {
+      "id": "D-R15",
+      "severity": "medium",
+      "server": "cross-server",
+      "title": "today is UTC in invoice and expense-tracker, local in time-tracker",
+      "repro": "servers/expense-tracker/src/money.ts:155 and servers/invoice/src/money.ts:160 use new Date().toISOString().slice(0,10); servers/time-tracker/src/index.ts:98 dayKey() uses getFullYear/getMonth/getDate. This run started 06:36 local in UTC+7 (23:36 UTC the previous day): the expense logged 'today' is dated 2026-09-03 while invoice_from_hours in the same conversation stamped issue_date 2026-09-02 and export_csv named its file time-entries-2026-09-02T23-38-15-640Z.csv. Run any lane between 00:00 and 07:00 local in UTC+7 and compare.",
+      "fix_direction": "Pick one - local day everywhere is what a freelancer means by 'today' - and share the helper across the servers."
+    },
+    {
+      "id": "D-R16",
+      "severity": "low",
+      "server": "client (servers are correct)",
+      "title": "the three MCP prompts are proxied but unreachable in headless -p",
+      "repro": "The bundle advertises prompts: {} and prompts/list returns daily_standup, check_prices, monthly_close; prompts/get daily_standup renders a complete brief (probe /private/tmp/probe_prompts.mjs). Scenario 2 is daily_standup's exact use case and scenario 8 is monthly_close's; both were answered by hand with entry_list / expense_list because the CLI -p run never issues prompts/list. Both answers were right, so this costs nothing here.",
+      "fix_direction": "Nothing to fix in the servers. Add a line to the READMEs that prompts surface as slash commands in interactive clients only, so their value is not assumed."
+    },
+    {
+      "id": "D-R17",
+      "severity": "low",
+      "server": "client",
+      "title": "ToolSearch needs the mcp__office__ prefix",
+      "repro": "/private/tmp/uv12/out/s5a.jsonl: ToolSearch {\"query\": \"select:watch_add,price_check\"} -> 'No matching deferred tools found'; the same query prefixed with mcp__office__ succeeded. One wasted turn.",
+      "fix_direction": "Client-side. Recorded so the extra call in the s5a count is not read as server noise."
+    }
+  ],
+  "defect_class": "D-R9 (round 4, price-tracker) and D-R11 (this round, spreadsheet) are one defect class: when a generic tool can plausibly do the job, the specific server has to say why it is better, in its own description, or it is not called.",
+  "not_rerun": "Nothing from rounds 1-4 was re-run. D-R5, D-R8, D-R9, D-R10 and D-E1 stand as recorded in docs/USER_VALUE_R4.md.",
+  "artifacts": [
+    "docs/USER_VALUE_R5.md",
+    "data/user_value_r5.json",
+    "/private/tmp/uv10/out/s1.jsonl", "/private/tmp/uv10/out/s2.jsonl", "/private/tmp/uv10/out/s6.jsonl",
+    "/private/tmp/uv10/out/s7.jsonl", "/private/tmp/uv10/out/s7b.jsonl", "/private/tmp/uv10/out/s8.jsonl",
+    "/private/tmp/uv10/out/s9.jsonl",
+    "/private/tmp/uv11/out/s3.jsonl", "/private/tmp/uv11/out/s4.jsonl",
+    "/private/tmp/uv11/out/s3_cwdblocked.jsonl", "/private/tmp/uv11/out/s4_cwdblocked.jsonl",
+    "/private/tmp/uv11/out/s3_contaminated.jsonl",
+    "/private/tmp/uv12/out/s5a.jsonl", "/private/tmp/uv12/out/s5b.jsonl",
+    "/private/tmp/uv13/out/s10a.jsonl", "/private/tmp/uv13/out/s10b.jsonl",
+    "/private/tmp/uv11/costs.csv", "/private/tmp/uv11/costs.xlsx",
+    "/private/tmp/uv10/data/mcp-servers/invoice/pdf/INV-2026-0001.pdf",
+    "/private/tmp/probe_prompts.mjs"
+  ]
+}
