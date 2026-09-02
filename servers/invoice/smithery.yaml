@@ -1,3 +1,6 @@
+name: mcp-invoice
+target: local
+
 runtime: typescript
 startCommand:
   type: stdio

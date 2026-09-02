@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-02T13:05:00Z",
+  "updated_at": "2026-09-02T13:22:04Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -17,19 +17,19 @@
       "note": "npm token dead (401); run: npm login --auth-type=web"
     },
     "registry": {
-      "status": "blocked",
-      "url": "https://registry.modelcontextprotocol.io",
-      "note": "mcp-publisher 1.8.1 installed; needs npm package first (mcpName ownership check)"
+      "status": "published",
+      "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
+      "note": "4 servers live as io.github.theluckystrike/{time-tracker,price-tracker,spreadsheet,invoice} v0.1.0, mcpb packages from GitHub release v0.1.0"
     },
     "smithery": {
-      "status": "pending",
-      "url": "https://smithery.ai",
-      "note": "smithery.yaml in each server; connect repo via GitHub OAuth (one click)"
+      "status": "blocked",
+      "url": "https://smithery.ai/auth/cli",
+      "note": "CLI 4.11.1 + REST api.smithery.ai are scriptable with a bearer key, but obtaining one needs one browser login: run `npx -y @smithery/cli auth login` and open the printed https://smithery.ai/auth/cli?s=<session> URL. smithery.yaml validated against the CLI schema (name + target, loose)"
     },
     "glama": {
       "status": "pending",
-      "url": "https://glama.ai/mcp/servers",
-      "note": "auto-indexes public repo; add glama.json + claim"
+      "url": "https://glama.ai/mcp/servers?query=theluckystrike",
+      "note": "glama.json (maintainers: theluckystrike) committed at repo root and in each servers/<name>; crawler discovery only, no unauthenticated add endpoint (Add Server button needs a Glama account; directory API needs a key from https://glama.ai/settings/api-keys)"
     },
     "mcpb": {
       "status": "published",
@@ -37,44 +37,52 @@
       "note": "4 .mcpb bundles on GitHub release v0.1.0; directory submission pending"
     },
     "awesome-mcp-servers": {
-      "status": "pending",
-      "url": "https://github.com/punkpeye/awesome-mcp-servers",
-      "note": "PR after npm publish"
+      "status": "submitted",
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13473",
+      "note": "PR 13473 open: 4 entries (Workplace & Productivity: time-tracker, spreadsheet; Finance & Fintech: invoice; E-Commerce: price-tracker)"
     },
-    "mcp.so / PulseMCP / mcpservers.org": {
-      "status": "pending",
-      "url": "https://mcp.so/submit",
-      "note": "web forms, human step"
+    "mcp.so": {
+      "status": "skipped: paid",
+      "url": "https://mcp.so/submit?type=server",
+      "note": "only submit control is 'Pay and submit automatically', $39 one-time listing fee; no free tier on the form. Skipped per operator rule (free submissions only)"
     }
   },
   "per_server": {
     "time-tracker": {
       "npm": "missing",
-      "registry": "missing",
+      "registry": "published",
       "github": "published",
-      "smithery": "pending",
-      "glama": "pending"
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "pr-open",
+      "mcp.so": "skipped: paid"
     },
     "price-tracker": {
       "npm": "missing",
-      "registry": "missing",
+      "registry": "published",
       "github": "published",
-      "smithery": "pending",
-      "glama": "pending"
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "pr-open",
+      "mcp.so": "skipped: paid"
     },
     "spreadsheet": {
       "npm": "missing",
-      "registry": "missing",
+      "registry": "published",
       "github": "published",
-      "smithery": "pending",
-      "glama": "pending"
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "pr-open",
+      "mcp.so": "skipped: paid"
     },
     "invoice": {
       "npm": "missing",
-      "registry": "missing",
+      "registry": "published",
       "github": "published",
-      "smithery": "pending",
-      "glama": "pending"
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "pr-open",
+      "mcp.so": "skipped: paid"
     }
   }
 }

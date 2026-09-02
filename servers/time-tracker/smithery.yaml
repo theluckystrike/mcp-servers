@@ -1,3 +1,6 @@
+name: mcp-time-tracker
+target: local
+
 runtime: typescript
 startCommand:
   type: stdio

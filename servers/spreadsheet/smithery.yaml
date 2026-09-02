@@ -1,3 +1,6 @@
+name: mcp-spreadsheet
+target: local
+
 runtime: typescript
 startCommand:
   type: stdio
