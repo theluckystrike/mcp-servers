@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-02T14:19:10Z",
+  "updated_at": "2026-09-02T14:54:31Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -120,6 +120,11 @@
       "status": "published",
       "url": "https://mcp.zovo.one/mcp",
       "note": "streamable HTTP for all 5 servers (spreadsheet in inline-CSV mode); anon token or Pro key; hardened (mint limit, batch reject, 256 KB body, SSRF guard, tenant caps); 14/14 probes"
+    },
+    "search-console": {
+      "status": "submitted",
+      "url": "https://search.google.com/search-console?resource_id=sc-domain:zovo.one",
+      "note": "sc-domain:zovo.one domain property already existed (siteFullUser, service account zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com) and covers mcp.zovo.one automatically; sitemaps.submit for https://mcp.zovo.one/sitemap.xml returned 204, sitemaps.list confirms it (13 URLs submitted, 0 warnings, 0 errors, indexed 0 so far -- fresh submission, indexing pending); urlInspection on / returned coverageState \"URL is unknown to Google\" and on /guides/track-time-in-claude-code returned \"Discovered - currently not indexed\", both expected within hours of a fresh submission"
     }
   },
   "per_server": {
