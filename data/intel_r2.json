@@ -1,0 +1,79 @@
+{
+  "measured_at": "2026-09-03T06:45:00Z",
+  "submission_status": {
+    "docker_mcp_registry_pr_4892": {
+      "url": "https://github.com/docker/mcp-registry/pull/4892",
+      "title": "Add time-tracker, price-tracker, spreadsheet and invoice servers",
+      "state": "OPEN",
+      "checks": "none reported (statusCheckRollup empty)",
+      "reviews": 0,
+      "comments": 0,
+      "maintainer_requests": []
+    },
+    "awesome_mcp_servers_pr_13473": {
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13473",
+      "title": "Add four theluckystrike MCP servers: time-tracker, price-tracker, spreadsheet, invoice",
+      "state": "OPEN",
+      "reviews": 0,
+      "comments": 2,
+      "maintainer_requests": [
+        "glama-check bot: server must be listed on Glama (glama.ai/mcp/servers) and pass all checks; add a Glama score badge after the description in the PR entry, format: [![OWNER/REPO MCP server](https://glama.ai/mcp/servers/OWNER/REPO/badges/score.svg)](https://glama.ai/mcp/servers/OWNER/REPO)",
+        "emoji-check bot: submission is missing a required emoji tag; must add at least one permitted emoji after the repo link (e.g. 🐍 Python, 📇 TS/JS, 🏠 Local Service, etc.)"
+      ]
+    },
+    "cline_mcp_marketplace_issues": {
+      "2397": {"title": "[Server Submission]: Time Tracker (mcp-time-tracker)", "state": "OPEN", "labels": [], "comments": 0},
+      "2398": {"title": "[Server Submission]: Price Tracker (mcp-price-tracker)", "state": "OPEN", "labels": [], "comments": 0},
+      "2399": {"title": "[Server Submission]: Spreadsheet (mcp-spreadsheet)", "state": "OPEN", "labels": [], "comments": 0},
+      "2400": {"title": "[Server Submission]: Invoice (mcp-invoice)", "state": "OPEN", "labels": [], "comments": 0},
+      "2401": {"title": "[Server Submission]: Expense Tracker (mcp-expense-tracker)", "state": "OPEN", "labels": [], "comments": 0}
+    }
+  },
+  "directory_listings": {
+    "mcpservers.org": {"listed": "unverifiable", "note": "client-rendered SPA (Next.js), no server-side search results or JSON API found via curl; cannot confirm yes/no without a browser"},
+    "mcpmarket.com": {"listed": "unverifiable", "note": "HTTP 403 on all requests (blocked)"},
+    "glama.ai": {"listed": "no", "url": "https://glama.ai/mcp/servers?query=theluckystrike", "note": "only 1 result for author theluckystrike: bln-mcp-grammar-server (pre-existing, unrelated). None of the 6 new servers (time-tracker, price-tracker, spreadsheet, invoice, expense-tracker, office-suite) appear. Direct slug lookups (glama.ai/mcp/servers/theluckystrike/<name>) all returned 404."},
+    "smithery_registry": {"listed": "no", "note": "queried registry.smithery.ai/servers?q=theluckystrike and per-name queries (time-tracker, price-tracker, spreadsheet, invoice, expense-tracker, office-suite); zero theluckystrike hits in any result set, top rows are unrelated third-party servers"},
+    "pulsemcp": {"listed": "unverifiable", "note": "HTTP 403 on all requests (blocked)"}
+  },
+  "registry_slot_movement": {
+    "endpoint": "https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 (cursor paginated)",
+    "compared_to": "data/registry_rank.json.after_v2_2026-09-02_post_expense_office",
+    "tokens": {
+      "timesheet":  {"results_before": 3,  "results_now": 5,   "rank_before": 2,    "rank_now": 1},
+      "billable":   {"results_before": 2,  "results_now": 4,   "rank_before": 2,    "rank_now": 1},
+      "hours":      {"results_before": 3,  "results_now": 5,   "rank_before": 3,    "rank_now": 2},
+      "mileage":    {"results_before": 1,  "results_now": 3,   "rank_before": 1,    "rank_now": 1},
+      "receipts":   {"results_before": 5,  "results_now": 7,   "rank_before": 4,    "rank_now": 4},
+      "expense":    {"results_before": 15, "results_now": 19,  "rank_before": 15,   "rank_now": 15},
+      "invoice":    {"results_before": 94, "results_now": 98,  "rank_before": 83,   "rank_now": 89, "note": "office-suite server now also matches (rank 88-89); rank moved down 6 places as new competitors were added ahead"},
+      "xlsx":       {"results_before": 20, "results_now": 22,  "rank_before": 20,   "rank_now": 19},
+      "csv":        {"results_before": 18, "results_now": 20,  "rank_before": 18,   "rank_now": 17},
+      "drop":       {"results_before": 165,"results_now": 167, "rank_before": 160,  "rank_now": 162},
+      "alert":      {"results_before": 44, "results_now": 47,  "rank_before": 36,   "rank_now": 39},
+      "office":     {"results_before": 32, "results_now": 34,  "rank_before": null, "rank_now": 33, "note": "office-suite server (io.github.theluckystrike/office-suite-time-invoice-expense-excel-price) is now published and appears at rank 33-34; it was absent/unpublished at the prior snapshot"},
+      "suite":      {"results_before": 86, "results_now": 88,  "rank_before": null, "rank_now": 78, "note": "office-suite server now appears at rank 78-79, was absent before"}
+    },
+    "new_total_results_delta": {"timesheet": 2, "billable": 2, "hours": 2, "mileage": 2, "receipts": 2, "expense": 4, "invoice": 4, "xlsx": 2, "csv": 2, "drop": 2, "alert": 3, "office": 2, "suite": 2},
+    "note_on_new_servers": "Result-count deltas of exactly +2 to +4 across every token match the count of our own additional published rows (new versions / new office-suite server), not third-party churn -- there is no evidence any genuinely new third-party server entered the time-tracker, price-tracker, or expense slots between the two snapshots; growth is entirely our own re-publishes."
+  },
+  "github_code_search": {
+    "queries_checked": ["mcp time tracker", "mcp invoice", "mcp expense tracker", "mcp spreadsheet excel", "mcp price tracker"],
+    "our_rank_in_first_30": {
+      "mcp time tracker": "not present",
+      "mcp invoice": "not present",
+      "mcp expense tracker": "not present",
+      "mcp spreadsheet excel": "not present",
+      "mcp price tracker": "present: theluckystrike/mcp-price-tracker at #12, theluckystrike/mcp-servers (monorepo) at #23"
+    }
+  },
+  "downloads_and_traffic": {
+    "previous_snapshot_at": "2026-09-02T15:18:02.295Z",
+    "current_snapshot_at": "2026-09-02T23:40:14.515Z",
+    "release_downloads_total_before": 55,
+    "release_downloads_total_now": 79,
+    "delta": 24,
+    "github_traffic_14d": {"views": 0, "uniques": 0, "clones": 0, "clone_uniques": 0, "note": "unchanged, still flat at zero"},
+    "npm_weekly_downloads": {"time-tracker": 404, "price-tracker": 404, "spreadsheet": 404, "invoice": 404, "note": "identical flat 404 across all 4 packages, unchanged from prior snapshot -- almost certainly an npm registry placeholder/cache value, not real traffic"}
+  }
+}
