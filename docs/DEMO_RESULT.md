@@ -79,3 +79,75 @@ insight: `npm run build -w packages/mcp-license -w servers/<name>` is required, 
 the shared license package is a workspace dependency with no npm registry copy, so a single-workspace build looks
 correct until `tsc` hits the missing module; the failure only surfaces on a clean clone, never in this repo's own
 node_modules where it is already built.
+
+---
+
+## Update 2026-09-03: expense-tracker and office-suite demos
+
+Added the two remaining demos so all six servers (five standalone + the office-suite bundle) now have a real GIF
+instead of a static logo / "no demo yet" placeholder.
+
+1. Driver changes (`scripts/demo/drive.mjs`):
+   - `client()` gained an optional `showStderr` predicate: office-suite's proxy-ready line is written to real
+     stderr (not the JSON-RPC stdout stream drive.mjs otherwise parses), so it is opted into the recording only
+     for that server, printed dimmed, matching one line per matched stderr line.
+   - New `expense-tracker` sequence: seeds one category rule (`Adobe -> software`, silent setup call, not
+     recorded), then records `expense_add` (61.50 EUR, merchant Adobe, vat_rate 23, auto-categorised from the
+     rule), `mileage_add` (45 km, region PL, built-in table rate), and `expense_to_invoice` for the same project
+     and day -- output shows the EUR line item at net 50.00 / tax_rate 23 (61.50 gross at 23% nets to exactly
+     50.00), with the PLN mileage claim correctly excluded (different currency does not appear in this project's
+     unbilled call because it was not tied to the `acme` project).
+   - New `office-suite` sequence: `timer_start`, `expense_add` (18.90 EUR, vat_rate 23), then `invoice_from_hours`
+     -- all three tools come from three different proxied children (time-tracker, expense-tracker, invoice) in
+     one stdio session. `business_set` and `client_add` are called silently first (same pattern as the invoice
+     demo) so the invoice result is not cluttered with placeholder-issuer warnings.
+
+2. Tapes: `scripts/demo/expense-tracker.tape`, `scripts/demo/office-suite.tape` -- identical settings to the
+   existing four (900x480, Dracula, 40ms typing, `Sleep 10s`).
+
+   Command run for each: `vhs scripts/demo/<name>.tape` from repo root.
+
+   Output sizes (limit 400 KB):
+   - assets/demo-expense-tracker.gif  145,664 bytes (142.2 KB) (expense_add, mileage_add, expense_to_invoice)
+   - assets/demo-office-suite.gif     139,218 bytes (136.0 KB) (timer_start, expense_add, invoice_from_hours, one
+     proxied session, stderr line confirming all five children)
+   Both well under the 400 KB cap.
+
+3. Verification (`file` + `ffprobe`):
+   ```
+   $ file assets/demo-expense-tracker.gif assets/demo-office-suite.gif
+   assets/demo-expense-tracker.gif: GIF image data, version 89a, 900 x 480
+   assets/demo-office-suite.gif:    GIF image data, version 89a, 900 x 480
+
+   $ ffprobe -v error -select_streams v -show_entries stream=width,height,nb_frames,avg_frame_rate \
+       -of default=noprint_wrappers=1 assets/demo-expense-tracker.gif
+   width=900
+   height=480
+   avg_frame_rate=25/1
+   nb_frames=283
+
+   $ ffprobe ... assets/demo-office-suite.gif
+   width=900
+   height=480
+   avg_frame_rate=25/1
+   nb_frames=279
+   ```
+   Both GIFs are valid 900x480 images at 25 fps with ~280 frames (~11s), matching the four existing demos.
+   Separately confirmed office-suite's proxy startup line by direct probe of `servers/office-suite/dist/index.js`:
+   `mcp-office-suite ready, proxying [time-tracker, price-tracker, spreadsheet, invoice, expense-tracker], 49
+   tools` on stderr, plus `tools/list` returning 51 tools total (49 proxied + `license_status` +
+   `license_activate`), confirming the README's "51 tools" and "five children" claims.
+
+4. README updates:
+   - `servers/expense-tracker/README.md` and `servers/office-suite/README.md`: each now opens with its demo GIF
+     right under the title, above the existing description.
+   - `README.md` (root): the demo-thumbnail table's `mcp-expense-tracker` cell now points at
+     `assets/demo-expense-tracker.gif` (previously the static logo PNG) and the `mcp-office-suite` cell now shows
+     `assets/demo-office-suite.gif` (previously "(bundle, no demo yet)"). No other table cells or prose changed.
+
+artifacts (this update):
+- scripts/demo/drive.mjs (extended)
+- scripts/demo/expense-tracker.tape, scripts/demo/office-suite.tape
+- assets/demo-expense-tracker.gif, assets/demo-office-suite.gif
+- servers/expense-tracker/README.md, servers/office-suite/README.md
+- README.md

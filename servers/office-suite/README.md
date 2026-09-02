@@ -1,5 +1,7 @@
 # mcp-office-suite
 
+![office-suite demo](../../assets/demo-office-suite.gif)
+
 One install for the whole freelancer office. This MCP server proxies four sibling servers -- **time-tracker**, **price-tracker**, **spreadsheet** and **invoice** -- so a client gets every tool from all four behind a single config entry instead of four. Under the hood it starts each sibling as its own stdio child process, forwards `tools/call`, `resources/*` and `prompts/*` to whichever child owns the name, and merges their license state into one `license_status` / `license_activate` pair. Nothing is re-implemented: each child server runs exactly as it does standalone, with its own local JSON storage.
 
 **Every tool of time-tracker, price-tracker, spreadsheet and invoice, one `claude mcp add`.**

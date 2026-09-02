@@ -18,7 +18,7 @@ const STEP_DELAY_MS = 1400;
 
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
-function client(entry, env) {
+function client(entry, env, opts = {}) {
   const sandbox = mkdtempSync(join(tmpdir(), "mcp-demo-"));
   const child = spawn(process.execPath, [entry], {
     stdio: ["pipe", "pipe", "pipe"],
@@ -30,6 +30,18 @@ function client(entry, env) {
       ...env,
     },
   });
+  if (opts.showStderr) {
+    let sbuf = "";
+    child.stderr.on("data", (chunk) => {
+      sbuf += chunk.toString();
+      let i;
+      while ((i = sbuf.indexOf("\n")) >= 0) {
+        const line = sbuf.slice(0, i);
+        sbuf = sbuf.slice(i + 1);
+        if (opts.showStderr(line)) console.log(`\x1b[90m${line}\x1b[0m`);
+      }
+    });
+  }
   let buf = "";
   const pending = new Map();
   child.stdout.on("data", (chunk) => {
@@ -97,7 +109,8 @@ function resultLine(text) {
 
 async function run(name) {
   const entry = join(ROOT, "servers", name, "dist", "index.js");
-  const c = client(entry, {});
+  const showStderr = name === "office-suite" ? (line) => line.startsWith("mcp-office-suite ready") : undefined;
+  const c = client(entry, {}, { showStderr });
   await c.init();
 
   const today = new Date().toISOString().slice(0, 10);
@@ -160,6 +173,35 @@ async function run(name) {
     await sleep(STEP_DELAY_MS);
     toolLine("invoice_list", {});
     resultLine(await c.call("invoice_list", {}));
+  }
+
+  if (name === "expense-tracker") {
+    say("$ Log a receipt and a mileage claim from chat, then rebill them.\n");
+    await c.call("category_rules", { rules: [{ match: "Adobe", category: "software" }] });
+    await sleep(STEP_DELAY_MS);
+    toolLine("expense_add", { amount: 61.50, currency: "EUR", merchant: "Adobe", project: "acme", vat_rate: 23, billable: true });
+    resultLine(await c.call("expense_add", { amount: 61.50, currency: "EUR", merchant: "Adobe", project: "acme", vat_rate: 23, billable: true }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("mileage_add", { km: 45, region: "PL", purpose: "client site visit" });
+    resultLine(await c.call("mileage_add", { km: 45, region: "PL", purpose: "client site visit" }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("expense_to_invoice", { project: "acme", from: today, to: today });
+    resultLine(await c.call("expense_to_invoice", { project: "acme", from: today, to: today }));
+  }
+
+  if (name === "office-suite") {
+    say("$ One server, every tool: timers, expenses, invoices, all in one session.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("timer_start", { project: "acme", task: "onsite consulting" });
+    resultLine(await c.call("timer_start", { project: "acme", task: "onsite consulting" }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("expense_add", { amount: 18.90, currency: "EUR", merchant: "train ticket", project: "acme", vat_rate: 23, billable: true });
+    resultLine(await c.call("expense_add", { amount: 18.90, currency: "EUR", merchant: "train ticket", project: "acme", vat_rate: 23, billable: true }));
+    await sleep(STEP_DELAY_MS);
+    await c.call("business_set", { name: "Lucky Strike Software", default_currency: "EUR", default_tax_rate: 23 });
+    await c.call("client_add", { name: "Acme GmbH", address: "Hauptstr. 5\nBerlin", email: "ap@acme.example" });
+    toolLine("invoice_from_hours", { client: "Acme GmbH", hours: 6, rate: 120, currency: "EUR", tax_rate: 23 });
+    resultLine(await c.call("invoice_from_hours", { client: "Acme GmbH", hours: 6, rate: 120, currency: "EUR", tax_rate: 23 }));
   }
 
   await sleep(STEP_DELAY_MS);

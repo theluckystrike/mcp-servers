@@ -1,5 +1,7 @@
 # mcp-expense-tracker
 
+![expense-tracker demo](../../assets/demo-expense-tracker.gif)
+
 Say "12.30 euros at Adobe, software, billable to Acme" and it is logged, categorised, VAT-split and ready to rebill. This MCP server keeps a local ledger of your business expenses: every amount is held in integer minor units in its own currency, `vat_rate` splits the gross on the receipt into net and VAT (set it once with `expense_settings` and every later expense is split without repeating it), merchant rules categorise new expenses on their own, receipts are attached by path and sha256 so an audit can prove the file has not changed, and business trips are priced from a built-in mileage table. Summaries group by category, project, month or merchant, always per currency and never mixed. It exports to CSV, xlsx or JSON, and `expense_to_invoice` hands the billable expenses of a project to `mcp-invoice` in exactly the line-item shape `invoice_create` expects. Everything is stored in a plain JSON file on your own machine; nothing is uploaded anywhere.
 
 **Log receipts and mileage in chat, split the VAT, and rebill them onto an invoice -- no expense SaaS required.**

@@ -15,8 +15,8 @@ six are also reachable as a hosted remote endpoint with no install at all (see b
 | [mcp-price-tracker](servers/price-tracker/README.md) | ![price-tracker](assets/demo-price-tracker.gif) | Check and watch product prices on ordinary shop pages, history, target alerts | `npx -y @theluckystrike/mcp-price-tracker`* |
 | [mcp-spreadsheet](servers/spreadsheet/README.md) | ![spreadsheet](assets/demo-spreadsheet.gif) | Read, query, add columns to and convert xlsx/csv files without corrupting them | `npx -y @theluckystrike/mcp-spreadsheet`* |
 | [mcp-invoice](servers/invoice/README.md) | ![invoice](assets/demo-invoice.gif) | Create numbered invoices with tax lines and render professional PDFs | `npx -y @theluckystrike/mcp-invoice`* |
-| [mcp-expense-tracker](servers/expense-tracker/README.md) | ![expense-tracker](assets/expense-tracker-logo.png) | Log receipts and mileage in chat, split the VAT, rebill onto an invoice | `npx -y @theluckystrike/mcp-expense-tracker`* |
-| [mcp-office-suite](servers/office-suite/README.md) | (bundle, no demo yet) | One install that proxies all five servers above behind a single config line | `npx -y @theluckystrike/mcp-office-suite`* |
+| [mcp-expense-tracker](servers/expense-tracker/README.md) | ![expense-tracker](assets/demo-expense-tracker.gif) | Log receipts and mileage in chat, split the VAT, rebill onto an invoice | `npx -y @theluckystrike/mcp-expense-tracker`* |
+| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that proxies all five servers above behind a single config line | `npx -y @theluckystrike/mcp-office-suite`* |
 
 \* npm publish is still pending for all six packages (see npm status below). Until then, the fastest path is the
 `.mcpb` one-click bundle from the
