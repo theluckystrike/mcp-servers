@@ -57,8 +57,8 @@ function patchInvoiceIndex(src) {
     "    const out = expandPath(a.out_path ?? join(dataDir(), \"pdf\", `${inv.number}.pdf`));\n    await renderInvoicePdf(inv, biz, out, { branded: !pro, logo: pro });",
     "    const out = await renderInvoicePdf(inv, biz, `${inv.number}.pdf`, { branded: !pro, logo: pro });",
     "invoice pdf call");
-  src = must(src, "return ok(`Wrote ${out}${note}`);",
-    "return ok(`Invoice ${inv.number} rendered. Download (HTML, valid 1 hour): ${out}${note}`);",
+  src = must(src, "return ok(`Wrote ${documentLabel(out)} ${out}${note}${extra}`);",
+    "return ok(`Invoice ${inv.number} rendered. Download (HTML invoice, print to PDF, valid 1 hour): ${out}${note}${extra}`);",
     "invoice pdf result text");
   return src;
 }
