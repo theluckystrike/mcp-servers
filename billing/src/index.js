@@ -7,7 +7,8 @@ export const PRODUCTS = {
   "price-tracker": { desc: "Check and watch product prices on ordinary shop pages, with history and target alerts.", free: "Free: unlimited price checks with confidence, 3 watches, 30 observations each, alerts.", pro: "Pro: unlimited watches, full history, refresh all.", name: "MCP Price Tracker Pro", price: "price_1UBDU6JKCamubEm1ufsEKwSS", usd: 19, pkg: "@theluckystrike/mcp-price-tracker", bin: "mcp-price-tracker", payload: "price-tracker" },
   spreadsheet: { desc: "Read, query, add columns to and convert xlsx and csv files without corrupting them.", free: "Free: read, query with group by and sums, stats up to 5,000 rows; writes up to 500 rows, never partial.", pro: "Pro: no limits.", name: "MCP Spreadsheet Pro", price: "price_1UBDU7JKCamubEm1LZTfrsMd", usd: 19, pkg: "@theluckystrike/mcp-spreadsheet", bin: "mcp-spreadsheet", payload: "spreadsheet" },
   invoice: { desc: "Numbered invoices with tax lines, rendered to a professional PDF, all local.", free: "Free: 3 invoices a month with a small footer line; overdue report included.", pro: "Pro: unlimited, no branding, logo, custom prefix.", name: "MCP Invoice Pro", price: "price_1UBDU8JKCamubEm1Ybcp5IUs", usd: 19, pkg: "@theluckystrike/mcp-invoice", bin: "mcp-invoice", payload: "invoice" },
-  bundle: { desc: "Every server above, one key, lifetime. Saves $37 against buying four.", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
+  "expense-tracker": { desc: "Receipts, mileage and expenses ledger that turns billable spend into invoice lines.", free: "Free: unlimited logging, last 30 days, 3 projects, 5 rules, CSV up to 200 rows.", pro: "Pro: full history, unlimited projects and rules, xlsx export, rebill with markup.", name: "MCP Expense Tracker Pro", price: "price_1UBEoOJKCamubEm1ryEKWxIg", usd: 19, pkg: "@theluckystrike/mcp-expense-tracker", bin: "mcp-expense-tracker", payload: "expense-tracker" },
+  bundle: { desc: "Every server above, one key, lifetime. Saves $56 against buying five.", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
 const REPO = "https://github.com/theluckystrike/mcp-servers";
@@ -86,7 +87,7 @@ function home() {
   return page("MCP Servers Pro licenses", `<h1>MCP Servers Pro licenses</h1>
 <p>Practical MCP servers for Claude, Cursor and any MCP client. Every server has a genuinely useful free tier; Pro is a one-time payment for a lifetime key. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
 <table><tr><th>Product</th><th>Price</th><th></th></tr>${rows}</table>
-<h2>How activation works</h2>
+<h2>Hosted endpoints</h2><p>No install: <a href="/mcp">mcp.zovo.one/mcp</a> serves time-tracker, price-tracker and invoice over MCP streamable HTTP. Get a free anonymous token at <code>/mcp/token</code> or use a Pro key as the bearer.</p><h2>How activation works</h2>
 <p>After payment you get a key like <code>MCPL1.xxx.yyy</code>. In Claude, run <code>license_activate</code> with the key, or set the environment variable <code>MCP_LICENSE_KEY</code>.</p>
 <h2>Guides</h2>
 <p>Setup and worked examples: ${GUIDE_LINKS}</p>
@@ -323,7 +324,7 @@ ${faqHtml}
     if (path === "/llms.txt") {
       const lines = Object.entries(PAGES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline} Install: npx -y @theluckystrike/mcp-${k}`).join("\n");
       const guideLines = Object.entries(GUIDES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/guides/${k}): ${v.description}`).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n- [Hosted endpoints, no install](https://mcp.zovo.one/mcp): streamable HTTP for time-tracker, price-tracker, invoice; bearer = anonymous token from /mcp/token or a Pro key\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {

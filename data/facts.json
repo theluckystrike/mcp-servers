@@ -88,6 +88,12 @@
         19
       ],
       [
+        "expense-tracker",
+        "prod_VBc2BK0DpkMjY1",
+        "price_1UBEoOJKCamubEm1ryEKWxIg",
+        19
+      ],
+      [
         "bundle",
         "prod_VBafU5C9o9d0f3",
         "price_1UBDU9JKCamubEm1dWgRjtoW",
@@ -177,6 +183,26 @@
       "free": "3 invoices per calendar month; overdue report free; PDF carries a small footer line.",
       "pro": "Unlimited invoices, no branding, logo, custom prefix.",
       "storage": "~/.local/share/mcp-servers/invoice/"
+    },
+    "expense-tracker": {
+      "title": "MCP Expense Tracker",
+      "tagline": "Receipts, mileage and expenses that turn into invoice lines.",
+      "does": "Logs expenses with per-expense currency, VAT split and receipt attachment (path + sha256), auto-categorises merchants by rules, records mileage with country rate tables, summarises by category, project, month or merchant per currency, exports CSV or xlsx, and emits invoice-ready line items (net + tax rate, so nothing is taxed twice) for rebilling a project with optional markup.",
+      "for": "Freelancers and small businesses who already track time and invoice from chat and want the receipts side closed in the same place.",
+      "example": "\"I paid 61.50 EUR at Media Markt for a USB hub, Acme project, billable\" ... \"Give me the invoice lines to rebill Acme this month with 10% markup.\"",
+      "free": "Unlimited logging; list and summary cover the last 30 days; 3 projects; 5 rules; CSV export up to 200 rows, never partial.",
+      "pro": "Full history, unlimited projects and rules, xlsx export, unlimited rebill items with markup.",
+      "storage": "~/.local/share/mcp-servers/expense-tracker/"
+    },
+    "office-suite": {
+      "title": "MCP Office Suite (bundle server)",
+      "tagline": "One install that exposes every tool of the five servers.",
+      "does": "A stdio proxy that starts the time tracker, price tracker, spreadsheet, invoice and expense tracker as child processes and exposes all their tools, resources and prompts under one server with a single license_status and license_activate. Measured reason: the most-used server in the category is an aggregator; one install beats five.",
+      "for": "Anyone who wants the whole freelancer workflow in one config line.",
+      "example": "\"Start a timer for Acme\" ... \"Invoice Acme for this week's hours plus the USB hub receipt.\"",
+      "free": "Each child's free tier.",
+      "pro": "The $39 bundle key unlocks every child.",
+      "storage": "Each child's own data folder."
     }
   },
   "version": "0.1.1"
