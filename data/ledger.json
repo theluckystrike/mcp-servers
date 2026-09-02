@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T14:25:00.994Z",
+  "generated_at": "2026-09-02T14:48:44.557Z",
   "session": {
-    "count": 13,
+    "count": 14,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -54,6 +54,10 @@
       {
         "at": "2026-09-02T14:25:00.976Z",
         "note": "v0.2.0: 5 servers, hosted remotes in registry, expense audit 21 tests, 130 unit tests, validation green"
+      },
+      {
+        "at": "2026-09-02T14:48:44.534Z",
+        "note": "wave 3: all 5 hosted + hardened, round-3 fixes, validation 121/121"
       }
     ]
   },
@@ -74,15 +78,16 @@
         "expense_summary",
         "mileage_add",
         "expense_export",
-        "expense_to_invoice"
+        "expense_to_invoice",
+        "expense_mark_rebilled"
       ],
-      "tool_count": 11,
+      "tool_count": 12,
       "free_limits": "pending",
       "price_usd": 19,
       "build_ok": true,
       "test_summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818",
       "result_status": "DONE",
-      "loc": 958,
+      "loc": 1036,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -121,7 +126,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 938,
+      "loc": 1002,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -263,7 +268,7 @@
       "build_ok": true,
       "test_summary": "# pass 2 / # fail 0",
       "result_status": "DONE",
-      "loc": 791,
+      "loc": 807,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -341,6 +346,10 @@
       "first_line": "1. `packages/mcp-license/src/index.ts:94-96` — P0 — Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."
     },
     {
+      "file": "docs/CODEX_REVIEW_REMOTE.md",
+      "first_line": "1. `remote/src/index.ts:173` — P1 — `/mcp/token` is unauthenticated and unlimited, so callers can mint new tenants to reset hourly limits and free-tier quotas while generating unlimited KV records. Fix: rate-limit token issuance by IP/device and require a durable abuse-control identity or challenge."
+    },
+    {
       "file": "docs/CONTENT_RESULT.md",
       "first_line": "Guides content run - 2026-09-02"
     },
@@ -389,6 +398,10 @@
       "first_line": "npm auth acquisition attempt — RESULT"
     },
     {
+      "file": "docs/ORGANIC_R2.md",
+      "first_line": "ORGANIC_R2.md -- organic re-measurement after v0.2.0, 2026-09-02"
+    },
+    {
       "file": "docs/README_DEPTH_RESULT.md",
       "first_line": "README depth pass — 2026-09-02"
     },
@@ -403,6 +416,10 @@
     {
       "file": "docs/USER_VALUE_R2.md",
       "first_line": "User value audit, round 2 — 2026-09-02"
+    },
+    {
+      "file": "docs/USER_VALUE_R3.md",
+      "first_line": "User value audit, round 3 — 2026-09-02"
     }
   ],
   "revenue": {

@@ -119,7 +119,7 @@
     "hosted": {
       "status": "published",
       "url": "https://mcp.zovo.one/mcp",
-      "note": "streamable HTTP for 3 servers; anonymous token or Pro key; 7/7 validation probes"
+      "note": "streamable HTTP for all 5 servers (spreadsheet in inline-CSV mode); anon token or Pro key; hardened (mint limit, batch reject, 256 KB body, SSRF guard, tenant caps); 14/14 probes"
     }
   },
   "per_server": {
@@ -187,7 +187,8 @@
       "mcpserverfinder.com": "blocked: email-only",
       "mcpindex.net": "dead",
       "mcp.pizza": "dead",
-      "mcpcentral.io": "dead"
+      "mcpcentral.io": "dead",
+      "hosted": "published"
     },
     "invoice": {
       "npm": "missing",
@@ -231,7 +232,8 @@
       "mcpserverfinder.com": "blocked: email-only",
       "mcpindex.net": "dead",
       "mcp.pizza": "dead",
-      "mcpcentral.io": "dead"
+      "mcpcentral.io": "dead",
+      "hosted": "published"
     }
   }
 }
