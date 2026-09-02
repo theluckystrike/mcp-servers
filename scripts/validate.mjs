@@ -60,8 +60,12 @@ const PROBES = {
     ok(`${tier}: mileage 45 km PL = 51.75 PLN`, !m.isError && /51\.75/.test(m.text), m.text);
     const now = new Date(); const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10); const to = now.toISOString().slice(0, 10);
     const sm = await c.tool("expense_summary", { from, to, group_by: "category" }); ok(`${tier}: summary by category per currency`, !sm.isError && /EUR/.test(sm.text) && /PLN/.test(sm.text), sm.text);
-    const inv = await c.tool("expense_to_invoice", { project: "acme", from, to }); ok(`${tier}: expense_to_invoice net unit_price 50.00 + tax_rate`, !inv.isError && /50\.00|"unit_price": ?50/.test(inv.text) && /tax_rate/.test(inv.text), inv.text);
-    const mk = await c.tool("expense_to_invoice", { project: "acme", from, to, markup_percent: 10 }); ok(`${tier}: markup ${tier === "pro" ? "allowed (55.00)" : "gated"}`, tier === "pro" ? /55\.00|"unit_price": ?55/.test(mk.text) : /mcp\.zovo\.one/.test(mk.text), mk.text);
+    if (tier === "pro") {
+      const mk = await c.tool("expense_to_invoice", { project: "acme", from, to, markup_percent: 10 }); ok(`pro: markup allowed, net 50.00 x 1.10 = 55.00 + tax_rate`, !mk.isError && /55\.00|"unit_price": ?55/.test(mk.text) && /tax_rate/.test(mk.text), mk.text);
+    } else {
+      const mk = await c.tool("expense_to_invoice", { project: "acme", from, to, markup_percent: 10 }); ok(`free: markup gated, nothing changed`, /mcp\.zovo\.one/.test(mk.text), mk.text);
+      const inv = await c.tool("expense_to_invoice", { project: "acme", from, to }); ok(`free: expense_to_invoice net unit_price 50.00 + tax_rate`, !inv.isError && /50\.00|"unit_price": ?50/.test(inv.text) && /tax_rate/.test(inv.text), inv.text);
+    }
   },
   "time-tracker": async (c, tmp, tier, ok) => {
     const a = await c.tool("timer_start", { project: "acme", task: "validation" }); ok(`${tier}: timer_start`, !a.isError, a.text);

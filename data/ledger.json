@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T13:58:26.222Z",
+  "generated_at": "2026-09-02T14:09:39.212Z",
   "session": {
-    "count": 11,
+    "count": 12,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -46,10 +46,53 @@
       {
         "at": "2026-09-02T13:58:26.208Z",
         "note": "wave 1 done: naming (18/34 tokens), 5 guides live, demo GIFs, intel; wave 2: remote endpoint, expense-tracker, office-suite, README depth"
+      },
+      {
+        "at": "2026-09-02T14:09:39.197Z",
+        "note": "wave 2: remote endpoints live (mcp.zovo.one/mcp), expense-tracker + office-suite built, READMEs deepened, forms submitted"
       }
     ]
   },
   "servers": [
+    {
+      "id": "expense-tracker",
+      "npm_name": "@theluckystrike/mcp-expense-tracker",
+      "version": "0.2.0",
+      "dir": "servers/expense-tracker",
+      "tools": [
+        "expense_add",
+        "expense_list",
+        "expense_update",
+        "expense_delete",
+        "receipt_attach",
+        "category_rules",
+        "expense_summary",
+        "mileage_add",
+        "expense_export",
+        "expense_to_invoice"
+      ],
+      "tool_count": 10,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 14 / # fail 0",
+      "result_status": "DONE",
+      "loc": 890,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
@@ -91,23 +134,23 @@
     },
     {
       "id": "office-suite",
-      "npm_name": "pending",
-      "version": "pending",
+      "npm_name": "@theluckystrike/mcp-office-suite",
+      "version": "0.1.0",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
       "free_limits": "pending",
       "price_usd": 19,
-      "build_ok": false,
-      "test_summary": "pending",
-      "result_status": "pending",
-      "loc": 0,
+      "build_ok": true,
+      "test_summary": "# pass 1 / # fail 0",
+      "result_status": "DONE",
+      "loc": 303,
       "files_present": {
-        "readme": false,
-        "server_json": false,
-        "smithery_yaml": false,
-        "dockerfile": false,
-        "license": false
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
       },
       "distribution": {
         "npm": "unknown",
@@ -252,6 +295,11 @@
     ],
     "products": [
       {
+        "id": "expense-tracker",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/expense-tracker"
+      },
+      {
         "id": "invoice",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/invoice"
@@ -326,6 +374,14 @@
     {
       "file": "docs/NPM_AUTH_RESULT.md",
       "first_line": "npm auth acquisition attempt — RESULT"
+    },
+    {
+      "file": "docs/README_DEPTH_RESULT.md",
+      "first_line": "README depth pass — 2026-09-02"
+    },
+    {
+      "file": "docs/REMOTE_RESULT.md",
+      "first_line": "REMOTE_RESULT.md - hosted streamable-HTTP endpoints (INTEL R1)"
     },
     {
       "file": "docs/USER_VALUE.md",
