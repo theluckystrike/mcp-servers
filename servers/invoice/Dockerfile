@@ -1,13 +1,21 @@
+# Build context: repository root (monorepo with npm workspaces).
+# docker buildx build -f servers/invoice/Dockerfile .
 FROM node:22-alpine AS build
 WORKDIR /app
-COPY package.json tsconfig.json ./
-COPY src ./src
-RUN npm install --no-audit --no-fund && npm run build
+COPY package.json ./
+COPY packages ./packages
+COPY servers ./servers
+RUN npm install --no-audit --no-fund \
+ && npm run build --workspace @theluckystrike/mcp-license \
+ && npm run build --workspace @theluckystrike/mcp-invoice
 
 FROM node:22-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json ./
-RUN npm install --omit=dev --no-audit --no-fund
-COPY --from=build /app/dist ./dist
-CMD ["node", "dist/index.js"]
+COPY --from=build /app/packages/mcp-license/package.json ./packages/mcp-license/package.json
+COPY --from=build /app/packages/mcp-license/dist ./packages/mcp-license/dist
+COPY --from=build /app/servers/invoice/package.json ./servers/invoice/package.json
+COPY --from=build /app/servers/invoice/dist ./servers/invoice/dist
+RUN npm install --omit=dev --no-audit --no-fund --workspace @theluckystrike/mcp-invoice --include-workspace-root=false
+CMD ["node", "servers/invoice/dist/index.js"]
