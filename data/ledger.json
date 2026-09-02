@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T13:01:29.110Z",
+  "generated_at": "2026-09-02T13:03:54.874Z",
   "session": {
-    "count": 6,
+    "count": 7,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -26,6 +26,10 @@
       {
         "at": "2026-09-02T13:01:29.102Z",
         "note": "mcpb bundles released on GitHub v0.1.0"
+      },
+      {
+        "at": "2026-09-02T13:03:54.867Z",
+        "note": "audit: 58 probes, 9 fixes; price bounds; bundles rebuilt; validation 82/82"
       }
     ]
   },
@@ -90,7 +94,7 @@
       "build_ok": true,
       "test_summary": "# pass 18 / # fail 0",
       "result_status": "DONE",
-      "loc": 998,
+      "loc": 999,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -226,6 +230,10 @@
     ]
   },
   "docs": [
+    {
+      "file": "docs/AUDIT.md",
+      "first_line": "Adversarial pre-publish audit"
+    },
     {
       "file": "docs/CODEX_REVIEW.md",
       "first_line": "1. `packages/mcp-license/src/index.ts:94-96` — P0 — Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."

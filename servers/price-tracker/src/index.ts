@@ -131,7 +131,7 @@ server.registerTool(
     inputSchema: {
       url: z.string().describe("Product page URL"),
       label: z.string().optional().describe("Short name for this item"),
-      target_price: z.union([z.string(), z.number()]).optional().describe("Alert when the price is at or below this"),
+      target_price: z.union([z.string(), z.number()]).optional().describe("Alert when the price is at or below this (positive number)"),
       currency: z.string().optional().describe("ISO code such as USD or EUR, if the page does not say"),
     },
   },
@@ -148,7 +148,7 @@ server.registerTool(
     let target: string | null = null;
     if (target_price !== undefined) {
       target = normalizeNumber(String(target_price));
-      if (!target) return fail(`could not read "${target_price}" as a price. Use a plain number such as 199.99`);
+      if (!target || !(Number(target) > 0) || /[eE]/.test(String(target_price))) return fail(`could not read "${target_price}" as a price. Use a plain positive number such as 199.99`);
     }
     try {
       const o = await observe(url);
@@ -331,8 +331,9 @@ server.registerTool(
     },
   },
   async ({ url, price, currency, label }): Promise<ToolResult> => {
+    if (/[eE]/.test(String(price)) || !/^[\s\d.,'\u00a0-]*[A-Za-z$\u20ac\u00a3\u00a5]*[\s\d.,'\u00a0]*$/.test(String(price).trim())) return fail(`could not read "${price}" as a price. Use plain digits such as 1299.00 or 1.299,00`);
     const p = normalizeNumber(String(price));
-    if (!p) return fail(`could not read "${price}" as a price. Try 1299.00 or 1.299,00`);
+    if (!p || !(Number(p) > 0) || Number(p) > 1e12) return fail(`could not read "${price}" as a price. Try 1299.00 or 1.299,00`);
     const cur = currencyFrom(currency ?? null, url) ?? (currency ? currency.trim().toUpperCase() : null);
     const db = load();
     let w = findWatch(db, url);
