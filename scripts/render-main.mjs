@@ -16,6 +16,8 @@ const toolsDb = js("data/tools.json", {});
 const valDb = js("data/validation.json", { runs: [] });
 const lastRun = valDb.runs.at(-1);
 const promo = js("data/promotion.json", { actions: [] });
+const organic = js("data/organic.json", { surfaces: [], servers: [], measured: [] });
+const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
 
 // ---- sprint results: every RESULT.md ----
 function findResults(dir, out = []) {
@@ -106,7 +108,7 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button></div>
+<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
 <div class="tab on" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
@@ -202,6 +204,19 @@ ${promo.actions.slice().sort((a, b) => b.impact - a.impact).map(a => `<tr><td cl
 <li><b>The pipeline stops at the human steps.</b> Four rows need one click each (npm login, Smithery, Glama, extensions directory). Each is under a minute and unlocks a terminal-only surface behind it.</li>
 <li><b>Budget rule.</b> After two weeks, keep only channels with at least one measured click to mcp.zovo.one or one install; drop the rest.</li>
 </ul></div>
+</div>
+<div class="tab" id="tab-organic">
+<div class="kpis"><div class="kpi"><div class="n">${orgHeadline}/100</div><div class="k">fleet organic traffic rating (reach-weighted mean of surface scores)</div></div><div class="kpi"><div class="n">${organic.fleet?.max_surface ?? 0}</div><div class="k">best single surface</div></div><div class="kpi"><div class="n">${organic.fleet?.fleet_score ?? 0}%</div><div class="k">chance at least one surface yields any organic visit (noisy-OR, model)</div></div><div class="kpi"><div class="n">${organic.surfaces.filter(s => s.listed >= 1).length}/${organic.surfaces.length}</div><div class="k">surfaces where the fleet is live</div></div></div>
+<div class="card" style="margin-top:12px"><b>Verdict.</b> ${esc(organic.fleet?.verdict || "")}</div>
+<h2>Will a user see it? Score per surface (100 x listed x findable x reach)</h2>
+<div class="tw"><table><tr><th>Surface</th><th>Status</th><th>Listed</th><th>Findable</th><th>Reach</th><th>Score</th><th>Evidence</th><th>What raises it</th></tr>
+${organic.surfaces.slice().sort((a, b) => b.score - a.score).map(s => `<tr><td><b>${esc(s.surface)}</b></td><td>${pill(s.status)}</td><td class="num">${s.listed}</td><td class="num">${s.findable}</td><td class="num">${s.reach}</td><td class="num"><b>${s.score}</b></td><td class="dim">${esc(s.evidence)}</td><td class="dim">${esc(s.fix)}</td></tr>`).join("")}</table></div>
+<h2>Per server, in the registry as it stands today</h2>
+<div class="tw"><table><tr><th>Server</th><th>Registry slot (measured)</th><th>Competitors in slot</th><th>Organic rating</th><th>Why</th></tr>
+${organic.servers.map(x => `<tr><td class="mono"><b>${esc(x.id)}</b></td><td class="dim">${esc(x.registry_slot)}</td><td class="num">${x.competitors_in_slot}</td><td class="num"><b>${x.organic}</b></td><td class="dim">${esc(x.why)}</td></tr>`).join("")}</table></div>
+<h2>Measured inputs</h2>
+<div class="tw"><table><tr><th>Finding</th><th>Detail</th><th>Source</th></tr>${organic.measured.map(m => `<tr><td><b>${esc(m[0])}</b></td><td class="dim">${esc(m[1])}</td><td class="dim">${esc(m[2])}</td></tr>`).join("")}</table></div>
+<p class="dim">${esc(organic.model || "")}</p>
 </div>
 <script>
 for (const b of document.querySelectorAll(".tabs button")) b.addEventListener("click", () => { document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b)); document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.id === "tab-" + b.dataset.tab)); location.hash = b.dataset.tab; });

@@ -1,0 +1,118 @@
+{
+  "time tracker": {
+    "results": 0,
+    "count_meta": 0,
+    "our_rank": [],
+    "top3": []
+  },
+  "time tracking": {
+    "results": 0,
+    "count_meta": 0,
+    "our_rank": [],
+    "top3": []
+  },
+  "price tracker": {
+    "results": 0,
+    "count_meta": 0,
+    "our_rank": [],
+    "top3": []
+  },
+  "price": {
+    "results": 100,
+    "count_meta": 100,
+    "our_rank": [
+      [
+        98,
+        "io.github.theluckystrike/price-tracker"
+      ]
+    ],
+    "top3": [
+      "ai.smithery/truss44-mcp-crypto-price",
+      "ai.wem3/wem-price-compare",
+      "ai.wem3/wem-price-compare"
+    ]
+  },
+  "spreadsheet": {
+    "results": 13,
+    "count_meta": 13,
+    "our_rank": [
+      [
+        13,
+        "io.github.theluckystrike/spreadsheet"
+      ]
+    ],
+    "top3": [
+      "io.github.ManddarinShop/spreadsheet-db-mcp",
+      "io.github.PSU3D0/agent-spreadsheet",
+      "io.github.PSU3D0/agent-spreadsheet"
+    ]
+  },
+  "excel": {
+    "results": 100,
+    "count_meta": 100,
+    "our_rank": [],
+    "top3": [
+      "cn.com.grapecity/gcexcel",
+      "cn.com.grapecity/gcexcel",
+      "com.ranovam/invoice-to-excel"
+    ]
+  },
+  "csv": {
+    "results": 16,
+    "count_meta": 16,
+    "our_rank": [],
+    "top3": [
+      "io.dedyn.kai-system-agent/csv-profiler",
+      "io.github.Bishop81/csvto-mcp",
+      "io.github.Br0ski777/csv-to-json"
+    ]
+  },
+  "invoice": {
+    "results": 91,
+    "count_meta": 91,
+    "our_rank": [
+      [
+        82,
+        "io.github.theluckystrike/invoice"
+      ]
+    ],
+    "top3": [
+      "app.wishpool/argentina-invoice-mcp",
+      "app.wishpool/belgium-invoice-mcp",
+      "app.wishpool/brazil-invoice-mcp"
+    ]
+  },
+  "invoicing": {
+    "results": 68,
+    "count_meta": 68,
+    "our_rank": [],
+    "top3": [
+      "com.howtocalculateaninvoice.www/invoicing",
+      "io.github.Evozim/automated-xml-invoicing-mcp",
+      "io.github.cmendezs/mcp-einvoicing-ae"
+    ]
+  },
+  "theluckystrike": {
+    "results": 4,
+    "count_meta": 4,
+    "our_rank": [
+      [
+        1,
+        "io.github.theluckystrike/invoice"
+      ],
+      [
+        2,
+        "io.github.theluckystrike/price-tracker"
+      ],
+      [
+        3,
+        "io.github.theluckystrike/spreadsheet"
+      ]
+    ],
+    "top3": [
+      "io.github.theluckystrike/invoice",
+      "io.github.theluckystrike/price-tracker",
+      "io.github.theluckystrike/spreadsheet"
+    ]
+  }
+}

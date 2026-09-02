@@ -1,0 +1,214 @@
+{
+  "updated_at": "2026-09-02",
+  "model": "Organic score = 100 x listed x findable x reach. listed: 1 live, 0.5 PR or submission pending, 0.2 blocked on a human step, 0 skipped. findable: measured chance a user browsing or searching that surface encounters one of our servers (registry probes below; catalog sizes from the research crawl). reach: relative audience weight of the surface, 0 to 1, estimate. Scores are a model over measured inputs; the inputs are listed per row.",
+  "measured": [
+    [
+      "Registry search is name-substring only",
+      "searching 'billable', 'VAT', 'xlsx' (words in our descriptions) returns 0 of ours; 'theluckystrike' returns all 4",
+      "measured 2026-09-02 via /v0/servers?search="
+    ],
+    [
+      "Natural language queries return nothing",
+      "'time tracker' 0 results, 'time tracking' 0, 'price tracker' 0: the hyphen in server names breaks two-word queries",
+      "measured"
+    ],
+    [
+      "Hyphenated queries find us",
+      "'time-tracker' 3 results, ours rank 3; 'price-tracker' 6 results, ours rank 5; 'spreadsheet' 13 results, ours rank 13; 'invoice' 91 results, ours rank 82",
+      "measured"
+    ],
+    [
+      "Sort is alphabetical by full name",
+      "'io.github.theluckystrike/...' sorts after 'ai.*', 'app.*', 'cn.*', 'co.*', 'com.*' and most io.github.* names, so we sit at the bottom of every list we appear in",
+      "measured"
+    ],
+    [
+      "The empty slots are closing",
+      "research on 2026-09-01 measured 0 servers for price tracker and time tracker; today io.github.CSOAI-ORG/time-tracker-ai-mcp and price-tracker-ai-mcp exist; 9,355 servers were added in August",
+      "measured"
+    ],
+    [
+      "Registry size",
+      "26,098 servers at crawl; 66.3% of sampled servers have zero use",
+      "research crawl"
+    ],
+    [
+      "Awesome list size",
+      "2,237 entries; our PR adds 4 lines placed alphabetically inside categories",
+      "measured in PR"
+    ],
+    [
+      "GitHub topic mcp-server",
+      "26,879 repos sorted by stars; a 0-star repo is on the last pages",
+      "gh api, research"
+    ]
+  ],
+  "surfaces": [
+    {
+      "surface": "Official MCP registry (API)",
+      "status": "live",
+      "listed": 1.0,
+      "findable": 0.3,
+      "reach": 1.0,
+      "evidence": "found only by hyphenated or exact-name queries; bottom of alphabetical lists; 4 of 26,098",
+      "fix": "republish with names that contain the words users type: e.g. io.github.theluckystrike/time-tracker-timesheet-billing (name-substring search rewards long descriptive names)",
+      "score": 30
+    },
+    {
+      "surface": "VS Code MCP gallery (reads the registry)",
+      "status": "live",
+      "listed": 1.0,
+      "findable": 0.3,
+      "reach": 0.9,
+      "evidence": "same search index as the registry",
+      "fix": "same as registry",
+      "score": 27
+    },
+    {
+      "surface": "Claude Desktop extensions directory",
+      "status": "not submitted",
+      "listed": 0.2,
+      "findable": 0.5,
+      "reach": 0.9,
+      "evidence": "curated, small; .mcpb bundles ready on release v0.1.0",
+      "fix": "human submits the form once",
+      "score": 9
+    },
+    {
+      "surface": "Cursor and Claude Code pickers (registry-backed)",
+      "status": "live",
+      "listed": 1.0,
+      "findable": 0.25,
+      "reach": 0.7,
+      "evidence": "same index; users type natural language",
+      "fix": "names with the plain words",
+      "score": 18
+    },
+    {
+      "surface": "Docker MCP catalog",
+      "status": "PR pending",
+      "listed": 0.5,
+      "findable": 0.5,
+      "reach": 0.6,
+      "evidence": "curated catalog shown to Docker Desktop users; PR based",
+      "fix": "maintainer merge",
+      "score": 15
+    },
+    {
+      "surface": "Cline marketplace",
+      "status": "issue pending",
+      "listed": 0.5,
+      "findable": 0.5,
+      "reach": 0.5,
+      "evidence": "issue-form intake; listing includes logo and llms-install.md",
+      "fix": "maintainer approval",
+      "score": 12
+    },
+    {
+      "surface": "awesome-mcp-servers (punkpeye)",
+      "status": "PR open #13473",
+      "listed": 0.5,
+      "findable": 0.3,
+      "reach": 0.7,
+      "evidence": "2,237 entries, alphabetical inside categories, ours start with 'theluckystrike' so near the bottom",
+      "fix": "merge; entries are text-searchable on the page, so wording matters",
+      "score": 10
+    },
+    {
+      "surface": "Smithery",
+      "status": "blocked: one browser login",
+      "listed": 0.2,
+      "findable": 0.15,
+      "reach": 0.6,
+      "evidence": "ranks by install count; new servers start at 0",
+      "fix": "login once, then REST publish of the 4 .mcpb bundles",
+      "score": 2
+    },
+    {
+      "surface": "Glama",
+      "status": "crawler intake",
+      "listed": 0.5,
+      "findable": 0.15,
+      "reach": 0.4,
+      "evidence": "auto-indexes public repos with glama.json; scores by repo quality; thousands listed",
+      "fix": "wait for crawl; README quality already high",
+      "score": 3
+    },
+    {
+      "surface": "GitHub search and topics",
+      "status": "live",
+      "listed": 1.0,
+      "findable": 0.08,
+      "reach": 0.5,
+      "evidence": "0 stars among 26,879 topic repos; search 'mcp time tracker' ranks by stars and recency",
+      "fix": "stars come from real users; recency helps for 30 days",
+      "score": 4
+    },
+    {
+      "surface": "Google: mcp.zovo.one product pages",
+      "status": "live, indexed via IndexNow",
+      "listed": 1.0,
+      "findable": 0.1,
+      "reach": 0.8,
+      "evidence": "new subdomain, 5 pages, 0 backlinks; queries like 'invoice mcp server' have low volume",
+      "fix": "estate backlinks from 6 ranking sites; one how-to article per server",
+      "score": 8
+    },
+    {
+      "surface": "llms.txt and agent crawlers",
+      "status": "live",
+      "listed": 1.0,
+      "findable": 0.05,
+      "reach": 0.1,
+      "evidence": "no known crawler ranks these yet",
+      "fix": "none",
+      "score": 0
+    },
+    {
+      "surface": "mcp.so",
+      "status": "skipped: paid ($39)",
+      "listed": 0,
+      "findable": 0,
+      "reach": 0.3,
+      "evidence": "paid submission only",
+      "fix": "none, per rule",
+      "score": 0
+    }
+  ],
+  "servers": [
+    {
+      "id": "time-tracker",
+      "registry_slot": "'time-tracker' 3 results, rank 3; 'time tracker' 0 results",
+      "competitors_in_slot": 2,
+      "organic": 42,
+      "why": "a searcher who types the hyphen finds 3 servers and sees ours last; most type a space and see nothing"
+    },
+    {
+      "id": "price-tracker",
+      "registry_slot": "'price-tracker' 6 results, rank 5; 'price' 100 results, rank 98",
+      "competitors_in_slot": 5,
+      "organic": 34,
+      "why": "same shape, one more competitor; 'price' is a crowded token"
+    },
+    {
+      "id": "spreadsheet",
+      "registry_slot": "'spreadsheet' 13 results, rank 13; 'excel' 100+, not found; 'xlsx' 18, not found",
+      "competitors_in_slot": 12,
+      "organic": 22,
+      "why": "users search excel or xlsx, neither is in our name"
+    },
+    {
+      "id": "invoice",
+      "registry_slot": "'invoice' 91 results, rank 82",
+      "competitors_in_slot": 90,
+      "organic": 12,
+      "why": "crowded token, alphabetical bottom; wins only via the time-tracker pairing and Google"
+    }
+  ],
+  "fleet": {
+    "max_surface": 30,
+    "mean_live": 14,
+    "fleet_score": 78,
+    "verdict": "Listed almost everywhere that is free, but findable almost nowhere: the fleet is at the alphabetical bottom of name-only searches and has zero installs on install-ranked directories. Renaming to word-rich names is the single highest-leverage fix and costs one republish."
+  }
+}
