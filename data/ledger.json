@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T14:52:07.225Z",
+  "generated_at": "2026-09-02T15:18:02.390Z",
   "session": {
-    "count": 15,
+    "count": 16,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -62,6 +62,10 @@
       {
         "at": "2026-09-02T14:52:07.198Z",
         "note": "v0.2.1: 6 registry entries, 5 hosted, office-suite bundle 51 tools"
+      },
+      {
+        "at": "2026-09-02T15:18:02.368Z",
+        "note": "v0.2.2: Codex correctness fixes; 4h loop closing: 6 products, 6 registry entries, 5 hosted, 121/121 validation, user value R4 20/24"
       }
     ]
   },
@@ -69,7 +73,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -91,7 +95,7 @@
       "build_ok": true,
       "test_summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818",
       "result_status": "DONE",
-      "loc": 1036,
+      "loc": 1105,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -110,7 +114,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -130,7 +134,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 1002,
+      "loc": 1016,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -149,7 +153,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -158,7 +162,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 303,
+      "loc": 337,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -177,7 +181,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -214,7 +218,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -251,7 +255,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -354,6 +358,10 @@
       "first_line": "1. `remote/src/index.ts:173` — P1 — `/mcp/token` is unauthenticated and unlimited, so callers can mint new tenants to reset hourly limits and free-tier quotas while generating unlimited KV records. Fix: rate-limit token issuance by IP/device and require a durable abuse-control identity or challenge."
     },
     {
+      "file": "docs/CODEX_REVIEW_V2.md",
+      "first_line": "1. [servers/expense-tracker/src/money.ts:61](/Users/mike/mcp-servers/servers/expense-tracker/src/money.ts:61) — P1 — Rounding net instead of the VAT component loses VAT on half-cent cases. Fix: calculate `vat = roundHalfUp(gross * rate / (100 + rate))`, then `net = gross - vat`. Trigger: `expense_add {amount:0.03,currency:\"EUR\",vat_rate:20}` reports VAT `EUR 0.00` instead of `EUR 0.01`."
+    },
+    {
       "file": "docs/CONTENT_RESULT.md",
       "first_line": "Guides content run - 2026-09-02"
     },
@@ -384,6 +392,10 @@
     {
       "file": "docs/FORMS_RESULT.md",
       "first_line": "Free directory submissions (forms + PR lists) — RESULT"
+    },
+    {
+      "file": "docs/GSC_RESULT.md",
+      "first_line": "status: DONE"
     },
     {
       "file": "docs/INTEL.md",
@@ -424,6 +436,10 @@
     {
       "file": "docs/USER_VALUE_R3.md",
       "first_line": "User value audit, round 3 — 2026-09-02"
+    },
+    {
+      "file": "docs/USER_VALUE_R4.md",
+      "first_line": "User value audit, round 4 — 2026-09-02"
     }
   ],
   "revenue": {
