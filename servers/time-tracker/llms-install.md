@@ -7,6 +7,10 @@ What it does: Start and stop timers, log entries, run reports and export CSV or 
 Source: https://github.com/theluckystrike/mcp-servers/tree/main/servers/time-tracker
 License: MIT. Support: support@zovo.one
 
+## Status of the npm package
+
+The npm package `@theluckystrike/mcp-time-tracker` is not published yet. Until it is, the `npx` command below will fail with E404. Use **Alternative B - from source** further down, which is the supported path today, and keep the same client config with `"command": "node"` and the absolute path to `dist/index.js`. Everything else on this page is unchanged.
+
 ## Prerequisites
 
 - Node.js 18 or newer on PATH (`node --version`).
