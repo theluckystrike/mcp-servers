@@ -46,3 +46,46 @@ EUR 75.65 for a EUR 61.50 receipt, a 23% silent overcharge. expense_to_invoice t
 because the split is exact by construction (net + vat == gross, verified over 40 gross/rate pairs). The same argument
 forces the per-currency grouping: one invoice carries one currency, so a mixed-currency selection has to be returned as
 separate line-item groups rather than one summed list.
+
+---
+
+# Adversarial audit + user-value run, 2026-09-02 (docs/EXPENSE_AUDIT.md)
+
+status: DONE
+
+evidence:
+$ node /private/tmp/mcp-audit/probe.mjs dist/index.js a.jsonl <fresh dir>   # 19 hostile requests
+before: TIMEOUT_5S, process SIGKILLed, 3 requests never answered
+after:  EXIT=0, 19 responses, every stdout line parseable JSON
+$ npm test -w servers/expense-tracker
+1..21 / # pass 21 / # fail 0 / # duration_ms 818
+$ claude -p ... --mcp-config /private/tmp/uv3/mcp.json --strict-mcp-config --model sonnet
+7 scenarios, 19/21, 9 tool calls, 104.0 s total
+
+artifacts:
+- /Users/mike/mcp-servers/docs/EXPENSE_AUDIT.md
+- /Users/mike/mcp-servers/servers/expense-tracker/src/{index.ts,money.ts,store.ts}
+- /Users/mike/mcp-servers/servers/expense-tracker/test/adversarial.test.mjs
+- /private/tmp/uv3/{mcp.json,shim.mjs,run.sh,s1..s7.json,exp.csv}
+
+cost: 41 wall minutes
+
+failures:
+- category_rules accepted "(a+)+$" and the next expense_add with a 60-character merchant never
+  returned; the stdio server was killed at 15 s and every queued request was lost. Fixed:
+  substring-first matching, a nested-quantifier check that refuses the pattern at store time, and a
+  512-character cap on the matched input.
+- markup_percent was Pro-gated; the model routed around it and emitted an invoice line priced off the
+  gross with tax_rate 0, the exact double-tax the tool exists to prevent. Fixed: markup is free, the
+  20-item cap remains the free limit.
+- 1 MB merchant stored verbatim, "XYZ" accepted as a currency, and a EUR-to-JPY currency change
+  silently reinterpreted 1234 cents as JPY 1234. All three refused now.
+
+insight:
+The paywall was the correctness bug. A limit on a tool the model can approximate by hand does not
+stop the work, it moves the arithmetic out of the server and into the model's head, where the invariant
+the server enforces (unit_price is the NET, tax_rate carries the VAT) does not exist. Measured: with
+markup_percent gated, the model recomputed the line by hand as gross x 1.10; on the same expense
+carrying 23% VAT the tool returns net 50.00 x 1.10 = 55.00 with tax_rate 23, while the hand
+calculation returns 67.65 with tax_rate 0. Both look like an answer. Only one survives being handed
+to invoice_create, which recomputes the tax from tax_rate.

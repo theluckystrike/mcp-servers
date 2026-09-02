@@ -1,6 +1,6 @@
 # mcp-expense-tracker
 
-Say "12.30 euros at Adobe, software, billable to Acme" and it is logged, categorised, VAT-split and ready to rebill. This MCP server keeps a local ledger of your business expenses: every amount is held in integer minor units in its own currency, `vat_rate` splits the gross on the receipt into net and VAT, merchant rules categorise new expenses on their own, receipts are attached by path and sha256 so an audit can prove the file has not changed, and business trips are priced from a built-in mileage table. Summaries group by category, project, month or merchant, always per currency and never mixed. It exports to CSV, xlsx or JSON, and `expense_to_invoice` hands the billable expenses of a project to `mcp-invoice` in exactly the line-item shape `invoice_create` expects. Everything is stored in a plain JSON file on your own machine; nothing is uploaded anywhere.
+Say "12.30 euros at Adobe, software, billable to Acme" and it is logged, categorised, VAT-split and ready to rebill. This MCP server keeps a local ledger of your business expenses: every amount is held in integer minor units in its own currency, `vat_rate` splits the gross on the receipt into net and VAT (set it once with `expense_settings` and every later expense is split without repeating it), merchant rules categorise new expenses on their own, receipts are attached by path and sha256 so an audit can prove the file has not changed, and business trips are priced from a built-in mileage table. Summaries group by category, project, month or merchant, always per currency and never mixed. It exports to CSV, xlsx or JSON, and `expense_to_invoice` hands the billable expenses of a project to `mcp-invoice` in exactly the line-item shape `invoice_create` expects. Everything is stored in a plain JSON file on your own machine; nothing is uploaded anywhere.
 
 **Log receipts and mileage in chat, split the VAT, and rebill them onto an invoice -- no expense SaaS required.**
 
@@ -62,11 +62,12 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | Tool | What it does |
 | --- | --- |
 | `expense_add` | Log one expense: amount, currency, category, merchant, date, project, note, receipt path, billable flag, VAT rate. An empty category is filled in from the merchant rules |
+| `expense_settings` | Read or set the defaults `expense_add` uses when a call names none: `default_vat_rate`, `default_currency` |
 | `expense_list` | List expenses in a date range, filtered by project, category or billable, with totals per currency |
 | `expense_update` | Change any field of a stored expense by id, including clearing the rebilled marker |
 | `expense_delete` | Delete one expense by id. The receipt file itself is left alone |
 | `receipt_attach` | Attach a receipt file to an expense. The file must exist; its path and sha256 are stored |
-| `category_rules` | Set or list the merchant-to-category rules. Each match is tried as a case-insensitive regex, then as a substring |
+| `category_rules` | Set or list the merchant-to-category rules. A match with no regex metacharacters is a plain substring; one with them is compiled only if it cannot backtrack exponentially, and a pattern like `(a+)+` is refused |
 | `expense_summary` | Totals for a range grouped by category, project, month or merchant, with the gross, net and VAT per currency |
 | `mileage_add` | Log a trip in km or miles and price it from the rate table (or your own rate) |
 | `expense_export` | Write the range to csv, xlsx or json and return the path. Never writes a partial file |
@@ -103,7 +104,7 @@ With no `region`, miles use the US rate and kilometres the EU rate. `rate_per_km
 | Category rules | 5 | Unlimited |
 | CSV and JSON export | Up to 200 rows | Unlimited |
 | xlsx export | No | Yes |
-| `expense_to_invoice` | 20 items at a time, at cost | Unlimited items, with `markup_percent` |
+| `expense_to_invoice` | 20 items at a time, `markup_percent` included | Unlimited items |
 | Multi-currency, VAT split, receipt hashing | Yes | Yes |
 
 A limit never writes a partial file and never silently truncates: the export is refused with nothing on disk, and the tool says what to narrow.

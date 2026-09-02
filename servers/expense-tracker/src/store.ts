@@ -30,9 +30,16 @@ export interface Expense {
 
 export interface Rule { match: string; category: string }
 
-export interface DB { version: 1; expenses: Expense[]; rules: Rule[] }
+export interface Settings {
+  /** Applied by expense_add when the call gives no vat_rate. Opt-in: unset means no VAT is assumed. */
+  default_vat_rate?: number;
+  /** Applied by expense_add when the call gives no currency. Unset means EUR. */
+  default_currency?: string;
+}
 
-const EMPTY: DB = { version: 1, expenses: [], rules: [] };
+export interface DB { version: 1; expenses: Expense[]; rules: Rule[]; settings: Settings }
+
+const EMPTY: DB = { version: 1, expenses: [], rules: [], settings: {} };
 
 export function dataDir(): string {
   const base = process.env.XDG_DATA_HOME || join(homedir(), ".local", "share");
@@ -49,8 +56,9 @@ export function load(): DB {
       version: 1,
       expenses: Array.isArray(raw.expenses) ? raw.expenses : [],
       rules: Array.isArray(raw.rules) ? raw.rules : [],
+      settings: raw.settings && typeof raw.settings === "object" ? raw.settings : {},
     };
-  } catch { return { ...EMPTY, expenses: [], rules: [] }; }
+  } catch { return { version: 1, expenses: [], rules: [], settings: {} }; }
 }
 
 /** tmp + rename, so a crash mid-write never leaves a half file. */

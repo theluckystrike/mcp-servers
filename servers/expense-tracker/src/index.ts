@@ -9,8 +9,9 @@ import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
 import { z } from "zod";
 import * as XLSX from "xlsx";
 import {
-  currencyDecimals, defaultRegion, formatMoney, isIsoDate, isoDaysAgo, isoToday,
-  MILEAGE_RATES, mileageAmount, roundHalfUp, toMajor, toMinor, vatSplit,
+  currencyDecimals, defaultRegion, formatMoney, hasRegexMetacharacters, isIsoDate, isKnownCurrency,
+  isoDaysAgo, isoToday, isSafeRegexSource, MAX_MATCH_INPUT, MILEAGE_RATES, mileageAmount,
+  roundHalfUp, toMajor, toMinor, vatSplit,
 } from "./money.js";
 import { dataDir, load, lockPath, save, type DB, type Expense, type Rule } from "./store.js";
 
@@ -20,6 +21,10 @@ const FREE_PROJECTS = 3;
 const FREE_RULES = 5;
 const FREE_EXPORT_ROWS = 200;
 const FREE_REBILL_ITEMS = 20;
+/** Free text is stored verbatim in data.json and echoed back; a 1 MB merchant is not a merchant. */
+const MAX_TEXT = 500;
+/** A receipt is hashed with readFileSync, so the whole file lands in memory. */
+const MAX_RECEIPT_BYTES = 25 * 1024 * 1024;
 
 const gate = createLicenseGate({ product: PRODUCT });
 
@@ -35,6 +40,19 @@ const json = (v: unknown) => ok(JSON.stringify(v, null, 2));
 const gated = (text: string) => ok(text);
 
 function newId(): string { return randomBytes(4).toString("hex"); }
+
+/** Every free-text field is length-bounded at the schema, so an oversized string never reaches the store. */
+const text = (max = MAX_TEXT) => z.string().max(max, `must be ${max} characters or fewer`);
+
+/** Existence, type and size checked before the file is read, so a huge path cannot exhaust memory. */
+function hashReceipt(p: string): { path: string; sha256: string } | { error: string } {
+  if (!existsSync(p) || !statSync(p).isFile()) return { error: `receipt file not found: ${p}` };
+  const size = statSync(p).size;
+  if (size > MAX_RECEIPT_BYTES) {
+    return { error: `receipt file is ${(size / 1048576).toFixed(1)} MB; the limit is ${MAX_RECEIPT_BYTES / 1048576} MB.` };
+  }
+  return { path: p, sha256: createHash("sha256").update(readFileSync(p)).digest("hex") };
+}
 
 function expandPath(p: string): string {
   const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
@@ -80,8 +98,11 @@ function projectsOf(db: DB): string[] {
 
 /** A rule matches on the merchant, as a case-insensitive regex, or as a substring if the regex is invalid. */
 function ruleMatches(rule: Rule, merchant: string): boolean {
-  const m = merchant.toLowerCase();
-  try { return new RegExp(rule.match, "i").test(merchant); }
+  const input = merchant.slice(0, MAX_MATCH_INPUT);
+  const m = input.toLowerCase();
+  if (!hasRegexMetacharacters(rule.match)) return m.includes(rule.match.toLowerCase());
+  if (!isSafeRegexSource(rule.match)) return m.includes(rule.match.toLowerCase());
+  try { return new RegExp(rule.match, "i").test(input); }
   catch { return m.includes(rule.match.toLowerCase()); }
 }
 
@@ -125,12 +146,12 @@ server.registerTool("expense_add", {
   inputSchema: {
     amount: amount("amount").describe("Gross amount on the receipt, in major units, e.g. 12.34"),
     currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("ISO code, default EUR"),
-    category: z.string().optional().describe("Category, e.g. software, travel, office. Omit to let the category rules decide"),
-    merchant: z.string().optional().describe("Who was paid, e.g. Adobe"),
-    date: z.string().optional().describe("ISO date YYYY-MM-DD, default today"),
-    project: z.string().optional().describe("Project or client this belongs to"),
-    note: z.string().optional(),
-    receipt_path: z.string().optional().describe("Absolute path to the receipt file; it is checked and hashed"),
+    category: text().optional().describe("Category, e.g. software, travel, office. Omit to let the category rules decide"),
+    merchant: text().optional().describe("Who was paid, e.g. Adobe"),
+    date: text(10).optional().describe("ISO date YYYY-MM-DD, default today"),
+    project: text().optional().describe("Project or client this belongs to"),
+    note: text(2000).optional(),
+    receipt_path: text(4096).optional().describe("Absolute path to the receipt file; it is checked and hashed"),
     billable: z.boolean().optional().describe("Rebillable to the client, default false"),
     vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent already included in amount"),
   },
@@ -138,16 +159,17 @@ server.registerTool("expense_add", {
   try {
     const date = a.date ?? isoToday();
     if (!isIsoDate(date)) return fail(`date must be a real calendar date as YYYY-MM-DD, got "${date}".`);
-    const currency = normCurrency(a.currency);
-    if (!/^[A-Z]{3}$/.test(currency)) return fail(`currency must be a 3-letter ISO code, got "${currency}".`);
+    const settings = load().settings;
+    const currency = normCurrency(a.currency, settings.default_currency ?? "EUR");
+    if (!isKnownCurrency(currency)) return fail(`"${currency}" is not an ISO 4217 currency code. Use a real code such as EUR, USD, PLN or GBP.`);
     const minor = toMinor(a.amount, currency);
     if (!Number.isSafeInteger(minor)) return fail("that amount is too large to represent exactly.");
 
     let receipt: { path: string; sha256: string } | undefined;
     if (a.receipt_path) {
-      const p = expandPath(a.receipt_path);
-      if (!existsSync(p) || !statSync(p).isFile()) return fail(`receipt file not found: ${p}`);
-      receipt = { path: p, sha256: createHash("sha256").update(readFileSync(p)).digest("hex") };
+      const r = hashReceipt(expandPath(a.receipt_path));
+      if ("error" in r) return fail(r.error);
+      receipt = r;
     }
 
     return await locked(() => {
@@ -162,21 +184,25 @@ server.registerTool("expense_add", {
             gate.upgradeText("unlimited projects"));
         }
       }
+      const vatRate = typeof a.vat_rate === "number" ? a.vat_rate : db.settings.default_vat_rate;
+      const vatFromDefault = typeof a.vat_rate !== "number" && typeof vatRate === "number";
       const e: Expense = {
         id: newId(), date, amount_minor: minor, currency, category,
         merchant: a.merchant, project: a.project, note: a.note,
         receipt_path: receipt?.path, receipt_sha256: receipt?.sha256,
-        billable: a.billable ?? false, vat_rate: a.vat_rate,
+        billable: a.billable ?? false, vat_rate: vatRate,
         created: new Date().toISOString(),
       };
       db.expenses.push(e);
       save(db);
-      const s = vatSplit(minor, a.vat_rate);
+      const s = vatSplit(minor, vatRate);
       return ok(`Saved ${e.id}: ${formatMoney(minor, currency)} on ${date}` +
         (e.merchant ? ` at ${e.merchant}` : "") +
         (category ? ` [${category}${autoCategorised ? ", from a category rule" : ""}]` : " [uncategorised]") +
         (e.project ? ` for ${e.project}` : "") +
-        (s.vat_minor ? `. Net ${formatMoney(s.net_minor, currency)}, VAT ${formatMoney(s.vat_minor, currency)} at ${s.rate}%` : "") +
+        (s.vat_minor
+          ? `. Net ${formatMoney(s.net_minor, currency)}, VAT ${formatMoney(s.vat_minor, currency)} at ${s.rate}%${vatFromDefault ? " (your default rate)" : ""}`
+          : ". No VAT rate was given, so net equals gross and the VAT column is 0. Pass vat_rate on the call, or set a default once with expense_settings, to get the net/VAT split.") +
         (e.billable ? ". Billable." : "") +
         (receipt ? `\nReceipt ${receipt.path} sha256 ${receipt.sha256.slice(0, 16)}...` : ""));
     });
@@ -189,10 +215,10 @@ server.registerTool("expense_list", {
   title: "List expenses",
   description: "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed.",
   inputSchema: {
-    from: z.string().optional().describe("ISO date, inclusive"),
-    to: z.string().optional().describe("ISO date, inclusive"),
-    project: z.string().optional(),
-    category: z.string().optional(),
+    from: text(10).optional().describe("ISO date, inclusive"),
+    to: text(10).optional().describe("ISO date, inclusive"),
+    project: text().optional(),
+    category: text().optional(),
     billable: z.boolean().optional(),
   },
 }, async (a) => {
@@ -220,14 +246,14 @@ server.registerTool("expense_update", {
   title: "Update an expense",
   description: "Change any field of a stored expense by id. Only the fields you pass are changed.",
   inputSchema: {
-    id: z.string().describe("Expense id from expense_add or expense_list"),
+    id: text(64).describe("Expense id from expense_add or expense_list"),
     amount: amount("amount").optional(),
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional(),
-    category: z.string().optional(),
-    merchant: z.string().optional(),
-    date: z.string().optional(),
-    project: z.string().optional(),
-    note: z.string().optional(),
+    category: text().optional(),
+    merchant: text().optional(),
+    date: text(10).optional(),
+    project: text().optional(),
+    note: text(2000).optional(),
     billable: z.boolean().optional(),
     vat_rate: z.number().finite().min(0).max(100).optional(),
     rebilled: z.boolean().optional().describe("false clears the rebilled marker so the expense can be billed again"),
@@ -239,7 +265,16 @@ server.registerTool("expense_update", {
       const db = load();
       const e = db.expenses.find((x) => x.id === a.id);
       if (!e) return fail(`no expense with id ${a.id}.`);
-      if (a.currency) e.currency = normCurrency(a.currency);
+      if (a.currency) {
+        const c = normCurrency(a.currency);
+        if (!isKnownCurrency(c)) return fail(`"${c}" is not an ISO 4217 currency code.`);
+        // Minor units are scaled per currency. Moving EUR (2 decimals) to JPY (0) without a new
+        // amount would silently reinterpret 1234 cents as JPY 1234, a 100x error.
+        if (currencyDecimals(c) !== currencyDecimals(e.currency) && typeof a.amount !== "number") {
+          return fail(`${e.currency} has ${currencyDecimals(e.currency)} decimals and ${c} has ${currencyDecimals(c)}, so the stored amount cannot carry over. Pass amount as well.`);
+        }
+        e.currency = c;
+      }
       if (typeof a.amount === "number") e.amount_minor = toMinor(a.amount, e.currency);
       if (a.category !== undefined) e.category = a.category;
       if (a.merchant !== undefined) e.merchant = a.merchant;
@@ -258,7 +293,7 @@ server.registerTool("expense_update", {
 server.registerTool("expense_delete", {
   title: "Delete an expense",
   description: "Delete one expense by id. The receipt file itself is left on disk.",
-  inputSchema: { id: z.string() },
+  inputSchema: { id: text(64) },
 }, async (a) => {
   try {
     return await locked(() => {
@@ -277,12 +312,12 @@ server.registerTool("expense_delete", {
 server.registerTool("receipt_attach", {
   title: "Attach a receipt",
   description: "Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed.",
-  inputSchema: { id: z.string(), path: z.string().describe("Path to the receipt file") },
+  inputSchema: { id: text(64), path: text(4096).describe("Path to the receipt file") },
 }, async (a) => {
   try {
-    const p = expandPath(a.path);
-    if (!existsSync(p) || !statSync(p).isFile()) return fail(`receipt file not found: ${p}`);
-    const sha = createHash("sha256").update(readFileSync(p)).digest("hex");
+    const r = hashReceipt(expandPath(a.path));
+    if ("error" in r) return fail(r.error);
+    const { path: p, sha256: sha } = r;
     return await locked(() => {
       const db = load();
       const e = db.expenses.find((x) => x.id === a.id);
@@ -302,9 +337,9 @@ server.registerTool("category_rules", {
   description: "Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, and rules are applied by expense_add when no category is given.",
   inputSchema: {
     rules: z.array(z.object({
-      match: z.string().describe("Regex or substring matched against the merchant"),
-      category: z.string(),
-    })).optional().describe("The full rule list. Omit to list the current rules"),
+      match: text(200).describe("Regex or substring matched against the merchant"),
+      category: text().describe("Category to apply"),
+    })).max(500).optional().describe("The full rule list. Omit to list the current rules"),
   },
 }, async (a) => {
   try {
@@ -318,12 +353,56 @@ server.registerTool("category_rules", {
     for (const r of a.rules) {
       if (!r.match.trim()) return fail("a rule needs a non-empty match.");
       if (!r.category.trim()) return fail("a rule needs a non-empty category.");
+      // A pattern that looks like regex but can backtrack exponentially is refused outright
+      // rather than silently demoted to a substring the user never asked for.
+      if (hasRegexMetacharacters(r.match) && !isSafeRegexSource(r.match)) {
+        return fail(`the pattern "${r.match}" is not a safe regular expression: a quantified group that itself repeats (such as "(a+)+") can take unbounded time to match. Nothing was changed. Use a plain substring, or a pattern without nested repetition, e.g. "uber|bolt".`);
+      }
     }
     return await locked(() => {
       const db = load();
       db.rules = a.rules!.map((r) => ({ match: r.match, category: r.category }));
       save(db);
       return ok(`Stored ${db.rules.length} category rules:\n` + db.rules.map((r) => `  ${r.match} -> ${r.category}`).join("\n"));
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+
+/* ------------------------------------------------------------ expense_settings */
+
+server.registerTool("expense_settings", {
+  title: "Expense defaults",
+  description: "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to read them. Set default_vat_rate once and every expense gets its net/VAT split without the caller having to repeat the rate.",
+  inputSchema: {
+    default_vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent to assume when a call gives none. Pass 0 to clear it"),
+    default_currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("ISO code to assume when a call gives none"),
+  },
+}, async (a) => {
+  try {
+    if (a.default_vat_rate === undefined && a.default_currency === undefined) {
+      const s0 = load().settings;
+      return json({
+        default_vat_rate: s0.default_vat_rate ?? null,
+        default_currency: s0.default_currency ?? "EUR",
+        note: s0.default_vat_rate === undefined
+          ? "No default VAT rate is set, so an expense added without vat_rate records 0% and its net equals its gross."
+          : undefined,
+      });
+    }
+    if (a.default_currency !== undefined) {
+      const c = normCurrency(a.default_currency);
+      if (!isKnownCurrency(c)) return fail(`"${c}" is not an ISO 4217 currency code.`);
+    }
+    return await locked(() => {
+      const db = load();
+      if (a.default_vat_rate !== undefined) {
+        if (a.default_vat_rate === 0) delete db.settings.default_vat_rate;
+        else db.settings.default_vat_rate = a.default_vat_rate;
+      }
+      if (a.default_currency !== undefined) db.settings.default_currency = normCurrency(a.default_currency);
+      save(db);
+      return ok(`Defaults: VAT ${db.settings.default_vat_rate ?? "none"}${db.settings.default_vat_rate ? "%" : ""}, currency ${db.settings.default_currency ?? "EUR"}. These apply only when a call does not name its own.`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -370,10 +449,10 @@ server.registerTool("expense_summary", {
   title: "Summarise expenses",
   description: "Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together.",
   inputSchema: {
-    from: z.string().describe("ISO date, inclusive"),
-    to: z.string().describe("ISO date, inclusive"),
+    from: text(10).describe("ISO date, inclusive"),
+    to: text(10).describe("ISO date, inclusive"),
     group_by: z.enum(["category", "project", "month", "merchant"]).describe("How to group the totals"),
-    project: z.string().optional(),
+    project: text().optional(),
     billable: z.boolean().optional(),
   },
 }, async (a) => {
@@ -395,8 +474,8 @@ server.registerTool("mileage_add", {
     km: amount("km").optional().describe("Distance in kilometres"),
     miles: amount("miles").optional().describe("Distance in miles"),
     date: z.string().optional().describe("ISO date, default today"),
-    purpose: z.string().describe("Why the trip was made, e.g. client meeting in Krakow"),
-    project: z.string().optional(),
+    purpose: text(2000).describe("Why the trip was made, e.g. client meeting in Krakow"),
+    project: text().optional(),
     region: z.enum(["PL", "UK", "US", "EU"]).optional().describe("Which rate to use. Default US for miles, EU for km"),
     rate_per_km: z.number().finite().min(0).optional().describe("Your own rate per supplied unit, overriding the table"),
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Currency for your own rate, default the region currency"),
@@ -421,6 +500,7 @@ server.registerTool("mileage_add", {
       return fail(`the ${region} rate is per ${table.unit}, but you gave ${unit}. Pass ${table.unit === "km" ? "km" : "miles"}, or pass rate_per_km with your own rate for ${unit}.`);
     }
     const currency = normCurrency(a.currency, table.currency);
+    if (!isKnownCurrency(currency)) return fail(`"${currency}" is not an ISO 4217 currency code.`);
     const minor = mileageAmount(distance, rate, currency);
     if (!Number.isSafeInteger(minor)) return fail("that distance is too large to represent exactly.");
 
@@ -478,12 +558,12 @@ server.registerTool("expense_export", {
   title: "Export expenses",
   description: "Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all.",
   inputSchema: {
-    from: z.string().describe("ISO date, inclusive"),
-    to: z.string().describe("ISO date, inclusive"),
+    from: text(10).describe("ISO date, inclusive"),
+    to: text(10).describe("ISO date, inclusive"),
     format: z.enum(["csv", "xlsx", "json"]),
-    path: z.string().optional().describe("Where to write it. Default is the server data directory"),
-    project: z.string().optional(),
-    category: z.string().optional(),
+    path: text(4096).optional().describe("Where to write it. Default is the server data directory"),
+    project: text().optional(),
+    category: text().optional(),
     billable: z.boolean().optional(),
   },
 }, async (a) => {
@@ -534,9 +614,9 @@ server.registerTool("expense_to_invoice", {
   title: "Rebill expenses to an invoice",
   description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate, so the invoice recomputes the same tax. Line items are grouped per currency because one invoice carries one currency. The expenses are marked as rebilled.",
   inputSchema: {
-    project: z.string().describe("Project or client to rebill"),
-    from: z.string().describe("ISO date, inclusive"),
-    to: z.string().describe("ISO date, inclusive"),
+    project: text().describe("Project or client to rebill"),
+    from: text(10).describe("ISO date, inclusive"),
+    to: text(10).describe("ISO date, inclusive"),
     markup_percent: z.number().finite().min(0).max(1000).optional().describe("Percent added to each net amount. Pro"),
     include_rebilled: z.boolean().optional().describe("Include expenses already marked as rebilled, default false"),
     mark_rebilled: z.boolean().optional().describe("Mark the expenses as rebilled, default true"),
@@ -545,10 +625,11 @@ server.registerTool("expense_to_invoice", {
   try {
     if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
+    // markup_percent used to be Pro-gated. Measured in the user-value run: the model met the
+    // paywall, recomputed the markup by hand off the GROSS amount and emitted tax_rate 0, which is
+    // the exact double-tax shape expense_to_invoice exists to prevent. The item-count cap below is
+    // the free-tier limit; the arithmetic is not.
     const markup = a.markup_percent ?? 0;
-    if (markup > 0 && !gate.isPro()) {
-      return gated(`markup_percent is a Pro feature. Nothing was changed. Re-run without markup_percent to rebill the expenses at cost.\n\n` + gate.upgradeText("rebilling with a markup"));
-    }
     const w = windowNote(a.from);
     return await locked(() => {
       const db = load();

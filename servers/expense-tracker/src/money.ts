@@ -84,6 +84,57 @@ export function mileageAmount(distance: number, rate: number, currency: string):
   return roundHalfUp(distance * rate * Math.pow(10, currencyDecimals(currency)));
 }
 
+/**
+ * ISO 4217 active alphabetic codes. A three-letter string that is not on this list is a
+ * typo or a made-up code; accepting it silently produces a ledger that can never be summed
+ * against the real one, so the tools refuse it.
+ */
+const ISO_4217 = new Set([
+  "AED","AFN","ALL","AMD","ANG","AOA","ARS","AUD","AWG","AZN","BAM","BBD","BDT","BGN","BHD",
+  "BIF","BMD","BND","BOB","BOV","BRL","BSD","BTN","BWP","BYN","BZD","CAD","CDF","CHE","CHF",
+  "CHW","CLF","CLP","CNY","COP","COU","CRC","CUP","CVE","CZK","DJF","DKK","DOP","DZD","EGP",
+  "ERN","ETB","EUR","FJD","FKP","GBP","GEL","GHS","GIP","GMD","GNF","GTQ","GYD","HKD","HNL",
+  "HTG","HUF","IDR","ILS","INR","IQD","IRR","ISK","JMD","JOD","JPY","KES","KGS","KHR","KMF",
+  "KPW","KRW","KWD","KYD","KZT","LAK","LBP","LKR","LRD","LSL","LYD","MAD","MDL","MGA","MKD",
+  "MMK","MNT","MOP","MRU","MUR","MVR","MWK","MXN","MXV","MYR","MZN","NAD","NGN","NIO","NOK",
+  "NPR","NZD","OMR","PAB","PEN","PGK","PHP","PKR","PLN","PYG","QAR","RON","RSD","RUB","RWF",
+  "SAR","SBD","SCR","SDG","SEK","SGD","SHP","SLE","SOS","SRD","SSP","STN","SVC","SYP","SZL",
+  "THB","TJS","TMT","TND","TOP","TRY","TTD","TWD","TZS","UAH","UGX","USD","USN","UYI","UYU",
+  "UYW","UZS","VED","VES","VND","VUV","WST","XAF","XCD","XCG","XDR","XOF","XPF","XSU","XUA",
+  "YER","ZAR","ZMW","ZWG",
+]);
+
+export function isKnownCurrency(code: string): boolean {
+  return ISO_4217.has(code.toUpperCase());
+}
+
+/**
+ * A merchant-to-category rule is matched as a regular expression, but an untrusted pattern
+ * can backtrack forever: `(a+)+$` against 60 non-matching characters never returns and takes
+ * the whole stdio server with it (measured: no response, process killed at 15 s).
+ * A pattern is only compiled when it is short and has no quantified group or class that
+ * itself contains a quantifier; anything else falls back to a plain substring test, which is
+ * what most rules are anyway.
+ */
+const MAX_REGEX_SOURCE = 100;
+const QUANTIFIED_GROUP_WITH_QUANTIFIER = /\((?:[^()\\]|\\.)*[*+?][^()]*\)\s*[*+{]/;
+const QUANTIFIED_GROUP_WITH_ALTERNATION = /\((?:[^()\\]|\\.)*\|(?:[^()\\]|\\.)*\)\s*[*+{]/;
+
+export function isSafeRegexSource(src: string): boolean {
+  if (src.length > MAX_REGEX_SOURCE) return false;
+  if (QUANTIFIED_GROUP_WITH_QUANTIFIER.test(src)) return false;
+  if (QUANTIFIED_GROUP_WITH_ALTERNATION.test(src)) return false;
+  try { new RegExp(src, "i"); return true; } catch { return false; }
+}
+
+/** Longest input the rule matcher will look at, so a 1 MB merchant cannot become the cost driver. */
+export const MAX_MATCH_INPUT = 512;
+
+/** A pattern with none of these is a plain substring and never needs the regex engine. */
+export function hasRegexMetacharacters(src: string): boolean {
+  return /[\\^$.|?*+()[\]{}]/.test(src);
+}
+
 export function isoToday(): string { return new Date().toISOString().slice(0, 10); }
 
 /** True only for a real calendar date in YYYY-MM-DD form. */
