@@ -1,86 +1,66 @@
 {
   "updated_at": "2026-09-02",
-  "model": "Organic score = 100 x listed x findable x reach. listed: 1 live, 0.5 PR or submission pending, 0.2 blocked on a human step, 0 skipped. findable for registry-backed surfaces is now MEASURED, not estimated: p(seen | query) = 0 if we do not appear in the result list, else min(1, 10/rank); findable = mean of p over the 34 natural queries in servers[].query_set. Same formula applied before and after the 2026-09-02 rename, so the two are comparable. reach: relative audience weight of the surface, 0 to 1, estimate. Per-server organic = 100 x mean(p) over that server's own query set.",
+  "model": "Organic score = 100 x listed x findable x reach. listed: 1 live, 0.5 PR or submission pending, 0.2 blocked on a human step, 0 skipped/not published. findable for registry-backed surfaces is MEASURED: p(seen | query) = 0 if our LATEST (v0.2.0) row does not appear in the result list, else min(1, 10/rank); findable = mean of p over the 41 natural queries across all six servers' query_set (was 34 across four servers before expense-tracker and office-suite existed). Per-server organic = 100 x mean(p) over that server's own query set. 'Hosted endpoints' is a new surface: findable = share of the 41 query slots where the matched row is a v0.2.0 entry that carries a non-empty remotes[] (time-tracker, price-tracker and invoice publish remotes; spreadsheet and expense-tracker do not; office-suite has no row at all). fleet.fleet_score is a noisy-OR over the six per-server organic scores (100 x (1 - product(1 - p_i/100))), applied identically before and after so the two are comparable; the previously stored fleet_score (78) used an undocumented aggregation and is not reused here. Reach and 'listed' for non-registry surfaces remain estimates, called out below.",
   "measured": [
     [
-      "Registry search is name-substring only",
-      "searching 'billable', 'VAT', 'xlsx' (words in our descriptions) returned 0 of ours before the rename; 'theluckystrike' returns all of ours",
-      "measured 2026-09-02 via /v0/servers?search="
+      "Two new servers exist, one is not in the registry at all",
+      "expense-tracker (io.github.theluckystrike/expense-tracker-receipts-mileage) is live at v0.2.0 with no prior version; office-suite (io.github.theluckystrike/office-suite-time-invoice-expense-excel-price) returns zero rows for 'office', 'suite', or 'theluckystrike' -- its server.mcpb.json exists on disk but was never run through mcp-publisher. Retried the search once (1-3 min index lag rule) with the same empty result.",
+      "measured 2026-09-02, data/registry_rank.json after_v2"
     ],
     [
-      "Search is case-insensitive",
-      "TIMESHEET, Timesheet and timesheet each return the same 1 result (2 after the rename)",
+      "remotes[] is live on 3 of 6 servers, not 5",
+      "fetching each server's latest (v0.2.0) row: time-tracker-timesheet-billable-hours, price-tracker-drop-alert-watch and invoice-pdf-billing-generator all carry a non-empty remotes[]; excel-spreadsheet-xlsx-csv and expense-tracker-receipts-mileage do not; office-suite has no row to check",
+      "measured 2026-09-02 via /v0/servers?search=<full name>"
+    ],
+    [
+      "expense-tracker landed on three near-empty tokens at launch",
+      "mileage: rank 1 of 1 (zero competitors); receipts: rank 4 of 5; expense: rank 15 of 15 (last place, but the list is only 15 long so still on the first screen); receipt: rank 15 of 16. Only 'expenses' (0 competitors, unmatched -- the name says 'expense' singular) is a miss",
       "measured 2026-09-02"
     ],
     [
-      "Search matches across the slash",
-      "search='theluckystrike/time' returns io.github.theluckystrike/time-tracker; search='luckystrike/invoice' returns our invoice server",
+      "expense-tracker is now the single strongest server by measured organic score",
+      "organic 66.7, ahead of time-tracker's 50.6, because 4 of its 5 tokens are near-empty lists it lands on the first screen of",
+      "measured 2026-09-02, data/organic.json servers[]"
+    ],
+    [
+      "office-suite contributes zero to every surface",
+      "not published means listed=0 on the one surface that matters (the official registry) and 0 organic on its own query set (office, suite); it does not drag the fleet noisy-OR down much because noisy-OR only needs one strong server, but it is dead weight until published",
       "measured 2026-09-02"
     ],
     [
-      "Natural language queries return nothing for anyone",
-      "'time tracker' 0, 'time tracking' 0, 'price tracker' 0: any query containing a space returns 0 results registry-wide",
-      "measured"
+      "Registry findable rose from 0.239 to 0.276 (22 of 41 tokens matched, was 18 of 34)",
+      "the gain is almost entirely expense-tracker's near-empty tokens; office-suite added 2 tokens to the denominator and 0 to the numerator, which is a net drag on the mean even while the fleet gained a whole server",
+      "measured 2026-09-02, data/registry_rank.json"
     ],
     [
-      "Sort is alphabetical by the FULL name, so the slug cannot buy rank",
-      "io.github.theluckystrike/* sorts after ai.*, app.*, cn.*, co.*, com.* and most io.github.*; renaming changed WHICH queries we appear in, not our position inside them ('time' rank 214 before, 216 after)",
-      "measured before and after the rename"
-    ],
-    [
-      "Renaming bought token coverage, not rank",
-      "matched natural queries went from 7 of 34 to 18 of 34; measured findable 0.092 -> 0.239",
-      "measured 2026-09-02, data/registry_rank.json before/after"
-    ],
-    [
-      "Near-empty tokens exist and are worth more than crowded ones",
-      "billable 0 competitors, timesheet 1, hours 1, invoices 0, freelance 6, receipt 15, csv 16, xlsx 18: our new names now rank 1, 1, 2, 17, 19 on billable, timesheet, hours, csv, xlsx",
+      "Smithery: we are not registered on any of the 5 sampled queries",
+      "'time tracker', 'invoice', 'expense', 'spreadsheet', 'price' each returned 10 rows via GET registry.smithery.ai/servers?q=; zero contained 'theluckystrike' in any field, confirmed with a raw grep on top-50 pages too. Top useCount observed per query: spreadsheet -> googlesheets 56,138; invoice -> OjasKord/vat-validator-mcp 1,299; price -> agentery/agentery-mcp 951; expense -> kelnix/kelnix-receipt-mcp 492; time tracker -> oura 19. The gap between 0 and those numbers is the install-ranked-surface problem the fleet still has not touched.",
       "measured 2026-09-02"
     ],
     [
-      "Crowded tokens stay useless even when matched",
-      "pdf 281 results (we rank 258), excel 163 (we rank 160), watch 138 (128), drop 164 (159), data 1200 (no match): being on page 26 is the same as not being listed",
+      "Glama: repo still not crawled",
+      "https://glama.ai/mcp/servers?query=theluckystrike returns only nav/unrelated cards (one literal hit was another user's 'BeLikeNative Grammar Server' text, not ours); searching the repo URL github.com/theluckystrike/mcp-servers returns an empty result set (the 3 'theluckystrike/mcp-servers' string occurrences in that page are the echoed query text in <title>/canonical/og tags, not a listing)",
       "measured 2026-09-02"
     ],
     [
-      "mcp-publisher has a status subcommand and it needs a piped confirmation",
-      "'mcp-publisher status --status deprecated --all-versions <name>' prompts 'Continue? [y/N]' and dies with 'failed to read response: EOF' under a non-tty; 'yes y | mcp-publisher status ...' succeeded for all 4",
+      "GitHub search: still absent from the first 30 results on every query tried",
+      "gh api search/repositories sorted by stars for 'mcp time tracker' (unchanged from prior run), 'mcp invoice', 'mcp expense tracker', 'mcp spreadsheet' -- theluckystrike/mcp-servers appears in none of the four top-30 lists; 0 stars is why",
       "measured 2026-09-02"
     ],
     [
-      "Deprecation does NOT remove an entry from search results",
-      "after deprecating all 8 old versions, search=theluckystrike still returns 12 rows (4 old-name servers x 2 versions + 4 new); the status flag is metadata only",
-      "measured 2026-09-02 after the status calls"
+      "Bing and DuckDuckGo site: search could not be measured via curl -- this is an instrument failure, not a zero",
+      "curl with a desktop UA against bing.com/search?q=site:mcp.zovo.one returned HTTP 200 but a fallback SERP of totally unrelated pages (Telstra webmail, Windows display settings) ignoring the site: operator entirely, in two separate attempts (default locale and forced en-US/US); html.duckduckgo.com/html/?q=site:mcp.zovo.one returned an anomaly/CAPTCHA challenge page ('Unfortunately, bots use DuckDuckGo too'). Neither indexed-page count could be extracted; recorded as unmeasured rather than assumed 0",
+      "measured 2026-09-02 -- see docs/ORGANIC_R2.md for the raw evidence"
     ],
     [
-      "Every published version is a separate search row",
-      "0.1.0 and 0.1.1 of each server both appear, so each server occupied 2 of the results in every list it matched",
-      "measured"
+      "Registry search is name-substring only (carried over)",
+      "unchanged behavior: descriptions are not searched, case-insensitive, matches across the slash, any query with a space returns 0 registry-wide, sort is alphabetical by full name",
+      "measured 2026-09-01/02, data/registry_rank.json search_semantics"
     ],
     [
-      "Registry search index lags a publish by 1-3 minutes",
-      "the first re-probe after publishing missed our new name on 'csv' (16 results) and 'pdf' (280); the second probe found it at rank 17 of 17 and 258 of 281",
+      "Registry search index lag is 1-3 minutes (carried over, reconfirmed)",
+      "the office-suite retry after ~90 seconds still showed zero rows, consistent with either a longer lag or (more likely, per the publish log) that it was never published at all",
       "measured 2026-09-02"
-    ],
-    [
-      "The empty slots are closing",
-      "research on 2026-09-01 measured 0 servers for price tracker and time tracker; today io.github.CSOAI-ORG/time-tracker-ai-mcp and price-tracker-ai-mcp exist; 9,355 servers were added in August",
-      "measured"
-    ],
-    [
-      "Registry size",
-      "26,098 servers at crawl; 66.3% of sampled servers have zero use",
-      "research crawl"
-    ],
-    [
-      "Awesome list size",
-      "2,237 entries; our PR adds 4 lines placed alphabetically inside categories",
-      "measured in PR"
-    ],
-    [
-      "GitHub topic mcp-server",
-      "26,879 repos sorted by stars; a 0-star repo is on the last pages",
-      "gh api, research"
     ]
   ],
   "surfaces": [
@@ -88,23 +68,23 @@
       "surface": "Official MCP registry (API)",
       "status": "live",
       "listed": 1.0,
-      "findable": 0.239,
+      "findable": 0.276,
       "reach": 1.0,
-      "evidence": "measured: matched 18 of 34 natural queries after the 2026-09-02 rename (7 of 34 before); mean p(seen)=0.239 vs 0.092 before. The old 0.3 findable was an estimate; this one is measured.",
-      "fix": "rank cannot be improved (alphabetical on the full name, and the io.github.theluckystrike prefix is fixed). Remaining levers: publish under additional near-empty tokens only if honest, and drive installs on surfaces that rank by installs.",
-      "score": 24,
-      "score_before_rename": 9
+      "evidence": "measured: 22 of 41 natural queries matched across 6 servers (18 of 34 across 4 servers before expense-tracker/office-suite existed); mean p(seen)=0.276 vs 0.239 in the v0.2.0-naming-only measurement",
+      "fix": "publish office-suite (it is not in the registry at all); rank cannot otherwise be improved -- alphabetical on the full name, io.github.theluckystrike prefix is fixed",
+      "score": 27.6,
+      "score_before_this_measurement": 23.9
     },
     {
       "surface": "VS Code MCP gallery (reads the registry)",
       "status": "live",
       "listed": 1.0,
-      "findable": 0.239,
+      "findable": 0.276,
       "reach": 0.9,
       "evidence": "same search index as the registry; findable copied from the measured registry number",
       "fix": "same as registry",
-      "score": 22,
-      "score_before_rename": 8
+      "score": 24.8,
+      "score_before_this_measurement": 21.5
     },
     {
       "surface": "Claude Desktop extensions directory",
@@ -112,20 +92,31 @@
       "listed": 0.2,
       "findable": 0.5,
       "reach": 0.9,
-      "evidence": "curated, small; .mcpb bundles ready on release v0.1.0",
+      "evidence": "curated, small; .mcpb bundles ready for all 6 servers including office-suite once it is published",
       "fix": "human submits the form once",
-      "score": 9
+      "score": 9.0
     },
     {
       "surface": "Cursor and Claude Code pickers (registry-backed)",
       "status": "live",
       "listed": 1.0,
-      "findable": 0.2,
+      "findable": 0.229,
       "reach": 0.7,
-      "evidence": "same index, but picker users type multi-word natural language, which returns 0 registry-wide; discounted 17% from the measured registry findable",
+      "evidence": "same index, but picker users type multi-word natural language, which returns 0 registry-wide; discounted 17% from the measured registry findable (0.276 x 0.83)",
       "fix": "nothing further from naming: a space in the query returns 0 results for every server in the registry",
-      "score": 14,
-      "score_before_rename": 6
+      "score": 16.0,
+      "score_before_this_measurement": 14.0
+    },
+    {
+      "surface": "Hosted endpoints (remotes[] in registry rows)",
+      "status": "live",
+      "listed": 1.0,
+      "findable": 0.317,
+      "reach": 0.5,
+      "evidence": "measured: 13 of 41 query slots resolve to a v0.2.0 row that carries a non-empty remotes[] (time-tracker, price-tracker, invoice); the other 3 servers' query slots (spreadsheet, expense-tracker, office-suite) do not, either because remotes was not set or the server was never published",
+      "fix": "add remotes[] to spreadsheet and expense-tracker once a hosted endpoint exists for them; publish office-suite",
+      "score": 15.9,
+      "score_before_this_measurement": null
     },
     {
       "surface": "Docker MCP catalog",
@@ -133,7 +124,7 @@
       "listed": 0.5,
       "findable": 0.5,
       "reach": 0.6,
-      "evidence": "curated catalog shown to Docker Desktop users; PR based",
+      "evidence": "curated catalog shown to Docker Desktop users; PR based; unchanged this measurement",
       "fix": "maintainer merge",
       "score": 15
     },
@@ -143,7 +134,7 @@
       "listed": 0.5,
       "findable": 0.5,
       "reach": 0.5,
-      "evidence": "issue-form intake; listing includes logo and llms-install.md",
+      "evidence": "issue-form intake; unchanged this measurement",
       "fix": "maintainer approval",
       "score": 12
     },
@@ -153,7 +144,7 @@
       "listed": 0.5,
       "findable": 0.3,
       "reach": 0.7,
-      "evidence": "2,237 entries, alphabetical inside categories, ours start with 'theluckystrike' so near the bottom",
+      "evidence": "2,237+ entries, alphabetical inside categories, ours start with 'theluckystrike' so near the bottom; unchanged this measurement",
       "fix": "merge; entries are text-searchable on the page, so wording matters",
       "score": 10
     },
@@ -163,8 +154,8 @@
       "listed": 0.2,
       "findable": 0.15,
       "reach": 0.6,
-      "evidence": "ranks by install count; new servers start at 0",
-      "fix": "login once, then REST publish of the 4 .mcpb bundles",
+      "evidence": "measured 2026-09-02: absent from all 5 sampled queries (time tracker, invoice, expense, spreadsheet, price), as expected -- we have never registered. Top competitor useCounts range 19 to 56,138 in the same queries, which is the gap the fleet has not closed",
+      "fix": "login once, then REST publish of the 6 .mcpb bundles",
       "score": 2
     },
     {
@@ -173,7 +164,7 @@
       "listed": 0.5,
       "findable": 0.15,
       "reach": 0.4,
-      "evidence": "auto-indexes public repos with glama.json; scores by repo quality; thousands listed",
+      "evidence": "measured 2026-09-02: repo still not indexed -- neither a 'theluckystrike' query nor a direct repo-URL query returns our repo; the string matches found were the echoed query text in page metadata, not a listing",
       "fix": "wait for crawl; README quality already high",
       "score": 3
     },
@@ -183,18 +174,18 @@
       "listed": 1.0,
       "findable": 0.08,
       "reach": 0.5,
-      "evidence": "0 stars among 26,879 topic repos; search 'mcp time tracker' ranks by stars and recency",
+      "evidence": "measured 2026-09-02: absent from the top 30 (sorted by stars/best-match) on 'mcp time tracker', 'mcp invoice', 'mcp expense tracker' and 'mcp spreadsheet'; 0 stars among 26,879+ topic repos",
       "fix": "stars come from real users; recency helps for 30 days",
       "score": 4
     },
     {
-      "surface": "Google: mcp.zovo.one product pages",
-      "status": "live, indexed via IndexNow",
+      "surface": "Google/Bing/DDG: mcp.zovo.one product pages",
+      "status": "live, indexed via IndexNow (Google); Bing/DDG indexation unmeasured this run",
       "listed": 1.0,
       "findable": 0.1,
       "reach": 0.8,
-      "evidence": "new subdomain, 5 pages, 0 backlinks; queries like 'invoice mcp server' have low volume",
-      "fix": "estate backlinks from 6 ranking sites; one how-to article per server",
+      "evidence": "unchanged Google estimate (no new Google-specific measurement this pass). Attempted Bing (site:mcp.zovo.one) and DuckDuckGo html endpoint via curl: Bing returned HTTP 200 but an unrelated fallback SERP that ignores the site: operator (two attempts, default and forced en-US); DDG returned a bot-challenge page. Neither confirms or denies indexation -- treated as unmeasured, findable left at its prior estimate rather than moved on no evidence",
+      "fix": "estate backlinks from 6 ranking sites; one how-to article per server; re-attempt Bing/DDG from a browser session (not curl) to get a real reading",
       "score": 8
     },
     {
@@ -221,129 +212,82 @@
   "servers": [
     {
       "id": "time-tracker",
-      "registry_slot": "'time' 216 of 296; 'timesheet' 1 of 2; 'hours' 2 of 2; 'billable' 1 of 1; 'time-tracker' 5 of 5; 'timer', 'tracking', 'time tracker' no match",
-      "organic": 51,
-      "why": "matched 5 of 8 natural queries, up from 2 of 8; it now owns the three near-empty tokens (billable 0 prior competitors, timesheet 1, hours 1) outright, which is where the whole gain comes from",
+      "registry_slot": "'time' 217 of 297; 'timesheet' 2 of 3; 'hours' 3 of 3; 'billable' 2 of 2; 'time-tracker' 6 of 6; 'timer', 'tracking', 'time tracker' no match",
+      "organic": 50.6,
+      "why": "matched 5 of 8 natural queries, same as the naming-only measurement; the extra old (pre-rename) rows still in the index push its own rank down by exactly one slot per token, which is why 'timesheet'/'hours'/'billable' each read one rank worse than the 09-02 naming result while staying just as findable (p still rounds to 1 on all three)",
       "old_registry_name": "io.github.theluckystrike/time-tracker (deprecated 2026-09-02, all versions)",
       "registry_name": "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
-      "query_set": [
-        "time",
-        "timer",
-        "timesheet",
-        "hours",
-        "billable",
-        "tracking",
-        "time-tracker",
-        "time tracker"
-      ],
-      "organic_before": 13,
-      "competitors_in_matched_slots": {
-        "time": 296,
-        "timer": 12,
-        "timesheet": 2,
-        "hours": 2,
-        "billable": 1,
-        "tracking": 24,
-        "time-tracker": 5,
-        "time tracker": 0
-      }
+      "has_remotes": true,
+      "query_set": ["time","timer","timesheet","hours","billable","tracking","time-tracker","time tracker"],
+      "organic_before": 51,
+      "competitors_in_matched_slots": {"time": 297, "timer": 12, "timesheet": 3, "hours": 3, "billable": 2, "tracking": 24, "time-tracker": 6, "time tracker": 0}
     },
     {
       "id": "price-tracker",
-      "registry_slot": "'price' 100 of 114; 'drop' 159 of 164; 'alert' 35 of 43; 'watch' 128 of 138; 'price-tracker' 7 of 8; 'prices', 'deal', 'product', 'shop' no match",
-      "organic": 15,
-      "why": "matched 5 of 10 natural queries, up from 2 of 10, but every token it gained is crowded: only 'alert' (rank 35 of 43) is close enough to a first page to matter",
+      "registry_slot": "'price' 101 of 115; 'drop' 160 of 165; 'alert' 36 of 44; 'watch' 129 of 139; 'price-tracker' 8 of 9; 'prices', 'deal', 'product', 'shop' no match",
+      "organic": 15.2,
+      "why": "matched 5 of 10 natural queries; only 'alert' (rank 36 of 44) is anywhere near reachable, unchanged in shape from the naming-only measurement",
       "old_registry_name": "io.github.theluckystrike/price-tracker (deprecated 2026-09-02, all versions)",
       "registry_name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
-      "query_set": [
-        "price",
-        "prices",
-        "deal",
-        "drop",
-        "alert",
-        "watch",
-        "product",
-        "shop",
-        "price-tracker",
-        "price tracker"
-      ],
-      "organic_before": 11,
-      "competitors_in_matched_slots": {
-        "price": 114,
-        "prices": 21,
-        "deal": 99,
-        "drop": 164,
-        "alert": 43,
-        "watch": 138,
-        "product": 126,
-        "shop": 113,
-        "price-tracker": 8,
-        "price tracker": 0
-      }
+      "has_remotes": true,
+      "query_set": ["price","prices","deal","drop","alert","watch","product","shop","price-tracker","price tracker"],
+      "organic_before": 15,
+      "competitors_in_matched_slots": {"price": 115, "prices": 21, "deal": 99, "drop": 165, "alert": 44, "watch": 139, "product": 126, "shop": 113, "price-tracker": 9, "price tracker": 0}
     },
     {
       "id": "spreadsheet",
-      "registry_slot": "'spreadsheet' 13 of 15; 'excel' 160 of 163; 'xlsx' 19 of 19; 'csv' 17 of 17; 'sheet' 107 of 113; 'sheets', 'table', 'data' no match",
-      "organic": 25,
-      "why": "matched 5 of 8 natural queries, up from 2 of 8; xlsx (19 total) and csv (17 total) are short enough lists that last place is still on the first screen; 'excel' at 160 of 163 is worthless",
+      "registry_slot": "'spreadsheet' 14 of 16; 'excel' 161 of 164; 'xlsx' 20 of 20; 'csv' 18 of 18; 'sheet' 108 of 115; 'sheets', 'table', 'data' no match",
+      "organic": 24.1,
+      "why": "matched 5 of 8; xlsx and csv stay short lists so last place is still on-screen; no remotes[] on this server, so it does not benefit from the new hosted-endpoints surface",
       "old_registry_name": "io.github.theluckystrike/spreadsheet (deprecated 2026-09-02, all versions)",
       "registry_name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
-      "query_set": [
-        "spreadsheet",
-        "excel",
-        "xlsx",
-        "csv",
-        "sheet",
-        "sheets",
-        "table",
-        "data"
-      ],
-      "organic_before": 11,
-      "competitors_in_matched_slots": {
-        "spreadsheet": 15,
-        "excel": 163,
-        "xlsx": 19,
-        "csv": 17,
-        "sheet": 113,
-        "sheets": 80,
-        "table": 129,
-        "data": 1200
-      }
+      "has_remotes": false,
+      "query_set": ["spreadsheet","excel","xlsx","csv","sheet","sheets","table","data"],
+      "organic_before": 25,
+      "competitors_in_matched_slots": {"spreadsheet": 16, "excel": 164, "xlsx": 20, "csv": 18, "sheet": 115, "sheets": 80, "table": 129, "data": 2891}
     },
     {
       "id": "invoice",
-      "registry_slot": "'invoice' 84 of 93; 'billing' 28 of 28; 'pdf' 258 of 281; 'invoices', 'invoicing', 'receipt', 'quote', 'freelance' no match",
-      "organic": 6,
-      "why": "the weakest of the four: 'invoice' and 'pdf' are crowded and alphabetical order pins us near the end. 'invoicing' (68 results) is unreachable because the name contains 'invoice', not 'invoicing'; 'invoices' has 0 competitors and is likewise unmatched",
+      "registry_slot": "'invoice' 85 of 94; 'billing' 29 of 29; 'pdf' 259 of 282; 'receipt' now belongs to expense-tracker, not us; 'invoices', 'invoicing', 'quote', 'freelance' no match",
+      "organic": 6.3,
+      "why": "still the weakest naming rewrite: 'invoice' and 'pdf' are crowded and alphabetical order pins us near the end; 'receipt' (0 competitors) went to expense-tracker's name instead of ours, so invoice's own query set actually lost a route to a near-empty token it never had a working name for anyway",
       "old_registry_name": "io.github.theluckystrike/invoice (deprecated 2026-09-02, all versions)",
       "registry_name": "io.github.theluckystrike/invoice-pdf-billing-generator",
-      "query_set": [
-        "invoice",
-        "invoices",
-        "invoicing",
-        "billing",
-        "pdf",
-        "receipt",
-        "quote",
-        "freelance"
-      ],
-      "organic_before": 2,
-      "competitors_in_matched_slots": {
-        "invoice": 93,
-        "invoices": 0,
-        "invoicing": 68,
-        "billing": 28,
-        "pdf": 281,
-        "receipt": 15,
-        "quote": 55,
-        "freelance": 6
-      }
+      "has_remotes": true,
+      "query_set": ["invoice","invoices","invoicing","billing","pdf","receipt","quote","freelance"],
+      "organic_before": 6,
+      "competitors_in_matched_slots": {"invoice": 94, "invoices": 0, "invoicing": 68, "billing": 29, "pdf": 282, "receipt": 16, "quote": 55, "freelance": 6}
+    },
+    {
+      "id": "expense-tracker",
+      "registry_slot": "'mileage' 1 of 1; 'receipts' 4 of 5; 'receipt' 15 of 16; 'expense' 15 of 15; 'expenses' no match",
+      "organic": 66.7,
+      "why": "new in v0.2.0, matched 4 of 5 natural queries on its first measurement, all near-empty lists; the single miss ('expenses', 0 competitors) is unmatched only because the registry name uses the singular 'expense'. Highest measured organic of any server in the fleet",
+      "old_registry_name": null,
+      "registry_name": "io.github.theluckystrike/expense-tracker-receipts-mileage",
+      "has_remotes": false,
+      "query_set": ["expense","expenses","receipt","receipts","mileage"],
+      "organic_before": 0,
+      "competitors_in_matched_slots": {"expense": 15, "expenses": 0, "receipt": 16, "receipts": 5, "mileage": 1}
+    },
+    {
+      "id": "office-suite",
+      "registry_slot": "not present in the registry at all -- confirmed absent on 'office' (32 results), 'suite' (86 results) and 'theluckystrike' (17 rows, none for office-suite), retried once",
+      "organic": 0.0,
+      "why": "new in v0.2.0 but never published via mcp-publisher; server.mcpb.json exists on disk only. Contributes 0 to every surface until it is actually published",
+      "old_registry_name": null,
+      "registry_name": "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+      "has_remotes": false,
+      "query_set": ["office", "suite"],
+      "organic_before": 0,
+      "competitors_in_matched_slots": {"office": 32, "suite": 86}
     }
   ],
   "fleet": {
-    "max_surface": 24,
-    "mean_live": 12,
-    "fleet_score": 78,
-    "verdict": "The 2026-09-02 rename raised measured registry findability from 0.092 to 0.239 by widening token coverage from 7 to 18 of 34 natural queries. It did not and cannot improve rank: results are sorted alphabetically by the full name and the io.github.theluckystrike prefix pins every entry near the bottom of any list longer than ~20. The gain is concentrated in near-empty tokens (billable, timesheet, hours, xlsx, csv), where a bottom placement is still on the first screen. On crowded tokens (pdf 281, excel 163, watch 138, invoice 93) we are matched but unreachable. Deprecating the 4 old names did not remove them from search, so the fleet still shows 12 rows for 4 products. The next lever is not naming: it is installs on the surfaces that rank by installs."
+    "max_surface": 27.6,
+    "mean_live": 13.9,
+    "fleet_score": 90.1,
+    "fleet_score_before_this_measurement": 70.6,
+    "verdict": "Two new servers arrived with v0.2.0: expense-tracker is live and already the fleet's strongest server (organic 66.7, on the back of 4 near-empty tokens including a rank-1-of-1 on 'mileage'); office-suite exists on disk but was never published and contributes exactly 0 everywhere it could otherwise help. remotes[] is live on 3 of 6 servers (time-tracker, price-tracker, invoice), which is what the new 'Hosted endpoints' surface measures (findable 0.317, score 15.9) -- spreadsheet and expense-tracker still ship stdio-only. Registry findable rose only slightly, 0.239 to 0.276, because office-suite added 2 unmatched tokens to the denominator at the same time expense-tracker added 4 matched ones; the fleet as a whole is stronger than the mean-findable number alone suggests, which is why fleet_score (noisy-OR across the six per-server organics) moved from a recomputed 70.6 to 90.1 -- adding one strong, findable server does more for 'is any of our servers reachable' than it does for the average reachability of an arbitrary token. Bing and DuckDuckGo indexation of mcp.zovo.one could not be measured via curl this run (Bing ignored the site: filter and served an unrelated fallback SERP; DDG served a CAPTCHA) -- that stays an open unknown, not a zero. The next lever is still not naming: publish office-suite, add remotes[] to the two stdio-only servers, and drive installs on surfaces that rank by installs (Smithery useCounts run from 19 to 56,138 among competitors we do not appear next to at all)."
   }
 }

@@ -584,5 +584,596 @@
    "our_rank": [],
    "top3": []
   }
+ },
+ "after_v2_2026-09-02_post_expense_office": {
+  "note": "re-probe after expense-tracker and office-suite servers added; office-suite (io.github.theluckystrike/office-suite-time-invoice-expense-excel-price) is NOT present in the registry at all -- it was never published via mcp-publisher (only server.mcpb.json exists on disk), retried once, still absent. expense-tracker (io.github.theluckystrike/expense-tracker-receipts-mileage) IS live at v0.2.0.",
+  "remotes_by_v0.2.0_row": {
+   "io.github.theluckystrike/time-tracker-timesheet-billable-hours": true,
+   "io.github.theluckystrike/price-tracker-drop-alert-watch": true,
+   "io.github.theluckystrike/invoice-pdf-billing-generator": true,
+   "io.github.theluckystrike/excel-spreadsheet-xlsx-csv": false,
+   "io.github.theluckystrike/expense-tracker-receipts-mileage": false,
+   "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price": "not published"
+  },
+  "tokens": {
+   "time": {
+    "results": 297,
+    "our_rank": [
+     [
+      214,
+      "io.github.theluckystrike/time-tracker"
+     ],
+     [
+      215,
+      "io.github.theluckystrike/time-tracker"
+     ],
+     [
+      216,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      217,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     215,
+     "io.github.theluckystrike/time-tracker",
+     "0.1.1",
+     true,
+     false
+    ]
+   },
+   "timer": {
+    "results": 12,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "timesheet": {
+    "results": 3,
+    "our_rank": [
+     [
+      1,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      2,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     2,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+     "0.2.0",
+     true,
+     true
+    ]
+   },
+   "hours": {
+    "results": 3,
+    "our_rank": [
+     [
+      2,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      3,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     3,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+     "0.2.0",
+     true,
+     true
+    ]
+   },
+   "billable": {
+    "results": 2,
+    "our_rank": [
+     [
+      1,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      2,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     2,
+     "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+     "0.2.0",
+     true,
+     true
+    ]
+   },
+   "tracking": {
+    "results": 24,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "time-tracker": {
+    "results": 6,
+    "our_rank": [
+     [
+      3,
+      "io.github.theluckystrike/time-tracker"
+     ],
+     [
+      4,
+      "io.github.theluckystrike/time-tracker"
+     ],
+     [
+      5,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      6,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     4,
+     "io.github.theluckystrike/time-tracker",
+     "0.1.1",
+     true,
+     false
+    ]
+   },
+   "time tracker": {
+    "results": 0,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "price": {
+    "results": 115,
+    "our_rank": [
+     [
+      98,
+      "io.github.theluckystrike/price-tracker"
+     ],
+     [
+      99,
+      "io.github.theluckystrike/price-tracker"
+     ],
+     [
+      100,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      101,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     99,
+     "io.github.theluckystrike/price-tracker",
+     "0.1.1",
+     true,
+     false
+    ]
+   },
+   "prices": {
+    "results": 21,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "deal": {
+    "results": 99,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "drop": {
+    "results": 165,
+    "our_rank": [
+     [
+      159,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      160,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     160,
+     "io.github.theluckystrike/price-tracker-drop-alert-watch",
+     "0.2.0",
+     true,
+     true
+    ]
+   },
+   "alert": {
+    "results": 44,
+    "our_rank": [
+     [
+      35,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      36,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     36,
+     "io.github.theluckystrike/price-tracker-drop-alert-watch",
+     "0.2.0",
+     true,
+     true
+    ]
+   },
+   "watch": {
+    "results": 139,
+    "our_rank": [
+     [
+      128,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      129,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     129,
+     "io.github.theluckystrike/price-tracker-drop-alert-watch",
+     "0.2.0",
+     true,
+     true
+    ]
+   },
+   "product": {
+    "results": 126,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "shop": {
+    "results": 113,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "price-tracker": {
+    "results": 9,
+    "our_rank": [
+     [
+      5,
+      "io.github.theluckystrike/price-tracker"
+     ],
+     [
+      6,
+      "io.github.theluckystrike/price-tracker"
+     ],
+     [
+      7,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      8,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     6,
+     "io.github.theluckystrike/price-tracker",
+     "0.1.1",
+     true,
+     false
+    ]
+   },
+   "price tracker": {
+    "results": 0,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "spreadsheet": {
+    "results": 16,
+    "our_rank": [
+     [
+      13,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      14,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      15,
+      "io.github.theluckystrike/spreadsheet"
+     ],
+     [
+      16,
+      "io.github.theluckystrike/spreadsheet"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     14,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "excel": {
+    "results": 164,
+    "our_rank": [
+     [
+      160,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      161,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     161,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "xlsx": {
+    "results": 20,
+    "our_rank": [
+     [
+      19,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      20,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     20,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "csv": {
+    "results": 18,
+    "our_rank": [
+     [
+      17,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      18,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     18,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "sheet": {
+    "results": 115,
+    "our_rank": [
+     [
+      107,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      108,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      109,
+      "io.github.theluckystrike/spreadsheet"
+     ],
+     [
+      110,
+      "io.github.theluckystrike/spreadsheet"
+     ],
+     [
+      111,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      112,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     108,
+     "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "sheets": {
+    "results": 80,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "table": {
+    "results": 129,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "data": {
+    "results": 2891,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "invoice": {
+    "results": 94,
+    "our_rank": [
+     [
+      82,
+      "io.github.theluckystrike/invoice"
+     ],
+     [
+      83,
+      "io.github.theluckystrike/invoice"
+     ],
+     [
+      84,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      85,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     83,
+     "io.github.theluckystrike/invoice",
+     "0.1.1",
+     true,
+     false
+    ]
+   },
+   "invoices": {
+    "results": 0,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "invoicing": {
+    "results": 68,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "billing": {
+    "results": 29,
+    "our_rank": [
+     [
+      28,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      29,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     29,
+     "io.github.theluckystrike/invoice-pdf-billing-generator",
+     "0.2.0",
+     true,
+     true
+    ]
+   },
+   "pdf": {
+    "results": 282,
+    "our_rank": [
+     [
+      258,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      259,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     259,
+     "io.github.theluckystrike/invoice-pdf-billing-generator",
+     "0.2.0",
+     true,
+     true
+    ]
+   },
+   "receipt": {
+    "results": 16,
+    "our_rank": [
+     [
+      15,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     15,
+     "io.github.theluckystrike/expense-tracker-receipts-mileage",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "quote": {
+    "results": 55,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "freelance": {
+    "results": 6,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "expense": {
+    "results": 15,
+    "our_rank": [
+     [
+      15,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     15,
+     "io.github.theluckystrike/expense-tracker-receipts-mileage",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "expenses": {
+    "results": 0,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "receipts": {
+    "results": 5,
+    "our_rank": [
+     [
+      4,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     4,
+     "io.github.theluckystrike/expense-tracker-receipts-mileage",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "mileage": {
+    "results": 1,
+    "our_rank": [
+     [
+      1,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ]
+    ],
+    "best_v0.2.0_row": [
+     1,
+     "io.github.theluckystrike/expense-tracker-receipts-mileage",
+     "0.2.0",
+     true,
+     false
+    ]
+   },
+   "office": {
+    "results": 32,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   },
+   "suite": {
+    "results": 86,
+    "our_rank": [],
+    "best_v0.2.0_row": null
+   }
+  }
  }
 }
