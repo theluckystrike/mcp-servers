@@ -6,6 +6,10 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// D-R15: "today" is the LOCAL calendar date in every server; a UTC slice disagrees
+// with it for any run before UTC midnight in a positive-offset zone.
+const localDay = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
 const here = dirname(fileURLToPath(import.meta.url));
 const ENTRY = join(here, "..", "dist", "index.js");
 const REPO = join(here, "..", "..", "..");
@@ -102,7 +106,7 @@ test("free tier: initialize, tools/list, timer, report, gating", async () => {
 
     // manual entry with an explicit rate, then a money report
     await c.call("project_set_rate", { project: "acme", hourly_rate: 100 });
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDay();
     await c.call("entry_add", { project: "acme", task: "spec", start: `${today}T09:00:00`, minutes: 90 });
 
     const rep = await c.call("report", { from: `${today}T00:00:00`, to: `${today}T23:59:59`, group_by: "project", format: "json" });
@@ -161,7 +165,7 @@ test("pro tier: a signed key unlocks full invoice history, tag grouping and full
     const status = await c.call("license_status");
     assert.match(status.text, /"tier": "pro"/);
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDay();
     await c.call("project_set_rate", { project: "acme", hourly_rate: 120 });
     await c.call("entry_add", { project: "acme", task: "build", start: `${today}T10:00:00`, minutes: 120, tags: ["dev"] });
     await c.call("entry_add", { project: "acme", task: "call", start: `${today}T13:00:00`, minutes: 30, tags: ["meeting"] });
@@ -203,7 +207,7 @@ test("D-R1: invoice_summary prints one line per (task, rate), never a blended ra
   const c = client({});
   try {
     await c.init();
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDay();
     // The exact shape from the user-value run: one 2.50 h entry at EUR 90.00 and one
     // 0.01 h entry with no rate, both with no task. The old code printed EUR 89.82.
     await c.call("entry_add", { project: "Acme", start: `${today}T09:00:00`, minutes: 150, rate: 90, currency: "EUR" });

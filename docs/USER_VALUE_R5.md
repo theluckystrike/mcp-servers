@@ -258,3 +258,176 @@ artifacts:
   /private/tmp/uv10/data/mcp-servers/invoice/pdf/INV-2026-0001.pdf
   /private/tmp/probe_prompts.mjs (prompts/list + mileage km probe)
 ```
+
+## Round-5 fixes
+
+Six defects from the list above are closed in code with regression tests. `node scripts/validate.mjs`
+is green at **121/121** (run 29); one probe was adjusted because D-R15 is a contract change.
+
+### D-R12 (medium, spreadsheet) - money ending in `.00` was written as text
+
+`coerce()` decided by string LENGTH (`String(n).length >= s.length - 1`), so `"403.00"` rendered back
+as `403` and lost two characters, and was kept as text. The decision is now by pattern only.
+
+- `servers/spreadsheet/src/csv.ts:76` `PLAIN_DECIMAL` - optional sign, no thousands separators, no
+  leading zeros on a multi-digit integer part, optional fraction, optional exponent.
+- `servers/spreadsheet/src/csv.ts:83` `GROUPED_DECIMAL` - comma separators only in the one
+  unambiguous shape, 1-3 digits then groups of exactly three.
+- `servers/spreadsheet/src/csv.ts:94` `coerce()` - pattern test only; length never enters into it.
+
+`"1250.00"`, `"12.00"`, `"1,250.00"`, `"0.00"`, `"-1,250.00"` are numbers. `"007"`, `"0123"`,
+`"1.250,00"`, `"1,25"`, `"1,2500.00"`, `"$1,250.00"`, `"-"`, `"1."` stay text.
+
+Tests: `servers/spreadsheet/test/round5.test.mjs:63` (unit) and `:86` (end to end - `sheet_convert`
+writes `C2/C3/C4` as `t="n"` with values `1250 / 1250 / 12`, and `C5/C6` as `t="s"` holding `007`
+and `1.250,00`).
+
+### D-R13 (medium, spreadsheet) - `sheet_add_column` emitted raw floats
+
+Money in, money out. When every column the formula reads holds at most 2 decimals, the numeric
+result is rounded to 2; an explicit `decimals` argument overrides.
+
+- `servers/spreadsheet/src/index.ts:38` `roundHalfUp(v, d)` - half away from zero, `toPrecision(15)`
+  first so `1250 * 1.23 = 1537.4999999999998` rounds to `1537.5` and not `1537.49`.
+- `servers/spreadsheet/src/index.ts:46` `formulaColumns()` - operand columns, via `parse()` +
+  `columnsUsed()` from `expr.ts`, intersected with the sheet's real headers.
+- `servers/spreadsheet/src/index.ts:72` `maxDecimals()` - widest decimal count over those columns,
+  `null` when no column carried a number.
+- `servers/spreadsheet/src/index.ts:521` the `decimals` argument (0-10).
+- `servers/spreadsheet/src/index.ts:538` the rounding decision, plus a note on the response naming
+  the columns it inferred from.
+
+VAT column, `[Amount] * 1.23`: **1250 -> 1537.5** and **33.16 -> 40.79** (was `40.7868`).
+`decimals: 4` gives `40.7868` back, `decimals: 0` gives `41`.
+
+Tests: `servers/spreadsheet/test/round5.test.mjs:105` and `:122`.
+
+### D-R11 (high, spreadsheet) - the tools now claim the file case
+
+The same sentence leads all three descriptions, verbatim: **"Use for ANY .xlsx/.csv path, including
+paths outside the current directory; do not read the file yourself."**
+
+- `servers/spreadsheet/src/index.ts:196` `sheet_info`
+- `servers/spreadsheet/src/index.ts:203` `sheet_read`
+- `servers/spreadsheet/src/index.ts:313` `sheet_query`
+
+Test: `servers/spreadsheet/test/round5.test.mjs:141` asserts over `tools/list` that each of the three
+descriptions *starts with* that sentence, so it cannot drift to the end of a paragraph.
+
+### D-R14 (high, invoice + expense-tracker) - a mixed-currency set has a path to one invoice
+
+`expense_to_invoice` takes `target_currency` and `fx_rates`, read as "1 unit of that currency = X
+units of the target". Every group converts and ONE group is returned; each converted line carries its
+origin on its own face.
+
+- `servers/expense-tracker/src/index.ts:655` `target_currency`, `:656` `fx_rates`.
+- `servers/expense-tracker/src/index.ts:663` validation: unknown code, non-positive rate, and
+  `fx_rates` without `target_currency` are all refused.
+- `servers/expense-tracker/src/index.ts:744` the conversion, the `[converted from EUR 12.40 at 1.08]`
+  suffix, and the merge into a single group.
+- `servers/expense-tracker/src/index.ts:647` description updated.
+- New response fields: `source_currencies`, `target_currency`, `converted_lines`, `fx_rates_used`,
+  `fx_note`.
+
+Scenario 7's exact set (EUR 12.40 rail + GBP 8.39 mileage, target USD at 1.08 / 1.27) returns one USD
+group: **13.39 + 10.66 = USD 24.05**, descriptions ending `[converted from EUR 12.40 at 1.08]` and
+`[converted from GBP 8.39 at 1.27]`. A missing rate is refused by name with the literal call to make
+(`fx_rates: {"GBP": <rate>}`). Without `fx_rates`, a mixed range returns `fx_note` naming the exact
+argument instead of a bare "one invoice carries one currency".
+
+`invoice_create` no longer bills a EUR line under a USD heading:
+
+- `servers/invoice/src/index.ts:234` items accept an optional `currency`.
+- `servers/invoice/src/index.ts:248` `itemCurrencyConflict()` - a mix, or one item currency that
+  disagrees with the invoice currency, is refused with the same `expense_to_invoice` guidance.
+- `servers/invoice/src/index.ts:311` the check runs before `nextNumber()`, so a refusal does not burn
+  an invoice number.
+- With no `currency` on the invoice, a single agreed item currency becomes the invoice's.
+
+Tests: `servers/expense-tracker/test/fx.test.mjs:64`, `:75`, `:100`, `:111`;
+`servers/invoice/test/round5.test.mjs:61`, `:80`, `:90`.
+
+### D-R15 (medium, all four) - "today" is the local calendar date everywhere
+
+- `servers/time-tracker/src/day.ts:8` `dayKey()` and `:15` `localToday()` - extracted from
+  `index.ts` so the definition is importable and testable; `index.ts` imports them.
+- `servers/expense-tracker/src/money.ts:161` `localDay()`, `:166` `isoToday()` - was
+  `new Date().toISOString().slice(0,10)`.
+- `servers/expense-tracker/src/money.ts:176` `isoDaysAgo()` - now walks back local days.
+- `servers/invoice/src/money.ts:166` `isoDate()` - was `d.toISOString().slice(0,10)`; drives the
+  `invoice_create` / `invoice_from_hours` `issue_date` default.
+
+Test: `servers/invoice/test/round5.test.mjs:109` spawns a child per fixed `process.env.TZ`
+(`Asia/Bangkok`, `UTC`, `America/Los_Angeles`, `Pacific/Kiritimati`) and asserts
+`invoice.isoDate() === expense.isoToday() === timeTracker.localToday() === the local date`.
+`:139` pins the reported case directly: `isoDate(new Date("2026-09-02T23:36:00Z"))` is **2026-09-03**
+in `Asia/Bangkok` and **2026-09-02** in `UTC`.
+
+Four test helpers that computed "today" with a UTC slice were themselves wrong under the new
+contract and were corrected to the local date: `servers/expense-tracker/test/smoke.test.mjs`,
+`concurrency.test.mjs`, `adversarial.test.mjs`, and `servers/time-tracker/test/smoke.test.mjs`,
+`currency.test.mjs`, `concurrency.test.mjs`. They failed before the fix at 06:49 local (UTC+7), which
+is the defect reproducing itself in the suite.
+
+`scripts/validate.mjs:59` - the expense-tracker probe built its `mileage_add` date and its
+`expense_summary` window from a UTC slice, so the range excluded the rows it had just written
+(18/22). Now local (`localDay`), and the suite is 121/121 again.
+
+### Verbatim test summaries
+
+```
+=== spreadsheet
+1..39
+# tests 39
+# suites 0
+# pass 39
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1150.319167
+=== invoice
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1492.729292
+=== expense-tracker
+1..36
+# tests 36
+# suites 0
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2792.804959
+=== time-tracker
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 415.943333
+```
+
+```
+$ node scripts/validate.mjs
+expense-tracker: 22/22 in 445 ms
+time-tracker: 18/18 in 218 ms
+price-tracker: 18/18 in 263 ms
+spreadsheet: 18/18 in 382 ms
+invoice: 20/20 in 427 ms
+remote: 14/14
+billing: 11/11
+validation db: /Users/mike/mcp-servers/data/validation.json run 29: 121/121
+```
+
+D-R16 and D-R17 are client-side and stay open as recorded.

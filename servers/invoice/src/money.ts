@@ -155,9 +155,17 @@ export function computeTotals(
   };
 }
 
-/** ISO date helpers. All dates stored and returned as YYYY-MM-DD. */
+/**
+ * ISO date helpers. All dates stored and returned as YYYY-MM-DD.
+ *
+ * D-R15: this is the LOCAL calendar date, matching time-tracker's dayKey() and
+ * expense-tracker's localDay(). It used to be `d.toISOString().slice(0,10)` (UTC), so in
+ * UTC+7 an invoice issued at 06:36 local was stamped with the previous day while the
+ * expense logged in the same conversation was stamped with the current one.
+ */
 export function isoDate(d: Date = new Date()): string {
-  return d.toISOString().slice(0, 10);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 export function addDays(iso: string, days: number): string {

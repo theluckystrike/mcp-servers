@@ -8,6 +8,10 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// D-R15: "today" is the LOCAL calendar date in every server; a UTC slice disagrees
+// with it for any run before UTC midnight in a positive-offset zone.
+const localDay = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
 const here = dirname(fileURLToPath(import.meta.url));
 const ENTRY = join(here, "..", "dist", "index.js");
 const REPO = join(here, "..", "..", "..");
@@ -55,7 +59,7 @@ function client(env) {
   };
 }
 
-const today = new Date().toISOString().slice(0, 10);
+const today = localDay();
 const DAY = { from: `${today}T00:00:00`, to: `${today}T23:59:59` };
 
 test("D-3: 2.5 hours at 90 euros an hour comes back as EUR 225.00, mixed currencies stay apart", async (t) => {

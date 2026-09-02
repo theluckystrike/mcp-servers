@@ -66,7 +66,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `business_set` | Store the issuer profile: name, address, email, VAT id, IBAN, bank, logo, default currency, default tax rate, payment terms, invoice prefix. `tax_rate`, `vat_rate` and `vat` are accepted as aliases for `default_tax_rate`, and any unrecognised field is reported back rather than dropped |
 | `client_add` | Add or update a client (name, address, email, VAT id) |
 | `client_list` | List stored clients with their ids |
-| `invoice_create` | Create an invoice from line items; allocates the next number, computes discount, tax per rate and total. If the client is created from a bare name the response says the BILL TO block has no address and how to add one |
+| `invoice_create` | Create an invoice from line items; allocates the next number, computes discount, tax per rate and total. Items may carry a per-line `currency`, and a mix is refused rather than billed as one currency. If the client is created from a bare name the response says the BILL TO block has no address and how to add one |
 | `invoice_from_hours` | Shortcut: bill one client for N hours at an hourly rate |
 | `invoice_list` | List invoices, filtered by status, client and issue-date range |
 | `invoice_get` | Full stored record for one invoice number |
@@ -185,6 +185,7 @@ always be regenerated from the stored records with `invoice_pdf`.
 - **Using the clone path**: the server binary is `servers/invoice/dist/index.js` after `npm run build`.
   Point your client's `command` at `node` with that absolute path as the only argument.
 - **Node version**: requires Node >= 18. Check with `node -v`.
+- **Mixed currencies**: an item may carry its own `currency`. Every line on one invoice must agree with the invoice currency; a mix is refused and the message names the conversion call to make (`expense_to_invoice` with `target_currency` and `fx_rates`) rather than silently billing a EUR line under a USD heading. With no `currency` on the invoice, a single agreed item currency becomes the invoice's.
 - **No business profile yet**: invoicing is never blocked by it. `invoice_create` and `invoice_from_hours`
   issue the document with the placeholder issuer "Your business" and say so in one line; run
   `business_set {name, address, vat_id, iban}` and render the PDF again to replace it.

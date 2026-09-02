@@ -9,6 +9,10 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// D-R15: "today" is the LOCAL calendar date in every server; a UTC slice disagrees
+// with it for any run before UTC midnight in a positive-offset zone.
+const localDay = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
 const here = dirname(fileURLToPath(import.meta.url));
 const ENTRY = join(here, "..", "dist", "index.js");
 const N = 20;
@@ -57,7 +61,7 @@ test("two processes, one data dir: 40 concurrent expense_add all persist", async
   const dataHome = join(sandbox, "data");
   const a = client(dataHome, "A");
   const b = client(dataHome, "B");
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDay();
   try {
     await Promise.all([a.init(), b.init()]);
     const calls = [];

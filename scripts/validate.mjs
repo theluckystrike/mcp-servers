@@ -56,9 +56,13 @@ const PROBES = {
     const a = await c.tool("expense_add", { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23, note: "USB hub" }); ok(`${tier}: expense_add VAT split 50.00 + 11.50`, !a.isError && /50\.00/.test(a.text) && /11\.50/.test(a.text), a.text);
     const r = await c.tool("category_rules", { rules: [{ match: "bolt", category: "Travel" }] }); ok(`${tier}: category_rules`, !r.isError, r.text);
     const b = await c.tool("expense_add", { amount: 23, currency: "PLN", merchant: "Bolt" }); ok(`${tier}: rule auto-categorises Travel`, !b.isError && /Travel/.test(b.text), b.text);
-    const m = await c.tool("mileage_add", { km: 45, date: new Date().toISOString().slice(0, 10), purpose: "client meeting", region: "PL" }).catch(() => ({ text: "", isError: true }));
+    // D-R15: "today" is the LOCAL calendar date in every server now, so the probe window
+    // must be local too; a UTC slice is yesterday for any run before UTC midnight in a
+    // positive-offset zone, and the range then excludes the rows just written.
+    const localDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const m = await c.tool("mileage_add", { km: 45, date: localDay(new Date()), purpose: "client meeting", region: "PL" }).catch(() => ({ text: "", isError: true }));
     ok(`${tier}: mileage 45 km PL = 51.75 PLN`, !m.isError && /51\.75/.test(m.text), m.text);
-    const now = new Date(); const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10); const to = now.toISOString().slice(0, 10);
+    const now = new Date(); const from = localDay(new Date(now.getFullYear(), now.getMonth(), 1)); const to = localDay(now);
     const sm = await c.tool("expense_summary", { from, to, group_by: "category" }); ok(`${tier}: summary by category per currency`, !sm.isError && /EUR/.test(sm.text) && /PLN/.test(sm.text), sm.text);
     if (tier === "pro") {
       const mk = await c.tool("expense_to_invoice", { project: "acme", from, to, markup_percent: 10 }); ok(`pro: markup allowed, net 50.00 x 1.10 = 55.00 + tax_rate`, !mk.isError && /55\.00|"unit_price": ?55/.test(mk.text) && /tax_rate/.test(mk.text), mk.text);

@@ -7,6 +7,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { dayKey, localDayStart } from "./day.js";
 
 const PRODUCT = "time-tracker";
 const FREE_WINDOW_DAYS = 7;
@@ -94,20 +95,7 @@ function parseTime(s: string, what: string): Date {
   return d;
 }
 
-/** Local-timezone day key, YYYY-MM-DD. */
-function dayKey(isoStr: string): string {
-  const d = new Date(isoStr);
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
 
-/** Start of local day N days back, as a Date. */
-function localDayStart(daysBack = 0): Date {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() - daysBack);
-  return d;
-}
 
 function toCents(v: number): number { return Math.round(v * 100); }
 

@@ -229,11 +229,37 @@ const itemSchema = z.object({
   tax_rate: rate.describe("VAT percent for this line, overrides the business default"),
   vat_rate: rate.describe("Alias for tax_rate"),
   vat: rate.describe("Alias for tax_rate"),
+  // D-R14: a line may carry the currency it was captured in (expense_to_invoice emits it).
+  // It is NOT silently ignored: mixing currencies on one invoice is refused below.
+  currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional()
+    .describe("Currency this line was captured in. Every line on one invoice must agree; convert first with expense_to_invoice target_currency + fx_rates"),
   // D-R7: an item's rate must not vanish because the caller spelled it vat_rate.
 }).transform((i) => ({
   description: i.description, quantity: i.quantity, unit_price: i.unit_price,
   tax_rate: i.tax_rate ?? i.vat_rate ?? i.vat,
+  currency: i.currency ? i.currency.toUpperCase() : undefined,
 }));
+
+/**
+ * D-R14: one invoice carries one currency. Before this, a line that arrived carrying
+ * currency "EUR" was billed under the invoice's USD heading with no conversion and no
+ * warning. Refuse, and name the argument that fixes it.
+ */
+function itemCurrencyConflict(items: { currency?: string }[], invoiceCurrency: string): string | null {
+  const seen = [...new Set(items.map((i) => i.currency).filter((c): c is string => !!c))];
+  if (!seen.length) return null;
+  const advice = (codes: string[], target: string) =>
+    `one invoice carries one currency and nothing here converts on its own. Convert first: ` +
+    `expense_to_invoice {project: "...", from: "...", to: "...", target_currency: "${target}", ` +
+    `fx_rates: {${codes.filter((c) => c !== target).map((c) => `"${c}": <1 ${c} in ${target}>`).join(", ")}}} ` +
+    `- 1 unit of that currency = X units of ${target} - then pass that single group's items here. ` +
+    `Or issue one invoice per currency.`;
+  if (seen.length > 1) return `the items mix currencies (${seen.join(", ")}): ` + advice(seen, seen[0]);
+  if (seen[0] !== invoiceCurrency) {
+    return `the items are in ${seen[0]} but the invoice currency is ${invoiceCurrency}: ` + advice([seen[0], invoiceCurrency], invoiceCurrency);
+  }
+  return null;
+}
 
 function monthLimitBlocked(issueDate: string): string | null {
   if (gate.isPro()) return null;
@@ -278,8 +304,12 @@ function createInvoice(a: {
   const gated = monthLimitBlocked(issue);
   if (gated) return { gated };
 
-  const currency = (a.currency ?? biz.default_currency).toUpperCase();
+  const itemCurrencies = [...new Set(a.items.map((i) => i.currency).filter((c): c is string => !!c))];
+  // With no explicit invoice currency, a single agreed item currency is the invoice's.
+  const currency = (a.currency ?? (itemCurrencies.length === 1 ? itemCurrencies[0] : biz.default_currency)).toUpperCase();
   if (!/^[A-Z]{3}$/.test(currency)) return { error: `currency must be a 3-letter ISO code such as EUR or USD, got "${currency}".` };
+  const clash = itemCurrencyConflict(a.items, currency);
+  if (clash) return { error: clash };
   const totals = computeTotals(a.items, currency, a.discount_percent ?? 0, biz.default_tax_rate);
   // Guard against a total that has left the exactly-representable integer range;
   // past this point the printed lines and the stored minor units can disagree.
@@ -319,7 +349,7 @@ function createInvoice(a: {
 
 server.registerTool("invoice_create", {
   title: "Create an invoice",
-  description: "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed.",
+  description: "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed. Items may carry a per-line currency; every line on one invoice must agree with the invoice currency, and a mix is refused with the exact conversion argument to pass rather than billed as if it were one currency.",
   inputSchema: {
     client: z.string().describe("Client name or id. Unknown names are added automatically"),
     items: z.array(itemSchema).describe("Line items"),
@@ -363,7 +393,7 @@ server.registerTool("invoice_from_hours", {
       client: a.client,
       items: [{
         description: a.description ?? "Consulting services",
-        quantity: a.hours, unit_price: a.rate, tax_rate: a.tax_rate,
+        quantity: a.hours, unit_price: a.rate, tax_rate: a.tax_rate, currency: undefined,
       }],
       currency: a.currency, issue_date: a.issue_date, due_days: a.due_days,
       notes: a.notes, discount_percent: a.discount_percent,

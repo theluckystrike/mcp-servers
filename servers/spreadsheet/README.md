@@ -69,7 +69,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `sheet_stats` | count, empty, distinct, min, max, sum, mean, median per column (top values for text columns) |
 | `sheet_find` | Find text anywhere in the workbook; returns cell addresses and a row preview |
 | `sheet_write` | Write rows (objects or arrays) as a new file, an append, or an explicit overwrite |
-| `sheet_add_column` | Add a computed column from a formula, saved to a new file |
+| `sheet_add_column` | Add a computed column from a formula, saved to a new file. Numeric results are rounded like their inputs (2 decimals in, 2 decimals out); `decimals` overrides |
 | `sheet_convert` | Convert a sheet to csv, xlsx or json |
 | `license_status` | Free or Pro, and where to upgrade |
 | `license_activate` | Activate a Pro key (verified offline) |
@@ -155,7 +155,9 @@ A small expression language, parsed and evaluated directly. There is no `eval` a
 [Amount] > 1000 AND NOT [Customer] startswith 'Test'
 ```
 
-Formula example for `sheet_add_column`: `[Qty] * [Unit Price]`.
+Formula example for `sheet_add_column`: `[Qty] * [Unit Price]`. When every column the formula reads holds at most 2 decimals, the result is rounded to 2 decimals, so `[Amount] * 1.23` on money gives `40.79` rather than `40.7868`. Pass `decimals` (0-10) to choose the precision yourself.
+
+Numbers written as text in a CSV are converted by pattern, not by length: `1250.00`, `12.00` and `1,250.00` all become numbers in the xlsx output, so Excel's own `SUM` counts them. Identifier-shaped and ambiguous values stay text: `007` keeps its leading zeros and `1.250,00` is left alone rather than guessed at.
 
 Text comparisons ignore case and surrounding whitespace. Values like `$1,250.00`, `1 250`, and `12%` compare as numbers, so `[Amount] > 1000` works on a column your spreadsheet stored as text.
 

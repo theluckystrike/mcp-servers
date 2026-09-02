@@ -73,7 +73,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `expense_summary` | Totals for a range grouped by category, project, month or merchant, with the gross, net and VAT per currency |
 | `mileage_add` | Log a trip in km or miles and price it from the rate table (or your own rate) |
 | `expense_export` | Write the range to csv, xlsx or json and return the path. Never writes a partial file |
-| `expense_to_invoice` | Preview a project's unbilled billable expenses as `invoice_create` line items, per currency, with an optional markup and an optional `assume_vat_rate`. Marks nothing as rebilled, ever |
+| `expense_to_invoice` | Preview a project's unbilled billable expenses as `invoice_create` line items, per currency, with an optional markup and an optional `assume_vat_rate`. Pass `target_currency` + `fx_rates` to fold every currency into one group. Marks nothing as rebilled, ever |
 | `expense_mark_rebilled` | Mark expenses rebilled once the invoice exists, by ids or by project, date range and `currency`. `invoice_number` is required |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |
@@ -100,6 +100,17 @@ With no `region`, miles use the US rate and kilometres the EU rate. `rate_per_km
 ## Pairs with the rest of the collection
 
 `expense_to_invoice` returns `{description, quantity, unit_price, tax_rate}` objects, which is exactly the `items` array [mcp-invoice](../invoice) takes. `unit_price` is the net amount, `tax_rate` is the VAT rate recorded on the expense, so the invoice recomputes the same tax rather than double-charging it, and the line total comes back to the gross on the receipt. Where rounding the tax a second time cannot reproduce that gross (EUR 0.03 at 23% splits into 0.02 + 0.01, but 0.02 taxed at 23% rounds to 0.00), the `unit_price` is nudged by the one cent if that lands the invoice exactly, and otherwise the group carries a visible `[rounding adjustment ...]` line at `tax_rate: 0`; `rounding_adjustment_lines` counts them.
+
+### Mixed currencies
+
+One invoice carries one currency, so a week of USD hours, a EUR receipt and a GBP mileage line comes back as three groups. To get a single invoice, supply the target and your own rates:
+
+```
+expense_to_invoice {project: "Nova", from: "2026-09-01", to: "2026-09-07",
+                    target_currency: "USD", fx_rates: {"EUR": 1.08, "GBP": 1.27}}
+```
+
+`fx_rates` reads as "1 unit of that currency = X units of `target_currency`". Every line is converted and one group is returned, and each converted line says so on its own face: `... [converted from EUR 12.40 at 1.08]`. Nothing here fetches or invents a rate; a currency with no rate is refused by name. Without `fx_rates`, a mixed range returns the exact call to make instead of leaving you to work it out.
 
 A stored `vat_rate` of `0` is a rate, not a gap: an exempt receipt stays exempt. An expense recorded with **no** rate holds a gross amount, and it is rebilled as-is with `tax_rate: 0` and `tax_rate: 0 (VAT unknown, gross rebilled as-is; pass assume_vat_rate to split)` in the description, so a default rate on the invoice cannot tax the receipt twice. The `expense_settings` default is applied when the expense is **inserted** and never retroactively at rebill time: changing that default later must not rewrite the tax meaning of receipts entered before it existed. To split those older lines anyway, pass `assume_vat_rate` explicitly on the `expense_to_invoice` call and the lines are flagged `[vat assumed 23%]`.
 
