@@ -1,6 +1,7 @@
 import { mintLicense, verifyLicenseKey, hex } from "./license.js";
 import { PAGES } from "./pages.js";
 import { GUIDES, GUIDE_INDEX } from "./content.js";
+import { setupPage, clientHub, setupIndex, setupUrls, CLIENTS, CLIENT_ORDER, SETUP_SERVERS } from "./setup.js";
 
 export const PRODUCTS = {
   "time-tracker": { desc: "Track billable time from chat: timers, entries, reports, CSV, invoice-ready totals.", free: "Free: unlimited timers, last 7 days of reports, 2 rated projects, currency per entry.", pro: "Pro: full history, invoice summaries, group by tag, unlimited projects.", name: "MCP Time Tracker Pro", price: "price_1UBDU5JKCamubEm1wPMZI8Zf", usd: 19, pkg: "@theluckystrike/mcp-time-tracker", bin: "mcp-time-tracker", payload: "time-tracker" },
@@ -89,6 +90,8 @@ function home() {
 <table><tr><th>Product</th><th>Price</th><th></th></tr>${rows}</table>
 <h2>Hosted endpoints</h2><p>No install: <a href="/mcp">mcp.zovo.one/mcp</a> serves time-tracker, price-tracker and invoice over MCP streamable HTTP. Get a free anonymous token at <code>/mcp/token</code> or use a Pro key as the bearer.</p><h2>How activation works</h2>
 <p>After payment you get a key like <code>MCPL1.xxx.yyy</code>. In Claude, run <code>license_activate</code> with the key, or set the environment variable <code>MCP_LICENSE_KEY</code>.</p>
+<h2>Setup guides per client</h2>
+<p>The exact config file, key and entry for every server in <a href="/setup/claude-desktop">Claude Desktop</a>, <a href="/setup/claude-code">Claude Code</a>, <a href="/setup/cursor">Cursor</a>, <a href="/setup/vscode">VS Code</a>, <a href="/setup/windsurf">Windsurf</a> and <a href="/setup/cline">Cline</a>: <a href="/setup">all 36 setup pages</a>.</p>
 <h2>Guides</h2>
 <p>Setup and worked examples: ${GUIDE_LINKS}</p>
 <p>Source and docs: <a href="${REPO}">${REPO}</a></p>`);
@@ -274,7 +277,11 @@ export default {
       if (!pg) return new Response(page("Not found", `<h1>Unknown server</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
       const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/s/${esc(id)}">
 <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "SoftwareApplication", name: pg.title, applicationCategory: "DeveloperApplication", operatingSystem: "macOS, Windows, Linux", description: pg.description, url: `https://mcp.zovo.one/s/${id}`, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, offers: [{ "@type": "Offer", price: "0", priceCurrency: "USD", name: "Free tier" }, { "@type": "Offer", price: String(PRODUCTS[id].usd), priceCurrency: "USD", name: "Pro, lifetime", url: `https://mcp.zovo.one/buy/${id}` }] })}</script>`;
+      const setupLinks = SETUP_SERVERS[id]
+        ? CLIENT_ORDER.map((c) => `<a href="/setup/${c}/${id}">${esc(CLIENTS[c].name)}</a>`).join(" &middot; ")
+        : null;
       const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}">Buy Pro $${PRODUCTS[id].usd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a> &middot; <a href="${REPO}/releases/tag/v0.1.1">Claude Desktop bundle (.mcpb)</a></p>${pg.html}
+${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry and caveats: ${setupLinks} &middot; <a href="/setup">all clients</a></p>` : ""}
 <h2>Guides</h2>
 <p>${GUIDE_LINKS}</p>`;
       return new Response(page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
@@ -311,8 +318,28 @@ ${faqHtml}
       return new Response(page(g.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
     }
 
+    if ((path === "/setup" || path.startsWith("/setup/")) && method === "GET") {
+      const parts = path.split("/").filter(Boolean); // ["setup", client?, server?]
+      let pg = null;
+      let faq = null;
+      if (parts.length === 1) pg = setupIndex();
+      else if (parts.length === 2) pg = clientHub(parts[1]);
+      else if (parts.length === 3) {
+        const sp = setupPage(parts[1], parts[2]);
+        if (sp) { pg = sp; faq = sp.faq; }
+      }
+      if (!pg) return new Response(page("Not found", `<h1>Unknown setup page</h1><p><a href="/setup">All setup guides</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+      const ld = [
+        { "@context": "https://schema.org", "@type": "TechArticle", headline: pg.title, description: pg.description, url: pg.canonical, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, publisher: { "@type": "Organization", name: "theluckystrike", url: "https://mcp.zovo.one" } },
+      ];
+      if (faq) ld.push({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) });
+      const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="${pg.canonical}">` +
+        ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
+      return new Response(page(pg.title, pg.body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
     if (path === "/sitemap.xml") {
-      const urls = ["/", "/guides", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      const urls = ["/", "/guides", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     if (path === "/22fad93b71a88e2e60acae203c4288ae.txt") {
@@ -324,7 +351,11 @@ ${faqHtml}
     if (path === "/llms.txt") {
       const lines = Object.entries(PAGES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline} Install: npx -y @theluckystrike/mcp-${k}`).join("\n");
       const guideLines = Object.entries(GUIDES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/guides/${k}): ${v.description}`).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n- [Hosted endpoints, no install](https://mcp.zovo.one/mcp): streamable HTTP for time-tracker, price-tracker, invoice; bearer = anonymous token from /mcp/token or a Pro key\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      const setupLines = CLIENT_ORDER.map((c) =>
+        `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file}, key ${CLIENTS[c].key}. ` +
+        Object.keys(SETUP_SERVERS).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
+      ).join("\n");
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Hosted endpoints, no install](https://mcp.zovo.one/mcp): streamable HTTP for time-tracker, price-tracker, invoice; bearer = anonymous token from /mcp/token or a Pro key\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {

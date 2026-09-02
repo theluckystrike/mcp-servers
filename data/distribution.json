@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-02T23:41:25Z",
+  "updated_at": "2026-09-03T00:20:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -59,7 +59,7 @@
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "6 long-form guides + index, FAQPage JSON-LD, sitemap 12 URLs, IndexNow pinged (expense-tracking-in-claude added)"
+      "note": "6 long-form guides + index, FAQPage JSON-LD, IndexNow pinged; plus 43 /setup pages (6 clients x 6 servers + 6 client hubs + index) shipped 2026-09-03, sitemap now 56 URLs, llms.txt carries a per-client setup section"
     },
     "mcpservers.org": {
       "status": "submitted",
@@ -130,6 +130,11 @@
       "status": "published",
       "url": "https://github.com/theluckystrike?tab=repositories&q=mcp-",
       "note": "six public one-server mirror repos, name-matching the GitHub repo search axis: mcp-time-tracker, mcp-price-tracker, mcp-spreadsheet, mcp-invoice, mcp-expense-tracker, mcp-office-suite. Each holds only that server's folder at root plus MIRROR.md and a vendored vendor/mcp-license (file: dep) so a fresh clone passes npm install && npm run build && npm test with no monorepo access; office-suite also vendors its five children. Description = tagline from data/facts.json, homepage = https://mcp.zovo.one/s/<name>, topics mcp, mcp-server, model-context-protocol, claude, cursor + 3 server-specific. Regenerate with scripts/sync-mirrors.sh (squashed single commit 'sync from monorepo <sha>', force-push to main). Pro-tier tests are skipped in mirrors: they need keys/license-private.pem, which stays in the monorepo"
+    },
+    "setup": {
+      "status": "published",
+      "url": "https://mcp.zovo.one/setup",
+      "note": "43 URLs, all HTTP 200; 36 client-by-server pages 490-551 words each with FAQPage JSON-LD and canonical; client facts verified against each client's public docs on 2026-09-03; IndexNow POST 200 for all 43"
     }
   },
   "per_server": {
