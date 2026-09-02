@@ -18,6 +18,7 @@ const lastRun = valDb.runs.at(-1);
 const promo = js("data/promotion.json", { actions: [] });
 const organic = js("data/organic.json", { surfaces: [], servers: [], measured: [] });
 const uv = js("data/user_value.json", null);
+const uv2 = js("data/user_value_r2.json", null);
 const metrics = js("data/metrics.json", { snapshots: [] });
 const m = metrics.snapshots.at(-1);
 const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
@@ -111,7 +112,7 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv ? ` (${uv.totals.score}/${uv.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
+<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : uv ? ` (${uv.totals.score}/${uv.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
 <div class="tab on" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
@@ -213,7 +214,10 @@ ${promo.actions.slice().sort((a, b) => b.impact - a.impact).map(a => `<tr><td cl
 <div class="tab" id="tab-uservalue">
 ${uv ? `<p class="dim">${esc(uv.method || "")} Run at ${esc(uv.at)}. Full report: <a href="docs/USER_VALUE.md">docs/USER_VALUE.md</a>.</p>
 <div class="kpis"><div class="kpi"><div class="n">${uv.totals.score}/${uv.totals.max}</div><div class="k">scenario points (0-3 each, real MCP client)</div></div><div class="kpi"><div class="n">${Math.round(uv.totals.hit_rate * 100)}%</div><div class="k">real retailer price hit rate (${esc(uv.totals.hit_rate_of_reachable)})</div></div><div class="kpi"><div class="n">${esc(uv.pdf.verdict)}</div><div class="k">invoice PDF visual check</div></div><div class="kpi"><div class="n">${(uv.free_tier.limits_hit || []).length}</div><div class="k">free limits hit in first session</div></div></div>
-<h2>Scenarios, phrased as a user would, through the claude CLI as MCP client</h2>
+${uv2 ? `<h2>Round 2 after the value fixes (v0.1.1): ${uv2.totals.score}/${uv2.totals.max}, round 1 was ${uv.totals.score}/${uv.totals.max}</h2>
+<div class="tw"><table><tr><th>Server</th><th>User said</th><th>R1</th><th>R2</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${uv2.scenarios.map((x, i) => { const r1 = uv.scenarios.find(y => y.id === x.id) || uv.scenarios[i] || {}; return `<tr><td class="mono">${esc(x.server)}</td><td>${esc(x.prompt)}</td><td class="num">${r1.score ?? ""}</td><td class="num"><b>${x.score}</b></td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`; }).join("")}</table></div>
+<p class="dim">Report: <a href="docs/USER_VALUE_R2.md">docs/USER_VALUE_R2.md</a>. Real-retailer hit rate round 2: ${Math.round((uv2.totals.hit_rate || 0) * 100)}%. PDF: ${esc(uv2.pdf?.verdict || "")}.</p>` : ""}
+<h2>Round 1 scenarios (v0.1.0), phrased as a user would, through the claude CLI as MCP client</h2>
 <div class="tw"><table><tr><th>Server</th><th>User said</th><th>Score</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${uv.scenarios.map(x => `<tr><td class="mono">${esc(x.server)}</td><td>${esc(x.prompt)}</td><td class="num"><b>${x.score}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
 <h2>Price extraction on real retailer pages</h2>
 <div class="tw"><table><tr><th>URL</th><th>HTTP</th><th>Price</th><th>Currency</th><th>Source</th><th>Correct</th></tr>${uv.price_hits.map(x => `<tr><td class="mono dim">${esc(String(x.url).slice(0, 70))}</td><td class="num">${esc(x.status)}</td><td class="num">${esc(x.price ?? "")}</td><td>${esc(x.currency ?? "")}</td><td class="dim">${esc(x.source ?? "")}</td><td>${pill(x.correct === true ? "ok" : x.correct === false ? "fail" : "n/a")}</td></tr>`).join("")}</table></div>
