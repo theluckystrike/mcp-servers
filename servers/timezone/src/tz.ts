@@ -78,10 +78,16 @@ function dist(a: string, b: string): number {
 }
 
 export interface ZoneHit { zone: string; matched: string }
+/** A caller-supplied name is echoed back, so it is truncated: a 1 MB argument must not become a 1 MB error. */
+export function clip(s: string, n = 80): string {
+  const t = String(s ?? "");
+  return t.length <= n ? t : `${t.slice(0, n)}... (${t.length} characters)`;
+}
+
 export class UnknownZoneError extends Error {
   constructor(public input: string, public suggestions: string[]) {
     super(
-      `unknown time zone or place: "${input}"` +
+      `unknown time zone or place: "${clip(input)}"` +
       (suggestions.length ? `. Did you mean: ${suggestions.join(", ")}?` : ". Pass an IANA zone such as Europe/Warsaw, or a city name such as Warsaw.")
     );
   }
@@ -119,6 +125,14 @@ export function resolveZone(input: string): ZoneHit {
       const z = `Etc/GMT${sign}${h}`;
       if (isValidZone(z)) return { zone: z, matched: raw };
     }
+    if (off[3]) {
+      throw new Error(
+        `"${clip(raw)}" is a fixed offset with minutes, and IANA has no zone for it. ` +
+        `Name the place instead (UTC+05:30 is India, so pass "India" or "Asia/Kolkata"), ` +
+        `or use a whole-hour offset such as UTC+5.`,
+      );
+    }
+    throw new UnknownZoneError(raw, []);
   }
 
   const cand: { name: string; d: number }[] = [];
@@ -227,7 +241,7 @@ export function hhmmToMinutes(s: string, what = "time"): number {
   const m = /^(\d{1,2}):?(\d{2})?$/.exec(String(s).trim());
   if (!m) throw new Error(`${what} must look like "09:00" or "17:30", got "${s}"`);
   const h = Number(m[1]), mi = Number(m[2] ?? 0);
-  if (h > 24 || mi > 59) throw new Error(`${what} is out of range: "${s}"`);
+  if (h > 24 || mi > 59 || h * 60 + mi > 24 * 60) throw new Error(`${what} is out of range: "${clip(s)}"`);
   return h * 60 + mi;
 }
 
@@ -387,6 +401,9 @@ export function dstChanges(zone: string, year: number): DstChange[] {
 
 /* ----------------------------------------------------------- business days */
 
+/** The day loop is O(days); a 200-year range used to stop silently at the guard and report a short answer. */
+export const MAX_BUSINESS_DAY_SPAN = 3700;
+
 export function businessDays(from: string, to: string, zone: string, holidays: string[] = []): {
   days: string[]; weekendCount: number; holidayCount: number; total: number;
 } {
@@ -400,8 +417,15 @@ export function businessDays(from: string, to: string, zone: string, holidays: s
   const [y1, m1, d1] = e.split("-").map(Number);
   let cur = Date.UTC(y0, m0 - 1, d0);
   const last = Date.UTC(y1, m1 - 1, d1);
+  const span = Math.round((last - cur) / 86400000) + 1;
+  if (span > MAX_BUSINESS_DAY_SPAN) {
+    throw new Error(
+      `${from} to ${to} is ${span} calendar days; this tool counts at most ` +
+      `${MAX_BUSINESS_DAY_SPAN} (about ${Math.round(MAX_BUSINESS_DAY_SPAN / 365)} years) in one call. Split the range.`,
+    );
+  }
   let guard = 0;
-  while (cur <= last && guard++ < 4000) {
+  while (cur <= last && guard++ <= MAX_BUSINESS_DAY_SPAN) {
     const d = new Date(cur);
     const key = `${d.getUTCFullYear()}-${P2(d.getUTCMonth() + 1)}-${P2(d.getUTCDate())}`;
     const dow = d.getUTCDay();

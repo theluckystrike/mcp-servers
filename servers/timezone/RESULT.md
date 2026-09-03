@@ -53,7 +53,12 @@ artifacts:
 /Users/mike/mcp-servers/servers/timezone/LICENSE
 /Users/mike/mcp-servers/assets/timezone-logo.png
 
-cost: 38 wall minutes
+cost: 38 wall minutes (+55 for the adversarial audit, docs/TIMEZONE_AUDIT.md)
+
+audit 2026-09-03: docs/TIMEZONE_AUDIT.md. 31 adversarial probes (7 failed and were fixed:
+unbounded caller text and array/day/participant counts, hh:mm past 24:00, a silently truncated
+business_days range, a duplicate contact name overwriting a different zone, a fixed offset with
+minutes) and 6 user-value scenarios through the claude CLI, scored 17/18. npm test now 33 pass.
 
 failures:
 1. Intl.supportedValuesOf("timeZone") on Node 22 returns 418 CANONICAL ids that exclude

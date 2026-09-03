@@ -194,11 +194,22 @@ good copy and delete the marker.
   `from_zone` is then only used for display.
 - **A wall time inside a spring-forward gap does not exist.** `02:30` on 2026-03-29 in Warsaw resolves to
   03:30 local (the instant right after the jump), which is what calendars do. It is never silently moved back.
-- **Ambiguous times in the autumn fold** resolve to the first (pre-change) occurrence.
+- **Ambiguous times in the autumn fold** resolve to the second (post-change) occurrence: `02:30` on
+  2026-10-25 in Warsaw is `01:30Z`, the CET reading, not the CEST one. Measured, not assumed
+  (docs/TIMEZONE_AUDIT.md probe 19).
 - **`.ics` files carry UTC times** (`DTSTART:20260910T130000Z`) and no `VTIMEZONE` block. That is deliberate:
   a hand-written `VTIMEZONE` with stale DST rules is the classic way an invite lands an hour off.
 - **Working hours are the only calendar this server has.** It does not know about your existing meetings,
-  public holidays (pass them to `business_days` yourself) or anyone's lunch.
+  public holidays (pass them to `business_days` yourself) or anyone's lunch. `business_days` says so in
+  its own answer when no holiday list is passed, so a "22 business days" figure is never mistaken for a
+  public-holiday-adjusted one.
+- **Argument sizes are capped**, so a runaway caller cannot turn one call into a hang or a huge reply:
+  place and date strings 100 characters, event titles 200, descriptions 5000, up to 50 zones,
+  100 participants, 100 attendees, 400 holidays, `days` <= 366, `duration_minutes` <= 1440, and a
+  `business_days` range of at most 3700 days (longer ranges are refused, never silently truncated).
+- **`out_path` is written where you name it.** `ics_create` resolves a relative path against the
+  process working directory and does not confine it to the data directory; an unwritable path returns
+  a clean `EACCES` and consumes none of the free monthly quota.
 - **Weekend skipping uses the first participant's zone** and the Saturday/Sunday convention. A Friday-Saturday
   weekend is not modelled; set `work_start`/`work_end` or read the dates.
 

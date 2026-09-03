@@ -20,6 +20,24 @@ const FREE_MAX_DAYS = 5;
 const FREE_MAX_CONTACTS = 5;
 const FREE_ICS_PER_MONTH = 3;
 
+/**
+ * Caller-supplied text is bounded at the schema. Without this a 1 MB zone name comes
+ * back inside a 1 MB error message, and a 1 MB event title writes a 1 MB .ics file.
+ * The numeric caps bound the work a single call can ask for: findSlots is
+ * O(days x participants x 52), so an unbounded `days` under Pro is a free hang.
+ */
+const MAX_ZONE_TEXT = 100;
+const MAX_TITLE = 200;
+const MAX_BODY = 5000;
+const MAX_PATH = 4096;
+const MAX_ZONES = 50;
+const MAX_PARTICIPANTS = 100;
+const MAX_DAYS = 366;
+const MAX_DURATION = 1440;
+const MAX_HOLIDAYS = 400;
+const text = (max: number, what: string) =>
+  z.string().max(max, `${what} must be ${max} characters or fewer`);
+
 const gate = createLicenseGate({ product: PRODUCT });
 
 /* ---------------------------------------------------------------- storage */
@@ -98,7 +116,7 @@ server.registerTool("now", {
   title: "Current time in zones",
   description: "The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC.",
   inputSchema: {
-    zones: z.array(z.string()).optional().describe("Places or IANA zones, e.g. ['Warsaw','New York','India']"),
+    zones: z.array(text(MAX_ZONE_TEXT, "a zone")).max(MAX_ZONES).optional().describe("Places or IANA zones, e.g. ['Warsaw','New York','India']"),
   },
 }, guard(async ({ zones }: { zones?: string[] }) => {
   const list = zones && zones.length
@@ -118,9 +136,9 @@ server.registerTool("convert_time", {
   title: "Convert a time between zones",
   description: "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'.",
   inputSchema: {
-    time: z.string().describe("'2026-09-10 15:00', '2026-09-10T15:00:00Z', '3pm tomorrow', 'now'"),
-    from_zone: z.string().describe("Place the time is given in, e.g. 'Warsaw' or 'Europe/Warsaw'"),
-    to_zones: z.array(z.string()).min(1).describe("Places to convert into"),
+    time: text(MAX_ZONE_TEXT, "time").describe("'2026-09-10 15:00', '2026-09-10T15:00:00Z', '3pm tomorrow', 'now'"),
+    from_zone: text(MAX_ZONE_TEXT, "from_zone").describe("Place the time is given in, e.g. 'Warsaw' or 'Europe/Warsaw'"),
+    to_zones: z.array(text(MAX_ZONE_TEXT, "a zone")).min(1).max(MAX_ZONES).describe("Places to convert into"),
   },
 }, guard(async ({ time, from_zone, to_zones }: { time: string; from_zone: string; to_zones: string[] }) => {
   const from = zoneOf(from_zone);
@@ -149,10 +167,10 @@ server.registerTool("overlap", {
   title: "Daily working-hours overlap",
   description: "The window each day when every listed place is inside working hours. Computed on a real date, so a DST week that widens or narrows the overlap is reflected.",
   inputSchema: {
-    zones: z.array(z.string()).min(2).describe("Places, e.g. ['Warsaw','New York','Bangalore']"),
-    work_start: z.string().optional().describe("Local working day start, default 09:00"),
-    work_end: z.string().optional().describe("Local working day end, default 17:00"),
-    date: z.string().optional().describe("Date to compute on, YYYY-MM-DD, default today"),
+    zones: z.array(text(MAX_ZONE_TEXT, "a zone")).min(2).max(MAX_ZONES).describe("Places, e.g. ['Warsaw','New York','Bangalore']"),
+    work_start: text(16, "work_start").optional().describe("Local working day start, default 09:00"),
+    work_end: text(16, "work_end").optional().describe("Local working day end, default 17:00"),
+    date: text(MAX_ZONE_TEXT, "date").optional().describe("Date to compute on, YYYY-MM-DD, default today"),
   },
 }, guard(async ({ zones, work_start = "09:00", work_end = "17:00", date }: { zones: string[]; work_start?: string; work_end?: string; date?: string }) => {
   const ws = windowsFor(zones, work_start, work_end);
@@ -178,10 +196,10 @@ server.registerTool("overlap", {
 /* ----------------------------------------------------- find_meeting_slots */
 
 const participantSchema = z.object({
-  name: z.string().min(1).describe("Person or client name"),
-  zone: z.string().min(1).describe("Their place or IANA zone"),
-  work_start: z.string().optional().describe("Their local day start, default 09:00"),
-  work_end: z.string().optional().describe("Their local day end, default 17:00"),
+  name: text(MAX_ZONE_TEXT, "name").min(1).describe("Person or client name"),
+  zone: text(MAX_ZONE_TEXT, "zone").min(1).describe("Their place or IANA zone"),
+  work_start: text(16, "work_start").optional().describe("Their local day start, default 09:00"),
+  work_end: text(16, "work_end").optional().describe("Their local day end, default 17:00"),
 });
 
 function toParticipants(list: { name: string; zone: string; work_start?: string; work_end?: string }[]): Participant[] {
@@ -197,11 +215,11 @@ server.registerTool("find_meeting_slots", {
   title: "Find meeting slots",
   description: "Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody. Weekends in the first participant's zone are skipped.",
   inputSchema: {
-    participants: z.array(participantSchema).min(1).describe("Who has to attend, with their zone and optional working hours"),
-    duration_minutes: z.number().int().positive().optional().describe("Meeting length, default 60"),
-    days: z.number().int().positive().optional().describe("How many days ahead to search, default 5"),
-    earliest_date: z.string().optional().describe("First date to consider, YYYY-MM-DD, default today"),
-    limit: z.number().int().positive().optional().describe("How many slots to return, default 8"),
+    participants: z.array(participantSchema).min(1).max(MAX_PARTICIPANTS).describe("Who has to attend, with their zone and optional working hours"),
+    duration_minutes: z.number().int().positive().max(MAX_DURATION).optional().describe("Meeting length in minutes, default 60, at most 1440"),
+    days: z.number().int().positive().max(MAX_DAYS).optional().describe("How many days ahead to search, default 5, at most 366"),
+    earliest_date: text(MAX_ZONE_TEXT, "earliest_date").optional().describe("First date to consider, YYYY-MM-DD, default today"),
+    limit: z.number().int().positive().max(100).optional().describe("How many slots to return, default 8"),
     recurring: z.boolean().optional().describe("Pro: also report the weekly recurring times that work on every searched weekday"),
   },
 }, guard(async (a: { participants: { name: string; zone: string; work_start?: string; work_end?: string }[]; duration_minutes?: number; days?: number; earliest_date?: string; limit?: number; recurring?: boolean }) => {
@@ -256,8 +274,8 @@ server.registerTool("dst_changes", {
   title: "Daylight-saving changes",
   description: "The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October.",
   inputSchema: {
-    zone: z.string().describe("Place or IANA zone"),
-    year: z.number().int().optional().describe("Calendar year, default this year"),
+    zone: text(MAX_ZONE_TEXT, "zone").describe("Place or IANA zone"),
+    year: z.number().int().min(1850).max(2200).optional().describe("Calendar year, default this year"),
   },
 }, guard(async ({ zone, year }: { zone: string; year?: number }) => {
   const z = zoneOf(zone);
@@ -278,20 +296,26 @@ server.registerTool("dst_changes", {
 
 server.registerTool("business_days", {
   title: "Count business days",
-  description: "Business days between two dates in a place, excluding weekends and any holidays you pass. Use it for delivery dates and payment terms across a client's calendar.",
+  description: "Business days between two dates in a place, excluding weekends and any holidays you pass. This tool has no national holiday calendar: unless you pass holidays, only weekends are excluded, so do not report the answer as a public-holiday-adjusted count. Use it for delivery dates and payment terms across a client's calendar.",
   inputSchema: {
-    from: z.string().describe("Start date, YYYY-MM-DD (inclusive)"),
-    to: z.string().describe("End date, YYYY-MM-DD (inclusive)"),
-    zone: z.string().describe("Place whose calendar to use"),
-    holidays: z.array(z.string()).optional().describe("Dates to exclude, YYYY-MM-DD"),
+    from: text(MAX_ZONE_TEXT, "from").describe("Start date, YYYY-MM-DD (inclusive)"),
+    to: text(MAX_ZONE_TEXT, "to").describe("End date, YYYY-MM-DD (inclusive)"),
+    zone: text(MAX_ZONE_TEXT, "zone").describe("Place whose calendar to use"),
+    holidays: z.array(text(32, "a holiday")).max(MAX_HOLIDAYS).optional().describe("Dates to exclude, YYYY-MM-DD"),
   },
 }, guard(async ({ from, to, zone, holidays }: { from: string; to: string; zone: string; holidays?: string[] }) => {
   const z = zoneOf(zone);
   const r = businessDays(from, to, z, holidays ?? []);
   const listed = r.days.length <= 20 ? `\nDays: ${r.days.join(", ")}` : "";
+  // D-T1: the count is only as good as the holiday list it was given. Say so, or a model
+  // narrates "no public holidays that month" as though the tool had checked a calendar.
+  const hol = holidays && holidays.length
+    ? `\nExcluded as holidays: ${holidays.join(", ")} (${r.holidayCount} of them fell on a weekday).`
+    : `\nNo holidays were passed, so only weekends were excluded; this tool has no national ` +
+      `holiday calendar - pass holidays to exclude them.`;
   return ok(
     `${from} to ${to} in ${z}: ${r.days.length} business day(s) of ${r.total} calendar day(s) ` +
-    `(${r.weekendCount} weekend, ${r.holidayCount} holiday).${listed}`,
+    `(${r.weekendCount} weekend, ${r.holidayCount} holiday).${hol}${listed}`,
   );
 }));
 
@@ -301,10 +325,10 @@ server.registerTool("contacts_set", {
   title: "Save a contact's zone",
   description: "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later.",
   inputSchema: {
-    name: z.string().min(1).describe("Their name"),
-    zone: z.string().min(1).describe("Their place or IANA zone"),
-    work_start: z.string().optional().describe("Local day start, default 09:00"),
-    work_end: z.string().optional().describe("Local day end, default 17:00"),
+    name: text(MAX_ZONE_TEXT, "name").min(1).describe("Their name"),
+    zone: text(MAX_ZONE_TEXT, "zone").min(1).describe("Their place or IANA zone"),
+    work_start: text(16, "work_start").optional().describe("Local day start, default 09:00"),
+    work_end: text(16, "work_end").optional().describe("Local day end, default 17:00"),
   },
 }, guard(async ({ name, zone, work_start = "09:00", work_end = "17:00" }: { name: string; zone: string; work_start?: string; work_end?: string }) => {
   const z = zoneOf(zone);
@@ -313,13 +337,19 @@ server.registerTool("contacts_set", {
   return withFileLock(LOCK, async () => {
     const db = load();
     const key = name.trim().toLowerCase();
-    const isNew = !db.contacts[key];
+    const prev = db.contacts[key];
+    const isNew = !prev;
     if (isNew && !gate.isPro() && Object.keys(db.contacts).length >= FREE_MAX_CONTACTS) {
       return gated(`a ${FREE_MAX_CONTACTS + 1}th saved contact (the free tier keeps ${FREE_MAX_CONTACTS})`);
     }
     db.contacts[key] = { name: name.trim(), zone: z, workStart: work_start, workEnd: work_end, updated: new Date().toISOString() };
     save(db);
-    return ok(`Saved ${name.trim()}: ${z}, ${work_start}-${work_end} local. Local time there now: ${describe(new Date(), z)}`);
+    // A second "Sara" is the same key. Saying so out loud is the difference between
+    // updating a contact and silently moving an existing person to another continent.
+    const replaced = prev && (prev.zone !== z || prev.workStart !== work_start || prev.workEnd !== work_end)
+      ? ` Replaced the saved ${prev.name} (was ${prev.zone}, ${prev.workStart}-${prev.workEnd}); names are matched case-insensitively.`
+      : "";
+    return ok(`Saved ${name.trim()}: ${z}, ${work_start}-${work_end} local. Local time there now: ${describe(new Date(), z)}.${replaced}`);
   });
 }));
 
@@ -348,14 +378,14 @@ server.registerTool("ics_create", {
   title: "Write a calendar invite",
   description: "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale.",
   inputSchema: {
-    title: z.string().min(1).describe("Event title"),
-    start: z.string().describe("Start time, read in `zone` unless it carries an offset"),
-    zone: z.string().describe("Place the start time is given in"),
-    duration_minutes: z.number().int().positive().describe("Length in minutes"),
-    attendees: z.array(z.string()).optional().describe("Email addresses, or names"),
-    description: z.string().optional().describe("Body text"),
-    location: z.string().optional().describe("Where, or a meeting link"),
-    out_path: z.string().optional().describe("Where to write the file; default meeting.ics in the data dir"),
+    title: text(MAX_TITLE, "title").min(1).describe("Event title"),
+    start: text(MAX_ZONE_TEXT, "start").describe("Start time, read in `zone` unless it carries an offset"),
+    zone: text(MAX_ZONE_TEXT, "zone").describe("Place the start time is given in"),
+    duration_minutes: z.number().int().positive().max(MAX_DURATION).describe("Length in minutes, at most 1440"),
+    attendees: z.array(text(MAX_TITLE, "an attendee")).max(MAX_PARTICIPANTS).optional().describe("Email addresses, or names"),
+    description: text(MAX_BODY, "description").optional().describe("Body text"),
+    location: text(MAX_TITLE, "location").optional().describe("Where, or a meeting link"),
+    out_path: text(MAX_PATH, "out_path").optional().describe("Where to write the file; default meeting.ics in the data dir"),
   },
 }, guard(async (a: { title: string; start: string; zone: string; duration_minutes: number; attendees?: string[]; description?: string; location?: string; out_path?: string }) => {
   const z = zoneOf(a.zone);
