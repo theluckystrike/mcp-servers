@@ -218,6 +218,60 @@ export const SETUP_SERVERS = {
     pro: "Full history, unlimited projects and rules, xlsx export, rebill with markup.",
     measured: "The EUR 61.50 receipt above stored as amount_minor 6150, vat_rate 23, and rebilled at a net unit_price of 50.00, so the invoice did not tax it twice.",
   },
+  currency: {
+    title: "MCP Currency Converter",
+    slug: "currency",
+    toolCount: "10 tools",
+    pkg: "@theluckystrike/mcp-currency",
+    sPage: "/s/currency",
+    hosted: null,
+    tagline: "ECB reference rates with the rate date on every answer.",
+    does: "It caches the European Central Bank's daily and historical euro reference rates, converts between any currencies the ECB quotes through EUR cross rates, and emits the exact fx_rates object the expense tracker needs to rebill a project in one currency.",
+    prompts: [
+      ["What is 4,500 EUR in USD today?", "convert"],
+      ["What was the GBP rate on 30 August?", "rate_on"],
+      ["Rebill Nova in USD using today's rates.", "fx_rates_for then expense_to_invoice"],
+    ],
+    free: "latest rates, convert, convert_many, fx_rates_for, history windows up to 90 days.",
+    pro: "Any date and any window back to 1999-01-04.",
+    measured: "Counted from the published history file: the ECB series runs 1999-01-04 to 2026-09-02, 10,104 calendar days holding 7,084 dates, so 29.9% of dates carry no rate. Every answer names the rate date it actually used.",
+  },
+  docx: {
+    title: "MCP Docx",
+    slug: "docx",
+    toolCount: "10 tools",
+    pkg: "@theluckystrike/mcp-docx",
+    sPage: "/s/docx",
+    hosted: null,
+    tagline: "Real Word documents from chat: proposals, contracts, quotes.",
+    does: "It writes .docx files from sections or from markdown, generates priced proposals and freelance service agreements with reference numbers that never repeat, reads an existing Word file back as text and outline, and fills {{placeholders}} in a template while keeping its styles.",
+    prompts: [
+      ["Write a proposal for Beta Corp: checkout rebuild, 4,500 EUR, three phases.", "proposal_create"],
+      ["Fill my NDA template with this client's details.", "doc_fill_template"],
+      ["What does this proposal.docx actually say?", "doc_read"],
+    ],
+    free: "unlimited create, convert and read; 3 proposals or contracts per calendar month; templates up to 10 placeholders.",
+    pro: "Unlimited proposals and contracts, letterhead logo and colour, any template.",
+    measured: "The worked proposal issued PROP-2026-0001 at EUR 4,500.00 with a timeline table and a signature block. Template filling substitutes on the joined paragraph text, so a placeholder Word split into three runs is still replaced.",
+  },
+  timezone: {
+    title: "MCP Timezone Planner",
+    slug: "timezone",
+    toolCount: "11 tools",
+    pkg: "@theluckystrike/mcp-timezone",
+    sPage: "/s/timezone",
+    hosted: null,
+    tagline: "Find meeting slots inside everyone's working hours.",
+    does: "It converts times between IANA zones with DST read from the ICU data in your Node build, ranks meeting slots where every participant is inside their own working hours, computes the daily overlap and clock changes, and writes .ics files.",
+    prompts: [
+      ["Find an hour next week for me in Warsaw, my client in New York and my designer in London.", "find_meeting_slots"],
+      ["When are Warsaw and New York both at work?", "overlap"],
+      ["Write me the .ics for Thursday 3pm Warsaw, 45 minutes.", "ics_create"],
+    ],
+    free: "conversions, overlap, DST and business days unlimited; slots for 3 participants over 5 days, 5 contacts, 3 ics a month.",
+    pro: "Unlimited participants, days, contacts and ics files, plus recurring slot search.",
+    measured: "Warsaw and New York on 09:00 to 17:00 days share 2 hours on 2026-09-10 and 3 hours on 2026-03-16, because the United States moves to daylight time on 8 March and Europe on 29 March. The overlap is computed on a real date, so it says so.",
+  },
   "office-suite": {
     title: "MCP Office Suite",
     slug: "office-suite",
@@ -285,6 +339,30 @@ const ANGLE = {
     windsurf: "Because there is one config for every workspace, the expense log is reachable in whatever project you are in when the receipt arrives, which is the whole point of an expense tool.",
     cline: "Put expense_add and expense_summary in autoApprove and keep expense_mark_rebilled out, because it writes an invoice number onto receipts and clearing it is a separate call with its own flag.",
   },
+  currency: {
+    "claude-desktop": "Claude Desktop is the client people ask a quick question in, and this is the one server here where the quick question has a wrong answer if the tool is missing: the model will happily guess a rate. Installed, every answer comes back with the ECB rate date attached.",
+    "claude-code": "The whole chain lives in one terminal session: expense_to_invoice to see which currencies are present, fx_rates_for to fetch them, expense_to_invoice again with the rates, invoice_create to issue. Nobody types an exchange rate.",
+    cursor: "If you invoice one client per repository, put the currency server in that project's .cursor/mcp.json next to the expense tracker, and the pair that rebills in the client's currency is scoped to the client's project.",
+    vscode: "fx_rates_for returns a plain JSON object, so in agent mode it can be written straight into a file in the workspace and committed next to the invoice it justifies, with the rate date in the same commit.",
+    windsurf: "Ten tools out of the 100 Cascade can hold, and one outbound host: www.ecb.europa.eu, only when the local cache is older than 6 hours. It is the cheapest server in this collection to leave enabled.",
+    cline: "Every tool here except license_activate is a read, so this is the one server whose whole tool list is safe in autoApprove. The only network destination is the ECB, and nothing about your amounts leaves the machine.",
+  },
+  docx: {
+    "claude-desktop": "Claude Desktop has no working directory, so pass an absolute out_path or let the server write to its own documents folder and open the path it hands back. The proposal layout with your letterhead is the reason to use this client for it: you are already reading the result in a window, not a terminal.",
+    "claude-code": "The write_proposal_from_hours prompt takes an invoice_summary out of the time tracker and prices a proposal from hours you actually logged, which only reads naturally in the client where both servers are already loaded in the same session.",
+    cursor: "Keep the NDA and the statement of work templates in the repository and doc_fill_template against the committed copy. The filled file lands in the same tree, so the diff shows which document went out and when.",
+    vscode: "doc_to_html is the PDF route, and VS Code is the client where that is least awkward: the HTML lands in the Explorer, opens in a preview, and prints from the browser with the print stylesheet applied.",
+    windsurf: "One config file for every workspace suits a tool you reach for when a proposal is due rather than daily. Ten tools of Cascade's 100 leaves the budget for the servers you use every hour.",
+    cline: "Put doc_read and doc_to_html in autoApprove and keep proposal_create and contract_create out of it. Reading a document is harmless; creating a proposal consumes a PROP reference number, and the counter is written before the record, so a burnt number is never handed out again.",
+  },
+  timezone: {
+    "claude-desktop": "This is the client that is open when the question arrives, which is what contacts_list is for: \"who is awake right now\" answers from the five contacts you saved, with each one's local time and whether they are inside their working hours.",
+    "claude-code": "Scheduling from the terminal without leaving it is the point, and the server makes no network call at all, so it behaves the same on a locked-down machine as on your own. The only file it writes is the .ics you asked for.",
+    cursor: "Put it in the project config for the client you have standing calls with, save that client's contacts once, and the slot search in that workspace already knows the zones and working hours involved.",
+    vscode: "The .ics lands in the workspace and can be opened, checked and sent from the Explorer, which matters because an invite is one of the few outputs here you cannot un-send after the fact.",
+    windsurf: "Eleven tools out of Cascade's ceiling of 100, no network calls and no account. Because mcp_config.json applies to every workspace, the contacts you save are reachable from whichever project you are in when a client emails.",
+    cline: "Put now, convert_time, overlap and dst_changes in autoApprove: they are pure calculation. Keep ics_create out, because on the free tier it spends one of three files a month, and keep contacts_set out because it writes.",
+  },
   "office-suite": {
     "claude-desktop": "One entry in claude_desktop_config.json instead of five, which matters more here than anywhere else: this is the client where each extra server is another absolute path to get right.",
     "claude-code": "One `claude mcp add` instead of five, and one bundle key. The audited conversation that started a timer and finished with a rendered invoice ran entirely through this single server.",
@@ -323,7 +401,9 @@ const FAQ = {
       q: "Can I use " + s.title + " without installing anything?",
       a: s.hosted
         ? "Yes: claude mcp add --transport http " + s.hosted + " https://mcp.zovo.one/mcp/" + s.hosted + " --header \"Authorization: Bearer <token>\". Mint a free token at https://mcp.zovo.one/mcp/token or use a Pro key. -t and -H are the short forms."
-        : "Not this one; it starts five child processes, so it runs locally over stdio. The five servers behind it are each hosted at https://mcp.zovo.one/mcp if you want a no-install route.",
+        : s.slug === "office-suite"
+          ? "Not this one; it starts five child processes, so it runs locally over stdio. Three of the servers behind it are hosted at https://mcp.zovo.one/mcp if you want a no-install route."
+          : "Not yet. " + s.title + " runs locally over stdio, which is also how it reads and writes files on your disk. The hosted endpoints at https://mcp.zovo.one/mcp currently cover time-tracker, price-tracker and invoice.",
     },
   ],
   cursor: (s) => [
@@ -388,6 +468,13 @@ function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+/** Trim so the HTML-escaped description still fits the 155-char slice index.js applies. */
+function fitDesc(d) {
+  let out = d;
+  while (esc(out).length > 155) out = out.slice(0, out.lastIndexOf(" "));
+  return out;
+}
+
 function serverJson(clientId, s) {
   const c = CLIENTS[clientId];
   const typeLine = clientId === "cursor" ? '\n      "type": "stdio",' : "";
@@ -427,6 +514,9 @@ ${esc(serverJson(clientId, s))}</code></pre>
 
 function hostedBlock(clientId, s) {
   if (!s.hosted) {
+    if (s.slug !== "office-suite") {
+      return `<p>There is no hosted endpoint for this one yet. ${esc(s.title)} runs locally over stdio with the config above, which is also the only form in which it reads and writes files on your own disk. Three of the servers in this collection are served at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP: time-tracker, price-tracker and invoice.</p>`;
+    }
     return `<p>The suite starts five child processes, so it has no hosted form. Each of the five is served at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP instead: mint a free token with <code>curl ${BASE}/mcp/token</code>, or use a Pro key as the bearer.</p>`;
   }
   const url = `${BASE}/mcp/${s.hosted}`;
@@ -474,7 +564,7 @@ export function setupPage(clientId, serverId) {
   if (!c || !s) return null;
   const canonical = `${BASE}/setup/${clientId}/${serverId}`;
   const title = `${s.title} in ${c.name}`;
-  const description = `Install ${s.title} in ${c.name}: the exact ${c.file} entry, three prompts that work, and ${c.caveatShort}.`.slice(0, 154);
+  const description = fitDesc(`Install ${s.title} in ${c.name}: the exact ${c.file} entry, three prompts that work, and ${c.caveatShort}.`);
 
   const promptRows = s.prompts
     .map(([p, t]) => `<tr><td>${esc(p)}</td><td><code>${esc(t)}</code></td></tr>`)
@@ -524,7 +614,7 @@ export function clientHub(clientId) {
   if (!c) return null;
   const canonical = `${BASE}/setup/${clientId}`;
   const title = `MCP servers for ${c.name}: install guides`;
-  const description = `Six MCP servers set up in ${c.name}, each with the exact ${c.file} entry: time tracking, invoices, expenses, spreadsheets and price watching.`.slice(0, 154);
+  const description = fitDesc(`Nine MCP servers set up in ${c.name}, each with the exact ${c.file} entry: time tracking, invoices, expenses, spreadsheets, price watching, currency, Word documents and time zones.`);
   const rows = SERVER_ORDER.map(
     (id) =>
       `<tr><td><a href="/setup/${clientId}/${id}">${esc(SETUP_SERVERS[id].title)} in ${esc(c.name)}</a><br><span class="muted">${esc(SETUP_SERVERS[id].tagline)}</span></td></tr>`
@@ -549,7 +639,7 @@ export function clientHub(clientId) {
 export function setupIndex() {
   const canonical = `${BASE}/setup`;
   const title = "Set up an MCP server in your client";
-  const description = "Exact config file paths and entries for six MCP servers in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline.";
+  const description = "Exact config file paths and entries for nine MCP servers in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline.";
   const clientRows = CLIENT_ORDER.map(
     (id) =>
       `<tr><td><a href="/setup/${id}">${esc(CLIENTS[id].name)}</a></td><td><code>${esc(CLIENTS[id].file)}</code></td><td><code>${esc(CLIENTS[id].key)}</code></td><td>${esc(CLIENTS[id].caveatShort)}</td></tr>`
@@ -560,7 +650,7 @@ export function setupIndex() {
   ).join("");
   const body = `<p class="muted"><a href="/">Home</a></p>
 <h1>${esc(title)}</h1>
-<p>Six servers, six clients, one page each: the config file that client actually reads, the entry to put in it, three prompts that were run against the server, and the hosted endpoint if you would rather install nothing. The two facts that cause most failed installs are in the table below: the file name and the top-level key are not the same across clients.</p>
+<p>Nine servers, six clients, one page each: the config file that client actually reads, the entry to put in it, three prompts that were run against the server, and the hosted endpoint if you would rather install nothing. The two facts that cause most failed installs are in the table below: the file name and the top-level key are not the same across clients.</p>
 <table><tr><th>Client</th><th>Config file</th><th>Key</th><th>Watch out for</th></tr>${clientRows}</table>
 <h2>Pages</h2>
 <table><tr><th>Server</th><th>In</th></tr>${serverRows}</table>

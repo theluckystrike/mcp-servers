@@ -500,9 +500,319 @@ ${FOOT}`,
       { q: "Is anything uploaded when I log an expense or export a report?", a: "No. All data is stored in a plain JSON file under ~/.local/share/mcp-servers/expense-tracker/, and the server makes no network calls at all. Exports write to a local path you choose or the server's own data directory." },
     ],
   },
+  "currency-conversion-ecb-rates-in-claude": {
+    title: "Convert currencies in Claude with real ECB rates, no API key",
+    description: "Dated ECB reference rates in chat: why ECB, what happens on a weekend, and how to rebill a project in one currency without typing a rate.",
+    html: `<h1>Convert currencies in Claude with real ECB rates, no API key</h1>
+<p>Most currency tools give you a number with no date on it. That is fine for curiosity and useless for
+an invoice, because the question an accountant asks is not "what is the rate" but "which rate did you
+use, and on what date". The MCP Currency Converter reads the European Central Bank's published euro
+foreign exchange reference rates, states the rate date in every answer, and needs no API key, no
+account and no rate limit, because the ECB publishes the files openly.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add currency -- npx -y @theluckystrike/mcp-currency</code></pre>
+<p>Cursor and Claude Desktop take the same server as a config block:</p>
+<pre><code>{
+  "mcpServers": {
+    "currency": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-currency"]
+    }
+  }
+}</code></pre>
+<p>The npm publish of the package is pending, so until it lands use the <code>.mcpb</code> bundle from
+the latest release or a clone and build. Exact config paths per client are on the
+<a href="/setup/claude-desktop/currency">setup pages</a>.</p>
+
+<h2>Why the ECB series and not a rate API</h2>
+<p>Three reasons, in the order they matter. It is the series tax authorities and accountants already
+accept, so a converted invoice line is defensible. It is keyless: the two files,
+<code>eurofxref-daily.xml</code> and <code>eurofxref-hist.xml</code>, are public downloads, so there is
+no signup, no quota and no key to rotate out of a config file. And it is small enough to cache, so the
+server keeps answering on a plane: the daily file is refreshed only when the local copy is more than 6
+hours old, the history file after 24 hours.</p>
+<p>The cost is honesty about what these rates are. They are reference rates published once a day, around
+16:00 CET, for accounting and reporting. They are not dealing rates. The number your bank actually
+charges you will differ, and the server says so rather than implying you can trade on it.</p>
+
+<h2>The rule that most tools get wrong: 30% of dates have no rate</h2>
+<p>The ECB publishes on TARGET business days only. There is no rate for a Saturday, a Sunday, 1 January,
+Good Friday, Easter Monday, 1 May, 25 December or 26 December. That is not a small gap. Counting the
+published history file directly: the series runs from 1999-01-04 to 2026-09-02, which is 10,104 calendar
+days, and it holds 7,084 dates. 29.9% of all calendar dates in the series carry no rate at all. Taking
+single years, 2025 has 255 published dates out of 365 and 2024 has 256 out of 366, both 30.1% missing.</p>
+<p>So a tool that looks up a date and returns nothing fails on nearly one date in three, and a tool that
+quietly returns the next rate it can find is inventing a number your client can check. This server
+applies the convention every bank uses: the last rate published on or before the date you asked for,
+the nearest previous business day, and the answer names the date it landed on and why. Ask for a rate on
+a Sunday and you get Friday's rate, labelled as Friday's rate.</p>
+<pre><code>rate_on { pair: "USD/PLN", date: "2026-08-30" }   # a Saturday
+  -> rule: nearest previous business day
+  -> rate date 2026-08-28, stated in the answer</code></pre>
+
+<h2>Cross rates and rounding</h2>
+<p>The ECB quotes everything against the euro, so a USD/PLN rate is a cross rate. The ratio is formed at
+full precision, rounded once to 6 decimals, and that rounded rate is the number the result is computed
+from. The consequence is the one that matters in a document: the rate printed in the answer reproduces
+the amount printed in the answer. Results are rounded to the target currency's own ISO 4217 minor units,
+so JPY comes back whole and BHD to three places.</p>
+
+<h2>Chaining fx_rates_for into expense_to_invoice</h2>
+<p>This is the reason the server exists rather than a conversion widget. The
+<a href="/s/expense-tracker">expense tracker</a> can fold a set of expenses in several currencies into
+one invoice currency, but <code>expense_to_invoice</code> will not fetch or invent a rate: you have to
+hand it an <code>fx_rates</code> object. <code>fx_rates_for</code> returns exactly that object, plus the
+rate date. Three calls, no rate typed by a human:</p>
+<pre><code>expense_to_invoice { project: "Nova", from, to }
+  -> which currencies are actually present: EUR, GBP
+
+fx_rates_for { target: "USD", currencies: ["EUR", "GBP"] }
+  -> { "EUR": 1.0812, "GBP": 1.2717 }, rate date 2026-09-02
+
+expense_to_invoice { project: "Nova", target_currency: "USD", fx_rates: { ... } }
+  -> one currency, every converted line annotated
+
+invoice_create { currency: "USD", items: [ ... ] }</code></pre>
+<p>The prompt <code>convert_invoice_lines</code> walks that whole chain in one step. Put the returned
+<code>invoice_note</code>, which reads "Converted at ECB reference rates of 2026-09-02", on the document,
+and the client can verify every line against a public file.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free covers the latest rates, <code>convert</code>, <code>convert_many</code>,
+<code>fx_rates_for</code> and history windows up to 90 days, unlimited, in all of the 30 or more
+currencies the ECB quotes. Pro ($19 once) opens any date and any window back to 1999-01-04. A refused
+window returns the reason and the exact narrower call to make; it never truncates a table silently.
+Product page: <a href="/s/currency">MCP Currency Converter</a>. Side by side with the alternatives:
+<a href="/compare/currency">currency comparison</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does it need an API key or an account?", a: "No. The ECB publishes eurofxref-daily.xml and eurofxref-hist.xml as open files, so there is no signup, no key and no quota. The only network request the server makes is to www.ecb.europa.eu, and only when the local cache is older than 6 hours for the daily file or 24 hours for the history." },
+      { q: "What rate do I get for a Saturday or a public holiday?", a: "The last rate published on or before that date, which is the nearest previous business day convention banks use, and the answer states which date it landed on. This matters more than it sounds: 29.9% of the calendar dates in the ECB series carry no rate of their own." },
+      { q: "Can I use these rates on an invoice?", a: "Yes, and that is what they are for. They are the published reference rates used for accounting and reporting. They are not dealing rates, so your bank's rate will differ. Put the returned invoice_note with the rate date on the document so the client can check it." },
+      { q: "How do I rebill a multi-currency project in one currency?", a: "Call expense_to_invoice to see which currencies are present, fx_rates_for to get the fx_rates object for your target currency, then expense_to_invoice again with target_currency and that object. The expense tracker never fetches a rate itself, by design, so nothing is invented." },
+      { q: "Does it work offline?", a: "After the first download, yes. Both ECB files are cached under ~/.local/share/mcp-servers/currency/ and every answer is served from that copy until it ages out. Set ECB_BASE_URL to a mirror if outbound access is restricted." },
+    ],
+  },
+
+  "word-documents-proposals-from-chat": {
+    title: "Generate Word proposals and contracts from a chat message",
+    description: "Say the proposal in one sentence and get a real .docx. Layouts, reference numbers, template fill that survives split runs, and no PDF export.",
+    html: `<h1>Generate Word proposals and contracts from a chat message</h1>
+<p>A proposal is the least interesting document you write and the one that most often decides whether
+you get paid. The MCP Docx server turns one sentence into a real <code>.docx</code>: letterhead, cover
+title, summary, scope, deliverables, a timeline table, a priced investment table and a signature block.
+It writes Word files rather than PDFs on purpose, because the client is going to want a change to clause
+four and you want them to be able to make it.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add docx -- npx -y @theluckystrike/mcp-docx</code></pre>
+<p>Cursor and Claude Desktop take the same server as a config block:</p>
+<pre><code>{
+  "mcpServers": {
+    "docx": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-docx"]
+    }
+  }
+}</code></pre>
+<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
+release or a clone and build. Per client paths are on the
+<a href="/setup/claude-code/docx">setup pages</a>.</p>
+
+<h2>Set the letterhead once</h2>
+<p><code>business_set</code> stores the sender block printed on every document: name, address, email,
+VAT id, IBAN, bank, logo, letterhead colour, default currency, tax rate and payment terms. It is the
+same field set as <a href="/s/invoice">MCP Invoice</a>, so one profile serves both and the proposal you
+accepted becomes the invoice you send. A missing profile never blocks a document; the response tells you
+the sender block is a placeholder.</p>
+
+<h2>A proposal in one call</h2>
+<pre><code>You: Write a proposal for Beta Corp. Checkout rebuild, 4,500 EUR, 50% on
+signature 50% on delivery, three phases: discovery 1 week, build 3 weeks,
+launch 1 week. Valid until the end of the year.
+
+  proposal_create {
+    client: "Beta Corp", project_title: "Checkout rebuild",
+    scope: ["Audit the current funnel", "Rebuild the checkout", "Ship and measure"],
+    timeline: [{phase: "Discovery", duration: "1 week"}, ... ],
+    price: {amount: 4500, currency: "EUR", terms: "50% on signature, 50% on delivery"},
+    valid_until: "2026-12-31"
+  }
+  -> PROP-2026-0001, EUR 4,500.00
+  -> ~/.local/share/mcp-servers/docx/documents/checkout-rebuild.docx</code></pre>
+<p>The file opens in Word, Pages, LibreOffice and Google Docs. Every amount carries its currency code,
+so there are no bare numbers for a client to misread. References are <code>PROP-YYYY-NNNN</code> for
+proposals and <code>AGR-YYYY-NNNN</code> for agreements, and the counter is written before the record is
+stored, so a crash burns a number rather than reusing one on a second sent document.</p>
+
+<h2>Contracts, with the caveat printed on the document</h2>
+<p><code>contract_create</code> writes a freelance service agreement skeleton: parties, services, term,
+fee, IP, confidentiality, contractor status, termination, liability and governing law, with
+<code>[BRACKETED PLACEHOLDERS]</code> where a decision is yours. The document itself says it is a
+drafting template and not legal advice, because nothing here has been reviewed by a lawyer in any
+jurisdiction. Treat it as the thing you send to a lawyer, not the thing you send to a client.</p>
+
+<h2>Filling a template you already use</h2>
+<p><code>doc_fill_template</code> replaces <code>{{placeholders}}</code> in an existing
+<code>.docx</code> and writes a new file, keeping every style, table, header, footer and image, because
+everything except the paragraphs it rewrites is copied byte for byte. Call it with no
+<code>values</code> and it lists the placeholders the template actually contains, which is the fastest
+way to end an argument about a name that did not get replaced.</p>
+<p>The part worth knowing is why so many template fillers fail on real files. A <code>.docx</code>
+paragraph is a sequence of runs, and Word routinely breaks a placeholder you typed as
+<code>{{client}}</code> into three runs after an edit or a spell-check pass: <code>{{cli</code>,
+<code>ent</code>, <code>}}</code>. Per-run replacement finds nothing and the document comes back with
+the placeholder still in it, silently. This server substitutes on the joined text of each paragraph
+instead, writes the result into the first run so its formatting survives, and blanks the remaining runs
+of that paragraph. The trade is stated plainly: a paragraph that mixes bold and regular text around a
+placeholder comes back in the first run's formatting. A placeholder with no value is left in place and
+reported, never blanked.</p>
+
+<h2>The numbering.xml insight</h2>
+<p>Reading a document back uses no dependency at all. A <code>.docx</code> is a ZIP, so
+<code>node:zlib</code> opens it and a small WordprocessingML walk pulls out paragraphs, heading levels
+from <code>w:pStyle</code>, list items and tables in document order. One detail decides whether
+<code>doc_read</code> is useful: in OOXML a numbered list and a bullet list are the same element. The
+distinction lives nowhere in the paragraph itself. It is recorded only by resolving that paragraph's
+<code>w:numId</code> against <code>word/numbering.xml</code>. Skip that resolution and every numbered
+list in the file reads back as bullets, which quietly destroys the structure of exactly the documents
+people want to read back: contracts, scopes of work and anything with numbered clauses.</p>
+
+<h2>There is no doc_to_pdf, deliberately</h2>
+<p>Every pure JavaScript path from Word to PDF needs a native dependency, a headless Chromium or a cloud
+API. This collection ships none of those, so <code>npx</code> works on any machine with Node and nothing
+else. <code>doc_to_html</code> writes semantic HTML with a print stylesheet: open it and print to PDF.
+The tool description says the same thing, so the model does not promise a file it cannot produce.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free covers <code>doc_create</code>, <code>doc_from_markdown</code>, <code>doc_read</code> and
+<code>doc_to_html</code> without limit, 3 proposals or contracts per calendar month combined, and
+templates with up to 10 placeholders. Pro ($19 once) removes those limits and adds your logo and brand
+colour on the letterhead. Product page: <a href="/s/docx">MCP Docx</a>. Side by side with the
+alternatives: <a href="/compare/docx">docx comparison</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can it export a PDF?", a: "No, and that is a deliberate choice. Every pure JavaScript route from .docx to PDF needs LibreOffice, a Chromium binary or a cloud API, none of which this collection ships. doc_to_html writes semantic HTML with a print stylesheet, so you open it and print to PDF." },
+      { q: "Why did my template placeholder not get replaced?", a: "Call doc_fill_template with no values and it lists the placeholders the file actually contains. Names are matched exactly, whitespace inside the braces is ignored, and the response names every key you passed that the template does not have. Placeholders split across runs by Word are handled, because substitution runs on the joined paragraph text." },
+      { q: "Is the generated contract safe to sign?", a: "Not as it stands. contract_create writes a drafting skeleton with bracketed placeholders and prints on the document that it is a template and not legal advice. Nothing in it has been reviewed by a lawyer in any jurisdiction. Send it to yours." },
+      { q: "Can it read an existing Word file?", a: "Yes. doc_read extracts headings with levels, paragraphs, list items and tables in document order, and format json returns the block structure. It reads .docx only; .doc, .rtf and Pages files are refused with a message that says so. It does not report fonts, colours, comments, tracked changes or footnotes." },
+      { q: "Where do the files and the reference numbers live?", a: "Under ~/.local/share/mcp-servers/docx/, with generated files in a documents subfolder when you do not pass out_path. Every mutating call runs inside an advisory lock, so two clients on one data directory cannot allocate the same reference number. The server makes no network request of any kind." },
+    ],
+  },
+
+  "meeting-slots-across-time-zones": {
+    title: "Find a meeting time across time zones without doing the arithmetic",
+    description: "Ranked slots inside everyone's working hours, the real overlap, DST traps that move it by an hour, and an ics file you can send. All local.",
+    html: `<h1>Find a meeting time across time zones without doing the arithmetic</h1>
+<p>Scheduling with a client in another country is a small calculation you get wrong once a year, usually
+in March. The MCP Timezone Planner answers it directly: ranked times where every participant is inside
+their own working hours, the exact daily overlap, the dates the clocks change, and a
+<code>.ics</code> file you can send. It reads no calendar and stores nothing but the contacts you give
+it.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add timezone -- npx -y @theluckystrike/mcp-timezone</code></pre>
+<p>Cursor and Claude Desktop take the same server as a config block:</p>
+<pre><code>{
+  "mcpServers": {
+    "timezone": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-timezone"]
+    }
+  }
+}</code></pre>
+<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
+release or a clone and build. Per client paths are on the
+<a href="/setup/cursor/timezone">setup pages</a>.</p>
+
+<h2>The overlap is not a constant, and March proves it</h2>
+<p>Take the pair a lot of European freelancers actually work: Warsaw and New York, both on 09:00 to
+17:00 days. Ask what the shared window is and the honest answer depends on the date, because Europe and
+the United States change their clocks on different weekends.</p>
+<table>
+<thead><tr><th>Date</th><th>Warsaw</th><th>New York</th><th>Shared window, UTC</th><th>Overlap</th></tr></thead>
+<tbody>
+<tr><td>2026-09-10</td><td>UTC+2</td><td>UTC-4</td><td>13:00 to 15:00</td><td>2 hours</td></tr>
+<tr><td>2026-03-16</td><td>UTC+1</td><td>UTC-4</td><td>13:00 to 16:00</td><td>3 hours</td></tr>
+</tbody>
+</table>
+<p>On 16 March 2026 the United States has already moved to daylight time, on 8 March, and Europe has not,
+until 29 March. For those three weeks the two cities are 5 hours apart rather than the usual 6, and the
+shared working window is 50% wider: 3 hours instead of 2. A recurring call booked at the edge of the
+window in that gap moves outside somebody's working day on 29 March. This is the single most useful
+thing the server tells you, and it falls out of <code>overlap</code> because the window is computed on a
+real date rather than from a stored offset.</p>
+<pre><code>overlap { places: ["Warsaw", "New York"], date: "2026-03-16" }
+dst_changes { place: "Warsaw", year: 2026 }
+  -> the exact UTC instant, the offset before and after, and the local time either side</code></pre>
+
+<h2>Ranked slots, and why the score is the worst person</h2>
+<p><code>find_meeting_slots</code> proposes times on a 30-minute grid where the whole meeting, start to
+end, is inside every participant's own working window on their own local calendar day. Weekends in the
+first participant's zone are skipped. Every candidate is scored by the worst participant's distance from
+13:00 local, in hours, and sorted ascending.</p>
+<p>The worst, not the average, on purpose. Averaging lets a slot that is pleasant for two people and
+07:00 for the third outrank one that is 10:00 for everybody, which is how scheduling tools produce
+suggestions nobody accepts. A fairness of 0 would put the meeting at midday for all of them, and
+anything under about 2 is comfortable.</p>
+<pre><code>find_meeting_slots {
+  participants: [{name:"Me", zone:"Warsaw"},
+                 {name:"Client", zone:"New York"},
+                 {name:"Designer", zone:"London"}],
+  duration_minutes: 60, days: 5
+}
+-> 15 slots fit all 3. Best: 2026-09-07T13:30:00.000Z, fairness 3.00h
+   Me 15:30-16:30 | Client 09:30-10:30 | Designer 14:30-15:30</code></pre>
+<p>Three hours of fairness is not a ranking flaw, it is the truth about that pair: with 09:00 to 17:00
+on both sides the shared window is only two hours wide, so somebody's meeting is always far from the
+middle of their day. The score says so instead of hiding it. Widen one person's hours and it improves.
+When nothing fits at all, the server says so and shows the windows rather than proposing a 06:00 call.</p>
+
+<h2>The invite</h2>
+<pre><code>ics_create { title: "Kickoff with Acme", start: "2026-09-10 15:00", zone: "Warsaw",
+             duration_minutes: 45, attendees: ["maria@acme.com"] }
+  -> DTSTART 2026-09-10T13:00:00.000Z</code></pre>
+<p>The file carries UTC times and no <code>VTIMEZONE</code> block, deliberately: a hand written
+<code>VTIMEZONE</code> with stale DST rules is the classic way an invite lands an hour off in somebody
+else's calendar. A time with no offset is wall-clock time in <code>from_zone</code>, so
+<code>2026-09-10 15:00</code> with Warsaw means 15:00 in Warsaw. A wall time inside a spring-forward gap
+does not exist and resolves to the instant right after the jump, which is what calendars do; an
+ambiguous time in the autumn fold resolves to the first occurrence.</p>
+
+<h2>How places are resolved</h2>
+<p>City and country names resolve through a built-in table of 510 entries covering more than 300 cities,
+every commonly used country, US state shorthands and abbreviations like PST, IST and CET. Every entry is
+checked against <code>Intl.supportedValuesOf("timeZone")</code> at startup, and an entry this Node build
+cannot resolve is dropped with a line on stderr rather than silently answering with the wrong zone. An
+unknown name is never guessed: it comes back as an error with suggestions. IANA ids always win, so
+<code>America/Denver</code> is exactly that. No DST rules are stored here at all; every offset comes
+from the ICU data inside your Node build, so the rules stay current as Node updates.</p>
+
+<h2>What it does not know</h2>
+<p>Working hours are the only calendar this server has. It does not read your existing meetings, does
+not know public holidays unless you pass them to <code>business_days</code>, and does not model a
+Friday-Saturday weekend. Saying so is cheaper than a wrong suggestion.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free covers <code>now</code>, <code>convert_time</code>, <code>overlap</code>,
+<code>dst_changes</code> and <code>business_days</code> without limit, slot searches for up to 3
+participants over 5 days, 5 saved contacts and 3 <code>.ics</code> files a month. Pro ($19 once) removes
+those limits and adds recurring slot search. Product page:
+<a href="/s/timezone">MCP Timezone Planner</a>. Side by side with the alternatives:
+<a href="/compare/timezone">timezone comparison</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does it read my calendar?", a: "No. It knows only the working hours you give it and the contacts you save. It writes .ics files; it never reads or connects to a calendar service, and it makes no network request at all, including for license activation." },
+      { q: "How is daylight saving handled?", a: "It stores no DST rules of its own. Every offset is read from the ICU data inside your Node build via Intl, so it stays current as Node updates. That is why Warsaw and New York come out 5 hours apart between 8 and 29 March 2026 rather than the usual 6, which widens their shared working window from 2 hours to 3." },
+      { q: "Why is the best slot still awkward?", a: "Because a real overlap can be two hours wide. Slots are scored by the worst participant's distance from 13:00 local, not the average, so a time that is pleasant for two people and 07:00 for a third never outranks one that is 10:00 for everybody. The score reports the cost so you can decide who absorbs it." },
+      { q: "Does it handle half-hour zones?", a: "Yes. India at +05:30, Nepal at +05:45, Adelaide at +09:30 and Chatham are handled like any other zone. The slot grid is 30 minutes, so a half-hour zone produces starts on the hour and the half hour in local time." },
+      { q: "Why does the ics file have no VTIMEZONE block?", a: "Because a hand-written VTIMEZONE with stale DST rules is the common way an invite arrives an hour off. The file carries UTC times instead, which every calendar client resolves against its own current rules." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: track billable hours, make an invoice PDF, log expenses and mileage, query Excel files, watch product prices, and what Pro adds.",
+  description: "Practical guides: track billable hours, invoice PDFs, expenses, Excel queries, price watching, ECB currency rates, Word proposals and meeting slots.",
 };

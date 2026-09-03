@@ -6,7 +6,7 @@
 
 export const COMPARE_INDEX = {
   title: "MCP server comparisons: ours against the closest alternatives",
-  description: "Five honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
+  description: "Eight honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
 };
 
 const t = (rows) =>
@@ -383,6 +383,242 @@ expense to invoice path.</p>`,
       { q: "How does an expense become an invoice line?", a: "expense_to_invoice selects the billable, unrebilled expenses for a project and returns invoice lines. Pro adds a markup percentage. The invoice server takes those lines directly." },
       { q: "What happens after the free 30 day window?", a: "Nothing is deleted. Logging stays unlimited and older records stay on disk; listings, summaries and exports cover the last 30 days until a Pro key opens the full history." },
       { q: "Is mileage handled in kilometres?", a: "Yes. mileage_add takes a distance and a rate in either unit, and the round 5 scenario that scored full marks included a metric mileage claim alongside a foreign-currency expense." },
+    ],
+  },
+  currency: {
+    title: "MCP Currency Converter vs exchange-mcp and tcmb_mcp: which MCP server to pick",
+    description: "Keyless local ECB rates against a pay-per-call hosted ECB server and the Turkish central bank series. Tools, cost per call and rate source.",
+    html: `<h1>MCP Currency Converter vs exchange-mcp and tcmb_mcp: which MCP server to pick</h1>
+<p>All three answer "what is this worth in that currency", and all three read a central bank rather than
+a trading venue. <a href="https://registry.smithery.ai/servers/stockvibes07/exchange-mcp">stockvibes07/exchange-mcp</a>
+reads the same ECB series we do and serves it as a hosted endpoint you pay for per call.
+<a href="https://registry.smithery.ai/servers/ofurkanuygur/tcmb_mcp">ofurkanuygur/tcmb_mcp</a> reads the
+Turkish central bank instead, back to 1996. Ours runs on your machine, caches both ECB files and costs
+nothing per call.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["exchange-mcp", "tcmb_mcp"], body: [
+  ["Tools", "8 plus license_status and license_activate", "4: get_rate, convert, historical, currencies", "6: current rates, historical rates, list, convert, rate history, compare"],
+  ["Transport", "stdio (npx or .mcpb bundle)", "Hosted streamable HTTP at exchange-mcp--stockvibes07.run.tools", "Hosted streamable HTTP at tcmb_mcp--ofurkanuygur.run.tools"],
+  ["Rate source", "ECB euro reference rates, daily and history back to 1999-01-04", "ECB, 33 currencies, updated daily", "Turkish Central Bank, back to 1996"],
+  ["Cost per call", "None. The server runs locally", "x402: 0.001 USDC per call on Base, its listing says no signup and no API key", "Listed on Smithery over run.tools"],
+  ["Account or API key", "No", "No signup, but a funded x402 wallet", "None documented on the listing"],
+  ["Works with no network", "Yes, from the local cache", "No", "No"],
+  ["Rate date stated in the answer", "Yes, with the nearest previous business day rule named", "Not documented on the listing", "Listing describes holiday-aware lookups returning the latest available data"],
+  ["Hands rates to another server", "Yes, fx_rates_for returns the expense tracker's fx_rates object", "No", "No"],
+] })}
+<p>Rows for the two hosted servers were read from their Smithery registry entries on 2026-09-03, which
+is where their tool lists, transports and descriptions are published.</p>
+
+<h2>When to pick exchange-mcp</h2>
+<p>Pick it if you want zero install and are already set up to pay per call. It is a hosted URL, so there
+is nothing on your disk, nothing to update and no Node version to worry about, and it reads the same ECB
+reference rates. Its four tools cover the common shape of the question: a rate, a conversion, a
+historical lookup and the currency list. If your agent runs somewhere you cannot install packages, that
+is a real advantage and it is the reason to choose it.</p>
+
+<h2>When to pick tcmb_mcp</h2>
+<p>Pick it if you invoice in Turkish lira or report to a Turkish authority. The ECB quotes TRY, but the
+rate a Turkish accountant expects is the central bank's own, and that is what this server publishes,
+back to 1996, which is deeper than the ECB series. It also exposes a compare tool that puts several
+pairs in one table, which we do not have: ours does one pair at a time in
+<code>rate_history</code>, or one amount into several currencies in <code>convert_many</code>.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the conversion ends up on a document somebody will check. Three things follow from
+that. Every answer states the rate date, and a date with no published rate resolves by the nearest
+previous business day rule with the landing date named, which matters more than it sounds: counted from
+the published history file, 7,084 of the 10,104 calendar days from 1999-01-04 to 2026-09-02 carry a
+rate, so 29.9% of dates have none. Cross rates are formed at full precision and rounded once to 6
+decimals, so the rate printed in the answer reproduces the amount printed in the answer, and results are
+rounded to the target currency's own ISO 4217 minor units. And <code>fx_rates_for</code> returns exactly
+the object <a href="/s/expense-tracker">the expense tracker</a> needs, so a multi-currency project is
+rebilled in one currency without a human typing a rate. It also keeps working with no network, because
+both ECB files are cached locally.</p>
+
+<h2>What we measured</h2>
+<p>The 29.9% figure above was counted directly from <code>eurofxref-hist.csv</code>, not taken from
+documentation: 2025 published 255 dates out of 365 and 2024 published 256 out of 366, both 30.1%
+missing. The refusal path was checked too: a history window past the free 90 days returns the reason and
+the exact narrower call to make, rather than truncating the table or returning a transport error.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add currency -- npx -y @theluckystrike/mcp-currency</code></pre>
+<p>exchange-mcp:</p>
+<pre><code>claude mcp add --transport http exchange https://exchange-mcp--stockvibes07.run.tools</code></pre>
+<p>tcmb_mcp:</p>
+<pre><code>claude mcp add --transport http tcmb https://tcmb_mcp--ofurkanuygur.run.tools</code></pre>
+<p>Per client config paths for ours are on the <a href="/setup">setup pages</a>, the product page is
+<a href="/s/currency">MCP Currency Converter</a>, and the longer walkthrough is in
+<a href="/guides/currency-conversion-ecb-rates-in-claude">ECB rates in Claude</a>.</p>`,
+    faq: [
+      { q: "Do any of these give me the rate my bank will charge?", a: "No. All three publish central bank reference rates, which exist for accounting and reporting. A dealing rate includes a spread and differs. Ours says so in the tool output rather than implying you can trade on it." },
+      { q: "Which one is cheapest to run?", a: "Ours per call, because it runs on your machine and the ECB files are free downloads. exchange-mcp is listed as x402 with 0.001 USDC per call on Base, which is cheap but is not zero and needs a funded wallet. Ours has a one-time $19 Pro for dates before the last 90 days." },
+      { q: "Can I get rates from before 1999?", a: "Not from the ECB series; it starts on 1999-01-04, when the euro did. tcmb_mcp publishes the Turkish central bank series back to 1996, so for lira history it reaches further back than either of the ECB-based servers." },
+      { q: "What happens on a weekend or a holiday?", a: "Ours returns the last rate published on or before the date and names the date it landed on. That is the convention banks use, and it is load bearing because 29.9% of the calendar dates in the ECB series have no rate of their own." },
+      { q: "Where can I read the competitor facts myself?", a: "The two hosted servers publish their tool lists, transports and descriptions on their Smithery registry entries, which is where these rows were read on 2026-09-03. The URLs are in docs/CONTENT_R3_RESULT.md in our repository." },
+    ],
+  },
+
+  docx: {
+    title: "MCP Docx vs docx-mcp and usejunior docx-mcp: which MCP server to pick",
+    description: "Proposals and contracts with reference numbers, against a JSON-schema document builder and a tracked-changes editor. Licences and versions.",
+    html: `<h1>MCP Docx vs docx-mcp and usejunior docx-mcp: which MCP server to pick</h1>
+<p>These three write Word files and almost nothing else about them is the same.
+<a href="https://www.npmjs.com/package/@docx-mcp/docx-mcp">@docx-mcp/docx-mcp</a> is a document builder:
+you hand it a validated JSON document tree and it renders it, with images, syntax-highlighted code blocks
+and page control. <a href="https://www.npmjs.com/package/@usejunior/docx-mcp">@usejunior/docx-mcp</a> is
+an editor for documents that already exist, with tracked changes, comments, footnotes and a comparison
+between two files. Ours is neither: it is a small set of business documents, proposals, contracts,
+letters and template fills, produced from a stored letterhead.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["@docx-mcp/docx-mcp", "@usejunior/docx-mcp"], body: [
+  ["Tools", "8 plus license_status and license_activate", "Create, query, edit, open and save operations over a JSON schema", "Read, search, edit, comment, footnote, tracked changes, save, compare, export"],
+  ["Licence", "MIT", "MIT", "Apache-2.0"],
+  ["Latest version read on npm", "publish pending; .mcpb bundle and clone-and-build", "0.5.0, published 2025-08-26", "0.19.1, published 2026-07-24"],
+  ["Transport", "stdio (npx or .mcpb bundle)", "stdio (npx)", "stdio (npx); end users are pointed at the @usejunior/safe-docx wrapper"],
+  ["Writes a proposal or contract", "Yes, proposal_create and contract_create with reference numbers", "No, you supply the whole document tree", "No, it edits documents you already have"],
+  ["Fills {{placeholders}} in a template", "Yes, on joined paragraph text, keeping styles, headers and images", "Not documented", "Not documented; it edits by content instead"],
+  ["Tracked changes and comments", "No. doc_read ignores them", "No", "Yes, inspect and accept tracked changes, comments and footnotes"],
+  ["Images in generated documents", "No", "Yes: URL download, local file and base64 embedding", "Editing only"],
+  ["PDF output", "No, by design. doc_to_html plus print", "No", "No; exports documents and structured revisions"],
+] })}
+<p>Rows for the two alternatives were read from their npm registry records and READMEs on 2026-09-03.</p>
+
+<h2>When to pick @docx-mcp/docx-mcp</h2>
+<p>Pick it when the document is generated wholesale by a program and the layout matters. It validates a
+document against a JSON schema and renders headings, tables, lists, blockquotes, info boxes, text boxes,
+horizontal rules, page and section breaks, page settings and per-page headers and footers, plus code
+blocks with syntax highlighting for over 180 languages and images from a URL, a local file or base64.
+None of that exists in ours. If you are building a report generator rather than sending a proposal, it
+is the better fit, and its image support in particular is something we do not offer at all.</p>
+
+<h2>When to pick @usejunior/docx-mcp</h2>
+<p>Pick it when the document already exists and the job is to change it carefully. It reads and searches
+content, applies text, paragraph, formatting, comment and footnote edits, inspects and accepts tracked
+changes, saves clean and tracked copies, and compares two documents. It also handles OpenDocument
+<code>.odt</code>. Ours reads a <code>.docx</code> as text and outline and cannot see a tracked change or
+a comment at all, so for a contract going back and forth with a counterparty's redlines, that server does
+the job and this one does not. Note the licence difference: Apache-2.0 rather than MIT.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when you want the document, not a document engine. One sentence produces a client-ready
+proposal with your letterhead, a cover title, summary, scope, deliverables, a timeline table, a priced
+investment table, terms, validity and a signature block, numbered <code>PROP-YYYY-NNNN</code>, and the
+counter is written before the record is stored, so a crash burns a number rather than handing the same
+reference to two sent documents. The letterhead comes from the same <code>business_set</code> profile
+<a href="/s/invoice">the invoice server</a> uses, so the proposal you win becomes the invoice you send.
+Everything is local: no upload, no account, no native dependency, and no network request of any kind.</p>
+
+<h2>What we measured</h2>
+<p>Two details are the reason this server reads and fills real files rather than clean ones. Template
+filling substitutes on the joined text of each paragraph, not per run, because Word routinely splits a
+placeholder you typed as <code>{{client}}</code> into three runs after an edit or a spell-check pass, and
+per-run replacement misses those silently. And numbered lists are told apart from bullets by resolving
+each paragraph's <code>w:numId</code> against <code>word/numbering.xml</code>, which is the only place
+that distinction is recorded: without it, every numbered clause in a contract reads back as a bullet.
+The known cost is stated on the page and in the README: a paragraph mixing bold and regular text around a
+placeholder comes back in the first run's formatting.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add docx -- npx -y @theluckystrike/mcp-docx</code></pre>
+<p>@docx-mcp/docx-mcp:</p>
+<pre><code>claude mcp add docx-mcp -- npx -y @docx-mcp/docx-mcp</code></pre>
+<p>@usejunior/docx-mcp:</p>
+<pre><code>npm install --global @usejunior/safe-docx
+claude mcp add safe-docx -- safe-docx</code></pre>
+<p>Per client config paths for ours are on the <a href="/setup">setup pages</a>, the product page is
+<a href="/s/docx">MCP Docx</a>, and the walkthrough is in
+<a href="/guides/word-documents-proposals-from-chat">proposals and contracts from chat</a>.</p>`,
+    faq: [
+      { q: "Which of these can produce a PDF?", a: "None of the three. Every pure JavaScript path from Word to PDF needs a native dependency or a cloud API. Ours writes semantic HTML with a print stylesheet through doc_to_html so you can print to PDF, and says so in the tool description rather than promising a file it cannot make." },
+      { q: "I need to accept a client's redlines. Which one?", a: "@usejunior/docx-mcp. It inspects and accepts tracked changes, handles comments and footnotes, and can compare two documents. Ours reads text, headings, lists and tables only, and ignores tracked changes entirely." },
+      { q: "Can any of them put an image in a generated document?", a: "@docx-mcp/docx-mcp can, from a URL, a local file or base64. Ours puts a logo on the letterhead on Pro and nothing else; there is no general image block." },
+      { q: "Do the licences differ?", a: "Yes. Ours and @docx-mcp/docx-mcp are MIT. @usejunior/docx-mcp is Apache-2.0, which carries a patent grant and a notice requirement that MIT does not. If your legal review cares, that is the row to read." },
+      { q: "Is the generated contract legal advice?", a: "No. contract_create writes a drafting skeleton with bracketed placeholders and prints on the document itself that it is a template and not legal advice. Nothing in it has been reviewed by a lawyer in any jurisdiction." },
+    ],
+  },
+
+  timezone: {
+    title: "MCP Timezone Planner vs meeting-mcp and timezone-toolkit: which MCP server to pick",
+    description: "Ranked meeting slots and ics files, locally, against a hosted pay-per-call scheduler with holidays and Google Calendar, and an astronomical time toolkit.",
+    html: `<h1>MCP Timezone Planner vs meeting-mcp and timezone-toolkit: which MCP server to pick</h1>
+<p>Three servers that all convert a time between zones, and then diverge.
+<a href="https://registry.smithery.ai/servers/stockvibes07/meeting-mcp">stockvibes07/meeting-mcp</a> is a
+hosted scheduling assistant with a public holiday dataset and Google Calendar event creation, paid per
+call. <a href="https://www.npmjs.com/package/@iflow-mcp/timezone-toolkit">@iflow-mcp/timezone-toolkit</a>
+is a local time utility that reaches into sunrise, sunset, twilight and moon phase. Ours is a meeting
+planner: ranked slots inside everyone's working hours, the honest overlap, and the invite file.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["meeting-mcp", "timezone-toolkit"], body: [
+  ["Tools", "9 plus license_status and license_activate", "6: convert_time, get_holidays, check_business_hours, find_meeting_slots, create_calendar_link, create_event", "9: convert_time, get_current_time, sunrise/sunset, moon phase, timezone difference, list_timezones, countdown, business days, format_date"],
+  ["Transport", "stdio (npx or .mcpb bundle)", "Hosted streamable HTTP at meeting-mcp--stockvibes07.run.tools", "stdio (npx)"],
+  ["Licence", "MIT", "Hosted service, no package licence to read", "ISC"],
+  ["Latest version read", "publish pending; .mcpb bundle and clone-and-build", "Smithery registry entry, read 2026-09-03", "1.0.1, published 2025-08-08 on npm"],
+  ["Cost per call", "None. Runs locally", "x402: its listing says $0.01 per call, no signup needed", "None"],
+  ["Ranks slots by fairness", "Yes, worst participant's distance from 13:00 local", "find_meeting_slots is listed; no ranking rule published", "No slot finder"],
+  ["Public holidays", "No. Pass them to business_days yourself", "Yes, 100+ countries", "Bundles date-holidays as a dependency"],
+  ["Writes an .ics file", "Yes, UTC times, no VTIMEZONE block", "Calendar link and Google Calendar event creation", "No"],
+  ["Saved contacts with working hours", "Yes, 5 free, unlimited on Pro", "No", "No"],
+  ["Network calls", "None at all", "Hosted, every call is a request", "Local, but it bundles express-rate-limit and suncalc"],
+] })}
+<p>The meeting-mcp row was read from its Smithery registry entry and the timezone-toolkit rows from its
+npm registry record and README, both on 2026-09-03.</p>
+
+<h2>When to pick meeting-mcp</h2>
+<p>Pick it when you want the holidays and the calendar write, and you are happy paying per call. Its
+<code>get_holidays</code> covers more than 100 countries, which is real work we have not done: ours knows
+weekends and the working hours you give it, and holidays only if you pass them into
+<code>business_days</code>. It also creates the Google Calendar event rather than handing you a file to
+attach. If the agent needs to put the meeting in a calendar without a human, that is the one.</p>
+
+<h2>When to pick timezone-toolkit</h2>
+<p>Pick it when the question is about the sky or the clock rather than about a meeting. Sunrise, sunset,
+civil, nautical and astronomical twilight, day length and moon phase for a location and date are things
+we do not compute at all, and it adds countdowns and date formatting across locales. It runs locally like
+ours and is ISC licensed. It has no slot finder, no overlap window and no <code>.ics</code> output, so it
+is a complement to a planner rather than a replacement for one.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the output has to be a time three people will actually accept. Slots are offered only
+when the whole meeting, start to end, sits inside every participant's own working window on their own
+local calendar day, and every candidate is scored by the worst participant's distance from 13:00 local,
+not the average, so a slot that is pleasant for two and 07:00 for the third never outranks one that is
+10:00 for everybody. When nothing fits, the server says so and shows the windows instead of proposing a
+06:00 call. The <code>.ics</code> it writes carries UTC times and no <code>VTIMEZONE</code> block on
+purpose, because a hand-written block with stale rules is the usual way an invite lands an hour off. No
+network call is made anywhere, including for license activation.</p>
+
+<h2>What we measured</h2>
+<p>DST is not stored here; every offset comes from the ICU data inside your Node build, and the
+consequence is measurable. Warsaw and New York, both on 09:00 to 17:00 days, share exactly 2 hours on
+2026-09-10, when Warsaw is UTC+2 and New York UTC-4, and 3 hours on 2026-03-16, when Warsaw is still
+UTC+1 because Europe does not change until 29 March while the United States changed on 8 March. A
+recurring call booked at the edge of that wider March window falls outside somebody's working day at the
+end of the month. Place names resolve through a table of 510 entries, each verified against
+<code>Intl.supportedValuesOf("timeZone")</code> at startup, and an unknown name returns suggestions
+rather than a guess.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add timezone -- npx -y @theluckystrike/mcp-timezone</code></pre>
+<p>meeting-mcp:</p>
+<pre><code>claude mcp add --transport http meeting https://meeting-mcp--stockvibes07.run.tools</code></pre>
+<p>timezone-toolkit:</p>
+<pre><code>claude mcp add timezone-toolkit -- npx -y @iflow-mcp/timezone-toolkit</code></pre>
+<p>Per client config paths for ours are on the <a href="/setup">setup pages</a>, the product page is
+<a href="/s/timezone">MCP Timezone Planner</a>, and the walkthrough is in
+<a href="/guides/meeting-slots-across-time-zones">meeting slots across time zones</a>.</p>`,
+    faq: [
+      { q: "Do any of them know public holidays?", a: "meeting-mcp does, for more than 100 countries, and timezone-toolkit bundles the date-holidays package. Ours does not: business_days excludes weekends and any holidays you pass it, and the README says so rather than implying a holiday calendar exists." },
+      { q: "Can any of them create the calendar event for me?", a: "meeting-mcp creates Google Calendar events and calendar links. Ours writes an .ics file to your disk and never connects to a calendar service, which is the trade: nothing of yours is held by a third party, and you attach the file yourself." },
+      { q: "Which ones run without a network?", a: "Ours and timezone-toolkit run locally. meeting-mcp is a hosted endpoint, so every call is a request, and its listing prices calls at $0.01 through x402." },
+      { q: "How does the slot ranking actually work?", a: "Each candidate is scored by the worst participant's distance from 13:00 in their own local time, in hours, and slots are sorted ascending. A fairness of 0 would be midday for everyone; under about 2 is comfortable. Three hours on a Warsaw and New York pair is the truth about that pair, not a ranking failure." },
+      { q: "Where can I read the competitor facts myself?", a: "meeting-mcp publishes its tool list, transport and pricing on its Smithery registry entry; timezone-toolkit publishes its tool table, licence and dependencies on npm. Both were read on 2026-09-03 and the URLs are in docs/CONTENT_R3_RESULT.md." },
     ],
   },
 };

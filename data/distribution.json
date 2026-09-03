@@ -59,7 +59,7 @@
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "6 long-form guides + index, FAQPage JSON-LD, IndexNow pinged; plus 43 /setup pages (6 clients x 6 servers + 6 client hubs + index) shipped 2026-09-03, sitemap now 56 URLs, llms.txt carries a per-client setup section; plus 6 /compare pages (index + 5 head-to-head, 2 verified competitors each) shipped 2026-09-03, sitemap now 62 URLs, llms.txt carries a comparisons section, every /s/<id> links its comparison"
+      "note": "9 long-form guides + index, 8 comparison pages + index, 61 /setup URLs (6 clients x 9 servers + 6 client hubs + index). Round 3 (2026-09-03) added 3 guides (currency ECB rates, Word proposals, meeting slots), 3 compare pages (currency, docx, timezone) and 18 setup pages for the three new servers; /s/currency, /s/docx and /s/timezone went live in the same deploy. sitemap.xml now 89 URLs, llms.txt carries every guide, comparison and per-client setup link. All 27 new URLs returned 200 and were pinged to IndexNow in one POST."
     },
     "mcpservers.org": {
       "status": "submitted",
