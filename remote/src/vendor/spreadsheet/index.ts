@@ -7,7 +7,7 @@ import { dirname, extname } from "node:path";
 import * as XLSX from "xlsx";
 import { z } from "zod";
 import { toCsv } from "./csv.js";
-import { compile, compilePredicate, truthy, ExprError } from "./expr.js";
+import { compile, compilePredicate, columnsUsed, parse, truthy, ExprError } from "./expr.js";
 import {
   Cell, FREE_MAX_BYTES, FREE_MAX_ROWS, FREE_WRITE_ROWS, LoadedSheet, Table, UserError,
   colLetter, expandPath, guessHeaderRow, headerNames, inferType, loadWorkbook, outputPath,
@@ -44,6 +44,57 @@ function guard<T extends any[]>(fn: (...a: T) => Promise<{ content: any[]; isErr
       return fail(msg);
     }
   };
+}
+
+/** Round half away from zero at `d` decimals, correcting for float representation first. */
+function roundHalfUp(v: number, d: number): number {
+  const f = Math.pow(10, d);
+  const scaled = Number((v * f).toPrecision(15));
+  const r = scaled < 0 ? -Math.round(-scaled) : Math.round(scaled);
+  return r / f;
+}
+
+/** Column names a formula reads, restricted to columns the sheet actually has. */
+function formulaColumns(formula: string, headers: string[]): string[] {
+  let used: Set<string>;
+  try { used = columnsUsed(parse(formula)); } catch { return []; }
+  const lower = new Map(headers.map((h) => [h.toLowerCase().trim(), h]));
+  const out: string[] = [];
+  for (const u of used) {
+    const h = lower.get(String(u).toLowerCase().trim());
+    if (h && !out.includes(h)) out.push(h);
+  }
+  return out;
+}
+
+/** Decimal places of a cell as written, for a value that parses as a number. */
+function decimalsOf(v: Cell): number | null {
+  if (v === null || v === undefined || v === "") return null;
+  if (toNumber(v) === null) return null;
+  const s = String(v).trim().replace(/[^0-9.eE+-]/g, "");
+  if (/[eE]/.test(s)) return null;
+  const dot = s.indexOf(".");
+  return dot < 0 ? 0 : s.length - dot - 1;
+}
+
+/**
+ * Widest decimal count seen across the given columns, or null when no column carried a
+ * number at all (in which case there is nothing to infer a money shape from).
+ */
+function maxDecimals(recs: Record<string, Cell>[], cols: string[]): number | null {
+  if (!cols.length) return null;
+  let seen = false;
+  let max = 0;
+  for (const r of recs) {
+    for (const c of cols) {
+      const d = decimalsOf(r[c] as Cell);
+      if (d === null) continue;
+      seen = true;
+      if (d > max) max = d;
+      if (max > 2) return max;
+    }
+  }
+  return seen ? max : null;
 }
 
 interface Opened { wb: ReturnType<typeof loadWorkbook>; ls: LoadedSheet; table: Table; notes: string[] }
@@ -155,14 +206,14 @@ async function infoText(path: string): Promise<string> {
 
 server.registerTool("sheet_info", {
   title: "Spreadsheet overview",
-  description: "Open an excel (xlsx/xlsm/xlsb/ods) or csv/tsv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading, querying or summing anything in a spreadsheet.",
+  description: "Use for ANY .xlsx/.csv path, including paths outside the current directory; do not read the file yourself. Open an excel (xlsx/xlsm/xlsb/ods) or csv/tsv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading, querying or summing anything in a spreadsheet.",
   inputSchema: { path: z.string().describe("Path to the .xlsx/.xlsm/.xlsb/.ods/.csv/.tsv file (~ is expanded)") },
 }, guard(async ({ path }: { path: string }) => text(await infoText(path))));
 
 // ---------------------------------------------------------------- sheet_read
 server.registerTool("sheet_read", {
   title: "Read rows",
-  description: "Read rows from an excel or csv sheet as a text table, JSON records or CSV text. Use limit/offset to page through big files, or range for an A1 block like B2:F40. For totals or per-group sums use sheet_query with group_by instead.",
+  description: "Use for ANY .xlsx/.csv path, including paths outside the current directory; do not read the file yourself. Read rows from an excel or csv sheet as a text table, JSON records or CSV text. Use limit/offset to page through big files, or range for an A1 block like B2:F40. For totals or per-group sums use sheet_query with group_by instead.",
   inputSchema: {
     path: z.string(),
     sheet: z.string().optional().describe("Sheet name; defaults to the first sheet"),
@@ -272,7 +323,7 @@ function describeQuery(q: {
 server.registerTool("sheet_query", {
   title: "Filter, group and sort rows",
   description:
-    "Query an excel (xlsx) or csv file without writing any code: filter rows, group by a column, sum/count/average, sort and limit. " +
+    "Use for ANY .xlsx/.csv path, including paths outside the current directory; do not read the file yourself. Query an excel (xlsx) or csv file without writing any code: filter rows, group by a column, sum/count/average, sort and limit. " +
     "where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. " +
     'Column names with spaces go in brackets: [Unit Price] > 10 AND [Region] contains "north". Strings use single or double quotes. ' +
     'Use group_by + aggregate for questions like "which rep sold the most units in the North region": ' +
@@ -473,16 +524,18 @@ server.registerTool("sheet_add_column", {
   description:
     'Add a computed column and save the result to a NEW file (the source is never modified unless out_path points at it). ' +
     'formula uses the same expression language as sheet_query over the columns of each row, e.g. "[Qty] * [Unit Price]" or \'[Country] = "PL"\'. ' +
+    "Numeric results are rounded like the inputs: when every column the formula reads holds at most 2 decimals, the result is rounded to 2 decimals, so a VAT column comes out in cents rather than as 40.7868. Pass decimals to override. " +
     "Alternatively pass values, one per data row.",
   inputSchema: {
     path: z.string(),
     sheet: z.string().optional(),
     name: z.string().describe("Name of the new column"),
     formula: z.string().optional().describe('Expression over row columns, e.g. "[Qty] * [Unit Price]"'),
+    decimals: z.number().int().min(0).max(10).optional().describe("Round numeric formula results to this many decimals. Default: the widest decimal count of the columns the formula reads, capped at 2 when they all hold 2 or fewer (money in, money out); otherwise no rounding beyond float cleanup"),
     values: z.array(z.any()).optional().describe("Explicit values, one per data row"),
     out_path: z.string().optional().describe("Output file; default <source>-plus-<column>.<same ext>"),
   },
-}, guard(async ({ path, sheet, name, formula, values, out_path }: any) => {
+}, guard(async ({ path, sheet, name, formula, values, out_path, decimals }: any) => {
   if (!formula && !values) throw new UserError("give either formula or values");
   const o = open(path, sheet);
   const notes = [...o.notes];
@@ -492,11 +545,25 @@ server.registerTool("sheet_add_column", {
   let computed: Cell[];
   if (formula) {
     const f = compile(formula);
+    // D-R13: "[Amount] * 1.23" over money produced 40.7868 in a column the user named
+    // "Amount with VAT". Money in, money out: if every operand column the formula reads
+    // holds at most 2 decimals, round the result to 2. decimals overrides explicitly.
+    const operands = formulaColumns(formula, headers);
+    const inputDecimals = maxDecimals(recs, operands);
+    const round = typeof decimals === "number"
+      ? decimals
+      : inputDecimals !== null && inputDecimals <= 2 ? 2 : null;
+    if (typeof decimals !== "number" && round === 2 && operands.length) {
+      notes.push(`Numeric results rounded to 2 decimals because ${operands.map((c) => JSON.stringify(c)).join(", ")} hold at most 2. Pass decimals to change that.`);
+    }
     computed = recs.map((r) => {
       const v = f(r);
       if (v === null || v === undefined) return null;
       if (typeof v === "boolean") return v;
-      if (typeof v === "number") return Number.isFinite(v) ? Number(v.toFixed(10)) : null;
+      if (typeof v === "number") {
+        if (!Number.isFinite(v)) return null;
+        return round === null ? Number(v.toFixed(10)) : Number(roundHalfUp(v, round).toFixed(round));
+      }
       return String(v);
     });
   } else {

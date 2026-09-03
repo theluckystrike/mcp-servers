@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-02T23:45:35.747Z",
+  "generated_at": "2026-09-03T00:00:41.047Z",
   "session": {
-    "count": 17,
+    "count": 18,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -70,6 +70,10 @@
       {
         "at": "2026-09-02T23:45:35.725Z",
         "note": "loop 2 wave A: 6 mirror repos, demo GIFs, intel R2 (downloads 79), round 5 26/30"
+      },
+      {
+        "at": "2026-09-03T00:00:41.020Z",
+        "note": "v0.2.3: round-5 fixes, 162 tests, 43 setup pages, mirrors resynced"
       }
     ]
   },
@@ -77,7 +81,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -99,7 +103,7 @@
       "build_ok": true,
       "test_summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818",
       "result_status": "DONE",
-      "loc": 1105,
+      "loc": 1194,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -118,7 +122,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -138,7 +142,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 1016,
+      "loc": 1054,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -157,7 +161,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -185,7 +189,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -222,7 +226,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -240,7 +244,7 @@
       "build_ok": true,
       "test_summary": "# pass 31 / # fail 0",
       "result_status": "DONE",
-      "loc": 1134,
+      "loc": 1229,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -259,7 +263,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -280,7 +284,7 @@
       "build_ok": true,
       "test_summary": "# pass 2 / # fail 0",
       "result_status": "DONE",
-      "loc": 807,
+      "loc": 821,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -436,6 +440,10 @@
     {
       "file": "docs/REMOTE_RESULT.md",
       "first_line": "REMOTE_RESULT.md - hosted streamable-HTTP endpoints (INTEL R1)"
+    },
+    {
+      "file": "docs/SETUP_PAGES_RESULT.md",
+      "first_line": "Setup pages run - 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE.md",

@@ -639,7 +639,7 @@ server.registerTool("expense_export", {
 
 server.registerTool("expense_to_invoice", {
   title: "Rebill expenses to an invoice",
-  description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax and the line total comes back to the receipt gross. A stored rate of 0 is a rate, not a gap. An expense with NO rate recorded is rebilled gross with tax_rate 0 and a warning in its description; the expense_settings default is never applied retroactively, because it would rewrite the tax meaning of receipts entered before it existed. Pass assume_vat_rate explicitly to split those lines instead. Line items are grouped per currency because one invoice carries one currency. This is a read-only preview: marking happens only in expense_mark_rebilled, once the invoice exists.",
+  description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax and the line total comes back to the receipt gross. A stored rate of 0 is a rate, not a gap. An expense with NO rate recorded is rebilled gross with tax_rate 0 and a warning in its description; the expense_settings default is never applied retroactively, because it would rewrite the tax meaning of receipts entered before it existed. Pass assume_vat_rate explicitly to split those lines instead. Line items are grouped per currency because one invoice carries one currency. When the range holds MORE THAN ONE currency, pass target_currency plus fx_rates and every line is converted into one single group, each converted line carrying [converted from EUR 12.40 at 1.08] in its description; without fx_rates the response names the exact argument to pass. This is a read-only preview: marking happens only in expense_mark_rebilled, once the invoice exists.",
   inputSchema: {
     project: text().describe("Project or client to rebill"),
     from: text(10).describe("ISO date, inclusive"),
@@ -647,11 +647,26 @@ server.registerTool("expense_to_invoice", {
     markup_percent: z.number().finite().min(0).max(1000).optional().describe("Percent added to each net amount. Pro"),
     include_rebilled: z.boolean().optional().describe("Include expenses already marked as rebilled, default false"),
     assume_vat_rate: z.number().finite().min(0).max(100).optional().describe("Split expenses that recorded NO VAT rate at this percent, flagged in the description. Only applied when you pass it here"),
+    target_currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe('Convert every line into this currency and return ONE group, e.g. "USD". Needs fx_rates for each other currency present'),
+    fx_rates: z.record(z.string(), z.number().finite().positive()).optional().describe('Rate per source currency, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.08, "GBP": 1.27}. You supply the rate; nothing here fetches or guesses one'),
   },
 }, async (a) => {
   try {
     if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
+    // D-R14: FX is caller-supplied. Nothing in this suite fetches or invents a rate.
+    const target = a.target_currency ? normCurrency(a.target_currency) : undefined;
+    if (target && !isKnownCurrency(target)) return fail(`"${target}" is not an ISO 4217 currency code.`);
+    if (a.fx_rates && !target) {
+      return fail(`fx_rates needs target_currency as well: a rate of 1.08 means nothing until you say 1.08 of WHAT. Pass target_currency: "USD" with it.`);
+    }
+    const fx = new Map<string, number>();
+    for (const [k, v] of Object.entries(a.fx_rates ?? {})) {
+      const c = normCurrency(k);
+      if (!isKnownCurrency(c)) return fail(`fx_rates key "${k}" is not an ISO 4217 currency code.`);
+      if (!(typeof v === "number" && Number.isFinite(v) && v > 0)) return fail(`fx_rates["${k}"] must be a positive number.`);
+      fx.set(c, v);
+    }
     // markup_percent used to be Pro-gated. Measured in the user-value run: the model met the
     // paywall, recomputed the markup by hand off the GROSS amount and emitted tax_rate 0, which is
     // the exact double-tax shape expense_to_invoice exists to prevent. The item-count cap below is
@@ -713,11 +728,68 @@ server.registerTool("expense_to_invoice", {
         byCurrency.set(e.currency, items);
         idsByCurrency.set(e.currency, [...(idsByCurrency.get(e.currency) ?? []), e.id]);
       }
-      const groups = [...byCurrency.entries()].map(([currency, items]) => ({
+      let groups = [...byCurrency.entries()].map(([currency, items]) => ({
         currency, items,
         expense_ids: idsByCurrency.get(currency) ?? [],
         total_net: formatMoney(items.reduce((n, i) => n + toMinor(i.unit_price * i.quantity, currency), 0), currency),
       }));
+
+      // D-R14: a freelancer week is routinely USD hours + a EUR receipt + a GBP mileage
+      // line, and "invoice everything unbilled in USD" had no argument that could say so.
+      // With target_currency + fx_rates every group folds into ONE, and each converted
+      // line says on its own face what it was and at what rate. Without the rates the
+      // response names the exact argument instead of leaving the caller to invent one.
+      const present = groups.map((g) => g.currency);
+      const foreign = present.filter((c) => c !== target);
+      let converted = 0;
+      let fxNote: string | undefined;
+      if (target) {
+        const missing = foreign.filter((c) => !fx.has(c));
+        if (missing.length) {
+          return fail(
+            `no rate for ${missing.join(", ")}. Pass fx_rates with one entry per currency, meaning 1 unit of that currency = X units of ${target}: ` +
+            `expense_to_invoice {project: ${JSON.stringify(a.project)}, from: "${w.from}", to: "${a.to}", target_currency: "${target}", ` +
+            `fx_rates: {${missing.map((c) => `"${c}": <rate>`).join(", ")}}}. Nothing here fetches or guesses a rate.`
+          );
+        }
+        const merged: Line[] = [];
+        const mergedIds: string[] = [];
+        for (const g of groups) {
+          const rate = g.currency === target ? 1 : fx.get(g.currency)!;
+          for (const it of g.items) {
+            if (rate === 1 && g.currency === target) { merged.push(it); continue; }
+            const srcMinor = toMinor(it.unit_price * it.quantity, g.currency);
+            const tgtMajor = toMajor(toMinor(it.unit_price * rate, target), target);
+            converted++;
+            merged.push({
+              description: `${it.description} [converted from ${formatMoney(srcMinor, g.currency)} at ${rate}]`,
+              quantity: it.quantity,
+              unit_price: tgtMajor,
+              tax_rate: it.tax_rate,
+            });
+          }
+          mergedIds.push(...g.expense_ids);
+        }
+        groups = merged.length
+          ? [{
+              currency: target,
+              items: merged,
+              expense_ids: mergedIds,
+              total_net: formatMoney(merged.reduce((n, i) => n + toMinor(i.unit_price * i.quantity, target), 0), target),
+            }]
+          : [];
+        fxNote = converted
+          ? `${converted} line(s) converted to ${target} at the rates you passed (${foreign.map((c) => `${c} ${fx.get(c)}`).join(", ")}). Each converted description carries its original amount and rate. The rates are yours, not fetched.`
+          : `Nothing needed converting: every line was already in ${target}.`;
+      } else if (present.length > 1) {
+        fxNote =
+          `${present.length} currencies in this range (${present.join(", ")}) and one invoice carries one currency. ` +
+          `To get ONE invoice, re-run with the target and your own rates, e.g. ` +
+          `expense_to_invoice {project: ${JSON.stringify(a.project)}, from: "${w.from}", to: "${a.to}", target_currency: "${present[0]}", ` +
+          `fx_rates: {${present.slice(1).map((c) => `"${c}": <1 ${c} in ${present[0]}>`).join(", ")}}}. ` +
+          `Otherwise invoice one group now and rebill the others on their own invoices.`;
+      }
+
       return json({
         project: a.project, from: w.from, to: a.to,
         markup_percent: markup,
@@ -732,6 +804,11 @@ server.registerTool("expense_to_invoice", {
             ? `${unknownVat} line(s) had no VAT rate recorded: the gross amount is rebilled as-is with tax_rate 0 and the description says so. Do not apply a default tax rate to those lines on the invoice, or the receipt is taxed twice. Pass assume_vat_rate {percent} to split them instead; the expense_settings default is deliberately not applied retroactively.`
             : "Every line carries the VAT rate recorded on its expense.",
         currencies: groups.map((g) => g.currency),
+        source_currencies: present,
+        target_currency: target ?? null,
+        converted_lines: converted,
+        fx_rates_used: target ? Object.fromEntries([...fx].filter(([c]) => foreign.includes(c))) : null,
+        fx_note: fxNote,
         line_items_per_currency: groups,
         next_step: groups.length
           ? `1. Pass one group's items straight to invoice_create {client: "...", currency: "${groups[0].currency}", items: <line_items_per_currency[0].items>}. ` +

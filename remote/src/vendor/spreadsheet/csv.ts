@@ -68,13 +68,41 @@ export function parseCsv(text: string, delimiter?: string): { rows: string[][]; 
   return { rows, delimiter: d };
 }
 
-/** Coerce a CSV string cell to number/boolean when unambiguous. */
+/**
+ * Plain ASCII decimal: optional sign, no thousands separators, no leading zeros on a
+ * multi-digit integer part (so an identifier like "007" or "0123" stays text), optional
+ * fraction, optional exponent. ".5" and "0.5" are numbers; "00.5" is not.
+ */
+const PLAIN_DECIMAL = /^[+-]?(?:0|[1-9]\d*)?(?:\.\d+)?(?:[eE][+-]?\d+)?$/;
+
+/**
+ * Comma thousands separators, only in the one unambiguous shape: 1-3 leading digits then
+ * one or more groups of exactly three, then an optional dot fraction. "1,250.00" matches;
+ * "1.250,00" (European) and "1,250,00" do not, and stay text.
+ */
+const GROUPED_DECIMAL = /^[+-]?[1-9]\d{0,2}(?:,\d{3})+(?:\.\d+)?$/;
+
+/**
+ * Coerce a CSV string cell to number/boolean when unambiguous.
+ *
+ * D-R12: this used to accept a number only when `String(n).length >= s.length - 1`, a
+ * string-LENGTH test. Any money value ending in ".00" lost more than one character when
+ * rendered back ("403.00" -> "403"), so it was written out as TEXT and Excel's own
+ * SUM skipped it silently. The decision is now by PATTERN only; trailing zeros and
+ * thousands separators are both fine, and length never enters into it.
+ */
 export function coerce(v: string): string | number | boolean {
   const s = v.trim();
   if (s === "") return "";
-  if (/^-?(\d+|\d*\.\d+)([eE][+-]?\d+)?$/.test(s)) {
-    const n = Number(s);
-    if (Number.isFinite(n) && String(n).length >= s.replace(/^\+/, "").length - 1) return n;
+  // A bare sign, a bare dot, or "" after the sign must not become 0.
+  if (/\d/.test(s)) {
+    if (PLAIN_DECIMAL.test(s)) {
+      const n = Number(s);
+      if (Number.isFinite(n)) return n;
+    } else if (GROUPED_DECIMAL.test(s)) {
+      const n = Number(s.replace(/,/g, ""));
+      if (Number.isFinite(n)) return n;
+    }
   }
   if (s === "true" || s === "TRUE") return true;
   if (s === "false" || s === "FALSE") return false;

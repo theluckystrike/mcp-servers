@@ -152,7 +152,18 @@ export function hasRegexMetacharacters(src: string): boolean {
   return /[\\^$.|?*+()[\]{}]/.test(src);
 }
 
-export function isoToday(): string { return new Date().toISOString().slice(0, 10); }
+/**
+ * D-R15: the LOCAL calendar date, YYYY-MM-DD - the same shape as time-tracker's dayKey().
+ * This used to be `new Date().toISOString().slice(0,10)`, i.e. the UTC date, so a user in
+ * UTC+7 logging an expense at 06:36 local got yesterday's date on it while time-tracker
+ * used today's. One user, one conversation, two different todays.
+ */
+export function localDay(d: Date = new Date()): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+export function isoToday(): string { return localDay(); }
 
 /** True only for a real calendar date in YYYY-MM-DD form. */
 export function isIsoDate(s: string): boolean {
@@ -161,9 +172,10 @@ export function isIsoDate(s: string): boolean {
   return Number.isFinite(d.getTime()) && d.toISOString().slice(0, 10) === s;
 }
 
-/** ISO date N days before today, UTC. */
+/** ISO date N days before today, on the LOCAL calendar (D-R15). */
 export function isoDaysAgo(days: number): string {
   const d = new Date();
-  d.setUTCDate(d.getUTCDate() - days);
-  return d.toISOString().slice(0, 10);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - days);
+  return localDay(d);
 }

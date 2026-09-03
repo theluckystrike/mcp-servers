@@ -18,7 +18,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "remote", "src", "vendor");
 
 const SERVERS = {
-  "time-tracker": ["index.ts"],
+  "time-tracker": ["index.ts", "day.ts"],
   "price-tracker": ["index.ts", "extract.ts", "fetch.ts", "redirect.ts", "store.ts"],
   "invoice": ["index.ts", "money.ts", "store.ts"],
   "expense-tracker": ["index.ts", "money.ts", "store.ts"],

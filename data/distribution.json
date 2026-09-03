@@ -19,7 +19,7 @@
     "registry": {
       "status": "published",
       "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
-      "note": "6 entries at v0.2.2 (5 servers + office-suite); 5 hosted via remotes[]; word-rich names"
+      "note": "6 entries at v0.2.3; 5 hosted; word-rich names"
     },
     "smithery": {
       "status": "blocked",
@@ -33,8 +33,8 @@
     },
     "mcpb": {
       "status": "published",
-      "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.2.2",
-      "note": "6 .mcpb bundles on release v0.2.2"
+      "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.2.3",
+      "note": "6 .mcpb bundles on release v0.2.3"
     },
     "awesome-mcp-servers": {
       "status": "blocked",
