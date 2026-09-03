@@ -336,5 +336,93 @@
       "name": "tailor_to_job",
       "description": "Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new"
     }
+  ],
+  "recurring": [
+    {
+      "name": "schedule_create",
+      "description": "Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due run"
+    },
+    {
+      "name": "schedule_list",
+      "description": "Every schedule with its cadence, per-period amount, next due date and status (active or paused)."
+    },
+    {
+      "name": "schedule_get",
+      "description": "The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated."
+    },
+    {
+      "name": "schedule_update",
+      "description": "Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only."
+    },
+    {
+      "name": "schedule_pause",
+      "description": "Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed."
+    },
+    {
+      "name": "schedule_resume",
+      "description": "Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due."
+    },
+    {
+      "name": "schedule_delete",
+      "description": "Remove a schedule. Invoices it already generated stay in the invoice server untouched; its generation history is kept so a re-created schedule cannot double-bill a period it already covered."
+    },
+    {
+      "name": "schedule_upcoming",
+      "description": "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days."
+    },
+    {
+      "name": "invoice_generate_due",
+      "description": "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Idempotent: one invoice per schedule per period, keyed by the occurrence d"
+    },
+    {
+      "name": "schedule_history",
+      "description": "The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path."
+    },
+    {
+      "name": "forecast",
+      "description": "Expected invoiced revenue per calendar month per currency from every active schedule. Free covers 3 months ahead; Pro covers up to 120."
+    }
+  ],
+  "clauses": [
+    {
+      "name": "clause_add",
+      "description": "Save a reusable contract or proposal clause to the library. Use {{variables}} in the body for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}. Free tier: 10 own clauses on top of"
+    },
+    {
+      "name": "clause_get",
+      "description": "Return a clause in full by id or by title, with its variables and, in Pro, its revision count."
+    },
+    {
+      "name": "clause_update",
+      "description": "Change the text, category, tags, variables or jurisdiction of a clause. In Pro the previous text is kept as a version; in the free tier the change is applied without history."
+    },
+    {
+      "name": "clause_delete",
+      "description": "Remove a clause from the library. A deleted starter clause is not re-seeded on the next call."
+    },
+    {
+      "name": "clause_list",
+      "description": "List every clause, newest categories first, optionally narrowed to one category."
+    },
+    {
+      "name": "clause_search",
+      "description": "Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature."
+    },
+    {
+      "name": "clause_import",
+      "description": "Bulk-load clauses from a file. Markdown form: '## Title', optional 'category:' / 'tags:' / 'variables:' lines, blank line, body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the "
+    },
+    {
+      "name": "clause_export",
+      "description": "Write the whole library to a file. Markdown export is free; JSON export is a Pro feature."
+    },
+    {
+      "name": "contract_assemble",
+      "description": "Build a contract or proposal from library clauses: orders them, fills {{variables}} from the values you pass, leaves every missing fact as a bracketed prompt like [late fee percent], prepends the not-legal-advice line, a"
+    },
+    {
+      "name": "variables_list",
+      "description": "Given a set of clauses, list every {{variable}} they use and which clause uses it, so nothing is missed before assembling."
+    }
   ]
 }

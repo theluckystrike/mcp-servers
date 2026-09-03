@@ -52,6 +52,24 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  clauses: async (c, tmp, tier, ok) => {
+    const s1 = await c.tool("clause_search", { query: "payment" }); ok(`${tier}: clause_search payment finds starter clauses`, !s1.isError && /payment/i.test(s1.text), s1.text.slice(0, 100));
+    const ids = [...s1.text.matchAll(/\b(cl_[a-z0-9-]+|[a-z0-9]{6,}-[a-z0-9-]+|[a-z-]+_[a-z_]+)\b/g)].map((m) => m[1]).slice(0, 2);
+    const asm = await c.tool("contract_assemble", { title: "Probe contract", categories: ["payment", "scope"], values: { client: "Acme Probe", fee: "4,500 EUR" }, client: "Acme Probe", out_path: join(tmp, "contract.docx"), format: "docx" });
+    ok(`${tier}: contract_assemble writes docx with disclaimer`, !asm.isError && existsSync(join(tmp, "contract.docx")) && /legal advice/i.test(asm.text), asm.text.slice(0, 100));
+    let last;
+    for (let i = 1; i <= 11; i++) last = await c.tool("clause_add", { title: `Own clause ${i}`, body: `Body ${i} with {{var${i}}}`, category: "custom" });
+    ok(`${tier}: 11th own clause ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(last.text) : /mcp\.zovo\.one\/buy\/clauses/.test(last.text), last.text.slice(0, 100));
+  },
+  recurring: async (c, tmp, tier, ok) => {
+    const a = await c.tool("schedule_create", { client: "Acme", items: [{ description: "Retainer", quantity: 12, unit_price: 90, tax_rate: 23 }], currency: "EUR", every: "monthly", start_date: "2026-07-01", due_days: 14 }); ok(`${tier}: schedule_create monthly`, !a.isError, a.text.slice(0, 100));
+    const dry = await c.tool("invoice_generate_due", { as_of: "2026-09-01", dry_run: true }); ok(`${tier}: dry run reports due periods`, !dry.isError && /3|three/.test(dry.text), dry.text.slice(0, 100));
+    const gen = await c.tool("invoice_generate_due", { as_of: "2026-09-01" }); ok(`${tier}: generate creates invoices at 1328.40`, !gen.isError && /1328\.40|1,328\.40/.test(gen.text), gen.text.slice(0, 120));
+    const again = await c.tool("invoice_generate_due", { as_of: "2026-09-01" }); ok(`${tier}: second run creates none`, !again.isError && /created 0|0 created|skipped 3/i.test(again.text), again.text.slice(0, 100));
+    let last;
+    for (let i = 2; i <= 4; i++) last = await c.tool("schedule_create", { client: `C${i}`, items: [{ description: "x", quantity: 1, unit_price: 10 }], currency: "EUR", every: "monthly", start_date: "2026-09-01" });
+    ok(`${tier}: 4th active schedule ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(last.text) : /mcp\.zovo\.one\/buy\/recurring/.test(last.text), last.text.slice(0, 100));
+  },
   resume: async (c, tmp, tier, ok) => {
     const prof = { name: "Ada Probe", email: "ada@example.com", summary: "Backend engineer.", skills: ["Go", "Postgres"], experience: [{ company: "Acme", title: "Engineer", start: "2022-01", bullets: ["Built the billing service handling 12000 invoices a month"] }], education: [{ school: "MIT", degree: "BSc" }] };
     const a = await c.tool("profile_set", prof); ok(`${tier}: profile_set`, !a.isError, a.text.slice(0, 80));
