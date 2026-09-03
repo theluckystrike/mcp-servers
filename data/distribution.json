@@ -137,9 +137,9 @@
       "note": "43 URLs, all HTTP 200; 36 client-by-server pages 490-551 words each with FAQPage JSON-LD and canonical; client facts verified against each client's public docs on 2026-09-03; IndexNow POST 200 for all 43"
     },
     "estate-backlinks": {
-      "status": "pushed, propagating",
+      "status": "published",
       "url": "https://ukmoneycalc.com and https://statewage.com",
-      "note": "footer block on every page of both sites (15 + 63 pages), deployed by their own CI on push"
+      "note": "footer block live on every page of both sites (15 + 63 pages) linking /s/invoice, /s/time-tracker, /s/expense-tracker; verified by curl"
     }
   },
   "per_server": {

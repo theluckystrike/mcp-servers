@@ -182,11 +182,11 @@
       "surface": "Google/Bing/DDG: mcp.zovo.one product pages",
       "status": "live, indexed via IndexNow (Google); Bing/DDG indexation unmeasured this run",
       "listed": 1.0,
-      "findable": 0.1,
+      "findable": 0.2,
       "reach": 0.8,
-      "evidence": "unchanged Google estimate (no new Google-specific measurement this pass). Attempted Bing (site:mcp.zovo.one) and DuckDuckGo html endpoint via curl: Bing returned HTTP 200 but an unrelated fallback SERP that ignores the site: operator (two attempts, default and forced en-US); DDG returned a bot-challenge page. Neither confirms or denies indexation -- treated as unmeasured, findable left at its prior estimate rather than moved on no evidence",
+      "evidence": "unchanged Google estimate (no new Google-specific measurement this pass). Attempted Bing (site:mcp.zovo.one) and DuckDuckGo html endpoint via curl: Bing returned HTTP 200 but an unrelated fallback SERP that ignores the site: operator (two attempts, default and forced en-US); DDG returned a bot-challenge page. Neither confirms or denies indexation -- treated as unmeasured, findable left at its prior estimate rather than moved on no evidence; two estate sites with existing search traffic now link every page to the product pages (78 pages)",
       "fix": "estate backlinks from 6 ranking sites; one how-to article per server; re-attempt Bing/DDG from a browser session (not curl) to get a real reading",
-      "score": 8
+      "score": 16
     },
     {
       "surface": "llms.txt and agent crawlers",
@@ -218,9 +218,27 @@
       "old_registry_name": "io.github.theluckystrike/time-tracker (deprecated 2026-09-02, all versions)",
       "registry_name": "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
       "has_remotes": true,
-      "query_set": ["time","timer","timesheet","hours","billable","tracking","time-tracker","time tracker"],
+      "query_set": [
+        "time",
+        "timer",
+        "timesheet",
+        "hours",
+        "billable",
+        "tracking",
+        "time-tracker",
+        "time tracker"
+      ],
       "organic_before": 51,
-      "competitors_in_matched_slots": {"time": 297, "timer": 12, "timesheet": 3, "hours": 3, "billable": 2, "tracking": 24, "time-tracker": 6, "time tracker": 0}
+      "competitors_in_matched_slots": {
+        "time": 297,
+        "timer": 12,
+        "timesheet": 3,
+        "hours": 3,
+        "billable": 2,
+        "tracking": 24,
+        "time-tracker": 6,
+        "time tracker": 0
+      }
     },
     {
       "id": "price-tracker",
@@ -230,9 +248,31 @@
       "old_registry_name": "io.github.theluckystrike/price-tracker (deprecated 2026-09-02, all versions)",
       "registry_name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
       "has_remotes": true,
-      "query_set": ["price","prices","deal","drop","alert","watch","product","shop","price-tracker","price tracker"],
+      "query_set": [
+        "price",
+        "prices",
+        "deal",
+        "drop",
+        "alert",
+        "watch",
+        "product",
+        "shop",
+        "price-tracker",
+        "price tracker"
+      ],
       "organic_before": 15,
-      "competitors_in_matched_slots": {"price": 115, "prices": 21, "deal": 99, "drop": 165, "alert": 44, "watch": 139, "product": 126, "shop": 113, "price-tracker": 9, "price tracker": 0}
+      "competitors_in_matched_slots": {
+        "price": 115,
+        "prices": 21,
+        "deal": 99,
+        "drop": 165,
+        "alert": 44,
+        "watch": 139,
+        "product": 126,
+        "shop": 113,
+        "price-tracker": 9,
+        "price tracker": 0
+      }
     },
     {
       "id": "spreadsheet",
@@ -242,9 +282,27 @@
       "old_registry_name": "io.github.theluckystrike/spreadsheet (deprecated 2026-09-02, all versions)",
       "registry_name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
       "has_remotes": false,
-      "query_set": ["spreadsheet","excel","xlsx","csv","sheet","sheets","table","data"],
+      "query_set": [
+        "spreadsheet",
+        "excel",
+        "xlsx",
+        "csv",
+        "sheet",
+        "sheets",
+        "table",
+        "data"
+      ],
       "organic_before": 25,
-      "competitors_in_matched_slots": {"spreadsheet": 16, "excel": 164, "xlsx": 20, "csv": 18, "sheet": 115, "sheets": 80, "table": 129, "data": 2891}
+      "competitors_in_matched_slots": {
+        "spreadsheet": 16,
+        "excel": 164,
+        "xlsx": 20,
+        "csv": 18,
+        "sheet": 115,
+        "sheets": 80,
+        "table": 129,
+        "data": 2891
+      }
     },
     {
       "id": "invoice",
@@ -254,9 +312,27 @@
       "old_registry_name": "io.github.theluckystrike/invoice (deprecated 2026-09-02, all versions)",
       "registry_name": "io.github.theluckystrike/invoice-pdf-billing-generator",
       "has_remotes": true,
-      "query_set": ["invoice","invoices","invoicing","billing","pdf","receipt","quote","freelance"],
+      "query_set": [
+        "invoice",
+        "invoices",
+        "invoicing",
+        "billing",
+        "pdf",
+        "receipt",
+        "quote",
+        "freelance"
+      ],
       "organic_before": 6,
-      "competitors_in_matched_slots": {"invoice": 94, "invoices": 0, "invoicing": 68, "billing": 29, "pdf": 282, "receipt": 16, "quote": 55, "freelance": 6}
+      "competitors_in_matched_slots": {
+        "invoice": 94,
+        "invoices": 0,
+        "invoicing": 68,
+        "billing": 29,
+        "pdf": 282,
+        "receipt": 16,
+        "quote": 55,
+        "freelance": 6
+      }
     },
     {
       "id": "expense-tracker",
@@ -266,9 +342,21 @@
       "old_registry_name": null,
       "registry_name": "io.github.theluckystrike/expense-tracker-receipts-mileage",
       "has_remotes": false,
-      "query_set": ["expense","expenses","receipt","receipts","mileage"],
+      "query_set": [
+        "expense",
+        "expenses",
+        "receipt",
+        "receipts",
+        "mileage"
+      ],
       "organic_before": 0,
-      "competitors_in_matched_slots": {"expense": 15, "expenses": 0, "receipt": 16, "receipts": 5, "mileage": 1}
+      "competitors_in_matched_slots": {
+        "expense": 15,
+        "expenses": 0,
+        "receipt": 16,
+        "receipts": 5,
+        "mileage": 1
+      }
     },
     {
       "id": "office-suite",
@@ -278,9 +366,15 @@
       "old_registry_name": null,
       "registry_name": "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
       "has_remotes": false,
-      "query_set": ["office", "suite"],
+      "query_set": [
+        "office",
+        "suite"
+      ],
       "organic_before": 0,
-      "competitors_in_matched_slots": {"office": 32, "suite": 86}
+      "competitors_in_matched_slots": {
+        "office": 32,
+        "suite": 86
+      }
     }
   ],
   "fleet": {

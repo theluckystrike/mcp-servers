@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T00:22:05.177Z",
+  "generated_at": "2026-09-03T00:29:36.127Z",
   "session": {
-    "count": 19,
+    "count": 20,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -78,6 +78,10 @@
       {
         "at": "2026-09-03T00:22:05.148Z",
         "note": "v0.2.4: Codex v3 fixes (P0 store guard, windows, locale numbers, extraction), 186 tests; compare pages; backlinks pushed"
+      },
+      {
+        "at": "2026-09-03T00:29:36.097Z",
+        "note": "estate backlinks live on ukmoneycalc + statewage (78 pages)"
       }
     ]
   },
@@ -430,6 +434,10 @@
       "first_line": "INTEL_R2 — Submission, directory, and registry-slot re-measurement"
     },
     {
+      "file": "docs/LAUNCH_POSTS.md",
+      "first_line": "Launch posts"
+    },
+    {
       "file": "docs/MARKETPLACES_RESULT.md",
       "first_line": "Marketplaces: Docker MCP catalog + Cline marketplace"
     },
@@ -480,6 +488,10 @@
     {
       "file": "docs/USER_VALUE_R5.md",
       "first_line": "User value audit, round 5 — 2026-09-03"
+    },
+    {
+      "file": "docs/USER_VALUE_R6.md",
+      "first_line": "User value audit, round 6 — 2026-09-03"
     }
   ],
   "revenue": {
