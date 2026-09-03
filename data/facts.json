@@ -130,6 +130,18 @@
         19
       ],
       [
+        "calendar",
+        "prod_VC1Tw0VGBIZZwa",
+        "price_1UBdQYJKCamubEm1CaxadXyX",
+        19
+      ],
+      [
+        "pdf",
+        "prod_VC1TQ28Nov4BDs",
+        "price_1UBdQaJKCamubEm16HxaiJWK",
+        19
+      ],
+      [
         "bundle",
         "prod_VBafU5C9o9d0f3",
         "price_1UBDU9JKCamubEm1dWgRjtoW",
@@ -299,6 +311,26 @@
       "free": "Starter set plus 10 own clauses, search, assembly up to 8 clauses, markdown export.",
       "pro": "Unlimited clauses, jurisdiction and tag filters, JSON import and export, unlimited assembly, clause versions.",
       "storage": "~/.local/share/mcp-servers/clauses/"
+    },
+    "calendar": {
+      "title": "MCP Calendar",
+      "tagline": "Read .ics calendars: events, free and busy, conflicts, exports.",
+      "does": "Parses .ics files and feeds from Google, Apple and Outlook (recurrence rules, exceptions, time zones, all-day events), lists events in a window in your home zone, computes busy blocks and free windows, flags overlapping events, exports selections as valid .ics, and turns a meeting into the arguments for a billable time entry.",
+      "for": "Freelancers who live in a calendar and bill by the hour.",
+      "example": "\"What is on my calendar next week and where am I free for a two-hour block?\" ... \"Log yesterday's Nova call as billable time.\"",
+      "free": "2 calendars, windows up to 31 days, exports up to 50 events.",
+      "pro": "Unlimited calendars, any window, unlimited exports, URL refresh.",
+      "storage": "~/.local/share/mcp-servers/calendar/"
+    },
+    "pdf": {
+      "title": "MCP PDF Tools",
+      "tagline": "Merge, split, stamp and read PDFs, pure JavaScript.",
+      "does": "Merges and splits PDFs, extracts and reorders pages, rotates, stamps PAID or DRAFT or any text at a chosen position, watermarks the business name and VAT id from the shared profile, extracts text best effort, and reports page counts and metadata. Never edits inputs in place and refuses encrypted files with a clear message.",
+      "for": "Anyone who sends invoices, proposals and contracts as PDFs and needs to mark, combine or split them without a desktop app.",
+      "example": "\"Merge these three invoices into one PDF and stamp it PAID.\" ... \"Split the contract into signature pages.\"",
+      "free": "Info, count, text, merge up to 5 files, edits on files up to 30 pages, PAID and DRAFT stamps.",
+      "pro": "Unlimited files and pages, custom stamp text and colours, business watermark, page reorder.",
+      "storage": "Works on your own files; a recent list only."
     }
   },
   "version": "0.1.1"
