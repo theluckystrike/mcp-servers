@@ -510,10 +510,10 @@ function patchDocxIndex(src) {
   // doc_read and doc_fill_template take the document itself, base64, as an alternative
   // to uploading it first.
   src = must(src,
-    /    path: z\.string\(\)\.describe\("Path to the \.docx file\. Files produced[^"]*"\),\n    format: z\.enum\(\["text", "json"\]\)\.optional\(\)\.describe\("text \(default\) returns the readable text, json returns the block structure"\),/,
+    /    path: z\.string\(\)\.describe\("Path to the \.docx file\.[^"]*"\),\n    format: z\.enum\(\["text", "json"\]\)\.optional\(\)\.describe\("[^"]*"\),/,
     '    path: z.string().optional().describe("Name of a document uploaded with doc_upload"),\n' +
     '    docx_base64: z.string().optional().describe("The .docx itself, base64-encoded, instead of uploading it first"),\n' +
-    '    format: z.enum(["text", "json"]).optional().describe("text (default) returns the readable text, json returns the block structure"),',
+    '    format: z.enum(["text", "json"]).optional().describe("text (default) returns the readable text, json returns the block structure in document order"),',
     "docx doc_read schema");
   src = must(src,
     "    const p = expandPath(a.path);\n    if (!existsSync(p)) return fail(`no file at ${p}.`);\n    if (!/\\.docx$/i.test(p)) return fail(`${p} is not a .docx file. Legacy .doc and .rtf are not readable here.`);",
@@ -607,7 +607,7 @@ function patchResumeIndex(src) {
 
   // resume_read takes the document itself, base64, as an alternative to uploading it.
   src = must(src,
-    /    path: z\.string\(\)\.min\(1\)(?:\.describe\("[^"]*"\))?,\n    save: z\.boolean\(\)\.default\(false\)\.describe\("Store the result as the profile\. Review it first\."\),/,
+    /    path: z\.string\(\)\.min\(1\)(?:\.describe\("[^"]*"\))?,\n    save: z\.boolean\(\)\.default\(false\)\.describe\("[^"]*"\),/,
     '    path: z.string().min(1).optional().describe("Name of a document uploaded with doc_upload"),\n' +
     '    docx_base64: z.string().optional().describe("The .docx itself, base64-encoded, instead of uploading it first"),\n' +
     '    save: z.boolean().default(false).describe("Store the result as the profile. Review it first."),',
