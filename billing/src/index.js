@@ -1,6 +1,7 @@
 import { mintLicense, verifyLicenseKey, hex } from "./license.js";
 import { PAGES } from "./pages.js";
 import { GUIDES, GUIDE_INDEX } from "./content.js";
+import { COMPARE, COMPARE_INDEX } from "./compare.js";
 import { setupPage, clientHub, setupIndex, setupUrls, CLIENTS, CLIENT_ORDER, SETUP_SERVERS } from "./setup.js";
 
 export const PRODUCTS = {
@@ -282,6 +283,7 @@ export default {
         : null;
       const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}">Buy Pro $${PRODUCTS[id].usd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a> &middot; <a href="${REPO}/releases/tag/v0.1.1">Claude Desktop bundle (.mcpb)</a></p>${pg.html}
 ${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry and caveats: ${setupLinks} &middot; <a href="/setup">all clients</a></p>` : ""}
+${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/${esc(id)}">${esc(COMPARE[id].title)}</a> &middot; <a href="/compare">all comparisons</a></p>` : ""}
 <h2>Guides</h2>
 <p>${GUIDE_LINKS}</p>`;
       return new Response(page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
@@ -318,6 +320,37 @@ ${faqHtml}
       return new Response(page(g.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
     }
 
+    if (path === "/compare" && method === "GET") {
+      const items = Object.entries(COMPARE).map(([slug, c]) =>
+        `<li><a href="/compare/${esc(slug)}">${esc(c.title)}</a><br><span class="muted">${esc(c.description)}</span></li>`).join("\n");
+      const body = `<h1>${esc(COMPARE_INDEX.title)}</h1>
+<p>${esc(COMPARE_INDEX.description)} Where a competing server does something we do not, the page says so and names the tool.</p>
+<ul>${items}</ul>
+<p><a href="/">All servers and prices</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a></p>`;
+      const meta = `<meta name="description" content="${esc(COMPARE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/compare">`;
+      return new Response(page(COMPARE_INDEX.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
+    if (path.startsWith("/compare/") && method === "GET") {
+      const slug = path.slice("/compare/".length);
+      const c = COMPARE[slug];
+      if (!c) return new Response(page("Not found", `<h1>Unknown comparison</h1><p><a href="/compare">All comparisons</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+      const canonical = `https://mcp.zovo.one/compare/${slug}`;
+      const faqHtml = c.faq.map((f) => `<h3>${esc(f.q)}</h3>\n<p>${esc(f.a)}</p>`).join("\n");
+      const ld = [
+        { "@context": "https://schema.org", "@type": "TechArticle", headline: c.title, description: c.description, url: canonical, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, publisher: { "@type": "Organization", name: "theluckystrike", url: "https://mcp.zovo.one" } },
+        { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: c.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
+      ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
+      const meta = `<meta name="description" content="${esc(c.description).slice(0, 155)}"><link rel="canonical" href="${canonical}">${ld}`;
+      const body = `<p class="muted"><a href="/">Home</a> &middot; <a href="/compare">Comparisons</a></p>
+${c.html}
+<h2>Questions</h2>
+${faqHtml}
+<h2>Related</h2>
+<p><a href="/s/${esc(slug)}">Product page</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/compare">All comparisons</a></p>`;
+      return new Response(page(c.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
     if ((path === "/setup" || path.startsWith("/setup/")) && method === "GET") {
       const parts = path.split("/").filter(Boolean); // ["setup", client?, server?]
       let pg = null;
@@ -339,7 +372,7 @@ ${faqHtml}
     }
 
     if (path === "/sitemap.xml") {
-      const urls = ["/", "/guides", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      const urls = ["/", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     if (path === "/22fad93b71a88e2e60acae203c4288ae.txt") {
@@ -351,11 +384,12 @@ ${faqHtml}
     if (path === "/llms.txt") {
       const lines = Object.entries(PAGES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline} Install: npx -y @theluckystrike/mcp-${k}`).join("\n");
       const guideLines = Object.entries(GUIDES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/guides/${k}): ${v.description}`).join("\n");
+      const compareLines = Object.entries(COMPARE).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/compare/${k}): ${v.description}`).join("\n");
       const setupLines = CLIENT_ORDER.map((c) =>
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file}, key ${CLIENTS[c].key}. ` +
         Object.keys(SETUP_SERVERS).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Hosted endpoints, no install](https://mcp.zovo.one/mcp): streamable HTTP for time-tracker, price-tracker, invoice; bearer = anonymous token from /mcp/token or a Pro key\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Hosted endpoints, no install](https://mcp.zovo.one/mcp): streamable HTTP for time-tracker, price-tracker, invoice; bearer = anonymous token from /mcp/token or a Pro key\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {

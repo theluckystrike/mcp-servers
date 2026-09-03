@@ -59,7 +59,7 @@
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "6 long-form guides + index, FAQPage JSON-LD, IndexNow pinged; plus 43 /setup pages (6 clients x 6 servers + 6 client hubs + index) shipped 2026-09-03, sitemap now 56 URLs, llms.txt carries a per-client setup section"
+      "note": "6 long-form guides + index, FAQPage JSON-LD, IndexNow pinged; plus 43 /setup pages (6 clients x 6 servers + 6 client hubs + index) shipped 2026-09-03, sitemap now 56 URLs, llms.txt carries a per-client setup section; plus 6 /compare pages (index + 5 head-to-head, 2 verified competitors each) shipped 2026-09-03, sitemap now 62 URLs, llms.txt carries a comparisons section, every /s/<id> links its comparison"
     },
     "mcpservers.org": {
       "status": "submitted",
