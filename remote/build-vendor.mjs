@@ -510,8 +510,7 @@ function patchDocxIndex(src) {
   // doc_read and doc_fill_template take the document itself, base64, as an alternative
   // to uploading it first.
   src = must(src,
-    '    path: z.string().describe("Path to the .docx file"),\n' +
-    '    format: z.enum(["text", "json"]).optional().describe("text (default) returns the readable text, json returns the block structure"),',
+    /    path: z\.string\(\)\.describe\("Path to the \.docx file\. Files produced[^"]*"\),\n    format: z\.enum\(\["text", "json"\]\)\.optional\(\)\.describe\("text \(default\) returns the readable text, json returns the block structure"\),/,
     '    path: z.string().optional().describe("Name of a document uploaded with doc_upload"),\n' +
     '    docx_base64: z.string().optional().describe("The .docx itself, base64-encoded, instead of uploading it first"),\n' +
     '    format: z.enum(["text", "json"]).optional().describe("text (default) returns the readable text, json returns the block structure"),',
@@ -608,8 +607,7 @@ function patchResumeIndex(src) {
 
   // resume_read takes the document itself, base64, as an alternative to uploading it.
   src = must(src,
-    "    path: z.string().min(1),\n" +
-    '    save: z.boolean().default(false).describe("Store the result as the profile. Review it first."),',
+    /    path: z\.string\(\)\.min\(1\)(?:\.describe\("[^"]*"\))?,\n    save: z\.boolean\(\)\.default\(false\)\.describe\("Store the result as the profile\. Review it first\."\),/,
     '    path: z.string().min(1).optional().describe("Name of a document uploaded with doc_upload"),\n' +
     '    docx_base64: z.string().optional().describe("The .docx itself, base64-encoded, instead of uploading it first"),\n' +
     '    save: z.boolean().default(false).describe("Store the result as the profile. Review it first."),',
