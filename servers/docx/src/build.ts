@@ -52,13 +52,14 @@ function tableOf(b: Extract<Block, { type: "table" }>, color: string): Table {
   });
   const headRow = new TableRow({
     tableHeader: true,
-    children: b.headers.map((h) => new TableCell({
+    children: Array.from({ length: Math.max(b.headers.length, ...b.rows.map((r) => r.length), 1) }, (_, i) => b.headers[i] ?? "").map((h) => new TableCell({
       shading: { type: ShadingType.CLEAR, fill: "F2F2F2", color: "auto" },
       margins: { top: 60, bottom: 60, left: 100, right: 100 },
       children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, color })] })],
     })),
   });
-  const width = b.headers.length;
+  // A row wider than the header must not lose cells: the table is as wide as the widest row.
+  const width = Math.max(b.headers.length, ...b.rows.map((r) => r.length), 1);
   const body = b.rows.map((r) => new TableRow({
     children: Array.from({ length: width }, (_, i) => cell(r[i] ?? "", false)),
   }));
@@ -68,7 +69,7 @@ function tableOf(b: Extract<Block, { type: "table" }>, color: string): Table {
   });
 }
 
-function blockChildren(blocks: Block[], color: string): (Paragraph | Table)[] {
+function blockChildren(blocks: Block[], color: string, refs: string[]): (Paragraph | Table)[] {
   const out: (Paragraph | Table)[] = [];
   for (const b of blocks) {
     switch (b.type) {
@@ -82,16 +83,21 @@ function blockChildren(blocks: Block[], color: string): (Paragraph | Table)[] {
       case "para":
         out.push(textPara(b.text, { spacing: { after: 140 } }));
         break;
-      case "bullets":
+      case "bullets": {
+        // Every ordered block gets its own numbering instance, or the second numbered list
+        // in a document continues the first one's sequence instead of restarting at 1.
+        const ref = `${NUM_REF}-${refs.length + 1}`;
+        if (b.ordered) refs.push(ref);
         b.items.forEach((item, i) => {
           const level = Math.min(8, Math.max(0, b.levels?.[i] ?? 0));
           out.push(new Paragraph({
             children: runs(inlineRuns(item)),
             spacing: { after: 60 },
-            ...(b.ordered ? { numbering: { reference: NUM_REF, level } } : { bullet: { level } }),
+            ...(b.ordered ? { numbering: { reference: ref, level } } : { bullet: { level } }),
           }));
         });
         break;
+      }
       case "table":
         out.push(tableOf(b, color));
         out.push(new Paragraph({ text: "", spacing: { after: 120 } }));
@@ -177,13 +183,17 @@ export async function buildDocx(o: BuildOptions): Promise<Buffer> {
     }
   }
 
+  const numberRefs: string[] = [];
+  const bodyChildren = blockChildren(o.blocks, color, numberRefs);
+  if (!numberRefs.length) numberRefs.push(NUM_REF);
+
   const doc = new Document({
     creator: biz.name || "mcp-docx",
     title: o.title,
     description: `Created with mcp-docx`,
     numbering: {
-      config: [{
-        reference: NUM_REF,
+      config: numberRefs.map((reference) => ({
+        reference,
         levels: Array.from({ length: 9 }, (_, level) => ({
           level,
           format: level % 3 === 0 ? "decimal" : level % 3 === 1 ? "lowerLetter" : "lowerRoman",
@@ -191,7 +201,7 @@ export async function buildDocx(o: BuildOptions): Promise<Buffer> {
           alignment: AlignmentType.START,
           style: { paragraph: { indent: { left: 720 * (level + 1), hanging: 360 } } },
         })),
-      }],
+      })),
     },
     styles: {
       default: {
@@ -208,7 +218,7 @@ export async function buildDocx(o: BuildOptions): Promise<Buffer> {
           })],
         }),
       },
-      children: [...head, ...blockChildren(o.blocks, color)],
+      children: [...head, ...bodyChildren],
     }],
   });
   return Buffer.from(await Packer.toBuffer(doc));

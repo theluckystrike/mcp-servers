@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -12,9 +12,9 @@ import { buildDocx, toHtml, type DocStyle } from "./build.js";
 import { parseMarkdown } from "./md.js";
 import {
   addDoc, dataDir, docsInMonth, getBusiness, getDocs, hasBusiness, nextNumber,
-  setBusiness, type Business, type DocKind,
+  setBusiness, updateDoc, type Business, type DocKind, type DocRecord,
 } from "./store.js";
-import { assertDocx, fillDocx, placeholdersIn, readDocx } from "./wordxml.js";
+import { assertDocx, fillDocx, placeholdersIn, readDocx, stripInvalidXml } from "./wordxml.js";
 
 const FREE_AGREEMENTS_PER_MONTH = 3;
 const FREE_TEMPLATE_PLACEHOLDERS = 10;
@@ -59,13 +59,36 @@ function slug(s: string): string {
 function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {
   const p = expandPath(out ?? join(dataDir(), "documents", fallbackName));
   const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;
-  if (!overwrite && existsSync(withExt)) {
-    throw new Error(
-      `${withExt} already exists and nothing was written. ` +
-      `Pass overwrite: true to replace it, or give a different out_path.`,
-    );
-  }
   mkdirSync(dirname(withExt), { recursive: true });
+  // A path this server derived itself (no out_path given) must never land on an earlier
+  // document: two proposals with the same title get -2, -3, ... instead of one file.
+  if (out === undefined && !overwrite) {
+    const stem = withExt.slice(0, withExt.length - ext.length);
+    for (let n = 1; n < 1000; n++) {
+      const candidate = n === 1 ? withExt : `${stem}-${n}${ext}`;
+      try {
+        closeSync(openSync(candidate, "wx"));
+        return candidate;
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
+      }
+    }
+    throw new Error(`${withExt} and 999 numbered variants already exist; pass out_path.`);
+  }
+  // Reserve the path with an exclusive create, not an existence check: two processes
+  // writing the same out_path with overwrite:false would otherwise both pass the check
+  // and the second would clobber the first.
+  if (!overwrite) {
+    try {
+      closeSync(openSync(withExt, "wx"));
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
+      throw new Error(
+        `${withExt} already exists and nothing was written. ` +
+        `Pass overwrite: true to replace it, or give a different out_path.`,
+      );
+    }
+  }
   return withExt;
 }
 
@@ -81,9 +104,9 @@ function money(amount: number, currency: string): string {
  * history is touched, so a corrupt store must not be reported as "nothing was written".
  * The reason is returned and appended to the tool's own answer instead.
  */
-function record(kind: DocKind, title: string, path: string, client?: string, number?: string): string {
+function record(kind: DocKind, title: string, path: string, client?: string, number?: string, data?: unknown): string {
   try {
-    addDoc({ id: randomBytes(4).toString("hex"), kind, title, client, number, path, created: new Date().toISOString() });
+    addDoc({ id: randomBytes(4).toString("hex"), kind, title, client, number, path, data, created: new Date().toISOString() });
     return "";
   } catch (e) {
     return `\n\nThe file was written, but it could not be added to the document history: ` +
@@ -200,18 +223,77 @@ function sectionBlocks(sections: z.infer<typeof sectionSchema>[]): Block[] {
   return blocks;
 }
 
+/**
+ * XML 1.0 has no way to carry a NUL or most other C0 controls, and Word refuses a file
+ * that contains one. Everything user-supplied is cleaned before it reaches document.xml
+ * and the count of removed code points is reported back in the tool's answer.
+ */
+/**
+ * A client that escaped its own JSON sends the two characters backslash-n where it meant a
+ * line break, and the escape used to reach the printed page. Turn those into real breaks and
+ * collapse stray whitespace before anything is rendered.
+ */
+export function normalizeText(s: string): string {
+  return s
+    .replace(/\\r\\n|\\n/g, "\n")
+    .replace(/\\t/g, "\t")
+    .replace(/\r\n?/g, "\n")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
+
+function cleanForXml<T>(value: T, count: { removed: number }): T {
+  if (typeof value === "string") {
+    const r = stripInvalidXml(normalizeText(value));
+    count.removed += r.removed;
+    return r.text as unknown as T;
+  }
+  if (Array.isArray(value)) return value.map((v) => cleanForXml(v, count)) as unknown as T;
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = cleanForXml(v, count);
+    return out as unknown as T;
+  }
+  return value;
+}
+
+function removedNote(removed: number): string {
+  return removed
+    ? `\n\nRemoved ${removed} character${removed > 1 ? "s" : ""} that XML 1.0 cannot carry ` +
+      `(control codes or unpaired surrogates). Word would have refused the file with them in it.`
+    : "";
+}
+
 async function writeDoc(
   title: string, blocks: Block[], style: DocStyle, out: string | undefined,
-  kind: DocKind, opts: { client?: string; number?: string; date?: string; overwrite?: boolean } = {},
+  kind: DocKind,
+  opts: {
+    client?: string; number?: string; date?: string; overwrite?: boolean;
+    data?: unknown; replaceId?: string;
+  } = {},
 ): Promise<{ path: string; note: string }> {
+  const count = { removed: 0 };
+  const clean = cleanForXml({ title, blocks, business: issuer(), date: opts.date, recipient: opts.client }, count);
+  // A blank line inside one paragraph argument is a paragraph break, not a line break.
+  const split: Block[] = [];
+  for (const b of clean.blocks) {
+    if (b.type === "para" && /\n\n/.test(b.text)) {
+      for (const part of b.text.split(/\n{2,}/)) if (part.trim()) split.push({ type: "para", text: part });
+    } else split.push(b);
+  }
   const path = outputPath(out, `${slug(title)}.docx`, ".docx", opts.overwrite === true);
   const buf = await buildDocx({
-    title, blocks, style, business: issuer(), pro: gate.isPro(),
-    date: opts.date, recipient: opts.client,
+    title: clean.title, blocks: split, style, business: clean.business, pro: gate.isPro(),
+    date: clean.date, recipient: clean.recipient,
   });
   writeFileSync(path, buf);
-  const note = record(kind, title, path, opts.client, opts.number);
-  return { path, note };
+  const stored = opts.replaceId
+    ? (updateDoc(opts.replaceId, { title, client: opts.client, path, data: opts.data }) ? "" :
+       `\n\nThe file was written, but reference ${opts.number ?? ""} is no longer in the document history.`)
+    : record(kind, title, path, opts.client, opts.number, opts.data);
+  return { path, note: stored + removedNote(count.removed) };
 }
 
 server.registerTool("doc_create", {
@@ -349,12 +431,59 @@ server.registerTool("doc_fill_template", {
     return ok(
       `Wrote ${out}${note}\n\nReplaced ${res.replaced.length}: ${res.replaced.map((k) => `{{${k}}}`).join(", ") || "(none)"}` +
       (res.unfilled.length ? `\n\nStill unfilled, no value was given: ${res.unfilled.map((k) => `{{${k}}}`).join(", ")}` : "") +
-      (unused.length ? `\n\nNot present in the template, ignored: ${unused.join(", ")}` : ""),
+      (unused.length ? `\n\nNot present in the template, ignored: ${unused.join(", ")}` : "") +
+      (res.sanitized.length
+        ? `\n\nCharacters XML 1.0 cannot carry (control codes or unpaired surrogates) were removed from: ` +
+          `${res.sanitized.map((k) => `{{${k}}}`).join(", ")}`
+        : ""),
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
 /* ---------------------------------------------------------------- proposals */
+
+interface ProposalInput {
+  client: string;
+  project_title: string;
+  summary: string;
+  scope: string[];
+  deliverables: string[];
+  timeline: { phase: string; duration: string }[];
+  price: { amount: number; currency?: string; terms?: string };
+  valid_until?: string;
+}
+
+/** The one place a proposal body is built, so proposal_update rewrites the same document. */
+function proposalBody(a: ProposalInput): { blocks: Block[]; total: string; terms: string } {
+  const biz = issuer();
+  const currency = (a.price.currency ?? biz.default_currency).toUpperCase();
+  const total = money(a.price.amount, currency);
+  const terms = a.price.terms ?? `Payable within ${biz.payment_terms_days} days of invoice.`;
+  const blocks: Block[] = [
+    { type: "heading", level: 2, text: "Summary" },
+    { type: "para", text: a.summary },
+    { type: "heading", level: 2, text: "Scope of work" },
+    { type: "bullets", items: a.scope, ordered: false },
+    { type: "heading", level: 2, text: "Deliverables" },
+    { type: "bullets", items: a.deliverables, ordered: false },
+  ];
+  if (a.timeline.length) {
+    blocks.push({ type: "heading", level: 2, text: "Timeline" });
+    blocks.push({ type: "table", headers: ["Phase", "Duration"], rows: a.timeline.map((t) => [t.phase, t.duration]) });
+  }
+  blocks.push({ type: "heading", level: 2, text: "Investment" });
+  blocks.push({ type: "table", headers: ["Item", "Amount"], rows: [[a.project_title, total]] });
+  blocks.push({ type: "para", text: `Total: **${total}**` });
+  blocks.push({ type: "para", text: `Payment terms: ${terms}` });
+  if (biz.default_tax_rate) blocks.push({ type: "para", text: `All amounts exclude VAT at ${biz.default_tax_rate}%.` });
+  blocks.push({ type: "heading", level: 2, text: "Acceptance" });
+  blocks.push({ type: "para", text:
+    `This proposal is valid until ${a.valid_until ?? "the date agreed in writing"}. ` +
+    `To accept, reply in writing or sign below.` });
+  blocks.push({ type: "para", text: `Signed for ${a.client}: ______________________ Date: ____________` });
+  blocks.push({ type: "para", text: `Signed for ${biz.name}: ______________________ Date: ____________` });
+  return { blocks, total, terms };
+}
 
 server.registerTool("proposal_create", {
   title: "Create a proposal",
@@ -382,39 +511,13 @@ server.registerTool("proposal_create", {
   try {
     const gated = agreementLimit();
     if (gated) return ok(gated);
-    const biz = issuer();
-    const currency = (a.price.currency ?? biz.default_currency).toUpperCase();
-    const total = money(a.price.amount, currency);
-    const terms = a.price.terms ?? `Payable within ${biz.payment_terms_days} days of invoice.`;
-    const blocks: Block[] = [
-      { type: "heading", level: 2, text: "Summary" },
-      { type: "para", text: a.summary },
-      { type: "heading", level: 2, text: "Scope of work" },
-      { type: "bullets", items: a.scope, ordered: false },
-      { type: "heading", level: 2, text: "Deliverables" },
-      { type: "bullets", items: a.deliverables, ordered: false },
-    ];
-    if (a.timeline.length) {
-      blocks.push({ type: "heading", level: 2, text: "Timeline" });
-      blocks.push({ type: "table", headers: ["Phase", "Duration"], rows: a.timeline.map((t) => [t.phase, t.duration]) });
-    }
-    blocks.push({ type: "heading", level: 2, text: "Investment" });
-    blocks.push({ type: "table", headers: ["Item", "Amount"], rows: [[a.project_title, total]] });
-    blocks.push({ type: "para", text: `Total: **${total}**` });
-    blocks.push({ type: "para", text: `Payment terms: ${terms}` });
-    if (biz.default_tax_rate) blocks.push({ type: "para", text: `All amounts exclude VAT at ${biz.default_tax_rate}%.` });
-    blocks.push({ type: "heading", level: 2, text: "Acceptance" });
-    blocks.push({ type: "para", text:
-      `This proposal is valid until ${a.valid_until ?? "the date agreed in writing"}. ` +
-      `To accept, reply in writing or sign below.` });
-    blocks.push({ type: "para", text: `Signed for ${a.client}: ______________________    Date: ____________` });
-    blocks.push({ type: "para", text: `Signed for ${biz.name}: ______________________    Date: ____________` });
+    const { blocks, total, terms } = proposalBody(a);
 
     const out = await locked(async () => {
       const number = nextNumber("PROP", isoDate().slice(0, 4));
       const w = await writeDoc(
         a.project_title, blocks, "proposal", a.out_path, "proposal",
-        { client: a.client, number, date: `${isoDate()}   |   Ref ${number}`, overwrite: a.overwrite },
+        { client: a.client, number, date: `${isoDate()} | Ref ${number}`, overwrite: a.overwrite, data: a },
       );
       return { path: w.path, note: w.note, number };
     });
@@ -425,6 +528,60 @@ server.registerTool("proposal_create", {
         total, terms, valid_until: a.valid_until, phases: a.timeline.length, file: out.path,
       }, null, 2) + out.note +
       `${businessMissing() ? `\n\n${NO_BUSINESS_NOTE}` : ""}${brandingNote()}`,
+    );
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+server.registerTool("proposal_update", {
+  title: "Update a proposal",
+  description: "Rewrite an existing proposal in place from its reference. Only the fields you pass change; everything else is taken from the structured data stored when the proposal was created, so the same file and the same reference number are kept and no second document is burned.",
+  inputSchema: {
+    reference: z.string().describe("The proposal reference, e.g. PROP-2026-0001"),
+    client: z.string().optional(),
+    project_title: z.string().optional(),
+    summary: z.string().optional(),
+    scope: z.array(z.string()).optional(),
+    deliverables: z.array(z.string()).optional(),
+    timeline: z.array(z.object({ phase: z.string(), duration: z.string() })).optional(),
+    price: z.object({
+      amount: z.number().finite(),
+      currency: z.string().regex(/^[A-Za-z]{3}$/).optional(),
+      terms: z.string().optional(),
+    }).optional(),
+    valid_until: z.string().optional(),
+  },
+}, async (a) => {
+  try {
+    const ref = a.reference.trim().toUpperCase();
+    const rec = getDocs().find((d: DocRecord) => d.kind === "proposal" && d.number === ref);
+    if (!rec) return fail(`no proposal ${ref} in the document history. The docs://recent resource lists the references.`);
+    if (!rec.data) {
+      return fail(
+        `proposal ${ref} was created before proposals were stored as structured data, so it cannot be ` +
+        `rewritten. Create a new one with proposal_create.`,
+      );
+    }
+    const patch: Partial<ProposalInput> = {};
+    for (const k of ["client", "project_title", "summary", "scope", "deliverables", "timeline", "price", "valid_until"] as const) {
+      const v = (a as Record<string, unknown>)[k];
+      if (v !== undefined) (patch as Record<string, unknown>)[k] = v;
+    }
+    const merged = { ...(rec.data as ProposalInput), ...patch };
+    const { blocks, total, terms } = proposalBody(merged);
+    const out = await locked(() => writeDoc(
+      merged.project_title, blocks, "proposal", rec.path, "proposal",
+      {
+        client: merged.client, number: ref, date: `${isoDate()} | Ref ${ref}`,
+        overwrite: true, data: merged, replaceId: rec.id,
+      },
+    ));
+    return ok(
+      `Updated proposal ${ref} in place; the reference and the file are unchanged.\n\n` +
+      JSON.stringify({
+        reference: ref, client: merged.client, project: merged.project_title,
+        total, terms, valid_until: merged.valid_until, phases: merged.timeline.length,
+        changed: Object.keys(patch), file: out.path,
+      }, null, 2) + out.note + brandingNote(),
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -500,7 +657,7 @@ server.registerTool("contract_create", {
       const number = nextNumber("AGR", (a.start_date.slice(0, 4).match(/^\d{4}$/) ? a.start_date.slice(0, 4) : isoDate().slice(0, 4)));
       const w = await writeDoc(
         `Service Agreement - ${a.client}`, blocks, "proposal", a.out_path, "contract",
-        { client: a.client, number, date: `${isoDate()}   |   Ref ${number}`, overwrite: a.overwrite },
+        { client: a.client, number, date: `${isoDate()} | Ref ${number}`, overwrite: a.overwrite, data: a },
       );
       return { path: w.path, note: w.note, number };
     });

@@ -32,6 +32,8 @@ export interface DocRecord {
   number?: string;
   path: string;
   created: string;
+  /** The structured input a proposal or contract was built from, so it can be rewritten in place. */
+  data?: unknown;
 }
 
 export function dataDir(): string {
@@ -114,6 +116,16 @@ export function hasBusiness(): boolean { return existsSync(join(dataDir(), "busi
 
 export function getDocs(): DocRecord[] { return readJson<DocRecord[]>("documents.json", []); }
 export function setDocs(d: DocRecord[]): void { writeJson("documents.json", d); }
+
+/** Rewrite one stored record in place, keyed by id. Returns false when the id is gone. */
+export function updateDoc(id: string, patch: Partial<DocRecord>): boolean {
+  const all = getDocs();
+  const i = all.findIndex((d) => d.id === id);
+  if (i < 0) return false;
+  all[i] = { ...all[i], ...patch };
+  setDocs(all);
+  return true;
+}
 
 export function addDoc(rec: DocRecord): void {
   const all = getDocs();

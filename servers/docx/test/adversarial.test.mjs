@@ -129,8 +129,12 @@ test("a placeholder inside a table cell and inside a header or footer is filled;
   const table = readDocx(res.buffer).find((b) => b.type === "table");
   assert.deepEqual(table.rows, [["Never", "{{never_given}}"]]);
   assert.deepEqual(table.headers, ["Party A", "Acme"], "a placeholder split across runs inside a cell is filled");
-  assert.ok(out.find((e) => e.name === "word/header9.xml").data.toString("utf8").includes("Header for Lucky Strike"));
-  assert.ok(out.find((e) => e.name === "word/footer9.xml").data.toString("utf8").includes("Footer 2026-09-03"));
+  // Replacement now happens inside the runs that hold the placeholder characters, so the
+  // filled value sits in the run that carried "{{part" and the leading run keeps its own
+  // text: read the joined paragraph text, not one run's bytes.
+  const partText = (name) => out.find((e) => e.name === name).data.toString("utf8").replace(/<[^>]+>/g, "");
+  assert.ok(partText("word/header9.xml").includes("Header for Lucky Strike"), partText("word/header9.xml"));
+  assert.ok(partText("word/footer9.xml").includes("Footer 2026-09-03"), partText("word/footer9.xml"));
 });
 
 test("stdout carries no console output and the source makes no network call", () => {

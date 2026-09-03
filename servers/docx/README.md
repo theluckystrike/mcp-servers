@@ -70,6 +70,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `doc_to_html` | Convert a `.docx` to semantic HTML with a print stylesheet. This is the PDF route -- see the note below |
 | `doc_fill_template` | Replace `{{placeholders}}` in a `.docx` and write a new file, keeping every style, table, header, footer and image. Called with no `values`, it lists the placeholders the template contains |
 | `proposal_create` | A client-ready proposal: summary, scope, deliverables, timeline table, price, terms, validity and signature block, with a reference number that is never reused |
+| `proposal_update` | Rewrite an existing proposal in place from its reference: only the fields you pass change, the rest comes from the structured data stored with the document, and the file and reference number stay the same |
 | `contract_create` | A plain freelance service agreement skeleton: parties, services, term, fee, IP, confidentiality, contractor status, termination, liability, governing law. A template with labelled placeholders for a lawyer, not legal advice |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |
@@ -153,8 +154,23 @@ Error: /path/acme-proposal.docx already exists and nothing was written.
 Pass overwrite: true to replace it, or give a different out_path.
 ```
 
+The path is reserved with an exclusive create, not an existence check, so two processes writing the same
+`out_path` at the same time cannot clobber each other: one wins, the other is refused and writes nothing.
+
+When you do not pass an `out_path`, the file name is derived from the title, and a derived path never
+lands on an earlier document: a second proposal with the same title is written as `...-2.docx`. To change
+a proposal you already sent, use `proposal_update {reference}` instead: it rewrites the same file from the
+stored structured data and keeps the reference number.
+
 The check runs before anything is built or written, so a refused call leaves the disk untouched and burns
 no reference number. Pass `overwrite: true` when replacing the file is what you want.
+
+## Characters Word cannot carry
+
+XML 1.0 allows TAB, LF and CR but no other control code. Every string that reaches `word/document.xml`
+is cleaned first: control codes and unpaired surrogates are removed, literal `\n` escapes become real
+paragraph breaks, and stray whitespace collapses. When something was removed the tool says so in its
+answer instead of handing you a file Word would offer to repair.
 
 ## How it stores data
 
