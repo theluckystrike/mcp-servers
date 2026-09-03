@@ -80,6 +80,38 @@ function monthsAgoFirst(n) {
 }
 const invoiceStore = (box, file) => join(box.data, "mcp-servers", "invoice", file);
 
+test("schedule_get refuses an ambiguous partial client match with the candidate list; an exact match still wins", async (t) => {
+  const box = sandbox();
+  const c = client(box);
+  t.after(() => c.close());
+  await init(c);
+
+  const start = monthsAgoFirst(1);
+  const mk = (client_) => c.call("schedule_create", {
+    client: client_,
+    items: [{ description: "Retainer hours", quantity: 1, unit_price: 100, tax_rate: 0 }],
+    currency: "EUR", every: "monthly", start_date: start, due_days: 14,
+  });
+  let r = await mk("Acme Inc (Consulting)");
+  assert.equal(r.isError, false, r.text);
+  r = await mk("Acme Inc (Retail)");
+  assert.equal(r.isError, false, r.text);
+  r = await mk("Acme Inc");
+  assert.equal(r.isError, false, r.text);
+
+  // "Acme Inc (" is a substring of two client names and an exact match of neither.
+  r = await c.call("schedule_get", { id: "Acme Inc (" });
+  assert.equal(r.isError, true, "an ambiguous partial client reference must be refused, not silently resolved");
+  assert.match(r.text, /matches more than one schedule/);
+  assert.match(r.text, /Acme Inc \(Consulting\)/);
+  assert.match(r.text, /Acme Inc \(Retail\)/);
+
+  // The exact client name still resolves outright, with no ambiguity check.
+  r = await c.call("schedule_get", { id: "Acme Inc" });
+  assert.equal(r.isError, false, r.text);
+  assert.equal(JSON.parse(r.text).client, "Acme Inc");
+});
+
 test("stdio: initialize, tools/list, monthly schedule, generate due, idempotent second run", async (t) => {
   const box = sandbox();
   const c = client(box);

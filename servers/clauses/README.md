@@ -75,8 +75,8 @@ the output as a first draft to take to a qualified lawyer, not as a contract to 
 | `clause_update` | Change the text, category, tags, variables or jurisdiction. In Pro the previous text is kept as a version |
 | `clause_delete` | Remove a clause. A deleted starter is not re-seeded on the next call |
 | `clause_list` | List every clause, in assembly order, optionally narrowed to one category |
-| `clause_search` | Ranked search over titles, tags, categories and bodies. A title match outranks a body mention. Pro adds jurisdiction and tag filters |
-| `clause_import` | Bulk-load from a markdown file (`## Title`, `category:` / `tags:` lines, blank line, body) or from JSON (Pro) |
+| `clause_search` | Ranked search over titles, tags, categories and bodies. A title match outranks a body mention; a term matches on a real word boundary ("fee" never matches inside "coffee"), with plain substring containment kept only as a lower-ranked fallback. Pro adds jurisdiction and tag filters |
+| `clause_import` | Bulk-load from a markdown file (`## Title`, `category:` / `tags:` lines, blank line, body) or from JSON (Pro). Only short, field-shaped lines right after the title are read as metadata, so body prose that happens to open with a word like "note:" is kept as body, not swallowed |
 | `clause_export` | Write the whole library to markdown (free) or JSON (Pro). An existing destination is never replaced unless you pass `overwrite: true` |
 | `contract_assemble` | Build a document from clause ids or whole categories: orders the clauses, numbers them, fills the variables, brackets what is missing, prepends the not-legal-advice line, writes `.docx` or `.md`. An existing `out_path` is never replaced unless you pass `overwrite: true` |
 | `variables_list` | Every `{{variable}}` a selection of clauses needs, and which clause needs it, before you assemble |

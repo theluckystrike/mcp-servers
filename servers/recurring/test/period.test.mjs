@@ -88,6 +88,25 @@ test("nextOccurrence stops at end_date", () => {
   assert.equal(nextOccurrence(rule, "2026-03-15"), null);
 });
 
+test("a schedule far older than MAX_OCCURRENCES still reports occurrences and next_due today", () => {
+  // Daily since 2010-01-01: by 2026-09 that's ~6100 days, well past MAX_OCCURRENCES=5000,
+  // so a k=0 scan would exhaust its cap before ever reaching the present (Review V5 P1).
+  const rule = { every: { days: 1 }, start_date: "2010-01-01" };
+  assert.deepEqual(occurrencesBetween(rule, "2026-09-05", "2026-09-01"),
+    ["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05"]);
+  assert.equal(nextOccurrence(rule, "2026-09-01"), "2026-09-02");
+
+  // Same defect shape for a month-stepped rule started decades ago.
+  const monthly = { every: "monthly", start_date: "1990-06-15" };
+  assert.deepEqual(occurrencesBetween(monthly, "2026-09-30", "2026-08-01"),
+    ["2026-08-15", "2026-09-15"]);
+  assert.equal(nextOccurrence(monthly, "2026-09-15"), "2026-10-15");
+
+  // A short-interval rule (weekly) started decades ago, exercising the 7-day step path.
+  const weekly = { every: "weekly", start_date: "2005-03-07" };
+  assert.equal(nextOccurrence(weekly, "2026-09-01") > "2026-09-01", true);
+});
+
 test("date helpers", () => {
   assert.equal(daysInMonth(2026, 2), 28);
   assert.equal(daysInMonth(2028, 2), 29);

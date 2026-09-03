@@ -67,6 +67,31 @@ test("search ranks a title match above a body mention", () => {
   assert.equal(lib.search(clauses, "zzzznothing").length, 0);
 });
 
+test("search matches on word boundaries: \"fee\" does not match inside \"coffee\"", () => {
+  const clauses = [
+    { id: "coffee-perk", title: "Office Coffee Perk", category: "general", tags: [], variables: [],
+      language: "en", body: "The company provides free coffee in the office kitchen.", history: [], created: "", updated: "" },
+    { id: "late-fee", title: "Late Payment Fee", category: "payment", tags: [], variables: [],
+      language: "en", body: "A late fee applies after the due date.", history: [], created: "", updated: "" },
+  ];
+  const hits = lib.search(clauses, "fee");
+  assert.equal(hits[0].clause.id, "late-fee", `expected the real "fee" match first, got ${hits.map((h) => h.clause.id).join(", ")}`);
+  // "Office Coffee Perk" contains "fee" only as a substring of "coffee": a fluke
+  // substring hit must never outrank a clause that says the word for real (Review V5 P2).
+  assert.ok(hits[0].score > (hits.find((h) => h.clause.id === "coffee-perk")?.score ?? 0));
+
+  // "art" is a substring of "party" and "contract" but a whole word in neither; a title
+  // that only contains it as a substring must not outrank a clause with a real "art" hit.
+  const artClauses = [
+    { id: "party-def", title: "Party Definitions", category: "general", tags: [], variables: [],
+      language: "en", body: "This section defines the contracting parties to the contract.", history: [], created: "", updated: "" },
+    { id: "artwork", title: "Artwork Licence", category: "ip", tags: [], variables: [],
+      language: "en", body: "The client licenses the delivered art for commercial use.", history: [], created: "", updated: "" },
+  ];
+  const artHits = lib.search(artClauses, "art");
+  assert.equal(artHits[0].clause.id, "artwork", `expected the real "art" match first, got ${artHits.map((h) => h.clause.id).join(", ")}`);
+});
+
 test("variable extraction is order-preserving and deduplicated", () => {
   assert.deepEqual(lib.extractVariables("pay {{fee}} {{currency}} to {{client}}, {{fee}} again"), ["fee", "currency", "client"]);
   assert.deepEqual(lib.extractVariables("{{ spaced }}"), ["spaced"]);
@@ -137,6 +162,27 @@ test("markdown import tolerates a hand-written file", () => {
   assert.deepEqual(parsed[0].tags, ["retainer", "monthly"]);
   assert.equal(parsed[1].category, "general");
   assert.equal(parsed[1].language, "en");
+});
+
+test("markdown import keeps body prose that opens with a metadata-like word (Review V5 P2)", () => {
+  const parsed = lib.parseMarkdown(
+    "## Payment Terms\n\nnote: Client must pay within 30 days of invoice date.\n\nLate payments accrue interest.\n",
+  );
+  assert.equal(parsed.length, 1);
+  assert.equal(parsed[0].title, "Payment Terms");
+  assert.equal(parsed[0].note, undefined, "a body sentence must not be captured as note metadata");
+  assert.match(parsed[0].body, /^note: Client must pay within 30 days of invoice date\./,
+    "the metadata-like opening sentence was dropped from the body");
+  assert.match(parsed[0].body, /Late payments accrue interest\.$/);
+
+  // A real, short metadata block right after the title is still recognised.
+  const withRealMeta = lib.parseMarkdown(
+    "## Confidentiality\ncategory: confidentiality\nnote: generic template, not legal advice\n\n" +
+    "Each party keeps the other's confidential information secret.\n",
+  );
+  assert.equal(withRealMeta[0].category, "confidentiality");
+  assert.equal(withRealMeta[0].note, "generic template, not legal advice");
+  assert.equal(withRealMeta[0].body, "Each party keeps the other's confidential information secret.");
 });
 
 test("json round trip keeps every field", () => {

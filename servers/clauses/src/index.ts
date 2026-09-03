@@ -108,11 +108,29 @@ function summary(c: Clause) {
   return { id: c.id, title: c.title, category: c.category, tags: c.tags, variables: clauseVariables(c), starter: c.starter };
 }
 
+/**
+ * Resolve a clause by id, then by exact title, then -- only if nothing exact matched --
+ * by partial title. An exact id or title match always wins outright, with no ambiguity
+ * check: it is a precise reference. The partial-title fallback is not: "Payment Terms"
+ * is also a substring of "Payment Terms (Retainer)", so more than one candidate there is
+ * refused with the candidate list instead of silently picking whichever is first in
+ * storage order (Review V5 P2), which could otherwise point clause_update/clause_delete/
+ * contract_assemble at the wrong clause with no warning.
+ */
 function findClause(clauses: Clause[], ref: string): Clause | undefined {
   const t = ref.trim().toLowerCase();
-  return clauses.find((c) => c.id.toLowerCase() === t)
-    ?? clauses.find((c) => c.title.toLowerCase() === t)
-    ?? clauses.find((c) => c.title.toLowerCase().includes(t));
+  const byId = clauses.find((c) => c.id.toLowerCase() === t);
+  if (byId) return byId;
+  const byTitle = clauses.find((c) => c.title.toLowerCase() === t);
+  if (byTitle) return byTitle;
+  const partial = clauses.filter((c) => c.title.toLowerCase().includes(t));
+  if (partial.length > 1) {
+    throw new Error(
+      `"${ref}" matches more than one clause: ${partial.map((c) => `${c.id} (${c.title})`).join(", ")}. ` +
+      `Pass the exact id or the exact title.`,
+    );
+  }
+  return partial[0];
 }
 
 /**

@@ -89,7 +89,7 @@ Store the profile every resume and cover letter is built from: contact details, 
 | `certifications` | string[] | no |  |
 | `education` | object{degree, end, school, start}[] | no | (default []) |
 | `email` | string | no | Your own email address. Leave it out and the shared business profile's email is used; with neither, letters and letterheads show "[add: email]" and say so. Never invent one |
-| `experience` | object{bullets, company, end, start, title}[] | no | (default []) |
+| `experience` | object{bullets, company, end, start, title}[] | no | Roles in any order you like -- profile_set sorts and stores them newest-first (an open role with no `end` first, then by `end` descending, then by `start` descending) before saving, since page-budget trimming and cover-letter bullet ranking both trust array order to mean recency. (default []) |
 | `languages` | string[] | no |  |
 | `links` | string[] | no | Portfolio, LinkedIn, GitHub |
 | `location` | string | no |  |

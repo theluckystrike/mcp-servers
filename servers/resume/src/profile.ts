@@ -11,6 +11,48 @@ export interface Experience {
   bullets: string[];
 }
 
+const ROLE_MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+/**
+ * A comparable "year*12+month" key for a free-text role date ("2021", "Jan 2021",
+ * "2021-05", ...). Unparseable or missing text sorts as the oldest possible date, so a
+ * role with a date profile_set cannot make sense of never outranks one it can. A
+ * year-only date is treated as December of that year (the latest a role starting or
+ * ending "in 2021" could be), so it still orders correctly against a dated neighbour in
+ * the same year.
+ */
+function roleDateKey(s?: string): number {
+  const t = (s ?? "").trim().toLowerCase();
+  if (!t) return -Infinity;
+  let m = /^(\d{4})[-/](\d{1,2})$/.exec(t);
+  if (m) return Number(m[1]) * 12 + (Number(m[2]) - 1);
+  m = /^([a-z]{3,9})\.?\s+(\d{4})$/.exec(t);
+  if (m) {
+    const idx = ROLE_MONTHS.findIndex((mo) => m![1].startsWith(mo));
+    return Number(m[2]) * 12 + (idx >= 0 ? idx : 11);
+  }
+  m = /^(\d{4})$/.exec(t);
+  if (m) return Number(m[1]) * 12 + 11;
+  return -Infinity;
+}
+
+/**
+ * Role ordering, newest first: an open-ended role (no `end`, i.e. "present") always
+ * sorts ahead of every dated role; among dated roles, later `end` wins, ties broken by
+ * later `start`. This is the order profile_set enforces on write (see index.ts), so
+ * every downstream reader -- page-budget trimming (render.ts scoreBullets) and cover
+ * letter bullet ranking (letter.ts rankBullets) -- can trust array order for recency
+ * instead of re-parsing dates itself.
+ */
+export function sortExperienceNewestFirst(experience: Experience[]): Experience[] {
+  return [...experience].sort((a, b) => {
+    const aEnd = a.end && a.end.trim() ? roleDateKey(a.end) : Infinity;
+    const bEnd = b.end && b.end.trim() ? roleDateKey(b.end) : Infinity;
+    if (aEnd !== bEnd) return bEnd - aEnd;
+    return roleDateKey(b.start) - roleDateKey(a.start);
+  });
+}
+
 export interface Education {
   school: string;
   degree: string;

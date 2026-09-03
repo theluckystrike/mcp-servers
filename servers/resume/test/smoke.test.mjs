@@ -172,6 +172,31 @@ test("stdio: initialize, tools/list, profile, resume, cover letter, tailoring", 
   assert.deepEqual(c.bad, [], `non-JSON on stdout: ${c.bad.join(" | ")}`);
 });
 
+test("profile_set stores experience newest-first regardless of the order the caller sent it in", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+
+  const oldestFirst = {
+    name: "Ada Rowe", email: "ada@example.com",
+    experience: [
+      { company: "Alpha", title: "Junior Dev", start: "2015", end: "2018", bullets: ["old"] },
+      { company: "Beta Corp", title: "Engineer", start: "2018", end: "2021", bullets: ["mid"] },
+      { company: "Acme Pay", title: "Senior Engineer", start: "2021", bullets: ["current, no end date"] },
+    ],
+    education: [],
+  };
+  let r = await c.call("profile_set", oldestFirst);
+  assert.equal(r.isError, false, r.text);
+
+  r = await c.call("profile_get", {});
+  const stored = JSON.parse(r.text);
+  assert.deepEqual(stored.profile.experience.map((e) => e.company), ["Acme Pay", "Beta Corp", "Alpha"],
+    "profile_set must reorder oldest-first input to newest-first on storage");
+
+  assert.deepEqual(c.bad, [], `non-JSON on stdout: ${c.bad.join(" | ")}`);
+});
+
 test("free tier: modern only, 3 letters a month, 2000-character postings; Pro lifts all three", async (t) => {
   const key = execFileSync(process.execPath, [join(REPO, "scripts", "sign-license.mjs"), "resume"], { encoding: "utf8" }).trim();
   assert.match(key, /^MCPL1\./);

@@ -9,8 +9,8 @@ import { createLicenseGate, EMAIL_PLACEHOLDER, readSharedProfile, withFileLock }
 import { buildDocx, letterhead, readDocx, stripInvalidXml, toHtml, type Block } from "@theluckystrike/mcp-docx/lib";
 import { z } from "zod";
 import {
-  addLetter, dataDir, getProfile, lettersInMonth, normalizeVariant, setProfile, variantNames,
-  type Education, type Experience, type Profile,
+  addLetter, dataDir, getProfile, lettersInMonth, normalizeVariant, setProfile, sortExperienceNewestFirst,
+  variantNames, type Education, type Experience, type Profile,
 } from "./profile.js";
 import { blocksToProfile } from "./read.js";
 import { buildLetter, unsourcedNumbers, type Tone } from "./letter.js";
@@ -175,7 +175,8 @@ server.registerTool("profile_set", {
     links: z.array(z.string()).optional().describe("Portfolio, LinkedIn, GitHub"),
     summary: z.string().optional().describe("Two or three lines. Used verbatim as the fit paragraph of a cover letter."),
     skills: z.array(z.string()).optional(),
-    experience: z.array(experienceSchema).default([]),
+    experience: z.array(experienceSchema).default([])
+      .describe("Roles in any order you like -- profile_set sorts and stores them newest-first (an open role with no `end` first, then by `end` descending, then by `start` descending) before saving, since page-budget trimming and cover-letter bullet ranking both trust array order to mean recency."),
     education: z.array(educationSchema).default([]),
     certifications: z.array(z.string()).optional(),
     languages: z.array(z.string()).optional(),
@@ -208,7 +209,10 @@ server.registerTool("profile_set", {
       email: (a.email ?? base?.email ?? readSharedProfile().email ?? "").trim(),
       phone: a.phone ?? base?.phone, location: a.location ?? base?.location,
       links: a.links ?? base?.links, summary: a.summary ?? base?.summary, skills: a.skills ?? base?.skills,
-      experience: (a.experience.length ? a.experience : base?.experience ?? []) as Experience[],
+      // Enforced ordering (Review V5 P1): whatever order the caller entered roles in,
+      // the stored array is always newest-first, so trimming and letter-bullet ranking
+      // (both of which read recency off array position) are correct regardless.
+      experience: sortExperienceNewestFirst((a.experience.length ? a.experience : base?.experience ?? []) as Experience[]),
       education: (a.education.length ? a.education : base?.education ?? []) as Education[],
       certifications: a.certifications ?? base?.certifications,
       languages: a.languages ?? base?.languages,

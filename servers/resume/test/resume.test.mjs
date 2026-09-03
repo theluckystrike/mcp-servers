@@ -11,7 +11,8 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 process.env.XDG_DATA_HOME = mkdtempSync(join(tmpdir(), "mcp-resume-unit-"));
 
-const { getProfile, setProfile, variantNames, profileText } = await import(join(here, "..", "dist", "profile.js"));
+const { getProfile, setProfile, variantNames, profileText, sortExperienceNewestFirst } =
+  await import(join(here, "..", "dist", "profile.js"));
 const { renderResume, trimToPages, fixedWordCount, countWords, keywordReport, highlight, matchesKeyword, blocksToMarkdown } =
   await import(join(here, "..", "dist", "render.js"));
 const { buildLetter, numbersIn, unsourcedNumbers, traceHighlight } = await import(join(here, "..", "dist", "letter.js"));
@@ -99,6 +100,49 @@ test("page trimming: the word budget is respected and the strongest bullets surv
   // A keyword hit outranks a later bullet of the same role.
   const kw = trimToPages(PROFILE.experience, ["Kubernetes"], fixed, 1, fixed + 30);
   assert.ok(kw.kept.some((b) => /Kubernetes/.test(b.text)), "the keyword bullet was trimmed away");
+});
+
+test("sortExperienceNewestFirst: an open role beats every dated role, then end desc, then start desc", () => {
+  const oldestFirst = [
+    { company: "Alpha", title: "Junior Dev", start: "2015", end: "2018", bullets: ["old job bullet"] },
+    { company: "Beta Corp", title: "Engineer", start: "2018", end: "2021", bullets: ["Built internal reporting in TypeScript"] },
+    { company: "Acme Pay", title: "Senior Engineer", start: "2021", bullets: ["current job bullet"] }, // no end = present
+  ];
+  const sorted = sortExperienceNewestFirst(oldestFirst);
+  assert.deepEqual(sorted.map((e) => e.company), ["Acme Pay", "Beta Corp", "Alpha"]);
+  // Original array is untouched.
+  assert.equal(oldestFirst[0].company, "Alpha");
+
+  // Free-text dates ("Jan 2021" style) parse too, not just bare years.
+  const monthy = [
+    { company: "Old", title: "T", start: "Jan 2019", end: "Mar 2020", bullets: [] },
+    { company: "New", title: "T", start: "Apr 2020", end: "Dec 2021", bullets: [] },
+  ];
+  assert.deepEqual(sortExperienceNewestFirst(monthy).map((e) => e.company), ["New", "Old"]);
+});
+
+test("page trimming keeps the CURRENT role's bullets even when the caller entered experience oldest-first", () => {
+  // Regression for Review V5 P1: scoreBullets/rankBullets read recency off array
+  // position, trusting index 0 = newest. profile_set is responsible for that ordering;
+  // this test feeds trimToPages the same oldest-first array a natural form-fill would
+  // produce and checks the *current* job's bullet is NOT the one silently dropped.
+  const oldestFirst = sortExperienceNewestFirst([
+    {
+      company: "Beta Corp", title: "Engineer", start: "2018", end: "2021",
+      bullets: ["Wrote the deployment pipeline for the reporting service back in 2019"],
+    },
+    {
+      company: "Acme Pay", title: "Senior Engineer", start: "2021",
+      bullets: ["Rebuilt the settlement pipeline, cutting reconciliation time from 6 hours to 20 minutes"],
+    },
+  ]);
+  assert.equal(oldestFirst[0].company, "Acme Pay", "sort did not put the open (current) role first");
+
+  const fixed = fixedWordCount({ ...PROFILE, experience: oldestFirst });
+  // A budget tight enough to fit only one of the two single-sentence bullets.
+  const trim = trimToPages(oldestFirst, [], fixed, 1, fixed + 12);
+  assert.equal(trim.kept.length, 1, "expected exactly one bullet to survive the tight budget");
+  assert.equal(trim.kept[0].exp, 0, "the CURRENT role (index 0 after sorting) must be the one kept");
 });
 
 test("cover letter states no number that is not in the profile", () => {

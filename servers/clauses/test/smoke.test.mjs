@@ -65,6 +65,35 @@ async function init(c) {
 
 const FIVE = ["scope-of-work", "payment-terms", "late-fees", "ip-assignment", "termination"];
 
+test("clause_get refuses an ambiguous partial title with the candidate list; an exact match still wins", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+
+  let r = await c.call("clause_add", {
+    title: "Payment Terms (Retainer)", body: "Retainer text.", category: "payment",
+  });
+  assert.equal(r.isError, false, r.text);
+  r = await c.call("clause_add", {
+    title: "Payment Terms (Hourly)", body: "Hourly text.", category: "payment",
+  });
+  assert.equal(r.isError, false, r.text);
+
+  // "Payment Terms (" is a substring of both new titles and an exact match of neither.
+  r = await c.call("clause_get", { title: "Payment Terms (" });
+  assert.equal(r.isError, true, "an ambiguous partial title must be refused, not silently resolved");
+  assert.match(r.text, /matches more than one clause/);
+  assert.match(r.text, /Payment Terms \(Retainer\)/);
+  assert.match(r.text, /Payment Terms \(Hourly\)/);
+
+  // The exact starter title still resolves outright, with no ambiguity check.
+  r = await c.call("clause_get", { title: "Payment Terms" });
+  assert.equal(r.isError, false, r.text);
+  assert.equal(JSON.parse(r.text).id, "payment-terms");
+
+  assert.deepEqual(c.bad, [], `non-JSON on stdout: ${c.bad.join(" | ")}`);
+});
+
 test("stdio: initialize, tools/list, search, assemble five clauses into a .docx", async (t) => {
   const c = client();
   t.after(() => c.close());

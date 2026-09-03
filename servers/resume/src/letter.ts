@@ -206,7 +206,11 @@ function listOf(items: string[]): string {
   return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
-/** Profile bullets, most relevant to the posting first. Recency breaks a tie. */
+/**
+ * Profile bullets, most relevant to the posting first. Recency breaks a tie, read as
+ * array position (`experience.length - ei`) on the assumption that profile_set already
+ * stored roles newest-first (see sortExperienceNewestFirst in profile.ts).
+ */
 export function rankBullets(p: Profile, keywords: string[]): string[] {
   const scored: { text: string; score: number }[] = [];
   p.experience.forEach((e, ei) => {

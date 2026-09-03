@@ -84,6 +84,11 @@ export interface TrimResult {
  * Score = keyword hits (3 each) + recency (the most recent role scores highest) +
  * a floor bonus for the first bullet of every role, so trimming never leaves a job
  * on the page with nothing under it while a later job keeps four lines.
+ *
+ * Recency reads array position (`experience.length - ei`), trusting index 0 to be the
+ * newest role. That is safe because profile_set (index.ts) sorts every stored profile
+ * newest-first (sortExperienceNewestFirst, profile.ts) before saving it -- this function
+ * does not re-derive recency from `start`/`end` itself.
  */
 export function scoreBullets(experience: Experience[], keywords: string[]): BulletRef[] {
   const out: BulletRef[] = [];

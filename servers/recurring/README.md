@@ -172,6 +172,10 @@ occurrence 0 is `start_date` itself, so a schedule starting today is due today.
   ignored for `weekly` and `{days: n}`, which have no month to anchor to. An anchored first occurrence that
   would land before `start_date` is dropped, never billed early.
 - **`end_date` is inclusive.** An occurrence landing exactly on `end_date` is generated; the next one is not.
+- **Long-lived schedules.** Looking up what is due does not replay the schedule from `start_date`: it jumps to
+  an estimate near the date you asked about and scans forward from there, so a daily schedule created in 2010
+  still reports what is due in 2026 instead of exhausting its per-run occurrence cap walking there one day at
+  a time.
 
 ## Money
 

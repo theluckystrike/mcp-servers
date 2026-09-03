@@ -108,15 +108,49 @@ export function occurrence(rule: PeriodRule, k: number): string {
 export const MAX_OCCURRENCES = 5000;
 
 /**
+ * A k that is at or a little before the k whose occurrence date reaches `target`, so a
+ * bounded forward scan from here (instead of from k=0) reaches `target` in a handful of
+ * steps no matter how long the schedule has been running. Day-stepped rules (`weekly`,
+ * `{days:n}`) are exactly linear in k, so the estimate is exact minus a 1-step safety
+ * margin. Month-stepped rules (`monthly`/`quarterly`/`yearly`) are linear in *months*
+ * but the day-of-month clamp (rule 3) can shift a given k's date by less than one full
+ * step, so the estimate uses a 2-step safety margin instead of 1.
+ */
+function estimateStartK(rule: PeriodRule, target: string): number {
+  const months = stepMonths(rule.every);
+  if (months !== null) {
+    const [sy, sm] = parts(rule.start_date);
+    const [ty, tm] = parts(target);
+    const startTotal = sy * 12 + (sm - 1);
+    const targetTotal = ty * 12 + (tm - 1);
+    const kFloor = Math.floor((targetTotal - startTotal) / months);
+    return Math.max(0, kFloor - 2);
+  }
+  const days = rule.every === "weekly" ? 7 : (rule.every as { days: number }).days;
+  const [sy, smo, sd] = parts(rule.start_date);
+  const [ty, tmo, td] = parts(target);
+  const diffDays = (Date.UTC(ty, tmo - 1, td) - Date.UTC(sy, smo - 1, sd)) / 86400000;
+  const kFloor = Math.floor(diffDays / days);
+  return Math.max(0, kFloor - 1);
+}
+
+/**
  * Every occurrence in [from, to], both inclusive, clipped by start_date and end_date
  * (end_date inclusive, rule 5). `from` defaults to start_date.
+ *
+ * The scan starts at `estimateStartK(rule, lower)` rather than k=0: a schedule that has
+ * been running for decades can have far more than MAX_OCCURRENCES occurrences before
+ * `lower`, and scanning from the beginning would exhaust the per-run cap before ever
+ * reaching the requested window. The per-run cap on occurrences examined is unchanged.
  */
 export function occurrencesBetween(rule: PeriodRule, to: string, from?: string): string[] {
   const lower = from && from > rule.start_date ? from : rule.start_date;
   const upper = rule.end_date && rule.end_date < to ? rule.end_date : to;
   const out: string[] = [];
   if (upper < lower) return out;
-  for (let k = 0; k < MAX_OCCURRENCES; k++) {
+  const startK = estimateStartK(rule, lower);
+  let scanned = 0;
+  for (let k = startK; scanned < MAX_OCCURRENCES; k++, scanned++) {
     const d = occurrence(rule, k);
     if (d > upper) break;
     if (d < rule.start_date) continue;   // anchoring moved the first one back
@@ -125,9 +159,15 @@ export function occurrencesBetween(rule: PeriodRule, to: string, from?: string):
   return out;
 }
 
-/** The first occurrence strictly after `after`, or null once the schedule has ended. */
+/**
+ * The first occurrence strictly after `after`, or null once the schedule has ended.
+ * Like occurrencesBetween, the scan starts near `after` (via estimateStartK) instead of
+ * at k=0 so a long-lived schedule still resolves within the per-run cap.
+ */
 export function nextOccurrence(rule: PeriodRule, after: string): string | null {
-  for (let k = 0; k < MAX_OCCURRENCES; k++) {
+  const startK = estimateStartK(rule, after);
+  let scanned = 0;
+  for (let k = startK; scanned < MAX_OCCURRENCES; k++, scanned++) {
     const d = occurrence(rule, k);
     if (d < rule.start_date) continue;
     if (d > after) return rule.end_date && d > rule.end_date ? null : d;

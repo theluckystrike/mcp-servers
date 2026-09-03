@@ -150,6 +150,11 @@ first. Every role keeps its first bullet before any role gets a second one, so t
 page with nothing under it. The response reports the budget, the words used, the estimated page count and every
 bullet it dropped, so you can see the decision rather than discover it in Word.
 
+Recency is part of that score, and it is read off array order, not off `start`/`end` text. `profile_set` enforces
+the ordering that makes that safe: however you list roles when you call it, the stored profile always ends up
+newest-first -- an open role with no `end` first, then by `end` descending, then by `start` descending. Enter roles
+in any order; the stored order (and the cover-letter bullet ranking in `cover_letter_create`) is always correct.
+
 ## Free vs Pro
 
 | | Free | Pro ($19 one-time) |
