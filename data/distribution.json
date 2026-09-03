@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03T12:45:00Z",
+  "updated_at": "2026-09-03T13:00:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -59,7 +59,7 @@
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "12 guides, 72 setup pages, 11 compare pages, 11 product pages; sitemap 116 URLs. Round 4 added the resume, recurring and clauses sets on 2026-09-03: 3 guides, 18 setup pages, 3 compare pages, all HTTP 200 and accepted by IndexNow"
+      "note": "12 guides, 72 setup pages, 11 compare pages, 11 product pages; sitemap 116 URLs. Round 4 added the resume, recurring and clauses sets on 2026-09-03: 3 guides, 18 setup pages, 3 compare pages, all HTTP 200 and accepted by IndexNow. Round 5 added connect-by-URL content on 2026-09-03: 1 guide (connect-mcp-servers-without-installing), a new claude-web client with 11 setup pages (office-suite excluded, no single connector URL); sitemap 116 -> 129, all 13 new URLs HTTP 200, IndexNow 200 for 17 URLs"
     },
     "mcpservers.org": {
       "status": "submitted",
@@ -124,7 +124,7 @@
     "search-console": {
       "status": "submitted",
       "url": "https://search.google.com/search-console?resource_id=sc-domain:zovo.one",
-      "note": "sc-domain:zovo.one domain property already existed (siteFullUser, service account zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com) and covers mcp.zovo.one automatically; sitemaps.submit for https://mcp.zovo.one/sitemap.xml returned 204, sitemaps.list confirms it (13 URLs submitted, 0 warnings, 0 errors, indexed 0 so far -- fresh submission, indexing pending); urlInspection on / returned coverageState \"URL is unknown to Google\" and on /guides/track-time-in-claude-code returned \"Discovered - currently not indexed\", both expected within hours of a fresh submission"
+      "note": "sc-domain:zovo.one domain property already existed (siteFullUser, service account zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com) and covers mcp.zovo.one automatically; sitemaps.submit for https://mcp.zovo.one/sitemap.xml returned 204, sitemaps.list confirms it (13 URLs submitted, 0 warnings, 0 errors, indexed 0 so far -- fresh submission, indexing pending); urlInspection on / returned coverageState \"URL is unknown to Google\" and on /guides/track-time-in-claude-code returned \"Discovered - currently not indexed\", both expected within hours of a fresh submission. Round 5, 2026-09-03: resubmitted https://mcp.zovo.one/sitemap.xml after it grew to 129 URLs (was 13 stale from round 4); sitemaps.list now shows submitted 129, indexed 0, 0 warnings, 0 errors (fresh resubmit, indexing pending); urlInspection: / = Discovered - currently not indexed (was 'URL is unknown to Google' in round 4, so it moved forward); /s/invoice = Discovered - currently not indexed; /guides/track-time-in-claude-code = URL is unknown to Google; /setup/claude-code/invoice = URL is unknown to Google; none of the 4 inspected URLs are indexed yet, all NEUTRAL verdict, consistent with a sitemap resubmitted minutes before inspection"
     },
     "github-mirrors": {
       "status": "published",
@@ -134,7 +134,7 @@
     "setup": {
       "status": "published",
       "url": "https://mcp.zovo.one/setup",
-      "note": "79 URLs, all HTTP 200; 72 client-by-server pages with FAQPage JSON-LD and canonical, the 18 round-4 pages 547-646 words each; client facts verified against each client's public docs on 2026-09-03"
+      "note": "79 URLs, all HTTP 200; 72 client-by-server pages with FAQPage JSON-LD and canonical, the 18 round-4 pages 547-646 words each; client facts verified against each client's public docs on 2026-09-03. Round 5 added claude-web (claude.ai / Claude Desktop custom connectors): 12 pages (1 hub + 11 servers), URL form instead of a config file, verified against Anthropic's own custom-connector support article with a direct curl before writing rather than assumed"
     },
     "estate-backlinks": {
       "status": "published",

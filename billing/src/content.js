@@ -3,6 +3,7 @@
 
 // The FAQ section, the related links and the footer are appended by index.js.
 const FOOT = "";
+const BASE = "https://mcp.zovo.one";
 
 export const GUIDES = {
   "track-time-in-claude-code": {
@@ -1141,6 +1142,95 @@ ${FOOT}`,
       { q: "Why does the bracketed prompt use spaces instead of underscores?", a: "Because the shared document engine parses inline markdown, so [late_fee_percent] reaches Word as [latefeepercent]: the underscore pair is read as an italic marker and dropped. The printed prompt uses spaces, and the machine-readable unfilled list keeps the real underscored names." },
       { q: "Can I keep my clause library in version control?", a: "Yes. clause_export writes the whole library to markdown on the free tier and clause_import reads the same shape back, so the terms you reuse can be committed and diffed. JSON import and export is a Pro feature." },
       { q: "Does it replace the contract generator in the docx server?", a: "They do different things. MCP Docx writes a fixed freelance service agreement skeleton in one call. This server assembles a document from the specific clauses you keep and have edited, which is what you want once your terms have diverged from a generic template." },
+    ],
+  },
+
+  "connect-mcp-servers-without-installing": {
+    title: "Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything",
+    description: "A remote MCP URL, no config file: claude.ai and Desktop connectors, Claude Code, Cursor, VS Code, what is kept, and where it falls short of local.",
+    html: `<h1>Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything</h1>
+<p>Every setup guide on this site so far has started with a config file: <code>claude_desktop_config.json</code>,
+<code>.cursor/mcp.json</code>, <code>.vscode/mcp.json</code>. That is the right route for a server that reads
+and writes files on your own disk. It is the wrong route the first time you just want to try something, and
+it is not a route at all inside claude.ai in a browser, which has no filesystem to put a config file on.
+That gap is what a remote MCP connector closes.</p>
+
+<h2>What a remote MCP connector actually is</h2>
+<p>An MCP server does not have to run as a local process talking over stdio. It can run as an HTTP endpoint
+that speaks the MCP streamable HTTP transport, and a client that supports remote servers connects to it
+the same way a browser connects to a website: with a URL. No process starts on your machine, nothing is
+installed, and there is nothing to keep updated. <a href="${BASE}/mcp/connect">${BASE}/mcp/connect</a>
+mints an anonymous token and prints one such URL per server, shaped like
+<code>${BASE}/mcp/&lt;server&gt;/t/&lt;token&gt;</code>. Paste it where a client asks for a remote server
+URL and the connection works with no headers: the token is already in the path, not in an Authorization
+field you have to remember to set.</p>
+
+<h2>Claude.ai and Claude Desktop: custom connectors</h2>
+<p>Anthropic's own documentation describes this as a Custom Connector. On an individual Pro or Max plan,
+Customize, Connectors, the + button, Add custom connector opens a form asking for a name and a Remote MCP
+server URL, with an Advanced settings section for an optional OAuth Client ID and Client Secret. Paste the
+URL from <code>/mcp/connect</code>, leave the OAuth fields blank, click Add, then Connect. On a Team or
+Enterprise plan the same form exists but only an Owner or Primary Owner can use it, at Organization
+settings, Connectors, Add, Custom, Web; members then connect to what the Owner added rather than pasting
+their own URL. That distinction is documented by Anthropic, not a guess: it was read from the support
+article and confirmed with a direct fetch before this page was written, not assumed from how other
+products work.</p>
+
+<h2>Claude Code: one command</h2>
+<p>Claude Code accepts a remote server on the command line:</p>
+<pre><code>claude mcp add --transport http time-tracker ${BASE}/mcp/time-tracker/t/&lt;token&gt;</code></pre>
+<p>No header is required for the token form, because it is already in the URL; a Pro key works the same way,
+placed in the URL instead of the free token.</p>
+
+<h2>Cursor and VS Code: a remote entry, not a local one</h2>
+<p>Cursor's <code>.cursor/mcp.json</code> and VS Code's <code>.vscode/mcp.json</code> both accept a server
+entry that is a URL instead of a command and args. In Cursor:</p>
+<pre><code>{
+  "mcpServers": {
+    "time-tracker": { "url": "${BASE}/mcp/time-tracker/t/&lt;token&gt;" }
+  }
+}</code></pre>
+<p>The full field-by-field entry for each client, including VS Code's <code>servers</code> key and the
+streamable HTTP type Cline needs written in explicitly, is on the <a href="/setup">per-client setup
+pages</a> for each server.</p>
+
+<h2>What is kept, and for how long</h2>
+<p>A token maps to an anonymous tenant with no account, no email and no name attached. What gets stored
+against it is only what each server needs to answer the next call: timer entries, invoice numbers,
+clause text, whatever that server's own data model holds, scoped to that token. A token that goes idle is
+swept after 30 days. A file a hosted call generates, such as an invoice PDF or a filled Word document,
+does not sit on a disk you can browse: it comes back as a download link that expires after one hour, so
+the practical habit is to save it in the same session you generate it. Checking out for Pro on
+<code>/buy/&lt;product&gt;?tenant=&lt;token&gt;</code> binds that Pro purchase to the token, and from then
+on the same URL you were already using carries Pro limits with no key to paste and no new URL to switch
+to.</p>
+
+<h2>Honest limits</h2>
+<p>The hosted route is not a like-for-like replacement for a local install, and three gaps are worth
+knowing before you rely on it. Invoices render as HTML rather than a locally-rendered PDF file on this
+remote path; the download link opens the invoice in a browser, which prints to PDF but is not the same
+file object as a stdio install writes to disk. The spreadsheet server runs in an inline mode over the
+hosted route: it reads and returns data in the response rather than writing a converted file back to a
+folder, because there is no folder on the other end of an HTTP call. And there is no receipts feature on
+this path: <code>receipt_attach</code> wants a real file path on a filesystem the connector does not have,
+so expense entries taken through a connector carry amounts and a description rather than an attached
+file. None of these are bugs to be fixed later so much as the shape of running server-side instead of on
+your own machine; a local install through <a href="/setup">the config-file route</a> does not have any of
+them.</p>
+
+<h2>Which one to use</h2>
+<p>Use the connector URL to try a server in under a minute, to use it from claude.ai in a browser where no
+local install is possible at all, or on a machine you do not want to run a local process on. Move to a
+local, stdio install once you are relying on filesystem features it does not have: a spreadsheet server
+that should write files back to your project, receipts you want kept as real attached files, or invoice
+PDFs that need to land on disk rather than behind a one-hour link.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does connecting need OAuth?", a: "No. The Add custom connector form in claude.ai and Claude Desktop offers an Advanced settings section with an OAuth Client ID and Client Secret, but the connect-by-URL route does not use it. Leave both blank; the token in the URL path is what authenticates the connection." },
+      { q: "What if my organization is on a Team or Enterprise plan?", a: "Anthropic's documentation is specific here: only an Owner or Primary Owner can add a custom connector at the organization level, from Organization settings, Connectors, Add, Custom, Web. Members then connect to the URL the Owner added; they do not paste their own." },
+      { q: "How long does an anonymous token last?", a: "A token that goes 30 days without a call is swept. A Pro key bound to a token has no such sweep, since binding happens on a paid checkout." },
+      { q: "Why does a generated invoice or document come back as a link instead of a file?", a: "The hosted route has no filesystem to write to, so anything a server generates, a PDF, a filled Word document, a CSV, is handed back as a download link that expires after one hour rather than a path on disk." },
+      { q: "Can I use a Pro key instead of the free token?", a: "Yes. Replace the token segment of the URL with a Pro key and the same connector uses Pro limits instead of the anonymous free tier, with no new URL and no re-adding the connector." },
     ],
   },
 };

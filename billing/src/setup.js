@@ -122,9 +122,33 @@ export const CLIENTS = {
     caveatShort: "omitting \"type\" falls back to the legacy sse transport",
     envNote: "An \"env\" object next to \"command\" is supported, plus \"disabled\" and a per-server \"autoApprove\" array.",
   },
+  "claude-web": {
+    name: "Claude.ai and Claude Desktop connectors",
+    short: "Claude.ai",
+    docs: "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+    file: null,
+    key: null,
+    paths: [
+      ["Individual, Pro or Max", "Customize (claude.ai) or Settings (Claude Desktop), Connectors, the + button, Add custom connector"],
+      ["Team or Enterprise", "an Owner or Primary Owner adds it once at Organization settings, Connectors, Add, Custom, Web; members then click Connect on it from Customize, Connectors"],
+    ],
+    reach: "There is no config file here: the Add custom connector form asks for a name and a Remote MCP server URL, with an Advanced settings section for an optional OAuth Client ID and Client Secret.",
+    cli: null,
+    oneClick: null,
+    restart: "No restart. Click Connect once the connector is added, then turn it on for a conversation from the + button, Connectors.",
+    caveat: "On an individual Pro or Max plan you add the connector yourself from Customize, Connectors. On Team and Enterprise it is the other way round: only an Owner or Primary Owner can add a custom connector, at Organization settings, Connectors, and members then connect to what the Owner added rather than pasting their own URL.",
+    caveatShort: "Team and Enterprise plans need an Owner to add it first",
+    envNote: "There is no env or headers field in this form. The token lives in the URL path, so nothing needs to be typed into Advanced settings.",
+  },
 };
 
 export const CLIENT_ORDER = Object.keys(CLIENTS);
+
+/** Servers that get a page for this client. claude-web skips office-suite: it starts
+ * five child processes and has no single connector URL. */
+export function serversFor(clientId) {
+  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => id !== "office-suite") : SERVER_ORDER;
+}
 
 /** Servers. Prompts are lines from each README's "What you can say" table. */
 export const SETUP_SERVERS = {
@@ -451,6 +475,22 @@ const ANGLE = {
   },
 };
 
+/** One sentence per server for the claude-web (claude.ai / Claude Desktop connector) client.
+ * office-suite is excluded: it starts five child processes, not one URL. */
+const WEB_ANGLE = {
+  "time-tracker": "This is the client with no terminal and no filesystem of its own, so the free tier's history window matters more here than anywhere else: a report is read in the chat, not exported to a file you would open elsewhere.",
+  "price-tracker": "A watch runs server-side against a URL you gave it, which is exactly the shape a browser tab full of Claude.ai can hold without a local process: no install, no machine that has to stay on.",
+  spreadsheet: "The file never touches your disk: it is read from wherever the connector fetched it and any output comes back as a one-hour download link, since a hosted call has nowhere local to write to.",
+  invoice: "The PDF is generated server-side and handed back as a download link rather than a path, which is the one thing that changes about this server between a local install and the connector.",
+  "expense-tracker": "receipt_attach still wants a path, and the connector has no local filesystem, so the practical route here is amounts and a description rather than a stored receipt file.",
+  currency: "Every tool this server has is a read against the ECB rate feed, so the connector needs nothing more than the URL: no file gets written, no download link is ever produced.",
+  docx: "The filled document comes back as a one-hour download link instead of a path on disk, which is the same trade every writer server makes when it runs on the hosted route.",
+  timezone: "No network call and no file besides the .ics you ask for, and that .ics also arrives as a download link rather than landing in a folder next to your other files.",
+  resume: "The generated .docx is a one-hour download link rather than a path, so the practical habit is to download it the same session you ask for it, before the link expires.",
+  recurring: "The schedule and the invoices it generates live in the hosted store behind the token, so the dry run and the real run both read the same state whether you connect from claude.ai or Claude Desktop.",
+  clauses: "The assembled document is a download link, and the library itself lives behind the token, so the same clause set is there whether you connect from claude.ai in a browser or Claude Desktop.",
+};
+
 const FAQ = {
   "claude-desktop": (s) => [
     {
@@ -538,6 +578,24 @@ const FAQ = {
     {
       q: "Should I auto-approve " + s.title + "'s tools?",
       a: "Approve the read-only ones and leave the writing ones behind a click: each entry carries an autoApprove array and a disabled flag.",
+    },
+  ],
+  "claude-web": (s) => [
+    {
+      q: "Does this need OAuth?",
+      a: "No. Add custom connector offers an Advanced settings section with an OAuth Client ID and Client Secret, but the connect-by-URL route does not use it. Leave both blank: the token in the URL path is what authenticates.",
+    },
+    {
+      q: "I am on a Team or Enterprise plan and cannot add a connector.",
+      a: "That is documented, not a bug: on Team and Enterprise, only an Owner or Primary Owner can add a custom connector, at Organization settings, Connectors, Add, Custom, Web. After that, members connect to the URL the Owner added from Customize, Connectors.",
+    },
+    {
+      q: "Can I use my Pro key instead of the free anonymous token?",
+      a: "Yes. The token segment of the URL from /mcp/connect can be replaced with a Pro key, which removes the free-tier limits on " + s.title + " for that connector.",
+    },
+    {
+      q: "Why did a generated file come back as a link instead of opening?",
+      a: "The connector runs server-side with no filesystem of its own, so any file " + s.title + " produces is handed back as a download link that expires after one hour, rather than a path on disk.",
     },
   ],
 };
@@ -640,9 +698,9 @@ export function setupPage(clientId, serverId) {
   const c = CLIENTS[clientId];
   const s = SETUP_SERVERS[serverId];
   if (!c || !s) return null;
+  if (clientId === "claude-web" && serverId === "office-suite") return null;
   const canonical = `${BASE}/setup/${clientId}/${serverId}`;
   const title = `${s.title} in ${c.name}`;
-  const description = fitDesc(`Install ${s.title} in ${c.name}: the exact ${c.file} entry, three prompts that work, and ${c.caveatShort}.`);
 
   const promptRows = s.prompts
     .map(([p, t]) => `<tr><td>${esc(p)}</td><td><code>${esc(t)}</code></td></tr>`)
@@ -653,6 +711,42 @@ export function setupPage(clientId, serverId) {
   const [prev, next] = neighbours(clientId);
   const faq = FAQ[clientId](s);
 
+  if (clientId === "claude-web") {
+    const description = fitDesc(`Connect ${s.title} in Claude.ai or Claude Desktop with no install: mint a URL at /mcp/connect and paste it into Add custom connector.`);
+    const exampleUrl = `${BASE}/mcp/${s.hosted || s.slug}/t/&lt;token&gt;`;
+    const body = `<p class="muted"><a href="/">Home</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/setup/${clientId}">${esc(c.name)}</a></p>
+<h1>${esc(title)}</h1>
+<p>${esc(s.tagline)} ${esc(s.does)}</p>
+<p>${esc(WEB_ANGLE[serverId] || "")}</p>
+
+<h2>What you get</h2>
+<table><tr><th>You say</th><th>Tool</th></tr>${promptRows}</table>
+<p>${esc(s.measured)}</p>
+
+<h2>Connect it, no install</h2>
+<p><a href="${BASE}/mcp/connect">${BASE}/mcp/connect</a> mints an anonymous token and prints a URL per server, including this one, shaped like <code>${exampleUrl}</code>. That URL works with no headers: the token is in the path, not in an Authorization field this form does not have.</p>
+<ol>
+<li>Open <a href="${BASE}/mcp/connect">${BASE}/mcp/connect</a> and copy the URL printed for ${esc(s.title)}.</li>
+<li>${esc(c.reach)}</li>
+<li>Paste the URL as the Remote MCP server URL. Leave the optional OAuth Client ID and Client Secret blank; this endpoint does not use them.</li>
+<li>Click Connect, then turn the connector on for a conversation from the + button, Connectors.</li>
+</ol>
+<p class="muted">Idle anonymous tokens are swept after 30 days. Since this route has no filesystem, a file ${esc(s.title)} generates comes back as a download link that expires after one hour. A Pro key can replace the token in the same URL and removes the free-tier limits.</p>
+
+<h2>${esc(c.name)} notes worth knowing first</h2>
+<p>${esc(c.caveat)}</p>
+
+<p class="muted">Free: ${esc(s.free)} Pro is $19 once, verified offline, and binds to the token after checkout.</p>
+
+<h2>Questions</h2>
+${faq.map((f) => `<h3>${esc(f.q)}</h3>\n<p>${esc(f.a)}</p>`).join("\n")}
+
+<h2>Related</h2>
+<p>${s.sPage ? `<a href="${s.sPage}">${esc(s.title)} in detail</a> &middot; ` : ""}<a href="/guides/connect-mcp-servers-without-installing">How connect-by-URL works</a> &middot; <a href="/setup/${clientId}">Every server for ${esc(c.name)}</a> &middot; <a href="/setup">All clients</a> &middot; <a href="${esc(c.docs)}">${esc(c.name)} docs</a></p>`;
+    return { title, description, body, faq, canonical };
+  }
+
+  const description = fitDesc(`Install ${s.title} in ${c.name}: the exact ${c.file} entry, three prompts that work, and ${c.caveatShort}.`);
   const body = `<p class="muted"><a href="/">Home</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/setup/${clientId}">${esc(c.name)}</a></p>
 <h1>${esc(title)}</h1>
 <p>${esc(s.tagline)} ${esc(s.does)}</p>
@@ -693,7 +787,7 @@ export function clientHub(clientId) {
   const canonical = `${BASE}/setup/${clientId}`;
   const title = `MCP servers for ${c.name}: install guides`;
   const description = fitDesc(`Twelve MCP servers set up in ${c.name}, each with the exact ${c.file} entry: time, invoices, recurring billing, expenses, spreadsheets, prices, currency, Word, clauses, resumes and time zones.`);
-  const rows = SERVER_ORDER.map(
+  const rows = serversFor(clientId).map(
     (id) =>
       `<tr><td><a href="/setup/${clientId}/${id}">${esc(SETUP_SERVERS[id].title)} in ${esc(c.name)}</a><br><span class="muted">${esc(SETUP_SERVERS[id].tagline)}</span></td></tr>`
   ).join("");
@@ -724,7 +818,7 @@ export function setupIndex() {
   ).join("");
   const serverRows = SERVER_ORDER.map(
     (id) =>
-      `<tr><td>${esc(SETUP_SERVERS[id].title)}</td><td>${CLIENT_ORDER.map((c) => `<a href="/setup/${c}/${id}">${esc(CLIENTS[c].short)}</a>`).join(" &middot; ")}</td></tr>`
+      `<tr><td>${esc(SETUP_SERVERS[id].title)}</td><td>${CLIENT_ORDER.filter((c) => serversFor(c).includes(id)).map((c) => `<a href="/setup/${c}/${id}">${esc(CLIENTS[c].short)}</a>`).join(" &middot; ")}</td></tr>`
   ).join("");
   const body = `<p class="muted"><a href="/">Home</a></p>
 <h1>${esc(title)}</h1>
@@ -741,7 +835,7 @@ export function setupUrls() {
   const urls = ["/setup"];
   for (const c of CLIENT_ORDER) {
     urls.push(`/setup/${c}`);
-    for (const s of SERVER_ORDER) urls.push(`/setup/${c}/${s}`);
+    for (const s of serversFor(c)) urls.push(`/setup/${c}/${s}`);
   }
   return urls;
 }
