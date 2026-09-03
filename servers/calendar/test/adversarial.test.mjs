@@ -163,20 +163,25 @@ function rpc(requests, dataDir, waitMs = 6000) {
       stdio: ["pipe", "pipe", "pipe"],
     });
     let buf = ""; const out = []; const bad = [];
+    // Requests are sent one at a time: the server handles calls concurrently, so a
+    // search fired in the same write as an import can be answered before the import lands.
+    const queue = [...requests]; let done = false;
+    const finish = () => { if (done) return; done = true; child.kill(); resolve({ out, bad }); };
+    const next = () => { const r = queue.shift(); if (!r) { setTimeout(finish, 150); return; } child.stdin.write(JSON.stringify(r) + "\n"); };
     child.stdout.on("data", d => {
       buf += d.toString();
       const lines = buf.split("\n"); buf = lines.pop();
       for (const l of lines) {
         if (!l.trim()) continue;
-        try { out.push(JSON.parse(l)); } catch { bad.push(l); }
+        try { const m = JSON.parse(l); out.push(m); if (m.id !== undefined && m.id !== 0) next(); } catch { bad.push(l); }
       }
     });
     child.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: 0, method: "initialize", params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "t", version: "1" } } }) + "\n");
     setTimeout(() => {
       child.stdin.write(JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }) + "\n");
-      for (const r of requests) child.stdin.write(JSON.stringify(r) + "\n");
+      next();
     }, 400);
-    setTimeout(() => { child.kill(); resolve({ out, bad }); }, waitMs);
+    setTimeout(finish, waitMs);
   });
 }
 const textOf = (out, id) => (out.find(o => o.id === id)?.result?.content ?? []).map(c => c.text).join("\n");
