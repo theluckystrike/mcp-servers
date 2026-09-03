@@ -43,6 +43,11 @@ export interface Invoice {
   tax_lines: TaxLine[];
   tax_minor: number;
   total_minor: number;
+  // D-R46: sum, in minor units, of how far the printed lines sit above (or below, if
+  // negative) the exact converted amount because a unit price was rounded to a whole
+  // cent before being multiplied by the quantity. Zero when every unit price already
+  // was a whole number of cents, or every line asked round_total: true.
+  rounding_drift_minor?: number;
   notes?: string;
   status: "unpaid" | "paid" | "partial";
   paid_date?: string;

@@ -1176,3 +1176,131 @@ from **1,319 ms to 78 ms**, against a target of 800, and is the first time that 
 has been met. Its probe was not changed - the endpoint shape it posts to is the same.
 
 `node scripts/validate.mjs`: **remote 26/26, whole run 247/247.**
+
+## Extension 4: pdf, calendar
+
+`POST /mcp/pdf` and `POST /mcp/calendar` on the same worker, same auth, same per-tenant
+caps. Thirteen endpoints now, and `GET /mcp` and `/mcp/connect` list all thirteen.
+
+### pdf: every path is an upload name
+
+The stdio server takes paths on a disk. There is no disk here, so `remote/src/shims/pdf-upload.ts`
+adds three tools -- `pdf_upload {name, pdf_base64}`, `pdf_files`, `pdf_delete_upload` -- and
+`patchPdfIo` in `remote/build-vendor.mjs` rewrites `expandPath` so that every `path`, and
+every entry of `paths[]`, is one of those names:
+
+- an input name resolves to `/uploads/<name>.pdf` when something is uploaded under it,
+  otherwise to `/out/<name>.pdf`, which is where anything this server wrote earlier lives;
+- `reserveOutput` no longer calls `expandPath` on its target: a new `outputPath()` forces
+  every output under `/out/`, so an output can never land on the upload root and quietly
+  skip being published;
+- `savePdf` gained one `publishFile(path)` line, so every written PDF comes back as a
+  one-hour download link served with `content-type: application/pdf`;
+- `sameFile` compared `statSync().dev`/`.ino`. The virtual filesystem has neither, so the
+  comparison read `undefined === undefined` and called **every** pair of existing files the
+  same file, which would have refused legitimate `out_path`s as "also an input". It is path
+  equality here: there are no links and no inodes.
+
+`ServerCfg.pdf` sets `publish: p => p.startsWith("/out/")` with `persistPublished: true`, so
+outputs are kept as well as published -- a merged file can be stamped by the next call, the
+way a file on a disk could, and the `overwrite` flag stays a real decision rather than a
+no-op. `strip: ["/uploads/"]` (a new `ServerCfg` field that also replaced the hard-coded
+`product === "spreadsheet"` branch in the response rewriter) keeps the virtual root out of
+the answer: the caller sees `probe.pdf`, which is the name they uploaded.
+
+**The upload limit.** `MAX_UPLOAD_BYTES` is 2 MB, but the 256 KB request-body cap binds long
+first: a base64 payload inside a JSON-RPC envelope leaves roughly **190 KB of actual PDF per
+POST**. That is stated in the `pdf_upload` description, in the `pdf` entry of `GET /mcp`, and
+in the refusal text. A bigger file has to be split before upload, or run over stdio.
+
+**pdf-lib and node:zlib under `nodejs_compat`: both work, verified live.** pdf-lib parses,
+copies pages, embeds `StandardFonts.HelveticaBold` and saves; `pdf_text` decompressed the
+FlateDecode content streams with `node:zlib` and read the text back. `Buffer` is not a global
+on Workers, so `servers/pdf/src/text.ts` is vendored with an added `import { Buffer } from
+"node:buffer"`.
+
+### calendar: text and url, no path
+
+`ics_import` already took `text`; `url` now works here too (Pro, as over stdio) and `path` is
+refused with the reason and the two things that do work. The feed guard is the strict one:
+`ssrfGuard()` -- the price-tracker's guard, refactored in `build-vendor.mjs` to take its own
+refusal sentence -- parses every IPv4 literal form `inet_aton` accepts (dotted quad, bare
+decimal, hex, octal, the short forms) and IPv6 to bytes, refuses a numeric host it cannot
+parse, and is applied before the first hop and again after every redirect, which means
+following redirects by hand (`redirect: "manual"`) instead of trusting `res.url` after the
+request already left. `MCP_CALENDAR_ALLOW_LOCAL`, the stdio escape hatch, is gone here: there
+is no environment variable that turns the guard off. The 5 MB feed cap is unchanged.
+
+`servers/calendar/src/store.ts` imports `@theluckystrike/mcp-timezone/lib`. That is the same
+sibling-engine case Extension 3 solved generically: `SERVERS.timezone` now vendors `lib.ts`
+alongside its other sources, and `rewriteSpec` already maps `@theluckystrike/mcp-<x>/lib` to
+`../<x>/lib.js`, so the calendar vendor directory reads the real `servers/timezone/src/lib.ts`
+rather than a second copy of the zone engine.
+
+Two node:fs functions the calendar store needs were missing from the shim and were added:
+`readdirSync` (derived from the flat path map -- names exactly one level below the directory)
+for `orphanIcsFiles`, and `rmSync` for `removeIcs`.
+
+`outPathOf` becomes the same name-not-path rewrite the timezone endpoint uses: an export is
+`/exports/<name>.ics`, published as a one-hour download served `text/calendar`. Calendars are
+per tenant under `/calendar/` and are kept; the messages that printed a stored file path
+(`Stored: <file>`, `deleted <path>`) say "kept for your token" and "the copy stored for your
+token" instead.
+
+### Verified live (bundle key, two POSTs each)
+
+```
+$ pdf pdf_upload {name: "probe", pdf_base64: <1,088-byte pdf-lib PDF>}
+  Uploaded "probe.pdf" (1088 bytes). Pass path: "probe" to any pdf tool.
+$ pdf pdf_info {path: "probe"}
+  file "probe.pdf", pages 2, A4 595.28x841.89 pt / 210x297 mm, encrypted false
+$ pdf pdf_stamp {path: "probe", text: "PAID", position: "center", out_path: "probe-paid"}
+  Stamped "PAID" on 2 pages, color #1b7f3b, opacity 0.35
+  out https://mcp.zovo.one/mcp/download/418bec45... (valid 1 hour)
+  GET that URL -> 2,793 bytes starting %PDF-1.7
+                  content-type: application/pdf
+                  content-disposition: attachment; filename="probe-paid.pdf"
+$ pdf pdf_text {path: "probe"}   -> "Remote probe page 1" / "Remote probe page 2"   (node:zlib)
+$ pdf pdf_files {}               -> uploaded probe.pdf 1088, generated probe-paid.pdf 2793
+
+$ calendar ics_import {text: <3 VEVENTs>, name: "Work"}
+  Imported calendar "Work" (3 event definition(s), 0 recurring)
+$ calendar events_list {from: "2026-09-08", to: "2026-09-14", zone: "UTC"}
+  2026-09-10 Thu  09:00-10:00 Nova call @ Zoom  /  09:30-11:00 Design review
+  2026-09-12 Sat  all day     Holiday
+$ calendar conflicts {...}      -> 1 overlapping pair, 30 min overlap
+$ calendar event_export {from: "2026-09-08", to: "2026-09-14", out_path: "week.ics"}
+  3 event(s) exported. Download: https://mcp.zovo.one/mcp/download/0fc801a0...
+  GET that URL -> 627 bytes starting BEGIN:VCALENDAR, content-type: text/calendar; charset=utf-8
+
+$ calendar ics_import {url: "http://169.254.169.254/latest/meta-data/"}
+  Error: 169.254.169.254 is not a public address, so this hosted endpoint will not fetch it.
+$ calendar ics_import {url: "https://www.google.com/robots.txt"}
+  Error: this does not look like a calendar file   <- a public host is reached, then parsed
+$ calendar ics_import {path: "/etc/passwd"}
+  Error: this hosted endpoint has no filesystem ... paste the contents instead
+```
+
+`GET /mcp` lists thirteen endpoints and `/mcp/connect` prints thirteen ready URLs.
+`tools/list`: pdf 15, calendar 12. `servers/calendar/remotes.json` was added in the shape
+`servers/pdf/remotes.json` already had, and `scripts/validate.mjs` covers both endpoints in
+the `tools/list` sweep plus four real calls (pdf upload + info + stamp + download head,
+pdf_text for the zlib proof, calendar import + list + export + download head, and the feed
+SSRF refusal): **remote 37/37, whole run 300/300.**
+
+### Limitations
+
+- 190 KB of PDF per POST is the real ceiling, not the 2 MB per-file cap. There is no chunked
+  upload: a larger file is split first, or run over stdio.
+- `pdf_watermark_business` reads the shared business profile, which is per token here; its
+  refusal used to name a path under `XDG_DATA_HOME` and now points at `business_set` on
+  `/mcp/invoice` or `/mcp/docx` for the same token.
+- The pdf operation register (`pdf://recent`) is per token and per endpoint, so it lists what
+  this token did on the hosted endpoint, never what a local stdio server did.
+- Generated PDFs are kept, so they count against the 2 MB pdf cap alongside the uploads.
+  `pdf_delete_upload` removes either kind by name.
+- `ics_import {path}` cannot work here and says so. A calendar app's export has to be pasted
+  as `text` or served as a public feed.
+- A hostname that resolves to a private address through DNS is still an accepted residual
+  risk on the calendar feed guard, exactly as it is on the price-tracker one: only literal
+  addresses and obvious internal names are caught before the connection.

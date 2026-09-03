@@ -12,6 +12,7 @@ export const CHECKOUT_BASE = "https://mcp.zovo.one";
 export const PRICE_SINGLE_USD = 19;
 export const PRICE_BUNDLE_USD = 39;
 export const STALE_MS = 30_000;
+export const GUIDE_URL = "https://mcp.zovo.one/guides/mcp-server-free-vs-pro";
 
 /**
  * D-R31 on the remote endpoint. packages/mcp-license/src/profile.ts keeps one shared
@@ -193,6 +194,12 @@ function buyUrl(product: string): string {
   return `${CHECKOUT_BASE}/buy/${product}` + (anon ? `?tenant=${encodeURIComponent(anon)}` : "");
 }
 
+/** The every-server bundle, carrying the same tenant, so the $39 price has a link too. */
+function bundleUrl(): string {
+  const anon = ctx().anonToken;
+  return `${CHECKOUT_BASE}/buy/bundle` + (anon ? `?tenant=${encodeURIComponent(anon)}` : "");
+}
+
 export function createLicenseGate(opts: { product: string }): LicenseGate {
   const product = opts.product;
   const gate: LicenseGate = {
@@ -203,12 +210,16 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       tier: ctx().isPro ? "pro" : "free",
       transport: "remote streamable-http",
       tenant: ctx().tenant,
-      source: "Authorization: Bearer",
+      source: ctx().authVia ?? "Authorization: Bearer",
       upgradeUrl: buyUrl(product),
+      bundleUrl: bundleUrl(),
+      price_usd: { single: PRICE_SINGLE_USD, every_server: PRICE_BUNDLE_USD },
+      limits: `This tool does not count your usage. The free-tier caps of every server are listed at ${GUIDE_URL}; a call that exceeds one is refused with the cap named and an upgrade link.`,
+      guide: GUIDE_URL,
     }),
     upgradeText: (feature: string) => {
       const url = buyUrl(product);
-      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime). ` +
+      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime: ${bundleUrl()}). ` +
         (ctx().anonToken
           ? `Buy at ${url} - that link carries your token, so Pro switches on for this same connection right after payment, with nothing to paste and no data to move.`
           : `Buy at ${url} , then send the key as "Authorization: Bearer <key>" to this endpoint.`);
@@ -218,11 +229,15 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
         { title: "License status", description: "Show whether this endpoint runs in free or Pro mode for your token, and where to upgrade.", inputSchema: {} },
         async () => ({ content: [{ type: "text", text: JSON.stringify(gate.status(), null, 2) }] }));
       server.registerTool("license_activate",
-        { title: "Activate license", description: "On the remote endpoint a licence is not stored server-side: send the key in the Authorization header instead.", inputSchema: { key: z.string().describe("License key from checkout") } },
+        { title: "Activate license", description: "On the remote endpoint a licence is not stored server-side: reconnect with the key in the URL or the Authorization header instead.", inputSchema: { key: z.string().describe("License key from checkout") } },
         async () => ({
           content: [{ type: "text", text:
-            "On the remote endpoint keys are not stored. Reconnect with the header " +
-            "\"Authorization: Bearer MCPL1....\" and this endpoint runs in Pro mode for that key." }],
+            "On the remote endpoint keys are not stored. Reconnect with the key in the URL, " +
+            `"${CHECKOUT_BASE}/mcp/${product}/t/MCPL1...." (for a client with no header field, such as ` +
+            "a Claude.ai or Claude Desktop custom connector), or with the header " +
+            "\"Authorization: Bearer MCPL1....\", and this endpoint runs in Pro mode for that key. " +
+            "If you bought from a link carrying ?tenant=<your anonymous token>, there is nothing to " +
+            "paste at all: Pro is already on for this same connection and this same data." }],
         }));
     },
   };

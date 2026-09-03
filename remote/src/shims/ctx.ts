@@ -21,6 +21,12 @@ export interface RequestCtx {
    * Absent for licence-key callers, who are Pro already.
    */
   anonToken?: string;
+  /**
+   * How the token actually reached this endpoint: a header, or the URL forms a
+   * client with no header field must use. license_status reports it, so a claude.ai
+   * or Claude Desktop user is not told their token came from a header they never set.
+   */
+  authVia?: "Authorization: Bearer" | "URL path segment (/mcp/<server>/t/<token>)" | "URL query parameter (?token=)";
   /** virtual filesystem: absolute path -> file contents (binary values carry the BIN sentinel) */
   files: Map<string, string>;
   dirs: Set<string>;

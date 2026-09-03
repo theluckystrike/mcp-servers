@@ -99,6 +99,27 @@ function lineRows(inv: Invoice) {
   }));
 }
 
+/**
+ * D-R46: when a unit price is rounded to a whole cent before being multiplied by the
+ * quantity (the default, D-R24, basis), the printed line can sit a cent or two above or
+ * below the amount an fx conversion actually names. Say so, and name the fix.
+ */
+function roundingNote(inv: Invoice): string | undefined {
+  const drift = inv.rounding_drift_minor ?? 0;
+  if (!drift) return undefined;
+  const above = drift > 0;
+  const amount = formatMoney(Math.abs(drift), inv.currency);
+  return (
+    `rounding_note: this invoice's total is ${amount} ${above ? "above" : "below"} the exact ` +
+    `converted amount, because at least one unit price is rounded to the nearest cent before ` +
+    `being multiplied by the quantity (the D-R24 basis: unit_price_minor x quantity always ` +
+    `equals the printed line, so the invoice adds up on a calculator). Pass round_total: true ` +
+    `on that item (or the whole call, for invoice_from_hours) to round the line's TOTAL to the ` +
+    `exact converted amount instead - the trade-off is that unit_price x quantity may then be a ` +
+    `cent or two off the printed total, for the same reason in reverse.`
+  );
+}
+
 function expandPath(p: string): string {
   const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
   return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
@@ -240,11 +261,20 @@ const itemSchema = z.object({
   // It is NOT silently ignored: mixing currencies on one invoice is refused below.
   currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional()
     .describe("Currency this line was captured in. Every line on one invoice must agree; convert first with expense_to_invoice target_currency + fx_rates"),
+  // D-R46: when unit_price carries sub-cent precision (typically an fx conversion done
+  // before calling this tool), the default basis rounds the unit to a whole cent and
+  // multiplies, which can drift a cent or two from the exact converted amount - see
+  // rounding_note in the response. round_total asks for the line gross to equal the
+  // exact converted total to the cent instead; unit_price is then reported, not used
+  // to compute the gross.
+  round_total: z.boolean().optional()
+    .describe("D-R46: round this line's TOTAL to the exact converted amount instead of rounding the unit price to cents first. Default false keeps the D-R24 basis (unit price x quantity always equals the printed gross); true trades that off so the gross matches an fx conversion to the cent."),
   // D-R7: an item's rate must not vanish because the caller spelled it vat_rate.
 }).transform((i) => ({
   description: i.description, quantity: i.quantity, unit_price: i.unit_price,
   tax_rate: i.tax_rate ?? i.vat_rate ?? i.vat,
   currency: i.currency ? i.currency.toUpperCase() : undefined,
+  round_total: i.round_total === true,
 }));
 
 /**
@@ -335,6 +365,7 @@ function createInvoice(a: {
     discount_percent: totals.discount_percent, discount_minor: totals.discount_minor,
     net_minor: totals.net_minor, tax_lines: totals.tax_lines, tax_minor: totals.tax_minor,
     total_minor: totals.total_minor,
+    rounding_drift_minor: totals.rounding_drift_minor,
     notes: a.notes, status: "unpaid", paid_minor: 0,
     created: new Date().toISOString(), branded: !gate.isPro(),
   };
@@ -376,7 +407,7 @@ server.registerTool("invoice_create", {
       `${JSON.stringify({ ...summarize(r.invoice!), lines: lineRows(r.invoice!) }, null, 2)}\n\n` +
       `Amounts are integer minor units: each line was rounded first and then summed, so the total always agrees with the printed lines. ` +
       `Every line on this invoice is in ${r.invoice!.currency}; to bill a line in another currency, convert it yourself and pass the converted unit_price.\n\n` +
-      `Render it with invoice_pdf.${r.businessNote ? `\n\n${r.businessNote}` : ""}${r.clientNote ? `\n\n${r.clientNote}` : ""}`
+      `Render it with invoice_pdf.${roundingNote(r.invoice!) ? `\n\n${roundingNote(r.invoice!)}` : ""}${r.businessNote ? `\n\n${r.businessNote}` : ""}${r.clientNote ? `\n\n${r.clientNote}` : ""}`
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -398,6 +429,8 @@ server.registerTool("invoice_from_hours", {
     due_days: z.number().optional(),
     notes: z.string().optional(),
     discount_percent: z.number().finite().min(0).max(100).optional(),
+    round_total: z.boolean().optional()
+      .describe("D-R46: when converting with fx_rates, round the line's TOTAL to the exact converted amount instead of rounding the hourly rate to cents first. Default false keeps the D-R24 basis (unit price x hours always equals the printed line, so a rounding_note explains any drift from the exact conversion); true removes the drift but unit_price x hours may then be a cent or two off the printed total."),
   },
 }, async (a) => {
   try {
@@ -430,6 +463,7 @@ server.registerTool("invoice_from_hours", {
       items: [{
         description,
         quantity: a.hours, unit_price: unitPrice, tax_rate: a.tax_rate, currency: undefined,
+        round_total: a.round_total === true,
       }],
       currency: target ?? a.currency, issue_date: a.issue_date, due_days: a.due_days,
       notes: a.notes, discount_percent: a.discount_percent,
@@ -457,6 +491,7 @@ server.registerTool("invoice_from_hours", {
       }, null, 2)}` +
       fxLine +
       closeLine +
+      `${roundingNote(r.invoice!) ? `\n\n${roundingNote(r.invoice!)}` : ""}` +
       `${r.businessNote ? `\n\n${r.businessNote}` : ""}` +
       `${r.clientNote ? `\n\n${r.clientNote}` : ""}`
     );

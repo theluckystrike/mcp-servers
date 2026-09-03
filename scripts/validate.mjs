@@ -206,12 +206,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 11 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 11 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 13 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 13 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -233,6 +233,33 @@ async function remote() {
     const cdl = (JSON.stringify(ca).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
     const chead = cdl ? Buffer.from(await (await fetch(cdl)).arrayBuffer()).subarray(0, 2).toString() : "";
     ok("hosted clauses clause_search + contract_assemble download starts with PK", /payment-terms/.test(JSON.stringify(cs)) && chead === "PK", `${cdl ? "link" : "no link"} ${chead}`);
+    const { PDFDocument: RemotePdfDoc, StandardFonts: RemoteFonts } = await import("pdf-lib");
+    const probeDoc = await RemotePdfDoc.create();
+    const probeFont = await probeDoc.embedFont(RemoteFonts.Helvetica);
+    for (let i = 0; i < 2; i++) probeDoc.addPage([400, 300]).drawText(`remote probe page ${i + 1}`, { x: 40, y: 200, size: 18, font: probeFont });
+    const probeB64 = Buffer.from(await probeDoc.save()).toString("base64");
+    const pup = await rpc("pdf", { jsonrpc: "2.0", id: 17, method: "tools/call", params: { name: "pdf_upload", arguments: { name: "probe", pdf_base64: probeB64 } } });
+    const pinfo = await rpc("pdf", { jsonrpc: "2.0", id: 18, method: "tools/call", params: { name: "pdf_info", arguments: { path: "probe" } } });
+    const pstamp = await rpc("pdf", { jsonrpc: "2.0", id: 19, method: "tools/call", params: { name: "pdf_stamp", arguments: { path: "probe", text: "PAID", position: "center", out_path: "probe-paid", overwrite: true } } });
+    const pdl = (JSON.stringify(pstamp).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const pres = pdl ? await fetch(pdl) : null;
+    const phead = pres ? Buffer.from(await pres.arrayBuffer()).subarray(0, 5).toString() : "";
+    ok("hosted pdf upload + pdf_info(2 pages) + pdf_stamp PAID download starts with %PDF-", !pup.error && /"pages": 2/.test(JSON.stringify(pinfo).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && phead === "%PDF-" && (pres?.headers.get("content-type") || "") === "application/pdf", `${pdl ? "link" : "no link"} ${phead} ${pres?.headers.get("content-type")}`);
+    const ptext = await rpc("pdf", { jsonrpc: "2.0", id: 20, method: "tools/call", params: { name: "pdf_text", arguments: { path: "probe" } } });
+    ok("hosted pdf_text decompresses with node:zlib under nodejs_compat", /remote probe page 1/.test(JSON.stringify(ptext)), JSON.stringify(ptext).slice(0, 90));
+    const calIcs = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//validate//EN",
+      "BEGIN:VEVENT", "UID:v1@probe", "DTSTART:20260910T090000Z", "DTEND:20260910T100000Z", "SUMMARY:Nova call", "END:VEVENT",
+      "BEGIN:VEVENT", "UID:v2@probe", "DTSTART:20260910T093000Z", "DTEND:20260910T110000Z", "SUMMARY:Design review", "END:VEVENT",
+      "BEGIN:VEVENT", "UID:v3@probe", "DTSTART;VALUE=DATE:20260912", "SUMMARY:Holiday", "END:VEVENT",
+      "END:VCALENDAR", ""].join("\r\n");
+    const cimp = await rpc("calendar", { jsonrpc: "2.0", id: 21, method: "tools/call", params: { name: "ics_import", arguments: { text: calIcs, name: "Work" } } });
+    const cev = await rpc("calendar", { jsonrpc: "2.0", id: 22, method: "tools/call", params: { name: "events_list", arguments: { from: "2026-09-08", to: "2026-09-14", zone: "UTC" } } });
+    const cexp = await rpc("calendar", { jsonrpc: "2.0", id: 23, method: "tools/call", params: { name: "event_export", arguments: { from: "2026-09-08", to: "2026-09-14", out_path: "week.ics" } } });
+    const cdl2 = (JSON.stringify(cexp).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const cbody = cdl2 ? await (await fetch(cdl2)).text() : "";
+    ok("hosted calendar ics_import(3) + events_list + event_export download starts with BEGIN:VCALENDAR", !cimp.error && /Nova call/.test(JSON.stringify(cev)) && /Holiday/.test(JSON.stringify(cev)) && cbody.startsWith("BEGIN:VCALENDAR"), `${cdl2 ? "link" : "no link"} ${cbody.slice(0, 20)}`);
+    const cssrf = await rpc("calendar", { jsonrpc: "2.0", id: 24, method: "tools/call", params: { name: "ics_import", arguments: { url: "http://169.254.169.254/latest/meta-data/", name: "meta" } } });
+    ok("calendar feed SSRF target refused", /not a public address/.test(JSON.stringify(cssrf)), JSON.stringify(cssrf).slice(0, 90));
     const urlTok = await fetch(`https://mcp.zovo.one/mcp/time-tracker/t/${tok.token}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream" }, body: JSON.stringify({ jsonrpc: "2.0", id: 11, method: "tools/list", params: {} }) }).then((r) => r.json()); ok("url-token path lists tools with no headers", (urlTok.result?.tools || []).length >= 8, `${(urlTok.result?.tools || []).length} tools`);
     const who = await fetch(`https://mcp.zovo.one/mcp/whoami/t/${tok.token}`).then((r) => r.json()); ok("whoami reports tier pro for a signed key", who.tier === "pro", JSON.stringify(who).slice(0, 100));
     const con = await fetch("https://mcp.zovo.one/mcp/connect"); ok("connect page 200 or per-IP 429", con.status === 200 || con.status === 429, con.status);

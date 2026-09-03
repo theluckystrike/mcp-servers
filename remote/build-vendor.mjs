@@ -24,11 +24,13 @@ const SERVERS = {
   "expense-tracker": ["index.ts", "money.ts", "store.ts"],
   "spreadsheet": ["index.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts"],
   "currency": ["index.ts", "ecb.ts", "money.ts", "rates.ts", "store.ts"],
-  "timezone": ["index.ts", "jsonstore.ts", "tz.ts", "zones.ts"],
+  "timezone": ["index.ts", "jsonstore.ts", "tz.ts", "zones.ts", "lib.ts"],
   "docx": ["index.ts", "blocks.ts", "build.ts", "md.ts", "store.ts", "wordxml.ts", "zip.ts", "lib.ts"],
   "resume": ["index.ts", "letter.ts", "profile.ts", "read.ts", "render.ts", "tailor.ts"],
   "recurring": ["index.ts", "currency.ts", "period.ts", "store.ts"],
   "clauses": ["index.ts", "assemble.ts", "library.ts", "starter.ts", "store.ts"],
+  "pdf": ["index.ts", "pdfio.ts", "store.ts", "text.ts"],
+  "calendar": ["index.ts", "ics.ts", "fetch.ts", "store.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
@@ -52,6 +54,14 @@ function rewriteImports(text, depth) {
 /** Fail loudly rather than silently vendoring un-patched code. */
 function must(src, find, replace, what) {
   const next = typeof find === "string" ? src.replace(find, replace) : src.replace(find, replace);
+  if (next === src) throw new Error(`patch did not apply: ${what}`);
+  return next;
+}
+
+/** must(), for a substitution that has to apply everywhere it matches. */
+function mustAll(src, find, replace, what) {
+  const re = find instanceof RegExp ? find : new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+  const next = src.replace(re, replace);
   if (next === src) throw new Error(`patch did not apply: ${what}`);
   return next;
 }
@@ -250,10 +260,12 @@ function patchPriceFetch(src) {
     "  const requestedUrl = parsed.toString();\n  const finalUrl = current.toString() || res.url || requestedUrl;",
     "price-tracker finalUrl");
 
-  return `${SSRF_GUARD}\n${src}`;
+  return `${ssrfGuard(
+    "Track a public product page instead, or run the price tracker locally over stdio " +
+    "(npx -y @theluckystrike/mcp-price-tracker), where it can reach your own network.")}\n${src}`;
 }
 
-const SSRF_GUARD = `/**
+const ssrfGuard = (refusal) => `/**
  * SSRF guard for the hosted endpoint (added by remote/build-vendor.mjs).
  * The worker sits inside a network the caller cannot otherwise reach, so a watch URL
  * must not be able to point at loopback, private, link-local or metadata addresses.
@@ -369,8 +381,7 @@ export function guardTarget(u: URL): void {
   if (blocked) {
     throw new FetchError(
       \`\${u.hostname} is not a public address, so this hosted endpoint will not fetch it. \` +
-      \`Track a public product page instead, or run the price tracker locally over stdio \` +
-      \`(npx -y @theluckystrike/mcp-price-tracker), where it can reach your own network.\`);
+      ${JSON.stringify(refusal)});
   }
 }
 `;
@@ -684,6 +695,258 @@ function patchClausesIndex(src) {
   return src;
 }
 
+/* -------------------------------------------------------------------- pdf */
+
+/**
+ * The hosted pdf endpoint has no disk. Every `path` and every entry of `paths[]` is
+ * the name of a PDF uploaded with pdf_upload (/uploads/<name>.pdf), and every output
+ * lands under /out/<name>.pdf, which the worker turns into a one-hour download link.
+ * Outputs stay in the tenant document, so a merged file can be stamped by a later call.
+ */
+function patchPdfIo(src) {
+  src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`export const UPLOAD_ROOT = "/uploads/";
+export const OUT_ROOT = "/out/";
+
+/** The bare name a hosted path argument has to be, or a caller-facing refusal. */
+function pdfName(p: string, what: string): string {
+  const raw = String(p ?? "").trim();
+  if (!raw) throw new Error(\`\${what} is required: it names a PDF uploaded with pdf_upload\`);
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "");
+  const m = /^([A-Za-z0-9_-]{1,64})(\\.[A-Za-z0-9]{1,8})?$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable PDF name. On this hosted endpoint a path is just a name - \` +
+      \`the one you uploaded a file under with pdf_upload, or the one to give a new file: 1-64 characters \` +
+      \`of letters, digits, underscore or dash, optionally with an extension. pdf_files lists what is stored.\`);
+  }
+  return m[1];
+}
+
+/**
+ * Resolve an input name: an uploaded file wins, otherwise a file this server wrote
+ * earlier for the same token.
+ */
+export function expandPath(p: string): string {
+  const name = pdfName(p, "path");
+  const upload = \`\${UPLOAD_ROOT}\${name}.pdf\`;
+  if (existsSync(upload)) return upload;
+  return \`\${OUT_ROOT}\${name}.pdf\`;
+}
+
+/** Every output is written under /out/, whatever the caller wrote, so it is published. */
+export function outputPath(p: string, ext = ".pdf"): string {
+  return \`\${OUT_ROOT}\${pdfName(p, "out_path")}\${ext}\`;
+}
+`, "pdf expandPath");
+
+  src = must(src, `  const p = expandPath(out);
+  const withExt = p.toLowerCase().endsWith(ext) ? p : \`\${p}\${ext}\`;`,
+    `  const withExt = outputPath(out, ext);`, "pdf reserveOutput target");
+
+  // statSync on the virtual filesystem has no dev/ino, so the inode comparison would
+  // read undefined === undefined and call every pair of existing files the same file.
+  src = must(src, /\/\*\* Same inode[\s\S]*?function sameFile\(a: string, b: string\): boolean \{[\s\S]*?\n\}\n/,
+`/** Path equality is identity here: the virtual filesystem has no links and no inodes. */
+function sameFile(a: string, b: string): boolean { return a === b; }
+`, "pdf sameFile");
+
+  src = must(src, '  if (!existsSync(path)) throw new Error(`${path} does not exist. Give the full path to an existing PDF file.`);',
+    '  if (!existsSync(path)) throw new Error(\n' +
+    '    `nothing is stored under the name ${JSON.stringify(path.split("/").pop()?.replace(/\\.pdf$/, ""))}. ` +\n' +
+    '    `Upload it first with pdf_upload {name, pdf_base64}; pdf_files lists what is stored.`);',
+    "pdf loadPdf not-found message");
+  return src;
+}
+
+function patchPdfStore(src) {
+  src = must(src, /export function dataDir\(\): string \{[\s\S]*?\n\}\n/,
+    'export function dataDir(): string { mkdirSync("/pdf", { recursive: true }); return "/pdf"; }\n',
+    "pdf dataDir");
+  return src;
+}
+
+function patchPdfText(src) {
+  // node:zlib is provided by nodejs_compat; Buffer is not a global on Workers.
+  return `import { Buffer } from "node:buffer";\n${src}`;
+}
+
+function patchPdfIndex(src) {
+  // Every finished output becomes a one-hour download link.
+  src = must(src, `  const bytes = await doc.save({ useObjectStreams: false });
+  writeFileSync(path, bytes);
+  return bytes.length;`,
+    `  const bytes = await doc.save({ useObjectStreams: false });
+  writeFileSync(path, bytes);
+  publishFile(path);
+  return bytes.length;`, "pdf savePdf publish");
+
+  // Names, not paths, everywhere the schema says "path".
+  src = must(src,
+    'path: z.string().describe("Path to the PDF file. ~ is expanded; a relative path is resolved against the working directory"),',
+    'path: z.string().describe("Name of a PDF uploaded with pdf_upload, or one this server wrote earlier"),',
+    "pdf_info path description");
+  src = must(src, 'paths: z.array(z.string()).min(1).describe("Paths to the PDF files"),',
+    'paths: z.array(z.string()).min(1).describe("Names of PDFs uploaded with pdf_upload"),',
+    "pdf_count paths description");
+  src = must(src, 'paths: z.array(z.string()).min(2).describe("The PDFs to join, in the order they should appear"),',
+    'paths: z.array(z.string()).min(2).describe("Names of the uploaded PDFs to join, in the order they should appear"),',
+    "pdf_merge paths description");
+  src = mustAll(src, 'z.string().describe("The source PDF")',
+    'z.string().describe("Name of an uploaded PDF (pdf_upload), or one this server wrote earlier")',
+    "pdf source-PDF descriptions");
+  src = must(src, 'path: z.string().describe("The PDF to split"),',
+    'path: z.string().describe("Name of the uploaded PDF to split"),', "pdf_split path description");
+  src = must(src, 'path: z.string().describe("The PDF to read"),',
+    'path: z.string().describe("Name of the PDF to read"),', "pdf_text path description");
+  src = mustAll(src, /out_path: z\.string\(\)\.describe\("Where to write the ([a-z]+) PDF"\),/g,
+    'out_path: z.string().describe("Name for the $1 PDF; it comes back as a download link valid for one hour"),',
+    "pdf out_path descriptions");
+  src = must(src,
+    'out_path_pattern: z.string().describe("Output path with a placeholder: {n} is the part number (1, 2, 3...), {range} is the range itself (e.g. 1-3), {name} is the input file name without .pdf. Example: ~/out/{name}-{range}.pdf"),',
+    'out_path_pattern: z.string().describe("Name pattern for the parts: {n} is the part number (1, 2, 3...), {range} is the range itself (e.g. 1-3), {name} is the input name. Example: {name}-{range}.pdf. Each part comes back as a download link valid for one hour"),',
+    "pdf_split pattern description");
+
+  // The profile lives in a per-token document here, not at a path anyone can open.
+  src = must(src,
+    '        `Run business_set {name, vat_id} in mcp-invoice or mcp-docx once - the profile is shared ` +\n' +
+    '        `(${join(process.env.XDG_DATA_HOME || "~/.local/share", "mcp-servers", "profile", "business.json")}) - then call this tool again.`,',
+    '        `Run business_set {name, vat_id} on /mcp/invoice or /mcp/docx once - the profile is shared across ` +\n' +
+    '        `every endpoint for your token - then call this tool again.`,',
+    "pdf business profile path");
+
+  // The prompt suggested a directory beside the input; there are no directories here.
+  src = must(src,
+    '  const out = path ? join(dirname(expandPath(path)), `${basename(expandPath(path), extname(expandPath(path)))}-paid.pdf`) : "<same folder>/<same name>-paid.pdf";',
+    '  const out = path ? `${basename(expandPath(path), extname(expandPath(path)))}-paid.pdf` : "<the same name>-paid.pdf";',
+    "pdf prompt out name");
+  src = must(src,
+    '      ? `The file is ${expandPath(path)}.\\n\\n`',
+    '      ? `The file is uploaded as ${JSON.stringify(String(path))}.\\n\\n`',
+    "pdf prompt file line");
+
+  src = must(src, "gate.registerTools(server as unknown as { registerTool: Function });",
+    "gate.registerTools(server as unknown as { registerTool: Function });\nregisterPdfUpload(server as unknown as { registerTool: Function });",
+    "pdf pdf_upload registration");
+  return src;
+}
+
+/* --------------------------------------------------------------- calendar */
+
+function patchCalendarStore(src) {
+  src = must(src, /export function dataDir\(\): string \{[\s\S]*?\n\}\n/,
+    'export function dataDir(): string { return "/calendar"; }\n', "calendar dataDir");
+  return src;
+}
+
+function patchCalendarFetch(src) {
+  // A calendar URL is pasted from somewhere the user did not write far more often than
+  // a shop URL is, so the hosted endpoint uses the strict guard: every IPv4 literal form
+  // inet_aton accepts is parsed, IPv6 is parsed to bytes, a numeric host that cannot be
+  // parsed is refused, redirects are followed by hand and every hop is checked again,
+  // and there is no environment variable that turns any of it off.
+  src = must(src, /  const blocked = isBlockedHost\(parsed\.hostname\);[\s\S]*?  const finalUrl = res\.url \|\| parsed\.toString\(\);\n  const after = new URL\(finalUrl\);\n  const blockedAfter = isBlockedHost\(after\.hostname\);\n  if \(blockedAfter && !process\.env\.MCP_CALENDAR_ALLOW_LOCAL\) \{\n    throw new FetchError\(`the feed redirected to \$\{after\.hostname\}, which is \$\{blockedAfter\}; nothing was read\.`\);\n  \}\n/,
+`  guardTarget(parsed);
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  let res!: Response;
+  let current = parsed;
+  try {
+    for (let hop = 0; ; hop++) {
+      if (hop > MAX_REDIRECTS) throw new FetchError(\`too many redirects (over \${MAX_REDIRECTS}) starting at \${parsed.toString()}\`);
+      res = await fetch(current.toString(), {
+        redirect: "manual",
+        signal: ctrl.signal,
+        headers: { "user-agent": USER_AGENT, accept: "text/calendar, text/plain, */*" },
+      });
+      if (res.status < 300 || res.status > 399) break;
+      const loc = res.headers.get("location");
+      if (!loc) break;
+      let next: URL;
+      try { next = new URL(loc, current); } catch { throw new FetchError(\`the feed redirected to something that is not a URL (\${loc}).\`); }
+      guardTarget(next);
+      current = next;
+    }
+  } catch (e) {
+    clearTimeout(timer);
+    if (e instanceof FetchError) throw e;
+    throw new FetchError((e as Error)?.name === "AbortError"
+      ? \`the calendar feed did not answer within \${Math.round(timeoutMs / 1000)}s.\`
+      : \`could not reach \${current.hostname} (\${(e as Error)?.message ?? "network error"}).\`);
+  }
+  clearTimeout(timer);
+  if (!res.ok) throw new FetchError(\`the feed returned HTTP \${res.status} for \${current.toString()}.\`);
+  const finalUrl = current.toString();
+`, "calendar fetch redirect loop");
+
+  return `import { Buffer } from "node:buffer";\n${ssrfGuard(
+    "Paste the calendar's contents as text instead (ics_import {text, name}), or run the calendar server " +
+    "locally over stdio (npx -y @theluckystrike/mcp-calendar), where it can reach your own network.")}\n${src}`;
+}
+
+function patchCalendarIndex(src) {
+  // No disk: an export becomes a one-hour download link and out_path is only the name
+  // that file carries.
+  src = must(src, /function outPathOf\(p: string\): string \{[\s\S]*?\n\}\n/,
+`function outPathOf(p: string): string {
+  const base = (String(p ?? "").split(/[\\\\/]/).pop() ?? "").replace(/\\.ics$/i, "");
+  const name = base || "events";
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(name)) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable file name. On this hosted endpoint the export comes back as a \` +
+      \`download link, so out_path is only the name the file carries: 1-64 characters of letters, digits, \` +
+      \`underscore or dash.\`);
+  }
+  return \`/exports/\${name}.ics\`;
+}
+`, "calendar outPathOf");
+
+  // A .ics on the caller's machine is not reachable from here; text and url are.
+  src = must(src,
+    '    path: text(MAX_PATH, "path").optional().describe("Path to a .ics file on this machine"),',
+    '    path: text(MAX_PATH, "path").optional().describe("Not available on this hosted endpoint, which has no filesystem: paste the file as text instead"),',
+    "calendar ics_import path description");
+  src = must(src,
+    /  \} else if \(a\.path && a\.path\.trim\(\)\) \{\n    const p = a\.path[\s\S]*?    source = "file"; ref = abs;\n/,
+`  } else if (a.path && a.path.trim()) {
+    throw new Error(
+      "this hosted endpoint has no filesystem, so there is no file at " + JSON.stringify(a.path.trim()) + " to read. " +
+      "Paste the calendar's contents instead - ics_import {text: \\"BEGIN:VCALENDAR...\\", name: \\"work\\"} - or give a " +
+      "public feed with ics_import {url, name} (Pro), or run the server locally over stdio " +
+      "(npx -y @theluckystrike/mcp-calendar), where a path works.");
+`, "calendar ics_import path branch");
+
+  src = must(src,
+    '      `Source: ${source}${ref ? ` ${ref}` : ""}\\nStored: ${file}\\n` +',
+    '      `Source: ${source}${ref ? ` ${ref}` : ""}\\nKept for your token (${(Buffer.byteLength(raw, "utf8") / 1024).toFixed(0)} KB).\\n` +',
+    "calendar ics_import stored line");
+
+  src = must(src,
+    '    return ok(`Forgot "${rec.name}" and deleted ${icsFilePath(rec.slug)}. ${left} calendar(s) left.`);',
+    '    return ok(`Forgot "${rec.name}" and deleted the copy stored for your token. ${left} calendar(s) left.`);',
+    "calendar ics_forget message");
+  src = must(src,
+    '  if (orphans.length) notes.push(`${orphans.length} stored .ics file(s) in ${dataDir()} have no calendar row and are ignored: ${orphans.join(", ")}.`);',
+    '  if (orphans.length) notes.push(`${orphans.length} stored .ics file(s) have no calendar row and are ignored: ${orphans.join(", ")}.`);',
+    "calendar orphan note");
+
+  // The export is a download, not a file on a disk.
+  src = must(src,
+    '    out_path: text(MAX_PATH, "out_path").describe("Where to write the .ics file"),',
+    '    out_path: text(MAX_PATH, "out_path").describe("Name for the downloaded .ics file, e.g. week.ics"),',
+    "calendar event_export out_path description");
+  src = must(src,
+    '  const path = outPathOf(a.out_path);\n  writeFileSync(path, mergeVevents(parts, chosen.length), "utf8");',
+    '  const path = outPathOf(a.out_path);\n  writeFileSync(path, mergeVevents(parts, chosen.length), "utf8");\n  publishFile(path);',
+    "calendar event_export publish");
+  src = must(src,
+    '    `Wrote ${chosen.length} event(s) to ${path}\\n` +',
+    '    `${chosen.length} event(s) exported. Download: ${path}\\n` +',
+    "calendar event_export result text");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -696,6 +959,14 @@ const EXTRA_IMPORTS = {
     'import { existsSync, publishFile } from "../../shims/fs.js";',
   ],
   clauses: ['import { publishFile } from "../../shims/fs.js";'],
+  pdf: [
+    'import { registerPdfUpload } from "../../shims/pdf-upload.js";',
+    'import { publishFile } from "../../shims/fs.js";',
+  ],
+  calendar: [
+    'import { Buffer } from "node:buffer";',
+    'import { publishFile } from "../../shims/fs.js";',
+  ],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -715,6 +986,11 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "currency" && f === "ecb.ts") src = patchCurrencyEcb(src);
       if (name === "docx" && f === "store.ts") src = patchDocxStore(src);
       if (name === "invoice" && f === "lib.ts") src = patchInvoiceLib(src);
+      if (name === "pdf" && f === "pdfio.ts") src = patchPdfIo(src);
+      if (name === "pdf" && f === "store.ts") src = patchPdfStore(src);
+      if (name === "pdf" && f === "text.ts") src = patchPdfText(src);
+      if (name === "calendar" && f === "store.ts") src = patchCalendarStore(src);
+      if (name === "calendar" && f === "fetch.ts") src = patchCalendarFetch(src);
       writeFileSync(join(dir, f), rewriteImports(src, 2));
       continue;
     }
@@ -729,6 +1005,8 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "resume") src = patchResumeIndex(src);
     if (name === "recurring") src = patchRecurringIndex(src);
     if (name === "clauses") src = patchClausesIndex(src);
+    if (name === "pdf") src = patchPdfIndex(src);
+    if (name === "calendar") src = patchCalendarIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {

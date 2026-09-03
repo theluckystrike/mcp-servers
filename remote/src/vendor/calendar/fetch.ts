@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 /**
  * SSRF guard for the hosted endpoint (added by remote/build-vendor.mjs).
  * The worker sits inside a network the caller cannot otherwise reach, so a watch URL
@@ -114,63 +115,63 @@ export function guardTarget(u: URL): void {
   if (blocked) {
     throw new FetchError(
       `${u.hostname} is not a public address, so this hosted endpoint will not fetch it. ` +
-      "Track a public product page instead, or run the price tracker locally over stdio (npx -y @theluckystrike/mcp-price-tracker), where it can reach your own network.");
+      "Paste the calendar's contents as text instead (ics_import {text, name}), or run the calendar server locally over stdio (npx -y @theluckystrike/mcp-calendar), where it can reach your own network.");
   }
 }
 
-export const USER_AGENT =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
-
-export const TIMEOUT_MS = 12_000;
-export const MAX_BYTES = 2 * 1024 * 1024;
-
-export class FetchError extends Error {
-  constructor(message: string, readonly status?: number, readonly blocked = false) {
-    super(message);
-    this.name = "FetchError";
-  }
-}
-
-function blockedText(url: string, status: number): string {
-  return (
-    `the shop blocked this automated request (HTTP ${status}) for ${url}. ` +
-    `Big retailers do this to non-browser traffic. Two ways round it: open the page in your browser, ` +
-    `read the price, and record it with price_add_manual {url, price, currency}; ` +
-    `or watch a smaller shop / a product page that is not behind a bot wall.`
-  );
-}
-
+import { decodeIcs } from "./ics.js";
 /**
- * A fetched page. `finalUrl` is the URL after every redirect was followed and
- * `status` is the HTTP status of that final response; callers compare
- * `finalUrl` against `requestedUrl` to detect a redirect off the product page
- * (see redirect.ts).
+ * Fetching a calendar feed. Only ever called when the user explicitly passed a URL:
+ * nothing here runs on a file or text import, and there is no background refresh.
+ *
+ * The guard is the price-tracker's shape (protocol check, abort timeout, byte cap)
+ * plus a private-address block, because a calendar URL is far likelier than a shop
+ * URL to be pasted from somewhere the user did not write.
  */
-export interface FetchedPage {
-  html: string;
-  /** the URL asked for, normalised by the URL parser */
-  requestedUrl: string;
-  /** the URL actually served, after redirects */
-  finalUrl: string;
-  /** HTTP status of the final response */
-  status: number;
-  /** true when finalUrl differs from requestedUrl */
-  redirected: boolean;
+export const TIMEOUT_MS = 12_000;
+export const MAX_BYTES = 5 * 1024 * 1024;
+export const USER_AGENT = "mcp-calendar/0.5.0 (+https://github.com/theluckystrike/mcp-servers)";
+
+export class FetchError extends Error {}
+
+/** Hostnames that must never be fetched: loopback, link-local, private ranges, cloud metadata. */
+export function isBlockedHost(host: string): string | null {
+  const h = host.toLowerCase().replace(/^\[|\]$/g, "");
+  if (!h) return "the URL has no host";
+  if (h === "localhost" || h.endsWith(".localhost")) return "localhost";
+  if (h.endsWith(".local") || h.endsWith(".internal") || h.endsWith(".home.arpa")) return "a local network name";
+  if (h === "metadata.google.internal") return "a cloud metadata service";
+  if (h === "::1" || h === "0:0:0:0:0:0:0:1") return "the IPv6 loopback address";
+  if (/^fe80:/i.test(h) || /^f[cd][0-9a-f]{2}:/i.test(h)) return "a private IPv6 address";
+  const v4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(h);
+  if (v4) {
+    const [a, b] = [Number(v4[1]), Number(v4[2])];
+    if (a === 127) return "a loopback address";
+    if (a === 10) return "a private address";
+    if (a === 0) return "an unspecified address";
+    if (a === 169 && b === 254) return "a link-local address (cloud metadata)";
+    if (a === 172 && b >= 16 && b <= 31) return "a private address";
+    if (a === 192 && b === 168) return "a private address";
+    if (a === 100 && b >= 64 && b <= 127) return "a carrier-private address";
+    if (a >= 224) return "a multicast or reserved address";
+  }
+  return null;
 }
 
-/** Fetch a page as a desktop browser would. Throws FetchError with user-facing text. */
-export async function fetchPage(url: string, timeoutMs = TIMEOUT_MS): Promise<FetchedPage> {
-  let parsed: URL;
-  try { parsed = new URL(url); } catch { throw new FetchError(`"${url}" is not a valid URL. Include https://`); }
-  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-    throw new FetchError(`only http and https URLs are supported (got ${parsed.protocol})`);
-  }
+export interface Fetched { text: string; finalUrl: string; bytes: number; truncated: boolean }
 
+export async function fetchIcs(url: string, timeoutMs = TIMEOUT_MS): Promise<Fetched> {
+  let parsed: URL;
+  try { parsed = new URL(url.replace(/^webcal:/i, "https:")); }
+  catch { throw new FetchError(`"${String(url).slice(0, 120)}" is not a valid URL. Include https://`); }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new FetchError(`only http, https and webcal URLs are supported (got ${parsed.protocol}).`);
+  }
   guardTarget(parsed);
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  let res: Response;
+  let res!: Response;
   let current = parsed;
   try {
     for (let hop = 0; ; hop++) {
@@ -178,64 +179,56 @@ export async function fetchPage(url: string, timeoutMs = TIMEOUT_MS): Promise<Fe
       res = await fetch(current.toString(), {
         redirect: "manual",
         signal: ctrl.signal,
-        headers: {
-          "user-agent": USER_AGENT,
-          accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "accept-language": "en-US,en;q=0.9",
-          "accept-encoding": "gzip, deflate, br",
-          "cache-control": "no-cache",
-          "upgrade-insecure-requests": "1",
-        },
+        headers: { "user-agent": USER_AGENT, accept: "text/calendar, text/plain, */*" },
       });
       if (res.status < 300 || res.status > 399) break;
       const loc = res.headers.get("location");
       if (!loc) break;
       let next: URL;
-      try { next = new URL(loc, current); } catch { throw new FetchError(`the shop redirected to something that is not a URL (${loc})`); }
+      try { next = new URL(loc, current); } catch { throw new FetchError(`the feed redirected to something that is not a URL (${loc}).`); }
       guardTarget(next);
       current = next;
     }
   } catch (e) {
     clearTimeout(timer);
     if (e instanceof FetchError) throw e;
-    const msg = (e as Error)?.name === "AbortError"
-      ? `the page did not answer within ${Math.round(timeoutMs / 1000)}s`
-      : `could not reach ${current.hostname} (${(e as Error)?.message ?? "network error"})`;
-    throw new FetchError(msg);
+    throw new FetchError((e as Error)?.name === "AbortError"
+      ? `the calendar feed did not answer within ${Math.round(timeoutMs / 1000)}s.`
+      : `could not reach ${current.hostname} (${(e as Error)?.message ?? "network error"}).`);
   }
   clearTimeout(timer);
-
-  if (res.status === 403 || res.status === 429 || res.status === 401 || res.status === 503) {
-    throw new FetchError(blockedText(parsed.toString(), res.status), res.status, true);
-  }
-  if (!res.ok) throw new FetchError(`the page returned HTTP ${res.status} for ${parsed.toString()}`, res.status);
-
-  const html = await readCapped(res);
-  if (/captcha|are you a human|enable javascript and cookies|access denied|unusual traffic/i.test(html.slice(0, 4000))) {
-    throw new FetchError(blockedText(res.url || parsed.toString(), res.status), res.status, true);
-  }
-  const requestedUrl = parsed.toString();
-  const finalUrl = current.toString() || res.url || requestedUrl;
-  return { html, requestedUrl, finalUrl, status: res.status, redirected: finalUrl !== requestedUrl };
+  if (!res.ok) throw new FetchError(`the feed returned HTTP ${res.status} for ${current.toString()}.`);
+  const finalUrl = current.toString();
+  const { text, bytes, truncated } = await readCapped(res);
+  return { text, finalUrl, bytes, truncated };
 }
 
-async function readCapped(res: Response): Promise<string> {
+async function readCapped(res: Response): Promise<{ text: string; bytes: number; truncated: boolean }> {
   const body = res.body;
-  if (!body) return (await res.text()).slice(0, MAX_BYTES);
+  if (!body) {
+    const t = await res.text();
+    const b = Buffer.from(t, "utf8");
+    return { text: decodeIcs(b.subarray(0, MAX_BYTES)), bytes: b.length, truncated: b.length > MAX_BYTES };
+  }
   const reader = body.getReader();
-  const chunks: Uint8Array[] = [];
+  const chunks: Buffer[] = [];
   let total = 0;
+  let truncated = false;
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
     if (!value) continue;
     total += value.byteLength;
     if (total > MAX_BYTES) {
-      chunks.push(value.slice(0, Math.max(0, value.byteLength - (total - MAX_BYTES))));
-      try { await reader.cancel(); } catch { /* ignore */ }
+      truncated = true;
+      try { await reader.cancel(); } catch { /* already closing */ }
       break;
     }
-    chunks.push(value);
+    chunks.push(Buffer.from(value));
   }
-  return Buffer.concat(chunks.map((c) => Buffer.from(c))).toString("utf8");
+  if (truncated) {
+    throw new FetchError(`the feed is larger than ${MAX_BYTES / (1024 * 1024)} MB; nothing was imported. Export a narrower date range.`);
+  }
+  const buf = Buffer.concat(chunks);
+  return { text: decodeIcs(buf), bytes: buf.length, truncated: false };
 }

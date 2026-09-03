@@ -231,6 +231,40 @@ export function renameSync(from: string, to: string): void {
 }
 
 export function unlinkSync(p: string): void { delFile(ctx(), p); }
+
+/** node:fs rmSync, only as far as the servers here use it: one file, force-tolerant. */
+export function rmSync(p: string, opts?: { force?: boolean; recursive?: boolean }): void {
+  const c = ctx();
+  if (!c.files.has(p) && !c.dirs.has(p)) {
+    if (opts?.force) return;
+    throw enoent(p);
+  }
+  if (opts?.recursive) {
+    const prefix = p.endsWith("/") ? p : `${p}/`;
+    for (const k of [...c.files.keys()]) if (k.startsWith(prefix)) delFile(c, k);
+  }
+  delFile(c, p);
+  c.dirs.delete(p);
+}
+
+/**
+ * The entries directly under a directory. There is no directory tree here, only a flat
+ * map of absolute paths, so the listing is derived from the keys: a name is returned
+ * when the path is exactly one level below `p`.
+ */
+export function readdirSync(p: string, _opts?: unknown): string[] {
+  const c = ctx();
+  const prefix = p.endsWith("/") ? p : `${p}/`;
+  const out = new Set<string>();
+  for (const k of c.files.keys()) {
+    if (!k.startsWith(prefix)) continue;
+    const rest = k.slice(prefix.length);
+    if (!rest) continue;
+    const i = rest.indexOf("/");
+    out.add(i === -1 ? rest : rest.slice(0, i));
+  }
+  return [...out].sort();
+}
 export function rmdirSync(p: string): void { ctx().dirs.delete(p); }
 export function chmodSync(_p: string, _m: number): void { /* no permissions here */ }
 
@@ -248,7 +282,7 @@ export function statSync(p: string): VStat {
 
 export default {
   existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync,
-  renameSync, unlinkSync, rmdirSync, chmodSync, statSync,
+  renameSync, unlinkSync, rmSync, rmdirSync, chmodSync, statSync, readdirSync,
 };
 
 // fd emulation for chunked readers (spreadsheet readCsvHead). Descriptors live in the

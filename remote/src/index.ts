@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, eleven endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, thirteen endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -21,6 +21,8 @@ import { createServer as createDocx } from "./vendor/docx/index.js";
 import { createServer as createResume } from "./vendor/resume/index.js";
 import { createServer as createRecurring } from "./vendor/recurring/index.js";
 import { createServer as createClauses } from "./vendor/clauses/index.js";
+import { createServer as createPdf } from "./vendor/pdf/index.js";
+import { createServer as createCalendar } from "./vendor/calendar/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -33,6 +35,8 @@ const RATE_LIMIT_PRO = 6000;
 const SWEEP_AFTER_DAYS = 35;          // orphan sweep: docs untouched this long are deleted
 const SPREADSHEET_MAX_BYTES = 2 * 1024 * 1024;   // inline-data mode, per token
 const DOCX_MAX_BYTES = 2 * 1024 * 1024;          // uploaded .docx templates, per token
+const PDF_MAX_BYTES = 2 * 1024 * 1024;           // uploaded and generated PDFs, per token
+const CALENDAR_MAX_BYTES = 2 * 1024 * 1024;      // imported .ics calendars, per token
 const DEFAULT_MAX_BYTES = 512 * 1024;            // stored document per token per endpoint
 const MAX_BODY_BYTES = 256 * 1024;               // request body ceiling
 const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour per client IP
@@ -43,7 +47,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-03.1";
+const BUILD_VERSION = "2026-09-03.2";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -55,6 +59,12 @@ interface ServerCfg {
   maxBytes?: number;
   /** Which virtual paths belong in the tenant document at all. Default: all of them. */
   persist?: (path: string) => boolean;
+  /**
+   * Virtual roots that are an implementation detail rather than something a caller can
+   * open, stripped out of the response body after the download links are substituted:
+   * on an upload/inline endpoint a file is known by the name it was loaded under.
+   */
+  strip?: string[];
   /**
    * A second tenant document this endpoint reads and writes. /mcp/recurring creates
    * invoices in the SAME invoice store /mcp/invoice serves, so it hydrates both keys
@@ -85,6 +95,7 @@ const SERVERS: Record<string, ServerCfg> = {
     publish: () => true,
     persistPublished: true,
     maxBytes: SPREADSHEET_MAX_BYTES,
+    strip: ["/sheets/"],
   },
   "currency": {
     factory: createCurrency as () => McpServer,
@@ -122,6 +133,24 @@ const SERVERS: Record<string, ServerCfg> = {
     factory: createClauses as () => McpServer,
     publish: (p) => p.startsWith("/docs/"),
   },
+  "pdf": {
+    factory: createPdf as () => McpServer,
+    // Uploads (/uploads/) and the operation register are the tenant's state; everything
+    // a tool writes lands under /out/ and becomes a one-hour download link. Outputs are
+    // kept as well, so a merged file can be stamped by a later call the way a file on a
+    // disk could - the overwrite flag stays a real decision rather than a no-op.
+    publish: (p) => p.startsWith("/out/"),
+    persistPublished: true,
+    maxBytes: PDF_MAX_BYTES,
+    strip: ["/uploads/"],
+  },
+  "calendar": {
+    factory: createCalendar as () => McpServer,
+    // Imported calendars are the tenant's state, under /calendar/; an export lands under
+    // /exports/ and is a transient download.
+    publish: (p) => p.startsWith("/exports/"),
+    maxBytes: CALENDAR_MAX_BYTES,
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -153,6 +182,8 @@ interface Auth {
   limit: number;
   /** The anonymous bearer token itself, when kind is "anon". */
   anonToken?: string;
+  /** Which of the three forms actually carried the token on this request. */
+  via?: "Authorization: Bearer" | "URL path segment (/mcp/<server>/t/<token>)" | "URL query parameter (?token=)";
   /** True when an anonymous tenant is Pro because of a bound purchase, not a pasted key. */
   bound?: boolean;
 }
@@ -218,10 +249,11 @@ async function verifyLicense(key: string, product: string): Promise<{ ok: boolea
  * The header wins when both are present. A token in a URL is a URL that grants access, so
  * it is treated exactly like a bearer: same tiers, same rate limits, same tenants.
  */
-async function authenticate(req: Request, env: Env, product: string, urlToken = ""): Promise<Auth | Response> {
+async function authenticate(req: Request, env: Env, product: string, urlToken = "", urlTokenForm: Auth["via"] = "URL path segment (/mcp/<server>/t/<token>)"): Promise<Auth | Response> {
   const header = req.headers.get("authorization") ?? "";
   const fromHeader = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
   const token = fromHeader || urlToken.trim();
+  const via: Auth["via"] = fromHeader ? "Authorization: Bearer" : urlTokenForm;
   if (!token) {
     return json({
       error: "unauthorized",
@@ -249,7 +281,7 @@ async function authenticate(req: Request, env: Env, product: string, urlToken = 
         guide: GUIDE,
       }, 401);
     }
-    return { tenant: `lic:${r.id}`, isPro: true, kind: "license", limit: RATE_LIMIT_PRO };
+    return { tenant: `lic:${r.id}`, isPro: true, kind: "license", limit: RATE_LIMIT_PRO, via };
   }
   if (/^anon_[0-9a-f]{32}$/.test(token)) {
     const id = token.slice(5);
@@ -264,7 +296,7 @@ async function authenticate(req: Request, env: Env, product: string, urlToken = 
     // The billing worker writes bind:<token> on payment; this endpoint only ever reads it.
     const verified = boundKey ? await verifyLicense(boundKey.trim(), product) : null;
     const d = decideBinding(verified);
-    return { tenant: `anon:${id}`, isPro: d.isPro, kind: "anon", limit: d.limit, anonToken: token, bound: d.bound };
+    return { tenant: `anon:${id}`, isPro: d.isPro, kind: "anon", limit: d.limit, anonToken: token, bound: d.bound, via };
   }
   return json({ error: "invalid_token", message: "Token is neither an MCPL1 licence key nor an anonymous token.", guide: GUIDE }, 401);
 }
@@ -466,6 +498,8 @@ const TOOLS: Record<string, string[]> = {
   "resume": ["doc_upload", "doc_files", "doc_delete_upload", "profile_set", "profile_get", "resume_create", "resume_to_markdown", "resume_to_html", "resume_read", "cover_letter_create", "tailor_to_job", "license_status", "license_activate"],
   "recurring": ["schedule_create", "schedule_list", "schedule_get", "schedule_update", "schedule_pause", "schedule_resume", "schedule_delete", "schedule_skip", "schedule_upcoming", "invoice_generate_due", "schedule_history", "forecast", "license_status", "license_activate"],
   "clauses": ["clause_add", "clause_get", "clause_update", "clause_delete", "clause_list", "clause_search", "clause_import", "clause_export", "contract_assemble", "variables_list", "license_status", "license_activate"],
+  "pdf": ["pdf_upload", "pdf_files", "pdf_delete_upload", "pdf_info", "pdf_count", "pdf_merge", "pdf_split", "pdf_pages", "pdf_rotate", "pdf_stamp", "pdf_watermark_business", "pdf_reorder", "pdf_text", "license_status", "license_activate"],
+  "calendar": ["ics_import", "calendars_list", "events_list", "events_search", "free_busy", "conflicts", "next_event", "event_export", "event_to_time_entry", "ics_forget", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -561,11 +595,29 @@ function indexDoc(base: string) {
         outputs: "contract_assemble and clause_export return a download link valid for one hour; .docx comes back as the real binary file.",
         free_limits: "10 clauses of your own on top of the starter set, 8 clauses per assembled document, markdown import and export (JSON is Pro)",
       },
+      {
+        name: "pdf", url: `${base}/mcp/pdf`, tools: TOOLS["pdf"],
+        mode: "upload and download",
+        how: "There is no disk here: pdf_upload {name, pdf_base64} stores a PDF under your token and every `path` argument - and every entry of `paths` - is that name. pdf_files lists what is stored, pdf_delete_upload removes one.",
+        outputs: "pdf_merge, pdf_split, pdf_pages, pdf_rotate, pdf_stamp, pdf_watermark_business and pdf_reorder return a download link valid for one hour, served as application/pdf. The file is also kept under your token, so a merged file can be stamped by the next call.",
+        free_limits: "up to 5 files per merge, files up to 30 pages for split, pages, rotate and stamp, the PAID and DRAFT stamp presets in their preset colours; pdf_info, pdf_count and pdf_text are unlimited",
+        storage: `${PDF_MAX_BYTES / 1048576} MB of stored PDFs per token, and at most ${PDF_MAX_BYTES / 1048576} MB in one upload - the ${MAX_BODY_BYTES / 1024} KB request-body cap binds long first, which is roughly 190 KB of PDF once base64-encoded`,
+        notes: "pdf_text is best-effort extraction with node:zlib and has no OCR, exactly as it is over stdio",
+      },
+      {
+        name: "calendar", url: `${base}/mcp/calendar`, tools: TOOLS["calendar"],
+        mode: "import and download",
+        how: "ics_import {text, name} pastes a calendar export in; ics_import {url, name} fetches a public https or webcal feed (Pro). A path is not available: this endpoint has no filesystem. Calendars are kept per token and calendars_list shows them.",
+        outputs: "event_export returns a download link valid for one hour, served as text/calendar; out_path is only the name that file carries",
+        free_limits: "2 calendars, a 31-day window per read, 50 events per export; importing from a URL is Pro",
+        storage: `${CALENDAR_MAX_BYTES / 1048576} MB of imported calendars per token; one import is capped at 5 MB, and the ${MAX_BODY_BYTES / 1024} KB request-body cap binds long first`,
+        notes: "a feed URL is checked against every literal private, loopback, link-local and metadata address before the first hop and again after every redirect; there is no override",
+      },
     ],
     limits: {
       request_body_bytes: MAX_BODY_BYTES,
       jsonrpc_batching: "not accepted - send one request object per POST",
-      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, currency: "no per-token storage" },
+      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, currency: "no per-token storage" },
       download_ttl_seconds: DOWNLOAD_TTL,
       idle_data_retention_days: SWEEP_AFTER_DAYS,
     },
@@ -862,8 +914,10 @@ export default {
     // URL. `/mcp/<name>/t/<token>` is stripped back to `/mcp/<name>` here and the token is
     // handed to authenticate(), which still prefers an Authorization header if one is set.
     let urlToken = url.searchParams.get("token") ?? "";
+    let urlTokenForm: Auth["via"] = urlToken ? "URL query parameter (?token=)" : undefined;
     const tokenInPath = path.match(/^(\/mcp\/[a-z-]+)\/t\/(.+)$/);
     if (tokenInPath) {
+      urlTokenForm = "URL path segment (/mcp/<server>/t/<token>)";
       path = tokenInPath[1];
       try { urlToken = decodeURIComponent(tokenInPath[2]); } catch { urlToken = tokenInPath[2]; }
     }
@@ -888,7 +942,7 @@ export default {
     if (path === "/mcp/whoami") {
       // Not one endpoint, so the licence product check is waived ("*"); everything else -
       // token shape, existence, binding - is decided exactly as it is on a real call.
-      const who = await authenticate(req, env, "*", urlToken);
+      const who = await authenticate(req, env, "*", urlToken, urlTokenForm);
       if (who instanceof Response) return who;
       return json({
         tenant: who.tenant,
@@ -896,6 +950,7 @@ export default {
         bound: who.bound === true,
         kind: who.kind,
         rate_limit_per_hour: who.limit,
+        token_arrived_via: who.via ?? "Authorization: Bearer",
         how: who.kind === "license"
           ? "a licence key was presented"
           : who.bound
@@ -956,7 +1011,7 @@ export default {
       return json({ error: "not_found", index: `${base}/mcp` }, 404);
     }
 
-    const auth = await authenticate(req, env, product, urlToken);
+    const auth = await authenticate(req, env, product, urlToken, urlTokenForm);
     if (auth instanceof Response) return auth;
     const limited = await rateLimit(env, auth, ctx);
     if (limited) return limited;
@@ -1026,7 +1081,7 @@ export default {
     }
 
     const rctx: RequestCtx = {
-      tenant: auth.tenant, server: product, isPro: auth.isPro, anonToken: auth.anonToken,
+      tenant: auth.tenant, server: product, isPro: auth.isPro, anonToken: auth.anonToken, authVia: auth.via,
       files, dirs: new Set<string>(), downloads: [], baseUrl: base,
       publish: cfg.publish, published: new Map<string, string>(), maxBytes,
       bytes: counted.bytes, nfiles: counted.nfiles,
@@ -1054,12 +1109,13 @@ export default {
         // The tool handlers report the virtual path they wrote; the caller gets the link.
         // The virtual root is an implementation detail, so it never reaches the caller:
         // in inline-data mode a sheet is known by the name it was loaded under.
-        if (rctx.published.size > 0 || product === "spreadsheet") {
+        const strip = cfg.strip ?? [];
+        if (rctx.published.size > 0 || strip.length > 0) {
           let out = await res.text();
           for (const [p2, u] of [...rctx.published].sort((a, b) => b[0].length - a[0].length)) {
             out = out.split(p2).join(`${u} (valid 1 hour)`);
           }
-          if (product === "spreadsheet") out = out.split("/sheets/").join("");
+          for (const prefix of strip) out = out.split(prefix).join("");
           const h = new Headers(res.headers);
           h.delete("content-length");
           res = new Response(out, { status: res.status, headers: h });
