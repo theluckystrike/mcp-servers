@@ -52,6 +52,14 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  calendar: async (c, tmp, tier, ok) => {
+    const ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//probe//EN\r\nBEGIN:VEVENT\r\nUID:a1@probe\r\nDTSTART:20260910T090000Z\r\nDTEND:20260910T100000Z\r\nSUMMARY:Nova call\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:a2@probe\r\nDTSTART:20260910T093000Z\r\nDTEND:20260910T110000Z\r\nSUMMARY:Design review\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:a3@probe\r\nDTSTART;VALUE=DATE:20260912\r\nSUMMARY:Holiday\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+    const imp = await c.tool("ics_import", { text: ics, name: "Work" }); ok(`${tier}: ics_import 3 events`, !imp.isError && /3/.test(imp.text), imp.text.slice(0, 80));
+    const ev = await c.tool("events_list", { from: "2026-09-08", to: "2026-09-14", zone: "UTC" }); ok(`${tier}: events_list shows Nova call and Holiday`, !ev.isError && /Nova call/.test(ev.text) && /Holiday/.test(ev.text), ev.text.slice(0, 100));
+    const cf = await c.tool("conflicts", { from: "2026-09-08", to: "2026-09-14" }); ok(`${tier}: conflicts finds the overlap`, !cf.isError && /Nova call/.test(cf.text) && /Design review/.test(cf.text), cf.text.slice(0, 100));
+    const te = await c.tool("event_to_time_entry", { event_id: (ev.text.match(/a1@probe|[0-9a-f]{8,}/) || ["a1@probe"])[0], project: "Nova" }); ok(`${tier}: event_to_time_entry returns start/end/project`, !te.isError && /Nova/.test(te.text) && /2026-09-10/.test(te.text), te.text.slice(0, 100));
+    for (const n of ["Second", "Third"]) { const r = await c.tool("ics_import", { text: ics.replace(/probe/g, n), name: n }); if (n === "Third") ok(`${tier}: 3rd calendar ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(r.text) : /mcp\.zovo\.one\/buy\/calendar/.test(r.text), r.text.slice(0, 80)); }
+  },
   pdf: async (c, tmp, tier, ok) => {
     const { PDFDocument, StandardFonts } = await import("pdf-lib");
     const mk = async (n, label) => { const d = await PDFDocument.create(); for (let i = 0; i < n; i++) { const pg = d.addPage([400, 300]); pg.drawText(`${label} page ${i + 1}`, { x: 40, y: 200, size: 18, font: await d.embedFont(StandardFonts.Helvetica) }); } const p = join(tmp, `${label}.pdf`); writeFileSync(p, await d.save()); return p; };

@@ -466,5 +466,47 @@
       "name": "pdf_text",
       "description": "Best-effort text extraction: the page content streams are decompressed and the text-showing operators are read. It works on PDFs written with standard fonts (exports from word processors, invoices, reports). It returns n"
     }
+  ],
+  "calendar": [
+    {
+      "name": "ics_import",
+      "description": "Read a calendar export and keep it locally under a name. Give exactly one of path (a .ics file on this machine), "
+    },
+    {
+      "name": "calendars_list",
+      "description": "Every calendar imported into this server: its name, where it came from, how many event definitions it holds and when it was imported."
+    },
+    {
+      "name": "events_list",
+      "description": "Every event between two dates, with recurring events expanded to their real occurrences and sorted by start. "
+    },
+    {
+      "name": "events_search",
+      "description": "Find events whose title, description, location or attendees contain a phrase. Searches every imported calendar. "
+    },
+    {
+      "name": "free_busy",
+      "description": "Where the time actually went and what is left: merged busy blocks from the calendars you name, and the gaps inside "
+    },
+    {
+      "name": "conflicts",
+      "description": "Every pair of events that overlap in time, with how many minutes they collide. Across all imported calendars unless you "
+    },
+    {
+      "name": "next_event",
+      "description": "The next event that has not started yet, with how long until it begins. Looks ahead up to a year."
+    },
+    {
+      "name": "event_export",
+      "description": "Write chosen events to a new .ics file you can send or import elsewhere. Either pass ids (from events_list) or a "
+    },
+    {
+      "name": "event_to_time_entry",
+      "description": "Take one event and return the exact arguments for the time-tracker's entry_add, so a meeting that already happened "
+    },
+    {
+      "name": "ics_forget",
+      "description": "Remove one imported calendar and the local copy of its .ics file. Nothing else is touched."
+    }
   ]
 }

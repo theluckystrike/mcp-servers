@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T08:58:53.742Z",
+  "generated_at": "2026-09-03T16:42:12.073Z",
   "rounds": [
     {
       "round": 1,
@@ -183,11 +183,63 @@
       "per_server": {},
       "at": "2026-09-03T08:55:00Z",
       "method": "servers/office-suite/dist/index.js v0.4.1 registered as ONE server 'office'; tools/list returns 108 tools and the per-tool allowlist was written from that live "
+    },
+    {
+      "round": 10,
+      "file": "user_value_r10.json",
+      "score": 19,
+      "max": 24,
+      "pct": 79,
+      "scenarios": 8,
+      "per_server": {
+        "hosted/invoice": {
+          "score": 2,
+          "max": 3
+        },
+        "hosted/time-tracker + expense-tracker": {
+          "score": 3,
+          "max": 3
+        },
+        "hosted/currency + expense-tracker + invoice": {
+          "score": 2,
+          "max": 3
+        },
+        "hosted/docx": {
+          "score": 2,
+          "max": 3
+        },
+        "hosted/timezone": {
+          "score": 3,
+          "max": 3
+        },
+        "hosted/invoice free cap + checkout": {
+          "score": 2,
+          "max": 3
+        },
+        "hosted/all six": {
+          "score": 2,
+          "max": 3
+        },
+        "hosted/invoice, new session": {
+          "score": 3,
+          "max": 3
+        }
+      },
+      "at": "2026-09-03T16:45:00Z",
+      "method": "Six local-scope MCP entries in a temp project /private/tmp/uv52: invoice, time-tracker, expense-tracker, timezone, docx, currency, each as https://mcp.zovo.one/"
     }
   ],
   "servers": [
     "bundle-licence",
     "expense-tracker",
+    "hosted/all six",
+    "hosted/currency + expense-tracker + invoice",
+    "hosted/docx",
+    "hosted/invoice",
+    "hosted/invoice free cap + checkout",
+    "hosted/invoice, new session",
+    "hosted/time-tracker + expense-tracker",
+    "hosted/timezone",
     "invoice",
     "office-suite",
     "price-tracker",
@@ -203,6 +255,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -222,10 +275,147 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
       "last_round": 5
+    },
+    {
+      "server": "hosted/all six",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "2/3"
+      ],
+      "best_pct": 67,
+      "last_round": 10
+    },
+    {
+      "server": "hosted/currency + expense-tracker + invoice",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "2/3"
+      ],
+      "best_pct": 67,
+      "last_round": 10
+    },
+    {
+      "server": "hosted/docx",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "2/3"
+      ],
+      "best_pct": 67,
+      "last_round": 10
+    },
+    {
+      "server": "hosted/invoice",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "2/3"
+      ],
+      "best_pct": 67,
+      "last_round": 10
+    },
+    {
+      "server": "hosted/invoice free cap + checkout",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "2/3"
+      ],
+      "best_pct": 67,
+      "last_round": 10
+    },
+    {
+      "server": "hosted/invoice, new session",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "3/3"
+      ],
+      "best_pct": 100,
+      "last_round": 10
+    },
+    {
+      "server": "hosted/time-tracker + expense-tracker",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "3/3"
+      ],
+      "best_pct": 100,
+      "last_round": 10
+    },
+    {
+      "server": "hosted/timezone",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "3/3"
+      ],
+      "best_pct": 100,
+      "last_round": 10
     },
     {
       "server": "invoice",
@@ -235,6 +425,7 @@
         "4/6",
         "",
         "1/3",
+        "",
         "",
         "",
         "",
@@ -249,6 +440,7 @@
         "",
         "",
         "8/12",
+        "",
         "",
         "",
         "",
@@ -270,6 +462,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -286,6 +479,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -299,6 +493,7 @@
         "9/9",
         "",
         "9/9",
+        "",
         "",
         "",
         "",
@@ -779,9 +974,9 @@
     },
     {
       "id": "D-R35",
-      "first_seen": "USER_VALUE_R8.md",
+      "first_seen": "USER_VALUE_R10.md",
       "severity": "",
-      "title": "D-R35. |",
+      "title": "D-R35 fix reads exactly that field.",
       "status": "fixed"
     },
     {
@@ -827,6 +1022,96 @@
       "status": "open"
     },
     {
+      "id": "D-R42",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "medium",
+      "title": "D-R42 (medium) — `license_status` told every caller its token came from an `Authorization` header,",
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "remote-only, round 10. license_status now reports the real auth form (URL path / URL query / header) from RequestCtx.authVia; whoami reports token_arrived_via. Deployed 7d3f5812.",
+      "triaged": true
+    },
+    {
+      "id": "D-R43",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "medium",
+      "title": "D-R43 (medium) — the $39 every-server price was quoted in every free-cap message and never",
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "remote-only, round 10. bundleUrl() carries /buy/bundle?tenant=<anonToken> into upgradeText next to the $39 and into license_status; verified 303 to Stripe with metadata.product bundle and the same tenant. Deployed 7d3f5812.",
+      "triaged": true
+    },
+    {
+      "id": "D-R44",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "",
+      "title": "D-R44). Turn two ran it: two invoices created, and the **fourth of the month refused**: \"You have already created 3 invoices in 2026-09. The",
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "remote-only, round 10. license_status now returns `limits` (this tool does not count usage; a call over a cap is refused with the cap named) and `guide`. Live usage counters remain per-server state in servers/*. Deployed 7d3f5812.",
+      "triaged": true
+    },
+    {
+      "id": "D-R45",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "low",
+      "title": "D-R45 (low) — `license_activate` told a URL-token caller to reconnect with a header, the one field",
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "remote-only, round 10. license_activate now leads with the /t/<key> URL form and notes that a purchase from a ?tenant= link needs nothing pasted. Deployed 7d3f5812.",
+      "triaged": true
+    },
+    {
+      "id": "D-R46",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "",
+      "title": "D-R46). |",
+      "status": "open",
+      "scraped_status": "open",
+      "note": "invoice_create rounds a fractional unit_price to minor units then multiplies: USD 418.16 vs 418.14, INV total 3 cents over the cited ECB rate. servers/invoice, out of round 10's edit scope.",
+      "triaged": true
+    },
+    {
+      "id": "D-R47",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "",
+      "title": "D-R47). |",
+      "status": "open",
+      "scraped_status": "open",
+      "note": "docx proposal_create requires scope/deliverables/timeline, so a two-paragraph request forces invented sections. servers/docx, out of round 10's edit scope.",
+      "triaged": true
+    },
+    {
+      "id": "D-R48",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "",
+      "title": "D-R48), so nothing declared the home zone that r9's D-R35 fix reads. |",
+      "status": "open",
+      "scraped_status": "open",
+      "note": "invoice business_set stores an address that names a city but no timezone, and says nothing about it; r9's D-R35 fix reads that field. servers/invoice, out of round 10's edit scope.",
+      "triaged": true
+    },
+    {
+      "id": "D-R49",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "",
+      "title": "D-R49) right after being told it need not repeat them anywhere, and **no timezone reached the profile** — \"in Warsaw\" became an address, `bu",
+      "status": "client",
+      "scraped_status": "open",
+      "note": "round 10: the model wrote the business facts into the CLI's project memory directory right after the tool said not to repeat them anywhere. No server change available.",
+      "triaged": true
+    },
+    {
+      "id": "D-R50",
+      "first_seen": "USER_VALUE_R10.md",
+      "severity": "",
+      "title": "D-R50); and the $39 price was named with **no link**, though `/buy/bundle` exists and 303s to Stripe with the same tenant metadata (D-R43). ",
+      "status": "open",
+      "scraped_status": "open",
+      "note": "whoami is an HTTP GET only, so 'what is my tier' costs one license_status per connected server. The per-endpoint half is closed in round 10; registering whoami as a tool on every endpoint is a vendored-server change.",
+      "triaged": true
+    },
+    {
       "id": "D-T1",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
@@ -855,16 +1140,16 @@
     }
   ],
   "counts": {
-    "defects": 67,
-    "fixed": 60,
-    "open": 1,
-    "triaged": 25,
+    "defects": 76,
+    "fixed": 64,
+    "open": 5,
+    "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 60,
-      "client": 2,
-      "superseded": 1,
-      "open": 1
+      "fixed": 64,
+      "client": 3,
+      "open": 5,
+      "superseded": 1
     },
     "unknown_overrides": []
   }
