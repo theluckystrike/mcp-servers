@@ -79,6 +79,15 @@ export interface InputItem {
   quantity: number;
   unit_price: number;
   tax_rate?: number;
+  // D-R46: when unit_price carries more precision than the currency's minor unit
+  // (typically because it was converted with fx_rates before being passed in), the
+  // default basis (round the unit to a whole cent, then multiply) can drift a line
+  // away from the exact converted amount. round_total asks for the OTHER basis: round
+  // the exact quantity x unit_price product once, so the line gross matches the exact
+  // conversion to the cent; unit_price_minor is then reported as gross_minor / quantity
+  // (rounded to the nearest cent for the label) rather than being what the gross was
+  // computed from.
+  round_total?: boolean;
 }
 
 export interface ComputedLine {
@@ -90,6 +99,11 @@ export interface ComputedLine {
   discount_minor: number;
   net_minor: number;
   tax_minor: number;
+  // D-R46: gross_minor for this line as it would be under the OTHER basis than the one
+  // actually used (round-unit-then-multiply vs round-the-exact-total-once). Equal to
+  // gross_minor when the two bases agree (no drift), e.g. whole unit prices.
+  exact_gross_minor: number;
+  round_total: boolean;
 }
 
 export interface TaxLine { rate: number; base_minor: number; tax_minor: number }
@@ -105,6 +119,10 @@ export interface Totals {
   tax_lines: TaxLine[];
   tax_minor: number;
   total_minor: number;
+  // D-R46: sum of (exact_gross_minor - gross_minor) over lines that did NOT ask for
+  // round_total. Zero when every unit price is a whole number of cents, or every line
+  // that isn't already asked round_total: true.
+  rounding_drift_minor: number;
 }
 
 export function computeTotals(
@@ -120,12 +138,19 @@ export function computeTotals(
 
   const lines: ComputedLine[] = items.map((it) => {
     const rate = it.tax_rate === undefined || it.tax_rate === null ? defaultTaxRate : it.tax_rate;
-    // D-R24: the line is computed from the unit price AS STORED AND PRINTED, never from
-    // the unrounded input. Round the unit price into minor units first, then multiply by
-    // the quantity, then discount, then tax. 104.202 x 6 prints "104.20" and "625.20",
-    // and 10420 x 6 = 62520 reproduces on a client's calculator.
-    const unit = roundHalfUp(it.unit_price * f);
-    const gross = roundHalfUp(it.quantity * unit);
+    // D-R24: by default the line is computed from the unit price AS STORED AND PRINTED,
+    // never from the unrounded input. Round the unit price into minor units first, then
+    // multiply by the quantity, then discount, then tax. 104.202 x 6 prints "104.20" and
+    // "625.20", and 10420 x 6 = 62520 reproduces on a client's calculator.
+    const unitRoundedFirst = roundHalfUp(it.unit_price * f);
+    const grossRoundedFirst = roundHalfUp(it.quantity * unitRoundedFirst);
+    // D-R46: the OTHER basis - round the exact product once. This is the exact converted
+    // total to the cent; grossRoundedFirst can drift from it when unit_price carries more
+    // precision than the currency's minor unit (typically an fx conversion).
+    const exactGross = roundHalfUp(it.quantity * it.unit_price * f);
+    const useExact = it.round_total === true;
+    const unit = useExact ? roundHalfUp(exactGross / it.quantity) : unitRoundedFirst;
+    const gross = useExact ? exactGross : grossRoundedFirst;
     const discount = p ? roundHalfUp(gross * p / 100) : 0;
     const net = gross - discount;
     const tax = rate ? roundHalfUp(net * rate / 100) : 0;
@@ -138,6 +163,8 @@ export function computeTotals(
       discount_minor: discount,
       net_minor: net,
       tax_minor: tax,
+      exact_gross_minor: exactGross,
+      round_total: useExact,
     };
   });
 
@@ -154,6 +181,9 @@ export function computeTotals(
   }
   const taxLines = [...byRate.values()].sort((a, b) => a.rate - b.rate);
   const tax = taxLines.reduce((a, t) => a + t.tax_minor, 0);
+  const roundingDrift = lines.reduce(
+    (a, l) => a + (l.round_total ? 0 : l.gross_minor - l.exact_gross_minor), 0,
+  );
 
   return {
     currency: code, decimals: d, lines,
@@ -164,6 +194,7 @@ export function computeTotals(
     tax_lines: taxLines,
     tax_minor: tax,
     total_minor: net + tax,
+    rounding_drift_minor: roundingDrift,
   };
 }
 

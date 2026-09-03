@@ -195,3 +195,103 @@ artifacts:
   /private/tmp/uv52/{token.txt,allow.txt,allow.csv,run.sh,show.py,tl_*.json}
   /private/tmp/uv52/out/*.jsonl (9 transcripts), /private/tmp/uv52/{inv1.html,prop.docx,h1.txt,h2.txt}
 ```
+
+## Round-10 fixes (invoice, docx, profile)
+
+Three defects logged in this round's own scorecard (D-R46, D-R47, D-R48) are fixed, in the
+`servers/` and `packages/mcp-license` code the earlier fix pass was not allowed to touch.
+
+### D-R46 (invoice) — the D-R24 rule stays, and the drift it trades away is now named
+
+The line is still computed unit-first-then-multiplied by default (D-R24:
+`unit_price_minor x quantity` always equals the printed line), but `computeTotals` in
+`servers/invoice/src/money.ts:151-180` now also computes the OTHER basis for every line —
+`exactGross = roundHalfUp(quantity * unit_price * f)`, the exact converted amount rounded
+once — and exposes both `exact_gross_minor` and a per-invoice `rounding_drift_minor`
+(`servers/invoice/src/money.ts:70-73, 224-231`). `roundingNote()` in
+`servers/invoice/src/index.ts:105-118` turns a non-zero drift into the required sentence,
+e.g. `rounding_note: this invoice's total is USD 0.02 above the exact converted amount,
+because at least one unit price is rounded to the nearest cent before being multiplied by
+the quantity ... Pass round_total: true ...`, wired into `invoice_create`
+(`servers/invoice/src/index.ts:410`) and `invoice_from_hours`
+(`servers/invoice/src/index.ts:481`). `round_total: true` is a new field on each
+`invoice_create` item (`servers/invoice/src/index.ts:243-244`) and on the whole
+`invoice_from_hours` call (`servers/invoice/src/index.ts:401-402`); when set, the line's
+gross is `exactGross` itself (`servers/invoice/src/money.ts:152-153`), so it reproduces
+the exact converted amount to the cent, and that line is excluded from
+`rounding_drift_minor`. The R10 repro (4 x 104.535 USD, 90 EUR/h at ECB 1.1615) now reads:
+default basis `USD 418.16` with `rounding_note` naming the `USD 0.02` gap from the exact
+`USD 418.14`; `round_total: true` gives `USD 418.14` with no note. Verbatim:
+
+    ok 36 - D-R24: the line gross is the STORED unit price times the quantity
+    ok 37 - D-R24: the identity holds for whole quantities, currencies and tax rates
+    ok 38 - D-R28: invoice_from_hours converts with target_currency + fx_rates and the line adds up
+    (... D-R46 tests, servers/invoice/test/round10.test.mjs ...)
+    # tests 46
+    # pass 45
+    # fail 0
+    # skipped 1
+    # duration_ms 2120.844208
+
+### D-R47 (docx) — proposal sections are optional; a missing one is omitted, not invented
+
+`summary`, `scope`, `deliverables` and `timeline` are all `z.string()/.array().optional()`
+on `proposal_create` (`servers/docx/src/index.ts:530-537`). `proposalBody()`
+(`servers/docx/src/index.ts:483-519`) only emits a section's heading and content when it
+is present and non-empty, and returns the list of `omitted` section names instead of
+inventing content for a missing one. `proposal_create`'s response
+(`servers/docx/src/index.ts:566-583`) carries `omitted_sections` in the JSON block and,
+when any were left out, a line naming them and pointing at `proposal_update` to add them
+later; `proposal_update` (`servers/docx/src/index.ts:611-641`) carries the same
+`omitted_sections` and note. A "two-paragraph proposal" with no scope, deliverables or
+timeline now produces a document with only Summary, Investment and Acceptance headings —
+no invented 4-phase timeline. Verbatim:
+
+    ok 27 - D-R47: a two-paragraph proposal with no scope/deliverables/timeline omits those sections, not inventing them
+    ok 28 - D-R47: an empty scope array is also omitted, same as a missing one
+    ok 29 - D-R47: all four sections present still renders normally with nothing omitted
+    # tests 32
+    # pass 31
+    # fail 0
+    # skipped 1
+    # duration_ms 1648.598167
+
+### D-R48 (profile) — an address with no timezone infers one, and says so
+
+`inferTimezoneFromAddress()` in `packages/mcp-license/src/profile.ts:182-197` imports
+`resolveZone` from `@theluckystrike/mcp-timezone/lib` (it exposes it, so no fallback city
+table was needed) and tries every comma/newline-separated segment of the address from the
+LAST one back to the first, returning the first that resolves — so `"Austin, TX"` skips
+the unrecognized `"TX"` and matches `"Austin"` -> `America/Chicago`, and a bare `"Warsaw"`
+resolves directly to `Europe/Warsaw`. `SharedProfile` gained a `timezone_source` field
+(`packages/mcp-license/src/profile.ts:26-30`, `PROFILE_FIELDS` at `:36`). `business_set`
+in `servers/invoice/src/index.ts:192-217` calls it only when an address was given, no
+explicit `timezone` argument was passed, AND no timezone is already stored (so a later
+call with just an address never clobbers an existing zone); on a match it stores
+`timezone_source: "inferred from address"` and says so in the response with how to
+override; on no match it says nothing could be inferred and names the argument to pass.
+An explicit `timezone` argument always wins and clears the `timezone_source` marker
+(`servers/invoice/src/index.ts:200-201`). Tests, in
+`packages/mcp-license/test/profile.test.mjs` and `servers/invoice/test/round10.test.mjs`:
+`"Warsaw" -> Europe/Warsaw`, `"Austin, TX" -> America/Chicago`, an unrecognized address ->
+no timezone and a note, an explicit timezone overriding inference, and a second
+`business_set` with an address not moving an already-stored zone. Verbatim:
+
+    # packages/mcp-license
+    # tests 21
+    # pass 21
+    # fail 0
+    # duration_ms 1776.533625
+    (includes 6 new D-R48 tests: bare city, full address, "Austin, TX", newline-separated
+    address, unrecognized address, empty/missing address)
+
+### Suite totals after all three fixes
+
+    servers/invoice:  tests 46, pass 45, fail 0, skipped 1, duration_ms 2120.844208
+    servers/docx:     tests 32, pass 31, fail 0, skipped 1, duration_ms 1648.598167
+    packages/mcp-license: tests 21, pass 21, fail 0, duration_ms 1776.533625
+
+`node scripts/gen-spec.mjs`: `servers/docx/SPEC.md tools=11 resources=1 prompts=1
+failure_modes=10`, `servers/invoice/SPEC.md tools=12 resources=1 prompts=1
+failure_modes=4`. `node scripts/validate.mjs`: `docx: 16/16`, `invoice: 20/20`,
+`remote: 37/37`, `billing: 19/19`, validation db run 50: `300/300`.

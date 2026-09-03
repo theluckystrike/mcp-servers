@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileS
 import { randomBytes } from "node:crypto";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { resolveZone } from "@theluckystrike/mcp-timezone/lib";
 
 /**
  * D-R31. One business profile for the whole suite.
@@ -27,6 +28,11 @@ export interface SharedProfile {
   payment_terms_days?: number;
   invoice_prefix?: string;
   timezone?: string;
+  /**
+   * D-R48. Set to "inferred from address" when timezone was not given explicitly and
+   * was worked out from the address instead. Absent when timezone came from the caller.
+   */
+  timezone_source?: string;
   logo_path?: string;
   /** ISO timestamp of the last write. Informational only. */
   updated?: string;
@@ -35,7 +41,7 @@ export interface SharedProfile {
 export const PROFILE_FIELDS = [
   "name", "address", "email", "phone", "vat_id", "iban", "bank",
   "default_currency", "default_tax_rate", "payment_terms_days",
-  "invoice_prefix", "timezone", "logo_path",
+  "invoice_prefix", "timezone", "timezone_source", "logo_path",
 ] as const;
 
 export type ProfileField = (typeof PROFILE_FIELDS)[number];
@@ -157,4 +163,34 @@ export function resolveEmail(explicit?: string): { email: string; missing: boole
   const stored = (readSharedProfile().email ?? "").trim();
   if (stored) return { email: stored, missing: false };
   return { email: EMAIL_PLACEHOLDER, missing: true };
+}
+
+/**
+ * D-R48. business_set receives an address but no timezone: "I am X in Warsaw" sets an
+ * address, and the profile came back with no timezone field at all, although timezone
+ * resolves bare place names perfectly well one call later. Infer one from the LAST city
+ * or country name in the address, using @theluckystrike/mcp-timezone's place table
+ * (the same table `timezone` itself reads for a bare place name such as "Austin").
+ *
+ * The address is split on commas and newlines and every segment is tried from the LAST
+ * one back to the first, so "123 Main St, Austin, TX" tries "TX" (not a place in the
+ * table, no match) before "Austin" (matches America/Chicago) - the last segment that IS
+ * a recognizable city, state or country wins, not necessarily the literal last segment.
+ * A number, a street name or an unrecognized place never matches, so an address that
+ * names nothing the table knows infers nothing.
+ */
+export function inferTimezoneFromAddress(address: string): { zone: string; matched: string } | undefined {
+  const segments = String(address ?? "")
+    .split(/[,\n]/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  for (let i = segments.length - 1; i >= 0; i--) {
+    try {
+      const hit = resolveZone(segments[i]);
+      return { zone: hit.zone, matched: segments[i] };
+    } catch {
+      // not a place this table knows; try the segment before it
+    }
+  }
+  return undefined;
 }

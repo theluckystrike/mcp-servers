@@ -466,32 +466,45 @@ server.registerTool("doc_fill_template", {
 interface ProposalInput {
   client: string;
   project_title: string;
-  summary: string;
-  scope: string[];
-  deliverables: string[];
-  timeline: { phase: string; duration: string }[];
+  summary?: string;
+  scope?: string[];
+  deliverables?: string[];
+  timeline?: { phase: string; duration: string }[];
   price: { amount: number; currency?: string; terms?: string };
   valid_until?: string;
 }
 
-/** The one place a proposal body is built, so proposal_update rewrites the same document. */
-function proposalBody(a: ProposalInput): { blocks: Block[]; total: string; terms: string } {
+/**
+ * D-R47: summary, scope, deliverables and timeline are all optional. A section that is
+ * missing, or present but empty, is OMITTED from the document rather than invented, and
+ * the caller of proposalBody gets back which sections it left out so the response can
+ * say so and the model can ask for them instead of guessing.
+ */
+function proposalBody(a: ProposalInput): { blocks: Block[]; total: string; terms: string; omitted: string[] } {
   const biz = issuer();
   const currency = (a.price.currency ?? biz.default_currency).toUpperCase();
   const total = money(a.price.amount, currency);
   const terms = a.price.terms ?? `Payable within ${biz.payment_terms_days} days of invoice.`;
-  const blocks: Block[] = [
-    { type: "heading", level: 2, text: "Summary" },
-    { type: "para", text: a.summary },
-    { type: "heading", level: 2, text: "Scope of work" },
-    { type: "bullets", items: a.scope, ordered: false },
-    { type: "heading", level: 2, text: "Deliverables" },
-    { type: "bullets", items: a.deliverables, ordered: false },
-  ];
-  if (a.timeline.length) {
+  const blocks: Block[] = [];
+  const omitted: string[] = [];
+
+  if (a.summary) {
+    blocks.push({ type: "heading", level: 2, text: "Summary" }, { type: "para", text: a.summary });
+  } else omitted.push("summary");
+
+  if (a.scope && a.scope.length) {
+    blocks.push({ type: "heading", level: 2, text: "Scope of work" }, { type: "bullets", items: a.scope, ordered: false });
+  } else omitted.push("scope");
+
+  if (a.deliverables && a.deliverables.length) {
+    blocks.push({ type: "heading", level: 2, text: "Deliverables" }, { type: "bullets", items: a.deliverables, ordered: false });
+  } else omitted.push("deliverables");
+
+  if (a.timeline && a.timeline.length) {
     blocks.push({ type: "heading", level: 2, text: "Timeline" });
     blocks.push({ type: "table", headers: ["Phase", "Duration"], rows: a.timeline.map((t) => [t.phase, t.duration]) });
-  }
+  } else omitted.push("timeline");
+
   blocks.push({ type: "heading", level: 2, text: "Investment" });
   blocks.push({ type: "table", headers: ["Item", "Amount"], rows: [[a.project_title, total]] });
   blocks.push({ type: "para", text: `Total: **${total}**` });
@@ -503,7 +516,7 @@ function proposalBody(a: ProposalInput): { blocks: Block[]; total: string; terms
     `To accept, reply in writing or sign below.` });
   blocks.push({ type: "para", text: `Signed for ${a.client}: ______________________ Date: ____________` });
   blocks.push({ type: "para", text: `Signed for ${biz.name}: ______________________ Date: ____________` });
-  return { blocks, total, terms };
+  return { blocks, total, terms, omitted };
 }
 
 server.registerTool("proposal_create", {
@@ -512,13 +525,16 @@ server.registerTool("proposal_create", {
   inputSchema: {
     client: z.string().describe("Client name, printed as 'Prepared for'. The letterhead comes from your business_set profile"),
     project_title: z.string().describe("Project title"),
-    summary: z.string().describe("One or two paragraphs on the problem and the approach"),
-    scope: z.array(z.string()).describe("What is in scope, one bullet each"),
-    deliverables: z.array(z.string()).describe("What the client receives, one bullet each"),
+    // D-R47: each of these is optional. A section that is missing (or an empty array)
+    // is omitted from the document rather than invented; the response lists what was
+    // left out so the model can ask for it instead of guessing a scope or a timeline.
+    summary: z.string().optional().describe("One or two paragraphs on the problem and the approach. Omitted from the document if not given"),
+    scope: z.array(z.string()).optional().describe("What is in scope, one bullet each. Omitted from the document if not given or empty"),
+    deliverables: z.array(z.string()).optional().describe("What the client receives, one bullet each. Omitted from the document if not given or empty"),
     timeline: z.array(z.object({
       phase: z.string(),
       duration: z.string().describe("e.g. '2 weeks'"),
-    })).describe("Phases and their durations, rendered as a table"),
+    })).optional().describe("Phases and their durations, rendered as a table. Omitted from the document if not given or empty"),
     price: z.object({
       amount: z.number().finite().describe("Total price in major units, e.g. 4500"),
       currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional(),
@@ -535,7 +551,7 @@ server.registerTool("proposal_create", {
     const gated = agreementLimit();
     if (gated) return ok(gated);
     if (businessMissing()) return fail(NO_BUSINESS_NOTE + " Nothing was written and no reference was used.");
-    const { blocks, total, terms } = proposalBody(a);
+    const { blocks, total, terms, omitted } = proposalBody(a);
 
     const out = await locked(async () => {
       const number = nextNumber("PROP", isoDate().slice(0, 4));
@@ -545,14 +561,22 @@ server.registerTool("proposal_create", {
       );
       return { path: w.path, note: w.note, number };
     });
+    // D-R47: a missing section is omitted from the document, never invented. Say which
+    // ones so the model can ask for them rather than the document silently being thinner
+    // than the client expects.
+    const omittedNote = omitted.length
+      ? `\n\nOmitted from the document, not invented: ${omitted.join(", ")}. Call proposal_update ` +
+        `{reference: "${out.number}", ...} with any of those to add them.`
+      : "";
     return ok(
       `Created proposal ${out.number} for ${a.client}. The letterhead came from your business_set profile, ` +
       `and reference ${out.number} is never reused. To revise this proposal later, call proposal_update ` +
       `with the reference rather than creating a second one.\n\n` +
       JSON.stringify({
         reference: out.number, client: a.client, project: a.project_title,
-        total, terms, valid_until: a.valid_until, phases: a.timeline.length, file: out.path,
-      }, null, 2) + out.note +
+        total, terms, valid_until: a.valid_until, phases: a.timeline?.length ?? 0, file: out.path,
+        omitted_sections: omitted,
+      }, null, 2) + out.note + omittedNote +
       `${emailNote()}${brandingNote()}`,
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -593,7 +617,10 @@ server.registerTool("proposal_update", {
       if (v !== undefined) (patch as Record<string, unknown>)[k] = v;
     }
     const merged = { ...(rec.data as ProposalInput), ...patch };
-    const { blocks, total, terms } = proposalBody(merged);
+    const { blocks, total, terms, omitted } = proposalBody(merged);
+    const omittedNote = omitted.length
+      ? `\n\nOmitted from the document, not invented: ${omitted.join(", ")}.`
+      : "";
     const out = await locked(() => writeDoc(
       merged.project_title, blocks, "proposal", rec.path, "proposal",
       {
@@ -607,9 +634,9 @@ server.registerTool("proposal_update", {
       `against the free-tier monthly count.\n\n` +
       JSON.stringify({
         reference: ref, client: merged.client, project: merged.project_title,
-        total, terms, valid_until: merged.valid_until, phases: merged.timeline.length,
-        changed: Object.keys(patch), file: out.path,
-      }, null, 2) + out.note + brandingNote(),
+        total, terms, valid_until: merged.valid_until, phases: merged.timeline?.length ?? 0,
+        changed: Object.keys(patch), omitted_sections: omitted, file: out.path,
+      }, null, 2) + out.note + omittedNote + brandingNote(),
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
