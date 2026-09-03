@@ -1,702 +1,6 @@
 {
   "runs": [
     {
-      "at": "2026-09-03T00:21:30.693Z",
-      "node": "v25.9.0",
-      "sdk": "1.30.0",
-      "results": [
-        {
-          "id": "expense-tracker",
-          "pass": 22,
-          "total": 22,
-          "ms": 574,
-          "checks": [
-            {
-              "name": "free: initialize",
-              "pass": true,
-              "detail": "mcp-expense-tracker in 251 ms"
-            },
-            {
-              "name": "free: tools/list",
-              "pass": true,
-              "detail": "14 tools"
-            },
-            {
-              "name": "free: license_status reports free",
-              "pass": true,
-              "detail": "{ \"product\": \"expense-tracker\", \"tier\": \"free\", \"reason\": \"no license found\", \"u"
-            },
-            {
-              "name": "free: expense_add VAT split 50.00 + 11.50",
-              "pass": true,
-              "detail": "Saved 39ba641d: EUR 61.50 on 2026-09-03 at Media Markt [uncategorised] for acme. Net EUR 50.00, VAT EUR 11.50 at 23%. Billable."
-            },
-            {
-              "name": "free: category_rules",
-              "pass": true,
-              "detail": "Stored 1 category rules:\n  bolt -> Travel"
-            },
-            {
-              "name": "free: rule auto-categorises Travel",
-              "pass": true,
-              "detail": "Saved 2271b9a7: PLN 23.00 on 2026-09-03 at Bolt [Travel, from a category rule]. No VAT rate was given, so net equals gross and the VAT column is 0. Pass vat_rat"
-            },
-            {
-              "name": "free: mileage 45 km PL = 51.75 PLN",
-              "pass": true,
-              "detail": "Saved ddde6d6c: 45 kms on 2026-09-03 at 1.15 PLN/km (table rate PL 1.15 PLN/km, an approximation; pass rate_per_km for your exact scheme) = PLN 51.75. client me"
-            },
-            {
-              "name": "free: summary by category per currency",
-              "pass": true,
-              "detail": "{\n  \"from\": \"2026-09-01\",\n  \"to\": \"2026-09-03\",\n  \"group_by\": \"category\",\n  \"by_currency\": [\n    {\n      \"currency\": \"EUR\",\n      \"count\": 1,\n      \"groups\": [\n"
-            },
-            {
-              "name": "free: markup free, net 50.00 x 1.10 = 55.00 + tax_rate",
-              "pass": true,
-              "detail": "{\n  \"project\": \"acme\",\n  \"from\": \"2026-09-01\",\n  \"to\": \"2026-09-03\",\n  \"markup_percent\": 10,\n  \"count\": 1,\n  \"marked_rebilled\": false,\n  \"vat_assumed_lines\": 0,"
-            },
-            {
-              "name": "free: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "free: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            },
-            {
-              "name": "pro: initialize",
-              "pass": true,
-              "detail": "mcp-expense-tracker in 189 ms"
-            },
-            {
-              "name": "pro: tools/list",
-              "pass": true,
-              "detail": "14 tools"
-            },
-            {
-              "name": "pro: license_status reports pro",
-              "pass": true,
-              "detail": "{ \"product\": \"expense-tracker\", \"tier\": \"pro\", \"licenseId\": \"8ec37265b7c1\", \"exp"
-            },
-            {
-              "name": "pro: expense_add VAT split 50.00 + 11.50",
-              "pass": true,
-              "detail": "Saved 2a95ee1c: EUR 61.50 on 2026-09-03 at Media Markt [uncategorised] for acme. Net EUR 50.00, VAT EUR 11.50 at 23%. Billable."
-            },
-            {
-              "name": "pro: category_rules",
-              "pass": true,
-              "detail": "Stored 1 category rules:\n  bolt -> Travel"
-            },
-            {
-              "name": "pro: rule auto-categorises Travel",
-              "pass": true,
-              "detail": "Saved b42582b8: PLN 23.00 on 2026-09-03 at Bolt [Travel, from a category rule]. No VAT rate was given, so net equals gross and the VAT column is 0. Pass vat_rat"
-            },
-            {
-              "name": "pro: mileage 45 km PL = 51.75 PLN",
-              "pass": true,
-              "detail": "Saved 103f4599: 45 kms on 2026-09-03 at 1.15 PLN/km (table rate PL 1.15 PLN/km, an approximation; pass rate_per_km for your exact scheme) = PLN 51.75. client me"
-            },
-            {
-              "name": "pro: summary by category per currency",
-              "pass": true,
-              "detail": "{\n  \"from\": \"2026-09-01\",\n  \"to\": \"2026-09-03\",\n  \"group_by\": \"category\",\n  \"by_currency\": [\n    {\n      \"currency\": \"EUR\",\n      \"count\": 1,\n      \"groups\": [\n"
-            },
-            {
-              "name": "pro: markup allowed, net 50.00 x 1.10 = 55.00 + tax_rate",
-              "pass": true,
-              "detail": "{\n  \"project\": \"acme\",\n  \"from\": \"2026-09-01\",\n  \"to\": \"2026-09-03\",\n  \"markup_percent\": 10,\n  \"count\": 1,\n  \"marked_rebilled\": false,\n  \"vat_assumed_lines\": 0,"
-            },
-            {
-              "name": "pro: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "pro: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            }
-          ]
-        },
-        {
-          "id": "time-tracker",
-          "pass": 18,
-          "total": 18,
-          "ms": 320,
-          "checks": [
-            {
-              "name": "free: initialize",
-              "pass": true,
-              "detail": "time-tracker in 121 ms"
-            },
-            {
-              "name": "free: tools/list",
-              "pass": true,
-              "detail": "13 tools"
-            },
-            {
-              "name": "free: license_status reports free",
-              "pass": true,
-              "detail": "{ \"product\": \"time-tracker\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgr"
-            },
-            {
-              "name": "free: timer_start",
-              "pass": true,
-              "detail": "Started timer for \"acme\" - validation at 2026-09-03T00:21:08.200Z."
-            },
-            {
-              "name": "free: timer_stop",
-              "pass": true,
-              "detail": "Stopped \"acme\" - validation. Duration 00:00:00 (0.00 h).\nEntry id 6e5fe5a0."
-            },
-            {
-              "name": "free: report",
-              "pass": true,
-              "detail": "{\n  \"from\": \"2026-09-02T00:21:08.202Z\",\n  \"to\": \"2026-09-03T01:21:08.202Z\",\n  \"group_by\": \"project\",\n  \"rows\": [\n    {\n      \"key\": \"acme\",\n      \"hours\": 0,\n  "
-            },
-            {
-              "name": "free: tag grouping gated with upgrade link",
-              "pass": true,
-              "detail": "\"group_by tag\" is a Pro feature. Pro is a one-time $19 (or $39 for every server, lifetime). Buy at https://mcp.zovo.one/buy/time-tracker , then run license_acti"
-            },
-            {
-              "name": "free: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "free: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            },
-            {
-              "name": "pro: initialize",
-              "pass": true,
-              "detail": "time-tracker in 117 ms"
-            },
-            {
-              "name": "pro: tools/list",
-              "pass": true,
-              "detail": "13 tools"
-            },
-            {
-              "name": "pro: license_status reports pro",
-              "pass": true,
-              "detail": "{ \"product\": \"time-tracker\", \"tier\": \"pro\", \"licenseId\": \"5e8c93835084\", \"expire"
-            },
-            {
-              "name": "pro: timer_start",
-              "pass": true,
-              "detail": "Started timer for \"acme\" - validation at 2026-09-03T00:21:08.392Z."
-            },
-            {
-              "name": "pro: timer_stop",
-              "pass": true,
-              "detail": "Stopped \"acme\" - validation. Duration 00:00:00 (0.00 h).\nEntry id b9f92866."
-            },
-            {
-              "name": "pro: report",
-              "pass": true,
-              "detail": "{\n  \"from\": \"2026-09-02T00:21:08.394Z\",\n  \"to\": \"2026-09-03T01:21:08.394Z\",\n  \"group_by\": \"project\",\n  \"rows\": [\n    {\n      \"key\": \"acme\",\n      \"hours\": 0,\n  "
-            },
-            {
-              "name": "pro: tag grouping allowed",
-              "pass": true,
-              "detail": "tag       hours  billable h  amount\n--------  -----  ----------  ------\n(no tag)  0.00   0.00        -\n\nTotal 0.00 h, -.\nTag rows can overlap: an entry tagged t"
-            },
-            {
-              "name": "pro: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "pro: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            }
-          ]
-        },
-        {
-          "id": "price-tracker",
-          "pass": 18,
-          "total": 18,
-          "ms": 389,
-          "checks": [
-            {
-              "name": "free: initialize",
-              "pass": true,
-              "detail": "price-tracker in 117 ms"
-            },
-            {
-              "name": "free: tools/list",
-              "pass": true,
-              "detail": "10 tools"
-            },
-            {
-              "name": "free: license_status reports free",
-              "pass": true,
-              "detail": "{ \"product\": \"price-tracker\", \"tier\": \"free\", \"reason\": \"no license found\", \"upg"
-            },
-            {
-              "name": "free: price_add_manual normalises 1.299,00",
-              "pass": true,
-              "detail": "Recorded 1299.00 EUR for probe (ff1680cb) at 2026-09-03T00:21:08.518Z. 1 observation(s) stored."
-            },
-            {
-              "name": "free: price_history",
-              "pass": true,
-              "detail": "probe (ff1680cb) - 1 of 1 observation(s)\nmin 1299 / max 1299 EUR\n[\n  {\n    \"ts\": \"2026-09-03T00:21:08.518Z\",\n    \"price\": \"1299.00\",\n    \"currency\": \"EUR\",\n    "
-            },
-            {
-              "name": "free: watch_add extracts JSON-LD price",
-              "pass": true,
-              "detail": "Watching w1 as 983a1392.\nPrice now: 49.90 USD\nConfidence: high (source json-ld)\nNo target price set.\nChecks run when you ask: there is no background job and not"
-            },
-            {
-              "name": "free: 4th+ watch gated",
-              "pass": true,
-              "detail": "The free tier tracks 3 items at a time and you already have 3. Remove one with watch_remove, or unlock unlimited watches.\n\n\"unlimited watches\" is a Pro feature."
-            },
-            {
-              "name": "free: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "free: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            },
-            {
-              "name": "pro: initialize",
-              "pass": true,
-              "detail": "price-tracker in 118 ms"
-            },
-            {
-              "name": "pro: tools/list",
-              "pass": true,
-              "detail": "10 tools"
-            },
-            {
-              "name": "pro: license_status reports pro",
-              "pass": true,
-              "detail": "{ \"product\": \"price-tracker\", \"tier\": \"pro\", \"licenseId\": \"9726f354e3e2\", \"expir"
-            },
-            {
-              "name": "pro: price_add_manual normalises 1.299,00",
-              "pass": true,
-              "detail": "Recorded 1299.00 EUR for probe (b0512752) at 2026-09-03T00:21:08.746Z. 1 observation(s) stored."
-            },
-            {
-              "name": "pro: price_history",
-              "pass": true,
-              "detail": "probe (b0512752) - 1 of 1 observation(s)\nmin 1299 / max 1299 EUR\n[\n  {\n    \"ts\": \"2026-09-03T00:21:08.746Z\",\n    \"price\": \"1299.00\",\n    \"currency\": \"EUR\",\n    "
-            },
-            {
-              "name": "pro: watch_add extracts JSON-LD price",
-              "pass": true,
-              "detail": "Watching w1 as fe11e1e3.\nPrice now: 49.90 USD\nConfidence: high (source json-ld)\nNo target price set.\nChecks run when you ask: there is no background job and not"
-            },
-            {
-              "name": "pro: 4th+ watch allowed",
-              "pass": true,
-              "detail": "Watching w4 as e691f7de.\nPrice now: 49.90 USD\nConfidence: high (source json-ld)\nNo target price set.\nChecks run when you ask: there is no background job and not"
-            },
-            {
-              "name": "pro: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "pro: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            }
-          ]
-        },
-        {
-          "id": "spreadsheet",
-          "pass": 18,
-          "total": 18,
-          "ms": 444,
-          "checks": [
-            {
-              "name": "free: initialize",
-              "pass": true,
-              "detail": "mcp-spreadsheet in 178 ms"
-            },
-            {
-              "name": "free: tools/list",
-              "pass": true,
-              "detail": "10 tools"
-            },
-            {
-              "name": "free: license_status reports free",
-              "pass": true,
-              "detail": "{ \"product\": \"spreadsheet\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgra"
-            },
-            {
-              "name": "free: sheet_info",
-              "pass": true,
-              "detail": "{\n  \"file\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-spreadsheet-free-nCtJy8/orders.csv\",\n  \"format\": \"csv\",\n  \"sizeBytes\": 5021,\n  \"sheets\": [\n   "
-            },
-            {
-              "name": "free: sheet_query expression",
-              "pass": true,
-              "detail": "Query: where [Qty] >= 5 AND [Status] = \"open\"; limit 5\n43 of 300 rows match, showing 5\n\n| Customer | Qty | Unit Price | Status |\n|----------|-----|------------|"
-            },
-            {
-              "name": "free: convert 300 rows -> 301 lines (under the 500-row free write cap)",
-              "pass": true,
-              "detail": "301 lines"
-            },
-            {
-              "name": "free: convert 600 rows -> refused, zero bytes written + upgrade",
-              "pass": true,
-              "detail": "0 lines"
-            },
-            {
-              "name": "free: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "free: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            },
-            {
-              "name": "pro: initialize",
-              "pass": true,
-              "detail": "mcp-spreadsheet in 180 ms"
-            },
-            {
-              "name": "pro: tools/list",
-              "pass": true,
-              "detail": "10 tools"
-            },
-            {
-              "name": "pro: license_status reports pro",
-              "pass": true,
-              "detail": "{ \"product\": \"spreadsheet\", \"tier\": \"pro\", \"licenseId\": \"12dc4d9b4dfa\", \"expires"
-            },
-            {
-              "name": "pro: sheet_info",
-              "pass": true,
-              "detail": "{\n  \"file\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-spreadsheet-pro-WUJZpd/orders.csv\",\n  \"format\": \"csv\",\n  \"sizeBytes\": 5021,\n  \"sheets\": [\n    "
-            },
-            {
-              "name": "pro: sheet_query expression",
-              "pass": true,
-              "detail": "Query: where [Qty] >= 5 AND [Status] = \"open\"; limit 5\n43 of 300 rows match, showing 5\n\n| Customer | Qty | Unit Price | Status |\n|----------|-----|------------|"
-            },
-            {
-              "name": "pro: convert 300 rows -> 301 lines (under the 500-row free write cap)",
-              "pass": true,
-              "detail": "301 lines"
-            },
-            {
-              "name": "pro: convert 600 rows -> 601 lines",
-              "pass": true,
-              "detail": "601 lines"
-            },
-            {
-              "name": "pro: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "pro: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            }
-          ]
-        },
-        {
-          "id": "invoice",
-          "pass": 20,
-          "total": 20,
-          "ms": 508,
-          "checks": [
-            {
-              "name": "free: initialize",
-              "pass": true,
-              "detail": "mcp-invoice in 220 ms"
-            },
-            {
-              "name": "free: tools/list",
-              "pass": true,
-              "detail": "12 tools"
-            },
-            {
-              "name": "free: license_status reports free",
-              "pass": true,
-              "detail": "{ \"product\": \"invoice\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgradeUr"
-            },
-            {
-              "name": "free: business_set",
-              "pass": true,
-              "detail": "Business profile saved to /var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-invoice-free-MDGz55/data/mcp-servers/invoice.\n\n{\n  \"name\": \"Validator Ltd\",\n  \"de"
-            },
-            {
-              "name": "free: client_add",
-              "pass": true,
-              "detail": "Added client Acme (73746505)."
-            },
-            {
-              "name": "free: 4th invoice in month gated",
-              "pass": true,
-              "detail": "You have already created 3 invoices in 2026-09. The free tier allows 3 invoices per calendar month.\n\n\"unlimited invoices\" is a Pro feature. Pro is a one-time $1"
-            },
-            {
-              "name": "free: invoice_pdf writes a PDF",
-              "pass": true,
-              "detail": "INV-2026-0001 %PDF- 2419 bytes"
-            },
-            {
-              "name": "free: total 12 x 90 + 23% = 1328.40",
-              "pass": true,
-              "detail": "{ \"count\": 3, \"invoices\": [ { \"number\": \"INV-2026-0001\", \"client\": \"Acme\", \"issue_date\": \"2026-09-03\", \"due_date\": \"2026"
-            },
-            {
-              "name": "free: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "free: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            },
-            {
-              "name": "pro: initialize",
-              "pass": true,
-              "detail": "mcp-invoice in 166 ms"
-            },
-            {
-              "name": "pro: tools/list",
-              "pass": true,
-              "detail": "12 tools"
-            },
-            {
-              "name": "pro: license_status reports pro",
-              "pass": true,
-              "detail": "{ \"product\": \"invoice\", \"tier\": \"pro\", \"licenseId\": \"015dc12544ef\", \"expires\": n"
-            },
-            {
-              "name": "pro: business_set",
-              "pass": true,
-              "detail": "Business profile saved to /var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-invoice-pro-pfkK4C/data/mcp-servers/invoice.\n\n{\n  \"name\": \"Validator Ltd\",\n  \"def"
-            },
-            {
-              "name": "pro: client_add",
-              "pass": true,
-              "detail": "Added client Acme (310f162a)."
-            },
-            {
-              "name": "pro: 4th invoice in month allowed",
-              "pass": true,
-              "detail": "Created invoice INV-2026-0004.\n\n{\n  \"number\": \"INV-2026-0004\",\n  \"client\": \"Acme\",\n  \"issue_date\": \"2026-09-03\",\n  \"due_date\": \"2026-09-17\",\n  \"currency\": \"EUR\""
-            },
-            {
-              "name": "pro: invoice_pdf writes a PDF",
-              "pass": true,
-              "detail": "INV-2026-0001 %PDF- 2343 bytes"
-            },
-            {
-              "name": "pro: total 12 x 90 + 23% = 1328.40",
-              "pass": true,
-              "detail": "{ \"count\": 4, \"invoices\": [ { \"number\": \"INV-2026-0001\", \"client\": \"Acme\", \"issue_date\": \"2026-09-03\", \"due_date\": \"2026"
-            },
-            {
-              "name": "pro: unknown tool returns clean error",
-              "pass": true,
-              "detail": "MCP error -32602: Tool nonexistent_tool not found"
-            },
-            {
-              "name": "pro: stdout carried only JSON-RPC",
-              "pass": true,
-              "detail": ""
-            }
-          ]
-        },
-        {
-          "id": "remote (mcp.zovo.one/mcp)",
-          "pass": 14,
-          "total": 14,
-          "ms": 16899,
-          "checks": [
-            {
-              "name": "index lists 3 endpoints",
-              "pass": true,
-              "detail": "{\"name\":\"mcp.zovo.one remote MCP endpoints\",\"protocol\":\"MCP streamable HTTP (2025-06-18)\",\"transport"
-            },
-            {
-              "name": "anonymous token minted (or per-IP mint limit 429 after repeated runs)",
-              "pass": true,
-              "detail": "anon_125375e74411875f928c84c2f648bead"
-            },
-            {
-              "name": "time-tracker: tools/list over HTTP",
-              "pass": true,
-              "detail": "13 tools"
-            },
-            {
-              "name": "price-tracker: tools/list over HTTP",
-              "pass": true,
-              "detail": "10 tools"
-            },
-            {
-              "name": "invoice: tools/list over HTTP",
-              "pass": true,
-              "detail": "12 tools"
-            },
-            {
-              "name": "expense-tracker: tools/list over HTTP",
-              "pass": true,
-              "detail": "14 tools"
-            },
-            {
-              "name": "spreadsheet: tools/list over HTTP",
-              "pass": true,
-              "detail": "13 tools"
-            },
-            {
-              "name": "hosted expense_add splits 50.00 + 11.50",
-              "pass": true,
-              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Saved ada2ed71: EUR 61.50 on 2026-09-03 at Media Markt "
-            },
-            {
-              "name": "hosted spreadsheet inline csv group_by sum (North 12)",
-              "pass": true,
-              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Query: group by Region; sum Units as total\\n2 groups fr"
-            },
-            {
-              "name": "JSON-RPC batch rejected 400",
-              "pass": true,
-              "detail": "400"
-            },
-            {
-              "name": "oversize body 413",
-              "pass": true,
-              "detail": "413"
-            },
-            {
-              "name": "SSRF target refused",
-              "pass": true,
-              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: 169.254.169.254 is not a public address, so this"
-            },
-            {
-              "name": "state persists across requests (KV)",
-              "pass": true,
-              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Running: \\\"remote-probe\\\" for 00:00:01 (since 2026-09-0"
-            },
-            {
-              "name": "no token -> 401",
-              "pass": true,
-              "detail": "401"
-            }
-          ]
-        },
-        {
-          "id": "billing (mcp.zovo.one)",
-          "pass": 11,
-          "total": 11,
-          "ms": 4055,
-          "checks": [
-            {
-              "name": "health ok, live mode, signer ok",
-              "pass": true,
-              "detail": "{\"ok\":true,\"service\":\"mcp-billing\",\"signer\":\"ok\",\"products\":[\"time-tracker\",\"price-tracker\",\"spreadsheet\",\"invoice\",\"exp"
-            },
-            {
-              "name": "buy/time-tracker -> 303 to Stripe",
-              "pass": true,
-              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1abGdlV"
-            },
-            {
-              "name": "buy/price-tracker -> 303 to Stripe",
-              "pass": true,
-              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1WZqTAA"
-            },
-            {
-              "name": "buy/spreadsheet -> 303 to Stripe",
-              "pass": true,
-              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1HkowIO"
-            },
-            {
-              "name": "buy/invoice -> 303 to Stripe",
-              "pass": true,
-              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b14gYcy0"
-            },
-            {
-              "name": "buy/expense-tracker -> 303 to Stripe",
-              "pass": true,
-              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1Wm7b8r"
-            },
-            {
-              "name": "buy/bundle -> 303 to Stripe",
-              "pass": true,
-              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1Hdx1E4"
-            },
-            {
-              "name": "verify accepts a locally signed key (same keypair as worker)",
-              "pass": true,
-              "detail": "{\"ok\":true,\"product\":\"invoice\",\"id\":\"e3d1a2a2426a\",\"iat\":1788394890,\"exp\":null}"
-            },
-            {
-              "name": "verify rejects garbage",
-              "pass": true,
-              "detail": "{\"ok\":false,\"product\":null,\"id\":null,\"reason\":\"bad payload\"}"
-            },
-            {
-              "name": "webhook rejects unsigned POST",
-              "pass": true,
-              "detail": "400"
-            },
-            {
-              "name": "unknown product 404",
-              "pass": true,
-              "detail": "404"
-            }
-          ]
-        }
-      ],
-      "unit_tests": [
-        {
-          "id": "expense-tracker",
-          "summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818"
-        },
-        {
-          "id": "invoice",
-          "summary": "# pass 12 / # fail 0"
-        },
-        {
-          "id": "office-suite",
-          "summary": "# pass 1 / # fail 0"
-        },
-        {
-          "id": "price-tracker",
-          "summary": "# pass 18 / # fail 0"
-        },
-        {
-          "id": "spreadsheet",
-          "summary": "# pass 31 / # fail 0"
-        },
-        {
-          "id": "time-tracker",
-          "summary": "# pass 2 / # fail 0"
-        }
-      ],
-      "pass": 121,
-      "total": 121
-    },
-    {
       "at": "2026-09-03T00:37:32.884Z",
       "node": "v22.23.2",
       "sdk": "1.30.0",
@@ -57642,6 +56946,1429 @@
               "name": "verify accepts a locally signed key (same keypair as worker)",
               "pass": true,
               "detail": "{\"ok\":true,\"product\":\"invoice\",\"id\":\"75615442f78c\",\"iat\":1788425494,\"exp\":null}"
+            },
+            {
+              "name": "verify rejects garbage",
+              "pass": true,
+              "detail": "{\"ok\":false,\"product\":null,\"id\":null,\"reason\":\"bad payload\"}"
+            },
+            {
+              "name": "webhook rejects unsigned POST",
+              "pass": true,
+              "detail": "400"
+            },
+            {
+              "name": "unknown product 404",
+              "pass": true,
+              "detail": "404"
+            }
+          ]
+        }
+      ],
+      "unit_tests": [
+        {
+          "id": "clauses",
+          "summary": "# pass 15 / # fail 0 / ## failures"
+        },
+        {
+          "id": "currency",
+          "summary": "# pass 21 / # fail 0"
+        },
+        {
+          "id": "docx",
+          "summary": "# pass 8 / # fail 0 / ## failures"
+        },
+        {
+          "id": "expense-tracker",
+          "summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818"
+        },
+        {
+          "id": "invoice",
+          "summary": "# pass 12 / # fail 0"
+        },
+        {
+          "id": "office-suite",
+          "summary": "# pass 1 / # fail 0"
+        },
+        {
+          "id": "price-tracker",
+          "summary": "# pass 18 / # fail 0"
+        },
+        {
+          "id": "recurring",
+          "summary": "# pass 28 / # fail 0 / # pass 13 / # fail 0"
+        },
+        {
+          "id": "resume",
+          "summary": "# tests 22   # pass 22   # fail 0 / # tests 12   # pass 12   # fail 0"
+        },
+        {
+          "id": "spreadsheet",
+          "summary": "# pass 31 / # fail 0"
+        },
+        {
+          "id": "time-tracker",
+          "summary": "# pass 2 / # fail 0"
+        },
+        {
+          "id": "timezone",
+          "summary": "# pass 23 / # fail 0"
+        }
+      ],
+      "pass": 252,
+      "total": 252
+    },
+    {
+      "at": "2026-09-03T08:58:33.953Z",
+      "node": "v25.9.0",
+      "sdk": "1.30.0",
+      "results": [
+        {
+          "id": "clauses",
+          "pass": 16,
+          "total": 16,
+          "ms": 489,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-clauses in 207 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "12 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"clauses\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgradeUr"
+            },
+            {
+              "name": "free: clause_search payment finds starter clauses",
+              "pass": true,
+              "detail": "{\n  \"query\": \"payment\",\n  \"count\": 5,\n  \"results\": [\n    {\n      \"score\": 121,\n      \"id\": \"payment-"
+            },
+            {
+              "name": "free: contract_assemble writes docx with disclaimer",
+              "pass": true,
+              "detail": "{\n  \"path\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-clauses-free-WNlJk6/contract.docx\""
+            },
+            {
+              "name": "free: 11th own clause gated",
+              "pass": true,
+              "detail": "The free tier holds 10 of your own clauses on top of the 25 starter clauses, and you have 10. \"an un"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-clauses in 130 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "12 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"clauses\", \"tier\": \"pro\", \"licenseId\": \"cf90ea941668\", \"expires\": n"
+            },
+            {
+              "name": "pro: clause_search payment finds starter clauses",
+              "pass": true,
+              "detail": "{\n  \"query\": \"payment\",\n  \"count\": 5,\n  \"results\": [\n    {\n      \"score\": 121,\n      \"id\": \"payment-"
+            },
+            {
+              "name": "pro: contract_assemble writes docx with disclaimer",
+              "pass": true,
+              "detail": "{\n  \"path\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-clauses-pro-TZgngM/contract.docx\","
+            },
+            {
+              "name": "pro: 11th own clause allowed",
+              "pass": true,
+              "detail": "{\n  \"added\": {\n    \"id\": \"own-clause-11\",\n    \"title\": \"Own clause 11\",\n    \"category\": \"custom\",\n  "
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "recurring",
+          "pass": 20,
+          "total": 20,
+          "ms": 579,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-recurring in 252 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"recurring\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgrade"
+            },
+            {
+              "name": "free: schedule_create monthly",
+              "pass": true,
+              "detail": "Created schedule 871fd535 for Acme, monthly from 2026-07-01.\n\n{\n  \"id\": \"871fd535\",\n  \"client\": \"Acm"
+            },
+            {
+              "name": "free: dry run reports due periods",
+              "pass": true,
+              "detail": "{\n  \"as_of\": \"2026-09-01\",\n  \"dry_run\": true,\n  \"would_create\": [\n    {\n      \"schedule_id\": \"871fd5"
+            },
+            {
+              "name": "free: generate creates invoices at 1328.40",
+              "pass": true,
+              "detail": "as_of 2026-09-01: created 3 invoices, skipped 0 already invoiced.\n\nINV-2026-0001  Acme  period 2026-07-01  EUR 1328.40  "
+            },
+            {
+              "name": "free: second run creates none",
+              "pass": true,
+              "detail": "as_of 2026-09-01: created 0 invoices, skipped 3 already invoiced.\n\nThey are stored in the invoice se"
+            },
+            {
+              "name": "free: 4th active schedule gated",
+              "pass": true,
+              "detail": "You already have 3 active schedules. The free tier allows 3; pause one with schedule_pause, or upgra"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-recurring in 178 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"recurring\", \"tier\": \"pro\", \"licenseId\": \"c4bed0c68dfb\", \"expires\":"
+            },
+            {
+              "name": "pro: schedule_create monthly",
+              "pass": true,
+              "detail": "Created schedule 73f2924a for Acme, monthly from 2026-07-01.\n\n{\n  \"id\": \"73f2924a\",\n  \"client\": \"Acm"
+            },
+            {
+              "name": "pro: dry run reports due periods",
+              "pass": true,
+              "detail": "{\n  \"as_of\": \"2026-09-01\",\n  \"dry_run\": true,\n  \"would_create\": [\n    {\n      \"schedule_id\": \"73f292"
+            },
+            {
+              "name": "pro: generate creates invoices at 1328.40",
+              "pass": true,
+              "detail": "as_of 2026-09-01: created 3 invoices, skipped 0 already invoiced.\n\nINV-2026-0001  Acme  period 2026-07-01  EUR 1328.40  "
+            },
+            {
+              "name": "pro: second run creates none",
+              "pass": true,
+              "detail": "as_of 2026-09-01: created 0 invoices, skipped 3 already invoiced.\n\nThey are stored in the invoice se"
+            },
+            {
+              "name": "pro: 4th active schedule allowed",
+              "pass": true,
+              "detail": "Created schedule 1e256f36 for C4, monthly from 2026-09-01.\n\n{\n  \"id\": \"1e256f36\",\n  \"client\": \"C4\",\n"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "resume",
+          "pass": 18,
+          "total": 18,
+          "ms": 420,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-resume in 132 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"resume\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgradeUrl"
+            },
+            {
+              "name": "free: profile_set",
+              "pass": true,
+              "detail": "Profile \"default\" stored: 1 roles, 1 bullets, 2 skills, 1 education entries. Sto"
+            },
+            {
+              "name": "free: resume_create writes docx and reports keywords",
+              "pass": true,
+              "detail": "{\n  \"path\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-resume-free-neh9dU/cv.docx\",\n  \"st"
+            },
+            {
+              "name": "free: tailor_to_job matched and missing",
+              "pass": true,
+              "detail": "{\n  \"variant\": \"default\",\n  \"keywords\": [\n    \"postgres\",\n    \"go\",\n    \"kubernetes\",\n    \"engineer\""
+            },
+            {
+              "name": "free: 4th cover letter gated",
+              "pass": true,
+              "detail": "Error: You have already written 3 cover letters in 2026-09. The free tier allows 3 per calendar mont"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-resume in 130 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"resume\", \"tier\": \"pro\", \"licenseId\": \"3a8a6d0189b2\", \"expires\": nu"
+            },
+            {
+              "name": "pro: profile_set",
+              "pass": true,
+              "detail": "Profile \"default\" stored: 1 roles, 1 bullets, 2 skills, 1 education entries. Sto"
+            },
+            {
+              "name": "pro: resume_create writes docx and reports keywords",
+              "pass": true,
+              "detail": "{\n  \"path\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-resume-pro-8SMRxn/cv.docx\",\n  \"sty"
+            },
+            {
+              "name": "pro: tailor_to_job matched and missing",
+              "pass": true,
+              "detail": "{\n  \"variant\": \"default\",\n  \"keywords\": [\n    \"postgres\",\n    \"go\",\n    \"kubernetes\",\n    \"engineer\""
+            },
+            {
+              "name": "pro: 4th cover letter allowed",
+              "pass": true,
+              "detail": "{\n  \"path\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-resume-pro-8SMRxn/cl4.docx\",\n  \"wo"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "docx",
+          "pass": 16,
+          "total": 16,
+          "ms": 455,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-docx in 131 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "11 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"docx\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgradeUrl\":"
+            },
+            {
+              "name": "free: doc_from_markdown writes docx",
+              "pass": true,
+              "detail": "Wrote Word document /var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-docx-free-UaN0Qn/md.docx\n\n{"
+            },
+            {
+              "name": "free: doc_read returns text",
+              "pass": true,
+              "detail": "md.docx: 4 blocks, 41 characters.\n\nOUTLINE\nTitle\n\nTEXT\nTitle\n\nHello world.\n\none\ntwo\n\na | b\n1 | 2"
+            },
+            {
+              "name": "free: 4th proposal gated",
+              "pass": true,
+              "detail": "You have already created 3 proposals or contracts in 2026-09. The free tier allows 3 proposals or co"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-docx in 128 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "11 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"docx\", \"tier\": \"pro\", \"licenseId\": \"051780caf2a6\", \"expires\": null"
+            },
+            {
+              "name": "pro: doc_from_markdown writes docx",
+              "pass": true,
+              "detail": "Wrote Word document /var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-docx-pro-vjfivr/md.docx\n\n{\n"
+            },
+            {
+              "name": "pro: doc_read returns text",
+              "pass": true,
+              "detail": "md.docx: 4 blocks, 41 characters.\n\nOUTLINE\nTitle\n\nTEXT\nTitle\n\nHello world.\n\none\ntwo\n\na | b\n1 | 2"
+            },
+            {
+              "name": "pro: 4th proposal allowed",
+              "pass": true,
+              "detail": "Created proposal PROP-2026-0004 for Acme. The letterhead came from your business_set profile, and re"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "timezone",
+          "pass": 16,
+          "total": 16,
+          "ms": 378,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-timezone in 148 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "11 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"timezone\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgradeU"
+            },
+            {
+              "name": "free: convert_time Warsaw 15:00 -> Denver 07:00",
+              "pass": true,
+              "detail": "Europe/Warsaw -> Europe/Warsaw: 2026-09-10 15:00 Thu (GMT+2, UTC+02:00)\nAmerica/Denver -> America/Denver: 2026-09-10 07:"
+            },
+            {
+              "name": "free: find_meeting_slots 3 participants answers",
+              "pass": true,
+              "detail": "No slot fits everyone's working hours in the next 5 day(s) for 60 minutes.\n  me (Europe/Warsaw): 09:"
+            },
+            {
+              "name": "free: 4th participant gated",
+              "pass": true,
+              "detail": "\"a meeting with 4 participants (the free tier plans up to 3)\" is a Pro feature. Pro is a one-time $1"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-timezone in 140 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "11 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"timezone\", \"tier\": \"pro\", \"licenseId\": \"0efcae5ca718\", \"expires\": "
+            },
+            {
+              "name": "pro: convert_time Warsaw 15:00 -> Denver 07:00",
+              "pass": true,
+              "detail": "Europe/Warsaw -> Europe/Warsaw: 2026-09-10 15:00 Thu (GMT+2, UTC+02:00)\nAmerica/Denver -> America/Denver: 2026-09-10 07:"
+            },
+            {
+              "name": "pro: find_meeting_slots 3 participants answers",
+              "pass": true,
+              "detail": "No slot fits everyone's working hours in the next 5 day(s) for 60 minutes.\n  me (Europe/Warsaw): 09:"
+            },
+            {
+              "name": "pro: 4th participant allowed",
+              "pass": true,
+              "detail": "No slot fits everyone's working hours in the next 5 day(s) for 60 minutes.\n  me (Europe/Warsaw): 09:"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "currency",
+          "pass": 16,
+          "total": 16,
+          "ms": 4568,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-currency in 116 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"currency\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgradeU"
+            },
+            {
+              "name": "free: convert USD->PLN with rate date",
+              "pass": true,
+              "detail": "{\n  \"amount\": 100,\n  \"from\": \"USD\",\n  \"to\": \"PLN\",\n  \"rate\": 3.736828,\n  \"rate_meaning\": \"1 USD = 3.736828 PLN\",\n  \"rate"
+            },
+            {
+              "name": "free: fx_rates_for shape",
+              "pass": true,
+              "detail": "{\n  \"target_currency\": \"USD\",\n  \"fx_rates\": {\n    \"EUR\": 1.1578,\n    \"GBP\": 1.348317\n  },\n  \"meaning\": \"1 unit of each k"
+            },
+            {
+              "name": "free: 91-day history gated",
+              "pass": true,
+              "detail": "That window is 92 days (2026-06-04 to 2026-09-03) and the free tier reads 90 days at a time. Nothing"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-currency in 139 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"currency\", \"tier\": \"pro\", \"licenseId\": \"10d20cc53565\", \"expires\": "
+            },
+            {
+              "name": "pro: convert USD->PLN with rate date",
+              "pass": true,
+              "detail": "{\n  \"amount\": 100,\n  \"from\": \"USD\",\n  \"to\": \"PLN\",\n  \"rate\": 3.736828,\n  \"rate_meaning\": \"1 USD = 3.736828 PLN\",\n  \"rate"
+            },
+            {
+              "name": "pro: fx_rates_for shape",
+              "pass": true,
+              "detail": "{\n  \"target_currency\": \"USD\",\n  \"fx_rates\": {\n    \"EUR\": 1.1578,\n    \"GBP\": 1.348317\n  },\n  \"meaning\": \"1 unit of each k"
+            },
+            {
+              "name": "pro: 91-day history allowed",
+              "pass": true,
+              "detail": "{\n  \"pair\": \"EUR/USD\",\n  \"from_date\": \"2026-06-04\",\n  \"to_date\": \"2026-09-03\",\n  \"business_days\": 65"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "expense-tracker",
+          "pass": 22,
+          "total": 22,
+          "ms": 471,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-expense-tracker in 194 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"expense-tracker\", \"tier\": \"free\", \"reason\": \"no license found\", \"u"
+            },
+            {
+              "name": "free: expense_add VAT split 50.00 + 11.50",
+              "pass": true,
+              "detail": "Saved 350f0273: EUR 61.50 on 2026-09-03 at Media Markt [uncategorised] for acme. Net EUR 50.00, VAT EUR 11.50 at 23% (the rate you passed on this call). Billabl"
+            },
+            {
+              "name": "free: category_rules",
+              "pass": true,
+              "detail": "Stored 1 category rules, replacing the previous list. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid "
+            },
+            {
+              "name": "free: rule auto-categorises Travel",
+              "pass": true,
+              "detail": "Saved d992f7f6: PLN 23.00 on 2026-09-03 at Bolt [Travel, from a category rule]. No VAT rate was given and none is stored, so net equals gross and the VAT column"
+            },
+            {
+              "name": "free: mileage 45 km PL = 51.75 PLN",
+              "pass": true,
+              "detail": "Saved 1d68006e: 45 kms on 2026-09-03 at 1.15 PLN/km (table rate PL 1.15 PLN/km, an approximation; pass rate_per_km for your exact scheme) = PLN 51.75. client me"
+            },
+            {
+              "name": "free: summary by category per currency",
+              "pass": true,
+              "detail": "{\n  \"from\": \"2026-09-01\",\n  \"to\": \"2026-09-03\",\n  \"group_by\": \"category\",\n  \"by_currency\": [\n    {\n      \"currency\": \"EUR\",\n      \"count\": 1,\n      \"groups\": [\n"
+            },
+            {
+              "name": "free: markup free, net 50.00 x 1.10 = 55.00 + tax_rate",
+              "pass": true,
+              "detail": "{\n  \"project\": \"acme\",\n  \"from\": \"2026-09-01\",\n  \"to\": \"2026-09-03\",\n  \"markup_percent\": 10,\n  \"count\": 1,\n  \"marked_rebilled\": false,\n  \"vat_assumed_lines\": 0,"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-expense-tracker in 178 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"expense-tracker\", \"tier\": \"pro\", \"licenseId\": \"beee2678ccc6\", \"exp"
+            },
+            {
+              "name": "pro: expense_add VAT split 50.00 + 11.50",
+              "pass": true,
+              "detail": "Saved 644b3f23: EUR 61.50 on 2026-09-03 at Media Markt [uncategorised] for acme. Net EUR 50.00, VAT EUR 11.50 at 23% (the rate you passed on this call). Billabl"
+            },
+            {
+              "name": "pro: category_rules",
+              "pass": true,
+              "detail": "Stored 1 category rules, replacing the previous list. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid "
+            },
+            {
+              "name": "pro: rule auto-categorises Travel",
+              "pass": true,
+              "detail": "Saved dc23368d: PLN 23.00 on 2026-09-03 at Bolt [Travel, from a category rule]. No VAT rate was given and none is stored, so net equals gross and the VAT column"
+            },
+            {
+              "name": "pro: mileage 45 km PL = 51.75 PLN",
+              "pass": true,
+              "detail": "Saved db0424a0: 45 kms on 2026-09-03 at 1.15 PLN/km (table rate PL 1.15 PLN/km, an approximation; pass rate_per_km for your exact scheme) = PLN 51.75. client me"
+            },
+            {
+              "name": "pro: summary by category per currency",
+              "pass": true,
+              "detail": "{\n  \"from\": \"2026-09-01\",\n  \"to\": \"2026-09-03\",\n  \"group_by\": \"category\",\n  \"by_currency\": [\n    {\n      \"currency\": \"EUR\",\n      \"count\": 1,\n      \"groups\": [\n"
+            },
+            {
+              "name": "pro: markup allowed, net 50.00 x 1.10 = 55.00 + tax_rate",
+              "pass": true,
+              "detail": "{\n  \"project\": \"acme\",\n  \"from\": \"2026-09-01\",\n  \"to\": \"2026-09-03\",\n  \"markup_percent\": 10,\n  \"count\": 1,\n  \"marked_rebilled\": false,\n  \"vat_assumed_lines\": 0,"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "time-tracker",
+          "pass": 24,
+          "total": 24,
+          "ms": 324,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-time-tracker in 123 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"time-tracker\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgr"
+            },
+            {
+              "name": "free: timer_start",
+              "pass": true,
+              "detail": "Started timer for \"acme\" - validation at 2026-09-03T08:58:08.150Z."
+            },
+            {
+              "name": "free: timer_stop",
+              "pass": true,
+              "detail": "Stopped \"acme\" - validation. Duration 00:00:00 (0.00 h).  No rate: this entry carries no currency and no amount. Set one with project_set_rate, or entry_update "
+            },
+            {
+              "name": "free: report",
+              "pass": true,
+              "detail": "{\n  \"from\": \"2026-09-02T08:58:08.152Z\",\n  \"to\": \"2026-09-03T09:58:08.152Z\",\n  \"group_by\": \"project\",\n  \"rows\": [\n    {\n      \"key\": \"acme\",\n      \"hours\": 0,\n  "
+            },
+            {
+              "name": "free: tag grouping allowed (not gated)",
+              "pass": true,
+              "detail": "tag       hours  billable h  amount\n--------  -----  ----------  ------\n(no tag)  0.00   0.00        -\n\nTotal 0.00 h, -.\nTag rows can overlap: an entry tagged t"
+            },
+            {
+              "name": "free: report without group_by returns a plain total",
+              "pass": true,
+              "detail": "Total 0.00 h, -."
+            },
+            {
+              "name": "free: apply_to_existing re-rates logged entries and states the new total",
+              "pass": true,
+              "detail": "Rate for \"acme\" set to USD 120.00 per hour.\n1 of 1 already logged entries re-rated (only_missing: false). New total for \"acme\": 0.00 h, -."
+            },
+            {
+              "name": "free: only_missing true keeps the old fill-the-gaps behaviour",
+              "pass": true,
+              "detail": "Rate for \"acme\" set to USD 140.00 per hour.\n0 of 1 entries that had no rate of their own re-rated (only_missing: true). New total for \"acme\": 0.00 h, -."
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-time-tracker in 115 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"time-tracker\", \"tier\": \"pro\", \"licenseId\": \"22ddb41b8802\", \"expire"
+            },
+            {
+              "name": "pro: timer_start",
+              "pass": true,
+              "detail": "Started timer for \"acme\" - validation at 2026-09-03T08:58:08.341Z."
+            },
+            {
+              "name": "pro: timer_stop",
+              "pass": true,
+              "detail": "Stopped \"acme\" - validation. Duration 00:00:00 (0.00 h).  No rate: this entry carries no currency and no amount. Set one with project_set_rate, or entry_update "
+            },
+            {
+              "name": "pro: report",
+              "pass": true,
+              "detail": "{\n  \"from\": \"2026-09-02T08:58:08.343Z\",\n  \"to\": \"2026-09-03T09:58:08.343Z\",\n  \"group_by\": \"project\",\n  \"rows\": [\n    {\n      \"key\": \"acme\",\n      \"hours\": 0,\n  "
+            },
+            {
+              "name": "pro: tag grouping allowed (not gated)",
+              "pass": true,
+              "detail": "tag       hours  billable h  amount\n--------  -----  ----------  ------\n(no tag)  0.00   0.00        -\n\nTotal 0.00 h, -.\nTag rows can overlap: an entry tagged t"
+            },
+            {
+              "name": "pro: report without group_by returns a plain total",
+              "pass": true,
+              "detail": "Total 0.00 h, -."
+            },
+            {
+              "name": "pro: apply_to_existing re-rates logged entries and states the new total",
+              "pass": true,
+              "detail": "Rate for \"acme\" set to USD 120.00 per hour.\n1 of 1 already logged entries re-rated (only_missing: false). New total for \"acme\": 0.00 h, -."
+            },
+            {
+              "name": "pro: only_missing true keeps the old fill-the-gaps behaviour",
+              "pass": true,
+              "detail": "Rate for \"acme\" set to USD 140.00 per hour.\n0 of 1 entries that had no rate of their own re-rated (only_missing: true). New total for \"acme\": 0.00 h, -."
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "price-tracker",
+          "pass": 18,
+          "total": 18,
+          "ms": 405,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-price-tracker in 126 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"price-tracker\", \"tier\": \"free\", \"reason\": \"no license found\", \"upg"
+            },
+            {
+              "name": "free: price_add_manual normalises 1.299,00",
+              "pass": true,
+              "detail": "Recorded 1299.00 EUR for probe (f71e3e85) at 2026-09-03T08:58:08.480Z. 1 observation(s) stored."
+            },
+            {
+              "name": "free: price_history",
+              "pass": true,
+              "detail": "probe (f71e3e85) - 1 of 1 observation(s)\nmin 1299 / max 1299 EUR\n[\n  {\n    \"ts\": \"2026-09-03T08:58:08.480Z\",\n    \"price\": \"1299.00\",\n    \"currency\": \"EUR\",\n    "
+            },
+            {
+              "name": "free: watch_add extracts JSON-LD price",
+              "pass": true,
+              "detail": "Watching w1 as dc70dbd3.\nPrice now: 49.90 USD\nConfidence: high (source json-ld)\nNo target price set.\nChecks run when you ask: there is no background job and not"
+            },
+            {
+              "name": "free: 4th+ watch gated",
+              "pass": true,
+              "detail": "The free tier tracks 3 items at a time and you already have 3. Remove one with watch_remove, or unlock unlimited watches.\n\n\"unlimited watches\" is a Pro feature."
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-price-tracker in 122 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"price-tracker\", \"tier\": \"pro\", \"licenseId\": \"01b975ddc322\", \"expir"
+            },
+            {
+              "name": "pro: price_add_manual normalises 1.299,00",
+              "pass": true,
+              "detail": "Recorded 1299.00 EUR for probe (cc201a87) at 2026-09-03T08:58:08.712Z. 1 observation(s) stored."
+            },
+            {
+              "name": "pro: price_history",
+              "pass": true,
+              "detail": "probe (cc201a87) - 1 of 1 observation(s)\nmin 1299 / max 1299 EUR\n[\n  {\n    \"ts\": \"2026-09-03T08:58:08.712Z\",\n    \"price\": \"1299.00\",\n    \"currency\": \"EUR\",\n    "
+            },
+            {
+              "name": "pro: watch_add extracts JSON-LD price",
+              "pass": true,
+              "detail": "Watching w1 as d221aab8.\nPrice now: 49.90 USD\nConfidence: high (source json-ld)\nNo target price set.\nChecks run when you ask: there is no background job and not"
+            },
+            {
+              "name": "pro: 4th+ watch allowed",
+              "pass": true,
+              "detail": "Watching w4 as efdd23a6.\nPrice now: 49.90 USD\nConfidence: high (source json-ld)\nNo target price set.\nChecks run when you ask: there is no background job and not"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "spreadsheet",
+          "pass": 18,
+          "total": 18,
+          "ms": 448,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-spreadsheet in 183 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"spreadsheet\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgra"
+            },
+            {
+              "name": "free: sheet_info",
+              "pass": true,
+              "detail": "{\n  \"file\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-spreadsheet-free-OFm3ds/orders.csv\",\n  \"format\": \"csv\",\n  \"sizeBytes\": 5021,\n  \"sheets\": [\n   "
+            },
+            {
+              "name": "free: sheet_query expression",
+              "pass": true,
+              "detail": "Query: where [Qty] >= 5 AND [Status] = \"open\"; limit 5\n43 of 300 rows match, showing 5\n\n| Customer | Qty | Unit Price | Status |\n|----------|-----|------------|"
+            },
+            {
+              "name": "free: convert 300 rows -> 301 lines (under the 500-row free write cap)",
+              "pass": true,
+              "detail": "301 lines"
+            },
+            {
+              "name": "free: convert 600 rows -> refused, zero bytes written + upgrade",
+              "pass": true,
+              "detail": "0 lines"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-spreadsheet in 177 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"spreadsheet\", \"tier\": \"pro\", \"licenseId\": \"67475322db10\", \"expires"
+            },
+            {
+              "name": "pro: sheet_info",
+              "pass": true,
+              "detail": "{\n  \"file\": \"/var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-spreadsheet-pro-hZBMj8/orders.csv\",\n  \"format\": \"csv\",\n  \"sizeBytes\": 5021,\n  \"sheets\": [\n    "
+            },
+            {
+              "name": "pro: sheet_query expression",
+              "pass": true,
+              "detail": "Query: where [Qty] >= 5 AND [Status] = \"open\"; limit 5\n43 of 300 rows match, showing 5\n\n| Customer | Qty | Unit Price | Status |\n|----------|-----|------------|"
+            },
+            {
+              "name": "pro: convert 300 rows -> 301 lines (under the 500-row free write cap)",
+              "pass": true,
+              "detail": "301 lines"
+            },
+            {
+              "name": "pro: convert 600 rows -> 601 lines",
+              "pass": true,
+              "detail": "601 lines"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "invoice",
+          "pass": 20,
+          "total": 20,
+          "ms": 465,
+          "checks": [
+            {
+              "name": "free: initialize",
+              "pass": true,
+              "detail": "mcp-invoice in 167 ms"
+            },
+            {
+              "name": "free: tools/list",
+              "pass": true,
+              "detail": "12 tools"
+            },
+            {
+              "name": "free: license_status reports free",
+              "pass": true,
+              "detail": "{ \"product\": \"invoice\", \"tier\": \"free\", \"reason\": \"no license found\", \"upgradeUr"
+            },
+            {
+              "name": "free: business_set",
+              "pass": true,
+              "detail": "Business profile saved to /var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-invoice-free-I6hiDT/data/mcp-servers/invoice and to the shared profile at mcp-ser"
+            },
+            {
+              "name": "free: client_add",
+              "pass": true,
+              "detail": "Added client Acme (68b8ab5e)."
+            },
+            {
+              "name": "free: 4th invoice in month gated",
+              "pass": true,
+              "detail": "You have already created 3 invoices in 2026-09. The free tier allows 3 invoices per calendar month.\n\n\"unlimited invoices\" is a Pro feature. Pro is a one-time $1"
+            },
+            {
+              "name": "free: invoice_pdf writes a PDF",
+              "pass": true,
+              "detail": "INV-2026-0001 %PDF- 2419 bytes"
+            },
+            {
+              "name": "free: total 12 x 90 + 23% = 1328.40",
+              "pass": true,
+              "detail": "{ \"count\": 3, \"invoices\": [ { \"number\": \"INV-2026-0001\", \"client\": \"Acme\", \"issue_date\": \"2026-09-03\", \"due_date\": \"2026"
+            },
+            {
+              "name": "free: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "free: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "pro: initialize",
+              "pass": true,
+              "detail": "mcp-invoice in 172 ms"
+            },
+            {
+              "name": "pro: tools/list",
+              "pass": true,
+              "detail": "12 tools"
+            },
+            {
+              "name": "pro: license_status reports pro",
+              "pass": true,
+              "detail": "{ \"product\": \"invoice\", \"tier\": \"pro\", \"licenseId\": \"ed2b725cc493\", \"expires\": n"
+            },
+            {
+              "name": "pro: business_set",
+              "pass": true,
+              "detail": "Business profile saved to /var/folders/nd/3cp8d1r97q9fn3chr1rd48qh0000gn/T/val-invoice-pro-njHbMQ/data/mcp-servers/invoice and to the shared profile at mcp-serv"
+            },
+            {
+              "name": "pro: client_add",
+              "pass": true,
+              "detail": "Added client Acme (f12e4b16)."
+            },
+            {
+              "name": "pro: 4th invoice in month allowed",
+              "pass": true,
+              "detail": "Created invoice INV-2026-0004.\n\n{\n  \"number\": \"INV-2026-0004\",\n  \"client\": \"Acme\",\n  \"issue_date\": \"2026-09-03\",\n  \"due_date\": \"2026-09-17\",\n  \"currency\": \"EUR\""
+            },
+            {
+              "name": "pro: invoice_pdf writes a PDF",
+              "pass": true,
+              "detail": "INV-2026-0001 %PDF- 2343 bytes"
+            },
+            {
+              "name": "pro: total 12 x 90 + 23% = 1328.40",
+              "pass": true,
+              "detail": "{ \"count\": 4, \"invoices\": [ { \"number\": \"INV-2026-0001\", \"client\": \"Acme\", \"issue_date\": \"2026-09-03\", \"due_date\": \"2026"
+            },
+            {
+              "name": "pro: unknown tool returns clean error",
+              "pass": true,
+              "detail": "MCP error -32602: Tool nonexistent_tool not found"
+            },
+            {
+              "name": "pro: stdout carried only JSON-RPC",
+              "pass": true,
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "id": "remote (mcp.zovo.one/mcp)",
+          "pass": 31,
+          "total": 31,
+          "ms": 15465,
+          "checks": [
+            {
+              "name": "index lists 11 endpoints",
+              "pass": true,
+              "detail": "{\"name\":\"mcp.zovo.one remote MCP endpoints\",\"protocol\":\"MCP streamable HTTP (2025-06-18)\",\"transport"
+            },
+            {
+              "name": "anonymous token minted (or per-IP mint limit 429 after repeated runs)",
+              "pass": true,
+              "detail": "HTTP 429"
+            },
+            {
+              "name": "time-tracker: tools/list over HTTP",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "price-tracker: tools/list over HTTP",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "invoice: tools/list over HTTP",
+              "pass": true,
+              "detail": "12 tools"
+            },
+            {
+              "name": "expense-tracker: tools/list over HTTP",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "spreadsheet: tools/list over HTTP",
+              "pass": true,
+              "detail": "13 tools"
+            },
+            {
+              "name": "currency: tools/list over HTTP",
+              "pass": true,
+              "detail": "10 tools"
+            },
+            {
+              "name": "timezone: tools/list over HTTP",
+              "pass": true,
+              "detail": "11 tools"
+            },
+            {
+              "name": "docx: tools/list over HTTP",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "resume: tools/list over HTTP",
+              "pass": true,
+              "detail": "13 tools"
+            },
+            {
+              "name": "recurring: tools/list over HTTP",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "clauses: tools/list over HTTP",
+              "pass": true,
+              "detail": "12 tools"
+            },
+            {
+              "name": "hosted expense_add splits 50.00 + 11.50",
+              "pass": true,
+              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Saved 45f2b648: EUR 61.50 on 2026-09-03 at Media Markt "
+            },
+            {
+              "name": "hosted spreadsheet inline csv group_by sum (North 12)",
+              "pass": true,
+              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Query: group by Region; sum Units as total\\n2 groups fr"
+            },
+            {
+              "name": "hosted currency convert with rate date",
+              "pass": true,
+              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"amount\\\": 100,\\n  \\\"from\\\": \\\"USD\\\",\\n  \\\"to\\\": "
+            },
+            {
+              "name": "hosted timezone convert_time",
+              "pass": true,
+              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Europe/Warsaw -> Europe/Warsaw: 2026-09-10 15:00 Thu (G"
+            },
+            {
+              "name": "hosted docx download starts with PK",
+              "pass": true,
+              "detail": "link PK"
+            },
+            {
+              "name": "hosted resume profile_set + resume_create download starts with PK",
+              "pass": true,
+              "detail": "link PK {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"path\\\": \\\"https://mcp.zovo.o"
+            },
+            {
+              "name": "hosted recurring schedule_create + invoice_generate_due writes the invoice store",
+              "pass": true,
+              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"as_of 2026-09-03: created 3 invoices, skipped 0 already invoiced.\\n\\nINV-20"
+            },
+            {
+              "name": "hosted clauses clause_search + contract_assemble download starts with PK",
+              "pass": true,
+              "detail": "link PK"
+            },
+            {
+              "name": "url-token path lists tools with no headers",
+              "pass": true,
+              "detail": "14 tools"
+            },
+            {
+              "name": "whoami reports tier pro for a signed key",
+              "pass": true,
+              "detail": "{\"tenant\":\"lic:d5d15aaed03a\",\"tier\":\"pro\",\"bound\":false,\"kind\":\"license\",\"rate_limit_per_hour\":6000,"
+            },
+            {
+              "name": "connect page 200 or per-IP 429",
+              "pass": true,
+              "detail": "429"
+            },
+            {
+              "name": "bound endpoint answers for an unknown tenant",
+              "pass": true,
+              "detail": "{\"bound\":false,\"product\":null}"
+            },
+            {
+              "name": "buy with tenant still 303 to Stripe",
+              "pass": true,
+              "detail": "303"
+            },
+            {
+              "name": "JSON-RPC batch rejected 400",
+              "pass": true,
+              "detail": "400"
+            },
+            {
+              "name": "oversize body 413",
+              "pass": true,
+              "detail": "413"
+            },
+            {
+              "name": "SSRF target refused",
+              "pass": true,
+              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: 169.254.169.254 is not a public address, so this"
+            },
+            {
+              "name": "state persists across requests (KV)",
+              "pass": true,
+              "detail": "{\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Running: \\\"remote-probe\\\" for 00:00:01 (since 2026-09-0"
+            },
+            {
+              "name": "no token -> 401",
+              "pass": true,
+              "detail": "401"
+            }
+          ]
+        },
+        {
+          "id": "billing (mcp.zovo.one)",
+          "pass": 17,
+          "total": 17,
+          "ms": 8822,
+          "checks": [
+            {
+              "name": "health ok, live mode, signer ok",
+              "pass": true,
+              "detail": "{\"ok\":true,\"service\":\"mcp-billing\",\"signer\":\"ok\",\"products\":[\"time-tracker\",\"price-tracker\",\"spreadsheet\",\"invoice\",\"exp"
+            },
+            {
+              "name": "buy/time-tracker -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1ohLdMZ"
+            },
+            {
+              "name": "buy/price-tracker -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1wTgzg2"
+            },
+            {
+              "name": "buy/spreadsheet -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1HC4ILU"
+            },
+            {
+              "name": "buy/invoice -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1AksDH0"
+            },
+            {
+              "name": "buy/expense-tracker -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1gcquZ7"
+            },
+            {
+              "name": "buy/currency -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1DXssYC"
+            },
+            {
+              "name": "buy/docx -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1NnCt6Y"
+            },
+            {
+              "name": "buy/timezone -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1RlMKyb"
+            },
+            {
+              "name": "buy/resume -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1zo0SCK"
+            },
+            {
+              "name": "buy/recurring -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1P1bZIB"
+            },
+            {
+              "name": "buy/clauses -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1c73Kgv"
+            },
+            {
+              "name": "buy/bundle -> 303 to Stripe",
+              "pass": true,
+              "detail": "303 https://checkout.stripe.com/c/pay/cs_live_b1RHZUFi"
+            },
+            {
+              "name": "verify accepts a locally signed key (same keypair as worker)",
+              "pass": true,
+              "detail": "{\"ok\":true,\"product\":\"invoice\",\"id\":\"a15fecacb7b4\",\"iat\":1788425913,\"exp\":null}"
             },
             {
               "name": "verify rejects garbage",

@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-03T08:43:24.174Z",
+  "generated_at": "2026-09-03T08:59:32.781Z",
   "kpis": [
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 12,
+      "value": 11,
       "target": 12,
       "unit": "entries",
       "how": "registry search theluckystrike",
       "why": "The official registry is the index Claude, Cursor and VS Code pickers read.",
-      "status": "met"
+      "status": "progress"
     },
     {
       "cat": "Discovery",
@@ -44,7 +44,7 @@
     {
       "cat": "Install",
       "name": "Bundle downloads (all releases)",
-      "value": 343,
+      "value": 354,
       "target": 1000,
       "unit": "downloads",
       "how": "gh api releases (scripts/measure.mjs)",
@@ -84,7 +84,7 @@
     {
       "cat": "Activation",
       "name": "Hosted tenants with stored data",
-      "value": 105,
+      "value": 106,
       "target": 100,
       "unit": "tenants",
       "how": "wrangler kv key list --remote (prefix tok)",
@@ -94,7 +94,7 @@
     {
       "cat": "Activation",
       "name": "Hosted downloads served",
-      "value": 67,
+      "value": 73,
       "target": 200,
       "unit": "files (1h TTL)",
       "how": "wrangler kv key list --remote (prefix dl)",
@@ -104,29 +104,29 @@
     {
       "cat": "Activation",
       "name": "First-prompt tool reach (round 8)",
-      "value": 98,
+      "value": null,
       "target": 95,
       "unit": "% of calls on the right tool",
       "how": "docs/USER_VALUE_R8.md (50 of 51)",
       "why": "Round 6 showed correct servers losing to built-in tools; descriptions are the lever.",
-      "status": "met"
+      "status": "unmeasured"
     },
     {
       "cat": "Value",
       "name": "User-value score, latest round",
-      "value": 75,
+      "value": 96,
       "target": 90,
       "unit": "%",
       "how": "scripts/uv-index.mjs from data/user_value*.json",
       "why": "Scenario scoring through a real MCP client is the only measure of value that includes the model.",
-      "status": "progress"
+      "status": "met"
     },
     {
       "cat": "Value",
       "name": "Seam defects fixed of found",
       "value": 60,
-      "target": 66,
-      "unit": "of 66",
+      "target": 67,
+      "unit": "of 67",
       "how": "defect ledger in the user-value tab",
       "why": "Every lost point since round 3 was a handoff between servers.",
       "status": "progress"
@@ -144,7 +144,7 @@
     {
       "cat": "Reliability",
       "name": "Live validation checks passing",
-      "value": "247/247",
+      "value": "252/252",
       "target": "all",
       "unit": "checks",
       "how": "node scripts/validate.mjs",
@@ -164,7 +164,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 78,
+      "value": 88,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -215,7 +215,7 @@
     {
       "cat": "Monetization",
       "name": "Pro tenants on hosted endpoints",
-      "value": 308,
+      "value": 329,
       "target": 20,
       "unit": "tenants (includes validation keys)",
       "how": "wrangler kv key list --remote (prefix lic)",
@@ -226,24 +226,24 @@
   "raw": {
     "stripe": {
       "sessions_last100": 100,
-      "probe_sessions": 61,
+      "probe_sessions": 91,
       "human_sessions": 0,
       "paid": 0,
       "note": "sessions created before 2026-09-03 08:55 UTC predate probe tagging and are excluded",
-      "untagged_before_tagging": 100
+      "untagged_before_tagging": 87
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 629,
+      "total": 664,
       "by": {
         "anon": 19,
-        "dl": 67,
-        "lic": 308,
-        "meta": 96,
+        "dl": 73,
+        "lic": 329,
+        "meta": 99,
         "mint": 2,
-        "rl": 30,
+        "rl": 34,
         "shared": 2,
-        "tok": 105
+        "tok": 106
       }
     },
     "license_kv": {
@@ -251,16 +251,16 @@
       "by": {}
     },
     "latency": {
-      "p50_ms": 78,
+      "p50_ms": 88,
       "samples": [
-        463,
-        78,
-        71
+        959,
+        88,
+        84
       ]
     },
     "registry": {
-      "entries": 12,
-      "hosted": 11
+      "entries": 11,
+      "hosted": 10
     },
     "sitemap_urls": 129
   }

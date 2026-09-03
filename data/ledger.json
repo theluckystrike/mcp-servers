@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T08:24:28.923Z",
+  "generated_at": "2026-09-03T08:59:33.045Z",
   "session": {
-    "count": 29,
+    "count": 30,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -118,6 +118,10 @@
       {
         "at": "2026-09-03T08:24:28.884Z",
         "note": "loop 5 closed: v0.4.1, shared business profile, SPEC.md + contract tests, round 8 27/36, all 11 hosted, 12 mirrors, KPI tab"
+      },
+      {
+        "at": "2026-09-03T08:59:32.975Z",
+        "note": "loop 6: v0.4.2, connect by URL, purchase binding, p50 78 ms, round 9 23/24, backlog 25 to 1, KPI + sprint tabs"
       }
     ]
   },
@@ -125,7 +129,7 @@
     {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/clauses",
       "tools": [
         "clause_add",
@@ -164,7 +168,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -182,7 +186,7 @@
       "build_ok": true,
       "test_summary": "# pass 21 / # fail 0",
       "result_status": "DONE",
-      "loc": 1065,
+      "loc": 1080,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -201,7 +205,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -239,7 +243,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -280,7 +284,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -319,7 +323,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -347,7 +351,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -384,7 +388,7 @@
     {
       "id": "recurring",
       "npm_name": "@theluckystrike/mcp-recurring",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/recurring",
       "tools": [
         "schedule_create",
@@ -425,7 +429,7 @@
     {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/resume",
       "tools": [
         "profile_set",
@@ -462,7 +466,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -499,7 +503,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -540,7 +544,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -667,6 +671,10 @@
       "first_line": "Estate backlinks run - 2026-09-03"
     },
     {
+      "file": "docs/BILLING_BIND_RESULT.md",
+      "first_line": "In-product upgrade path (billing <-> hosted endpoints bind) — RESULT"
+    },
+    {
       "file": "docs/CLAUSES_AUDIT.md",
       "first_line": "mcp-clauses: adversarial audit and user-value run"
     },
@@ -705,6 +713,10 @@
     {
       "file": "docs/CONTENT_R4_RESULT.md",
       "first_line": "Content round 4: guides, setup and compare pages for resume, recurring, clauses - 2026-09-03"
+    },
+    {
+      "file": "docs/CONTENT_R5_RESULT.md",
+      "first_line": "Content round 5: connect-by-URL guide, claude-web setup pages, home lead - 2026-09-03"
     },
     {
       "file": "docs/CONTENT_RESULT.md",
@@ -811,6 +823,10 @@
       "first_line": "Plan v2 (2026-09-03, loop 5)"
     },
     {
+      "file": "docs/PLAN_V3.md",
+      "first_line": "Plan v3 (2026-09-03, loop 6)"
+    },
+    {
       "file": "docs/README_DEPTH_RESULT.md",
       "first_line": "README depth pass — 2026-09-02"
     },
@@ -873,6 +889,10 @@
     {
       "file": "docs/USER_VALUE_R8.md",
       "first_line": "User value audit, round 8 — 2026-09-03"
+    },
+    {
+      "file": "docs/USER_VALUE_R9.md",
+      "first_line": "User value audit, round 9 — 2026-09-03"
     }
   ],
   "revenue": {

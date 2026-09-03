@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-03T08:34:58.630Z",
-  "total_commits": 154,
+  "generated_at": "2026-09-03T08:59:32.915Z",
+  "total_commits": 161,
   "sessions": 29,
   "loops": [
     {
@@ -31,7 +31,7 @@
     {
       "name": "Loop 6: connect by URL, binding, variants, round 9",
       "sessions": 0,
-      "commits": 64
+      "commits": 71
     }
   ],
   "rows": [
@@ -290,7 +290,7 @@
       "at": "2026-09-03T08:24:28.884Z",
       "note": "loop 5 closed: v0.4.1, shared business profile, SPEC.md + contract tests, round 8 27/36, all 11 hosted, 12 mirrors, KPI tab",
       "loop": "Loop 5: specs, shared profile, KPIs",
-      "commits": 64,
+      "commits": 71,
       "subjects": [
         "Billing: currency, docx, timezone products",
         "Billing: currency, docx, timezone products live",
