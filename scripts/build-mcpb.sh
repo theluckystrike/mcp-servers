@@ -23,7 +23,7 @@ mkdir -p "$BUNDLES"
 MCPB="npx -y @anthropic-ai/mcpb"
 LIC_SRC="$ROOT/packages/mcp-license"
 
-SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses"
+SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar"
 
 declare -A DISPLAY_NAME=(
   [time-tracker]="Time Tracker"
@@ -37,6 +37,8 @@ declare -A DISPLAY_NAME=(
   [resume]="Resume"
   [recurring]="Recurring Invoices"
   [clauses]="Clause Library"
+  [pdf]="PDF Tools"
+  [calendar]="Calendar"
 )
 
 declare -A KEYWORDS=(
@@ -51,6 +53,8 @@ declare -A KEYWORDS=(
   [resume]='["mcp","model-context-protocol","resume","cv","cover-letter","docx","job-application"]'
   [recurring]='["mcp","model-context-protocol","invoice","recurring","subscription","billing","freelance"]'
   [clauses]='["mcp","model-context-protocol","contract","clauses","legal","docx","proposal"]'
+  [pdf]='["mcp","model-context-protocol","pdf","merge","split","stamp"]'
+  [calendar]='["mcp","model-context-protocol","calendar","ics","events","freebusy"]'
 )
 
 # ------------------------------------------------------------------ helpers

@@ -52,6 +52,17 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  pdf: async (c, tmp, tier, ok) => {
+    const { PDFDocument, StandardFonts } = await import("pdf-lib");
+    const mk = async (n, label) => { const d = await PDFDocument.create(); for (let i = 0; i < n; i++) { const pg = d.addPage([400, 300]); pg.drawText(`${label} page ${i + 1}`, { x: 40, y: 200, size: 18, font: await d.embedFont(StandardFonts.Helvetica) }); } const p = join(tmp, `${label}.pdf`); writeFileSync(p, await d.save()); return p; };
+    const a = await mk(2, "a"), b = await mk(3, "b");
+    const info = await c.tool("pdf_info", { path: a }); ok(`${tier}: pdf_info reports 2 pages`, !info.isError && /2/.test(info.text), info.text.slice(0, 80));
+    const out = join(tmp, "merged.pdf");
+    const m = await c.tool("pdf_merge", { paths: [a, b], out_path: out }); ok(`${tier}: pdf_merge writes 5 pages`, !m.isError && existsSync(out) && /5/.test(m.text), m.text.slice(0, 80));
+    const st = await c.tool("pdf_stamp", { path: out, text: "PAID", position: "center", out_path: join(tmp, "paid.pdf") }); ok(`${tier}: pdf_stamp PAID`, !st.isError && existsSync(join(tmp, "paid.pdf")), st.text.slice(0, 80));
+    const tx = await c.tool("pdf_text", { path: a }); ok(`${tier}: pdf_text reads the fixture`, !tx.isError && /a page 1/.test(tx.text), tx.text.slice(0, 80));
+    const six = await c.tool("pdf_merge", { paths: [a, b, a, b, a, b], out_path: join(tmp, "six.pdf") }); ok(`${tier}: 6-file merge ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(six.text) : /mcp\.zovo\.one\/buy\/pdf/.test(six.text) && !existsSync(join(tmp, "six.pdf")), six.text.slice(0, 80));
+  },
   clauses: async (c, tmp, tier, ok) => {
     const s1 = await c.tool("clause_search", { query: "payment" }); ok(`${tier}: clause_search payment finds starter clauses`, !s1.isError && /payment/i.test(s1.text), s1.text.slice(0, 100));
     const ids = [...s1.text.matchAll(/\b(cl_[a-z0-9-]+|[a-z0-9]{6,}-[a-z0-9-]+|[a-z-]+_[a-z_]+)\b/g)].map((m) => m[1]).slice(0, 2);
@@ -234,7 +245,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);

@@ -41,6 +41,8 @@ const CHILDREN: ChildDef[] = [
   { id: "resume", pkg: "@theluckystrike/mcp-resume", optional: true },
   { id: "recurring", pkg: "@theluckystrike/mcp-recurring", optional: true },
   { id: "clauses", pkg: "@theluckystrike/mcp-clauses", optional: true },
+  { id: "pdf", pkg: "@theluckystrike/mcp-pdf", optional: true },
+  { id: "calendar", pkg: "@theluckystrike/mcp-calendar", optional: true },
 ];
 
 /** Resolve the absolute path to a sibling server's dist/index.js. */
