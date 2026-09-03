@@ -183,7 +183,9 @@ test("place table: every entry resolves, cities and countries both work", () => 
   assert.equal(tz.resolveZone("New York").zone, "America/New_York");
   assert.equal(tz.resolveZone("india").zone, "Asia/Kolkata");
   assert.equal(tz.resolveZone("Asia/Kolkata").zone, "Asia/Kolkata");
-  assert.equal(tz.resolveZone("PST").zone, "America/Los_Angeles");
+  assert.equal(tz.resolveZone("PST").zone, "Etc/GMT+8");            // V4-6: fixed offset, never a DST zone
+  assert.match(tz.resolveZone("PST").note, /fixed offset \(UTC-08:00\)/);
+  assert.equal(tz.resolveZone("PT").zone, "America/Los_Angeles");   // the region shorthand keeps DST
   assert.equal(tz.resolveZone("UTC+2").zone, "Etc/GMT-2");   // Etc signs are inverted
   assert.equal(tz.offsetMinutes(at("2026-09-10T12:00:00Z"), "Etc/GMT-2"), 120);
 });
@@ -210,4 +212,196 @@ test("parseTimeIn: wall time, ISO with Z, and relative phrases", () => {
   assert.equal(tz.parseTimeIn("3pm", "Europe/Warsaw", now).toISOString(), "2026-09-10T13:00:00.000Z");
   assert.equal(tz.parseTimeIn("09:30", "Asia/Kolkata", now).toISOString(), "2026-09-10T04:00:00.000Z");
   assert.throws(() => tz.parseTimeIn("sometime soonish", "UTC"), /not a valid time/);
+});
+
+/* ------------------------------------------------------- Codex v4 fixes */
+
+test("V4-4: wall-clock fields are range-checked and must round-trip", () => {
+  assert.throws(() => tz.assertValidWall({ y: 2026, m: 2, d: 30, h: 9, mi: 0, s: 0 }), /not a real calendar date/);
+  assert.throws(() => tz.assertValidWall({ y: 2026, m: 13, d: 1, h: 0, mi: 0, s: 0 }), /out-of-range month/);
+  assert.throws(() => tz.assertValidWall({ y: 2026, m: 1, d: 0, h: 0, mi: 0, s: 0 }), /out-of-range day/);
+  assert.throws(() => tz.assertValidWall({ y: 2026, m: 1, d: 1, h: 24, mi: 0, s: 0 }), /out-of-range hour/);
+  assert.throws(() => tz.assertValidWall({ y: 2026, m: 1, d: 1, h: 0, mi: 60, s: 0 }), /out-of-range minute/);
+  assert.throws(() => tz.assertValidWall({ y: 2026, m: 1, d: 1, h: 0, mi: 0, s: 60 }), /out-of-range second/);
+  assert.throws(() => tz.assertValidWall({ y: 2026, m: 1, d: 1.5, h: 0, mi: 0, s: 0 }), /out-of-range day/);
+  // 2024 is a leap year, 2026 is not
+  assert.ok(tz.assertValidWall({ y: 2024, m: 2, d: 29, h: 0, mi: 0, s: 0 }));
+  assert.throws(() => tz.assertValidWall({ y: 2026, m: 2, d: 29, h: 0, mi: 0, s: 0 }), /has 28 days/);
+  assert.throws(() => tz.parseIsoDateStrict("2026-02-30"), /not a real calendar date/);
+  assert.throws(() => tz.parseIsoDateStrict("2026-2-3"), /YYYY-MM-DD/);
+  assert.equal(tz.dateKey(tz.parseIsoDateStrict("2026-09-10")), "2026-09-10");
+  // the whole point: no silent roll-forward into March
+  assert.throws(() => tz.parseTimeIn("2026-02-30 09:00", "Europe/Warsaw"), /not a real calendar date/);
+});
+
+test("V4-5: a gap is refused with both neighbours, a fold returns the first occurrence", () => {
+  const gapWall = { y: 2026, m: 3, d: 29, h: 2, mi: 30, s: 0 };
+  assert.equal(tz.instantsFor(gapWall, "Europe/Warsaw").length, 0);
+  assert.throws(() => tz.resolveWall(gapWall, "Europe/Warsaw"), (e) => {
+    assert.match(e.message, /does not exist in Europe\/Warsaw/);
+    assert.match(e.message, /2026-03-29 01:30 and 2026-03-29 03:30/);
+    assert.match(e.message, /gap:"backward"/);
+    assert.match(e.message, /gap:"forward"/);
+    return true;
+  });
+  assert.equal(tz.resolveWall(gapWall, "Europe/Warsaw", { gap: "forward" }).date.toISOString(), "2026-03-29T01:30:00.000Z");
+  assert.equal(tz.resolveWall(gapWall, "Europe/Warsaw", { gap: "backward" }).date.toISOString(), "2026-03-29T00:30:00.000Z");
+  assert.equal(tz.resolveWall(gapWall, "Europe/Warsaw", { gap: "forward" }).kind, "gap");
+
+  const foldWall = { y: 2026, m: 10, d: 25, h: 2, mi: 30, s: 0 };
+  assert.equal(tz.instantsFor(foldWall, "Europe/Warsaw").length, 2);
+  const first = tz.resolveWall(foldWall, "Europe/Warsaw");
+  assert.equal(first.kind, "fold");
+  assert.equal(first.date.toISOString(), "2026-10-25T00:30:00.000Z");
+  assert.match(first.note, /used the first occurrence/);
+  assert.match(first.note, /fold:"second"/);
+  const second = tz.resolveWall(foldWall, "Europe/Warsaw", { fold: "second" });
+  assert.equal(second.date.toISOString(), "2026-10-25T01:30:00.000Z");
+  assert.match(second.note, /used the second occurrence/);
+  // an ordinary time has exactly one instant and no note
+  const plain = tz.resolveWall({ y: 2026, m: 7, d: 1, h: 9, mi: 15, s: 0 }, "Europe/Warsaw");
+  assert.equal(plain.kind, "unique");
+  assert.equal(plain.note, undefined);
+});
+
+test("V4-6: fixed abbreviations are fixed offsets all year", () => {
+  const est = tz.resolveZone("EST");
+  assert.equal(est.zone, "Etc/GMT+5");
+  assert.equal(tz.offsetMinutes(at("2026-07-01T12:00:00Z"), est.zone), -300);
+  assert.equal(tz.offsetMinutes(at("2026-01-01T12:00:00Z"), est.zone), -300);
+  assert.equal(tz.parseTimeIn("2026-07-01 09:00", est.zone).toISOString(), "2026-07-01T14:00:00.000Z");
+  assert.equal(tz.resolveZone("CET").zone, "Etc/GMT-1");
+  assert.equal(tz.resolveZone("cest").zone, "Etc/GMT-2");
+  assert.equal(tz.resolveZone("JST").zone, "Etc/GMT-9");
+  assert.equal(tz.resolveZone("IST").zone, "Asia/Kolkata");     // +05:30 has no Etc zone; Kolkata never shifts
+  assert.match(tz.resolveZone("IST").note, /Irish Standard Time/);
+  assert.match(tz.resolveZone("GMT+2").note, /never follows daylight saving/);
+  for (const a of ["EST", "EDT", "PST", "PDT", "CET", "CEST", "BST", "JST", "AEST", "MSK"]) {
+    const z = tz.resolveZone(a).zone;
+    assert.equal(tz.dstChanges(z, 2026).length, 0, `${a} -> ${z} must not observe DST`);
+  }
+});
+
+test("V4-7: overlap boundaries are built from the local calendar date in each zone", () => {
+  // Auckland (+12) evening meets Los Angeles (-7) early morning on the SAME local date
+  const o = tz.overlapOnLocalDate(
+    [{ zone: "Pacific/Auckland", startMin: 19 * 60, endMin: 23 * 60 },
+     { zone: "America/Los_Angeles", startMin: 0, endMin: 6 * 60 }],
+    "2026-09-10",
+  );
+  assert.equal(o.startUtc.toISOString(), "2026-09-10T07:00:00.000Z");
+  assert.equal(o.endUtc.toISOString(), "2026-09-10T11:00:00.000Z");
+  // both ends read as the requested date in both zones, not the day before
+  for (const z of ["Pacific/Auckland", "America/Los_Angeles"]) {
+    assert.equal(tz.dateKey(tz.wallIn(o.startUtc, z)), "2026-09-10", z);
+    assert.equal(tz.dateKey(tz.wallIn(new Date(o.endUtc.getTime() - 60000), z)), "2026-09-10", z);
+  }
+  // Warsaw and New York on 2026-09-10: 13:00-15:00 UTC on that date, not 2026-09-09
+  const wny = tz.overlapOnLocalDate(
+    [{ zone: "Europe/Warsaw", startMin: 540, endMin: 1020 },
+     { zone: "America/New_York", startMin: 540, endMin: 1020 }],
+    "2026-09-10",
+  );
+  assert.equal(wny.startUtc.toISOString(), "2026-09-10T13:00:00.000Z");
+  assert.equal(wny.endUtc.toISOString(), "2026-09-10T15:00:00.000Z");
+  // a 09:00-17:00 day cannot meet across Auckland and Los Angeles
+  assert.equal(tz.overlapOnLocalDate(
+    [{ zone: "Pacific/Auckland", startMin: 540, endMin: 1020 },
+     { zone: "America/Los_Angeles", startMin: 540, endMin: 1020 }], "2026-09-10"), null);
+  assert.throws(() => tz.overlapOnLocalDate([{ zone: "UTC", startMin: 540, endMin: 1020 }], "2026-02-30"), /not a real calendar date/);
+});
+
+test("V4-8: no slot starts before the supplied lower-bound instant", () => {
+  const parts = [{ name: "A", zone: "UTC", startMin: 540, endMin: 1020 }];
+  const bound = at("2026-09-07T16:00:00Z");
+  const slots = tz.findSlots(parts, 60, 1, bound);
+  assert.ok(slots.length > 0, "expected slots after 16:00 UTC");
+  for (const s of slots) assert.ok(s.startUtc.getTime() >= bound.getTime(), s.startUtc.toISOString());
+  assert.ok(!slots.some(s => s.startUtc.toISOString() === "2026-09-07T12:30:00.000Z"), "a past slot was ranked");
+  assert.equal(slots[0].startUtc.toISOString(), "2026-09-07T16:00:00.000Z");
+  // midnight bound: the whole day is still searched
+  assert.ok(tz.findSlots(parts, 60, 1, at("2026-09-07T00:00:00Z")).length > slots.length);
+});
+
+test("V4-9: attendees are calendar addresses, CN is a quoted parameter", () => {
+  assert.throws(() => tz.calendarAddress("a@example.com\r\nORGANIZER:mailto:x@example.com"), /line break/);
+  assert.throws(() => tz.calendarAddress("Tom"), /not a calendar address/);
+  assert.throws(() => tz.calendarAddress("a@b"), /not a calendar address/);
+  assert.deepEqual(tz.calendarAddress("mailto:Maria@acme.com"), { uri: "mailto:Maria@acme.com", cn: "Maria" });
+  assert.deepEqual(tz.calendarAddress(" sara@example.com "), { uri: "mailto:sara@example.com", cn: "sara" });
+  const text = tz.icsCreate({
+    title: "Kickoff", startUtc: at("2026-09-10T13:00:00Z"), durationMinutes: 30,
+    attendees: [{ name: "Maria Nowak", email: "maria@acme.com" }],
+  });
+  assert.ok(text.includes('ATTENDEE;CN="Maria Nowak";RSVP=TRUE:mailto:maria@acme.com'), text);
+  // a control character anywhere is refused, not escaped away
+  for (const field of ["title", "location", "description"]) {
+    assert.throws(() => tz.icsCreate({
+      title: "t", startUtc: at("2026-09-10T13:00:00Z"), durationMinutes: 30, [field]: "a\u0000b",
+    }), /control character/, field);
+  }
+  assert.throws(() => tz.icsCreate({
+    title: "t\r\nX-EVIL:1", startUtc: at("2026-09-10T13:00:00Z"), durationMinutes: 30,
+  }), /line break/);
+  // a name that cannot be a CN parameter value is refused rather than written raw
+  assert.throws(() => tz.icsCreate({
+    title: "t", startUtc: at("2026-09-10T13:00:00Z"), durationMinutes: 30,
+    attendees: [{ name: 'He said "hi"', email: "x@acme.com" }],
+  }), /double quote/);
+});
+
+test("D-R27: names without an email go in DESCRIPTION, ORGANIZER is emitted when given", () => {
+  const r = tz.icsCreateDetailed({
+    title: "Kickoff", startUtc: at("2026-09-10T13:00:00Z"), durationMinutes: 30,
+    attendees: ["sara@example.com", "Tom", { name: "Ana" }],
+    organizerEmail: "me@example.com", organizerName: "Mike",
+  });
+  const unfolded = r.text.replace(/\r\n /g, "");
+  assert.deepEqual(r.invited, ["sara@example.com"]);
+  assert.deepEqual(r.listedOnly, ["Tom", "Ana"]);
+  assert.equal(r.organizer, "me@example.com");
+  assert.ok(unfolded.includes('ORGANIZER;CN="Mike":mailto:me@example.com'), r.text);
+  assert.ok(unfolded.includes('ATTENDEE;CN="sara";RSVP=TRUE:mailto:sara@example.com'), r.text);
+  assert.ok(!/invalid:nomail/.test(r.text), r.text);
+  // RFC 5545 TEXT escaping: the separating comma is written "\,"
+  assert.match(unfolded, /DESCRIPTION:Also attending \(no email address was given[^\r\n]*\): Tom\\, Ana/);
+  // no organizer_email: no ORGANIZER line at all, and the caller can see that
+  const none = tz.icsCreateDetailed({ title: "x", startUtc: at("2026-09-10T13:00:00Z"), durationMinutes: 30 });
+  assert.equal(none.organizer, undefined);
+  assert.ok(!/ORGANIZER/.test(none.text));
+  assert.throws(() => tz.icsCreateDetailed({
+    title: "x", startUtc: at("2026-09-10T13:00:00Z"), durationMinutes: 30, attendees: [{}],
+  }), /neither a name nor an email/);
+});
+
+test("D-R30: near-miss slots rank by minutes outside hours and name the hours that fit", () => {
+  const parts = [
+    { name: "Ana", zone: "America/Los_Angeles", startMin: 540, endMin: 1020 },
+    { name: "Kenji", zone: "Asia/Tokyo", startMin: 540, endMin: 1020 },
+  ];
+  const first = at("2026-09-07T00:00:00Z");
+  assert.equal(tz.findSlots(parts, 60, 3, first).length, 0, "this pair must not overlap at all");
+  const near = tz.findNearMissSlots(parts, 60, 3, first, 30, 3);
+  assert.equal(near.length, 3);
+  assert.ok(near[0].outsideMinutes > 0);
+  for (let i = 1; i < near.length; i++) assert.ok(near[i].outsideMinutes >= near[i - 1].outsideMinutes);
+  for (const n of near) {
+    assert.equal(n.local.length, 2);
+    assert.equal(n.outsideMinutes, n.local.reduce((a, l) => a + l.outsideMinutes, 0));
+    for (const l of n.local) {
+      assert.match(l.start, /^\d\d:\d\d$/);
+      assert.match(l.needStart, /^\d\d:\d\d$/);
+      assert.match(l.needEnd, /^\d\d:\d\d$/);
+    }
+    assert.ok(n.startUtc.getTime() >= first.getTime());
+  }
+  // the suggested hours really do make it fit
+  const widened = parts.map((p, i) => ({
+    ...p,
+    startMin: Number(near[0].local[i].needStart.slice(0, 2)) * 60 + Number(near[0].local[i].needStart.slice(3)),
+    endMin: Number(near[0].local[i].needEnd.slice(0, 2)) * 60 + Number(near[0].local[i].needEnd.slice(3)),
+  }));
+  const fixed = tz.findSlots(widened, 60, 3, first);
+  assert.ok(fixed.some(s => s.startUtc.getTime() === near[0].startUtc.getTime()),
+    `widening to the named hours must make ${near[0].startUtc.toISOString()} fit`);
 });

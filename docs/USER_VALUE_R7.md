@@ -202,3 +202,118 @@ destroying it (D-R26), an .ics that names attendees it cannot address (D-R27), a
 renames tools without telling the text that mentions them (D-R29). None of these is a parser or an
 extractor. They are contracts between servers that no single server's test suite can see, which is
 what a bundle is for and what the next round of fixes should be about.
+
+## Round-7 fixes
+
+Three defects from the list above are fixed. Every claim below is a line of shipped code or a line
+of test output copied verbatim.
+
+### D-R24 (invoice) — the line is computed from the unit price that is stored and printed
+
+`servers/invoice/src/money.ts:123-128` now rounds the unit price into minor units first and
+multiplies the quantity by that stored value, instead of multiplying the unrounded input:
+
+    const unit = roundHalfUp(it.unit_price * f);
+    const gross = roundHalfUp(it.quantity * unit);
+
+The rounding contract at the head of the file (`servers/invoice/src/money.ts:1-14`) states the basis
+and its cost: `unit_price_minor x quantity` equals `gross_minor` for a whole quantity, so
+`10420 x 6 = 62520` reproduces on a client's calculator, and a converted line may sit one minor unit
+away from the mathematically exact conversion. The round-7 invoice is the test case: 90 EUR/h at the
+ECB 2026-09-02 rate 1.1578 is 104.202, stored as `10420`, and six hours are now `62520`, not `62521`.
+The identity is also asserted across 2-, 0- and 3-decimal currencies (JPY, KWD).
+
+### D-R28 (time-tracker + invoice) — billed hours close
+
+time-tracker:
+
+- `servers/time-tracker/src/index.ts:46-47` — entries carry `billed_at` and `billed_invoice`.
+- `servers/time-tracker/src/index.ts:871` — new tool `entry_mark_billed {ids[] | project+from+to,
+  invoice_number}`. Already-billed entries are listed back, never re-stamped; an unknown id refuses
+  the whole call so nothing is half-marked. Its window is deliberately unclamped by the free tier,
+  because under-marking is what puts the same hours on a second invoice.
+- `servers/time-tracker/src/index.ts:751` and `:931` — `unbilled_only` (default **true**) on `report`
+  and `invoice_summary`; the excluded count is stated in the text and as
+  `billed_entries_excluded` in the JSON report.
+- `servers/time-tracker/src/index.ts:979-985` — `invoice_summary` returns `entry_ids: [...]` and the
+  instruction to call `entry_mark_billed` with the new invoice number.
+
+invoice:
+
+- `servers/invoice/src/index.ts:375-395` — `invoice_from_hours` takes `target_currency` + `fx_rates`
+  with exactly the semantics of `expense_to_invoice` (1 unit of the source currency = X units of the
+  target; nothing fetches or guesses a rate), converts the rate, and annotates the line
+  `[converted from EUR 90.00/h at 1.1578]`. `fx_rates` without `target_currency` and a missing rate
+  both return the exact call to make.
+- `servers/invoice/src/index.ts:431-433` — the response echoes `entry_ids` and tells the caller to
+  run `entry_mark_billed {ids: [...], invoice_number: "INV-2026-0001"}` "or the same hours appear on
+  the next invoice".
+
+Scenario 1 of this round now closes end to end: `invoice_from_hours {hours: 6, rate: 90,
+currency: "EUR", target_currency: "USD", fx_rates: {"EUR": 1.1578}}` produces USD 104.20 x 6 =
+USD 625.20 in one call, and the hours behind it stop being offered once marked.
+
+### D-R29 (office-suite) — renamed tools are renamed in the child's prose too
+
+- `servers/office-suite/src/index.ts:203-236` — `renameMapFor` / `rewriteToolNames` /
+  `rewriteContent`: per child, every whole-word occurrence of a child tool name that was renamed on
+  the bundle is replaced by the exposed name in the text content forwarded to the client.
+  `business_set_extra` and `my_business_set` are untouched, and a child that never collided keeps
+  its text byte for byte.
+- `servers/office-suite/src/index.ts:308` — the rewrite is applied on the `tools/call` return path.
+- `servers/office-suite/src/index.ts:318-360` — the `office://tools_map` resource: exposed name ->
+  `child.tool` for every tool, with the renamed pairs listed separately.
+- `servers/office-suite/src/index.ts:392-400` — the renames are named once on the startup line.
+
+### Test summaries (verbatim)
+
+    == invoice
+    ok 19 - D-R24: the line gross is the STORED unit price times the quantity
+    ok 20 - D-R24: the identity holds for whole quantities, currencies and tax rates
+    ok 21 - D-R28: invoice_from_hours converts with target_currency + fx_rates and the line adds up
+    ok 22 - D-R28: fx_rates without target_currency, and a missing rate, name the exact fix
+    # tests 28
+    # pass 28
+    # fail 0
+    # duration_ms 1617.26125
+
+    == time-tracker
+    ok 15 - D-R28: hours billed once are excluded from the next invoice_summary
+    ok 16 - D-R28: report hides billed hours by default and shows them on unbilled_only false
+    ok 17 - D-R28: entry_mark_billed refuses an unknown id and marks nothing
+    # tests 20
+    # pass 20
+    # fail 0
+    # duration_ms 836.956208
+
+    == office-suite
+    ok 3 - D-R29: a renamed tool is renamed in the child's text too, per child
+    ok 4 - D-R29: tools_map resource lists exposed name -> child.tool
+    # tests 5
+    # pass 5
+    # fail 0
+    # duration_ms 1258.499458
+
+New test files: `servers/invoice/test/round7.test.mjs`, `servers/time-tracker/test/round7.test.mjs`,
+`servers/office-suite/test/round7.test.mjs` (a stub bundle whose invoice and docx children both
+register `business_set` and answer "Run business_set {name, address, email, vat_id} and create it
+again").
+
+`node scripts/validate.mjs`, with no probe changed:
+
+    docx: 16/16 in 416 ms
+    timezone: 16/16 in 291 ms
+    currency: 16/16 in 3942 ms
+    expense-tracker: 22/22 in 409 ms
+    time-tracker: 24/24 in 231 ms
+    price-tracker: 18/18 in 280 ms
+    spreadsheet: 18/18 in 396 ms
+    invoice: 20/20 in 388 ms
+    remote: 20/20
+    billing: 14/14
+    validation db: /Users/mike/mcp-servers/data/validation.json run 50: 184/184
+
+### What is still open from round 7
+
+D-R25, D-R26, D-R27 (docx and timezone) and D-R30 belong to servers other agents own and are not
+touched here.

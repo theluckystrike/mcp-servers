@@ -199,13 +199,64 @@ export const RAW_PLACES: Record<string, string> = {
   "new york state": "America/New_York", "illinois": "America/Chicago", "colorado": "America/Denver",
   "arizona": "America/Phoenix", "hawaii": "Pacific/Honolulu", "alaska": "America/Anchorage",
   "utc": "UTC", "gmt": "UTC", "zulu": "UTC",
-  "est": "America/New_York", "edt": "America/New_York", "et": "America/New_York",
-  "cst": "America/Chicago", "cdt": "America/Chicago", "ct": "America/Chicago",
-  "mst": "America/Denver", "mdt": "America/Denver", "mt": "America/Denver",
-  "pst": "America/Los_Angeles", "pdt": "America/Los_Angeles", "pt": "America/Los_Angeles",
-  "cet": "Europe/Paris", "cest": "Europe/Paris", "bst": "Europe/London",
-  "ist": "Asia/Kolkata", "jst": "Asia/Tokyo", "aest": "Australia/Sydney",
-  "sgt": "Asia/Singapore", "hkt": "Asia/Hong_Kong", "kst": "Asia/Seoul",
-  "eet": "Europe/Athens", "msk": "Europe/Moscow", "brt": "America/Sao_Paulo",
+  // Region shorthands (not fixed abbreviations): these name a PLACE, so they keep the
+  // place's DST rules. The standard/summer abbreviations live in FIXED_ABBREV below.
+  "et": "America/New_York", "ct": "America/Chicago", "mt": "America/Denver",
+  "pt": "America/Los_Angeles",
   "gulf": "Asia/Dubai", "west coast": "America/Los_Angeles", "east coast": "America/New_York",
+};
+
+/**
+ * V4-6: a fixed abbreviation is an OFFSET, not a place. "EST" is UTC-05:00 all year;
+ * mapping it to America/New_York returned EDT (UTC-04:00) every summer, an hour wrong
+ * for half the year with nothing in the answer to show it. Each entry therefore maps to
+ * a fixed-offset zone and carries a note that names the place to pass instead.
+ */
+export interface FixedAbbrev { zone: string; note: string }
+
+function fixed(abbr: string, zone: string, offset: string, place: string, extra = ""): FixedAbbrev {
+  return {
+    zone,
+    note: `${abbr} is a fixed offset (${offset}), read as ${zone}: it never follows daylight saving. ` +
+      `For the place and its clock changes, pass "${place}" instead.${extra ? ` ${extra}` : ""}`,
+  };
+}
+
+export const FIXED_ABBREV: Record<string, FixedAbbrev> = {
+  est: fixed("EST", "Etc/GMT+5", "UTC-05:00", "New York"),
+  edt: fixed("EDT", "Etc/GMT+4", "UTC-04:00", "New York"),
+  cst: fixed("CST", "Etc/GMT+6", "UTC-06:00", "Chicago", "CST also names China Standard Time (UTC+08:00); pass \"Shanghai\" for that."),
+  cdt: fixed("CDT", "Etc/GMT+5", "UTC-05:00", "Chicago"),
+  mst: fixed("MST", "Etc/GMT+7", "UTC-07:00", "Denver"),
+  mdt: fixed("MDT", "Etc/GMT+6", "UTC-06:00", "Denver"),
+  pst: fixed("PST", "Etc/GMT+8", "UTC-08:00", "Los Angeles"),
+  pdt: fixed("PDT", "Etc/GMT+7", "UTC-07:00", "Los Angeles"),
+  akst: fixed("AKST", "Etc/GMT+9", "UTC-09:00", "Anchorage"),
+  hst: fixed("HST", "Etc/GMT+10", "UTC-10:00", "Hawaii"),
+  brt: fixed("BRT", "Etc/GMT+3", "UTC-03:00", "Sao Paulo"),
+  wet: fixed("WET", "Etc/GMT+0", "UTC+00:00", "Lisbon"),
+  cet: fixed("CET", "Etc/GMT-1", "UTC+01:00", "Paris"),
+  cest: fixed("CEST", "Etc/GMT-2", "UTC+02:00", "Paris"),
+  bst: fixed("BST", "Etc/GMT-1", "UTC+01:00", "London"),
+  eet: fixed("EET", "Etc/GMT-2", "UTC+02:00", "Athens"),
+  eest: fixed("EEST", "Etc/GMT-3", "UTC+03:00", "Athens"),
+  msk: fixed("MSK", "Etc/GMT-3", "UTC+03:00", "Moscow"),
+  gst: fixed("GST", "Etc/GMT-4", "UTC+04:00", "Dubai"),
+  pkt: fixed("PKT", "Etc/GMT-5", "UTC+05:00", "Karachi"),
+  ict: fixed("ICT", "Etc/GMT-7", "UTC+07:00", "Bangkok"),
+  sgt: fixed("SGT", "Etc/GMT-8", "UTC+08:00", "Singapore"),
+  hkt: fixed("HKT", "Etc/GMT-8", "UTC+08:00", "Hong Kong"),
+  jst: fixed("JST", "Etc/GMT-9", "UTC+09:00", "Tokyo"),
+  kst: fixed("KST", "Etc/GMT-9", "UTC+09:00", "Seoul"),
+  aest: fixed("AEST", "Etc/GMT-10", "UTC+10:00", "Sydney"),
+  aedt: fixed("AEDT", "Etc/GMT-11", "UTC+11:00", "Sydney"),
+  nzst: fixed("NZST", "Etc/GMT-12", "UTC+12:00", "Auckland"),
+  // IST is +05:30: IANA has no whole-hour Etc zone for it, and Asia/Kolkata observes no
+  // daylight saving, so it is the fixed-offset answer. The name is the ambiguous part.
+  ist: {
+    zone: "Asia/Kolkata",
+    note: "IST is read as India Standard Time (UTC+05:30, Asia/Kolkata), which observes no " +
+      "daylight saving. IST also names Irish Standard Time (UTC+01:00) and Israel Standard " +
+      "Time (UTC+02:00); pass \"Dublin\" or \"Jerusalem\" if you meant one of those.",
+  },
 };

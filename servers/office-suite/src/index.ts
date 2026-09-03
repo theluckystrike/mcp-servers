@@ -197,6 +197,39 @@ async function loadChildCapabilities(child: Child): Promise<void> {
   } catch { child.hasPrompts = false; }
 }
 
+/* ------------------------------------------------- renamed-tool text rewrite */
+
+/**
+ * D-R29: when two children register the same tool name the bundle exposes prefixed names
+ * (business_set -> invoice_business_set / docx_business_set), but the child's own prose
+ * still says "Run business_set ...", naming a tool that does not exist on the bundle.
+ * Rewrite whole-word occurrences of the child's tool names in the text it returns, per
+ * child, so every name a user reads is a name they can call.
+ */
+function renameMapFor(child: Child): Map<string, string> {
+  const m = new Map<string, string>();
+  for (const t of child.tools) if (t.name !== t.childName) m.set(t.childName, t.name);
+  return m;
+}
+
+function rewriteToolNames(text: string, renames: Map<string, string>): string {
+  if (!renames.size) return text;
+  let out = text;
+  for (const [from, to] of renames) {
+    // Whole word only: business_set must not match invoice_business_set, and a name
+    // already rewritten in an earlier pass must not be rewritten again.
+    out = out.replace(new RegExp(`(?<![A-Za-z0-9_])${from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Za-z0-9_])`, "g"), to);
+  }
+  return out;
+}
+
+function rewriteContent(content: unknown, renames: Map<string, string>): unknown {
+  if (!renames.size || !Array.isArray(content)) return content;
+  return content.map((c: any) =>
+    c && c.type === "text" && typeof c.text === "string" ? { ...c, text: rewriteToolNames(c.text, renames) } : c,
+  );
+}
+
 /* -------------------------------------------------------- aggregate license */
 
 async function aggregateLicenseStatus(): Promise<{ content: { type: "text"; text: string }[] }> {
@@ -272,14 +305,39 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   if (!child) return { content: [{ type: "text", text: `Error: owning server for "${name}" is not connected` }], isError: true };
   try {
     const r = await child.client.callTool({ name: tool.childName, arguments: (args ?? {}) as Record<string, unknown> });
-    return { content: r.content, isError: r.isError === true };
+    return { content: rewriteContent(r.content, renameMapFor(child)), isError: r.isError === true };
   } catch (e) {
     return { content: [{ type: "text", text: `Error: ${e instanceof Error ? e.message : String(e)}` }], isError: true };
   }
 });
 
+/**
+ * D-R29: one place that says which bundle tool is which child tool, so a client that sees
+ * invoice_business_set can find out it is invoice's own business_set without guessing.
+ */
+const TOOLS_MAP_URI = "office://tools_map";
+
+function toolsMapText(): string {
+  const rows = [...toolIndex.values()]
+    .map(t => ({ exposed: t.name, child: `${t.childId}.${t.childName}`, renamed: t.name !== t.childName }))
+    .sort((a, b) => a.exposed.localeCompare(b.exposed));
+  return JSON.stringify({
+    bundle: "office-suite",
+    servers: children.map(c => c.def.id),
+    renamed: rows.filter(r => r.renamed).map(r => ({ exposed: r.exposed, child: r.child })),
+    tools: rows.map(r => ({ exposed: r.exposed, child: r.child })),
+    note: "Two children registering the same tool name are both prefixed with their server id. Call the exposed name; the child column is the tool the call is forwarded to.",
+  }, null, 2);
+}
+
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
-  const resources: unknown[] = [];
+  const resources: unknown[] = [{
+    uri: TOOLS_MAP_URI,
+    name: "tools_map",
+    title: "Bundle tool map",
+    description: "Every tool this bundle exposes, mapped to the child server and child tool name it forwards to, including the tools renamed because two children shared a name.",
+    mimeType: "application/json",
+  }];
   for (const child of children) {
     if (!child.hasResources) continue;
     try {
@@ -294,6 +352,9 @@ server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => ({ reso
 
 server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
   const uri = req.params.uri;
+  if (uri === TOOLS_MAP_URI) {
+    return { contents: [{ uri, mimeType: "application/json", text: toolsMapText() }] };
+  }
   const child = resourceOwner.get(uri);
   if (!child) throw new Error(`unknown resource "${uri}"`);
   return child.client.readResource({ uri });
@@ -328,9 +389,16 @@ async function main() {
   if (children.length === 0) throw new Error("no child servers connected");
   const transport = new StdioServerTransport();
   await server.connect(transport);
+  const renamed = [...toolIndex.values()].filter(t => t.name !== t.childName);
   process.stderr.write(
     `mcp-office-suite ready, proxying [${children.map(c => c.def.id).join(", ")}], ${toolIndex.size} tools\n`,
   );
+  if (renamed.length) {
+    process.stderr.write(
+      `office-suite: renamed ${renamed.length} colliding tools: ${renamed.map(t => `${t.childId}.${t.childName} -> ${t.name}`).join(", ")}` +
+      ` (see the ${TOOLS_MAP_URI} resource; child responses are rewritten to use the exposed names)\n`,
+    );
+  }
 }
 
 main().catch(e => {

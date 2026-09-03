@@ -189,3 +189,133 @@ insight: the silent business_days truncation is the dangerous class, not the cra
 `01:30Z`, which is the second (CET) reading, not the first (CEST, `00:30Z`). The behaviour is the
 right one - `zonedToUtc` iterates twice and lands after the change - so the README was corrected to
 match the measurement rather than the code changed to match the README.
+
+---
+
+## Codex v4 fixes
+
+Date 2026-09-03. Scope `servers/timezone` only, zero paid API calls, zero network calls.
+Items 4-10 of docs/CODEX_REVIEW_V4.md, plus D-R27 and D-R30 of docs/USER_VALUE_R7.md. Every item has a
+test that fails on the old behaviour. `node scripts/validate.mjs` stays green: 184/184 across 10 units
+(`timezone: 16/16`); its timezone probe is 2026-09-10 15:00 Warsaw, which is neither a gap nor a fold.
+
+### 4 - strict wall-clock validation
+
+`servers/timezone/src/tz.ts:223` `assertValidWall` checks every field against its range (year 1-9999,
+month 1-12, day 1-31, hour 0-23, minute and second 0-59, all integers) and then requires the UTC
+round-trip to reproduce the input exactly, so 2026-02-30 is refused instead of becoming 2026-03-02.
+`servers/timezone/src/tz.ts:248` `parseIsoDateStrict` is the strict `YYYY-MM-DD` reader used wherever a
+date-shaped string arrives. `servers/timezone/src/tz.ts:212` `utcFromWall` keeps years 1-99 literal,
+which `Date.UTC` alone maps onto 1900-1999. Validation runs on every parse path:
+`servers/timezone/src/tz.ts:294` (`resolveWall`) is called by the ISO, month-name and relative-phrase
+branches of `parseTimeInDetailed` at `servers/timezone/src/tz.ts:402`.
+Tests: `servers/timezone/test/tz.test.mjs:219`, `servers/timezone/test/adversarial.test.mjs:211`.
+
+### 5 - explicit DST policy
+
+`servers/timezone/src/tz.ts:270` `instantsFor` enumerates every UTC instant whose wall reading in the
+zone equals the input: zero in a spring-forward gap, two in an autumn fold, one otherwise.
+`servers/timezone/src/tz.ts:294` `resolveWall` applies the policy. A gap is **refused** with both valid
+neighbours named ("The valid times either side are 2026-03-29 01:30 and 2026-03-29 03:30"), unless the
+caller passes `gap:"forward"` or `gap:"backward"`; the answer then states where it moved the time. A fold
+returns the **first** occurrence by default and says so with the abbreviation and offset it used;
+`fold:"second"` selects the other. Both arguments are exposed on `convert_time` and `ics_create`
+(`servers/timezone/src/index.ts:107` `gapArg`/`foldArg`). `zonedToUtc`
+(`servers/timezone/src/tz.ts:336`) keeps `gap:"forward"` as its default because internal callers walk a
+calendar grid and cannot stop on a gap; caller-supplied times go through `resolveWall` with no default.
+This reverses the fold behaviour the earlier audit measured (probe 19): 2026-10-25 02:30 Warsaw is now
+`00:30Z`, the first (CEST) reading, not `01:30Z`.
+Tests: `servers/timezone/test/tz.test.mjs:237`, `servers/timezone/test/adversarial.test.mjs:185`.
+
+### 6 - fixed abbreviations are fixed offsets
+
+`servers/timezone/src/zones.ts:225` `FIXED_ABBREV` maps 29 fixed abbreviations to fixed-offset zones:
+EST -> Etc/GMT+5, PST -> Etc/GMT+8, CET -> Etc/GMT-1, JST -> Etc/GMT-9 and so on, each with a note naming
+the place to pass instead. IST maps to Asia/Kolkata (UTC+05:30 has no `Etc` zone and Kolkata observes no
+DST) with a note that IST also names Irish and Israel time. The region shorthands ET/CT/MT/PT stay on
+their DST-observing places, since they name a region rather than an offset
+(`servers/timezone/src/zones.ts:202`). `resolveZone` consults the table before the place table at
+`servers/timezone/src/tz.ts:111`, and the `UTC+2` branch at `servers/timezone/src/tz.ts:130` carries the
+same note. Notes surface in the tool answers through the collector at
+`servers/timezone/src/index.ts:97`. Measured: `convert_time` from EST on 2026-07-01 09:00 now returns
+`2026-07-01T14:00Z`, not 13:00Z.
+Tests: `servers/timezone/test/tz.test.mjs:267`, `servers/timezone/test/adversarial.test.mjs:227`.
+
+### 7 - overlap builds each boundary from the local calendar date
+
+`servers/timezone/src/tz.ts:527` `overlapOnLocalDate` takes a `YYYY-MM-DD` and, for each zone, builds the
+window's start and end from that local date in that zone before converting to UTC; the intersection is
+computed on instants. `servers/timezone/src/index.ts:205` uses it and reports the local date beside each
+zone's times. The old minutes-from-UTC-midnight form answered for whichever UTC day contained local
+midnight, which is the previous day for every positive offset.
+Measured: Auckland 19:00-23:00 and Los Angeles 00:00-06:00 on 2026-09-10 now overlap
+2026-09-10T07:00Z-11:00Z, with both ends reading 2026-09-10 in both zones; Warsaw/New York on 2026-09-10
+returns 13:00Z-15:00Z on 2026-09-10 instead of 2026-09-09.
+Tests: `servers/timezone/test/tz.test.mjs:285`, `servers/timezone/test/adversarial.test.mjs:236`.
+
+### 8 - slots never start before the lower-bound instant
+
+`servers/timezone/src/tz.ts:648` skips any grid start earlier than `firstDayUtc`, which is a lower-bound
+INSTANT and not just a date. Measured: `findSlots([{name:"A",zone:"UTC",startMin:540,endMin:1020}], 60, 1,
+new Date("2026-09-07T16:00:00Z"))` now begins at 16:00Z; the 12:30Z slot it used to rank had already
+passed. The same bound is applied in `findNearMissSlots` (`servers/timezone/src/tz.ts:691`).
+Test: `servers/timezone/test/tz.test.mjs:314`.
+
+### 9 - ics attendees, control characters and parameter quoting
+
+`servers/timezone/src/tz.ts:747` `assertNoControls` rejects CR, LF and every other C0 code point in
+title, location, uid and attendee fields; DESCRIPTION alone may carry line breaks, escaped to `\n`.
+`servers/timezone/src/tz.ts:762` `quoteParam` writes `CN` as an RFC 5545 quoted parameter value and
+refuses DQUOTE, CTL, `;`, `:` and `,`. `servers/timezone/src/tz.ts:772` `calendarAddress` requires a
+`mailto:<addr>` calendar address and refuses anything else with guidance. The injection trigger
+`"a@example.com\r\nORGANIZER:mailto:x@example.com"` is now refused ("contains a line break") and no file
+is written.
+Tests: `servers/timezone/test/tz.test.mjs:326`, `servers/timezone/test/adversarial.test.mjs:143`.
+
+### 10 - business_days and holidays use the strict validator
+
+`servers/timezone/src/tz.ts:576` runs `parseIsoDateStrict` over `from`, `to` and every holiday. Measured:
+`business_days({from:"2026-02-30",to:"2026-02-30",zone:"UTC"})` is refused instead of answering for
+2026-03-02, and `holidays:["2026-09-31"]` is refused instead of silently matching nothing.
+Tests: `servers/timezone/test/tz.test.mjs:219`, `servers/timezone/test/adversarial.test.mjs:211`.
+
+### D-R27 - real CAL-ADDRESS attendees and an ORGANIZER
+
+`servers/timezone/src/tz.ts:822` `splitAttendees` accepts `"maria@acme.com"` or `{name, email}`. An entry
+with an email becomes `ATTENDEE;CN="Name";RSVP=TRUE:mailto:addr`; an entry with only a name is listed in
+DESCRIPTION ("Also attending (no email address was given...)") instead of the old
+`ATTENDEE;CN=Tom:invalid:nomail`, which no client can route. `organizer_email` /`organizer_name`
+(`servers/timezone/src/index.ts:447`) write the ORGANIZER line; with no organizer email none is written
+and the answer says so (`servers/timezone/src/index.ts:477`), as does the note when names were listed
+rather than invited (`servers/timezone/src/index.ts:474`). `icsCreateDetailed`
+(`servers/timezone/src/tz.ts:849`) returns who was invited, who was only listed and the organizer.
+Tests: `servers/timezone/test/tz.test.mjs:353`, `servers/timezone/test/adversarial.test.mjs:145`.
+
+### D-R30 - shorten the search, and answer with near misses
+
+`servers/timezone/src/index.ts:269`: a free-tier request for more than 5 days is now searched over the
+first 5 days and the answer names the cap and the upgrade, instead of returning an upgrade wall and no
+times. `servers/timezone/src/tz.ts:691` `findNearMissSlots` ranks candidate times by the TOTAL minutes any
+participant would spend outside their own hours; `servers/timezone/src/index.ts:283` prints the best
+three with each participant's local time, the minutes outside, the hours that would make that slot fit,
+and a one-line "To make the first one fit, set: ..." instruction. Los Angeles and Tokyo on 09:00-17:00
+have zero overlap; the tool now returns the least-bad times and the exact hours to change, labelled as
+outside hours, instead of only a refusal. The test verifies the suggested hours: widening the
+participants to the named `needStart`/`needEnd` makes `findSlots` return that exact slot.
+Tests: `servers/timezone/test/tz.test.mjs:377`, `servers/timezone/test/adversarial.test.mjs:244`.
+
+### Test summary (verbatim, `npm test -w @theluckystrike/mcp-timezone`)
+
+```
+1..46
+# tests 46
+# suites 0
+# pass 46
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1890.303875
+```
+
+`node scripts/validate.mjs`: `timezone: 16/16 in 303 ms`, run total `184/184`.

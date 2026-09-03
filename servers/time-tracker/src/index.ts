@@ -39,6 +39,12 @@ interface Entry {
   billable: boolean;
   rateCents?: number;
   currency?: string;
+  /**
+   * D-R28: an entry that has been put on an invoice carries the stamp, exactly the way
+   * expense-tracker stamps a rebilled receipt. Absent = never billed.
+   */
+  billed_at?: string;
+  billed_invoice?: string;
 }
 interface ProjectMeta { rateCents: number; currency: string }
 interface DB {
@@ -332,6 +338,19 @@ function select(db: DB, w: Window, project?: string): Entry[] {
   }
   return out.sort((a, b) => a.start.localeCompare(b.start));
 }
+
+/** D-R28: true once the entry has been stamped onto an invoice by entry_mark_billed. */
+function isBilled(e: Entry): boolean {
+  return typeof e.billed_at === "string" && e.billed_at.length > 0;
+}
+
+/** Drop already-invoiced entries unless the caller explicitly asked for all of them. */
+function unbilled(entries: Entry[], unbilledOnly: boolean): Entry[] {
+  return unbilledOnly ? entries.filter(e => !isBilled(e)) : entries;
+}
+
+const BILLED_NOTE = (n: number) =>
+  `\n\n${n} ${n === 1 ? "entry is" : "entries are"} hidden because ${n === 1 ? "it has" : "they have"} already been invoiced. Pass unbilled_only: false to include ${n === 1 ? "it" : "them"}.`;
 
 /** Resolve an optional project filter the same way creation does (Codex v3 #29). */
 type Filter = { kind: "ok"; project?: string } | { kind: "ambiguous"; text: string };
@@ -729,8 +748,9 @@ server.registerTool("report", {
     group_by: z.enum(GROUPS).optional().describe("project | day | task | tag. Optional: omit it for the plain total per currency, with no breakdown."),
     format: z.enum(["table", "json", "csv"]).optional().describe("table (default), json or csv"),
     project: z.string().optional().describe("Optional project filter"),
+    unbilled_only: z.boolean().optional().describe("Default true: hours already put on an invoice (entry_mark_billed) are excluded, so the report answers 'what is still to bill'. Pass false for the full timesheet including invoiced work."),
   },
-}, guard(async (a: { from: string; to: string; group_by?: Group; format?: "table" | "json" | "csv"; project?: string }) => {
+}, guard(async (a: { from: string; to: string; group_by?: Group; format?: "table" | "json" | "csv"; project?: string; unbilled_only?: boolean }) => {
   const pro = gate.isPro();
   // D-R22: tag grouping is free. It is a corrected total, not a premium capability, and
   // gating it hid the #26/#27 fix from every free user. Pro keeps full history and
@@ -739,14 +759,18 @@ server.registerTool("report", {
   const f = resolveFilter(db, a.project);          // Codex v3 #29
   if (f.kind === "ambiguous") return ok(f.text);
   const w = windowFor(a.from, a.to, pro);
-  const entries = select(db, w, f.project);
+  const unbilledOnly = a.unbilled_only !== false;          // D-R28: default true
+  const all = select(db, w, f.project);
+  const entries = unbilled(all, unbilledOnly);
+  const hidden = all.length - entries.length;
+  const billedNote = hidden > 0 ? BILLED_NOTE(hidden) : "";
   const buckets = a.group_by ? aggregate(db, entries, a.group_by) : [];
   const totals = totalsOf(db, entries);            // Codex v3 #26
   const totalSec = totals.seconds;
   const totalParts = nonZero(totals.amounts);
   const currency = totalParts.length ? totalParts[0][0] : "USD";
   const fmt = a.format ?? "table";
-  const note = !pro && w.clamped ? FREE_WINDOW_NOTE : "";
+  const note = (!pro && w.clamped ? FREE_WINDOW_NOTE : "") + billedNote;
 
   if (fmt === "json") {
     return ok(JSON.stringify({
@@ -772,6 +796,8 @@ server.registerTool("report", {
       },
       ...(a.group_by ? {} : { note: "No group_by was given, so this is the plain total for the period; rows is empty." }),
       ...(a.group_by === "tag" ? { note: TAG_OVERLAP_NOTE } : {}),
+      unbilled_only: unbilledOnly,
+      billed_entries_excluded: hidden,
       tier: pro ? "pro" : "free",
     }, null, 2) + note);
   }
@@ -842,6 +868,59 @@ server.registerTool("export_csv", {
   return ok(`Wrote ${entries.length} entries to ${target}${note}`);
 }));
 
+server.registerTool("entry_mark_billed", {
+  title: "Mark time entries as billed",
+  description: "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice. Pass the exact ids (the entry_ids invoice_summary returned) or a project plus a from/to range. Already-billed entries are left alone and listed back to you.",
+  inputSchema: {
+    ids: z.array(z.string()).optional().describe("Entry ids, e.g. the entry_ids from invoice_summary"),
+    project: z.string().optional().describe("Project or client, used with from and to instead of ids"),
+    from: z.string().optional().describe("ISO date/time start of the billed period, used with project"),
+    to: z.string().optional().describe("ISO date/time end of the billed period, used with project"),
+    invoice_number: z.string().min(1).describe("The invoice these hours were put on, e.g. INV-2026-0001"),
+    billed_at: z.string().optional().describe("ISO timestamp of the stamp, defaults to now"),
+  },
+}, guard(async (a: { ids?: string[]; project?: string; from?: string; to?: string; invoice_number: string; billed_at?: string }) => {
+  return withFileLock(LOCK, async () => {
+  const db = load();
+  const stamp = a.billed_at ? iso(parseTime(a.billed_at, "billed_at")) : iso(new Date());
+  let targets: Entry[];
+  if (a.ids && a.ids.length) {
+    const wanted = new Set(a.ids);
+    targets = db.entries.filter(e => wanted.has(e.id));
+    const missing = a.ids.filter(id => !db.entries.some(e => e.id === id));
+    if (missing.length) return err(`no entry with id ${missing.join(", ")}. Nothing was marked; run entry_list or invoice_summary for current ids.`);
+  } else {
+    if (!a.project || !a.from || !a.to) {
+      return err(`pass either ids: ["..."] or project plus from and to. entry_mark_billed {ids: <entry_ids from invoice_summary>, invoice_number: "${a.invoice_number}"} is the usual call.`);
+    }
+    const r = resolveProject(db, a.project);
+    if (r.kind === "ambiguous") return ok(ambiguousText(a.project, r.candidates));
+    // The window is deliberately unclamped: under-marking on the free tier would let the
+    // same hours onto a second invoice, which is the defect this tool exists to close.
+    const w = windowFor(a.from, a.to, true);
+    const picked = new Set(select(db, w, r.project).filter(e => e.billable).map(e => e.id));
+    targets = db.entries.filter(e => picked.has(e.id));
+  }
+  if (targets.length === 0) return ok("No entries matched, nothing marked.");
+  const already = targets.filter(isBilled);
+  const fresh = targets.filter(e => !isBilled(e));
+  for (const e of fresh) { e.billed_at = stamp; e.billed_invoice = a.invoice_number; }
+  if (fresh.length) save(db);
+  const sec = fresh.reduce((s, e) => s + e.seconds, 0);
+  const amounts = new Map<string, number>() as Amounts;
+  for (const e of fresh) if (e.billable) addAmount(amounts, currencyForEntry(db, e), amountCents(e.seconds, rateForEntry(db, e)));
+  const lines = [
+    `Marked ${fresh.length} ${fresh.length === 1 ? "entry" : "entries"} as billed on ${a.invoice_number}: ${hours(sec)} h${nonZero(amounts).length ? `, ${moneyOf(amounts)}` : ""}.`,
+    `ids: ${JSON.stringify(fresh.map(e => e.id))}`,
+  ];
+  if (already.length) {
+    lines.push(`Left alone, already billed: ${already.map(e => `${e.id} on ${e.billed_invoice}`).join(", ")}.`);
+  }
+  lines.push(`report and invoice_summary now skip these hours; pass unbilled_only: false to see them again.`);
+  return ok(lines.join("\n"));
+  });
+}));
+
 server.registerTool("invoice_summary", {
   title: "Invoice summary",
   description: "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00). Free for the last 7 days; Pro invoices any period from the full history.",
@@ -849,8 +928,9 @@ server.registerTool("invoice_summary", {
     project: z.string().min(1).describe("Project or client to invoice"),
     from: z.string().describe("ISO date/time start of the billing period"),
     to: z.string().describe("ISO date/time end of the billing period"),
+    unbilled_only: z.boolean().optional().describe("Default true: hours already put on an invoice (entry_mark_billed) are left out, so the same hours are never billed twice. Pass false to see the whole period including invoiced work."),
   },
-}, guard(async (a: { project: string; from: string; to: string }) => {
+}, guard(async (a: { project: string; from: string; to: string; unbilled_only?: boolean }) => {
   // Free within the 7-day window: this tool is the answer to "give me invoice lines",
   // and a first free session should not have to rebuild it from entry_list + report (D-11).
   const pro = gate.isPro();
@@ -858,9 +938,13 @@ server.registerTool("invoice_summary", {
   const r = resolveProject(db, a.project);         // Codex v3 #29
   if (r.kind === "ambiguous") return ok(ambiguousText(a.project, r.candidates));
   const w = windowFor(a.from, a.to, pro);
-  const entries = select(db, w, r.project).filter(e => e.billable);
+  const unbilledOnly = a.unbilled_only !== false;          // D-R28: default true
+  const billableAll = select(db, w, r.project).filter(e => e.billable);
+  const entries = unbilled(billableAll, unbilledOnly);
+  const hidden = billableAll.length - entries.length;
+  const billedNote = hidden > 0 ? BILLED_NOTE(hidden) : "";
   if (entries.length === 0) {
-    return ok(`No billable time for "${r.project}" in that period.` + (!pro && w.clamped ? FREE_WINDOW_NOTE : ""));
+    return ok(`No billable time for "${r.project}" in that period.` + (!pro && w.clamped ? FREE_WINDOW_NOTE : "") + billedNote);
   }
   // D-R1: one line per (task, rate, currency). Grouping by task alone blends two
   // rates into an average - EUR 89.82 for work agreed at EUR 90.00 - which is a
@@ -890,11 +974,17 @@ server.registerTool("invoice_summary", {
   ]);
   const body = table(["description", "hours", "rate", "amount"], rows);
   const days = [...new Set(entries.map(e => dayKey(e.start)))].sort();
+  // D-R28: the ids are part of the answer. Whoever turns these lines into an invoice has
+  // to hand them back to entry_mark_billed, or the same hours are billed again next month.
+  const entryIds = [...new Set(entries.map(e => e.id))];
   return ok(
     `Invoice summary - ${r.project}\n` +
     `Period ${dayKey(a.from)} to ${dayKey(a.to)} (${days.length} working days, ${entries.length} entries)\n\n` +
-    `${body}\n\nTOTAL ${hours(totalSec)} h  ${moneyOf(totals)}` +
-    (!pro && w.clamped ? FREE_WINDOW_NOTE : ""),
+    `${body}\n\nTOTAL ${hours(totalSec)} h  ${moneyOf(totals)}\n\n` +
+    `entry_ids: ${JSON.stringify(entryIds)}\n` +
+    `After the invoice exists, call entry_mark_billed {ids: <these entry_ids>, invoice_number: "<the new invoice number>"} ` +
+    `so these hours are not billed a second time.` +
+    (!pro && w.clamped ? FREE_WINDOW_NOTE : "") + billedNote,
   );
 }));
 

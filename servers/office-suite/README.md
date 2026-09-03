@@ -132,6 +132,10 @@ Tool names are passed through unchanged from each child. If this bundle ever pro
 
 Resources and prompts registered by any child (for example time-tracker's `timetracker://today` resource and `daily_standup` prompt) are also proxied under their original names.
 
+### Renamed tools
+
+Two children can register the same tool name -- invoice and docx both have `business_set`. The bundle then exposes both, prefixed with the server they came from (`invoice_business_set`, `docx_business_set`), names the renames once on startup, and **rewrites the child's own answer** so a response that said "Run `business_set` ..." says the name you can actually call. The full mapping is published as the `office://tools_map` resource: exposed name -> `child.tool`, with the renamed pairs listed separately.
+
 ## Free vs Pro
 
 Each child server keeps its own free tier exactly as documented in its own README (see `servers/time-tracker/README.md`, `servers/price-tracker/README.md`, `servers/spreadsheet/README.md`, `servers/invoice/README.md`). This bundle changes nothing about those limits -- it only changes how many config entries it takes to reach all four.

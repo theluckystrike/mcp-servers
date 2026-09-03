@@ -71,12 +71,12 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | Tool | What it does |
 | --- | --- |
 | `now` | The current time in any list of places, with the zone abbreviation and UTC offset. With no arguments: this machine's zone and UTC. |
-| `convert_time` | Convert a time from one place to any number of others. Reads `"2026-09-10 15:00"`, an ISO timestamp, or `"3pm tomorrow"` as wall-clock time in `from_zone`; a trailing `Z` or an explicit offset wins over `from_zone`. Flags a next-day or previous-day result. |
+| `convert_time` | Convert a time from one place to any number of others. Reads `"2026-09-10 15:00"`, an ISO timestamp, or `"3pm tomorrow"` as wall-clock time in `from_zone`; a trailing `Z` or an explicit offset wins over `from_zone`. Flags a next-day or previous-day result, and states which occurrence it used on a DST fold (`gap`, `fold`). |
 | `find_meeting_slots` | Ranked times where every participant is inside their own working hours, on a 30-minute grid, weekends skipped. Ranked by fairness (see below). |
 | `overlap` | The daily window when every listed place is at work, in UTC and in each local clock, computed on a real date so DST weeks are honest. |
 | `dst_changes` | Every clock change in a place for a year: the exact UTC instant, the offset before and after, and the local time either side. |
-| `business_days` | Business days between two dates in a place, excluding weekends and any holidays you pass. |
-| `ics_create` | Write a `.ics` calendar file for one meeting and return the path. |
+| `business_days` | Business days between two dates in a place, excluding weekends and any holidays you pass. Dates are strict: `2026-02-30` is refused, never rolled forward. |
+| `ics_create` | Write a `.ics` calendar file for one meeting and return the path. Attendees with an email are invited; a name with no email is listed in the description. `organizer_email` writes the `ORGANIZER` line. |
 | `contacts_set` | Remember a client or teammate's zone and working hours. |
 | `contacts_list` | Everyone you have saved, their local time now, and whether they are inside working hours. |
 | `license_status` | Free or Pro, and where to upgrade. |
@@ -122,7 +122,8 @@ middle of their day. The score says so instead of hiding it. Widen one person's 
 You: Write the invite for that one, 45 minutes, and send it to maria@acme.com.
 
   ics_create { title:"Kickoff with Acme", start:"2026-09-10 15:00", zone:"Warsaw",
-               duration_minutes:45, attendees:["maria@acme.com"] }
+               duration_minutes:45, attendees:[{name:"Maria Nowak", email:"maria@acme.com"}],
+               organizer_email:"you@yourdomain.com" }
 
 Assistant: Wrote /Users/you/.local/share/mcp-servers/timezone/meeting.ics
 Kickoff with Acme: 2026-09-10 15:00 Thu (CEST, UTC+02:00) for 45 min
@@ -137,13 +138,18 @@ for the third must never outrank one that is 10:00 for everybody. A fairness of 
 at midday for all of them; anything under about 2 is comfortable.
 
 A slot is only offered when the whole meeting -- start to end -- is inside every participant's working window,
-on their own local calendar day. Weekends in the first participant's zone are skipped. When nothing fits, the
-server says so and shows the windows, rather than proposing a 06:00 call.
+on their own local calendar day. Weekends in the first participant's zone are skipped. No slot ever starts
+before `earliest_date` -- if you pass a time with it, slots earlier that day are not proposed.
+
+When nothing fits, the server says so, shows the windows, and then lists the closest times that are
+**outside** somebody's hours, ranked by the total minutes outside, with each person's local time and the
+working hours that would make each one fit. On the free tier a search longer than 5 days is shortened to
+5 days and the answer says so; it is never refused outright.
 
 ## How places are resolved
 
-City and country names resolve through a built-in table of 510 entries (300+ cities, every commonly used
-country, US state shorthands and abbreviations like PST, IST, CET). Every entry is verified against
+City and country names resolve through a built-in table of 490 entries (300+ cities, every commonly used
+country and US state shorthands). Every entry is verified against
 `Intl.supportedValuesOf("timeZone")` at startup; an entry this Node build cannot resolve is dropped with a
 line on stderr rather than silently answering with the wrong zone.
 
@@ -153,6 +159,12 @@ line on stderr rather than silently answering with the wrong zone.
 - IANA ids always work and always win: pass `America/Denver` and you get exactly that.
 - `UTC+2` style offsets resolve to the matching fixed zone (`Etc/GMT-2` -- the Etc signs are inverted by the
   IANA database, not by this server).
+- **A fixed abbreviation is an offset, not a place.** `EST` is `Etc/GMT+5` (UTC-05:00) all year, `PST` is
+  `Etc/GMT+8`, `CET` is `Etc/GMT-1`, `JST` is `Etc/GMT-9`. Mapping them to a DST-observing zone made `EST`
+  mean EDT (UTC-04:00) every summer, an hour wrong for half the year. Each answer carries a note naming the
+  place to pass instead (`"New York"`, `"Los Angeles"`, `"Paris"`). The region shorthands `ET`, `CT`, `MT`,
+  `PT` still name places and keep their clock changes. `IST` is read as India (UTC+05:30, `Asia/Kolkata`,
+  no daylight saving) and the note says so, because IST also names Irish and Israel time.
 - An unknown name is **never** guessed. It comes back as an error with suggestions:
   `unknown time zone or place: "Warsawa". Did you mean: warsaw (Europe/Warsaw)?`
 
@@ -165,7 +177,7 @@ DST is not stored here at all. Every offset comes from the ICU data inside your 
 | --- | --- | --- |
 | `now`, `convert_time`, `overlap`, `dst_changes`, `business_days` | Unlimited | Unlimited |
 | `find_meeting_slots` participants | Up to 3 | Unlimited |
-| `find_meeting_slots` search window | Up to 5 days | Unlimited |
+| `find_meeting_slots` search window | Up to 5 days (a longer request is shortened, not refused) | Unlimited |
 | Recurring-slot search (`recurring: true`) | -- | Yes |
 | Saved contacts | 5 | Unlimited |
 | `.ics` files | 3 per month | Unlimited |
@@ -192,11 +204,22 @@ good copy and delete the marker.
 - **A time with no offset is wall-clock time in `from_zone`**, not UTC. `2026-09-10 15:00` with
   `from_zone: "Warsaw"` is 15:00 in Warsaw. A trailing `Z` or an explicit `+05:30` is honoured exactly and
   `from_zone` is then only used for display.
-- **A wall time inside a spring-forward gap does not exist.** `02:30` on 2026-03-29 in Warsaw resolves to
-  03:30 local (the instant right after the jump), which is what calendars do. It is never silently moved back.
-- **Ambiguous times in the autumn fold** resolve to the second (post-change) occurrence: `02:30` on
-  2026-10-25 in Warsaw is `01:30Z`, the CET reading, not the CEST one. Measured, not assumed
-  (docs/TIMEZONE_AUDIT.md probe 19).
+- **A calendar date is validated, not normalised.** `2026-02-30` is refused with the reason (February 2026
+  has 28 days) everywhere a date is read: `convert_time`, `overlap`, `business_days`, `ics_create` and the
+  holiday list. Nothing is ever rolled forward into March.
+- **A wall time inside a spring-forward gap does not exist, and is refused.** `02:30` on 2026-03-29 in
+  Warsaw comes back as an error naming both valid neighbours (`2026-03-29 01:30` and `2026-03-29 03:30`).
+  Pass `gap:"forward"` to take the time after the jump or `gap:"backward"` for the one before it; the answer
+  then says which it used. Guessing silently is how a meeting moves an hour once a year.
+- **Ambiguous times in the autumn fold return the FIRST occurrence** and say so: `02:30` on 2026-10-25 in
+  Warsaw is `00:30Z`, the CEST reading. Pass `fold:"second"` for `01:30Z`, the CET one. Both answers name
+  the abbreviation and offset they used.
+- **`.ics` attendees are calendar addresses.** An attendee with an email becomes
+  `ATTENDEE;CN="Name";RSVP=TRUE:mailto:addr`, with `CN` written as a quoted RFC 5545 parameter value. A name
+  with no email is listed in `DESCRIPTION` instead of being written as an unroutable address. Any CR, LF or
+  control character in any field is refused, not escaped away: it is what a content-line injection looks
+  like. `organizer_email` writes the `ORGANIZER` line; without it no `ORGANIZER` is written and the answer
+  says so, because replies then have nowhere to go.
 - **`.ics` files carry UTC times** (`DTSTART:20260910T130000Z`) and no `VTIMEZONE` block. That is deliberate:
   a hand-written `VTIMEZONE` with stale DST rules is the classic way an invite lands an hour off.
 - **Working hours are the only calendar this server has.** It does not know about your existing meetings,

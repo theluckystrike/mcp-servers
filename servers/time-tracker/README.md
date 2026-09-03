@@ -76,9 +76,10 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `entry_edit` | Change any field of an entry. |
 | `entry_delete` | Delete an entry by id. |
 | `project_set_rate` | Set the hourly rate and currency used for money totals (currency accepts codes or words: EUR, euros, pounds, zl). `apply_to_existing: true` re-rates time already logged for that project; add `only_missing: true` to touch only entries that carry no rate. |
-| `report` | Hours and money for a period, optionally grouped by project, day, task or tag; omit `group_by` for the plain total per currency. Table, JSON or CSV. |
+| `report` | Hours and money for a period, optionally grouped by project, day, task or tag; omit `group_by` for the plain total per currency. Table, JSON or CSV. Hours already invoiced are left out; pass `unbilled_only: false` for the full timesheet. |
 | `export_csv` | Write entries to a CSV file and return the path. |
-| `invoice_summary` | Invoice-ready line items for one project: hours, rate, amount, total, in the currency the time was logged in. One line per task and rate, so no line ever shows a blended rate nobody agreed. Free for the last 7 days, Pro for any period from full history. |
+| `invoice_summary` | Invoice-ready line items for one project: hours, rate, amount, total, in the currency the time was logged in. One line per task and rate, so no line ever shows a blended rate nobody agreed. Returns the `entry_ids` behind the lines, and skips hours already invoiced (`unbilled_only: false` includes them). Free for the last 7 days, Pro for any period from full history. |
+| `entry_mark_billed` | Stamp the hours that went on an invoice with its number (`ids` from `invoice_summary`, or `project` + `from` + `to`), so `report` and `invoice_summary` stop offering them and the same hours are never billed twice. |
 | `license_status` | Free or Pro, and where to upgrade. |
 | `license_activate` | Activate a Pro key (verified offline). |
 
@@ -102,6 +103,7 @@ column is what answered them.
 | "Set my rate for Acme to 90 EUR an hour." | `project_set_rate` |
 | "How many hours did I bill this month, grouped by project?" | `report` |
 | "Give me invoice lines for Acme in August." | `invoice_summary` |
+| "I invoiced those hours as INV-2026-0001." | `entry_mark_billed` |
 
 Two more worth knowing: "export my time to a CSV for my bookkeeper" (`export_csv`) and "write my standup
 update from yesterday and today" (the `daily_standup` prompt).
@@ -149,6 +151,15 @@ You: Write my standup update.
 Assistant: Yesterday: 2.50 h on Acme website (design review).
 Today: nothing logged yet.
 ```
+
+### Billed hours close
+
+An hour that has been invoiced is finished. `entry_mark_billed {ids, invoice_number}` writes
+`billed_at` and `billed_invoice` onto those entries; from then on `report` and `invoice_summary`
+skip them by default, so next month's "invoice Acme" cannot re-bill work already paid for. The
+whole timesheet is still there: pass `unbilled_only: false` to any of them. `invoice_summary`
+returns the `entry_ids` it used precisely so they can be handed straight to `entry_mark_billed`
+once the invoice exists.
 
 `report` and `invoice_summary` answer overlapping questions on purpose: `report` is for "how much time
 and money," grouped any way you like; `invoice_summary` is for "give me the lines I can put on an
