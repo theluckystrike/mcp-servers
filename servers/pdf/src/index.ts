@@ -8,7 +8,7 @@ import { createLicenseGate, readSharedProfile, withFileLock } from "@theluckystr
 import { PDFDocument, PDFFont, StandardFonts, degrees, rgb } from "pdf-lib";
 import { z } from "zod";
 import {
-  MAX_BYTES, expandPath, humanBytes, loadPdf, looksEncrypted, parsePageList, parseRanges,
+  MAX_BYTES, expandPath, humanBytes, loadPdf, looksEncrypted, parsePageList, parseRanges, pdfaClaim,
   releaseReservations, reserveOutput, type Reservation,
 } from "./pdfio.js";
 import { extractText } from "./text.js";
@@ -16,6 +16,10 @@ import { addOp, dataDir, getOps } from "./store.js";
 
 const FREE_MAX_MERGE_FILES = 5;
 const FREE_MAX_PAGES = 30;
+/** Larger than any page this server writes; a stamp bigger than this is a typo, not a choice. */
+const MAX_FONT_SIZE = 1600;
+/** pdf_text is read into one chat message, so the whole answer is capped, not just each page. */
+const MAX_TEXT_CHARS = 200_000;
 const STAMP_PRESETS: Record<string, { color: string; note: string }> = {
   PAID: { color: "#1b7f3b", note: "green" },
   DRAFT: { color: "#b02020", note: "red" },
@@ -71,20 +75,42 @@ function parseColor(input: string): [number, number, number] {
  * cleaned first and the count of removed characters is reported, rather than handing
  * back a file that failed to write halfway.
  */
-export function sanitizeStampText(s: string): { text: string; removed: number } {
+export function sanitizeStampText(s: string): { text: string; removed: number; transliterated: number } {
   const map: Record<string, string> = {
     "‘": "'", "’": "'", "“": '"', "”": '"',
     "–": "-", "—": "-", "…": "...", " ": " ",
   };
+  // Letters outside WinAnsi that have an obvious Latin body: dropping the character
+  // turns OPŁACONE into OPACONE, a different word that still looks like a word.
+  // Transliterating gives OPLACONE, which is legible and visibly not the original.
+  const translit: Record<string, string> = {
+    "Ł": "L", "ł": "l", "Đ": "D", "đ": "d", "Ħ": "H", "ħ": "h",
+    "ı": "i", "Ĳ": "IJ", "ĳ": "ij", "Ŀ": "L", "ŀ": "l", "ŉ": "'n",
+    "Ŋ": "N", "ŋ": "n", "Œ": "OE", "œ": "oe", "Ŧ": "T", "ŧ": "t",
+    "ſ": "s", "ƀ": "b", "Ƅ": "b", "Ƈ": "C", "Ɨ": "I", "ƚ": "l",
+    "ȷ": "j", "Ђ": "D", "‐": "-", "‑": "-", "‒": "-", "―": "-",
+    "•": "-", "→": "->", "€": "EUR", "⁄": "/",
+  };
   let removed = 0;
+  let transliterated = 0;
   let out = "";
-  for (const ch of s.replace(/[‘’“”–—… ]/g, (c) => map[c] ?? c)) {
-    const cp = ch.codePointAt(0)!;
-    if (cp === 9) { out += " "; continue; }
-    if (cp < 32 || cp === 127 || cp > 255) { removed++; continue; }
+  const pre = s.replace(/[‘’“”–—… ]/g, (c) => map[c] ?? c);
+  for (const raw of pre) {
+    // Any whitespace control (newline, tab, form feed) is a word separator, never a
+    // deletion: dropping it ran "PAID\nIN FULL" together as "PAIDIN FULL".
+    if (/\s/.test(raw)) { out += " "; continue; }
+    let ch = raw;
+    let cp = ch.codePointAt(0)!;
+    if (cp > 255) {
+      const t = translit[ch] ?? ch.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (t && t !== ch && /^[\x20-\xff]+$/.test(t)) { out += t; transliterated++; continue; }
+      removed++;
+      continue;
+    }
+    if (cp < 32 || cp === 127) { removed++; continue; }
     out += ch;
   }
-  return { text: out.replace(/\s+/g, " ").trim(), removed };
+  return { text: out.replace(/\s+/g, " ").trim(), removed, transliterated };
 }
 
 const POSITIONS = [
@@ -183,7 +209,7 @@ server.registerTool("pdf_info", {
     };
     return ok(JSON.stringify({
       file: f.path, size: humanBytes(f.size), size_bytes: f.size, pages: f.pageCount,
-      encrypted: looksEncrypted(f.bytes), distinct_page_sizes: distinct.length,
+      encrypted: looksEncrypted(f.bytes), pdfa_claim: f.pdfa, distinct_page_sizes: distinct.length,
       page_sizes: sizes.length > 20 ? sizes.slice(0, 20) : sizes,
       page_sizes_truncated: sizes.length > 20 ? `showing 20 of ${sizes.length}` : undefined,
       metadata: meta,
@@ -236,7 +262,7 @@ server.registerTool("pdf_merge", {
     }
     const loaded = [];
     for (const p of paths) loaded.push(await loadPdf(p));
-    reservation = reserveOutput(out_path, overwrite ?? false);
+    reservation = reserveOutput(out_path, overwrite ?? false, paths);
     const out = await PDFDocument.create();
     const sizes = new Set<string>();
     const per: { file: string; pages: number }[] = [];
@@ -257,6 +283,7 @@ server.registerTool("pdf_merge", {
     return ok(
       `Merged ${loaded.length} files into ${out.getPageCount()} pages.\n\n` +
       JSON.stringify({ out: reserveNameOnly(out_path), pages: out.getPageCount(), size: humanBytes(bytes), sources: per }, null, 2) +
+      (loaded.some((x) => x.pdfa) ? `\n\n${loaded.filter((x) => x.pdfa).map((x) => `${x.path} claims ${x.pdfa}`).join("; ")}. The merged file is a new document and carries neither that claim nor the source output intents, so it is not ${loaded.find((x) => x.pdfa)!.pdfa}. Nothing was silently kept.` : "") +
       (sizes.size > 1 ? `\n\nThe sources do not all use the same page size (${[...sizes].join(", ")} in points), so the merged file has mixed page sizes. Nothing was scaled.` : "") +
       note,
     );
@@ -265,6 +292,13 @@ server.registerTool("pdf_merge", {
     return fail(String((e as Error).message ?? e));
   }
 });
+
+/** Every tool that builds a NEW document loses the source PDF/A identity; say so once. */
+function pdfaLostNote(f: { path: string; pdfa: string | null }): string {
+  return f.pdfa
+    ? `\n\n${f.path} claims ${f.pdfa}. The output is a new document without the source output intents and metadata, so it is not ${f.pdfa}.`
+    : "";
+}
 
 function reserveNameOnly(p: string): string {
   const full = expandPath(p);
@@ -309,7 +343,7 @@ server.registerTool("pdf_split", {
     }
     // Reserve every target before writing anything, so a collision on part 3 does not
     // leave parts 1 and 2 behind as a half-done split.
-    for (const t of targets) reserved.push(reserveOutput(t, overwrite ?? false));
+    for (const t of targets) reserved.push(reserveOutput(t, overwrite ?? false, [path]));
     const written: { file: string; range: string; pages: number }[] = [];
     for (let i = 0; i < parts.length; i++) {
       const r = parts[i];
@@ -331,6 +365,7 @@ server.registerTool("pdf_split", {
     return ok(
       `Split ${f.path} (${f.pageCount} pages) into ${written.length} file${written.length === 1 ? "" : "s"}.\n\n` +
       JSON.stringify({ source: f.path, source_pages: f.pageCount, parts: written }, null, 2) +
+      pdfaLostNote(f) +
       (missing > 0 ? `\n\n${missing} page${missing === 1 ? "" : "s"} of the source are in no range and are in none of the output files. The source is unchanged.` : "") +
       note,
     );
@@ -363,7 +398,7 @@ server.registerTool("pdf_pages", {
     const f = await loadPdf(path);
     if (!gate.isPro() && f.pageCount > FREE_MAX_PAGES) return freeLimit(freePageText("pdf_pages", f.pageCount));
     const idx = parsePageList(pages, f.pageCount);
-    reservation = reserveOutput(out_path, overwrite ?? false);
+    reservation = reserveOutput(out_path, overwrite ?? false, [path]);
     const out = await PDFDocument.create();
     const copied = await out.copyPages(f.doc, idx);
     for (const pg of copied) out.addPage(pg);
@@ -376,6 +411,7 @@ server.registerTool("pdf_pages", {
     return ok(
       `Extracted ${idx.length} page${idx.length === 1 ? "" : "s"} from ${f.path}.\n\n` +
       JSON.stringify({ source: f.path, source_pages: f.pageCount, kept: idx.map((i) => i + 1), out: written, size: humanBytes(bytes) }, null, 2) +
+      pdfaLostNote(f) +
       (dupes > 0 ? `\n\n${dupes} page${dupes === 1 ? " was" : "s were"} asked for more than once and copied more than once, in the order you wrote.` : "") +
       note,
     );
@@ -406,7 +442,7 @@ server.registerTool("pdf_rotate", {
     const f = await loadPdf(a.path);
     if (!gate.isPro() && f.pageCount > FREE_MAX_PAGES) return freeLimit(freePageText("pdf_rotate", f.pageCount));
     const idx = a.pages ? parsePageList(a.pages, f.pageCount) : f.doc.getPageIndices();
-    reservation = reserveOutput(a.out_path, a.overwrite ?? false);
+    reservation = reserveOutput(a.out_path, a.overwrite ?? false, [a.path]);
     const changed: { page: number; from: number; to: number }[] = [];
     for (const i of new Set(idx)) {
       const page = f.doc.getPage(i);
@@ -422,6 +458,12 @@ server.registerTool("pdf_rotate", {
     return ok(
       `Rotated ${changed.length} page${changed.length === 1 ? "" : "s"} by ${a.degrees} degrees.\n\n` +
       JSON.stringify({ source: f.path, out: written, pages: changed.slice(0, 30), size: humanBytes(bytes) }, null, 2) +
+      (changed.length && changed.every((c) => c.from === c.to)
+        ? `\n\n${a.degrees} degrees is a whole number of turns, so every page came out at the rotation it already had and the output is a copy of the input with nothing turned.`
+        : "") +
+      (Math.abs(a.degrees) >= 360 && a.degrees % 360 !== 0
+        ? `\n\n${a.degrees} degrees is the same as ${((a.degrees % 360) + 360) % 360} degrees; a PDF stores one angle per page, not a number of turns.`
+        : "") +
       `\n\nRotation is metadata on the page, not a redraw: the text and images are untouched and any reader shows the page turned.` +
       note,
     );
@@ -457,6 +499,12 @@ async function stamp(a: StampArgs, businessFooter: boolean): Promise<ReturnType<
         );
       }
     }
+    if (a.font_size !== undefined && (!Number.isFinite(a.font_size) || a.font_size <= 0 || a.font_size > MAX_FONT_SIZE)) {
+      throw new Error(
+        `font_size must be greater than 0 and at most ${MAX_FONT_SIZE} points; got ${a.font_size}. ` +
+        `A negative or zero size draws nothing and a huge one puts the glyphs off the page. Nothing was written.`,
+      );
+    }
     const clean = sanitizeStampText(a.text);
     if (!clean.text) throw new Error(`the stamp text is empty after removing characters a built-in PDF font cannot carry. Nothing was written.`);
     const f = await loadPdf(a.path);
@@ -464,10 +512,11 @@ async function stamp(a: StampArgs, businessFooter: boolean): Promise<ReturnType<
     const colour = parseColor(a.color ?? preset?.color ?? "#b02020");
     const opacity = a.opacity ?? (a.position === "center" || !a.position ? 0.35 : 0.85);
     if (opacity <= 0 || opacity > 1) throw new Error(`opacity must be greater than 0 and at most 1; got ${opacity}.`);
-    reservation = reserveOutput(a.out_path, a.overwrite ?? false);
+    reservation = reserveOutput(a.out_path, a.overwrite ?? false, [a.path]);
     const font = await f.doc.embedFont(StandardFonts.HelveticaBold);
     const position: Position = a.position ?? "center";
     const stamped: number[] = [];
+    const overflow: { page: number; text_pt: number; page_pt: number; size: number }[] = [];
     for (const i of new Set(idx)) {
       const page = f.doc.getPage(i);
       const { width, height } = page.getSize();
@@ -475,6 +524,10 @@ async function stamp(a: StampArgs, businessFooter: boolean): Promise<ReturnType<
       const tw = font.widthOfTextAtSize(clean.text, size);
       const th = font.heightAtSize(size);
       const at = place(position, width, height, tw, th);
+      // A stamp wider than the page is drawn off the edge and simply is not there when
+      // the file is opened. autoSize stops at 6 pt, so a long line can still overflow.
+      const budget = position === "center" ? Math.hypot(width, height) : width;
+      if (tw > budget) overflow.push({ page: i + 1, text_pt: Math.round(tw), page_pt: Math.round(budget), size });
       page.drawText(clean.text, {
         x: at.x, y: at.y, size, font, color: rgb(colour[0], colour[1], colour[2]),
         opacity, rotate: degrees(at.rotate),
@@ -491,7 +544,10 @@ async function stamp(a: StampArgs, businessFooter: boolean): Promise<ReturnType<
         source: f.path, out: written, text: clean.text, position, opacity,
         color: a.color ?? preset?.color ?? "#b02020", pages: stamped.slice(0, 30), size: humanBytes(bytes),
       }, null, 2) +
-      (clean.removed ? `\n\n${clean.removed} character${clean.removed === 1 ? "" : "s"} were removed from the stamp text because a built-in PDF font (WinAnsi, 256 code points) cannot carry them.` : "") +
+      (clean.removed ? `\n\n${clean.removed} character${clean.removed === 1 ? " was" : "s were"} removed from the stamp text because a built-in PDF font (WinAnsi, 256 code points) cannot carry them.` : "") +
+      (clean.transliterated ? `\n\n${clean.transliterated} character${clean.transliterated === 1 ? " was" : "s were"} replaced with the nearest Latin form (for example L for the Polish l with stroke), because a built-in PDF font cannot carry them. The stamp reads "${clean.text}", not what you typed.` : "") +
+      (overflow.length ? `\n\nThe text is wider than the page and part of it is drawn off the edge on ${overflow.length} page${overflow.length === 1 ? "" : "s"} (page ${overflow[0].page}: ${overflow[0].text_pt} pt of text at ${overflow[0].size} pt in ${overflow[0].page_pt} pt of room, the smallest size this server will use). Stamp a shorter line, or split it over several calls with different positions.` : "") +
+      (f.pdfa ? `\n\n${f.path} claims ${f.pdfa} conformance. The stamped copy still carries that claim in its metadata but is no longer guaranteed to meet it: the stamp uses a standard font that is not embedded. Validate the output before archiving it as ${f.pdfa}.` : "") +
       `\n\nThe stamp is drawn text on top of the page, not a flattened image, so it can be selected and searched. The input file is unchanged.` +
       note,
     );
@@ -603,7 +659,7 @@ server.registerTool("pdf_reorder", {
         `Use pdf_pages if you want a subset or a repeat.`,
       );
     }
-    reservation = reserveOutput(a.out_path, a.overwrite ?? false);
+    reservation = reserveOutput(a.out_path, a.overwrite ?? false, [a.path]);
     const out = await PDFDocument.create();
     const copied = await out.copyPages(f.doc, a.order.map((n) => n - 1));
     for (const pg of copied) out.addPage(pg);
@@ -614,7 +670,7 @@ server.registerTool("pdf_reorder", {
     const note = await record("pdf_reorder", [f.path], [written], f.pageCount);
     return ok(
       `Reordered ${f.pageCount} pages.\n\n` +
-      JSON.stringify({ source: f.path, out: written, order: a.order, size: humanBytes(bytes) }, null, 2) + note,
+      JSON.stringify({ source: f.path, out: written, order: a.order, size: humanBytes(bytes) }, null, 2) + pdfaLostNote(f) + note,
     );
   } catch (e) {
     if (reservation) releaseReservations([reservation]);
@@ -637,7 +693,20 @@ server.registerTool("pdf_text", {
     const idx = pages ? [...new Set(parsePageList(pages, f.pageCount))].sort((x, y) => x - y) : f.doc.getPageIndices();
     const r = extractText(f.doc, idx);
     const withText = r.pages.filter((p) => p.text).length;
-    const body = r.pages.map((p) => `--- page ${p.page} ---\n${p.text || `(no text extracted: ${p.note})`}`).join("\n\n");
+    // One answer is one chat message. A 2000-page report returns megabytes of text and
+    // the client either truncates it silently or drops the turn, so the cut is made here
+    // and named, with the argument that avoids it.
+    const blocks = r.pages.map((p) => `--- page ${p.page} ---\n${p.text || `(no text extracted: ${p.note})`}`);
+    let used = 0;
+    let shown = 0;
+    for (const b of blocks) { if (used + b.length > MAX_TEXT_CHARS && shown > 0) break; used += b.length + 2; shown++; }
+    const body = blocks.slice(0, shown).join("\n\n");
+    const cut = shown < blocks.length
+      ? `\n\nStopped after page ${r.pages[shown - 1].page} of ${blocks.length} requested pages: the text passed the ` +
+        `${MAX_TEXT_CHARS.toLocaleString("en-US")}-character limit for one answer. Nothing is missing from the file - ` +
+        `call pdf_text again with pages: "${r.pages[shown].page}-" to continue from where this stopped.`
+      : "";
+    const fields = formFields(f.doc);
     const header =
       `${f.path}: text from ${withText} of ${idx.length} page${idx.length === 1 ? "" : "s"} ` +
       `(best effort; see the caveats below).`;
@@ -647,9 +716,35 @@ server.registerTool("pdf_text", {
       `and " operators were read. No OCR, no layout reconstruction, no column detection - reading order follows the ` +
       `drawing order, which is usually but not always the reading order. Word spaces are recovered from large negative ` +
       `kerns in TJ arrays; a PDF that positions every word separately can come back with words run together.`;
-    return ok(`${header}\n\n${body}${caveats}${truth}`);
+    return ok(`${header}\n\n${body}${cut}${fields}${caveats}${truth}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
+
+/**
+ * A filled form keeps its values in the field objects and in each widget's appearance
+ * stream, not in the page content stream, so the content-stream walk above reads the
+ * blank form and nothing else. Reading them back explicitly is the difference between
+ * "this page says Application form" and the two values the user actually typed.
+ */
+function formFields(doc: PDFDocument): string {
+  let fields;
+  try { fields = doc.getForm().getFields(); } catch { return ""; }
+  if (!fields.length) return "";
+  const rows: string[] = [];
+  for (const fl of fields) {
+    const name = fl.getName();
+    let value = "";
+    const anyF = fl as unknown as { getText?: () => string | undefined; isChecked?: () => boolean; getSelected?: () => string[] };
+    try {
+      if (typeof anyF.getText === "function") value = anyF.getText() ?? "";
+      else if (typeof anyF.isChecked === "function") value = anyF.isChecked() ? "checked" : "unchecked";
+      else if (typeof anyF.getSelected === "function") value = (anyF.getSelected() ?? []).join(", ");
+    } catch { value = "(could not be read)"; }
+    rows.push(`- ${name}: ${value === "" ? "(empty)" : value}`);
+  }
+  return `\n\nThis PDF is a form with ${fields.length} field${fields.length === 1 ? "" : "s"}. Their values are stored in the ` +
+    `form fields, not in the page content, so they are not part of the page text above:\n${rows.join("\n")}`;
+}
 
 /* ----------------------------------------------------------------- resource */
 

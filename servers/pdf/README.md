@@ -175,15 +175,36 @@ behind as a half-done split -- and the reservations are released, so nothing emp
 
 Pass `overwrite: true` when replacing the file is what you want.
 
+`overwrite: true` still does not let an output be an input. Writing the result of an operation back over one of its
+own sources destroys that source -- the pages are already in memory and get written over the file they came from,
+which takes a three-page file to the one page you extracted -- and every later read of that path is then quietly
+wrong. So an `out_path` that resolves to (or shares an inode with) any input of the same call is refused before any
+work happens:
+
+```
+Error: out_path /path/scan.pdf is also an input of this operation, so writing it would destroy the source.
+Nothing was written. Write beside it instead - /path/scan-out.pdf - and, if the result really is meant to
+take the original's place, rename it yourself once you have checked it.
+```
+
 ## Limits
 
 - Inputs over 100 MB are refused: rewriting a PDF needs several times its size in memory.
 - A file that does not start with `%PDF-` is refused before anything is read.
 - Rotation is recorded as page metadata, in multiples of 90 degrees, which is all the format has. Nothing is redrawn.
-- Stamp text goes through a built-in PDF font, which carries WinAnsi and its 256 code points. Characters outside it
-  are removed and counted in the answer rather than failing the write; there is no CJK stamp.
-- No page numbering, no form filling, no signatures, no redaction, no compression, no PDF/A. This server does the
-  page-level jobs; it is not a PDF editor.
+- Stamp text goes through a built-in PDF font, which carries WinAnsi and its 256 code points. A character outside it
+  is transliterated where it has an obvious Latin body -- Polish `OPŁACONE` stamps as `OPLACONE`, and the answer says
+  so and prints what was actually drawn -- and removed and counted where it does not, so there is no CJK stamp. A
+  newline is a word separator, never a deletion.
+- `font_size` must be between 1 and 1600 points. A stamp too long to fit even at the smallest size this server will
+  use is still drawn, and the answer says how far past the edge it runs, so you can shorten it.
+- `pdf_text` caps one answer at 200,000 characters and names the `pages` argument that continues from where it
+  stopped. Nothing is missing from the file; the cut is in the answer, not the read.
+- No page numbering, no signatures, no redaction, no compression. This server does the page-level jobs; it is not a
+  PDF editor. It does not *write* PDF/A: `pdf_info` reports a file's own `pdfa_claim`, and every tool that writes
+  says plainly that its output no longer holds that claim.
+- Forms are read, not filled: `pdf_text` prints the AcroForm field values, which live in the fields rather than in
+  the page content stream and are therefore not part of the page text.
 - No OCR. See the `pdf_text` section.
 
 ## How it stores data

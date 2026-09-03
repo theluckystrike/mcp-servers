@@ -23,6 +23,8 @@ export interface LoadedPdf {
   size: number;
   doc: PDFDocument;
   pageCount: number;
+  /** The PDF/A level the file claims for itself, if any. Not validated here. */
+  pdfa: string | null;
 }
 
 /**
@@ -61,7 +63,7 @@ export async function loadPdf(input: string): Promise<LoadedPdf> {
     }
     throw new Error(`${path} could not be parsed as a PDF: ${msg}`);
   }
-  return { path, bytes, size: st.size, doc, pageCount: doc.getPageCount() };
+  return { path, bytes, size: st.size, doc, pageCount: doc.getPageCount(), pdfa: pdfaClaim(bytes) };
 }
 
 /** True when the trailer names an /Encrypt dictionary, used by pdf_info to report the flag. */
@@ -78,9 +80,25 @@ export interface Reservation { path: string; created: boolean }
  * and the second would clobber the first. The reservation is a real 0-byte file, so
  * it is released again if the work that follows fails.
  */
-export function reserveOutput(out: string, overwrite: boolean, ext = ".pdf"): Reservation {
+export function reserveOutput(out: string, overwrite: boolean, inputs: string[] = [], ext = ".pdf"): Reservation {
   const p = expandPath(out);
   const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;
+  // An output that is also an input destroys the source: the pages already in memory
+  // are written back over the file they came from, so a 3-page file becomes the
+  // 1 page that was extracted and every later operation reads the wrong document.
+  // overwrite: true is consent to replace some other file, never to consume the input.
+  for (const raw of inputs) {
+    const inPath = expandPath(raw);
+    if (inPath === withExt || sameFile(inPath, withExt)) {
+      throw new Error(
+        `out_path ${withExt} is also an input of this operation, so writing it would destroy the source ` +
+        `(the pages are already in memory and would be written back over the file they came from). ` +
+        `Nothing was written. Write beside it instead - ${withExt.replace(/\.pdf$/i, "")}-out.pdf - and, if the ` +
+        `result really is meant to take the original's place, rename it yourself once you have checked it. ` +
+        `overwrite: true is consent to replace some other file, never to consume an input.`,
+      );
+    }
+  }
   mkdirSync(dirname(withExt), { recursive: true });
   if (overwrite) return { path: withExt, created: false };
   try {
@@ -100,6 +118,28 @@ export function releaseReservations(rs: Reservation[]): void {
     if (!r.created) continue;
     try { if (statSync(r.path).size === 0) unlinkSync(r.path); } catch { /* leave it */ }
   }
+}
+
+/** Same inode, so a symlink or a second path to the same file is caught too. */
+function sameFile(a: string, b: string): boolean {
+  try {
+    const x = statSync(a), y = statSync(b);
+    return x.dev === y.dev && x.ino === y.ino;
+  } catch { return false; }
+}
+
+/**
+ * A file that carries an XMP pdfaid claim says it is PDF/A. Nothing here validates
+ * that claim, and every write path below breaks it (a stamp adds a font that is not
+ * embedded to the standard PDF/A requires; a merge builds a new document without the
+ * source OutputIntents), so the claim is reported and the break is stated.
+ */
+export function pdfaClaim(bytes: Uint8Array): string | null {
+  const s = Buffer.from(bytes).toString("latin1");
+  const part = /pdfaid:part\s*[>=]\s*"?(\d)/.exec(s) ?? /<pdfaid:part>\s*(\d)/.exec(s);
+  if (!part) return null;
+  const conf = /pdfaid:conformance\s*[>=]\s*"?([AaBbUu])/.exec(s) ?? /<pdfaid:conformance>\s*([AaBbUu])/.exec(s);
+  return `PDF/A-${part[1]}${conf ? conf[1].toLowerCase() : ""}`;
 }
 
 export interface Range { from: number; to: number; label: string }
