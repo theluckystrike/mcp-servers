@@ -63,19 +63,21 @@ test("parse: a truncated download is an error, not an empty rate set", () => {
   assert.throws(() => parseEcbXml("<html>maintenance</html>"), /no dated rate block/);
 });
 
-test("cross rate EUR -> USD -> PLN, rounded once to 6 decimals", () => {
+test("cross rate USD -> PLN: displayed to 6 decimals, computed at full precision", () => {
   // 4.2650 PLN per EUR / 1.0812 USD per EUR = 3.944691 PLN per USD
   assert.equal(crossRate(RATES.USD, RATES.PLN), 3.944691);
   const c = convertAmount(RATES, 100, "USD", "PLN");
-  assert.equal(c.rate, 3.944691);
+  assert.equal(c.rate, 3.944691, "display value");
+  assert.equal(c.rate_exact, RATES.PLN / RATES.USD, "multiplier");
   assert.equal(c.result_minor, 39447, "394.4691 rounds half-up to 394.47");
   assert.equal(c.result, "PLN 394.47");
   assert.equal(c.result_number, 394.47);
 });
 
-test("the printed rate reproduces the printed result", () => {
+test("the printed rate is close enough to reproduce the printed result for a near-1 pair", () => {
   const c = convertAmount(RATES, 100, "USD", "PLN");
   assert.equal(Math.round(c.amount * c.rate * 100) / 100, c.result_number);
+  assert.equal(Math.round(c.amount * c.rate_exact * 100) / 100, c.result_number);
 });
 
 test("the euro leg is an identity, in both directions", () => {

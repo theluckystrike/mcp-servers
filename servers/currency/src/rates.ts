@@ -1,4 +1,4 @@
-import { crossRate, currencyDecimals, formatMoney, roundHalfUp } from "./money.js";
+import { crossRate, currencyDecimals, exactCrossRate, formatMoney, roundHalfUp } from "./money.js";
 import type { RateMap } from "./store.js";
 
 export const BASE = "EUR";
@@ -18,7 +18,8 @@ export function codesOf(rates: RateMap): string[] {
 export interface Conversion {
   from: string;
   to: string;
-  rate: number;          // 6 decimals, 1 from = rate to
+  rate: number;          // display only, 6 decimals, 1 from = rate to
+  rate_exact: number;    // the multiplier actually used, full double precision
   amount: number;        // input, major units
   result_minor: number;  // rounded to the target's ISO 4217 minor units
   result: string;        // "PLN 393.71"
@@ -26,17 +27,19 @@ export interface Conversion {
 }
 
 /**
- * Cross rate through the euro. Both legs come from one ECB day, so the two rounding
- * steps of a hand calculation (from -> EUR -> to) never happen: the ratio is formed at
- * full precision and rounded once, to 6 decimals, and that rounded rate is the number
- * the result is computed from.
+ * Cross rate through the euro. Both legs come from one ECB day, and the ratio is formed
+ * and multiplied at full precision: the only rounding in the whole path is the final one,
+ * to the target currency's ISO 4217 minor units. Rounding the rate to 6 decimals first
+ * destroys any pair whose rate is far from 1 - 1,000,000 VND is KWD 11.667, not KWD 12.000 -
+ * so the 6-decimal rate is reported as a display value alongside the exact one, never used
+ * as the multiplier.
  */
 export function convertAmount(rates: RateMap, amount: number, from: string, to: string): Conversion | { error: string } {
   const f = from.toUpperCase(), t = to.toUpperCase();
   const fr = perEur(rates, f), tr = perEur(rates, t);
   if (fr === undefined) return { error: unknownCode(f, rates) };
   if (tr === undefined) return { error: unknownCode(t, rates) };
-  const rate = crossRate(fr, tr);
+  const rate = exactCrossRate(fr, tr);
   // 1e308 * a rate overflows to Infinity, which formats as "JPY Infinity" and serialises
   // result_number as null. Refuse anything that cannot survive the multiplication as an exact
   // integer number of minor units, and say so, rather than emitting a non-number as money.
@@ -46,7 +49,7 @@ export function convertAmount(rates: RateMap, amount: number, from: string, to: 
     return { error: `that amount is too large to convert exactly (${amount} ${f} in ${t} exceeds what can be represented without losing minor units). The largest amount this handles is about ${Math.floor(Number.MAX_SAFE_INTEGER / (rate * Math.pow(10, currencyDecimals(t))))} ${f}.` };
   }
   return {
-    from: f, to: t, rate, amount,
+    from: f, to: t, rate: crossRate(fr, tr), rate_exact: rate, amount,
     result_minor: minor,
     result: formatMoney(minor, t),
     result_number: minor / Math.pow(10, currencyDecimals(t)),

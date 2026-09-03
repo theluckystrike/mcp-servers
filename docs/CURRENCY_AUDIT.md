@@ -249,3 +249,93 @@ published rate series can never shrink.
 ```
 
 Built by theluckystrike.
+
+---
+
+## Codex v4 fixes
+
+Date 2026-09-03. Scope `servers/currency` only. Items 1, 2 and 3 of `docs/CODEX_REVIEW_V4.md`.
+Zero paid API calls; every test is served by a local fixture HTTP server over `ECB_BASE_URL`.
+
+### 1 -- conversion rounded the rate before it multiplied
+
+`convertAmount` multiplied by the 6-decimal cross rate, so any pair whose rate is far from 1 lost
+significant digits before the amount was touched. `crossRate(30000, 0.35)` is `0.000012`, and
+1,000,000 VND therefore converted to KWD 12.000 instead of KWD 11.667 -- 2.9% of the money.
+
+- [servers/currency/src/money.ts:78](servers/currency/src/money.ts#L78) -- new `exactCrossRate(fromPerEur, toPerEur)` returns `toPerEur / fromPerEur` unrounded.
+- [servers/currency/src/money.ts:88](servers/currency/src/money.ts#L88) -- `crossRate` now wraps it and is documented as display only.
+- [servers/currency/src/rates.ts:42](servers/currency/src/rates.ts#L42) -- the multiplier is `exactCrossRate(fr, tr)`; the only rounding left in the path is the final one to the target's ISO 4217 minor units.
+- [servers/currency/src/rates.ts:22](servers/currency/src/rates.ts#L22), [servers/currency/src/rates.ts:52](servers/currency/src/rates.ts#L52) -- `Conversion` carries both: `rate` (6 decimals, display) and `rate_exact` (the multiplier).
+- [servers/currency/src/index.ts:147](servers/currency/src/index.ts#L147), [servers/currency/src/index.ts:178](servers/currency/src/index.ts#L178), [servers/currency/src/index.ts:309](servers/currency/src/index.ts#L309) -- `convert`, `convert_many` and `rate_on` report the displayed rate and the exact rate separately, with a `rate_note` saying which one the arithmetic used.
+- [servers/currency/README.md:121](servers/currency/README.md#L121) -- the "reference rates" section restated; the old claim that the printed 6-decimal rate is the multiplier is removed.
+
+Tests: [servers/currency/test/precision.test.mjs:15](servers/currency/test/precision.test.mjs#L15) (the KWD 11.667 case, including the assertion that the 6-decimal rate would have produced 12.000),
+[servers/currency/test/precision.test.mjs:38](servers/currency/test/precision.test.mjs#L38) (EUR -> USD -> PLN equals EUR -> PLN, to the minor unit and at the rate level),
+[servers/currency/test/precision.test.mjs:53](servers/currency/test/precision.test.mjs#L53) (the same chain through the rounding-hostile VND leg).
+
+### 2 -- the fetch deadline stopped at the headers and the lock expired under it
+
+The abort timer was cleared as soon as the response headers arrived, so a body that stalled was
+unbounded, while the refresh lock leased 60 s. A stalled download therefore lost its lock, a second
+process refreshed, and the first response landed last and overwrote the newer cache.
+
+- [servers/currency/src/ecb.ts:106](servers/currency/src/ecb.ts#L106) -- `fetchText(url, totalTimeoutMs)` arms one `AbortController` before the request and clears it in a `finally` after the last byte; connect, headers and body all run against the one deadline, and an abort during body reads is reported as a timeout rather than a network error.
+- [servers/currency/src/ecb.ts:23](servers/currency/src/ecb.ts#L23) -- `HISTORY_TIMEOUT_MS = 60_000` for the ~6 MB history; the daily file keeps `TIMEOUT_MS = 20_000`.
+- [servers/currency/src/ecb.ts:43](servers/currency/src/ecb.ts#L43) -- `LOCK_TIMEOUT_MS` raised to 90_000 so the lease outlasts the longest body deadline, with a load-time check at [servers/currency/src/ecb.ts:44](servers/currency/src/ecb.ts#L44) that fails the module rather than shipping the inversion again.
+- [servers/currency/src/ecb.ts:238](servers/currency/src/ecb.ts#L238) -- a daily download whose rate date is older than the cached one is refused as a stale response.
+- [servers/currency/src/ecb.ts:262](servers/currency/src/ecb.ts#L262) -- the existing shrink guard (fewer rate days) is extended with a newest-date guard: a history whose latest day is before the cache's latest day is refused. Both guards read the cache inside the lock, immediately before the write.
+
+Tests: [servers/currency/test/guards.test.mjs:29](servers/currency/test/guards.test.mjs#L29) (headers sent, body stalls forever: the fetch aborts on the total deadline instead of hanging),
+[servers/currency/test/guards.test.mjs:50](servers/currency/test/guards.test.mjs#L50) (`LOCK_TIMEOUT_MS >= HISTORY_TIMEOUT_MS`),
+[servers/currency/test/guards.test.mjs:61](servers/currency/test/guards.test.mjs#L61) (a download with the same day count but an older newest day is refused, the file on disk still reaches the newer day, and the caller is told why).
+
+### 3 -- every cache miss was labelled a weekend
+
+`ratesForDate` printed "weekend or TARGET holiday" for any inexact date, including a weekday that
+was missing only because the cache had not been refreshed that far.
+
+- [servers/currency/src/ecb.ts:220](servers/currency/src/ecb.ts#L220) -- `latestDay(days)` exported.
+- [servers/currency/src/index.ts:115](servers/currency/src/index.ts#L115) -- the answer states whether this call refreshed, attempted a refresh and failed, or did not attempt one because the cache is under 24 h old.
+- [servers/currency/src/index.ts:123](servers/currency/src/index.ts#L123) -- a date after the cache's newest day now reads "No rate published yet in the cache for YYYY-MM-DD (latest YYYY-MM-DD)" plus that refresh status. Only a gap inside the cached range is still called a weekend or TARGET holiday.
+
+Tests: [servers/currency/test/guards.test.mjs:130](servers/currency/test/guards.test.mjs#L130) -- one spawned server, one fixture history that ends two days before today and has a hole three days back: the out-of-range date gets the cache-miss wording and the refresh status, the in-range hole still gets the weekend wording, and a repeat call on a fresh cache reports that no refresh was attempted.
+
+### Verification
+
+`npm run build` clean. `npm test` in `servers/currency`, verbatim summary:
+
+```
+# tests 35
+# suites 0
+# pass 35
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1136.43825
+```
+
+`node scripts/validate.mjs`, verbatim tail:
+
+```
+docx: 16/16 in 413 ms
+timezone: 16/16 in 287 ms
+currency: 16/16 in 3730 ms
+expense-tracker: 22/22 in 416 ms
+time-tracker: 24/24 in 229 ms
+price-tracker: 18/18 in 280 ms
+spreadsheet: 18/18 in 393 ms
+invoice: 20/20 in 441 ms
+remote: 20/20
+billing: 14/14
+validation db: /Users/mike/mcp-servers/data/validation.json run 50: 184/184
+```
+
+insight:
+The 6-decimal cross rate was introduced so a user could check the arithmetic by hand, and that is
+exactly what made it wrong: the number that is easiest to read is not the number that must be
+multiplied. The error is invisible on the pairs anyone tests -- USD/PLN is off by 5 parts in
+10 million -- and only appears where the rate is nowhere near 1, which is where the ECB set is
+widest (VND at 30,000 per EUR, KWD at 0.35). A display value and a multiplier are two different
+numbers and the answer has to carry both.

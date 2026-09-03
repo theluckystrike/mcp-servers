@@ -115,10 +115,14 @@ invoice_create {currency: "USD", items: [...]}  -> the document
 - Published around 16:00 CET on TARGET business days. There is no rate for a weekend, 1 January, Good Friday,
   Easter Monday, 1 May, or 25 and 26 December.
 - Asking for a date with no rate returns the last rate published on or before it -- the convention every bank
-  uses -- and the answer says which date it landed on and why.
-- The ECB quotes everything against the euro, so a USD/PLN rate is a cross rate: the ratio is formed at full
-  precision and rounded once, to 6 decimals, and that rounded rate is the number the result is computed from.
-  The rate printed in the answer reproduces the amount printed in the answer.
+  uses -- and the answer says which date it landed on and why. A date inside the cached range with no rate is
+  a weekend or a TARGET holiday and is named as one; a date after the newest day in the cache is reported as
+  not published yet, with the cache's latest date and whether this call went to the ECB to look for it.
+- The ECB quotes everything against the euro, so a USD/PLN rate is a cross rate: the ratio is formed and
+  multiplied at full precision, and the only rounding in the path is the last one, to the target currency's
+  minor units. The answer carries both numbers: `rate_exact` is the multiplier, `rate` is the same rate rounded
+  to 6 decimals for reading. Recomputing by hand from the 6-decimal `rate` can differ by a minor unit or two;
+  it is far out for pairs whose rate is nowhere near 1 (1,000,000 VND is KWD 11.667, not KWD 12.000).
 - Results are rounded to the target currency's own ISO 4217 minor units: JPY comes back whole, BHD to three places.
 - These are reference rates for accounting and reporting. They are not dealing rates; your bank's rate will differ.
 

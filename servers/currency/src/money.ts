@@ -69,12 +69,22 @@ export function daysBetween(a: string, b: string): number {
 }
 
 /**
- * The published cross rate, rounded to 6 decimals. The rounded rate is what the
- * conversion actually multiplies by, so the rate printed in the answer reproduces
- * the number in the answer. A rate quoted to 6 decimals and a result computed from
- * 15 do not reconcile, and a user checking the arithmetic by hand is right to
- * distrust the tool that cannot be checked.
+ * The cross rate at full double precision: toPerEur / fromPerEur, no intermediate
+ * rounding. This is the number every conversion multiplies by. Rounding the rate
+ * first and multiplying afterwards loses the small currencies: at 6 decimals
+ * 0.35 KWD / 30000 VND per EUR becomes 0.000012, and 1,000,000 VND then converts to
+ * KWD 12.000 instead of KWD 11.667 - a 2.9% error on real money.
+ */
+export function exactCrossRate(fromPerEur: number, toPerEur: number): number {
+  return toPerEur / fromPerEur;
+}
+
+/**
+ * The same rate rounded to 6 decimals, for display only. It is never used to compute
+ * a result, so the answer reports it next to the exact rate and says which one the
+ * arithmetic used; a rate quoted to 6 decimals that does not reproduce the printed
+ * result is stated as a display value rather than passed off as the multiplier.
  */
 export function crossRate(fromPerEur: number, toPerEur: number): number {
-  return Number((toPerEur / fromPerEur).toFixed(6));
+  return Number(exactCrossRate(fromPerEur, toPerEur).toFixed(6));
 }
