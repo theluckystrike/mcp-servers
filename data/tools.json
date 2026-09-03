@@ -150,5 +150,157 @@
       "name": "overdue_report",
       "description": "List every unpaid or partly paid invoice past its due date with days overdue, plus outstanding totals per currency. Pro."
     }
+  ],
+  "expense-tracker": [
+    {
+      "name": "expense_add",
+      "description": "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when "
+    },
+    {
+      "name": "expense_list",
+      "description": "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed."
+    },
+    {
+      "name": "expense_update",
+      "description": "Change any field of a stored expense by id. Only the fields you pass are changed."
+    },
+    {
+      "name": "expense_delete",
+      "description": "Delete one expense by id. The receipt file itself is left on disk."
+    },
+    {
+      "name": "receipt_attach",
+      "description": "Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed."
+    },
+    {
+      "name": "category_rules",
+      "description": "Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, a"
+    },
+    {
+      "name": "expense_settings",
+      "description": "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to"
+    },
+    {
+      "name": "expense_summary",
+      "description": "Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together."
+    },
+    {
+      "name": "mileage_add",
+      "description": "Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, "
+    },
+    {
+      "name": "expense_export",
+      "description": "Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all."
+    },
+    {
+      "name": "expense_to_invoice",
+      "description": "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate rec"
+    },
+    {
+      "name": "expense_mark_rebilled",
+      "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range mar"
+    }
+  ],
+  "currency": [
+    {
+      "name": "rates_latest",
+      "description": "The most recent European Central Bank daily reference rates, re-expressed against any base. The answer always states the rate date, because ECB rates are published once a day around 16:00 CET on TARGET business days and "
+    },
+    {
+      "name": "convert",
+      "description": "Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounde"
+    },
+    {
+      "name": "convert_many",
+      "description": "One amount, one source currency, many targets, all off the same ECB rate date. Each result is rounded to that target's own minor units."
+    },
+    {
+      "name": "fx_rates_for",
+      "description": "The ECB rate for one currency pair over a window, with min, max, average and the change across the window. Give days for a trailing window, or from_date and to_date for an explicit one. Only TARGET business days have rat"
+    },
+    {
+      "name": "rate_on",
+      "description": "The ECB rate for a pair on one date. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the a"
+    },
+    {
+      "name": "currencies_list",
+      "description": "Every currency in the ECB daily reference set, with its rate against the euro and the number of decimal places it is rounded to. Anything not on this list cannot be converted here."
+    },
+    {
+      "name": "cache_status",
+      "description": "What is cached on this machine, how old it is, and when it will next be refreshed. Answer this before trusting a rate on a machine that has been offline."
+    }
+  ],
+  "docx": [
+    {
+      "name": "business_set",
+      "description": "Store the sender profile printed on every proposal, contract and letter: your name, address, email, VAT id, bank details and defaults (currency, payment terms). Same profile shape as mcp-invoice. Call this once before cr"
+    },
+    {
+      "name": "doc_create",
+      "description": "Write a real .docx file from structured sections: headings, paragraphs, bullet or numbered lists and tables. Choose plain, letter (sender block top right, date, addressee) or proposal (letterhead band and cover title) la"
+    },
+    {
+      "name": "doc_from_markdown",
+      "description": "Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and **bold** / *italic* / `code` inline. Returns the file path. Free and unlimited."
+    },
+    {
+      "name": "doc_read",
+      "description": "Extract the text of an existing .docx: headings with their levels, paragraphs, list items and tables, in document order. Works on files Word, Google Docs or this server produced. Free and unlimited."
+    },
+    {
+      "name": "doc_to_html",
+      "description": "Convert a .docx to semantic HTML you can open in a browser and print to PDF. Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native dependency or a headless browser, and this server "
+    },
+    {
+      "name": "doc_fill_template",
+      "description": "Replace {{placeholders}} in an existing .docx and write a new file, keeping every style, table, header, footer and image of the original. Placeholders split across runs by Word's editor are handled, because the substitut"
+    },
+    {
+      "name": "proposal_create",
+      "description": "Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number t"
+    },
+    {
+      "name": "contract_create",
+      "description": "Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. Thi"
+    }
+  ],
+  "timezone": [
+    {
+      "name": "now",
+      "description": "The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC."
+    },
+    {
+      "name": "convert_time",
+      "description": "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'."
+    },
+    {
+      "name": "overlap",
+      "description": "The window each day when every listed place is inside working hours. Computed on a real date, so a DST week that widens or narrows the overlap is reflected."
+    },
+    {
+      "name": "find_meeting_slots",
+      "description": "Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that "
+    },
+    {
+      "name": "dst_changes",
+      "description": "The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October."
+    },
+    {
+      "name": "business_days",
+      "description": "Business days between two dates in a place, excluding weekends and any holidays you pass. Use it for delivery dates and payment terms across a client's calendar."
+    },
+    {
+      "name": "contacts_set",
+      "description": "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later."
+    },
+    {
+      "name": "contacts_list",
+      "description": "Everyone you have saved, with their current local time and whether they are inside working hours right now."
+    },
+    {
+      "name": "ics_create",
+      "description": "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale."
+    }
   ]
 }

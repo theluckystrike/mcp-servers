@@ -52,6 +52,21 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  docx: async (c, tmp, tier, ok) => {
+    const out = join(tmp, "md.docx");
+    const a = await c.tool("doc_from_markdown", { markdown: "# Title\n\nHello **world**.\n\n- one\n- two\n\n| a | b |\n|---|---|\n| 1 | 2 |\n", out_path: out }); ok(`${tier}: doc_from_markdown writes docx`, !a.isError && existsSync(out) && readFileSync(out).subarray(0, 2).toString() === "PK", a.text.slice(0, 100));
+    const r = await c.tool("doc_read", { path: out }); ok(`${tier}: doc_read returns text`, !r.isError && /Hello/.test(r.text) && /Title/.test(r.text), r.text.slice(0, 100));
+    await c.tool("business_set", { name: "Validator Ltd" });
+    let last;
+    for (let i = 1; i <= 4; i++) last = await c.tool("proposal_create", { client: "Acme", project_title: `P${i}`, summary: "s", scope: ["a"], deliverables: ["d"], timeline: [{ phase: "x", duration: "1 week" }], price: { amount: 4500, currency: "EUR", terms: "50% upfront" }, out_path: join(tmp, `p${i}.docx`) });
+    ok(`${tier}: 4th proposal ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(last.text) : /mcp\.zovo\.one\/buy\/docx/.test(last.text), last.text.slice(0, 100));
+  },
+  timezone: async (c, tmp, tier, ok) => {
+    const a = await c.tool("convert_time", { time: "2026-09-10 15:00", from_zone: "Europe/Warsaw", to_zones: ["America/Denver"] }); ok(`${tier}: convert_time Warsaw 15:00 -> Denver 07:00`, !a.isError && /07:00/.test(a.text), a.text.slice(0, 120));
+    const parts = [{ name: "me", zone: "Europe/Warsaw" }, { name: "Sara", zone: "Australia/Sydney" }, { name: "Tom", zone: "America/Chicago" }];
+    const sl = await c.tool("find_meeting_slots", { participants: parts, duration_minutes: 60, days: 5 }); ok(`${tier}: find_meeting_slots 3 participants answers`, !sl.isError, sl.text.slice(0, 100));
+    const four = await c.tool("find_meeting_slots", { participants: [...parts, { name: "Ana", zone: "Europe/Lisbon" }], duration_minutes: 60, days: 5 }); ok(`${tier}: 4th participant ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(four.text) : /mcp\.zovo\.one\/buy\/timezone/.test(four.text), four.text.slice(0, 100));
+  },
   currency: async (c, tmp, tier, ok) => {
     const a = await c.tool("convert", { amount: 100, from: "USD", to: "PLN" }); ok(`${tier}: convert USD->PLN with rate date`, !a.isError && /PLN/.test(a.text) && /20\d\d-\d\d-\d\d/.test(a.text), a.text.slice(0, 120));
     const f = await c.tool("fx_rates_for", { target: "USD", currencies: ["EUR", "GBP"] }); ok(`${tier}: fx_rates_for shape`, !f.isError && /"EUR"/.test(f.text) && /"GBP"/.test(f.text), f.text.slice(0, 120));

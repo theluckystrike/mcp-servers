@@ -22,6 +22,8 @@ declare -A DISPLAY_NAME=(
   [invoice]="Invoice"
   [expense-tracker]="Expense Tracker"
   [currency]="Currency Converter"
+  [timezone]="Timezone Planner"
+  [docx]="Docx"
 )
 
 declare -A KEYWORDS=(
@@ -31,9 +33,11 @@ declare -A KEYWORDS=(
   [invoice]='["mcp","model-context-protocol","invoice","invoicing","pdf","vat","freelance"]'
   [expense-tracker]='["mcp","model-context-protocol","expenses","receipts","mileage","vat","freelance"]'
   [currency]='["mcp","model-context-protocol","currency","exchange-rates","ecb","fx"]'
+  [timezone]='["mcp","model-context-protocol","timezone","meeting","scheduling","ics"]'
+  [docx]='["mcp","model-context-protocol","docx","word","proposal","contract","markdown"]'
 )
 
-for NAME in time-tracker price-tracker spreadsheet invoice expense-tracker currency; do
+for NAME in time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx; do
   echo "=== $NAME ==="
   SRC_DIR="$ROOT/servers/$NAME"
   OUT_DIR="$BUNDLES/$NAME"
@@ -118,7 +122,7 @@ OS_SRC_DIR="$ROOT/servers/office-suite"
 OS_OUT_DIR="$BUNDLES/office-suite"
 OS_PKG_JSON="$OS_SRC_DIR/package.json"
 LIC_SRC="$ROOT/packages/mcp-license"
-CHILDREN="time-tracker price-tracker spreadsheet invoice expense-tracker currency"
+CHILDREN="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx"
 
 if [ ! -d "$OS_SRC_DIR/dist" ]; then
   echo "FATAL: $OS_SRC_DIR/dist missing, run npm run build in servers/office-suite first" >&2
@@ -233,7 +237,9 @@ OS_TOOLS_JSON=$(node -e "
   "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/spreadsheet/src/index.ts" "$LIC_SRC/dist/index.js")" \
   "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/invoice/src/index.ts" "$LIC_SRC/dist/index.js")" \
   "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/expense-tracker/src/index.ts" "$LIC_SRC/dist/index.js")" \
-  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/currency/src/index.ts" "$LIC_SRC/dist/index.js")")
+  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/currency/src/index.ts" "$LIC_SRC/dist/index.js")" \
+  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/timezone/src/index.ts" "$LIC_SRC/dist/index.js")" \
+  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/docx/src/index.ts" "$LIC_SRC/dist/index.js")")
 
 # 6. Write manifest.json
 node "$ROOT/scripts/gen-manifest.mjs" \
