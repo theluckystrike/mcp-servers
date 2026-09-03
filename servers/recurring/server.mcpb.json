@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders",
   "description": "Recurring invoices on a schedule: define once, generate the due PDFs into your invoice server,.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.0/recurring.mcpb",
-      "version": "0.4.0",
-      "fileSha256": "a44779ddacc2f284dca292392ceae8cbc2f84b9b7e609922d74f2560e360d750",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.1/recurring.mcpb",
+      "version": "0.4.1",
+      "fileSha256": "85072942ca17c1b57000e8d4a6e095d0a3c50bf30b70bfbd1d01f6184818bfbc",
       "transport": {
         "type": "stdio"
       },
@@ -23,6 +23,20 @@
           "name": "MCP_LICENSE_KEY",
           "description": "Optional Pro license key (MCPL1....). Verified offline.",
           "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/recurring",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
           "isSecret": true
         }
       ]

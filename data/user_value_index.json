@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T07:22:35.079Z",
+  "generated_at": "2026-09-03T08:23:08.129Z",
   "rounds": [
     {
       "round": 1,
@@ -667,70 +667,70 @@
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R31. The model also left the bundle here — twice — to write the same facts into the CLI's own memory directory. |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R32",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R32 |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R33",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R33. The keyword list is still noisy (`end`, `run`, `accretion`, `ten-year-old`, `austin-anchored` outrank nothing). |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R34",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R34. `mileage_add {km: 30, region: \"PL\"}` -> `PLN 34.50` correctly, but with **no project and no billable flag**, so the drive is invisibl",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R35",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R35. |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R36",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R36. |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R37",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R37. |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R38",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R38. \"By type\" was answered per file, not per expense category. |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R39",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R39. |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R40",
       "first_seen": "USER_VALUE_R8.md",
       "severity": "",
       "title": "D-R40 |",
-      "status": "open (client or accepted)"
+      "status": "fixed"
     },
     {
       "id": "D-T1",
@@ -756,6 +756,6 @@
   ],
   "counts": {
     "defects": 66,
-    "fixed": 31
+    "fixed": 41
   }
 }

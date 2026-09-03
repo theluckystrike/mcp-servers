@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
@@ -39,7 +39,7 @@
   "tools": [
     {
       "name": "timer_start",
-      "description": "Start a stopwatch for billable work on a project or client (timesheet / hours per project). Only one timer runs at a time: starting a new one stops and logs the previous one. Accepts an hourly rate and a currency, e.g. rate '90 euros'."
+      "description": "Start a stopwatch for billable work on a project or client (timesheet / hours per project). Only one timer runs at a time: starting a new one stops and logs the previous one."
     },
     {
       "name": "timer_stop",
@@ -67,23 +67,23 @@
     },
     {
       "name": "project_set_rate",
-      "description": "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Pass apply_to_existing to re-rate time already logged for that project (add only_missing to touch only entries that carry no rate)."
+      "description": "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Returns the new rate and, when re-rating is asked for, how many already logged entries changed."
     },
     {
       "name": "report",
-      "description": "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency. Money is grouped by currency and never mixes EUR with USD. Free tier covers the last 7 days."
+      "description": "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency."
     },
     {
       "name": "export_csv",
-      "description": "Export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Free tier exports the last 7 days."
+      "description": "Call this tool to export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Returns the file path written."
     },
     {
       "name": "entry_mark_billed",
-      "description": "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice. Pass the exact ids (the entry_ids invoice_summary returned) or a project plus a from/to range. Already-billed entries are left alone and listed back to you."
+      "description": "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice."
     },
     {
       "name": "invoice_summary",
-      "description": "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00). Free for the last 7 days; Pro invoices any period from the full history."
+      "description": "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00)."
     },
     {
       "name": "license_status",
@@ -111,23 +111,23 @@
     },
     {
       "name": "sheet_find",
-      "description": "Search every cell for text (case insensitive) and return cell addresses with a preview of the row it is on."
+      "description": "Call this tool to search every cell of a spreadsheet or CSV for text; built-in file readers cannot parse spreadsheets. Matching is case insensitive. Returns cell addresses with a preview of the row each hit is on."
     },
     {
       "name": "sheet_write",
-      "description": "Write rows to an excel (xlsx) or csv/tsv/json file. rows may be objects (keys become headers) or arrays (first array is the header row). mode new_file writes a brand new file and refuses to clobber an existing one; append adds the rows under the existing data; overwrite replaces the file contents. Format follows the extension of out_path (.xlsx, .csv, .tsv, .json)."
+      "description": "Call this tool to write rows to an excel (xlsx) or csv/tsv/json file. Returns the rows, columns, byte size and column names of the file written."
     },
     {
       "name": "sheet_add_column",
-      "description": "Add a computed column and save the result to a NEW file (the source is never modified unless out_path points at it). formula uses the same expression language as sheet_query over the columns of each row, e.g. \"[Qty] * [Unit Price]\" or '[Country] = \"PL\"'. Numeric results are rounded like the inputs: when every column the formula reads holds at most 2 decimals, the result is rounded to 2 decimals, so a VAT column comes out in cents rather than as 40.7868. Pass decimals to override. Alternatively pass values, one per data row."
+      "description": "Call this tool to add a computed column and save the result to a NEW file; the source is never modified unless out_path points at it. Returns the new file path, the row count and a preview of the first rows."
     },
     {
       "name": "sheet_convert",
-      "description": "Convert a sheet between excel (xlsx), csv and json. Writes a new file next to the source unless out_path is given; the source is never modified."
+      "description": "Call this tool to convert a sheet between excel (xlsx), csv and json. Writes a new file next to the source unless out_path is given; the source is never modified. Returns the new file path with its row and column counts."
     },
     {
       "name": "business_set",
-      "description": "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices."
+      "description": "The ONE business profile for the whole suite: name, address, VAT id, bank details and defaults (currency, tax rate, terms, prefix, timezone). Saved to the shared profile every other server reads. Call it once, first."
     },
     {
       "name": "client_add",
@@ -139,11 +139,11 @@
     },
     {
       "name": "invoice_create",
-      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed. Items may carry a per-line currency; every line on one invoice must agree with the invoice currency, and a mix is refused with the exact conversion argument to pass rather than billed as if it were one currency."
+      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused) and returns the stored invoice with its subtotal, discount, one tax line per rate and the total."
     },
     {
       "name": "invoice_from_hours",
-      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice. When the rate is in one currency and the invoice must be in another, pass target_currency plus fx_rates - the same pair expense_to_invoice takes: fx_rates maps the RATE's currency to the number of target units one of it buys, e.g. {\"EUR\": 1.1578} with target_currency \"USD\". Nothing here fetches or guesses a rate. Pass entry_ids (from the time tracker's invoice_summary) and they come back with the new invoice number so the tracked hours can be closed."
+      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates and returns a single-line invoice, converting the rate into target_currency when you supply fx_rates, and echoing back any entry_ids."
     },
     {
       "name": "invoice_list",
@@ -159,7 +159,7 @@
     },
     {
       "name": "invoice_pdf",
-      "description": "Render an invoice as an A4 PDF you can send: issuer block, BILL TO client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Every money value on the page carries its currency code. Returns the file path."
+      "description": "Call this tool to render a stored invoice as an A4 PDF you can send. Returns the path of the file written."
     },
     {
       "name": "overdue_report",
@@ -167,7 +167,7 @@
     },
     {
       "name": "expense_add",
-      "description": "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when a project is given and false otherwise, and the response always states the value used. Amounts are integer minor units in the expense's own currency."
+      "description": "Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess."
     },
     {
       "name": "expense_list",
@@ -183,15 +183,15 @@
     },
     {
       "name": "receipt_attach",
-      "description": "Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed."
+      "description": "Call this tool to attach a receipt file to a stored expense. Returns the stored path and sha256. The file must exist; it is hashed so a later audit can prove the file has not changed."
     },
     {
       "name": "category_rules",
-      "description": "Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, and rules are applied by expense_add when no category is given."
+      "description": "Replace the merchant-to-category rules, or call with no rules to list them. Returns the stored rule list. The rules are applied by expense_add whenever a call gives no category of its own."
     },
     {
       "name": "expense_settings",
-      "description": "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to read them. Set default_vat_rate once and every expense gets its net/VAT split without the caller having to repeat the rate."
+      "description": "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate and default_currency. Returns the stored defaults. Call with no arguments to read them without changing anything."
     },
     {
       "name": "expense_summary",
@@ -199,27 +199,27 @@
     },
     {
       "name": "mileage_add",
-      "description": "Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, no vehicle or engine class and no first-10000-mile band, so it is not a tax calculation. Pass rate_per_km for your exact scheme. currency is only accepted together with rate_per_km; a table rate always keeps its own currency. Give either km or miles."
+      "description": "Record a business trip as an expense, priced as distance x rate. Give exactly one of km or miles. Returns the saved id with the rate used, where that rate came from and the money, in the rate's own currency."
     },
     {
       "name": "expense_export",
-      "description": "Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all."
+      "description": "Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. The money column is `amount` (gross), as in time-tracker's export_csv, with `gross`, `net`, `vat` alongside."
     },
     {
       "name": "expense_to_invoice",
-      "description": "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax and the line total comes back to the receipt gross. A stored rate of 0 is a rate, not a gap. An expense with NO rate recorded is rebilled gross with tax_rate 0 and a warning in its description; the expense_settings default is never applied retroactively, because it would rewrite the tax meaning of receipts entered before it existed. Pass assume_vat_rate explicitly to split those lines instead. Line items are grouped per currency because one invoice carries one currency. When the range holds MORE THAN ONE currency, pass target_currency plus fx_rates and every line is converted into one single group, each converted line carrying [converted from EUR 12.40 at 1.08] in its description; without fx_rates the response names the exact argument to pass. This is a read-only preview: marking happens only in expense_mark_rebilled, once the invoice exists."
+      "description": "Preview the unbilled billable expenses of one project as invoice_create line items (description, quantity, unit_price, tax_rate), grouped per currency. Read-only: nothing is marked rebilled here."
     },
     {
       "name": "expense_mark_rebilled",
-      "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range marks only billable, not-yet-rebilled expenses in that one currency, so invoicing the EUR group cannot mark the PLN one. invoice_number is required: the marker records which invoice carries the expense."
+      "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or that project, date range and currency. Returns what was marked."
     },
     {
       "name": "rates_latest",
-      "description": "The most recent European Central Bank daily reference rates, re-expressed against any base. The answer always states the rate date, because ECB rates are published once a day around 16:00 CET on TARGET business days and a Sunday carries Friday's rate. Rates are cached locally and refreshed only when the copy is more than 6 hours old, so repeated calls and offline machines cost nothing."
+      "description": "Call this tool for the most recent European Central Bank daily reference rates, re-expressed against any base. Returns the rates, the ECB rate date they belong to, and how old the local cache is."
     },
     {
       "name": "convert",
-      "description": "Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounded to the target currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places. Every answer states the rate date it used. A weekend or holiday date falls back to the last published rate on or before it, and says so."
+      "description": "Call this tool to convert an amount between any two ECB-quoted currencies, today or on a past date. Returns the converted amount, the cross rate to 6 decimals, the rounding applied and the rate date used."
     },
     {
       "name": "convert_many",
@@ -227,15 +227,15 @@
     },
     {
       "name": "fx_rates_for",
-      "description": "Return exactly the object that the expense tracker's expense_to_invoice takes as fx_rates: {\"EUR\": 1.08, \"GBP\": 1.27} meaning 1 unit of that currency = X units of the target. Call this when a rebill or an invoice spans more than one currency, then pass the fx_rates object straight through with target_currency, instead of asking the user for rates. The rate date is returned alongside so it can be written on the invoice."
+      "description": "Call this tool when a rebill or an invoice spans more than one currency, instead of asking the user for rates. Returns the fx_rates object expense_to_invoice takes, plus the rate date to write on the invoice."
     },
     {
       "name": "rate_history",
-      "description": "The ECB rate for one currency pair over a window, with min, max, average and the change across the window. Give days for a trailing window, or from_date and to_date for an explicit one. Only TARGET business days have rates, so a 30-day window holds about 21 rows. Free reads up to 90 days; Pro reads the whole series back to 1999-01-04."
+      "description": "Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change over the whole window."
     },
     {
       "name": "rate_on",
-      "description": "The ECB rate for a pair on one date. The ECB quotes every currency per 1 euro, so \"the ECB rate for USD\" is from EUR to USD, not the other way round; ask for the inverse only if the user did. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the answer says which date that was and why. Free covers the last 90 days; Pro covers every date back to 1999-01-04."
+      "description": "Call this tool for the ECB rate of one currency pair on one date. Returns the rate, the date the rate actually came from, and whether that was an exact match for the date asked for."
     },
     {
       "name": "currencies_list",
@@ -259,7 +259,7 @@
     },
     {
       "name": "find_meeting_slots",
-      "description": "Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody. Weekends in the first participant's zone are skipped."
+      "description": "Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first."
     },
     {
       "name": "dst_changes",
@@ -267,7 +267,7 @@
     },
     {
       "name": "business_days",
-      "description": "Business days between two dates in a place, excluding weekends and any holidays you pass. This tool has no national holiday calendar: unless you pass holidays, only weekends are excluded, so do not report the answer as a public-holiday-adjusted count. Use it for delivery dates and payment terms across a client's calendar."
+      "description": "Count the business days between two dates in a place, for delivery dates and payment terms. Returns the business-day count, the calendar total, and how many days fell on a weekend or on a holiday you passed."
     },
     {
       "name": "contacts_set",
@@ -279,43 +279,43 @@
     },
     {
       "name": "ics_create",
-      "description": "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale."
+      "description": "Call this tool to write a .ics calendar file for one meeting. Returns the path written and the meeting time in UTC and in the zone you gave."
     },
     {
       "name": "doc_create",
-      "description": "Write a real .docx file from structured sections: headings, paragraphs, bullet or numbered lists and tables. Choose plain, letter (sender block top right, date, addressee) or proposal (letterhead band and cover title) layout. Returns the file path. Free and unlimited."
+      "description": "Call this tool to write a real .docx file from structured sections. Returns the file path, the number of blocks written and the layout used. Free and unlimited."
     },
     {
       "name": "doc_from_markdown",
-      "description": "Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and **bold** / *italic* / `code` inline. Returns the file path. Free and unlimited."
+      "description": "Call this tool to turn markdown into a .docx. Returns the file path and a count of the blocks written, by type. Free and unlimited."
     },
     {
       "name": "doc_read",
-      "description": "Extract the text of an existing .docx: headings with their levels, paragraphs, list items and tables, in document order. Works on files Word, Google Docs or this server produced. Free and unlimited."
+      "description": "Call this tool to extract the text of an existing .docx. Returns an outline of the headings and the full text in document order, or the block structure. Free and unlimited."
     },
     {
       "name": "doc_to_html",
-      "description": "Convert a .docx to semantic HTML you can open in a browser and print to PDF. Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native dependency or a headless browser, and this server stays install-free, so printing the HTML is the supported route. Free and unlimited."
+      "description": "Call this tool to convert a .docx to semantic HTML you can open in a browser and print to PDF. Returns the path of the .html file. This is the supported PDF route; no PDF is rendered here. Free and unlimited."
     },
     {
       "name": "doc_fill_template",
-      "description": "Replace {{placeholders}} in an existing .docx and write a new file, keeping every style, table, header, footer and image of the original. Placeholders split across runs by Word's editor are handled, because the substitution runs on the joined text of each paragraph. Call with no values to list the placeholders a template contains."
+      "description": "Call this tool to replace {{placeholders}} in an existing .docx and write a new file. Returns the new path and which placeholders were replaced, unfilled or ignored. Call with no values to list a template's placeholders."
     },
     {
       "name": "proposal_create",
-      "description": "Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number that is never reused. Free tier: 3 proposals or contracts per calendar month."
+      "description": "Call this tool to produce a client-ready .docx proposal from summary, scope, deliverables, timeline, price and terms. Returns the reference, the total and the file path. Free tier: 3 proposals or contracts per month."
     },
     {
       "name": "proposal_update",
-      "description": "Rewrite an existing proposal in place from its reference. Only the fields you pass change; everything else is taken from the structured data stored when the proposal was created, so the same file and the same reference number are kept and no second document is burned."
+      "description": "Rewrite an existing proposal in place from its reference. Only the fields you pass change; the rest comes from the data stored at creation. Returns the fields that changed and the file path."
     },
     {
       "name": "contract_create",
-      "description": "Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. This is a template skeleton with labelled placeholders for a lawyer to review, not legal advice. Free tier: 3 proposals or contracts per calendar month."
+      "description": "Call this tool to produce a freelance service agreement .docx. Returns the reference, the fee and the file path. It is a template skeleton for a lawyer to review, not legal advice. Free tier: 3 agreements per month."
     },
     {
       "name": "profile_set",
-      "description": "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. One profile per data directory; Pro adds named variants. Nothing leaves the machine."
+      "description": "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. Returns a count of what was stored."
     },
     {
       "name": "profile_get",
@@ -323,7 +323,7 @@
     },
     {
       "name": "resume_create",
-      "description": "Write the stored profile to a Word .docx. Bullets are ordered by relevance to the target role and keywords, then trimmed to fit max_pages using a measured word budget. Keywords that appear anywhere in the profile are printed in bold; keywords that do not appear are reported as missing and are never added. Free: the \"modern\" style."
+      "description": "Call this tool to write the stored profile to a Word .docx. Returns the output path, the estimated page count, which bullets were dropped to fit, and which keywords matched or are missing."
     },
     {
       "name": "resume_to_markdown",
@@ -331,23 +331,23 @@
     },
     {
       "name": "resume_to_html",
-      "description": "Write the resume as semantic HTML with a print stylesheet. Open it and print to PDF: there is no doc_to_pdf here because every pure-JavaScript route to PDF needs a native dependency."
+      "description": "Call this tool to write the resume as semantic HTML with a print stylesheet. Returns the output path. Open the file in a browser and print it to PDF."
     },
     {
       "name": "resume_read",
-      "description": "Extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Best effort, section by heading. Nothing is saved unless save is true."
+      "description": "Call this tool to extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Returns the parsed profile, the sections found, and anything unparsed."
     },
     {
       "name": "cover_letter_create",
-      "description": "Write a one-page cover letter from the stored profile: opening, fit, proof, close. It states no fact that is not in your profile. Anything it does not know is left as a bracketed prompt such as [add: metric] for you to fill in. Free: 3 letters per calendar month."
+      "description": "Call this tool to write a one-page cover letter from the stored profile: opening, fit, proof, close. Returns the output path, the word count, and every bracketed prompt left for you to fill in."
     },
     {
       "name": "tailor_to_job",
-      "description": "Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new claim. Free: postings up to 2,000 characters."
+      "description": "READ-ONLY gap analysis against a posting: writes nothing, changes nothing. Returns matched keywords, missing ones, a coverage figure and orderings of facts you already stated. Act on it with resume_create."
     },
     {
       "name": "schedule_create",
-      "description": "Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due runs. Month steps keep the start date's day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March."
+      "description": "Define a repeating invoice: a client, the line items, how often to bill, and when it starts and ends. Returns the schedule id, a summary and its next dates. Nothing is invoiced until invoice_generate_due runs."
     },
     {
       "name": "schedule_list",
@@ -371,19 +371,19 @@
     },
     {
       "name": "schedule_delete",
-      "description": "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Note that re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again: invoice_generate_due will warn that another schedule for that client already covered them."
+      "description": "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Returns the client and how many invoices and history rows remain."
     },
     {
       "name": "schedule_skip",
-      "description": "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. This is the answer to \"pause this client for October\" -- schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good. Pass undo: true to un-skip a period that has not been invoiced."
+      "description": "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. Returns the amount that will not be billed and how to undo it."
     },
     {
       "name": "schedule_upcoming",
-      "description": "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days."
+      "description": "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free lists the first 3 occurrences in the horizon you ask for."
     },
     {
       "name": "invoice_generate_due",
-      "description": "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Idempotent: one invoice per schedule per period, keyed by the occurrence date, so running it twice creates nothing the second time. Reports what was created and what was skipped. Free and unlimited."
+      "description": "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Returns what was created, what was skipped and what is still due."
     },
     {
       "name": "schedule_history",
@@ -395,7 +395,7 @@
     },
     {
       "name": "clause_add",
-      "description": "Save a reusable contract or proposal clause to the library. Use {{variables}} in the body for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}. Free tier: 10 own clauses on top of the 25 starters."
+      "description": "Save a reusable contract or proposal clause to the library. Returns the stored clause id, title, category, tags and the variables detected in its body, plus how many clauses of your own the library now holds."
     },
     {
       "name": "clause_get",
@@ -419,15 +419,15 @@
     },
     {
       "name": "clause_import",
-      "description": "Bulk-load clauses from a file. Markdown form: '## Title', optional 'category:' / 'tags:' / 'variables:' lines, blank line, body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the free tier within the free clause cap."
+      "description": "Call this tool to bulk-load clauses into the library from a markdown or JSON file. Returns how many clauses were added, replaced, skipped and blocked by the free clause cap, plus the new library total."
     },
     {
       "name": "clause_export",
-      "description": "Write the whole library to a file. Markdown export is free; JSON export is a Pro feature."
+      "description": "Call this tool to write the whole clause library out to one file. Returns the destination path, the format used and how many clauses were written."
     },
     {
       "name": "contract_assemble",
-      "description": "Build a contract or proposal from library clauses: orders them, fills {{variables}} from the values you pass, leaves every missing fact as a bracketed prompt like [late fee percent], prepends the not-legal-advice line, and writes a .docx or a markdown file. Free tier: up to 8 clauses per document."
+      "description": "Call this tool to build a contract or proposal document from library clauses. Returns the path written, the clauses used in document order, which variables were filled, and the facts still missing as bracketed prompts."
     },
     {
       "name": "variables_list",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T08:10:48.792Z",
+  "generated_at": "2026-09-03T08:23:49.594Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -44,7 +44,7 @@
     {
       "cat": "Install",
       "name": "Bundle downloads (all releases)",
-      "value": 290,
+      "value": 343,
       "target": 1000,
       "unit": "downloads",
       "how": "gh api releases (scripts/measure.mjs)",
@@ -84,7 +84,7 @@
     {
       "cat": "Activation",
       "name": "Hosted tenants with stored data",
-      "value": 100,
+      "value": 102,
       "target": 100,
       "unit": "tenants",
       "how": "wrangler kv key list --remote (prefix tok)",
@@ -94,7 +94,7 @@
     {
       "cat": "Activation",
       "name": "Hosted downloads served",
-      "value": 79,
+      "value": 73,
       "target": 200,
       "unit": "files (1h TTL)",
       "how": "wrangler kv key list --remote (prefix dl)",
@@ -124,7 +124,7 @@
     {
       "cat": "Value",
       "name": "Seam defects fixed of found",
-      "value": 31,
+      "value": 41,
       "target": 66,
       "unit": "of 66",
       "how": "defect ledger in the user-value tab",
@@ -164,7 +164,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 976,
+      "value": 1319,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -215,7 +215,7 @@
     {
       "cat": "Monetization",
       "name": "Pro tenants on hosted endpoints",
-      "value": 281,
+      "value": 294,
       "target": 20,
       "unit": "tenants (includes validation keys)",
       "how": "wrangler kv key list --remote (prefix lic)",
@@ -226,7 +226,7 @@
   "raw": {
     "stripe": {
       "sessions_last100": 100,
-      "probe_sessions": 25,
+      "probe_sessions": 37,
       "human_sessions": 0,
       "paid": 0,
       "note": "sessions created before 2026-09-03 08:55 UTC predate probe tagging and are excluded",
@@ -234,16 +234,16 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 591,
+      "total": 606,
       "by": {
         "anon": 17,
-        "dl": 79,
-        "lic": 281,
-        "meta": 88,
+        "dl": 73,
+        "lic": 294,
+        "meta": 91,
         "mint": 2,
-        "rl": 22,
+        "rl": 25,
         "shared": 2,
-        "tok": 100
+        "tok": 102
       }
     },
     "license_kv": {
@@ -251,16 +251,16 @@
       "by": {}
     },
     "latency": {
-      "p50_ms": 976,
+      "p50_ms": 1319,
       "samples": [
-        1723,
-        940,
-        976
+        1753,
+        961,
+        1319
       ]
     },
     "registry": {
       "entries": 12,
-      "hosted": 8
+      "hosted": 11
     },
     "sitemap_urls": 116
   }

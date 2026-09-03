@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/invoice-pdf-billing-generator",
   "description": "Create PDF invoices from your AI chat: clients, numbering, VAT, overdue reports. All data is local.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.0/invoice.mcpb",
-      "version": "0.4.0",
-      "fileSha256": "16daba18e0099f68178a358b92dd276d0d1c07ec6db732d2504562bf062c3ea7",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.1/invoice.mcpb",
+      "version": "0.4.1",
+      "fileSha256": "1f957add29c39fc5df445ca7a54caa1767edc9d065498e4997aa50f9b5932b96",
       "transport": {
         "type": "stdio"
       },
