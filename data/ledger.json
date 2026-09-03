@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T00:56:32.881Z",
+  "generated_at": "2026-09-03T02:15:48.140Z",
   "session": {
-    "count": 22,
+    "count": 23,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -90,10 +90,88 @@
       {
         "at": "2026-09-03T00:56:32.843Z",
         "note": "loop 2 closed: v0.2.5, hosted hardening v2, 209 tests, validation 127/127, downloads 102"
+      },
+      {
+        "at": "2026-09-03T02:15:48.115Z",
+        "note": "loop 3: currency, docx, timezone built (21/8/23 tests); Stripe products live; validation 178/178; audits + hosting + content in flight"
       }
     ]
   },
   "servers": [
+    {
+      "id": "currency",
+      "npm_name": "@theluckystrike/mcp-currency",
+      "version": "0.3.0",
+      "dir": "servers/currency",
+      "tools": [
+        "rates_latest",
+        "convert",
+        "convert_many",
+        "fx_rates_for",
+        "rate_history",
+        "rate_on",
+        "currencies_list",
+        "cache_status"
+      ],
+      "tool_count": 8,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 21 / # fail 0",
+      "result_status": "DONE",
+      "loc": 951,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "docx",
+      "npm_name": "@theluckystrike/mcp-docx",
+      "version": "0.3.0",
+      "dir": "servers/docx",
+      "tools": [
+        "business_set",
+        "doc_create",
+        "doc_from_markdown",
+        "doc_read",
+        "doc_to_html",
+        "doc_fill_template",
+        "proposal_create",
+        "contract_create"
+      ],
+      "tool_count": 8,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 8 / # fail 0 / ## failures",
+      "result_status": "DONE",
+      "loc": 1431,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
@@ -186,7 +264,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 337,
+      "loc": 340,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -315,6 +393,44 @@
         "smithery": "unknown",
         "glama": "unknown"
       }
+    },
+    {
+      "id": "timezone",
+      "npm_name": "@theluckystrike/mcp-timezone",
+      "version": "0.3.0",
+      "dir": "servers/timezone",
+      "tools": [
+        "now",
+        "convert_time",
+        "overlap",
+        "find_meeting_slots",
+        "dst_changes",
+        "business_days",
+        "contacts_set",
+        "contacts_list",
+        "ics_create"
+      ],
+      "tool_count": 9,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 23 / # fail 0",
+      "result_status": "DONE",
+      "loc": 1274,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
     }
   ],
   "billing": {
@@ -336,6 +452,16 @@
       "https://mcp.zovo.one/recover"
     ],
     "products": [
+      {
+        "id": "currency",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/currency"
+      },
+      {
+        "id": "docx",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/docx"
+      },
       {
         "id": "expense-tracker",
         "price_usd": 19,
@@ -365,6 +491,11 @@
         "id": "time-tracker",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/time-tracker"
+      },
+      {
+        "id": "timezone",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/timezone"
       }
     ]
   },
@@ -444,6 +575,10 @@
     {
       "file": "docs/INTEL_R2.md",
       "first_line": "INTEL_R2 — Submission, directory, and registry-slot re-measurement"
+    },
+    {
+      "file": "docs/INTEL_R3.md",
+      "first_line": "INTEL_R3 — re-measuring the three servers now in build (currency, docx, timezone)"
     },
     {
       "file": "docs/LAUNCH_POSTS.md",
