@@ -20,6 +20,16 @@ export interface AssembleResult {
   filled: string[];
   /** Variables no value was given for. Each appears in the document as [name]. */
   unfilled: string[];
+  /**
+   * D-R37. References that WERE resolved: the referring clause and the numbered clause it
+   * now points at. These are printed in the document as "See also clause N (Title)."
+   */
+  resolved_references: { clause: string; refers_to: string; as: string }[];
+  /**
+   * References that could not be resolved because the target clause is not in this
+   * document. Nothing about them is printed: a contract never cites a clause it lacks.
+   */
+  missing_references: { clause: string; refers_to: string }[];
 }
 
 function paragraphs(body: string): string[] {
@@ -42,6 +52,15 @@ export function assemble(o: AssembleInput): AssembleResult {
     md.push(`Client: ${o.client}`, "");
   }
 
+  // D-R37: number every included clause first, so a cross-reference can be rendered as the
+  // number the reader will actually see, and an unresolvable one can be dropped instead of
+  // shipped. A round-8 contract cited "the Change Requests clause" and "the Dispute
+  // Resolution clause", neither of which was in the document.
+  const numberOf = new Map<string, { n: number; title: string }>();
+  o.clauses.forEach((c, i) => numberOf.set(c.id, { n: i + 1, title: c.title }));
+  const resolved_references: { clause: string; refers_to: string; as: string }[] = [];
+  const missing_references: { clause: string; refers_to: string }[] = [];
+
   o.clauses.forEach((c, i) => {
     const heading = `${i + 1}. ${c.title}`;
     blocks.push({ type: "heading", level: 2, text: heading });
@@ -52,6 +71,17 @@ export function assemble(o: AssembleInput): AssembleResult {
       for (const v of r.unfilled) if (!unfilled.includes(v)) unfilled.push(v);
       blocks.push({ type: "para", text: r.text });
       md.push(r.text, "");
+    }
+    for (const ref of c.references ?? []) {
+      const target = numberOf.get(ref);
+      if (target) {
+        const line = `See also clause ${target.n} (${target.title}).`;
+        resolved_references.push({ clause: c.id, refers_to: ref, as: line });
+        blocks.push({ type: "para", text: line });
+        md.push(line, "");
+      } else {
+        missing_references.push({ clause: c.id, refers_to: ref });
+      }
     }
   });
 
@@ -64,7 +94,7 @@ export function assemble(o: AssembleInput): AssembleResult {
     md.push("");
   }
 
-  return { blocks, markdown: md.join("\n"), filled, unfilled };
+  return { blocks, markdown: md.join("\n"), filled, unfilled, resolved_references, missing_references };
 }
 
 /** Every variable the given clauses use, with whether a value was supplied. */

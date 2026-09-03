@@ -30,7 +30,7 @@ Keeps a structured profile and writes resumes, cover letters and job-tailored va
 | `resume_read` | Call this tool to extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Returns the parsed profile, the sections found, and anything unparsed. |
 | `resume_to_html` | Call this tool to write the resume as semantic HTML with a print stylesheet. Returns the output path. Open the file in a browser and print it to PDF. |
 | `resume_to_markdown` | Return the stored profile as markdown: paste it into a form, an email or an ATS box. |
-| `tailor_to_job` | Extract what a job description actually asks for and check it against your profile. Returns the matched keywords, the missing ones, a coverage figure, and rewrites that only reorder facts you already stated. |
+| `tailor_to_job` | READ-ONLY gap analysis against a posting: writes nothing, changes nothing. Returns matched keywords, missing ones, a coverage figure and orderings of facts you already stated. Act on it with resume_create. |
 
 ### `cover_letter_create`
 
@@ -88,13 +88,15 @@ Store the profile every resume and cover letter is built from: contact details, 
 | `accent_color` | string | no | Letterhead colour, six hex digits, e.g. 1F3864. Pro only. |
 | `certifications` | string[] | no |  |
 | `education` | object{degree, end, school, start}[] | no | (default []) |
-| `email` | string | yes | (minLength 1) |
+| `email` | string | no | Your own email address. Leave it out and the shared business profile's email is used; with neither, letters and letterheads show "[add: email]" and say so. Never invent one |
 | `experience` | object{bullets, company, end, start, title}[] | no | (default []) |
 | `languages` | string[] | no |  |
 | `links` | string[] | no | Portfolio, LinkedIn, GitHub |
 | `location` | string | no |  |
+| `merge` | boolean | no | Update the stored profile: fields you pass replace their stored value, fields you leave out are kept. Required when a profile already exists, unless you pass replace |
 | `name` | string | yes | (minLength 1) |
 | `phone` | string | no |  |
+| `replace` | boolean | no | Discard the stored profile and store exactly what this call carries. Required when a profile already exists, unless you pass merge |
 | `skills` | string[] | no |  |
 | `summary` | string | no | Two or three lines. Used verbatim as the fit paragraph of a cover letter. |
 | `variant` | string | no | Name a second profile, e.g. "backend". One profile per data directory on the free tier; named variants are Pro only. |
@@ -157,7 +159,7 @@ Return the stored profile as markdown: paste it into a form, an email or an ATS 
 
 Title: Gap analysis against a posting
 
-Extract what a job description actually asks for and check it against your profile. Returns the matched keywords, the missing ones, a coverage figure, and rewrites that only reorder facts you already stated.
+READ-ONLY gap analysis against a posting: writes nothing, changes nothing. Returns matched keywords, missing ones, a coverage figure and orderings of facts you already stated. Act on it with resume_create.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -228,6 +230,7 @@ Licence key lookup order: `MCP_LICENSE_KEY` env, then `${XDG_CONFIG_HOME:-~/.con
 Literal error-message heads found in `servers/resume/src/*.ts`. Each is returned as `Error: <text>` with `isError: true`, sorted, truncated at the first interpolation.
 
 - `Error: You have already written`
+- `Error: a profile is already stored under variant`
 - `Error: cannot read the data file`
 - `Error: data file is corrupt; moved to`
 - `Error: no name could be read from the document, so nothing was saved. Call again with save: false, then pass the corrected fields to profile_set.`

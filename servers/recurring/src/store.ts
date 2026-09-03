@@ -36,6 +36,8 @@ export interface Schedule {
   end_of_month?: boolean;
   due_days?: number;
   notes?: string;
+  /** D-R39: why this schedule bills the tax it bills, e.g. "reverse charge, art. 196". Carried onto every generated invoice. */
+  tax_note?: string;
   auto_generate: boolean;
   status: "active" | "paused";
   created: string;

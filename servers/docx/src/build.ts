@@ -154,7 +154,9 @@ export async function buildDocx(o: BuildOptions): Promise<Buffer> {
       spacing: { after: 40 },
       children: [new TextRun({ text: biz.name, bold: true, size: 26, color })],
     }));
-    const meta = [biz.address, biz.email, biz.vat_id ? `VAT ${biz.vat_id}` : ""].filter(Boolean).join("\n");
+    // D-R40: an absent email is shown as a bracketed placeholder, never filled in from
+    // anything but the shared business profile or an explicit argument.
+    const meta = [biz.address, biz.email || "[add: email]", biz.vat_id ? `VAT ${biz.vat_id}` : ""].filter(Boolean).join("\n");
     if (meta) {
       head.push(textPara(meta, {
         alignment: style === "letter" ? AlignmentType.RIGHT : AlignmentType.LEFT,

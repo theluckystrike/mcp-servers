@@ -11,7 +11,7 @@ import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { createLicenseGate, EMAIL_PLACEHOLDER, readSharedProfile, withFileLock } from "@theluckystrike/mcp-license";
 import { buildDocx, letterhead, stripInvalidXml, type Block } from "@theluckystrike/mcp-docx/lib";
 import { z } from "zod";
 import {
@@ -113,6 +113,26 @@ function findClause(clauses: Clause[], ref: string): Clause | undefined {
   return clauses.find((c) => c.id.toLowerCase() === t)
     ?? clauses.find((c) => c.title.toLowerCase() === t)
     ?? clauses.find((c) => c.title.toLowerCase().includes(t));
+}
+
+/**
+ * D-R31/D-R40. The contract letterhead is the user's own identity, read from the shared
+ * business profile that invoice's and docx's business_set write. When no email is stored
+ * the letterhead shows a bracketed prompt rather than an address nobody supplied.
+ */
+function contractLetterhead() {
+  const p = readSharedProfile();
+  return letterhead({
+    name: p.name ?? "",
+    address: p.address,
+    email: p.email ?? EMAIL_PLACEHOLDER,
+  });
+}
+
+function letterheadNote(): string {
+  const p = readSharedProfile();
+  if (!p.name) return " No business profile is stored, so the letterhead is blank: run business_set (invoice or docx) once and assemble again.";
+  return p.email ? "" : ` No email is stored, so the letterhead shows "${EMAIL_PLACEHOLDER}". Set it with business_set {email}; do not supply one yourself.`;
 }
 
 const server = new McpServer({ name: "mcp-clauses", version: VERSION });
@@ -380,9 +400,16 @@ function selectClauses(all: Clause[], ids: string[] | undefined, categories: str
   return { error: "pass clause_ids or categories" };
 }
 
-function assembleNote(pro: boolean, unfilled: number): string {
+function assembleNote(pro: boolean, unfilled: number, missing: { clause: string; refers_to: string }[] = []): string {
   const parts = [`The document opens with the not-legal-advice line: ${DISCLAIMER}`];
   if (unfilled) parts.push(`${unfilled} fact(s) had no value and are left in the document as bracketed prompts; fill them before sending.`);
+  if (missing.length) {
+    parts.push(
+      `${missing.length} cross-reference(s) were DROPPED because the clause they point at is not in this document ` +
+      `(${missing.map((m) => `${m.clause} -> ${m.refers_to}`).join(", ")}). The document cites nothing it does not contain. ` +
+      `Add ${missing.map((m) => m.refers_to).join(", ")} to clause_ids and assemble again to keep the reference.`,
+    );
+  }
   if (!pro) parts.push(`The free tier assembles up to ${FREE_ASSEMBLE_CLAUSES} clauses per document.`);
   return parts.join(" ");
 }
@@ -421,8 +448,10 @@ server.registerTool("contract_assemble", {
         path: file, format, clauses: picked.map((c) => c.id),
         filled: result.filled, unfilled: result.unfilled,
         unfilled_prompts: result.unfilled.map(promptFor),
+        resolved_references: result.resolved_references,
+        missing_references: result.missing_references,
         disclaimer: DISCLAIMER,
-        note: assembleNote(pro, result.unfilled.length),
+        note: assembleNote(pro, result.unfilled.length, result.missing_references),
       });
     }
     const file = outputPath(a.out_path, `${name}.docx`, ".docx", a.overwrite === true);
@@ -430,7 +459,9 @@ server.registerTool("contract_assemble", {
       title: clean(a.title),
       blocks: cleanBlocks(result.blocks),
       style: "plain",
-      business: letterhead({ name: a.client ?? "" }),
+      // D-R31/D-R40: the letterhead is the AUTHOR of the contract, not its recipient, and
+      // its name and email come from the shared business profile or from nowhere.
+      business: contractLetterhead(),
       pro,
     });
     writeFileSync(file, buf);
@@ -438,8 +469,10 @@ server.registerTool("contract_assemble", {
       path: file, format, clauses: picked.map((c) => c.id),
       filled: result.filled, unfilled: result.unfilled,
       unfilled_prompts: result.unfilled.map(promptFor),
+      resolved_references: result.resolved_references,
+      missing_references: result.missing_references,
       disclaimer: DISCLAIMER,
-      note: assembleNote(pro, result.unfilled.length),
+      note: assembleNote(pro, result.unfilled.length, result.missing_references) + letterheadNote(),
     });
   } catch (e) { return fail((e as Error).message); }
 });

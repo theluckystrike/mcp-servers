@@ -6,8 +6,8 @@ import { randomBytes } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
-import { dayKey, localDayStart } from "./day.js";
+import { createLicenseGate, readSharedProfile, withFileLock } from "@theluckystrike/mcp-license";
+import { dayKey, homeZone, localDayStart, wallClockInZone } from "./day.js";
 import { readJsonFile } from "./jsonstore.js";
 
 const PRODUCT = "time-tracker";
@@ -107,6 +107,13 @@ const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
  */
 function parseTime(s: string, what: string): Date {
   const t = String(s).trim();
+  // D-R35: with a home zone on the shared business profile, a stamp that names no offset
+  // is wall-clock time THERE, not on whatever machine the server happens to run on.
+  const inZone = wallClockInZone(t);
+  if (inZone) {
+    if (Number.isNaN(inZone.getTime())) throw new Error(`${what} is not a valid date/time: ${s}`);
+    return inZone;
+  }
   if (DATE_ONLY.test(t)) {
     const [y, m, d] = t.split("-").map(Number);
     const local = new Date(y, m - 1, d);
@@ -120,8 +127,20 @@ function parseTime(s: string, what: string): Date {
 
 /** Codex v3 #20: a date-only upper bound means the END of that local day, inclusive. */
 function endOfLocalDay(s: string): number {
+  const zoned = wallClockInZone(s);
+  if (zoned) {
+    const next = wallClockInZone(dayKeyPlusOne(s));
+    if (next) return next.getTime() - 1;
+  }
   const [y, m, d] = String(s).trim().split("-").map(Number);
   return new Date(y, m - 1, d + 1).getTime() - 1;
+}
+
+/** The calendar day after a YYYY-MM-DD string, as a YYYY-MM-DD string. */
+function dayKeyPlusOne(s: string): string {
+  const [y, m, d] = String(s).trim().slice(0, 10).split("-").map(Number);
+  const n = new Date(Date.UTC(y, m - 1, d + 1));
+  return n.toISOString().slice(0, 10);
 }
 
 
@@ -213,7 +232,7 @@ function rateForEntry(db: DB, e: Entry): number {
   return db.projects[e.project]?.rateCents ?? 0;
 }
 function currencyFor(db: DB, project: string): string {
-  return db.projects[project]?.currency ?? "USD";
+  return db.projects[project]?.currency ?? readSharedProfile().default_currency ?? "USD";
 }
 /** D-3: the currency stored on the entry wins over the project default. */
 function currencyForEntry(db: DB, e: Entry): string {
@@ -379,11 +398,17 @@ function stopRunning(db: DB, endDate: Date, note?: string): Entry {
   const seconds = Math.max(0, Math.round((endDate.getTime() - start.getTime()) / 1000));
   // Codex v3 #19: capture the effective rate and currency now, at stop time.
   const meta = db.projects[r.project];
+  // D-R35: a timer started with no rate and no project rate has no money on it. Stamping
+  // rateCents 0 / currency USD invented a US-dollar row inside a EUR business, and that
+  // zero row then rode into invoice_summary, entry_mark_billed and the CSV. Leave both
+  // fields unset instead; every reader already treats "no rate" as "no amount".
+  const knownRate = typeof r.rateCents === "number" ? r.rateCents : meta?.rateCents;
+  const knownCurrency = r.currency ?? meta?.currency;
   const entry: Entry = {
     id: newId(), project: r.project, task: r.task, tags: r.tags,
     start: iso(start), end: iso(endDate), seconds, note, billable: true,
-    rateCents: typeof r.rateCents === "number" ? r.rateCents : (meta?.rateCents ?? 0),
-    currency: r.currency ?? meta?.currency ?? "USD",
+    ...(typeof knownRate === "number" ? { rateCents: knownRate } : {}),
+    ...(knownCurrency ? { currency: knownCurrency } : {}),
   };
   db.entries.push(entry);
   db.running = null;
@@ -437,7 +462,9 @@ server.registerTool("timer_stop", {
   save(db);
   const rc = rateForEntry(db, e);
   const cur = currencyForEntry(db, e);
-  const amount = rc > 0 ? `  ${money(amountCents(e.seconds, rc), cur)}` : "";
+  const amount = rc > 0
+    ? `  ${money(amountCents(e.seconds, rc), cur)}`
+    : "  No rate: this entry carries no currency and no amount. Set one with project_set_rate, or entry_update {rate, currency}.";
   return ok(`Stopped "${e.project}"${e.task ? ` - ${e.task}` : ""}. Duration ${hms(e.seconds)} (${hours(e.seconds)} h).${amount}\nEntry id ${e.id}.`);
   });
 }));
@@ -853,8 +880,9 @@ server.registerTool("export_csv", {
     const cur = currencyForEntry(db, e);
     lines.push([
       e.id, e.project, e.task ?? "", e.start, e.end, hours(e.seconds), String(e.seconds),
-      e.billable ? "true" : "false", (rc / 100).toFixed(2), cur,
-      e.billable ? (amountCents(e.seconds, rc) / 100).toFixed(2) : "0.00",
+      e.billable ? "true" : "false",
+      rc > 0 ? (rc / 100).toFixed(2) : "", rc > 0 ? cur : "",
+      rc > 0 && e.billable ? (amountCents(e.seconds, rc) / 100).toFixed(2) : "",
       e.tags.join(" "), e.note ?? "",
     ].map(csvCell).join(","));
   }

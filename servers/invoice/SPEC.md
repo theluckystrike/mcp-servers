@@ -21,7 +21,7 @@ Issues numbered invoices with per-line tax, discounts and multi-currency lines, 
 
 | tool | description |
 | --- | --- |
-| `business_set` | Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices. |
+| `business_set` | The ONE business profile for the whole suite: name, address, VAT id, bank details and defaults (currency, tax rate, terms, prefix, timezone). Saved to the shared profile every other server reads. Call it once, first. |
 | `client_add` | Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details. |
 | `client_list` | List every stored client with their id, address, email and VAT id. |
 | `invoice_create` | Create an invoice for a client from a list of items. Allocates the next invoice number (never reused) and returns the stored invoice with its subtotal, discount, one tax line per rate and the total. |
@@ -38,7 +38,7 @@ Issues numbered invoices with per-line tax, discounts and multi-currency lines, 
 
 Title: Set your business details
 
-Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices.
+The ONE business profile for the whole suite: name, address, VAT id, bank details and defaults (currency, tax rate, terms, prefix, timezone). Saved to the shared profile every other server reads. Call it once, first.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -46,13 +46,15 @@ Store the issuer profile printed at the top of every invoice: your name, address
 | `bank` | string | no | Bank name / BIC |
 | `default_currency` | string | no | ISO code, e.g. EUR, USD, JPY. Default EUR (pattern `^[A-Za-z]{3}$`) |
 | `default_tax_rate` | number | no | Default VAT percent applied to items without their own rate |
-| `email` | string | no |  |
+| `email` | string | no | Your own email address. Leave it out unless the user gave it: no server ever fills an email from anything but this profile or an explicit argument |
 | `iban` | string | no | IBAN or account number for payment |
 | `invoice_prefix` | string | no | Invoice number prefix, default INV (custom prefix is Pro) |
 | `logo_path` | string | no | Path to a PNG or JPG logo (Pro) |
 | `name` | string | yes | Your business or freelancer name |
 | `payment_terms_days` | number | no | Default days until due. Default 14 |
+| `phone` | string | no | Your own phone number. Same rule as email: only if the user gave it |
 | `tax_rate` | number | no | Alias for default_tax_rate |
+| `timezone` | string | no | IANA zone you work in, e.g. Europe/Warsaw. Shared with time-tracker (entries are stamped in it) and timezone (your home zone) |
 | `vat` | number | no | Alias for default_tax_rate |
 | `vat_id` | string | no | VAT / tax registration id |
 | `vat_rate` | number | no | Alias for default_tax_rate |

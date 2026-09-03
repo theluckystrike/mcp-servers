@@ -148,3 +148,13 @@ If `data.json` is ever unreadable or not valid JSON, it is not treated as "no ex
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/expense-tracker/`. There are no network calls: receipts are hashed on your machine, exports are written on your machine, and license keys are verified offline with a public key compiled into the package.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
+
+## One business profile for the whole suite
+
+Your identity is stored once, at `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/profile/business.json`,
+and every server in the suite reads it: the invoice issuer, the docx letterhead, the recurring
+issuer, expense-tracker's default VAT rate, time-tracker's and timezone's home zone, and the
+resume and contract letterheads. Set it once with `business_set` (invoice or docx) - you never
+repeat it anywhere else. An email address is only ever taken from that profile or from an explicit
+argument; when none is stored, documents show `[add: email]` and the tool says so rather than
+letting anyone improvise an address.

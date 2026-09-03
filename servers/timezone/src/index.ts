@@ -5,7 +5,7 @@ import { join, dirname, isAbsolute, resolve as pathResolve } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { createLicenseGate, EMAIL_PLACEHOLDER, readSharedProfile, withFileLock } from "@theluckystrike/mcp-license";
 import { readJsonFile } from "./jsonstore.js";
 import {
   DROPPED_PLACES, PLACE_COUNT, UnknownZoneError, businessDays, dateKey, describe, dstChanges,
@@ -94,7 +94,30 @@ function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string 
  * A resolution can carry a note the caller has to see - "EST is a fixed offset, not
  * New York". Notes are collected per call and appended once, deduplicated.
  */
+const HOME_WORDS = new Set(["home", "me", "my zone", "my timezone", "my time zone", "local", "my local time"]);
+
+/**
+ * D-R31/D-R35: "home" is whatever timezone the shared business profile carries, so the zone
+ * the user declared once at onboarding is the zone every later question defaults to.
+ */
+function homeZone(): string | undefined {
+  const tz = readSharedProfile().timezone;
+  if (!tz) return undefined;
+  try { new Intl.DateTimeFormat("en-CA", { timeZone: tz }); return tz; } catch { return undefined; }
+}
+
 function zoneOf(input: string, notes?: string[]): string {
+  const word = String(input ?? "").trim().toLowerCase();
+  if (HOME_WORDS.has(word)) {
+    const home = homeZone();
+    if (home) {
+      const n = `"${input}" resolved to ${home}, the timezone on your shared business profile.`;
+      if (notes && !notes.includes(n)) notes.push(n);
+      return home;
+    }
+    const n = `No home timezone is stored: set one with business_set {timezone: "Europe/Warsaw"} in the invoice or docx server, and "home" will resolve to it everywhere.`;
+    if (notes && !notes.includes(n)) notes.push(n);
+  }
   const hit = resolveZone(input);
   if (hit.note && notes && !notes.includes(hit.note)) notes.push(hit.note);
   return hit.zone;
@@ -446,7 +469,7 @@ server.registerTool("ics_create", {
         email: text(MAX_TITLE, "an attendee email").optional().describe("Their email address"),
       }),
     ])).max(MAX_PARTICIPANTS).optional().describe("Attendees. An entry with an email is invited (ATTENDEE:mailto:...); a name with no email is listed in the description instead, because a calendar cannot invite a name."),
-    organizer_email: text(MAX_TITLE, "organizer_email").optional().describe("Your email address, written as the ORGANIZER so replies have somewhere to go"),
+    organizer_email: text(MAX_TITLE, "organizer_email").optional().describe("Your email address, written as the ORGANIZER so replies have somewhere to go. Leave it out and your shared business profile's email is used; with neither, the ORGANIZER line is omitted rather than filled with an address you improvised"),
     organizer_name: text(MAX_TITLE, "organizer_name").optional().describe("Your display name for the ORGANIZER line"),
     description: text(MAX_BODY, "description").optional().describe("Body text"),
     location: text(MAX_TITLE, "location").optional().describe("Where, or a meeting link"),
@@ -470,14 +493,18 @@ server.registerTool("ics_create", {
     const built = icsCreateDetailed({
       title: a.title, startUtc, durationMinutes: a.duration_minutes,
       attendees: a.attendees, description: a.description, location: a.location,
-      organizerEmail: a.organizer_email, organizerName: a.organizer_name,
+      // D-R40: an ORGANIZER address comes from this call or from the shared business
+      // profile. In round 8 a model put the operator's own account address on a client's
+      // calendar invite because nothing else was available.
+      organizerEmail: a.organizer_email ?? readSharedProfile().email,
+      organizerName: a.organizer_name ?? readSharedProfile().name,
     });
     const text = built.text;
     if (built.listedOnly.length) {
       notes.push(`${built.listedOnly.join(", ")} had no email address, so ${built.listedOnly.length === 1 ? "the name is" : "the names are"} listed in the description instead of being invited. Pass {name, email} to invite them.`);
     }
     if (!built.organizer) {
-      notes.push(`No ORGANIZER line was written: pass organizer_email so replies and RSVPs have somewhere to go.`);
+      notes.push(`No ORGANIZER line was written (${EMAIL_PLACEHOLDER}): pass organizer_email, or store it once with business_set {email} in the invoice or docx server so every invite carries it. Do not use an address the user has not given you.`);
     }
     const dir = dataDir();
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });

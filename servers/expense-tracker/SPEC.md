@@ -24,7 +24,7 @@ Logs business expenses with categories, VAT, mileage and receipts, and hands the
 | `category_rules` | Replace the merchant-to-category rules, or call with no rules to list them. Returns the stored rule list. The rules are applied by expense_add whenever a call gives no category of its own. |
 | `expense_add` | Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess. |
 | `expense_delete` | Delete one expense by id. The receipt file itself is left on disk. |
-| `expense_export` | Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path written. Nothing partial is ever written: if a limit is hit the file is not created at all. |
+| `expense_export` | Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. The money column is `amount` (gross), as in time-tracker's export_csv, with `gross`, `net`, `vat` alongside. |
 | `expense_list` | List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed. |
 | `expense_mark_rebilled` | Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or that project, date range and currency. Returns what was marked. |
 | `expense_settings` | Read or set the defaults expense_add uses when a call does not name them: default_vat_rate and default_currency. Returns the stored defaults. Call with no arguments to read them without changing anything. |
@@ -81,7 +81,7 @@ Delete one expense by id. The receipt file itself is left on disk.
 
 Title: Export expenses
 
-Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path written. Nothing partial is ever written: if a limit is hit the file is not created at all.
+Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. The money column is `amount` (gross), as in time-tracker's export_csv, with `gross`, `net`, `vat` alongside.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -211,12 +211,12 @@ Record a business trip as an expense, priced as distance x rate. Give exactly on
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `billable` | boolean | no |  |
+| `billable` | boolean | no | Whether the trip is rebilled to the client. Default true, so a mileage claim reaches expense_to_invoice unless you pass false |
 | `currency` | string | no | Currency for your own rate. Only accepted together with rate_per_km; a table rate keeps the table currency (pattern `^[A-Za-z]{3}$`) |
 | `date` | string | no | ISO date, default today |
 | `km` | number | no | Distance in kilometres. Give exactly one of km or miles |
 | `miles` | number | no | Distance in miles. Give exactly one of km or miles |
-| `project` | string | no | (maxLength 500) |
+| `project` | string | no | Bill the trip to a client or project - use the same name you use in time-tracker and expense_add. Without it the drive is invisible to expense_summary by project and to expense_to_invoice (maxLength 500) |
 | `purpose` | string | yes | Why the trip was made, e.g. client meeting in Krakow (maxLength 2000) |
 | `rate_per_km` | number | no | Your own rate per supplied unit, overriding the table. Pass it whenever you need your exact scheme rather than the approximate table rate (min 0) |
 | `region` | "PL" \| "UK" \| "US" \| "EU" | no | Which built-in table rate to use: PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km. Default US for miles, EU for km. Each is one flat approximate rate per region with no effective dates, no vehicle or engine class and no first-10000-mile band, so it is NOT a tax calculation |

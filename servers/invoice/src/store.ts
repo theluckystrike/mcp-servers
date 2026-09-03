@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { readSharedProfile, writeSharedProfile } from "@theluckystrike/mcp-license";
 import type { ComputedLine, TaxLine } from "./money.js";
 
 export interface Business {
@@ -123,11 +124,39 @@ export const DEFAULT_BUSINESS: Business = {
   payment_terms_days: 14, invoice_prefix: "INV",
 };
 
+/**
+ * D-R31. The issuer identity is one fact for the whole suite. The shared profile at
+ * mcp-servers/profile/business.json is read first and wins field by field; the local
+ * business.json is kept as the compatibility copy and as the fallback when no shared
+ * profile exists yet. A field absent from the shared profile never blanks a local one.
+ */
 export function getBusiness(): Business {
-  return { ...DEFAULT_BUSINESS, ...readJson<Partial<Business>>("business.json", {}) };
+  const local = readJson<Partial<Business>>("business.json", {});
+  const shared = readSharedProfile();
+  const fromShared: Partial<Business> = {};
+  if (shared.name) fromShared.name = shared.name;
+  if (shared.address) fromShared.address = shared.address;
+  if (shared.email) fromShared.email = shared.email;
+  if (shared.vat_id) fromShared.vat_id = shared.vat_id;
+  if (shared.iban) fromShared.iban = shared.iban;
+  if (shared.bank) fromShared.bank = shared.bank;
+  if (shared.logo_path) fromShared.logo_path = shared.logo_path;
+  if (shared.default_currency) fromShared.default_currency = shared.default_currency;
+  if (typeof shared.default_tax_rate === "number") fromShared.default_tax_rate = shared.default_tax_rate;
+  if (typeof shared.payment_terms_days === "number") fromShared.payment_terms_days = shared.payment_terms_days;
+  if (shared.invoice_prefix) fromShared.invoice_prefix = shared.invoice_prefix;
+  return { ...DEFAULT_BUSINESS, ...local, ...fromShared };
 }
-export function setBusiness(b: Business): void { writeJson("business.json", b); }
-export function hasBusiness(): boolean { return existsSync(join(dataDir(), "business.json")); }
+
+/** Writes the shared profile as well, so docx, expense-tracker and recurring see it. */
+export function setBusiness(b: Business): void {
+  writeJson("business.json", b);
+  writeSharedProfile(b as unknown as Record<string, unknown>);
+}
+
+export function hasBusiness(): boolean {
+  return existsSync(join(dataDir(), "business.json")) || !!readSharedProfile().name;
+}
 
 export function getClients(): Client[] { return readJson<Client[]>("clients.json", []); }
 export function setClients(c: Client[]): void { writeJson("clients.json", c); }

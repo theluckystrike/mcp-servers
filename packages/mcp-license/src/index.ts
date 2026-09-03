@@ -165,3 +165,5 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
 }
 
 export { withFileLock, STALE_MS } from "./lock.js";
+export { readSharedProfile, writeSharedProfile, hasSharedProfile, profilePath, profileDir, resolveEmail, PROFILE_FIELDS, EMAIL_PLACEHOLDER } from "./profile.js";
+export type { SharedProfile, ProfileField } from "./profile.js";

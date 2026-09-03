@@ -23,6 +23,12 @@ export interface Clause {
   tags: string[];
   /** Declared variables. The effective set is this union whatever {{...}} the body contains. */
   variables: string[];
+  /**
+   * D-R37. Clause ids this clause's text points at. contract_assemble resolves each one
+   * against the clauses actually included: a resolved reference becomes "see clause N",
+   * an unresolved one is dropped from the document and reported as a missing reference.
+   */
+  references?: string[];
   jurisdiction?: string;
   language: string;
   /** True for the 25 clauses shipped with the server. Starters do not count against the free cap. */

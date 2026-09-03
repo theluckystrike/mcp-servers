@@ -33,7 +33,7 @@ Recurring invoice schedules: define a cadence, see what is due, and generate the
 | `schedule_pause` | Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed. |
 | `schedule_resume` | Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due. |
 | `schedule_skip` | Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. Returns the amount that will not be billed and how to undo it. |
-| `schedule_upcoming` | Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days. |
+| `schedule_upcoming` | Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free lists the first 3 occurrences in the horizon you ask for. |
 | `schedule_update` | Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only. |
 
 ### `forecast`
@@ -95,6 +95,7 @@ Define a repeating invoice: a client, the line items, how often to bill, and whe
 | `items` | object{description, quantity, tax_rate, unit_price}[] | yes | The line items billed every period |
 | `notes` | string | no | Free text printed under the totals of every generated invoice |
 | `start_date` | string | yes | YYYY-MM-DD. The first invoice falls on this date, and for weekly/monthly/quarterly/yearly steps its day of month is the billing day for every later period |
+| `tax_note` | string | no | Why this schedule bills the tax it bills, e.g. 'Reverse charge: VAT accounted for by the recipient, art. 196 Directive 2006/112/EC'. It is printed under the totals of EVERY invoice this schedule generates, so a 0% retainer carries its reason on the document instead of only in the chat |
 
 ### `schedule_delete`
 
@@ -172,11 +173,11 @@ Skip a single occurrence of a schedule without pausing it: no invoice is ever cr
 
 Title: What falls due soon
 
-Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days.
+Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free lists the first 3 occurrences in the horizon you ask for.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `days` | integer | no | Days ahead, default 30 (min 1, max 3650) |
+| `days` | integer | no | Days ahead, default 30. The free tier honours the horizon you ask for and lists the first 3 occurrences in it; Pro lists them all (min 1, max 3650) |
 
 ### `schedule_update`
 
@@ -198,6 +199,7 @@ Change a schedule's client, items, currency, cadence, dates, due days, notes or 
 | `items` | object{description, quantity, tax_rate, unit_price}[] | no |  |
 | `notes` | string | no |  |
 | `start_date` | string | no |  |
+| `tax_note` | string | no | Replace the tax reason carried onto every future generated invoice. Pass an empty string to clear it |
 
 ## Resources
 

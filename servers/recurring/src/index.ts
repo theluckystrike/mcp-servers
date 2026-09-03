@@ -23,6 +23,13 @@ import {
 
 const FREE_ACTIVE_SCHEDULES = 3;
 const FREE_UPCOMING_DAYS = 30;
+/**
+ * D-R39. "Show me the next 3 invoices" on a monthly schedule is a 90-day question, and a
+ * 30-day window answered it with one row, so the model finished the answer with its own
+ * arithmetic. The free cap is a COUNT of occurrences, not a window of days: the horizon
+ * the caller asked for is honoured and the list is truncated at three, with the cap stated.
+ */
+const FREE_UPCOMING_PERIODS = 3;
 const FREE_FORECAST_MONTHS = 3;
 
 /**
@@ -145,7 +152,10 @@ function issueInvoice(s: Schedule, period: string): Invoice {
     discount_percent: 0, discount_minor: 0,
     net_minor: totals.net_minor, tax_lines: totals.tax_lines, tax_minor: totals.tax_minor,
     total_minor: totals.total_minor,
-    notes: s.notes, status: "unpaid", paid_minor: 0,
+    // D-R39: the tax reason travels with the money. Both the free-text note and the tax
+    // note are printed under the totals; neither one silently replaces the other.
+    notes: [s.notes, s.tax_note].filter(Boolean).join("\n") || undefined,
+    status: "unpaid", paid_minor: 0,
     created: new Date().toISOString(), branded: !gate.isPro(),
   };
   const all = getInvoices();
@@ -218,6 +228,7 @@ server.registerTool("schedule_create", {
     end_date: z.string().optional().describe("YYYY-MM-DD, INCLUSIVE: an occurrence landing exactly on it is still generated"),
     due_days: z.number().int().optional().describe("Days until each invoice is due, defaults to your payment terms"),
     notes: z.string().optional().describe("Free text printed under the totals of every generated invoice"),
+    tax_note: z.string().optional().describe("Why this schedule bills the tax it bills, e.g. 'Reverse charge: VAT accounted for by the recipient, art. 196 Directive 2006/112/EC'. It is printed under the totals of EVERY invoice this schedule generates, so a 0% retainer carries its reason on the document instead of only in the chat"),
     auto_generate: z.boolean().optional().describe("Marks the schedule for the monthly_billing_run prompt. Default false. Nothing runs in the background either way: invoices are created only when invoice_generate_due is called"),
     anchor_day: z.number().int().min(1).max(31).optional().describe("Pro: bill on this day of month instead of the start date's day. 31 means the last day of every month"),
     end_of_month: z.boolean().optional().describe("Pro: always bill on the last day of the month"),
@@ -255,6 +266,7 @@ server.registerTool("schedule_create", {
         end_of_month: eom,
         due_days: a.due_days,
         notes: a.notes,
+        tax_note: a.tax_note,
         auto_generate: a.auto_generate ?? false,
         status: "active",
         created: now, updated: now,
@@ -314,6 +326,7 @@ server.registerTool("schedule_update", {
     end_date: z.string().nullable().optional().describe("null clears the end date"),
     due_days: z.number().int().optional(),
     notes: z.string().optional(),
+    tax_note: z.string().optional().describe("Replace the tax reason carried onto every future generated invoice. Pass an empty string to clear it"),
     auto_generate: z.boolean().optional(),
     anchor_day: z.number().int().min(1).max(31).nullable().optional().describe("Pro"),
     end_of_month: z.boolean().optional().describe("Pro"),
@@ -337,6 +350,7 @@ server.registerTool("schedule_update", {
       if (a.end_date !== undefined) s.end_date = a.end_date ?? undefined;
       if (a.due_days !== undefined) s.due_days = a.due_days;
       if (a.notes !== undefined) s.notes = a.notes;
+      if (a.tax_note !== undefined) s.tax_note = a.tax_note.trim() || undefined;
       if (a.auto_generate !== undefined) s.auto_generate = a.auto_generate;
       if (a.anchor_day !== undefined || a.end_of_month !== undefined) {
         if (pro) {
@@ -454,17 +468,13 @@ server.registerTool("schedule_skip", {
 
 server.registerTool("schedule_upcoming", {
   title: "What falls due soon",
-  description: "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days.",
-  inputSchema: { days: z.number().int().min(1).max(3650).optional().describe("Days ahead, default 30") },
+  description: "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free lists the first 3 occurrences in the horizon you ask for.",
+  inputSchema: { days: z.number().int().min(1).max(3650).optional().describe("Days ahead, default 30. The free tier honours the horizon you ask for and lists the first 3 occurrences in it; Pro lists them all") },
 }, async (a) => {
   try {
     const today = isoDate();
-    let days = a.days ?? FREE_UPCOMING_DAYS;
+    const days = a.days ?? FREE_UPCOMING_DAYS;
     let note = "";
-    if (!gate.isPro() && days > FREE_UPCOMING_DAYS) {
-      days = FREE_UPCOMING_DAYS;
-      note = `Free tier looks ${FREE_UPCOMING_DAYS} days ahead; showing ${FREE_UPCOMING_DAYS} days. ${gate.upgradeText("a longer horizon")}`;
-    }
     const to = addDays(today, days);
     const upcomingDone = generatedKeys(getHistory());
     const rows: Array<Record<string, unknown>> = [];
@@ -484,6 +494,14 @@ server.registerTool("schedule_upcoming", {
       }
     }
     rows.sort((x, y) => String(x.due_date).localeCompare(String(y.due_date)));
+    // D-R39: truncate by count, after sorting, and say exactly what the cap is and how many
+    // occurrences were withheld - never return a shorter horizon than the one asked for.
+    const foundInHorizon = rows.length;
+    let shown = rows;
+    if (!gate.isPro() && foundInHorizon > FREE_UPCOMING_PERIODS) {
+      shown = rows.slice(0, FREE_UPCOMING_PERIODS);
+      note = `Free tier lists ${FREE_UPCOMING_PERIODS} occurrences per call: showing ${FREE_UPCOMING_PERIODS} of ${foundInHorizon} found in the ${days}-day horizon you asked for. ${gate.upgradeText("every occurrence in the horizon")}`;
+    }
     // D-R5: "what is due" also means the periods that already fell due and were never
     // invoiced. Looking only forward hid a whole unbilled month from the answer.
     const history = getHistory();
@@ -501,7 +519,9 @@ server.registerTool("schedule_upcoming", {
     backlog.sort((x, y) => String(x.period).localeCompare(String(y.period)));
     return json({
       as_of: today, horizon_days: days, to,
-      count: rows.length, occurrences: rows,
+      count: shown.length, occurrences_found_in_horizon: foundInHorizon,
+      free_tier_occurrence_cap: gate.isPro() ? undefined : FREE_UPCOMING_PERIODS,
+      occurrences: shown,
       past_due_not_yet_invoiced: backlog.length
         ? { count: backlog.length, periods: backlog.slice(0, MAX_PERIODS_PER_RUN), hint: "run invoice_generate_due to create these" }
         : undefined,

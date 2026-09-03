@@ -5,7 +5,7 @@ import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { createLicenseGate, readSharedProfile, withFileLock } from "@theluckystrike/mcp-license";
 import { z } from "zod";
 import * as XLSX from "xlsx";
 import {
@@ -188,8 +188,21 @@ server.registerTool("expense_add", {
       }
       // D-R3: accept the names a caller actually uses for the same number.
       const givenRate = [a.vat_rate, a.tax_rate, a.vat].find((v) => typeof v === "number");
-      const vatRate = typeof givenRate === "number" ? givenRate : db.settings.default_vat_rate;
-      const vatFromDefault = typeof givenRate !== "number" && typeof vatRate === "number";
+      // D-R31/D-R34: the rate the user stated once at onboarding lives in the shared
+      // business profile. When neither the call nor expense_settings names a rate, use it
+      // rather than recording a gross-only row that expense_to_invoice can never correct.
+      const sharedRate = readSharedProfile().default_tax_rate;
+      let rateSource: "call" | "settings" | "profile" | "none" = "none";
+      let vatRate: number | undefined;
+      if (typeof givenRate === "number") { vatRate = givenRate; rateSource = "call"; }
+      else if (typeof db.settings.default_vat_rate === "number") { vatRate = db.settings.default_vat_rate; rateSource = "settings"; }
+      else if (typeof sharedRate === "number" && sharedRate > 0) { vatRate = sharedRate; rateSource = "profile"; }
+      const RATE_SOURCE_TEXT: Record<string, string> = {
+        call: " (the rate you passed on this call)",
+        settings: " (your expense_settings default_vat_rate)",
+        profile: " (your shared business profile default_tax_rate, set with business_set)",
+        none: "",
+      };
       // D-R21: "for <project>" is the only reason to book a client project onto a receipt,
       // and a default of false silently dead-ended expense_to_invoice one turn later.
       const billable = a.billable ?? !!a.project;
@@ -209,8 +222,8 @@ server.registerTool("expense_add", {
         (category ? ` [${category}${autoCategorised ? ", from a category rule" : ""}]` : " [uncategorised]") +
         (e.project ? ` for ${e.project}` : "") +
         (s.vat_minor
-          ? `. Net ${formatMoney(s.net_minor, currency)}, VAT ${formatMoney(s.vat_minor, currency)} at ${s.rate}%${vatFromDefault ? " (your default rate)" : ""}`
-          : ". No VAT rate was given, so net equals gross and the VAT column is 0. Pass vat_rate on the call, or set a default once with expense_settings, to get the net/VAT split") +
+          ? `. Net ${formatMoney(s.net_minor, currency)}, VAT ${formatMoney(s.vat_minor, currency)} at ${s.rate}%${RATE_SOURCE_TEXT[rateSource]}`
+          : ". No VAT rate was given and none is stored, so net equals gross and the VAT column is 0. Pass vat_rate on the call, set a default once with expense_settings, or set default_tax_rate on your business profile with business_set, to get the net/VAT split") +
         (e.billable
           ? `. Billable: yes${billableDefaulted && a.project ? " (default for an expense with a project; pass billable: false to keep it off the client's invoice)" : ""} - it will appear in expense_to_invoice.`
           : `. Billable: no${billableDefaulted ? " (default with no project)" : ""} - it will NOT appear in expense_to_invoice; pass billable: true to rebill it.`) +
@@ -408,7 +421,9 @@ server.registerTool("expense_settings", {
         default_vat_rate: s0.default_vat_rate ?? null,
         default_currency: s0.default_currency ?? "EUR",
         note: s0.default_vat_rate === undefined
-          ? "No default VAT rate is set, so an expense added without vat_rate records 0% and its net equals its gross."
+          ? (typeof readSharedProfile().default_tax_rate === "number" && readSharedProfile().default_tax_rate! > 0
+            ? `No expense_settings default is set, so expense_add falls back to your shared business profile default_tax_rate of ${readSharedProfile().default_tax_rate}%.`
+            : "No default VAT rate is set here or on your shared business profile, so an expense added without vat_rate records 0% and its net equals its gross.")
           : undefined,
       });
     }
@@ -504,11 +519,11 @@ server.registerTool("mileage_add", {
     miles: amount("miles").optional().describe("Distance in miles. Give exactly one of km or miles"),
     date: z.string().optional().describe("ISO date, default today"),
     purpose: text(2000).describe("Why the trip was made, e.g. client meeting in Krakow"),
-    project: text().optional(),
+    project: text().optional().describe("Bill the trip to a client or project - use the same name you use in time-tracker and expense_add. Without it the drive is invisible to expense_summary by project and to expense_to_invoice"),
     region: z.enum(["PL", "UK", "US", "EU"]).optional().describe("Which built-in table rate to use: PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km. Default US for miles, EU for km. Each is one flat approximate rate per region with no effective dates, no vehicle or engine class and no first-10000-mile band, so it is NOT a tax calculation"),
     rate_per_km: z.number().finite().min(0).optional().describe("Your own rate per supplied unit, overriding the table. Pass it whenever you need your exact scheme rather than the approximate table rate"),
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Currency for your own rate. Only accepted together with rate_per_km; a table rate keeps the table currency"),
-    billable: z.boolean().optional(),
+    billable: z.boolean().optional().describe("Whether the trip is rebilled to the client. Default true, so a mileage claim reaches expense_to_invoice unless you pass false"),
   },
 }, async (a) => {
   try {
@@ -558,8 +573,15 @@ server.registerTool("mileage_add", {
       const source = usingOwnRate
         ? "your rate_per_km"
         : `table rate ${region} ${table.rate} ${table.currency}/${table.unit}, an approximation; pass rate_per_km for your exact scheme`;
+      const billableDefaulted = typeof a.billable !== "boolean";
       return ok(`Saved ${e.id}: ${distance} ${unit}${distance === 1 ? "" : "s"} on ${date} at ${rate} ${currency}/${unit} ` +
-        `(${source}) = ${formatMoney(minor, currency)}. ${a.purpose}`);
+        `(${source}) = ${formatMoney(minor, currency)}. ${a.purpose}` +
+        (e.project
+          ? `\nProject: ${e.project}.`
+          : `\nProject: none - this drive will NOT appear in expense_summary {by: "project"} or in expense_to_invoice. Pass project to bill it to a client.`) +
+        (e.billable
+          ? ` Billable: yes${billableDefaulted ? " (default for a mileage claim; pass billable: false to keep it off the invoice)" : ""}.`
+          : " Billable: no - it will NOT appear in expense_to_invoice."));
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -571,6 +593,9 @@ function exportRows(rows: Expense[]) {
     const s = vatSplit(e.amount_minor, e.vat_rate);
     return {
       id: e.id, date: e.date, currency: e.currency,
+      // D-R38: time-tracker's export_csv calls the money column "amount". Both exports now
+      // carry "amount"; "gross" stays as an additional column for existing readers.
+      amount: toMajor(s.gross_minor, e.currency),
       gross: toMajor(s.gross_minor, e.currency),
       net: toMajor(s.net_minor, e.currency),
       vat: toMajor(s.vat_minor, e.currency),
@@ -585,7 +610,7 @@ function exportRows(rows: Expense[]) {
   });
 }
 
-const CSV_HEADERS = ["id", "date", "currency", "gross", "net", "vat", "vat_rate", "category", "merchant", "project", "billable", "note", "receipt_path", "receipt_sha256", "mileage"];
+const CSV_HEADERS = ["id", "date", "currency", "amount", "gross", "net", "vat", "vat_rate", "category", "merchant", "project", "billable", "note", "receipt_path", "receipt_sha256", "mileage"];
 
 function csvCell(v: unknown): string {
   const s = String(v ?? "");
@@ -594,7 +619,7 @@ function csvCell(v: unknown): string {
 
 server.registerTool("expense_export", {
   title: "Export expenses",
-  description: "Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path written. Nothing partial is ever written: if a limit is hit the file is not created at all.",
+  description: "Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. The money column is `amount` (gross), as in time-tracker's export_csv, with `gross`, `net`, `vat` alongside.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),

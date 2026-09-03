@@ -13,6 +13,8 @@ export interface StarterClause {
   category: string;
   tags: string[];
   variables: string[];
+  /** D-R37: clause ids this body points at. Resolved against the included set at assembly. */
+  references?: string[];
 }
 
 export const STARTER_CLAUSES: StarterClause[] = [
@@ -20,7 +22,8 @@ export const STARTER_CLAUSES: StarterClause[] = [
     id: "scope-of-work", title: "Scope of Work", category: "scope",
     tags: ["scope", "deliverables", "core"],
     variables: ["contractor", "client", "project", "deliverables"],
-    body: "{{contractor}} will provide {{client}} with the services described for {{project}}: {{deliverables}}. Work outside this description is not included and is handled under the Change Requests clause. Anything not listed here is out of scope until both parties agree otherwise in writing.",
+    references: ["revisions"],
+    body: "{{contractor}} will provide {{client}} with the services described for {{project}}: {{deliverables}}. Work outside this description is not included and is treated as a change request, priced and agreed in writing before it starts. Anything not listed here is out of scope until both parties agree otherwise in writing.",
   },
   {
     id: "payment-terms", title: "Payment Terms", category: "payment",
@@ -74,7 +77,8 @@ export const STARTER_CLAUSES: StarterClause[] = [
     id: "governing-law", title: "Governing Law", category: "general",
     tags: ["law", "jurisdiction", "boilerplate"],
     variables: ["jurisdiction"],
-    body: "This agreement is governed by the laws of {{jurisdiction}}, without regard to its conflict of law rules, and the courts of {{jurisdiction}} have exclusive jurisdiction over any dispute that is not resolved under the Dispute Resolution clause.",
+    references: ["dispute-resolution"],
+    body: "This agreement is governed by the laws of {{jurisdiction}}, without regard to its conflict of law rules, and the courts of {{jurisdiction}} have exclusive jurisdiction over any dispute the parties have not already resolved between them.",
   },
   {
     id: "force-majeure", title: "Force Majeure", category: "general",

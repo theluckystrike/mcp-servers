@@ -121,7 +121,7 @@ Call this tool to write a .ics calendar file for one meeting. Returns the path w
 | `fold` | "first" \| "second" | no | Which occurrence of a time that happens twice because the clocks went back. Default 'first'. |
 | `gap` | "forward" \| "backward" | no | What to do with a time that does not exist because the clocks jumped forward: 'forward' takes the time after the jump, 'backward' the time before it. Without this, such a time is refused. |
 | `location` | string | no | Where, or a meeting link (maxLength 200) |
-| `organizer_email` | string | no | Your email address, written as the ORGANIZER so replies have somewhere to go (maxLength 200) |
+| `organizer_email` | string | no | Your email address, written as the ORGANIZER so replies have somewhere to go. Leave it out and your shared business profile's email is used; with neither, the ORGANIZER line is omitted rather than filled with an address you improvised (maxLength 200) |
 | `organizer_name` | string | no | Your display name for the ORGANIZER line (maxLength 200) |
 | `out_path` | string | no | Where to write the .ics file; default meeting.ics in the data dir. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale (maxLength 4096) |
 | `start` | string | yes | Start time, read in `zone` unless it carries an offset (maxLength 100) |

@@ -168,7 +168,7 @@ test("expense_settings: an opted-in default VAT rate splits an expense that name
   assert.match(bare.text, /No VAT rate was given/);
   await c.call("expense_settings", { default_vat_rate: 23 });
   const split = await c.call("expense_add", { amount: 61.5, currency: "EUR", merchant: "Media Markt" });
-  assert.match(split.text, /Net EUR 50\.00, VAT EUR 11\.50 at 23% \(your default rate\)/);
+  assert.match(split.text, /Net EUR 50\.00, VAT EUR 11\.50 at 23% \(your expense_settings default_vat_rate\)/);
   const explicit = await c.call("expense_add", { amount: 61.5, currency: "EUR", vat_rate: 0 });
   assert.match(explicit.text, /No VAT rate was given/);
   assert.ok((await c.call("expense_settings", { default_currency: "XYZ" })).isError);

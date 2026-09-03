@@ -326,7 +326,7 @@ test("D-R7: business_set accepts tax_rate aliases and warns about unknown keys",
   // an unknown key is reported, not dropped in silence
   const u = await c.call("business_set", { name: "Zovo Studio", company_vat: 23, iban_number: "PL01" });
   assert.match(u.text, /Warning: ignored unknown fields company_vat, iban_number\./);
-  assert.match(u.text, /Accepted fields: name, address, email, vat_id, iban, bank, logo_path, default_currency, default_tax_rate, payment_terms_days, invoice_prefix/);
+  assert.match(u.text, /Accepted fields: name, address, email, phone, timezone, vat_id, iban, bank, logo_path, default_currency, default_tax_rate, payment_terms_days, invoice_prefix/);
 
   // items take the same alias
   await c.call("business_set", { name: "Zovo Studio", default_tax_rate: 0 });

@@ -5,7 +5,7 @@ import { homedir } from "node:os";
 import { isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { createLicenseGate, readSharedProfile, withFileLock, writeSharedProfile } from "@theluckystrike/mcp-license";
 import { z } from "zod";
 import {
   addDays, computeTotals, daysBetween, formatMoney, isoDate, toMinor,
@@ -19,7 +19,7 @@ import {
 
 const FREE_INVOICES_PER_MONTH = 3;
 const BUSINESS_FIELDS = [
-  "name", "address", "email", "vat_id", "iban", "bank", "logo_path",
+  "name", "address", "email", "phone", "timezone", "vat_id", "iban", "bank", "logo_path",
   "default_currency", "default_tax_rate", "payment_terms_days", "invoice_prefix",
   "tax_rate", "vat_rate", "vat",
 ];
@@ -113,11 +113,13 @@ const server = new McpServer(
 
 server.registerTool("business_set", {
   title: "Set your business details",
-  description: "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices.",
+  description: "The ONE business profile for the whole suite: name, address, VAT id, bank details and defaults (currency, tax rate, terms, prefix, timezone). Saved to the shared profile every other server reads. Call it once, first.",
   inputSchema: z.object({
     name: z.string().describe("Your business or freelancer name"),
     address: z.string().optional().describe("Postal address, newlines allowed"),
-    email: z.string().optional(),
+    email: z.string().optional().describe("Your own email address. Leave it out unless the user gave it: no server ever fills an email from anything but this profile or an explicit argument"),
+    phone: z.string().optional().describe("Your own phone number. Same rule as email: only if the user gave it"),
+    timezone: z.string().optional().describe("IANA zone you work in, e.g. Europe/Warsaw. Shared with time-tracker (entries are stamped in it) and timezone (your home zone)"),
     vat_id: z.string().optional().describe("VAT / tax registration id"),
     iban: z.string().optional().describe("IBAN or account number for payment"),
     bank: z.string().optional().describe("Bank name / BIC"),
@@ -165,7 +167,12 @@ server.registerTool("business_set", {
       invoice_prefix: prefix.replace(/[^A-Za-z0-9_-]/g, "") || "INV",
     };
     setBusiness(biz);
-    return ok(`Business profile saved to ${dataDir()}.\n\n${JSON.stringify(biz, null, 2)}${note}${warn}`);
+    if (a.phone || a.timezone) writeSharedProfile({ phone: a.phone, timezone: a.timezone });
+    const shared = readSharedProfile();
+    return ok(`Business profile saved to ${dataDir()} and to the shared profile at ` +
+      `mcp-servers/profile/business.json, which docx, expense-tracker, recurring, time-tracker, ` +
+      `timezone, resume and clauses all read. You do not need to repeat it anywhere else.\n\n` +
+      `${JSON.stringify({ ...biz, phone: shared.phone, timezone: shared.timezone }, null, 2)}${note}${warn}`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });

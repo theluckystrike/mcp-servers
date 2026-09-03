@@ -5,7 +5,7 @@ import { homedir } from "node:os";
 import { basename, dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { createLicenseGate, EMAIL_PLACEHOLDER, readSharedProfile, withFileLock, writeSharedProfile } from "@theluckystrike/mcp-license";
 import { z } from "zod";
 import { blockText, type Block } from "./blocks.js";
 import { buildDocx, toHtml, type DocStyle } from "./build.js";
@@ -19,7 +19,7 @@ import { assertDocx, fillDocx, placeholdersIn, readDocx, stripInvalidXml } from 
 const FREE_AGREEMENTS_PER_MONTH = 3;
 const FREE_TEMPLATE_PLACEHOLDERS = 10;
 const BUSINESS_FIELDS = [
-  "name", "address", "email", "vat_id", "iban", "bank", "logo_path", "brand_color",
+  "name", "address", "email", "phone", "timezone", "vat_id", "iban", "bank", "logo_path", "brand_color",
   "default_currency", "default_tax_rate", "payment_terms_days", "invoice_prefix",
   "tax_rate", "vat_rate", "vat",
 ];
@@ -37,12 +37,25 @@ const json = (v: unknown) => ok(JSON.stringify(v, null, 2));
 const PLACEHOLDER_ISSUER = "Your business";
 const NO_BUSINESS_NOTE =
   "No business profile yet: the document shows a placeholder sender. " +
-  "Run business_set {name, address, email, vat_id} and create it again.";
+  "Run business_set {name, address, email, vat_id}, then proposal_update {reference} to rewrite this document " +
+  "in place - creating it again would burn a second reference and a second free-tier document.";
 
 function businessMissing(): boolean { return !hasBusiness() || !getBusiness().name.trim(); }
 function issuer(): Business {
   const b = getBusiness();
   return b.name.trim() ? b : { ...b, name: PLACEHOLDER_ISSUER };
+}
+
+/**
+ * D-R40. The letterhead prints an email only when the shared profile carries one. When it
+ * does not, the document shows "[add: email]" and the answer says so, so nobody has to
+ * invent an address to make the page look finished.
+ */
+function emailNote(): string {
+  return getBusiness().email
+    ? ""
+    : `\n\nNo email address is stored, so the letterhead shows "${EMAIL_PLACEHOLDER}". ` +
+      `Set it with business_set {email} once the user has given you the address; do not supply one yourself.`;
 }
 
 function isoDate(d = new Date()): string { return d.toISOString().slice(0, 10); }
@@ -140,11 +153,13 @@ const server = new McpServer(
 
 server.registerTool("business_set", {
   title: "Set your business details",
-  description: "Store the sender profile printed on every proposal, contract and letter. Returns the saved profile and the directory it was written to. Call this once before creating documents.",
+  description: "The sender profile printed on every proposal, contract and letter. The SAME profile invoice's business_set writes: it goes to the shared profile, so it also sets your invoice issuer and default VAT.",
   inputSchema: z.object({
     name: z.string().describe("Your business or freelancer name, printed on the letterhead of every proposal, contract and letter"),
     address: z.string().optional().describe("Postal address, newlines allowed"),
-    email: z.string().optional(),
+    email: z.string().optional().describe("Your own email address, printed on every letterhead. Leave it out unless the user gave it: a document that shows an address nobody supplied is worse than one that shows [add: email]"),
+    phone: z.string().optional().describe("Your own phone number. Same rule as email: only if the user gave it"),
+    timezone: z.string().optional().describe("IANA zone you work in, e.g. Europe/Warsaw. Shared with time-tracker and timezone as your home zone"),
     vat_id: z.string().optional().describe("VAT / tax registration id"),
     iban: z.string().optional().describe("IBAN or account number for payment"),
     bank: z.string().optional().describe("Bank name / BIC"),
@@ -192,7 +207,11 @@ server.registerTool("business_set", {
         invoice_prefix: (a.invoice_prefix ?? prev.invoice_prefix).replace(/[^A-Za-z0-9_-]/g, "") || "INV",
       };
       setBusiness(biz);
-      return ok(`Business profile saved to ${dataDir()}.\n\n${JSON.stringify(biz, null, 2)}${note}${warn}`);
+      if (a.phone || a.timezone) writeSharedProfile({ phone: a.phone, timezone: a.timezone });
+      const shared = readSharedProfile();
+      return ok(`Business profile saved to ${dataDir()} and to the shared profile every server in the suite reads ` +
+        `(invoice issuer, expense-tracker default VAT, time-tracker and timezone home zone).\n\n` +
+        `${JSON.stringify({ ...biz, phone: shared.phone, timezone: shared.timezone }, null, 2)}${note}${warn}`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -511,8 +530,11 @@ server.registerTool("proposal_create", {
   },
 }, async (a) => {
   try {
+    // D-R32: both refusals happen BEFORE nextNumber() and before any file is written, so a
+    // refused call consumes no reference and none of the free tier's monthly documents.
     const gated = agreementLimit();
     if (gated) return ok(gated);
+    if (businessMissing()) return fail(NO_BUSINESS_NOTE + " Nothing was written and no reference was used.");
     const { blocks, total, terms } = proposalBody(a);
 
     const out = await locked(async () => {
@@ -531,7 +553,7 @@ server.registerTool("proposal_create", {
         reference: out.number, client: a.client, project: a.project_title,
         total, terms, valid_until: a.valid_until, phases: a.timeline.length, file: out.path,
       }, null, 2) + out.note +
-      `${businessMissing() ? `\n\n${NO_BUSINESS_NOTE}` : ""}${brandingNote()}`,
+      `${emailNote()}${brandingNote()}`,
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });

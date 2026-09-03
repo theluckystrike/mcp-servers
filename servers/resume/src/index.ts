@@ -5,7 +5,7 @@ import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { createLicenseGate, EMAIL_PLACEHOLDER, readSharedProfile, withFileLock } from "@theluckystrike/mcp-license";
 import { buildDocx, letterhead, readDocx, stripInvalidXml, toHtml, type Block } from "@theluckystrike/mcp-docx/lib";
 import { z } from "zod";
 import {
@@ -84,6 +84,44 @@ function cleanBlocks(blocks: Block[]): Block[] {
 
 function proOnly(what: string): string { return `${what} is a Pro feature.\n\n${gate.upgradeText(what)}`; }
 
+/**
+ * D-R40. An email is the shared business profile's or an explicit argument, never anything
+ * else. With neither, every letterhead shows the bracketed prompt and the answer says so.
+ */
+function emailNote(): string {
+  return `\n\nNo email address was given and none is stored on your shared business profile, so the ` +
+    `letterhead and the closing line show "${EMAIL_PLACEHOLDER}". Pass email here, or set it once with ` +
+    `business_set {email} in the invoice or docx server. Do not supply an address the user has not given.`;
+}
+
+/**
+ * D-R33. Report every bullet whose TEXT changed, so a rewrite can never be silent. Round 8
+ * turned "wrote the OpenAPI style guide two of those clients still use" into "... and
+ * governance documentation ..." to raise a keyword score, and nothing said a word.
+ */
+function bulletChanges(before: Profile | undefined, after: Profile): string {
+  if (!before) return "";
+  const key = (e: { company: string; title: string }) => `${e.company}|${e.title}`;
+  const old = new Map(before.experience.map((e) => [key(e), e.bullets]));
+  const changed: string[] = [];
+  const added: string[] = [];
+  const removed: string[] = [];
+  for (const e of after.experience) {
+    const prev = old.get(key(e));
+    if (!prev) { added.push(...e.bullets.map((b) => `${e.company}: ${b}`)); continue; }
+    const seen = new Set(prev);
+    for (const b of e.bullets) if (!seen.has(b)) changed.push(`${e.company}: "${b}"`);
+    const now = new Set(e.bullets);
+    for (const b of prev) if (!now.has(b)) removed.push(`${e.company}: "${b}"`);
+  }
+  if (!changed.length && !added.length && !removed.length) return "\n\nNo stored bullet changed.";
+  const parts: string[] = [];
+  if (changed.length) parts.push(`${changed.length} bullet(s) now read differently from what was stored: ${changed.join("; ")}`);
+  if (removed.length) parts.push(`${removed.length} stored bullet(s) are gone: ${removed.join("; ")}`);
+  if (added.length) parts.push(`${added.length} bullet(s) are on roles that were not stored before: ${added.join("; ")}`);
+  return `\n\n${parts.join(". ")}. Every one of these is now a fact this server will let a cover letter claim; check that the user actually said each of them.`;
+}
+
 function requireProfile(variant?: string): Profile | string {
   const p = getProfile(variant);
   if (p) return p;
@@ -131,7 +169,7 @@ server.registerTool("profile_set", {
   description: "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. Returns a count of what was stored.",
   inputSchema: {
     name: z.string().min(1),
-    email: z.string().min(1),
+    email: z.string().optional().describe("Your own email address. Leave it out and the shared business profile's email is used; with neither, letters and letterheads show \"[add: email]\" and say so. Never invent one"),
     phone: z.string().optional(),
     location: z.string().optional(),
     links: z.array(z.string()).optional().describe("Portfolio, LinkedIn, GitHub"),
@@ -143,24 +181,47 @@ server.registerTool("profile_set", {
     languages: z.array(z.string()).optional(),
     accent_color: z.string().optional().describe("Letterhead colour, six hex digits, e.g. 1F3864. Pro only."),
     variant: z.string().optional().describe("Name a second profile, e.g. \"backend\". One profile per data directory on the free tier; named variants are Pro only."),
+    merge: z.boolean().optional().describe("Update the stored profile: fields you pass replace their stored value, fields you leave out are kept. Required when a profile already exists, unless you pass replace"),
+    replace: z.boolean().optional().describe("Discard the stored profile and store exactly what this call carries. Required when a profile already exists, unless you pass merge"),
   },
 }, async (a) => {
   try {
     const wantsVariant = !!a.variant && normalizeVariant(a.variant) !== "default";
     if (wantsVariant && !gate.isPro()) return fail(proOnly("Profile variants"));
+    // D-R33: the stored profile is the fact base every resume and cover letter is checked
+    // against. A model asked to "tailor my resume" has no write path, so in round 8 it
+    // reached for this tool and silently altered a bullet the user had dictated. An
+    // existing profile is never overwritten without the caller saying which it means.
+    const existing = getProfile(a.variant) ?? undefined;
+    if (existing && !a.merge && !a.replace) {
+      return fail(
+        `a profile is already stored under variant "${normalizeVariant(a.variant)}" ` +
+        `(${existing.experience.length} roles, ${existing.experience.reduce((n, e) => n + e.bullets.length, 0)} bullets). ` +
+        `Nothing was changed. Pass merge: true to update only the fields you send, or replace: true to discard the stored profile. ` +
+        `Do not use this tool to reword bullets for a posting: tailor_to_job is read-only by design and rewriting a stored bullet ` +
+        `changes what cover_letter_create is allowed to claim.`,
+      );
+    }
+    const base = a.merge && existing ? existing : undefined;
     const p: Profile = {
-      name: a.name.trim(), email: a.email.trim(), phone: a.phone, location: a.location,
-      links: a.links, summary: a.summary, skills: a.skills,
-      experience: a.experience as Experience[], education: a.education as Education[],
-      certifications: a.certifications, languages: a.languages, accent_color: a.accent_color,
+      name: a.name.trim(),
+      email: (a.email ?? base?.email ?? readSharedProfile().email ?? "").trim(),
+      phone: a.phone ?? base?.phone, location: a.location ?? base?.location,
+      links: a.links ?? base?.links, summary: a.summary ?? base?.summary, skills: a.skills ?? base?.skills,
+      experience: (a.experience.length ? a.experience : base?.experience ?? []) as Experience[],
+      education: (a.education.length ? a.education : base?.education ?? []) as Education[],
+      certifications: a.certifications ?? base?.certifications,
+      languages: a.languages ?? base?.languages,
+      accent_color: a.accent_color ?? base?.accent_color,
     };
+    const changes = bulletChanges(existing, p);
     await locked(() => setProfile(a.variant, p));
     const bullets = p.experience.reduce((n, e) => n + e.bullets.length, 0);
     const note = a.accent_color && !gate.isPro()
       ? `\n\nThe accent colour is stored but the free tier prints the default colour. ${gate.upgradeText("letterhead colours")}` : "";
     return ok(`Profile "${normalizeVariant(a.variant)}" stored: ${p.experience.length} roles, ${bullets} bullets, ` +
       `${p.skills?.length ?? 0} skills, ${p.education.length} education entries. ` +
-      `Stored under ${dataDir()}; nothing leaves this machine.${note}`);
+      `Stored under ${dataDir()}; nothing leaves this machine.${note}${changes}${p.email ? "" : emailNote()}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -364,7 +425,7 @@ server.registerTool("cover_letter_create", {
 
 server.registerTool("tailor_to_job", {
   title: "Gap analysis against a posting",
-  description: "Extract what a job description actually asks for and check it against your profile. Returns the matched keywords, the missing ones, a coverage figure, and rewrites that only reorder facts you already stated.",
+  description: "READ-ONLY gap analysis against a posting: writes nothing, changes nothing. Returns matched keywords, missing ones, a coverage figure and orderings of facts you already stated. Act on it with resume_create.",
   inputSchema: {
     job_description: z.string().min(1).describe("Paste the posting. The free tier reads up to 2,000 characters; Pro reads any length."),
     variant: z.string().optional(),
@@ -381,7 +442,9 @@ server.registerTool("tailor_to_job", {
     const g = analyseGap(p, a.job_description, a.limit);
     return json({
       variant: normalizeVariant(a.variant), ...g,
-      note: "Rewrites only reorder facts you already stated. A missing keyword is reported as a warning and never becomes a new claim; add one with profile_set only if it is true." +
+      read_only: true,
+      note: "This tool wrote nothing: it is a report. Rewrites only reorder facts you already stated. A missing keyword is reported as a warning and never becomes a new claim; add one with profile_set only if it is true." +
+        " To use this result, call resume_create {target_role, keywords} - profile_set is for facts the user actually stated, not for raising this score." +
         (gate.isPro() ? "" : ` Free tier: postings up to ${FREE_JD_CHARS} characters.`),
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }

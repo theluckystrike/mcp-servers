@@ -190,7 +190,7 @@ test("stdio: initialize, tools/list, expenses, rules, summary, mileage, rebill",
   assert.equal(r.isError, false);
   const lines = readFileSync(csvPath, "utf8").trim().split("\n");
   assert.equal(lines.length, 1 + 7);                     // 3 expenses + 4 mileage rows
-  assert.match(lines[0], /^id,date,currency,gross,net,vat,vat_rate,/);
+  assert.match(lines[0], /^id,date,currency,amount,gross,net,vat,vat_rate,/);
 
   // free tier: xlsx refused, nothing written
   const xlsxPath = join(c.home, "out.xlsx");

@@ -21,7 +21,7 @@ Writes real .docx files: documents from markdown or sections, proposals, contrac
 
 | tool | description |
 | --- | --- |
-| `business_set` | Store the sender profile printed on every proposal, contract and letter. Returns the saved profile and the directory it was written to. Call this once before creating documents. |
+| `business_set` | The sender profile printed on every proposal, contract and letter. The SAME profile invoice's business_set writes: it goes to the shared profile, so it also sets your invoice issuer and default VAT. |
 | `contract_create` | Call this tool to produce a freelance service agreement .docx. Returns the reference, the fee and the file path. It is a template skeleton for a lawyer to review, not legal advice. Free tier: 3 agreements per month. |
 | `doc_create` | Call this tool to write a real .docx file from structured sections. Returns the file path, the number of blocks written and the layout used. Free and unlimited. |
 | `doc_fill_template` | Call this tool to replace {{placeholders}} in an existing .docx and write a new file. Returns the new path and which placeholders were replaced, unfilled or ignored. Call with no values to list a template's placeholders. |
@@ -37,7 +37,7 @@ Writes real .docx files: documents from markdown or sections, proposals, contrac
 
 Title: Set your business details
 
-Store the sender profile printed on every proposal, contract and letter. Returns the saved profile and the directory it was written to. Call this once before creating documents.
+The sender profile printed on every proposal, contract and letter. The SAME profile invoice's business_set writes: it goes to the shared profile, so it also sets your invoice issuer and default VAT.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -46,13 +46,15 @@ Store the sender profile printed on every proposal, contract and letter. Returns
 | `brand_color` | string | no | Letterhead colour as a hex code, e.g. 1F3864 (Pro) |
 | `default_currency` | string | no | ISO code, e.g. EUR, USD. Default EUR (pattern `^[A-Za-z]{3}$`) |
 | `default_tax_rate` | number | no | Default VAT percent, quoted on proposals |
-| `email` | string | no |  |
+| `email` | string | no | Your own email address, printed on every letterhead. Leave it out unless the user gave it: a document that shows an address nobody supplied is worse than one that shows [add: email] |
 | `iban` | string | no | IBAN or account number for payment |
 | `invoice_prefix` | string | no | Reference prefix used by mcp-invoice; this profile has the same field shape as mcp-invoice, so one profile serves both |
 | `logo_path` | string | no | Path to a PNG or JPG logo for the letterhead (Pro) |
 | `name` | string | yes | Your business or freelancer name, printed on the letterhead of every proposal, contract and letter |
 | `payment_terms_days` | number | no | Default days until payment is due. Default 14 |
+| `phone` | string | no | Your own phone number. Same rule as email: only if the user gave it |
 | `tax_rate` | number | no | Alias for default_tax_rate |
+| `timezone` | string | no | IANA zone you work in, e.g. Europe/Warsaw. Shared with time-tracker and timezone as your home zone |
 | `vat` | number | no | Alias for default_tax_rate |
 | `vat_id` | string | no | VAT / tax registration id |
 | `vat_rate` | number | no | Alias for default_tax_rate |

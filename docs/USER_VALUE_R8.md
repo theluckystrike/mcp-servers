@@ -325,3 +325,78 @@ insight:
   tailor a resume it edited the source of truth the fact-integrity guard checks against. A gap in a
   bundle is not a blank the user fills in. It is a blank the model fills in.
 ```
+
+## Round-8 fixes
+
+Shipped 2026-09-03. Ten defects, one new shared module, ten servers touched. The through-line of
+round 8 was that the bundle had no memory of the user; the fix is that it now has exactly one.
+
+**The shared business profile** — `packages/mcp-license/src/profile.ts:59` `readSharedProfile()`
+and `:112` `writeSharedProfile(patch)`, backed by
+`${XDG_DATA_HOME:-~/.local/share}/mcp-servers/profile/business.json` (`:47` `profilePath()`).
+Atomic write (tmp + pid + random suffix, then rename, `:130`), corrupt-marker quarantine
+(`:74` `quarantine()` moves a non-JSON file to `business.json.corrupt-<ts>` and refuses every later
+write, `:113`), and a field whitelist (`:36` `PROFILE_FIELDS`: name, address, email, phone, vat_id,
+iban, bank, default_currency, default_tax_rate, payment_terms_days, invoice_prefix, timezone,
+logo_path) so nothing untyped reaches a document. Reads never throw: identity is read on paths that
+must still work.
+
+| id | fix | file:line |
+|---|---|---|
+| D-R31 | invoice and docx `business_set` write the shared profile and keep the local `business.json` as the compatibility copy; every `getBusiness()` reads shared first, field by field | `servers/invoice/src/store.ts:133` (get), `:152` (set), `:157` (`hasBusiness`); `servers/docx/src/store.ts:117`, `:136`, `:142`; `servers/invoice/src/index.ts:116` (description), `:170` (`phone`/`timezone` fan-out); `servers/docx/src/index.ts:210` |
+| D-R31 | cross-process test: set through invoice, read from docx, expense-tracker and recurring, three separate processes, one `XDG_DATA_HOME` | `servers/invoice/test/shared-profile.test.mjs:60` |
+| D-R32 | `proposal_create` checks the free-tier gate **and** the business profile before `nextNumber()` and before any write, so a refused call burns no reference and no monthly document; the refusal names `proposal_update` | `servers/docx/src/index.ts:533` |
+| D-R33 | `profile_set` refuses to overwrite an existing profile unless `merge: true` or `replace: true`, and reports every bullet whose text changed, was removed, or is new | `servers/resume/src/index.ts:191` (refusal), `:98` `bulletChanges()` |
+| D-R33 | `tailor_to_job` says it is read-only, in the description, in the payload (`read_only: true`) and in the note, and points at `resume_create` instead of `profile_set` | `servers/resume/src/index.ts:428`, `:445` (`read_only`) |
+| D-R34 | `expense_add` falls back to the shared `default_tax_rate` when neither the call nor `expense_settings` names a rate, and the response states which of the three the rate came from | `servers/expense-tracker/src/index.ts:191`, `:200` (`RATE_SOURCE_TEXT`), `:225` |
+| D-R35 | a timer stopped with no rate stores no `rateCents` and no `currency` — never `USD 0.00` in a EUR business — and `timer_stop` says so; `export_csv` writes blank rate/currency/amount for such a row | `servers/time-tracker/src/index.ts:401`, `:467`, `:884` |
+| D-R35 | day boundaries and offset-free timestamps resolve in `profile.timezone` when one is set | `servers/time-tracker/src/day.ts:17` `homeZone()`, `:56` `dayKey()`, `:73` `localDayStart()`, `:89` `wallClockInZone()`; `servers/time-tracker/src/index.ts:110` (`parseTime`), `:129` (`endOfLocalDay`) |
+| D-R35 | timezone resolves "home" / "my zone" to the profile zone, and says so | `servers/timezone/src/index.ts:97` `HOME_WORDS`, `:103` `homeZone()`, `:111` |
+| D-R36 | `mileage_add`'s `project` and `billable` get `.describe()` strings, and the answer echoes both — including the sentence that says an unprojected drive is invisible to `expense_summary {by: "project"}` and `expense_to_invoice` | `servers/expense-tracker/src/index.ts:522`, `:526`, `:576` |
+| D-R37 | clause cross-references are declared as `references: string[]` and resolved against the clauses actually included: a resolved one prints "See also clause N (Title)", an unresolved one is dropped and reported as `missing_references` with the ids to add | `servers/clauses/src/store.ts:25`; `servers/clauses/src/starter.ts:17`, `:25`, `:80`; `servers/clauses/src/assemble.ts:55`, `:75`; `servers/clauses/src/index.ts:407` |
+| D-R38 | `expense_export` writes `amount` (gross) as the money column, the name `export_csv` already uses, keeping `gross` alongside for existing readers; both descriptions say which column carries the money | `servers/expense-tracker/src/index.ts:596`, `:613` (`CSV_HEADERS`), `:622` |
+| D-R39 | `schedule_create` / `schedule_update` take `tax_note`, carried onto every generated invoice next to `notes` | `servers/recurring/src/index.ts:231`, `:269`, `:329`, `:353`, `:157`; `servers/recurring/src/store.ts:40` |
+| D-R39 | the free horizon is a cap on the number of occurrences (3), not a shorter window: the horizon asked for is honoured, the list is truncated, and the answer states the cap and how many were found | `servers/recurring/src/index.ts:32` `FREE_UPCOMING_PERIODS`, `:497` |
+| D-R40 | no server fills an email from anything but the shared profile or an explicit argument. docx letterhead prints `[add: email]`; the proposal answer says so; contract letterheads read the profile (they previously used the **client** name); the resume closing line already prompted; `ics_create`'s ORGANIZER takes the profile email or is omitted with the reason | `packages/mcp-license/src/profile.ts:152` `EMAIL_PLACEHOLDER`; `servers/docx/src/build.ts:157`; `servers/docx/src/index.ts:54` `emailNote()`; `servers/clauses/src/index.ts:123` `contractLetterhead()`, `:132` `letterheadNote()`; `servers/resume/src/index.ts:88`; `servers/timezone/src/index.ts:496`, `:507` (ORGANIZER note) |
+
+Two contract changes were forced and their probes moved with them:
+`servers/expense-tracker/test/smoke.test.mjs:193` now expects the `amount` column ahead of `gross`,
+and `servers/invoice/test/smoke.test.mjs` expects `phone` and `timezone` in the accepted-fields list.
+`servers/expense-tracker/test/adversarial.test.mjs:171` now expects the rate source to be named
+("your expense_settings default_vat_rate") rather than the old generic "your default rate".
+The 220-character description ratchet held: every lengthened description was cut back under it
+rather than added to the baseline.
+
+### Verbatim test totals
+
+`npm test` at the root, all thirteen workspaces:
+
+```
+> @theluckystrike/mcp-license@0.1.0 test        # tests 15  # pass 15  # fail 0  # skipped 0
+> @theluckystrike/mcp-clauses@0.4.0 test        # tests 31  # pass 30  # fail 0  # skipped 1
+> @theluckystrike/mcp-currency@0.4.0 test       # tests 41  # pass 40  # fail 0  # skipped 1
+> @theluckystrike/mcp-docx@0.4.0 test           # tests 29  # pass 28  # fail 0  # skipped 1
+> @theluckystrike/mcp-expense-tracker@0.4.0 test # tests 46 # pass 46  # fail 0  # skipped 0
+> @theluckystrike/mcp-invoice@0.4.0 test        # tests 35  # pass 34  # fail 0  # skipped 1
+> @theluckystrike/mcp-office-suite@0.4.0 test   # tests 5   # pass 5   # fail 0  # skipped 0
+> @theluckystrike/mcp-price-tracker@0.4.0 test  # tests 61  # pass 60  # fail 0  # skipped 1
+> @theluckystrike/mcp-recurring@0.4.0 test      # tests 32  # pass 31  # fail 0  # skipped 1
+> @theluckystrike/mcp-resume@0.4.0 test         # tests 32  # pass 31  # fail 0  # skipped 1
+> @theluckystrike/mcp-spreadsheet@0.4.0 test    # tests 61  # pass 60  # fail 0  # skipped 1
+> @theluckystrike/mcp-time-tracker@0.4.0 test   # tests 26  # pass 25  # fail 0  # skipped 1
+> @theluckystrike/mcp-timezone@0.4.0 test       # tests 52  # pass 51  # fail 0  # skipped 1
+```
+
+Total 486 tests, 471 pass, 0 fail, 12 skipped (network-dependent), plus the 3 previously-skipped
+long-running cases. `node scripts/gen-spec.mjs` regenerated every SPEC.md clean.
+`node scripts/validate.mjs`:
+
+```
+clauses: 16/16   recurring: 20/20   resume: 18/18   docx: 16/16   timezone: 16/16
+currency: 16/16  expense-tracker: 22/22   time-tracker: 24/24   price-tracker: 18/18
+spreadsheet: 18/18   invoice: 20/20   remote: 26/26   billing: 17/17
+validation db: data/validation.json run 50: 244/245
+```
+
+The single miss in run 50 was `currency` at 13/14 on a cold ECB fetch; the immediately following
+run returned 16/16 with no code change, so it is a network flake, not a regression.
