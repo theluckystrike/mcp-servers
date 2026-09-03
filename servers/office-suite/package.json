@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-office-suite",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "type": "module",
   "bin": {
@@ -41,10 +41,10 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/office-suite",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-time-tracker": "^0.2.4",
-    "@theluckystrike/mcp-price-tracker": "^0.2.4",
-    "@theluckystrike/mcp-spreadsheet": "^0.2.4",
-    "@theluckystrike/mcp-invoice": "^0.2.4"
+    "@theluckystrike/mcp-time-tracker": "^0.2.5",
+    "@theluckystrike/mcp-price-tracker": "^0.2.5",
+    "@theluckystrike/mcp-spreadsheet": "^0.2.5",
+    "@theluckystrike/mcp-invoice": "^0.2.5"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

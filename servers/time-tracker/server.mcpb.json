@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
   "description": "Track billable time from your AI chat: timers, entries, reports, CSV export. All data stays local.",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.2.4/time-tracker.mcpb",
-      "version": "0.2.4",
-      "fileSha256": "2a64f9c0a0ae86c4cbc0d5708e86cdc79f35d58d6ea3572c72ba2a1af4616514",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.2.5/time-tracker.mcpb",
+      "version": "0.2.5",
+      "fileSha256": "34c0115c72120655edfe7b36740c0b8eb8a5316e07cbc5f6706a0c149fb9c2d1",
       "transport": {
         "type": "stdio"
       },
