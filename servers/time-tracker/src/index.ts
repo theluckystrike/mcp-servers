@@ -8,6 +8,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
 import { dayKey, localDayStart } from "./day.js";
+import { readJsonFile } from "./jsonstore.js";
 
 const PRODUCT = "time-tracker";
 const FREE_WINDOW_DAYS = 7;
@@ -62,16 +63,18 @@ const LOCK = join(dataDir(), ".lock");
 
 const EMPTY: DB = { version: 1, running: null, entries: [], projects: {} };
 
+/**
+ * Codex v3 #1 (P0): only a missing file is an empty database. A corrupt or unreadable
+ * file throws, so no mutation can overwrite history that is still on disk.
+ */
 function load(): DB {
-  try {
-    const raw = JSON.parse(readFileSync(dbPath(), "utf8")) as Partial<DB>;
-    return {
-      version: 1,
-      running: raw.running ?? null,
-      entries: Array.isArray(raw.entries) ? raw.entries : [],
-      projects: raw.projects && typeof raw.projects === "object" ? raw.projects : {},
-    };
-  } catch { return { ...EMPTY, entries: [], projects: {} }; }
+  const raw = readJsonFile<Partial<DB>>(dbPath(), { ...EMPTY });
+  return {
+    version: 1,
+    running: raw.running ?? null,
+    entries: Array.isArray(raw.entries) ? raw.entries : [],
+    projects: raw.projects && typeof raw.projects === "object" ? raw.projects : {},
+  };
 }
 
 function save(db: DB): void {
@@ -89,10 +92,30 @@ function newId(): string { return randomBytes(4).toString("hex"); }
 
 function iso(d: Date): string { return d.toISOString(); }
 
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Codex v3 #24: a timestamp without an offset ("2026-09-02T09:00:00") is the user's
+ * LOCAL time - that is how Date parses it, DST folds included - and a bare date is
+ * local midnight, not UTC midnight (#20). An explicit offset or trailing Z is honoured.
+ */
 function parseTime(s: string, what: string): Date {
-  const d = new Date(s);
-  if (Number.isNaN(d.getTime())) throw new Error(`${what} is not a valid date/time: ${s}`);
-  return d;
+  const t = String(s).trim();
+  if (DATE_ONLY.test(t)) {
+    const [y, m, d] = t.split("-").map(Number);
+    const local = new Date(y, m - 1, d);
+    if (Number.isNaN(local.getTime())) throw new Error(`${what} is not a valid date/time: ${s}`);
+    return local;
+  }
+  const d2 = new Date(t);
+  if (Number.isNaN(d2.getTime())) throw new Error(`${what} is not a valid date/time: ${s}`);
+  return d2;
+}
+
+/** Codex v3 #20: a date-only upper bound means the END of that local day, inclusive. */
+function endOfLocalDay(s: string): number {
+  const [y, m, d] = String(s).trim().split("-").map(Number);
+  return new Date(y, m - 1, d + 1).getTime() - 1;
 }
 
 
@@ -135,12 +158,29 @@ function parseRate(rate: number | string | undefined): { rate?: number; currency
     return { rate };
   }
   const txt = String(rate).trim();
-  const m = txt.match(/-?\d+(?:[.,]\d+)?/);
-  if (!m) throw new Error(`rate must contain a number, got ${JSON.stringify(txt)}`);
-  const n = Number(m[0].replace(",", "."));
+  const n = parseAmount(txt);
   if (!Number.isFinite(n) || n < 0) throw new Error(`rate must be a non-negative number, got ${JSON.stringify(txt)}`);
-  return { rate: n, currency: normCurrency(txt.replace(m[0], " ")) };
+  return { rate: n, currency: normCurrency(txt.replace(/[\d.,]+/g, " ")) };
 }
+/**
+ * Codex v3 #18. "1,200 USD" is 1200 (thousands grouping: a comma followed by exactly
+ * three digits), "1.200,50" is 1200.50, "12,50 EUR" is 12.50 (the unambiguous European
+ * decimal shape, one or two digits after the comma). Anything else with a separator
+ * that could mean either thing is refused with an example instead of guessed.
+ */
+function parseAmount(raw: string): number {
+  const t = String(raw).replace(/[^\d.,]/g, "");
+  if (!t) throw new Error(`rate must contain a number, got ${JSON.stringify(raw)}`);
+  if (/^\d+(\.\d+)?$/.test(t)) return Number(t);                                  // 90 / 90.50 / 1.2
+  if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(t)) return Number(t.replace(/,/g, ""));   // 1,200 / 1,200.50
+  if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(t)) return Number(t.replace(/\./g, "").replace(",", "."));  // 1.200,50
+  if (/^\d+,\d{1,2}$/.test(t)) return Number(t.replace(",", "."));                // 12,50
+  throw new Error(
+    `rate ${JSON.stringify(String(raw))} is ambiguous: write 1200 or "1,200.00" for one thousand two hundred, ` +
+    `or 12.50 or "12,50" for twelve and a half.`,
+  );
+}
+
 function money(cents: number, currency: string): string {
   const sign = cents < 0 ? "-" : "";
   const a = Math.abs(cents);
@@ -157,6 +197,11 @@ function amountCents(seconds: number, rateCents: number): number {
   return Math.round((seconds * rateCents) / 3600);
 }
 
+/**
+ * Codex v3 #19: the rate is captured on the entry when it is logged, so changing a
+ * project rate later never rewrites history. The project lookup below is a fallback
+ * for entries written by older versions, which carry no rate of their own.
+ */
 function rateForEntry(db: DB, e: Entry): number {
   if (typeof e.rateCents === "number") return e.rateCents;
   return db.projects[e.project]?.rateCents ?? 0;
@@ -185,10 +230,6 @@ function nonZero(m: Amounts): [string, number][] {
 function moneyOf(m: Amounts): string {
   const parts = nonZero(m);
   return parts.length ? parts.map(([c, v]) => money(v, c)).join(" + ") : "-";
-}
-function primaryOf(m: Amounts): { cents: number; currency: string } {
-  const parts = nonZero(m);
-  return parts.length ? { cents: parts[0][1], currency: parts[0][0] } : { cents: 0, currency: [...m.keys()][0] ?? "USD" };
 }
 
 /* ------------------------------------------------------- project matching */
@@ -227,7 +268,7 @@ function resolveProject(db: DB, input: string): Resolved {
 
 function ambiguousText(given: string, candidates: string[]): string {
   return `"${given}" matches ${candidates.length} existing projects: ${candidates.map(c => `"${c}"`).join(", ")}. ` +
-    `Nothing was logged. Repeat the request with the exact project name you mean.`;
+    `Nothing was written or reported. Repeat the request with the exact project name you mean.`;
 }
 
 function table(headers: string[], rows: string[][]): string {
@@ -256,23 +297,49 @@ function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string 
 
 interface Window { fromMs: number; toMs: number; clamped: boolean }
 
+/**
+ * Codex v3 #20: `from: "2026-09-01"` is local start of day, `to: "2026-09-30"` is local
+ * END of that day (23:59:59.999), so a month reported by dates includes its last day.
+ */
 function windowFor(from: string | undefined, to: string | undefined, pro: boolean): Window {
   const fromMs = from ? parseTime(from, "from").getTime() : -Infinity;
-  const toMs = to ? parseTime(to, "to").getTime() : Infinity;
+  const toMs = to ? (DATE_ONLY.test(String(to).trim()) ? endOfLocalDay(to) : parseTime(to, "to").getTime()) : Infinity;
   if (pro) return { fromMs, toMs, clamped: false };
   const floor = localDayStart(FREE_WINDOW_DAYS - 1).getTime();
   return { fromMs: Math.max(fromMs, floor), toMs, clamped: fromMs < floor };
 }
 
+/**
+ * Codex v3 #21: an entry counts for the part of it that lies inside the window, not
+ * all-or-nothing on its start time. Returns null when the overlap is empty.
+ */
+function clip(e: Entry, w: Window): Entry | null {
+  const s = new Date(e.start).getTime();
+  const en = new Date(e.end).getTime();
+  const a = Math.max(s, w.fromMs);
+  const b = Math.min(en, w.toMs);
+  if (!(b > a)) return null;
+  if (a === s && b === en) return e;
+  return { ...e, start: iso(new Date(a)), end: iso(new Date(b)), seconds: Math.round((b - a) / 1000) };
+}
+
 function select(db: DB, w: Window, project?: string): Entry[] {
-  return db.entries
-    .filter(e => {
-      const t = new Date(e.start).getTime();
-      if (t < w.fromMs || t > w.toMs) return false;
-      if (project && e.project.toLowerCase() !== project.toLowerCase()) return false;
-      return true;
-    })
-    .sort((a, b) => a.start.localeCompare(b.start));
+  const out: Entry[] = [];
+  for (const e of db.entries) {
+    if (project && e.project.toLowerCase() !== project.toLowerCase()) continue;
+    const c = clip(e, w);
+    if (c) out.push(c);
+  }
+  return out.sort((a, b) => a.start.localeCompare(b.start));
+}
+
+/** Resolve an optional project filter the same way creation does (Codex v3 #29). */
+type Filter = { kind: "ok"; project?: string } | { kind: "ambiguous"; text: string };
+function resolveFilter(db: DB, project: string | undefined): Filter {
+  if (!project) return { kind: "ok" };
+  const r = resolveProject(db, project);
+  if (r.kind === "ambiguous") return { kind: "ambiguous", text: ambiguousText(project, r.candidates) };
+  return { kind: "ok", project: r.project };
 }
 
 const FREE_WINDOW_NOTE =
@@ -291,11 +358,13 @@ function stopRunning(db: DB, endDate: Date, note?: string): Entry {
   const r = db.running!;
   const start = new Date(r.start);
   const seconds = Math.max(0, Math.round((endDate.getTime() - start.getTime()) / 1000));
+  // Codex v3 #19: capture the effective rate and currency now, at stop time.
+  const meta = db.projects[r.project];
   const entry: Entry = {
     id: newId(), project: r.project, task: r.task, tags: r.tags,
     start: iso(start), end: iso(endDate), seconds, note, billable: true,
-    ...(typeof r.rateCents === "number" ? { rateCents: r.rateCents } : {}),
-    ...(r.currency ? { currency: r.currency } : {}),
+    rateCents: typeof r.rateCents === "number" ? r.rateCents : (meta?.rateCents ?? 0),
+    currency: r.currency ?? meta?.currency ?? "USD",
   };
   db.entries.push(entry);
   db.running = null;
@@ -360,17 +429,25 @@ server.registerTool("timer_status", {
   inputSchema: {},
 }, guard(async () => {
   const db = load();
+  // Codex v3 #23: today is the intersection with [start of today, start of tomorrow),
+  // for logged entries and for the running timer alike - a timer started at 23:30
+  // yesterday contributes only the minutes after midnight.
   const todayStart = localDayStart(0).getTime();
-  let todaySec = db.entries.filter(e => new Date(e.start).getTime() >= todayStart).reduce((a, e) => a + e.seconds, 0);
+  const tomorrowStart = localDayStart(-1).getTime();
+  const w: Window = { fromMs: todayStart, toMs: tomorrowStart - 1, clamped: false };
+  const todayEntries = select(db, w);
+  let todaySec = todayEntries.reduce((a, e) => a + e.seconds, 0);
   const lines: string[] = [];
   if (db.running) {
-    const sec = Math.round((Date.now() - new Date(db.running.start).getTime()) / 1000);
-    todaySec += sec;
+    const startMs = new Date(db.running.start).getTime();
+    const sec = Math.round((Date.now() - startMs) / 1000);
+    const todayPart = Math.max(0, Math.round((Math.min(Date.now(), tomorrowStart) - Math.max(startMs, todayStart)) / 1000));
+    todaySec += todayPart;
     lines.push(`Running: "${db.running.project}"${db.running.task ? ` - ${db.running.task}` : ""} for ${hms(sec)} (since ${db.running.start}).`);
   } else {
     lines.push("No timer running.");
   }
-  lines.push(`Today: ${hms(todaySec)} (${hours(todaySec)} h) across ${db.entries.filter(e => new Date(e.start).getTime() >= todayStart).length} logged entries.`);
+  lines.push(`Today: ${hms(todaySec)} (${hours(todaySec)} h) across ${todayEntries.length} logged entries.`);
   return ok(lines.join("\n"));
 }));
 
@@ -403,12 +480,14 @@ server.registerTool("entry_add", {
   if (r.kind === "ambiguous") return ok(ambiguousText(a.project, r.candidates));
   const parsed = parseRate(a.rate);
   const cur = normCurrency(a.currency) ?? parsed.currency;
+  // Codex v3 #19: the entry keeps the rate that was in force when it was logged.
+  const meta = db.projects[r.project];
   const e: Entry = {
     id: newId(), project: r.project, task: a.task, tags: a.tags ?? [],
     start: iso(start), end: iso(end), seconds, note: a.note,
     billable: a.billable !== false,
-    ...(typeof parsed.rate === "number" ? { rateCents: toCents(parsed.rate) } : {}),
-    ...(cur ? { currency: cur } : {}),
+    rateCents: typeof parsed.rate === "number" ? toCents(parsed.rate) : (meta?.rateCents ?? 0),
+    currency: cur ?? meta?.currency ?? "USD",
   };
   db.entries.push(e);
   save(db);
@@ -432,9 +511,11 @@ server.registerTool("entry_list", {
   },
 }, guard(async (a: { from?: string; to?: string; project?: string; limit?: number }) => {
   const db = load();
+  const f = resolveFilter(db, a.project);          // Codex v3 #29
+  if (f.kind === "ambiguous") return ok(f.text);
   const pro = gate.isPro();
   const w = windowFor(a.from, a.to, pro);
-  const all = select(db, w, a.project);
+  const all = select(db, w, f.project);
   const limit = a.limit ?? 50;
   const rows = all.slice(-limit).reverse();
   if (rows.length === 0) return ok(`No entries found.${!pro && w.clamped ? FREE_WINDOW_NOTE : ""}`);
@@ -516,37 +597,76 @@ server.registerTool("project_set_rate", {
   title: "Set project rate",
   description: "Set the hourly rate and currency used to turn tracked hours into money for a project or client.",
   inputSchema: {
-    project: z.string().min(1).describe("Project or client name"),
-    hourly_rate: z.union([z.number().nonnegative(), z.string()]).describe("Hourly rate: a number (85) or the words the user said ('90 euros an hour')"),
+    project: z.string().min(1).describe("Project or client name. A partial name that matches exactly one existing project is used as that project."),
+    hourly_rate: z.union([z.number().nonnegative(), z.string()]).describe("Hourly rate: a number (85) or the words the user said ('90 euros an hour'). '1,200 USD' is 1200; '12,50 EUR' is 12.50; anything ambiguous is refused."),
     currency: z.string().optional().describe("Currency: a code (EUR, USD, GBP, PLN) or a word ('euros', 'pounds', 'zl'). Default USD."),
+    apply_to_existing: z.boolean().optional().describe("Also write this rate onto already logged entries of this project that carry no rate of their own. Default false: the new rate applies to future entries only."),
   },
-}, guard(async (a: { project: string; hourly_rate: number | string; currency?: string }) => {
+}, guard(async (a: { project: string; hourly_rate: number | string; currency?: string; apply_to_existing?: boolean }) => {
   return withFileLock(LOCK, async () => {
   const db = load();
-  const isNew = !(a.project in db.projects);
+  const r = resolveProject(db, a.project);         // Codex v3 #29
+  if (r.kind === "ambiguous") return ok(ambiguousText(a.project, r.candidates));
+  const project = r.project;
+  const isNew = !(project in db.projects);
   if (isNew && !gate.isPro() && Object.keys(db.projects).length >= FREE_RATED_PROJECTS) {
     return gated(`more than ${FREE_RATED_PROJECTS} projects with rates`);
   }
   const parsed = parseRate(a.hourly_rate);
   if (typeof parsed.rate !== "number") throw new Error("hourly_rate must contain a number");
-  db.projects[a.project] = {
+  db.projects[project] = {
     rateCents: toCents(parsed.rate),
     currency: normCurrency(a.currency) ?? parsed.currency ?? "USD",
   };
+  const m = db.projects[project];
+  // Codex v3 #19: entries keep the rate captured when they were logged. Backfilling is
+  // opt-in and only touches entries that never captured one (older versions of this server).
+  let backfilled = 0;
+  if (a.apply_to_existing) {
+    for (const e of db.entries) {
+      if (e.project !== project || typeof e.rateCents === "number") continue;
+      e.rateCents = m.rateCents;
+      e.currency = e.currency ?? m.currency;
+      backfilled += 1;
+    }
+  }
   save(db);
-  const m = db.projects[a.project];
-  return ok(`Rate for "${a.project}" set to ${money(m.rateCents, m.currency)} per hour.`);
+  const lines = [`Rate for "${project}" set to ${money(m.rateCents, m.currency)} per hour.`];
+  lines.push(a.apply_to_existing
+    ? `Applies to future entries; ${backfilled} already logged ${backfilled === 1 ? "entry" : "entries"} with no rate of their own were backfilled.`
+    : "Applies to future entries only: time already logged keeps the rate captured when it was logged (pass apply_to_existing to backfill entries that have no rate).");
+  if (r.note) lines.unshift(r.note);
+  return ok(lines.join("\n"));
   });
 }));
 
 const GROUPS = ["project", "day", "task", "tag"] as const;
 type Group = typeof GROUPS[number];
 
-function groupsOf(e: Entry, by: Group): string[] {
-  if (by === "project") return [e.project];
-  if (by === "day") return [dayKey(e.start)];
-  if (by === "task") return [e.task && e.task.trim() ? e.task : "(no task)"];
-  return e.tags.length ? e.tags : ["(no tag)"];
+/**
+ * Codex v3 #22: an entry that runs past local midnight belongs to both days, split at
+ * the boundary, so a night shift is not billed wholly to the day it started on.
+ */
+function splitByDay(e: Entry): { key: string; seconds: number }[] {
+  const end = new Date(e.end).getTime();
+  const out: { key: string; seconds: number }[] = [];
+  let cur = new Date(e.start).getTime();
+  while (cur < end) {
+    const midnight = new Date(cur);
+    midnight.setHours(24, 0, 0, 0);
+    const next = Math.min(midnight.getTime(), end);
+    out.push({ key: dayKey(new Date(cur).toISOString()), seconds: Math.round((next - cur) / 1000) });
+    cur = next;
+  }
+  return out.length ? out : [{ key: dayKey(e.start), seconds: e.seconds }];
+}
+
+/** The (key, seconds) pairs one entry contributes to a grouping. Tag rows overlap by design. */
+function partsOf(e: Entry, by: Group): { key: string; seconds: number }[] {
+  if (by === "day") return splitByDay(e);
+  if (by === "project") return [{ key: e.project, seconds: e.seconds }];
+  if (by === "task") return [{ key: e.task && e.task.trim() ? e.task : "(no task)", seconds: e.seconds }];
+  return (e.tags.length ? e.tags : ["(no tag)"]).map(t => ({ key: t, seconds: e.seconds }));
 }
 
 interface Bucket { key: string; seconds: number; billableSeconds: number; amounts: Amounts }
@@ -556,21 +676,35 @@ function aggregate(db: DB, entries: Entry[], by: Group): Bucket[] {
   for (const e of entries) {
     const rc = rateForEntry(db, e);
     const cur = currencyForEntry(db, e);
-    for (const k of groupsOf(e, by)) {
-      const b = m.get(k) ?? { key: k, seconds: 0, billableSeconds: 0, amounts: new Map<string, number>() as Amounts };
-      b.seconds += e.seconds;
-      if (e.billable) { b.billableSeconds += e.seconds; addAmount(b.amounts, cur, amountCents(e.seconds, rc)); }
-      m.set(k, b);
+    for (const part of partsOf(e, by)) {
+      const b = m.get(part.key) ?? { key: part.key, seconds: 0, billableSeconds: 0, amounts: new Map<string, number>() as Amounts };
+      b.seconds += part.seconds;
+      if (e.billable) { b.billableSeconds += part.seconds; addAmount(b.amounts, cur, amountCents(part.seconds, rc)); }
+      m.set(part.key, b);
     }
   }
   return [...m.values()].sort((a, b) => b.seconds - a.seconds);
 }
 
-function totalAmounts(buckets: Bucket[]): Amounts {
-  const t = new Map<string, number>() as Amounts;
-  for (const b of buckets) mergeAmounts(t, b.amounts);
-  return t;
+/**
+ * Codex v3 #26: totals are computed from the entries, once each, never by summing
+ * buckets - a two-tag entry sits in two tag rows and would otherwise be billed twice.
+ */
+interface Totals { seconds: number; billableSeconds: number; amounts: Amounts }
+function totalsOf(db: DB, entries: Entry[]): Totals {
+  const amounts = new Map<string, number>() as Amounts;
+  let seconds = 0, billableSeconds = 0;
+  for (const e of entries) {
+    seconds += e.seconds;
+    if (!e.billable) continue;
+    billableSeconds += e.seconds;
+    addAmount(amounts, currencyForEntry(db, e), amountCents(e.seconds, rateForEntry(db, e)));
+  }
+  return { seconds, billableSeconds, amounts };
 }
+
+const TAG_OVERLAP_NOTE =
+  "Tag rows can overlap: an entry tagged twice appears in both rows. The total counts every entry once.";
 
 server.registerTool("report", {
   title: "Time report",
@@ -586,14 +720,15 @@ server.registerTool("report", {
   const pro = gate.isPro();
   if (a.group_by === "tag" && !pro) return gated("group_by tag");
   const db = load();
+  const f = resolveFilter(db, a.project);          // Codex v3 #29
+  if (f.kind === "ambiguous") return ok(f.text);
   const w = windowFor(a.from, a.to, pro);
-  const entries = select(db, w, a.project);
+  const entries = select(db, w, f.project);
   const buckets = aggregate(db, entries, a.group_by);
-  const totalSec = buckets.reduce((s, b) => s + b.seconds, 0);
-  const totals = totalAmounts(buckets);
-  const totalPrimary = primaryOf(totals);
-  const totalCents = totalPrimary.cents;
-  const currency = totalPrimary.currency;
+  const totals = totalsOf(db, entries);            // Codex v3 #26
+  const totalSec = totals.seconds;
+  const totalParts = nonZero(totals.amounts);
+  const currency = totalParts.length ? totalParts[0][0] : "USD";
   const fmt = a.format ?? "table";
   const note = !pro && w.clamped ? FREE_WINDOW_NOTE : "";
 
@@ -602,18 +737,24 @@ server.registerTool("report", {
       from: Number.isFinite(w.fromMs) ? iso(new Date(w.fromMs)) : null,
       to: Number.isFinite(w.toMs) ? iso(new Date(w.toMs)) : null,
       group_by: a.group_by,
+      // Codex v3 #27: a scalar amount_cents/currency is emitted only when the bucket
+      // holds exactly one currency; mixed buckets expose `amounts` alone.
       rows: buckets.map(b => {
-        const p = primaryOf(b.amounts);
+        const parts = nonZero(b.amounts);
         return {
           key: b.key, hours: Number(hours(b.seconds)), seconds: b.seconds,
-          billable_hours: Number(hours(b.billableSeconds)), amount_cents: p.cents, currency: p.currency,
-          amounts: nonZero(b.amounts).map(([c, cents]) => ({ currency: c, amount_cents: cents })),
+          billable_hours: Number(hours(b.billableSeconds)),
+          ...(parts.length === 1 ? { amount_cents: parts[0][1], currency: parts[0][0] } : {}),
+          amounts: parts.map(([c, cents]) => ({ currency: c, amount_cents: cents })),
         };
       }),
       total: {
-        hours: Number(hours(totalSec)), seconds: totalSec, amount_cents: totalCents, currency,
-        amounts: nonZero(totals).map(([c, cents]) => ({ currency: c, amount_cents: cents })),
+        hours: Number(hours(totalSec)), seconds: totalSec,
+        billable_hours: Number(hours(totals.billableSeconds)),
+        ...(totalParts.length === 1 ? { amount_cents: totalParts[0][1], currency: totalParts[0][0] } : {}),
+        amounts: totalParts.map(([c, cents]) => ({ currency: c, amount_cents: cents })),
       },
+      ...(a.group_by === "tag" ? { note: TAG_OVERLAP_NOTE } : {}),
       tier: pro ? "pro" : "free",
     }, null, 2) + note);
   }
@@ -625,7 +766,7 @@ server.registerTool("report", {
       // one line per currency: mixed currencies must never be added together
       for (const [cur, cents] of parts) lines.push([b.key, hours(b.seconds), hours(b.billableSeconds), (cents / 100).toFixed(2), cur].map(csvCell).join(","));
     }
-    for (const [cur, cents] of (nonZero(totals).length ? nonZero(totals) : [[currency, 0] as [string, number]])) {
+    for (const [cur, cents] of (totalParts.length ? totalParts : [[currency, 0] as [string, number]])) {
       lines.push(["TOTAL", hours(totalSec), "", (cents / 100).toFixed(2), cur].map(csvCell).join(","));
     }
     return ok(lines.join("\n") + note);
@@ -635,7 +776,8 @@ server.registerTool("report", {
     [a.group_by, "hours", "billable h", "amount"],
     buckets.map(b => [b.key, hours(b.seconds), hours(b.billableSeconds), moneyOf(b.amounts)]),
   );
-  return ok(`${body}\n\nTotal ${hours(totalSec)} h, ${moneyOf(totals)}.${note}`);
+  const overlap = a.group_by === "tag" ? `\n${TAG_OVERLAP_NOTE}` : "";
+  return ok(`${body}\n\nTotal ${hours(totalSec)} h, ${moneyOf(totals.amounts)}.${overlap}${note}`);
 }));
 
 server.registerTool("export_csv", {
@@ -650,8 +792,10 @@ server.registerTool("export_csv", {
 }, guard(async (a: { from?: string; to?: string; project?: string; path?: string }) => {
   const pro = gate.isPro();
   const db = load();
+  const f = resolveFilter(db, a.project);          // Codex v3 #29
+  if (f.kind === "ambiguous") return ok(f.text);
   const w = windowFor(a.from, a.to, pro);
-  const entries = select(db, w, a.project);
+  const entries = select(db, w, f.project);
   const header = ["id", "project", "task", "start", "end", "hours", "seconds", "billable", "rate", "currency", "amount", "tags", "note"];
   const lines = [header.join(",")];
   for (const e of entries) {
@@ -690,10 +834,12 @@ server.registerTool("invoice_summary", {
   // and a first free session should not have to rebuild it from entry_list + report (D-11).
   const pro = gate.isPro();
   const db = load();
+  const r = resolveProject(db, a.project);         // Codex v3 #29
+  if (r.kind === "ambiguous") return ok(ambiguousText(a.project, r.candidates));
   const w = windowFor(a.from, a.to, pro);
-  const entries = select(db, w, a.project).filter(e => e.billable);
+  const entries = select(db, w, r.project).filter(e => e.billable);
   if (entries.length === 0) {
-    return ok(`No billable time for "${a.project}" in that period.` + (!pro && w.clamped ? FREE_WINDOW_NOTE : ""));
+    return ok(`No billable time for "${r.project}" in that period.` + (!pro && w.clamped ? FREE_WINDOW_NOTE : ""));
   }
   // D-R1: one line per (task, rate, currency). Grouping by task alone blends two
   // rates into an average - EUR 89.82 for work agreed at EUR 90.00 - which is a
@@ -724,7 +870,7 @@ server.registerTool("invoice_summary", {
   const body = table(["description", "hours", "rate", "amount"], rows);
   const days = [...new Set(entries.map(e => dayKey(e.start)))].sort();
   return ok(
-    `Invoice summary - ${a.project}\n` +
+    `Invoice summary - ${r.project}\n` +
     `Period ${dayKey(a.from)} to ${dayKey(a.to)} (${days.length} working days, ${entries.length} entries)\n\n` +
     `${body}\n\nTOTAL ${hours(totalSec)} h  ${moneyOf(totals)}` +
     (!pro && w.clamped ? FREE_WINDOW_NOTE : ""),
@@ -733,12 +879,14 @@ server.registerTool("invoice_summary", {
 
 /* ------------------------------------------------------- resource + prompt */
 
+/** Codex v3 #22/#23: the day gets the part of each entry that falls inside it. */
 function daySummary(db: DB, key: string): string {
-  const entries = db.entries.filter(e => dayKey(e.start) === key);
+  const [y, m, d] = key.split("-").map(Number);
+  const entries = select(db, { fromMs: new Date(y, m - 1, d).getTime(), toMs: new Date(y, m - 1, d + 1).getTime() - 1, clamped: false });
   const sec = entries.reduce((s, e) => s + e.seconds, 0);
   if (entries.length === 0) return `${key}: nothing tracked.`;
   const byProject = aggregate(db, entries, "project");
-  const totals = totalAmounts(byProject);
+  const totals = totalsOf(db, entries).amounts;
   const detail = byProject.map(b => `  ${b.key}: ${hours(b.seconds)} h${nonZero(b.amounts).length ? ` (${moneyOf(b.amounts)})` : ""}`).join("\n");
   return `${key}: ${hours(sec)} h across ${entries.length} entries${nonZero(totals).length ? `, ${moneyOf(totals)}` : ""}\n${detail}`;
 }

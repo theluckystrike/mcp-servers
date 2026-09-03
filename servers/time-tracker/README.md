@@ -169,6 +169,35 @@ the lock.
 To back up your data, copy the single `data.json` file (and `.lock` if present, though it holds no data).
 There is no database and no hidden second file.
 
+If `data.json` is ever unreadable or not valid JSON, the server does **not** treat that as "no data yet".
+It moves the file aside byte-for-byte as `data.json.corrupt-<timestamp>`, writes a `data.json.corrupt`
+marker and makes every tool -- reads included -- return `data file is corrupt; moved to ...; nothing was
+written`. Restore a good `data.json` (the quarantined copy is right there) and delete the marker file to
+carry on. Nothing is overwritten in the meantime.
+
+## Dates, times and rates
+
+- **Timestamps with no offset are your local time.** `2026-09-02T09:00:00` means 09:00 where you are, not
+  UTC. Pass an explicit offset (`2026-09-02T09:00:00+02:00`) or a trailing `Z` and it is honoured exactly.
+- **Date-only bounds cover whole local days.** `from: "2026-09-01"` is 00:00:00 local on the 1st and
+  `to: "2026-09-30"` is 23:59:59.999 local on the 30th, so a month reported by dates includes its last
+  day. Timestamps with a time are used as given.
+- **Entries are clipped to the window.** An entry that starts before `from` or ends after `to` counts for
+  the part inside the period, not all of it and not none of it.
+- **Entries are split at local midnight for day grouping.** Work from 23:30 to 01:30 is 0.5 h on the first
+  day and 1.5 h on the next, including across a month boundary. `timer_status` counts only the part of an
+  entry -- or of the running timer -- that falls after midnight today.
+- **Rate strings are parsed, never guessed.** `"1,200 USD"` is 1200 (a comma followed by exactly three
+  digits is thousands grouping), `"12,50 EUR"` is 12.50 (the unambiguous European decimal shape), and
+  `"1.200,50"` is 1200.50. Anything that could mean either thing, such as `"1,2345"`, is refused with a
+  worked example instead of being read as the wrong number.
+- **Rates are captured when the time is logged.** `entry_add` and `timer_stop` store the effective hourly
+  rate and currency on the entry, and reports and invoices use that stored rate. `project_set_rate`
+  therefore applies to future entries only; pass `apply_to_existing: true` to backfill entries that never
+  captured a rate of their own.
+- **Tag rows overlap.** In `group_by: "tag"` an entry tagged `dev` and `meeting` appears in both rows; the
+  total is computed from the entries once, so it is never the sum of the rows.
+
 ## Limits and honest caveats
 
 - Free `entry_list`, `report`, `export_csv` and `invoice_summary` only see the last 7 days. Timers and

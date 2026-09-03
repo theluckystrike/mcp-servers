@@ -163,6 +163,12 @@ under one lock. Saves go to a temporary file and are renamed into place. To back
 copy the whole `invoice/` data directory, including `pdf/` if you want the rendered files too -- they can
 always be regenerated from the stored records with `invoice_pdf`.
 
+If one of those JSON files is unreadable or not valid JSON, it is never treated as "empty". The file is
+moved aside byte-for-byte as `<name>.json.corrupt-<timestamp>`, a `<name>.json.corrupt` marker is written,
+and every tool returns `data file is corrupt; moved to ...; nothing was written` until you restore a good
+copy and delete the marker. A truncated `clients.json` can no longer be silently replaced by an empty
+client list.
+
 ## Limits and honest caveats
 
 - Free tier allows 3 invoices per calendar month; the counter resets on the 1st. `overdue_report` and

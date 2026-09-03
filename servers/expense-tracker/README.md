@@ -143,6 +143,8 @@ The amount you record is the gross on the receipt. `vat_rate` splits it by round
 
 ## Privacy
 
+If `data.json` is ever unreadable or not valid JSON, it is not treated as "no expenses yet". The file is moved aside byte-for-byte as `data.json.corrupt-<timestamp>`, a `data.json.corrupt` marker is written, and every tool returns `data file is corrupt; moved to ...; nothing was written` until you restore a good copy and delete the marker -- so a truncated file can never be overwritten by an empty database.
+
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/expense-tracker/`. There are no network calls: receipts are hashed on your machine, exports are written on your machine, and license keys are verified offline with a public key compiled into the package.
 
 Built by [theluckystrike](https://github.com/theluckystrike).

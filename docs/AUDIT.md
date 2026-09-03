@@ -264,3 +264,158 @@ invoice: 20/20 in 371 ms
 billing: 10/10
 validation db: /Users/mike/mcp-servers/data/validation.json run 5: 82/82
 ```
+
+## Codex v3 fixes (price-tracker)
+
+Scope: `servers/price-tracker` only. Items 1, 30, 31, 32, 34, 35 of `docs/CODEX_REVIEW_V3.md`.
+
+| Item | Was | Fix | Where |
+| --- | --- | --- | --- |
+| 1 (P0) | Any read or JSON parse failure returned an empty database, so the next mutation overwrote the whole price history. | Only `ENOENT` is empty. A parse failure, a non-database shape, or any other read error moves the file to `watches.json.corrupt-<timestamp>`, logs to stderr and raises a sticky `StoreError`; every tool then answers with that error until the server is restarted, and `save()` refuses to write. | `servers/price-tracker/src/store.ts:49` (StoreError), `src/store.ts:59` (quarantine), `src/store.ts:70` (load), `src/store.ts:97` (save guard), `src/index.ts:138` (all tools report StoreError instead of throwing across the transport) |
+| 30 | JSON-LD offers from every product on the page were pooled and the lowest price won, under the first product's name. | Offers are read from the selected product's own `offers` subtree. The product whose name best matches the page title / `og:title` is selected; with no match, the first product carrying offers. Unattached offers are used only when the graph has no product node. | `servers/price-tracker/src/extract.ts:262` (fromJsonLd), `src/extract.ts:252` (titleScore), `src/extract.ts:224` (ownPrice), `src/extract.ts:239` (offerPrices) |
+| 31 | `twitter:data1` was a high-confidence price source and returned shipping thresholds. | Removed from the Open Graph key list. | `servers/price-tracker/src/extract.ts:351` |
+| 32 | Class-hint extraction took the first price-like value, including a crossed-out old price. | `stripStruckPrices()` removes `<s>`, `<del>`, `<strike>` and elements whose class or id contains `old`, `was`, `strike`, `regular`, `compare`, `list-price` or `rrp` before the hint scan. | `servers/price-tracker/src/extract.ts:402` (stripStruckPrices), `src/extract.ts:416` (fromClassHints) |
+| 34 | A `$` was resolved through the ccTLD before any explicit currency text was considered, so `$10 USD` on a `.ca` shop read CAD. | An ISO 4217 code adjacent to the number, or anywhere in a currency token, wins; the ccTLD is used only for a bare symbol with no explicit code. | `servers/price-tracker/src/extract.ts:442` (explicitCode), `src/extract.ts:457` (firstPriceInText), `src/extract.ts:468` (firstCurrencyToken), `src/extract.ts:497` (regex fallback) |
+| 35 | Any newly introduced `/products/` segment was classified as a listing, even when the SKU survived. | `products`, `product`, `p` and `dp` are not listing segments when the requested product identity survives in the final URL and the final title is a real product title. Every other category segment, `/cat/` included, still refuses. | `servers/price-tracker/src/redirect.ts:83` (PRODUCT_ROUTE_SEGMENTS), `src/redirect.ts:151` (listing test) |
+
+Tests added: `servers/price-tracker/test/store.test.mjs` (4 tests: ENOENT is empty; garbage bytes preserved under
+`watches.json.corrupt-*` and load/save both fail; non-database JSON quarantined; `price_add_manual`, `watch_remove`
+and `watch_list` all return `isError` over stdio while the bad bytes stay on disk), 7 in `test/extract.test.mjs`
+(items 30, 31, 32, 34) and 4 in `test/redirect.test.mjs` (item 35: `/item/12345` -> `/products/widget?sku=12345`
+accepted, the same redirect with a generic title refused, identity-losing `/products/widgets` refused, IKEA `/cat/`
+still refused).
+
+`npm test` in `servers/price-tracker` (was 39 tests before this work):
+
+```
+# tests 54
+# suites 0
+# pass 54
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2012.418167
+```
+
+`npm run build` at the root: clean, all workspaces.
+
+`node scripts/validate.mjs`:
+
+```
+price-tracker: 18/18 in 272 ms
+validation db: /Users/mike/mcp-servers/data/validation.json run 33: 121/121
+```
+
+## Codex v3 fixes (stores, time-tracker)
+
+2026-09-03. Scope: the JSON stores of time-tracker, invoice and expense-tracker, plus time-tracker
+reporting. Items 1, 18, 19, 20, 21, 22, 23, 24, 26, 27 and 29 of `docs/CODEX_REVIEW_V3.md`.
+
+### #1 (P0) a read or parse failure is no longer an empty database
+
+- `servers/time-tracker/src/jsonstore.ts:23` `readJsonFile()` - only `ENOENT` returns the empty database.
+  A parse failure renames the file byte-for-byte to `<file>.corrupt-<timestamp>`, writes a `<file>.corrupt`
+  marker, logs to stderr and throws `data file is corrupt; moved to ...; nothing was written`. Any other
+  read failure (permissions, EISDIR) throws without touching the file.
+- `servers/time-tracker/src/index.ts:71` `load()` uses it, so every mutating tool and every read returns
+  that error until the marker is removed.
+- `servers/invoice/src/store.ts:81` (used by `readJson()` at `servers/invoice/src/store.ts:108`, so
+  `business.json`, `clients.json`, `invoices.json` and `counter.json` are all covered).
+- `servers/expense-tracker/src/store.ts:74`, used by `load()` at `servers/expense-tracker/src/store.ts:101`.
+- Tests: `servers/time-tracker/test/codexv3.test.mjs:63`, `servers/invoice/test/corrupt.test.mjs`,
+  `servers/expense-tracker/test/corrupt.test.mjs` - each writes garbage into the data file, calls a
+  mutation, asserts the tool errored, that exactly one `.corrupt-<timestamp>` file exists holding the
+  original bytes unchanged, that no fresh empty data file was written, and that a following read errors too.
+
+### #18 rate strings
+
+- `servers/time-tracker/src/index.ts:171` `parseAmount()`. `"1,200 USD"` -> 1200 (comma followed by exactly
+  three digits), `"1,200.50"` -> 1200.50, `"1.200,50"` -> 1200.50, `"12,50 EUR"` -> 12.50 (one or two digits
+  after the comma). Everything else with a separator, e.g. `"1,2345"`, is refused with a worked example.
+  Wired into `parseRate()` at `servers/time-tracker/src/index.ts:154`.
+
+### #19 rates captured at entry time
+
+- `servers/time-tracker/src/index.ts:483` (`entry_add`) and `servers/time-tracker/src/index.ts:361`
+  (`stopRunning`, used by `timer_stop` and by the auto-stop in `timer_start`) write `rateCents` and
+  `currency` onto the entry from the explicit rate, else the project rate in force at that moment.
+- `servers/time-tracker/src/index.ts:205` `rateForEntry()` keeps a project lookup only for entries written
+  by older versions, which carry no rate of their own.
+- `project_set_rate` at `servers/time-tracker/src/index.ts:625` says it applies to future entries only and
+  takes `apply_to_existing: true` to backfill the rate-less entries of that project.
+
+### #20 date-only bounds
+
+- `servers/time-tracker/src/index.ts:102` `parseTime()` reads a bare `YYYY-MM-DD` as local midnight;
+  `servers/time-tracker/src/index.ts:116` `endOfLocalDay()` and `windowFor()` at
+  `servers/time-tracker/src/index.ts:304` make a date-only `to` the inclusive local end of that day
+  (23:59:59.999). Documented in `servers/time-tracker/README.md` under "Dates, times and rates".
+
+### #21/#22/#23 clipping and midnight splits
+
+- `servers/time-tracker/src/index.ts:316` `clip()` intersects each entry with the window;
+  `servers/time-tracker/src/index.ts:326` `select()` uses overlap, not start time, so partly-overlapping
+  entries contribute their overlapping part.
+- `servers/time-tracker/src/index.ts:650` `splitByDay()` splits an entry at local midnight, used by
+  `partsOf()` at `servers/time-tracker/src/index.ts:665` for `group_by: "day"` and by `daySummary()`.
+- `servers/time-tracker/src/index.ts:432` `timer_status` intersects logged entries and the running timer
+  with `[today 00:00, tomorrow 00:00)`.
+
+### #24 offsetless timestamps
+
+- `servers/time-tracker/src/index.ts:102`: an offsetless timestamp is local time (Date parsing, DST folds
+  included); an explicit offset or `Z` is honoured. Test asserts a `+02:00` entry is found by a window
+  expressed in UTC (`servers/time-tracker/test/codexv3.test.mjs:170`).
+
+### #26/#27 report totals
+
+- `servers/time-tracker/src/index.ts:694` `totalsOf()` computes hours and money from the entries once;
+  `report` uses it instead of summing buckets, so overlapping tag rows can no longer double-count.
+  `servers/time-tracker/src/index.ts:706` `TAG_OVERLAP_NOTE` is printed under a tag table and returned as
+  `note` in the JSON.
+- `servers/time-tracker/src/index.ts:747` and `:754`: `amount_cents`/`currency` scalars are emitted only
+  when a row or the total holds exactly one currency; mixed rows expose `amounts` alone.
+
+### #29 one resolver
+
+- `servers/time-tracker/src/index.ts:338` `resolveFilter()` wraps `resolveProject()`; `entry_list`,
+  `report`, `export_csv`, `invoice_summary` and `project_set_rate` all refuse an ambiguous project name
+  with the candidate list instead of matching exactly or silently creating a second project.
+
+### Evidence
+
+```
+> @theluckystrike/mcp-time-tracker@0.2.3 test
+# tests 13
+# pass 13
+# fail 0
+> @theluckystrike/mcp-invoice@0.2.3 test
+# tests 24
+# pass 24
+# fail 0
+> @theluckystrike/mcp-expense-tracker@0.2.3 test
+# tests 37
+# pass 37
+# fail 0
+```
+
+`npm run build` for the three packages: clean.
+
+`node scripts/validate.mjs` (no probe changes were needed; the inclusive date-only bound only affects
+date-only inputs and the probes pass full timestamps):
+
+```
+expense-tracker: 22/22 in 376 ms
+time-tracker: 18/18 in 210 ms
+price-tracker: 18/18 in 262 ms
+spreadsheet: 18/18 in 374 ms
+invoice: 20/20 in 406 ms
+remote: 14/14
+billing: 11/11
+validation db: /Users/mike/mcp-servers/data/validation.json run 36: 121/121
+```
+
+One behaviour change visible to existing callers: the ambiguity refusal now reads "Nothing was written or
+reported" (it is returned by read tools too), and `servers/time-tracker/test/currency.test.mjs:156` was
+updated to match.

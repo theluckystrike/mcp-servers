@@ -153,7 +153,7 @@ test("D-7: a partial project name resolves to the one existing project, ambiguit
   assert.match(amb.text, /matches 2 existing projects/);
   assert.match(amb.text, /"Acme mobile"/);
   assert.match(amb.text, /"Acme website"/);
-  assert.match(amb.text, /Nothing was logged/);
+  assert.match(amb.text, /Nothing was written or reported/);
 
   const ambTimer = await c.call("timer_start", { project: "Acme" });
   assert.match(ambTimer.text, /matches 2 existing projects/);
