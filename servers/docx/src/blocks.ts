@@ -9,17 +9,30 @@ export type Block =
 /** Inline runs: bold, italic and monospace inside a paragraph. */
 export interface Run { text: string; bold?: boolean; italic?: boolean; mono?: boolean }
 
-/** Parse **bold**, *italic* / _italic_ and `code` into runs. Unmatched markers stay literal. */
+/**
+ * Parse **bold**, *italic* / _italic_ and `code` into runs. Unmatched markers stay literal.
+ *
+ * Underscore italics use CommonMark's left/right-flanking rule so intraword underscores
+ * (e.g. late_fee_percent) are left alone: an opening `_` must not be preceded by a word
+ * character (start of text, whitespace or punctuation counts) and must be immediately
+ * followed by a non-space character; a closing `_` must be immediately preceded by a
+ * non-space character and must not be followed by a word character (whitespace,
+ * punctuation or end of text counts). Asterisk italics keep the simpler "no adjacent
+ * space" rule, so *this* still works intraword.
+ */
 export function inlineRuns(text: string): Run[] {
   const out: Run[] = [];
-  const re = /(\*\*|__)(.+?)\1|(\*|_)(?!\s)(.+?)(?<!\s)\3|`([^`]+)`/gs;
+  const re =
+    /(?<boldMark>\*\*|__)(?<boldText>.+?)\k<boldMark>|\*(?!\s)(?<astItalic>.+?)(?<!\s)\*|(?<!\w)_(?!\s)(?<underItalic>.+?)(?<!\s)_(?!\w)|`(?<code>[^`]+)`/gs;
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
     if (m.index > last) out.push({ text: text.slice(last, m.index) });
-    if (m[2] !== undefined) out.push({ text: m[2], bold: true });
-    else if (m[4] !== undefined) out.push({ text: m[4], italic: true });
-    else out.push({ text: m[5], mono: true });
+    const g = m.groups!;
+    if (g.boldText !== undefined) out.push({ text: g.boldText, bold: true });
+    else if (g.astItalic !== undefined) out.push({ text: g.astItalic, italic: true });
+    else if (g.underItalic !== undefined) out.push({ text: g.underItalic, italic: true });
+    else out.push({ text: g.code!, mono: true });
     last = m.index + m[0].length;
   }
   if (last < text.length) out.push({ text: text.slice(last) });

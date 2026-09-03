@@ -143,6 +143,35 @@ test("template fill: values land, unknown placeholders are reported, split runs 
   assert.deepEqual(readZip(res.buffer).map((e) => e.name), entries.map((e) => e.name));
 });
 
+test("underscore italics are intraword-safe: snake_case survives, _italic_ still works", async () => {
+  const blocks = [
+    { type: "para", text: "late_fee_percent" },
+    { type: "para", text: "my_var_name and file_names_like_this" },
+    { type: "para", text: "_italic_ word" },
+    { type: "para", text: "snake_case and _italic_" },
+    { type: "para", text: "a_b_c" },
+  ];
+  const buf = await buildDocx({ title: "Underscore check", blocks, business: BIZ, pro: true });
+
+  const doc = readZip(buf).find((e) => e.name === "word/document.xml");
+  const xml = doc.data.toString("utf8");
+  // Snake-case identifiers must appear verbatim, underscores intact, in document.xml.
+  assert.match(xml, /late_fee_percent/);
+  assert.match(xml, /my_var_name/);
+  assert.match(xml, /file_names_like_this/);
+  assert.match(xml, /a_b_c/);
+  // A true underscore-italic span is still rendered as italic (<w:i\/>), not literal underscores.
+  assert.match(xml, /<w:i\/>[^]*?<w:t[^>]*>italic<\/w:t>/);
+
+  const back = readDocx(buf);
+  const textOf = (needle) => back.find((b) => b.type === "para" && b.text.includes(needle))?.text;
+  assert.equal(textOf("late_fee_percent"), "late_fee_percent");
+  assert.equal(textOf("my_var_name"), "my_var_name and file_names_like_this");
+  assert.equal(textOf("italic word"), "italic word");
+  assert.equal(textOf("snake_case"), "snake_case and italic");
+  assert.equal(textOf("a_b_c"), "a_b_c");
+});
+
 test("doc_read refuses what is not a .docx with a message that names the reason", async () => {
   assert.throws(() => readDocx(Buffer.from("this is not a zip file at all")), /ZIP/);
 });
