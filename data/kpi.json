@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-03T09:00:44.593Z",
+  "generated_at": "2026-09-03T17:23:39.749Z",
   "kpis": [
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 11,
+      "value": 17,
       "target": 12,
       "unit": "entries",
       "how": "registry search theluckystrike",
       "why": "The official registry is the index Claude, Cursor and VS Code pickers read.",
-      "status": "progress"
+      "status": "met"
     },
     {
       "cat": "Discovery",
@@ -34,7 +34,7 @@
     {
       "cat": "Discovery",
       "name": "Pages indexed on the storefront sitemap",
-      "value": 129,
+      "value": 149,
       "target": 150,
       "unit": "URLs",
       "how": "curl mcp.zovo.one/sitemap.xml",
@@ -44,7 +44,7 @@
     {
       "cat": "Install",
       "name": "Bundle downloads (all releases)",
-      "value": 354,
+      "value": 556,
       "target": 1000,
       "unit": "downloads",
       "how": "gh api releases (scripts/measure.mjs)",
@@ -64,7 +64,7 @@
     {
       "cat": "Install",
       "name": "Hosted endpoints coverage",
-      "value": 11,
+      "value": 13,
       "target": 11,
       "unit": "of 11 servers",
       "how": "data/distribution.json per_server.hosted",
@@ -74,7 +74,7 @@
     {
       "cat": "Activation",
       "name": "Anonymous hosted tokens minted",
-      "value": 19,
+      "value": 24,
       "target": 100,
       "unit": "tokens",
       "how": "wrangler kv key list --remote (prefix anon)",
@@ -84,7 +84,7 @@
     {
       "cat": "Activation",
       "name": "Hosted tenants with stored data",
-      "value": 106,
+      "value": 133,
       "target": 100,
       "unit": "tenants",
       "how": "wrangler kv key list --remote (prefix tok)",
@@ -94,7 +94,7 @@
     {
       "cat": "Activation",
       "name": "Hosted downloads served",
-      "value": 67,
+      "value": 59,
       "target": 200,
       "unit": "files (1h TTL)",
       "how": "wrangler kv key list --remote (prefix dl)",
@@ -104,29 +104,29 @@
     {
       "cat": "Activation",
       "name": "First-prompt tool reach (latest round)",
-      "value": 100,
+      "value": 98,
       "target": 95,
       "unit": "% of calls on the right tool",
-      "how": "data/user_value_r9.json tool_selection (falls back to round 8: 50 of 51)",
+      "how": "data/user_value_r10.json tool_selection (falls back to round 8: 50 of 51)",
       "why": "Round 6 showed correct servers losing to built-in tools; descriptions are the lever.",
       "status": "met"
     },
     {
       "cat": "Value",
       "name": "User-value score, latest round",
-      "value": 96,
+      "value": 79,
       "target": 90,
       "unit": "%",
       "how": "scripts/uv-index.mjs from data/user_value*.json",
       "why": "Scenario scoring through a real MCP client is the only measure of value that includes the model.",
-      "status": "met"
+      "status": "progress"
     },
     {
       "cat": "Value",
       "name": "Seam defects fixed of found",
-      "value": 60,
-      "target": 67,
-      "unit": "of 67",
+      "value": 74,
+      "target": 86,
+      "unit": "of 86",
       "how": "defect ledger in the user-value tab",
       "why": "Every lost point since round 3 was a handoff between servers.",
       "status": "progress"
@@ -134,7 +134,7 @@
     {
       "cat": "Value",
       "name": "Servers that reached 100% in a round",
-      "value": 6,
+      "value": 9,
       "target": 11,
       "unit": "of 11",
       "how": "per-server matrix",
@@ -144,7 +144,7 @@
     {
       "cat": "Reliability",
       "name": "Live validation checks passing",
-      "value": "252/252",
+      "value": "300/300",
       "target": "all",
       "unit": "checks",
       "how": "node scripts/validate.mjs",
@@ -154,7 +154,7 @@
     {
       "cat": "Reliability",
       "name": "Unit tests passing",
-      "value": 465,
+      "value": 574,
       "target": "all",
       "unit": "tests",
       "how": "npm test",
@@ -164,7 +164,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 85,
+      "value": 81,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -215,7 +215,7 @@
     {
       "cat": "Monetization",
       "name": "Pro tenants on hosted endpoints",
-      "value": 329,
+      "value": 393,
       "target": 20,
       "unit": "tenants (includes validation keys)",
       "how": "wrangler kv key list --remote (prefix lic)",
@@ -226,24 +226,24 @@
   "raw": {
     "stripe": {
       "sessions_last100": 100,
-      "probe_sessions": 91,
+      "probe_sessions": 100,
       "human_sessions": 0,
       "paid": 0,
       "note": "sessions created before 2026-09-03 08:55 UTC predate probe tagging and are excluded",
-      "untagged_before_tagging": 87
+      "untagged_before_tagging": 0
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 659,
+      "total": 733,
       "by": {
-        "anon": 19,
-        "dl": 67,
-        "lic": 329,
-        "meta": 99,
+        "anon": 24,
+        "dl": 59,
+        "lic": 393,
+        "meta": 110,
         "mint": 2,
-        "rl": 35,
+        "rl": 10,
         "shared": 2,
-        "tok": 106
+        "tok": 133
       }
     },
     "license_kv": {
@@ -251,17 +251,17 @@
       "by": {}
     },
     "latency": {
-      "p50_ms": 85,
+      "p50_ms": 81,
       "samples": [
-        850,
-        85,
-        82
+        834,
+        81,
+        79
       ]
     },
     "registry": {
-      "entries": 11,
-      "hosted": 10
+      "entries": 17,
+      "hosted": 11
     },
-    "sitemap_urls": 129
+    "sitemap_urls": 149
   }
 }

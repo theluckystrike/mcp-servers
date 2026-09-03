@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T16:42:12.073Z",
+  "generated_at": "2026-09-03T17:22:11.364Z",
   "rounds": [
     {
       "round": 1,
@@ -680,9 +680,9 @@
     },
     {
       "id": "D-E4",
-      "first_seen": "CLAUSES_AUDIT.md",
+      "first_seen": "CALENDAR_AUDIT.md",
       "severity": "",
-      "title": "D-E4 already measured.",
+      "title": "D-E4).",
       "status": "harness",
       "scraped_status": "open (client or accepted)",
       "note": "--allowedTools 'mcp__*' grants nothing. A CLI fact, not a server defect; every round since 3 writes a per-tool allowlist from a live tools/list because of it.",
@@ -693,6 +693,76 @@
       "first_seen": "EXPENSE_AUDIT.md",
       "severity": "low",
       "title": "D-E5 (low, not fixed) — `expense_summary` cannot be asked for \"this month\".**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P1",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "P1",
+      "title": "D-P1 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P2",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "P2",
+      "title": "D-P2 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P3",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "P3",
+      "title": "D-P3 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P4",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "",
+      "title": "D-P4 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P5",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "",
+      "title": "D-P5 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P6",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "",
+      "title": "D-P6 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P7",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "",
+      "title": "D-P7 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P8",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "",
+      "title": "D-P8 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P9",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "",
+      "title": "D-P9 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-P10",
+      "first_seen": "PDF_AUDIT.md",
+      "severity": "P1",
+      "title": "D-P10 (part 2, partially fixed): the self-output refusal left the model stuck.** The D-P1 guard is",
       "status": "fixed"
     },
     {
@@ -897,9 +967,9 @@
     },
     {
       "id": "D-R24",
-      "first_seen": "USER_VALUE_R7.md",
+      "first_seen": "USER_VALUE_R10.md",
       "severity": "",
-      "title": "D-R24 rides along. |",
+      "title": "D-R24:",
       "status": "fixed"
     },
     {
@@ -925,9 +995,9 @@
     },
     {
       "id": "D-R28",
-      "first_seen": "USER_VALUE_R7.md",
+      "first_seen": "USER_VALUE_R10.md",
       "severity": "",
-      "title": "D-R28 |",
+      "title": "D-R28: invoice_from_hours converts with target_currency + fx_rates and the line adds up",
       "status": "fixed"
     },
     {
@@ -1067,7 +1137,7 @@
       "severity": "",
       "title": "D-R46). |",
       "status": "open",
-      "scraped_status": "open",
+      "scraped_status": "fixed",
       "note": "invoice_create rounds a fractional unit_price to minor units then multiplies: USD 418.16 vs 418.14, INV total 3 cents over the cited ECB rate. servers/invoice, out of round 10's edit scope.",
       "triaged": true
     },
@@ -1140,13 +1210,13 @@
     }
   ],
   "counts": {
-    "defects": 76,
-    "fixed": 64,
+    "defects": 86,
+    "fixed": 74,
     "open": 5,
     "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 64,
+      "fixed": 74,
       "client": 3,
       "open": 5,
       "superseded": 1

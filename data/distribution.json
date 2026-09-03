@@ -19,7 +19,7 @@
     "registry": {
       "status": "published",
       "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
-      "note": "19 entries at v0.4.2: 12 primary word-rich names (11 hosted via remotes[]) plus 7 stdio-only variants on empty tokens (invoices, expenses, retainer, timer, exchange-fx, prices-deal, calendar)"
+      "note": "14 primary entries at v0.5.0 (13 servers + office-suite) + 7 stdio-only variants; 13 hosted via remotes[]"
     },
     "smithery": {
       "status": "blocked",
@@ -33,8 +33,8 @@
     },
     "mcpb": {
       "status": "published",
-      "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.4.2",
-      "note": "12 .mcpb bundles on release v0.4.2"
+      "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.5.0",
+      "note": "14 .mcpb bundles on release v0.5.0"
     },
     "awesome-mcp-servers": {
       "status": "blocked",
@@ -59,7 +59,7 @@
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "12 guides, 72 setup pages, 11 compare pages, 11 product pages; sitemap 116 URLs. Round 4 added the resume, recurring and clauses sets on 2026-09-03: 3 guides, 18 setup pages, 3 compare pages, all HTTP 200 and accepted by IndexNow. Round 5 added connect-by-URL content on 2026-09-03: 1 guide (connect-mcp-servers-without-installing), a new claude-web client with 11 setup pages (office-suite excluded, no single connector URL); sitemap 116 -> 129, all 13 new URLs HTTP 200, IndexNow 200 for 17 URLs Round 6, 2026-09-03: added 2 guides (pdf-merge-split-stamp-from-chat, calendar-ics-free-busy-in-claude), 14 setup pages for pdf and calendar across all 7 clients (claude-desktop, claude-code, cursor, vscode, windsurf, cline, claude-web), and 2 compare pages (pdf vs pdf-mcp/DocWand, calendar vs mcp-ical/google-calendar-mcp), all competitor facts read from the official MCP registry search and each project's README/npm record on 2026-09-03; sitemap.xml 149 <loc> (was 129), llms.txt carries both guide lines, both compare lines and 14 setup lines; all 18 new URLs plus /guides, /compare, /setup, /sitemap.xml, / verified HTTP 200 by curl; IndexNow POST 200 for 23 URLs."
+      "note": "13 guides, 89 setup pages incl. claude-web, 13 compare pages; sitemap 149 URLs"
     },
     "mcpservers.org": {
       "status": "submitted",
@@ -119,7 +119,7 @@
     "hosted": {
       "status": "published",
       "url": "https://mcp.zovo.one/mcp",
-      "note": "all 11 servers; connect by URL (/mcp/connect), purchase binding, tools/list p50 under 100 ms; 31/31 probes"
+      "note": "all 13 servers hosted (pdf uploads ~190 KB per POST; calendar text or public feed); connect by URL; purchase binding; 37/37 probes"
     },
     "search-console": {
       "status": "submitted",
@@ -319,15 +319,17 @@
     },
     "pdf": {
       "github": "published",
-      "registry": "pending (v0.5.0)",
+      "registry": "published",
       "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted"
+      "cline-marketplace": "submitted",
+      "hosted": "published"
     },
     "calendar": {
       "github": "published",
-      "registry": "pending (v0.5.0)",
+      "registry": "published",
       "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted"
+      "cline-marketplace": "submitted",
+      "hosted": "published"
     }
   }
 }
