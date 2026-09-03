@@ -36,8 +36,7 @@ round before that went from 13/24 to 20/24 after fixing the defects that round f
 What's honest about limits: none of the six packages are on npm yet (the publish token is dead),
 so install today is a `.mcpb` double-click bundle or a clone-and-build, not `npx`. Price-tracker
 correctly extracted 5 of 12 real retailer URLs in a spot check; the other 7 hit bot walls, a
-timeout, or a redirect, and the tool says so instead of guessing. The hosted invoice download
-still serves HTML content-type under a `.pdf` filename.
+timeout, or a redirect, and the tool says so instead of guessing. The hosted endpoints render invoices as HTML documents (print to PDF); the local server writes a real PDF.
 <!-- npm not published: README.md "npm status" -->
 <!-- 5 of 12 retailers, 41.7%: docs/CONTENT_RESULT.md "Content sourcing" -->
 <!-- hosted invoice HTML under .pdf name: docs/USER_VALUE_R4.md defect D-R8 -->

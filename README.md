@@ -80,7 +80,7 @@ server in this category, measured across the registry, is an aggregator: one ins
 
 ## Validation
 
-Before anything ships: 130 unit tests across the six servers and the shared license package (protocol smoke
+Before anything ships: 186 unit tests across the six servers and the shared license package (protocol smoke
 tests over real stdio, plus adversarial cases: bad input, oversized strings, path traversal, concurrent
 writers, zero-byte files), a 121-check live validation database run against the built servers and the hosted
 worker, three rounds of user-value testing through a real MCP client (one prompt per conversation, not a unit
