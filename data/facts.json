@@ -112,6 +112,12 @@
         19
       ],
       [
+        "resume",
+        "prod_VBqFiD4h8BQQId",
+        "price_1UBSYxJKCamubEm1uaUEIGBI",
+        19
+      ],
+      [
         "bundle",
         "prod_VBafU5C9o9d0f3",
         "price_1UBDU9JKCamubEm1dWgRjtoW",
@@ -251,6 +257,16 @@
       "free": "Conversions, overlap, DST, business days, slots for up to 3 participants over 5 days, 5 contacts, 3 ics per month.",
       "pro": "Unlimited participants, days, contacts and ics files, recurring slot search.",
       "storage": "~/.local/share/mcp-servers/timezone/ (contacts)"
+    },
+    "resume": {
+      "title": "MCP Resume and Cover Letter",
+      "tagline": "Resumes and cover letters as Word files from one profile, never invented.",
+      "does": "Stores a structured profile (experience, education, skills, links), writes resumes in three styles trimmed to a page budget with keyword highlighting, drafts one-page cover letters whose every claim traces to the profile with bracketed prompts for anything unknown, runs a gap analysis against a job description with suggested bullet rewrites from existing facts, reads an existing resume .docx back into the profile shape, and exports markdown and printable HTML. Built on the docx engine.",
+      "for": "Anyone applying for jobs who wants editable Word output and honest tailoring, not hallucinated achievements.",
+      "example": "\"Tailor my resume to this job post and write a direct cover letter for the hiring manager.\" ... \"What am I missing for this role?\"",
+      "free": "Profile, modern-style resume, markdown and HTML exports, 3 cover letters per calendar month, tailoring on job posts up to 2,000 characters.",
+      "pro": "All styles, unlimited cover letters and tailoring, profile variants, letterhead colours.",
+      "storage": "~/.local/share/mcp-servers/resume/"
     }
   },
   "version": "0.1.1"
