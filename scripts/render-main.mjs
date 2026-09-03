@@ -22,6 +22,7 @@ const uv2 = js("data/user_value_r2.json", null);
 const uv3 = js("data/user_value_r3.json", null);
 const uv4 = js("data/user_value_r4.json", null);
 const uv5 = js("data/user_value_r5.json", null);
+const uv6 = js("data/user_value_r6.json", null);
 const metrics = js("data/metrics.json", { snapshots: [] });
 const m = metrics.snapshots.at(-1);
 const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
@@ -217,6 +218,9 @@ ${promo.actions.slice().sort((a, b) => b.impact - a.impact).map(a => `<tr><td cl
 <div class="tab" id="tab-uservalue">
 ${uv ? `<p class="dim">${esc(uv.method || "")} Run at ${esc(uv.at)}. Full report: <a href="docs/USER_VALUE.md">docs/USER_VALUE.md</a>.</p>
 <div class="kpis"><div class="kpi"><div class="n">${uv.totals.score}/${uv.totals.max}</div><div class="k">scenario points (0-3 each, real MCP client)</div></div><div class="kpi"><div class="n">${Math.round(uv.totals.hit_rate * 100)}%</div><div class="k">real retailer price hit rate (${esc(uv.totals.hit_rate_of_reachable)})</div></div><div class="kpi"><div class="n">${esc(uv.pdf.verdict)}</div><div class="k">invoice PDF visual check</div></div><div class="kpi"><div class="n">${(uv.free_tier.limits_hit || []).length}</div><div class="k">free limits hit in first session</div></div></div>
+${uv6 ? `<h2>Round 6 regression on the v0.2.4 changes: ${uv6.totals?.score ?? ""}/${uv6.totals?.max ?? ""} through the client, 8/8 correct on direct probes</h2>
+<div class="tw"><table><tr><th>Scenario</th><th>Score</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${(uv6.scenarios || []).map(x => `<tr><td>${esc(x.prompt || x.id)}</td><td class="num"><b>${x.score}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
+<p class="dim">Report: <a href="docs/USER_VALUE_R6.md">docs/USER_VALUE_R6.md</a>. Every changed behaviour was correct when invoked; the points lost were the client choosing built-in readers over the tools. Fixes for the six follow-up defects are in v0.2.5.</p>` : ""}
 ${uv5 ? `<h2>Round 5, ten fresh scenarios through the office-suite bundle: ${uv5.totals?.score ?? uv5.totals?.r5 ?? ""}/${uv5.totals?.max ?? ""}</h2>
 <div class="tw"><table><tr><th>Scenario</th><th>Score</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${(uv5.scenarios || []).map(x => `<tr><td>${esc(x.prompt || x.id)}</td><td class="num"><b>${x.score ?? x.r5}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
 <p class="dim">Report: <a href="docs/USER_VALUE_R5.md">docs/USER_VALUE_R5.md</a>. Verified independently: 6.5 h x 85 = USD 552.50, supplier totals to the cent, 30 km UK converted to 18.64 mi x 0.45 = GBP 8.39 with the conversion disclosed.</p>` : ""}

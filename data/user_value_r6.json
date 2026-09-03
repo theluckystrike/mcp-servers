@@ -1,0 +1,252 @@
+{
+  "at": "2026-09-03T00:40:00Z",
+  "round": 6,
+  "compares_to": "data/user_value_r5.json",
+  "scope": "REGRESSION round. Eight scenarios, each aimed at a behaviour changed in v0.2.4 per docs/AUDIT.md 'Codex v3 fixes': midnight split and day grouping (#21/#22/#23), rate captured at entry time (#19), date-only inclusive bounds (#20), the shared locale-aware numeric parser (spreadsheet #4/#7), struck-price and twitter:data1 removal from price extraction (#31/#32), the P0 corrupt-store quarantine (#1), tag totals that do not double count (#26/#27), and the multi-currency expense-to-invoice FX path that D-R14 asked for.",
+  "method": "servers/office-suite/dist/index.js v0.2.4 registered as ONE server 'office'. Four independent lanes, each with its own XDG_DATA_HOME/XDG_CONFIG_HOME and MCP_LICENSE_KEY='' (free tier): /private/tmp/uv20 (scenarios 1,2,3,7,8 in one conversation, --session-id then --resume), /private/tmp/uv21 (4), /private/tmp/uv22 (5), /private/tmp/uv23 (6), plus /private/tmp/uv12 as a cwd control for 4. claude -p --strict-mcp-config --model sonnet --output-format stream-json --verbose --max-turns 16, allowlist written out per tool name (51 entries) because --allowedTools 'mcp__*' grants nothing (D-E4). Fixtures: /private/tmp/uv12/eu.csv (8 rows, semicolon delimiter, European decimals 1.234,56 / 12,99 / 0,99 / 10.000,00; independent decimal.Decimal totals Deltex 10000.00, Bolt 2099.50, Amazon 1593.00, Cegos 1001.00, grand 14693.50) and /private/tmp/uv22/www/index.html on python3 -m http.server 8791 (struck <s>$199.00</s> in .old-price, $99.00 in .current-price, twitter:data1 'Free shipping over $50'). Lane D had 28 bytes of garbage written into data.json before the run, sha256 recorded. Direct JSON-RPC probes /private/tmp/probe6.mjs (free) and /private/tmp/probe24.mjs (Pro key id eb568daccb16 from scripts/sign-license.mjs '*') separate server correctness from client reach. Tool-call counts exclude the client's own ToolSearch.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn or a workaround. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "scenarios": [
+    {
+      "surface": "bundle/time-tracker",
+      "id": "1",
+      "target_fix": "Codex v3 #21/#22/#23 midnight split and day grouping",
+      "prompt": "Log 3 hours yesterday evening 21:00 to 00:00 on Nova at 100 USD, then show me hours per day for this week.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 22.1,
+      "note": "entry_add {start 2026-09-02T21:00:00, end 2026-09-03T00:00:00, rate 100, currency USD} -> '3.00 h, billable. USD 100.00/h, USD 300.00'. report {group_by day, 2026-08-31..2026-09-06} returns exactly one row, 2026-09-02 3.00 3.00 USD 300.00, and no 2026-09-03 row. The end at local midnight is exclusive, so the whole 3 h lands on the previous local day. Day grouping is local-time consistent."
+    },
+    {
+      "surface": "bundle/time-tracker",
+      "id": "2",
+      "target_fix": "Codex v3 #19 rate captured at entry time",
+      "prompt": "Set my Nova rate to 120 USD. What is my Nova total this week? -- then: Apply the new rate to existing entries.",
+      "score": 2,
+      "tool_calls": 5,
+      "seconds": 29.5,
+      "note": "Turn 1 (12.8s, 2 calls) is exactly the intended behaviour: project_set_rate 120 then report -> USD 300.00, NOT 360.00, and the tool's own line says time already logged keeps its captured rate. Turn 2 (16.7s, 3 calls): project_set_rate {apply_to_existing: true} -> '0 already logged entries with no rate of their own were backfilled'. The flag only fills rate-less entries, and #19 gives every new entry a rate, so it can never re-rate anything written by v0.2.4. The model recovered with entry_edit {id 8e783f26, rate 120} -> report USD 360.00. Right number, wrong path. D-R18."
+    },
+    {
+      "surface": "bundle/time-tracker",
+      "id": "3",
+      "target_fix": "Codex v3 #20 date-only bounds inclusive",
+      "prompt": "Report on Nova from 2026-09-01 to 2026-09-30",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 7.7,
+      "note": "No error. report -> 2026-09-02 3.00 h USD 360.00, total 3.00 h USD 360.00. The model normalised the bounds to full timestamps itself, so the date-only path was verified separately by probe: entry_add ending 2026-09-30T23:59 is found by report {from '2026-09-30', to '2026-09-30'} -> 0.98 h. The inclusive local end-of-day holds."
+    },
+    {
+      "surface": "bundle/spreadsheet",
+      "id": "4",
+      "target_fix": "spreadsheet #4/#7 shared locale-aware numeric parser",
+      "prompt": "Open /private/tmp/uv12/eu.csv and total the Amount by Supplier.",
+      "score": 0,
+      "tool_calls": 1,
+      "seconds": 7.4,
+      "note": "One Read, denied, then the model asked the user to grant permission and stopped. sheet_query, sheet_read, sheet_stats and sheet_info were all in the allowlist and none was called. Control re-run with cwd = /private/tmp/uv12 (s4ctl, 17.1s) to remove the sandbox confound: Bash 'cat -A' -> Read -> a hand-written Bash python3 parser -> blocked -> gave up. Still no spreadsheet tool. The server is correct: probe sheet_query {group_by ['Supplier'], aggregate [{col 'Amount', fn 'sum'}]} returns Amazon 1593, Bolt 2099.5, Cegos 1001, Deltex 10000 and sheet_stats returns sum 14693.5, identical to an independent decimal.Decimal sum, with the semicolon delimiter auto-detected. D-R19."
+    },
+    {
+      "surface": "bundle/price-tracker",
+      "id": "5",
+      "target_fix": "price-tracker #31 twitter:data1 removed, #32 struck prices stripped",
+      "prompt": "What is the price here: http://127.0.0.1:8791/",
+      "score": 0,
+      "tool_calls": 2,
+      "seconds": 24.3,
+      "note": "ToolSearch select:WebFetch, then Bash curl twice (both blocked), then a question back to the user about what the port was. price_check was never called. The server is correct: probe price_check {url 'http://127.0.0.1:8791/'} -> 'Price: 99.00 USD, Confidence: medium (source class:current-price)'. It ignored both the struck-through $199.00 and the twitter:data1 'Free shipping over $50'. D-R19."
+    },
+    {
+      "surface": "bundle/time-tracker",
+      "id": "6",
+      "target_fix": "stores #1 (P0) corrupt read is quarantined, not an empty database",
+      "prompt": "Start a timer for Nova. (28 bytes of garbage written into data.json first)",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 28.9,
+      "note": "timer_start returned isError: 'data file is corrupt; moved to /private/tmp/uv23/data/mcp-servers/time-tracker/data.json.corrupt-2026-09-03T00-24-30-544Z; nothing was written. Restore a good copy ... then delete ...data.json.corrupt to continue.' The model stopped, inspected the directory, refused to write a fresh empty data.json and asked the user. On disk: the quarantined file's sha256 equals the pre-run garbage sha256 exactly (e3a04589a03091338ef7692a65fc6d0466f29a35f0f1fdfd044a53dbb3381c9a) and no data.json exists. One low-severity wrinkle: the .corrupt marker holds a bare path, which the model read as suspicious data (D-R23)."
+    },
+    {
+      "surface": "bundle/time-tracker",
+      "id": "7",
+      "target_fix": "Codex v3 #26/#27 report totals computed once, tag rows do not double count",
+      "prompt": "Tag my last entry with review and demo, then show this week grouped by tag.",
+      "score": 1,
+      "tool_calls": 2,
+      "seconds": 7.3,
+      "note": "entry_edit {tags: ['review','demo']} succeeded. report {group_by 'tag'} returned the Pro paywall, so the user got a price instead of an answer. The fix itself is correct under a Pro key: with a 3.00 h entry tagged review+demo and a 2.00 h entry tagged review, the rows are review 5.00 h USD 600.00 and demo 3.00 h USD 360.00 (sum 8.00 h / 960.00) while the reported total is 5.00 h, USD 600.00 with the overlap note printed, matching the group_by day total exactly. Not double counted. Free tier cannot see it. D-R22."
+    },
+    {
+      "surface": "bundle/expense-tracker",
+      "id": "8",
+      "target_fix": "expense_to_invoice FX conversion path (the D-R14 fix)",
+      "prompt": "Add expense 45 EUR at Amazon for Nova. -- then: Now rebill Nova this month in USD at 1.08.",
+      "score": 1,
+      "tool_calls": 2,
+      "seconds": 18.8,
+      "note": "The model chose expense_to_invoice {project Nova, from 2026-09-01, to 2026-09-30, target_currency USD, fx_rates {EUR: 1.08}} in one call, which is exactly the affordance D-R14 asked for. But count came back 0, because expense_add defaults billable to false even when a project is attached (D-R21), and the empty response still claimed 'fx_note: Nothing needed converting: every line was already in USD' on a set with zero lines and source_currencies [] (D-R20). Probe with billable: true returns unit_price 48.6, total_net 'USD 48.60', converted_lines 1, fx_rates_used {EUR: 1.08} and the description '[converted from EUR 45.00 at 1.08]'. 45 x 1.08 = 48.60 exactly."
+    }
+  ],
+  "totals": {
+    "score": 13,
+    "max": 24,
+    "by_area": {
+      "time-tracker window/split (#20,#21-23)": "6/6",
+      "stores #1 corruption (P0)": "3/3",
+      "time-tracker rates (#19)": "2/3",
+      "time-tracker report totals (#26/#27)": "1/3",
+      "expense FX handoff": "1/3",
+      "spreadsheet numeric parser (#4/#7)": "0/3",
+      "price-tracker extraction (#31/#32)": "0/3"
+    },
+    "server_behaviour_correct": "8/8 on direct JSON-RPC probe",
+    "client_reach": "5/8"
+  },
+  "verification": [
+    {
+      "check": "midnight split",
+      "method": "report {group_by day, 2026-08-31..2026-09-06} returns one row 2026-09-02 3.00 3.00 USD 300.00, no 2026-09-03 row",
+      "result": "PASS"
+    },
+    {
+      "check": "rate captured at entry time",
+      "method": "after project_set_rate 120 the report still says USD 300.00; only entry_edit {rate 120} moves it to USD 360.00",
+      "result": "PASS"
+    },
+    {
+      "check": "apply_to_existing backfill",
+      "method": "server text verbatim 'Applies to future entries; 0 already logged entries with no rate of their own were backfilled'; source servers/time-tracker/src/index.ts:626 skips entries where typeof e.rateCents === 'number', and :483 gives every new entry one",
+      "result": "FAIL (D-R18)"
+    },
+    {
+      "check": "date-only inclusive end",
+      "method": "probe entry_add 2026-09-30T23:00..23:59 then report {from '2026-09-30', to '2026-09-30', group_by day} -> 2026-09-30 0.98",
+      "result": "PASS"
+    },
+    {
+      "check": "European decimals, parser level",
+      "method": "parseNumberStrict: 1.234,56->1234.56, 12,99->12.99, 0,99->0.99, 10.000,00->10000",
+      "result": "PASS"
+    },
+    {
+      "check": "European decimals, end to end",
+      "method": "probe sheet_query group by Supplier sum Amount -> Amazon 1593, Bolt 2099.5, Cegos 1001, Deltex 10000; sheet_stats sum 14693.5; identical to an independent decimal.Decimal sum over the fixture; ';' delimiter auto-detected",
+      "result": "PASS (server)"
+    },
+    {
+      "check": "sheet_query reached by the client",
+      "method": "two runs, two cwd configurations: /private/tmp/uv21/out/s4.jsonl CALLS(1) Read, /private/tmp/uv12/out/s4ctl.jsonl CALLS(3) Bash, Read, Bash",
+      "result": "FAIL (D-R19)"
+    },
+    {
+      "check": "struck price and twitter:data1 ignored",
+      "method": "probe price_check on the local page -> 'Price: 99.00 USD, Confidence: medium (source class:current-price)'. Not 199, not 50",
+      "result": "PASS (server)"
+    },
+    {
+      "check": "price_check reached by the client",
+      "method": "/private/tmp/uv22/out/s5.jsonl CALLS(2) Bash, Bash",
+      "result": "FAIL (D-R19)"
+    },
+    {
+      "check": "corrupt bytes preserved, nothing written",
+      "method": "shasum -a 256 of the pre-run data.json and of data.json.corrupt-2026-09-03T00-24-30-544Z both e3a04589a03091338ef7692a65fc6d0466f29a35f0f1fdfd044a53dbb3381c9a; ls data.json -> No such file or directory",
+      "result": "PASS"
+    },
+    {
+      "check": "tag rows do not double count",
+      "method": "Pro probe: rows review 5.00 h USD 600.00 + demo 3.00 h USD 360.00 sum to 8.00 h / 960.00, reported total 5.00 h USD 600.00 with the overlap note, equal to the group_by day total for the same window",
+      "result": "PASS (server)"
+    },
+    {
+      "check": "FX 45 EUR at 1.08",
+      "method": "Pro probe with billable: true -> unit_price 48.6, total_net 'USD 48.60', converted_lines 1, fx_rates_used {EUR: 1.08}. 45 x 1.08 = 48.60",
+      "result": "PASS"
+    },
+    {
+      "check": "fx_note on an empty set",
+      "method": "/private/tmp/uv20/out/s8b.jsonl: count 0, source_currencies [], yet fx_note 'Nothing needed converting: every line was already in USD.'",
+      "result": "FAIL (D-R20)"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R18",
+      "severity": "high",
+      "server": "time-tracker",
+      "title": "apply_to_existing can no longer apply a rate to any existing entry",
+      "repro": "/private/tmp/uv20/out/s2b.jsonl: project_set_rate {project 'Nova', hourly_rate 120, currency 'USD', apply_to_existing true} -> 'Rate for \"Nova\" set to USD 120.00 per hour. Applies to future entries; 0 already logged entries with no rate of their own were backfilled.' Codex v3 #19 made entry_add (servers/time-tracker/src/index.ts:483) and stopRunning (:361) always stamp rateCents, and the backfill loop at :626 does `if (e.project !== project || typeof e.rateCents === 'number') continue;`, so for every entry written by v0.2.4 the flag is unreachable dead code that reports success with a zero count. The user sentence 'apply the new rate to existing entries' has no tool that performs it; the model had to fall back to entry_edit with the entry id.",
+      "fix_direction": "Keep apply_to_existing with its documented fill-the-gaps semantics and add a distinct explicit re-rate path (rerate_existing {from, to} or overwrite_existing: true) that re-stamps entries that already carry a rate, reporting the count changed and the money delta. The descriptions must separate the two, because 'apply to existing' is the phrase a user reaches for when they mean the second."
+    },
+    {
+      "id": "D-R19",
+      "severity": "high",
+      "server": "price-tracker + spreadsheet (client reach)",
+      "title": "the specific tool is not reached, now costing full marks instead of speed",
+      "repro": "Scenario 4: 'Open /private/tmp/uv12/eu.csv and total the Amount by Supplier' -> one Read, denied, turn over (/private/tmp/uv21/out/s4.jsonl, CALLS(1)). Control with cwd inside the CSV's directory: Bash 'cat -A' -> Read -> a hand-written Bash python3 replace('.','').replace(',','.') parser -> blocked -> gave up (/private/tmp/uv12/out/s4ctl.jsonl, CALLS(3)). Scenario 5: 'What is the price here: http://127.0.0.1:8791/' -> ToolSearch select:WebFetch, two blocked Bash curl calls, then a question back to the user (/private/tmp/uv22/out/s5.jsonl, CALLS(2)). sheet_query and price_check were both in the 51-entry allowlist and both answer their prompt correctly in one call over raw JSON-RPC.",
+      "fix_direction": "Same as D-R11/D-R9 and now urgent, because the generic path is blocked rather than merely slower, so the turn ends with a question instead of an answer. sheet_query's description must claim the trigger: 'use this instead of reading a CSV or shelling out - it auto-detects ; delimiters, parses European decimals (1.234,56), groups and aggregates in one call, and works on any absolute path.' price_check's: 'use this for any product or price URL, including http:// and localhost - it ignores struck-through old prices and shipping thresholds, which a raw fetch does not.'"
+    },
+    {
+      "id": "D-R20",
+      "severity": "medium",
+      "server": "expense-tracker",
+      "title": "expense_to_invoice asserts a conversion fact about an empty set",
+      "repro": "/private/tmp/uv20/out/s8b.jsonl: the response carries count 0, currencies [], source_currencies [], converted_lines 0, and yet fx_note 'Nothing needed converting: every line was already in USD.' There were no lines, so nothing was already in USD. The model relayed it and then had to reason back to the real cause from count: 0 alone.",
+      "fix_direction": "When count is 0, fx_note and vat_note should say 'no lines matched, so nothing was converted or taxed', and next_step should name the two usual causes - nothing billable in the range, or already rebilled."
+    },
+    {
+      "id": "D-R21",
+      "severity": "medium",
+      "server": "expense-tracker",
+      "title": "expense_add defaults billable false, silently dead-ending the rebill chain it recommends",
+      "repro": "/private/tmp/uv20/out/s8a.jsonl: expense_add {amount 45, currency EUR, merchant Amazon, project Nova} -> 'Saved 85352e9a: EUR 45.00 on 2026-09-03 at Amazon [uncategorised] for Nova' plus three lines about VAT and nothing about billability. One turn later expense_to_invoice for the same project and range returns count 0. The identical call with billable: true yields USD 48.60. Attaching a project is the only reason to record a client on a receipt, so the default contradicts the intent the user expressed.",
+      "fix_direction": "Either default billable to true when project is set, or append one line to the expense_add result when a project is set and billable is false: 'not billable, so it will not appear in expense_to_invoice for Nova; pass billable: true to rebill it.'"
+    },
+    {
+      "id": "D-R22",
+      "severity": "medium",
+      "server": "time-tracker",
+      "title": "the #26/#27 tag-total fix is behind the Pro gate, and group_by is mandatory",
+      "repro": "/private/tmp/uv20/out/s7.jsonl: report {group_by 'tag'} on the free tier returns 'group_by tag is a Pro feature. Pro is a one-time $19...' The fix is real - under a Pro key the tag rows sum to 8.00 h / USD 960.00 while the total is 5.00 h / USD 600.00 with the overlap note, matching the group_by day total - but a free-tier user asking for a tag breakdown gets a price. Secondary: probe report {from '2026-08-31', to '2026-09-06'} -> 'Input validation error: Invalid arguments for tool report: Required at group_by', so there is no way to ask for a plain total.",
+      "fix_direction": "Make group_by optional with a project default, and reconsider gating tag grouping - the gate hides a correctness fix rather than a premium capability."
+    },
+    {
+      "id": "D-R23",
+      "severity": "low",
+      "server": "time-tracker",
+      "title": "the .corrupt marker file contains a bare path and reads as suspicious data",
+      "repro": "/private/tmp/uv23/out/s6.jsonl: quarantine writes data.json.corrupt-<ts> (28 bytes, the original) and data.json.corrupt (90 bytes, the absolute path of the first). The model read the marker, found a filename where it expected JSON, and told the user the pattern was 'unusual' and 'not an accidental corruption' - a false alarm produced by the marker's own format.",
+      "fix_direction": "Give the marker a self-describing first line, e.g. '# time-tracker quarantine marker. Original bytes: <path>. Delete this file once data.json is restored.'"
+    }
+  ],
+  "fixed_since_r5": [
+    {
+      "id": "D-R14",
+      "status": "FIXED, verified",
+      "evidence": "expense_to_invoice now takes target_currency and fx_rates; probe returned unit_price 48.6, total_net 'USD 48.60', fx_rates_used {EUR: 1.08} and the line description '[converted from EUR 45.00 at 1.08]'."
+    }
+  ],
+  "still_open": "D-R11 and D-R9 are superseded by D-R19 as one defect class. D-R15 (UTC vs local 'today') was not re-testable: the run started 07:23 local in UTC+7, i.e. 00:23 UTC on the same date, so no split is observable. D-R16 and D-R17 stand as recorded in docs/USER_VALUE_R5.md. D-R12 and D-R13 (xlsx text cells, unrounded derived column) were out of scope this round.",
+  "artifacts": [
+    "docs/USER_VALUE_R6.md",
+    "data/user_value_r6.json",
+    "/private/tmp/uv20/out/s1.jsonl",
+    "/private/tmp/uv20/out/s2a.jsonl",
+    "/private/tmp/uv20/out/s2b.jsonl",
+    "/private/tmp/uv20/out/s3.jsonl",
+    "/private/tmp/uv20/out/s7.jsonl",
+    "/private/tmp/uv20/out/s8a.jsonl",
+    "/private/tmp/uv20/out/s8b.jsonl",
+    "/private/tmp/uv21/out/s4.jsonl",
+    "/private/tmp/uv12/out/s4ctl.jsonl",
+    "/private/tmp/uv22/out/s5.jsonl",
+    "/private/tmp/uv23/out/s6.jsonl",
+    "/private/tmp/uv12/eu.csv",
+    "/private/tmp/uv22/www/index.html",
+    "/private/tmp/uv23/data/mcp-servers/time-tracker/data.json.corrupt-2026-09-03T00-24-30-544Z",
+    "/private/tmp/uv23/garbage.sha",
+    "/private/tmp/probe6.mjs",
+    "/private/tmp/probe24.mjs",
+    "/private/tmp/uv20/show.py"
+  ]
+}
