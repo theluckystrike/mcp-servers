@@ -38,6 +38,9 @@ const CHILDREN: ChildDef[] = [
   { id: "currency", pkg: "@theluckystrike/mcp-currency", optional: true },
   { id: "docx", pkg: "@theluckystrike/mcp-docx", optional: true },
   { id: "timezone", pkg: "@theluckystrike/mcp-timezone", optional: true },
+  { id: "resume", pkg: "@theluckystrike/mcp-resume", optional: true },
+  { id: "recurring", pkg: "@theluckystrike/mcp-recurring", optional: true },
+  { id: "clauses", pkg: "@theluckystrike/mcp-clauses", optional: true },
 ];
 
 /** Resolve the absolute path to a sibling server's dist/index.js. */

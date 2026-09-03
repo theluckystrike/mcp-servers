@@ -302,5 +302,39 @@
       "name": "ics_create",
       "description": "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale."
     }
+  ],
+  "resume": [
+    {
+      "name": "profile_set",
+      "description": "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. One profile per data directory; Pro adds named variants. Nothi"
+    },
+    {
+      "name": "profile_get",
+      "description": "Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job."
+    },
+    {
+      "name": "resume_create",
+      "description": "Write the stored profile to a Word .docx. Bullets are ordered by relevance to the target role and keywords, then trimmed to fit max_pages using a measured word budget. Keywords that appear anywhere in the profile are pri"
+    },
+    {
+      "name": "resume_to_markdown",
+      "description": "Return the stored profile as markdown: paste it into a form, an email or an ATS box."
+    },
+    {
+      "name": "resume_to_html",
+      "description": "Write the resume as semantic HTML with a print stylesheet. Open it and print to PDF: there is no doc_to_pdf here because every pure-JavaScript route to PDF needs a native dependency."
+    },
+    {
+      "name": "resume_read",
+      "description": "Extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Best effort, section by heading. Nothing is saved unless save is true."
+    },
+    {
+      "name": "cover_letter_create",
+      "description": "Write a one-page cover letter from the stored profile: opening, fit, proof, close. It states no fact that is not in your profile. Anything it does not know is left as a bracketed prompt such as [add: metric] for you to f"
+    },
+    {
+      "name": "tailor_to_job",
+      "description": "Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new"
+    }
   ]
 }
