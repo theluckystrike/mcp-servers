@@ -289,3 +289,59 @@ artifacts (this update):
 - assets/demo-resume.gif, assets/demo-recurring.gif, assets/demo-clauses.gif
 - servers/resume/README.md, servers/recurring/README.md, servers/clauses/README.md
 - README.md
+
+## Update: mcp-pdf and mcp-calendar demos
+
+1. `scripts/demo/drive.mjs` extended with two more sequences:
+   - `pdf`: generates three one-page invoice PDFs with pdf-lib in the sandbox (each with a real "Total: <amount>
+     EUR" line), then `pdf_info` on the first (summarised: file, size, pages, encrypted, paper), `pdf_merge` of all
+     three into one 3-page file, `pdf_stamp` with the PAID preset on the merged file, and `pdf_text {pages: "3"}`
+     on the stamped result -- output shows the extracted "Total: 1476.00 EUR" line from the last invoice's page,
+     with PAID also readable as extracted text. Verbose JSON/prose fields (full metadata block, the stamp's
+     trailing explanation paragraphs, pdf_text's methodology footer) are trimmed in the printed transcript to
+     keep the recording under the size cap; the tool calls and their real return values are unchanged.
+   - `calendar`: builds a 5-event-definition `.ics` fixture (4 occurrences of a weekly "Daily standup" via
+     `RRULE:FREQ=WEEKLY;COUNT=4`, plus one one-off "Acme GmbH quarterly review"), then `ics_import`, `events_list`
+     (5 occurrences across the window, recurring series expanded), `free_busy` for the same week, and
+     `event_to_time_entry` on the first standup occurrence's id (parsed out of the events_list output) -- shows
+     the exact `entry_add` JSON (project, start/end UTC, note, task, billable) ready to hand to the time-tracker.
+
+2. Tapes: `scripts/demo/pdf.tape`, `scripts/demo/calendar.tape` -- identical settings to the existing demos
+   (900x480, Dracula, 40ms typing, `Sleep 10s`).
+
+   Command run for each: `vhs scripts/demo/<name>.tape` from repo root.
+
+   Output sizes (limit 400 KB):
+   - assets/demo-pdf.gif       260,068 bytes (254.0 KB) (pdf_info, pdf_merge of 3, pdf_stamp PAID, pdf_text extracting the total)
+   - assets/demo-calendar.gif  337,745 bytes (329.8 KB) (ics_import of a 5-event fixture with a weekly series, events_list, free_busy, event_to_time_entry)
+   Both under 400 KB. The pdf recording was trimmed (summarised pdf_info JSON, dropped the long trailing prose
+   from pdf_stamp and pdf_text) after an initial draft came in at 483,639 bytes over the cap.
+
+3. Verification (`file` + `ffprobe`):
+   ```
+   $ file assets/demo-pdf.gif assets/demo-calendar.gif
+   assets/demo-pdf.gif:      GIF image data, version 89a, 900 x 480
+   assets/demo-calendar.gif: GIF image data, version 89a, 900 x 480
+
+   $ ffprobe -v error -select_streams v -show_entries stream=width,height,nb_frames,avg_frame_rate \
+       -of default=noprint_wrappers=1 assets/demo-<name>.gif
+   pdf:      width=900 height=480 avg_frame_rate=25/1 nb_frames=263
+   calendar: width=900 height=480 avg_frame_rate=25/1 nb_frames=269
+   ```
+   Both are valid 900x480 GIFs at 25 fps, roughly 10-11s, matching the existing demos.
+
+4. README updates:
+   - `servers/pdf/README.md`: replaced `![pdf logo](../../assets/pdf-logo.png)` with
+     `![pdf demo](../../assets/demo-pdf.gif)` (only that line changed).
+   - `servers/calendar/README.md`: replaced `![calendar](../../assets/calendar-logo.png)` with
+     `![calendar demo](../../assets/demo-calendar.gif)` (only that line changed; re-read immediately before
+     editing since another agent may be touching this file concurrently).
+   - `README.md` (root): added two rows (mcp-pdf, mcp-calendar) to the demo-thumbnail table, right before the
+     mcp-office-suite bundle row, matching the existing row format exactly. No other rows or prose changed.
+
+artifacts (this update):
+- scripts/demo/drive.mjs (extended)
+- scripts/demo/pdf.tape, scripts/demo/calendar.tape
+- assets/demo-pdf.gif, assets/demo-calendar.gif
+- servers/pdf/README.md, servers/calendar/README.md
+- README.md

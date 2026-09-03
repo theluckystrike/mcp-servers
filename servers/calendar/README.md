@@ -10,7 +10,7 @@ machine as plain text.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
-![calendar](../../assets/calendar-logo.png)
+![calendar demo](../../assets/demo-calendar.gif)
 
 **Import the .ics your calendar exports, then ask what is on, when you are free, and what clashes -- zero setup, all local.**
 

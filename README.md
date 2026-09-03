@@ -22,6 +22,8 @@ nine products are also reachable as a hosted remote endpoint with no install at 
 | [mcp-resume](servers/resume/README.md) | ![resume](assets/demo-resume.gif) | Tailor a resume to a posting and write a cover letter that cannot state a fact you did not give it | `npx -y @theluckystrike/mcp-resume`* |
 | [mcp-recurring](servers/recurring/README.md) | ![recurring](assets/demo-recurring.gif) | Define a repeating invoice once, generate the ones actually due, idempotent by period | `npx -y @theluckystrike/mcp-recurring`* |
 | [mcp-clauses](servers/clauses/README.md) | ![clauses](assets/demo-clauses.gif) | Assemble a contract from a searchable clause library, variables filled or flagged | `npx -y @theluckystrike/mcp-clauses`* |
+| [mcp-pdf](servers/pdf/README.md) | ![pdf](assets/demo-pdf.gif) | Merge, split, stamp and read PDFs from chat: page ranges, watermarks, text extraction | `npx -y @theluckystrike/mcp-pdf`* |
+| [mcp-calendar](servers/calendar/README.md) | ![calendar](assets/demo-calendar.gif) | Import a calendar export, list events with recurring series expanded, free/busy, bill a meeting | `npx -y @theluckystrike/mcp-calendar`* |
 | [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that proxies all eight servers above behind a single config line, 76 tools | `npx -y @theluckystrike/mcp-office-suite`* |
 
 \* npm publish is still pending for all nine packages (see npm status below). Until then, the fastest path is the

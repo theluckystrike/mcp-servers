@@ -359,6 +359,88 @@ async function run(name) {
     resultLine(await c.call("invoice_generate_due", {}));
   }
 
+  if (name === "pdf") {
+    const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
+    const { writeFileSync } = await import("node:fs");
+    async function makeInvoicePdf(fileName, invNo, total) {
+      const doc = await PDFDocument.create();
+      const page = doc.addPage([612, 792]);
+      const font = await doc.embedFont(StandardFonts.Helvetica);
+      page.drawText(`Invoice ${invNo}`, { x: 50, y: 740, size: 20, font });
+      page.drawText(`Acme GmbH`, { x: 50, y: 700, size: 12, font });
+      page.drawText(`Backend development - 12h @ 90 EUR`, { x: 50, y: 660, size: 12, font });
+      page.drawText(`Total: ${total} EUR`, { x: 50, y: 620, size: 14, font, color: rgb(0, 0, 0) });
+      const bytes = await doc.save({ useObjectStreams: false });
+      const p = join(c.sandbox, fileName);
+      writeFileSync(p, bytes);
+      return p;
+    }
+    const inv1 = await makeInvoicePdf("invoice-001.pdf", "INV-001", "1250.00");
+    const inv2 = await makeInvoicePdf("invoice-002.pdf", "INV-002", "980.00");
+    const inv3 = await makeInvoicePdf("invoice-003.pdf", "INV-003", "1476.00");
+    say("$ Inspect a PDF, merge a few, stamp PAID, and read the total back.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("pdf_info", { path: inv1 });
+    const infoResult = JSON.parse(await c.call("pdf_info", { path: inv1 }));
+    resultLine(JSON.stringify({ file: infoResult.file, size: infoResult.size, pages: infoResult.pages, encrypted: infoResult.encrypted, paper: infoResult.page_sizes[0].paper }, null, 2));
+    await sleep(STEP_DELAY_MS);
+    const merged = join(c.sandbox, "merged.pdf");
+    toolLine("pdf_merge", { paths: [inv1, inv2, inv3], out_path: merged });
+    resultLine((await c.call("pdf_merge", { paths: [inv1, inv2, inv3], out_path: merged })).split("\n\n")[0]);
+    await sleep(STEP_DELAY_MS);
+    const stamped = join(c.sandbox, "merged-paid.pdf");
+    toolLine("pdf_stamp", { path: merged, text: "PAID", out_path: stamped });
+    resultLine((await c.call("pdf_stamp", { path: merged, text: "PAID", out_path: stamped })).split("\n\n")[0]);
+    await sleep(STEP_DELAY_MS);
+    toolLine("pdf_text", { path: stamped, pages: "3" });
+    resultLine((await c.call("pdf_text", { path: stamped, pages: "3" })).split("\n\nHow this was read")[0]);
+  }
+
+  if (name === "calendar") {
+    const { writeFileSync } = await import("node:fs");
+    const icsPath = join(c.sandbox, "work.ics");
+    const dtStart = "20260908T090000";
+    const dtEnd = "20260908T093000";
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//mcp-servers demo//EN",
+      "BEGIN:VEVENT",
+      "UID:standup-1@example.com",
+      `DTSTART;TZID=Europe/Warsaw:${dtStart}`,
+      `DTEND;TZID=Europe/Warsaw:${dtEnd}`,
+      "SUMMARY:Daily standup",
+      "RRULE:FREQ=WEEKLY;COUNT=4",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "UID:acme-review@example.com",
+      "DTSTART;TZID=Europe/Warsaw:20260910T140000",
+      "DTEND;TZID=Europe/Warsaw:20260910T150000",
+      "SUMMARY:Acme GmbH quarterly review",
+      "LOCATION:Zoom",
+      "END:VEVENT",
+      "END:VCALENDAR",
+      "",
+    ].join("\r\n");
+    writeFileSync(icsPath, ics);
+    say("$ Import a calendar, list events, see free/busy, and bill a meeting.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("ics_import", { path: icsPath, name: "work" });
+    resultLine(await c.call("ics_import", { path: icsPath, name: "work" }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("events_list", { calendar: "work", from: "2026-09-08", to: "2026-09-30" });
+    const listResult = await c.call("events_list", { calendar: "work", from: "2026-09-08", to: "2026-09-30" });
+    resultLine(listResult);
+    await sleep(STEP_DELAY_MS);
+    toolLine("free_busy", { calendars: ["work"], from: "2026-09-08", to: "2026-09-12" });
+    resultLine(await c.call("free_busy", { calendars: ["work"], from: "2026-09-08", to: "2026-09-12" }));
+    await sleep(STEP_DELAY_MS);
+    const idMatch = listResult.match(/id (\S+)/);
+    const eventId = idMatch ? idMatch[1] : "";
+    toolLine("event_to_time_entry", { event_id: eventId, project: "acme" });
+    resultLine(await c.call("event_to_time_entry", { event_id: eventId, project: "acme" }));
+  }
+
   if (name === "clauses") {
     say("$ Search the clause library, assemble a contract, and check what it still needs.\n");
     await sleep(STEP_DELAY_MS);

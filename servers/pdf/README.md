@@ -2,7 +2,7 @@
 
 Say "stamp PAID on that invoice and save a copy" or "pull pages 2 to 6 out of this scan and merge them with the contract" and it happens, on your machine, in a second. This MCP server does the small PDF jobs that otherwise send you to a web uploader: merge, split by page range, extract or reorder pages, rotate a sideways scan, stamp `PAID` or `DRAFT` or any text you like, put your business name and VAT id in the footer, count pages across a folder of files, and read a PDF's text back as text. No upload, no account, no native dependency, no office install.
 
-![pdf logo](../../assets/pdf-logo.png)
+![pdf demo](../../assets/demo-pdf.gif)
 
 **The PDF chores of a freelance business, done from chat instead of from a browser tab you do not trust with an invoice.**
 
