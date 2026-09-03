@@ -77,8 +77,8 @@ the output as a first draft to take to a qualified lawyer, not as a contract to 
 | `clause_list` | List every clause, in assembly order, optionally narrowed to one category |
 | `clause_search` | Ranked search over titles, tags, categories and bodies. A title match outranks a body mention. Pro adds jurisdiction and tag filters |
 | `clause_import` | Bulk-load from a markdown file (`## Title`, `category:` / `tags:` lines, blank line, body) or from JSON (Pro) |
-| `clause_export` | Write the whole library to markdown (free) or JSON (Pro) |
-| `contract_assemble` | Build a document from clause ids or whole categories: orders the clauses, numbers them, fills the variables, brackets what is missing, prepends the not-legal-advice line, writes `.docx` or `.md` |
+| `clause_export` | Write the whole library to markdown (free) or JSON (Pro). An existing destination is never replaced unless you pass `overwrite: true` |
+| `contract_assemble` | Build a document from clause ids or whole categories: orders the clauses, numbers them, fills the variables, brackets what is missing, prepends the not-legal-advice line, writes `.docx` or `.md`. An existing `out_path` is never replaced unless you pass `overwrite: true` |
 | `variables_list` | Every `{{variable}}` a selection of clauses needs, and which clause needs it, before you assemble |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |

@@ -6,7 +6,7 @@
  * Nothing here is legal advice. Every starter clause carries that note, and every assembled
  * document opens with it.
  */
-import { closeSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -48,11 +48,20 @@ function expandPath(p: string): string {
  * processes writing a derived path would both pass the check and the second would clobber
  * the first. A path this server derived itself gets -2, -3, ... instead.
  */
-function outputPath(out: string | undefined, fallbackName: string, ext: string): string {
+function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {
   const p = expandPath(out ?? join(dataDir(), "documents", fallbackName));
   const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;
   mkdirSync(dirname(withExt), { recursive: true });
-  if (out !== undefined) return withExt;   // an explicit path is the caller's to overwrite
+  if (out !== undefined) {
+    // An explicit path is still reserved with an exclusive create: a second contract
+    // written to a path a signed document already occupies would otherwise destroy it
+    // with no warning anywhere in the answer.
+    if (overwrite) return withExt;
+    try { closeSync(openSync(withExt, "wx")); return withExt; } catch (e) {
+      if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
+      throw new Error(`${withExt} already exists and nothing was written. Pass overwrite: true to replace it, or give a different out_path.`);
+    }
+  }
   const stem = withExt.slice(0, withExt.length - ext.length);
   for (let n = 1; n < 1000; n++) {
     const candidate = n === 1 ? withExt : `${stem}-${n}${ext}`;
@@ -74,8 +83,16 @@ function cleanBlocks(blocks: Block[]): Block[] {
   });
 }
 
+const MAX_CATEGORY = 40;
+
+/**
+ * A category is a grouping key, printed in every list and in clauses://categories. A 10 000
+ * character one is not a grouping, it is a paste accident, and it was previously stored
+ * verbatim and echoed back in every listing.
+ */
 function slugCategory(s: string | undefined): string {
-  return (s ?? "general").toLowerCase().trim().replace(/\s+/g, "-") || "general";
+  const v = (s ?? "general").toLowerCase().trim().replace(/\s+/g, "-") || "general";
+  return v.length > MAX_CATEGORY ? v.slice(0, MAX_CATEGORY) : v;
 }
 
 function view(c: Clause) {
@@ -108,7 +125,7 @@ server.registerTool("clause_add", {
   inputSchema: {
     title: z.string().min(1).describe("Clause heading, for example 'Late Payment'"),
     body: z.string().min(1).describe("The clause text. {{variable}} placeholders are filled at assembly time"),
-    category: z.string().describe(`Grouping, for example ${CATEGORY_ORDER.slice(0, 6).join(", ")}`),
+    category: z.string().describe(`Grouping. The known ones, in assembly order, are ${CATEGORY_ORDER.join(", ")} -- reuse one of these; any other name is accepted but sorts last in a category-based assembly`),
     tags: z.array(z.string()).optional(),
     variables: z.array(z.string()).optional().describe("Declared variable names. Anything {{...}} in the body is detected anyway"),
     jurisdiction: z.string().optional().describe("Where the clause is meant to apply, for example 'PL' or 'England and Wales'"),
@@ -267,6 +284,7 @@ server.registerTool("clause_import", {
 }, async (a) => {
   try {
     const file = expandPath(a.path);
+    if (!existsSync(file)) return fail(`no such file: ${file}`);
     const isJson = file.toLowerCase().endsWith(".json");
     if (isJson && !gate.isPro()) {
       return ok("JSON import and export are Pro features. Markdown import works in the free tier. " + gate.upgradeText("JSON import and export"));
@@ -316,6 +334,7 @@ server.registerTool("clause_export", {
   inputSchema: {
     path: z.string().describe("Destination file path"),
     format: z.enum(["json", "markdown"]).describe("json (Pro) or markdown (free)"),
+    overwrite: z.boolean().optional().describe("Replace the destination if a file is already there. Without it an existing file is never touched"),
   },
 }, async (a) => {
   try {
@@ -326,6 +345,12 @@ server.registerTool("clause_export", {
     const list = orderByCategory(db.clauses);
     const file = expandPath(a.path);
     mkdirSync(dirname(file), { recursive: true });
+    if (a.overwrite !== true) {
+      try { closeSync(openSync(file, "wx")); } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
+        return fail(`${file} already exists and nothing was written. Pass overwrite: true to replace it, or give a different path.`);
+      }
+    }
     writeFileSync(file, a.format === "json" ? toClauseJson(list) : toMarkdown(list));
     return ok(`Exported ${list.length} clauses to ${file} as ${a.format}.`);
   } catch (e) { return fail((e as Error).message); }
@@ -363,6 +388,7 @@ server.registerTool("contract_assemble", {
     client: z.string().optional().describe("Client name; also fills the {{client}} variable"),
     out_path: z.string().optional().describe("Where to write the file. Default: the server data directory"),
     format: z.enum(["docx", "markdown"]).optional().describe("docx (default) or markdown"),
+    overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Without it an existing file is never touched"),
   },
 }, async (a) => {
   try {
@@ -379,11 +405,11 @@ server.registerTool("contract_assemble", {
     const stem = (a.client ? `${a.client}-` : "") + a.title;
     const name = stem.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "contract";
     if (format === "markdown") {
-      const file = outputPath(a.out_path, `${name}.md`, ".md");
+      const file = outputPath(a.out_path, `${name}.md`, ".md", a.overwrite === true);
       writeFileSync(file, result.markdown);
       return json({ path: file, format, clauses: picked.map((c) => c.id), filled: result.filled, unfilled: result.unfilled, disclaimer: DISCLAIMER });
     }
-    const file = outputPath(a.out_path, `${name}.docx`, ".docx");
+    const file = outputPath(a.out_path, `${name}.docx`, ".docx", a.overwrite === true);
     const buf = await buildDocx({
       title: clean(a.title),
       blocks: cleanBlocks(result.blocks),

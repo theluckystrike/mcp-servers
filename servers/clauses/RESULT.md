@@ -80,3 +80,23 @@ in, `[latefeepercent]` out; `[a_b]` survives (a single underscore has no closing
 or more underscores does not. Every server in this repo that prints a variable name, a file path, an identifier
 or a snake_case key into a .docx has the same defect, and only a test that reads the .docx back can see it --
 asserting on the block list passed to `buildDocx` passes clean.
+
+## Adversarial audit and user-value run, 2026-09-03
+
+Full write-up: `docs/CLAUSES_AUDIT.md`.
+
+status: DONE
+evidence: 28 adversarial probes over 4 fresh data dirs + 5 claude-CLI scenarios; npm test 25/25;
+  every .docx assertion read from word/document.xml, never from the tool's answer
+artifacts: servers/clauses/src/index.ts, servers/clauses/test/adversarial.test.mjs,
+  docs/CLAUSES_AUDIT.md, /private/tmp/clausesaudit/, /private/tmp/uvc31/
+cost: 29 wall minutes; $0.299 of claude CLI usage in Part 2; zero paid API calls elsewhere
+failures: 4 server defects found and fixed -- silent overwrite of an explicit out_path,
+  silent overwrite of a clause_export destination, a 10 000 character category stored verbatim,
+  a missing-file import answered with a Pro upsell
+insight: the 4 defects are all "the answer was true about the tool and false about the disk".
+  Nothing crashed, no schema was violated, and every one of them was invisible to an assertion on
+  the tool's own text -- they only appear when the test reads the file back. The two overwrite bugs
+  are the same shape as docx defects 12/14, which means the pattern is the repo's, not one server's:
+  every writing tool here defaults to clobber, and the audit that reads the answer instead of the
+  file will pass all of them.
