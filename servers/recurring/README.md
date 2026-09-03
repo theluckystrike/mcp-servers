@@ -81,11 +81,12 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `schedule_update` | Change client, items, currency, cadence, dates, due days or notes. Periods already invoiced are never re-issued |
 | `schedule_pause` | Stop generating without deleting; history is kept |
 | `schedule_resume` | Make it active again. Periods that fell due while paused are still due |
-| `schedule_delete` | Remove the schedule. Invoices it made stay in the invoice server; its history is kept so a re-created schedule cannot double-bill |
-| `schedule_upcoming` | What falls due in the next N days, with amounts and totals per currency. Free covers 30 days |
-| `invoice_generate_due` | Create the invoices that are due as of a date and render their PDFs. Idempotent, keyed by period; reports created and skipped. `dry_run` shows the run first. Free and unlimited |
+| `schedule_delete` | Remove the schedule. Invoices it made stay in the invoice server and its history is kept as an audit trail. A re-created schedule gets a new id, so `invoice_generate_due` warns when it re-covers a period the old one already billed |
+| `schedule_skip` | Skip ONE occurrence for good, without pausing the schedule -- the answer to "do not bill this client for October". `undo: true` puts the period back |
+| `schedule_upcoming` | What falls due in the next N days, with amounts and totals per currency, plus any period that already fell due and was never invoiced. Free covers 30 days |
+| `invoice_generate_due` | Create the invoices that are due as of a date and render their PDFs. Idempotent, keyed by period; reports created and skipped. At most 60 invoices per call, oldest period first, and it says how many are still due. `dry_run` shows the run first. Free and unlimited |
 | `schedule_history` | Pro: the audit log for one schedule -- every period, invoice number, dates, amount, paid status and PDF path |
-| `forecast` | Expected revenue per calendar month per currency. Free covers 3 months |
+| `forecast` | Expected revenue per calendar month per currency, with paused schedules listed separately rather than dropped. Free covers 3 months |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |
 
@@ -102,6 +103,7 @@ Prompt: `monthly_billing_run` -- dry run, generate, list what is coming, then re
 | "Run this month's billing." | `monthly_billing_run` / `invoice_generate_due` |
 | "Show me what would be created before you create it." | `invoice_generate_due {dry_run: true}` |
 | "Pause the Beta Corp retainer, they are on hold." | `schedule_pause` |
+| "Do not bill Acme for October." | `schedule_skip` |
 | "Put the Acme retainer up to 100 EUR an hour from now on." | `schedule_update` |
 | "How much will I invoice per month next year?" | `forecast` |
 | "Show me every invoice this retainer has produced." | `schedule_history` |

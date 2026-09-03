@@ -11,6 +11,7 @@ import {
   type Business, type Client, type Invoice,
 } from "@theluckystrike/mcp-invoice/lib";
 import { z } from "zod";
+import { isKnownCurrency } from "./currency.js";
 import {
   addMonthsIso, everyLabel, isIsoDate, nextOccurrence, occurrencesBetween,
   type Every, type PeriodRule,
@@ -23,6 +24,22 @@ import {
 const FREE_ACTIVE_SCHEDULES = 3;
 const FREE_UPCOMING_DAYS = 30;
 const FREE_FORECAST_MONTHS = 3;
+
+/**
+ * One call to invoice_generate_due creates at most this many invoices.
+ *
+ * Measured before the cap: a schedule starting 1900-01-01 offered 1,520 due periods, and
+ * `invoice_generate_due {as_of: "2126-01-01"}` on a plain monthly schedule created 1,193
+ * real invoices and 1,193 PDFs (6.0 MB, 6.8 s) from a single call, burning 1,193 numbers
+ * out of the shared invoice series. A mistyped year is a normal typo, so the run is
+ * bounded instead: the oldest periods are billed first, the rest stay due, and the answer
+ * says how many are left and that another call continues. Idempotency is unchanged --
+ * the key is still (schedule_id, period) -- so continuing is just calling it again.
+ */
+const MAX_PERIODS_PER_RUN = 60;
+
+/** A schedule prints one invoice per period; a 1,000-line PDF is a mistake, not a retainer. */
+const MAX_ITEMS = 200;
 const gate = createLicenseGate({ product: "recurring" });
 
 const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
@@ -194,7 +211,7 @@ server.registerTool("schedule_create", {
   description: "Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due runs. Month steps keep the start date's day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March.",
   inputSchema: {
     client: z.string().describe("Client name or id, as in the invoice server. Unknown names are created on the first generated invoice"),
-    items: z.array(itemSchema).min(1).describe("The line items billed every period"),
+    items: z.array(itemSchema).min(1).max(MAX_ITEMS, `a schedule can carry at most ${MAX_ITEMS} line items`).describe("The line items billed every period"),
     currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Defaults to your business default currency"),
     every: everySchema,
     start_date: z.string().describe("YYYY-MM-DD. The first invoice falls on this date"),
@@ -211,6 +228,7 @@ server.registerTool("schedule_create", {
       if (!isIsoDate(a.start_date)) return fail(`start_date must be a real calendar date as YYYY-MM-DD, got "${a.start_date}".`);
       if (a.end_date !== undefined && !isIsoDate(a.end_date)) return fail(`end_date must be a real calendar date as YYYY-MM-DD, got "${a.end_date}".`);
       if (a.end_date && a.end_date < a.start_date) return fail(`end_date ${a.end_date} is before start_date ${a.start_date}.`);
+      if (a.currency && !isKnownCurrency(a.currency)) return fail(`"${a.currency.toUpperCase()}" is not an ISO 4217 currency code. Use EUR, USD, GBP, PLN and so on.`);
       const list = getSchedules();
       const today = isoDate();
       const pro = gate.isPro();
@@ -287,7 +305,7 @@ server.registerTool("schedule_update", {
   inputSchema: {
     id: z.string(),
     client: z.string().optional(),
-    items: z.array(itemSchema).min(1).optional(),
+    items: z.array(itemSchema).min(1).max(MAX_ITEMS, `a schedule can carry at most ${MAX_ITEMS} line items`).optional(),
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional(),
     every: everySchema.optional(),
     start_date: z.string().optional(),
@@ -306,6 +324,7 @@ server.registerTool("schedule_update", {
       if (!s) return fail(`no schedule ${a.id}. List them with schedule_list.`);
       if (a.start_date !== undefined && !isIsoDate(a.start_date)) return fail(`start_date must be YYYY-MM-DD, got "${a.start_date}".`);
       if (a.end_date != null && !isIsoDate(a.end_date)) return fail(`end_date must be YYYY-MM-DD, got "${a.end_date}".`);
+      if (a.currency !== undefined && !isKnownCurrency(a.currency)) return fail(`"${a.currency.toUpperCase()}" is not an ISO 4217 currency code. Use EUR, USD, GBP, PLN and so on.`);
       const pro = gate.isPro();
       let note = "";
       if (a.client !== undefined) s.client = a.client.trim();
@@ -368,7 +387,7 @@ server.registerTool("schedule_resume", {
 
 server.registerTool("schedule_delete", {
   title: "Delete a schedule",
-  description: "Remove a schedule. Invoices it already generated stay in the invoice server untouched; its generation history is kept so a re-created schedule cannot double-bill a period it already covered.",
+  description: "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Note that re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again: invoice_generate_due will warn that another schedule for that client already covered them.",
   inputSchema: { id: z.string() },
 }, async (a) => {
   try {
@@ -378,7 +397,54 @@ server.registerTool("schedule_delete", {
       if (!s) return fail(`no schedule ${a.id}. List them with schedule_list.`);
       setSchedules(list.filter((x) => x.id !== s.id));
       const n = getHistory().filter((h) => h.schedule_id === s.id).length;
-      return ok(`Deleted schedule ${s.id} (${s.client}). ${n} generated invoice${n === 1 ? "" : "s"} remain in the invoice server.`);
+      return ok(`Deleted schedule ${s.id} (${s.client}). ${n} generated invoice${n === 1 ? "" : "s"} remain in the invoice server, and its ${n} history row${n === 1 ? "" : "s"} are kept.` + (n ? " Re-creating this schedule starts a new id, so those periods would be offered again; invoice_generate_due warns when that happens." : ""));
+    });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
+});
+
+server.registerTool("schedule_skip", {
+  title: "Skip one period",
+  description: "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. This is the answer to \"pause this client for October\" -- schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good. Pass undo: true to un-skip a period that has not been invoiced.",
+  inputSchema: {
+    id: z.string().describe("Schedule id, or a client name"),
+    period: z.string().describe("The occurrence date to skip, YYYY-MM-DD, exactly as it appears in schedule_upcoming or forecast"),
+    undo: z.boolean().optional().describe("Remove a previous skip so the period becomes due again. Default false"),
+  },
+}, async (a) => {
+  try {
+    return await locked(() => {
+      const list = getSchedules();
+      const s = findSchedule(list, a.id);
+      if (!s) return fail(`no schedule ${a.id}. List them with schedule_list.`);
+      if (!isIsoDate(a.period)) return fail(`period must be a real calendar date as YYYY-MM-DD, got "${a.period}".`);
+      const history = getHistory();
+      const existing = history.find((h) => h.schedule_id === s.id && h.period === a.period);
+      if (a.undo) {
+        if (!existing) return fail(`${s.client} has no record for ${a.period}, so there is nothing to undo.`);
+        if (!existing.skipped) return fail(`${a.period} was invoiced as ${existing.invoice_number}, not skipped. Delete that invoice in the invoice server if it was wrong.`);
+        setHistory(history.filter((h) => h !== existing));
+        return ok(`${s.client} ${a.period} is due again. Run invoice_generate_due to create it.`);
+      }
+      if (existing) {
+        return existing.skipped
+          ? ok(`${s.client} ${a.period} was already skipped; nothing changed.`)
+          : fail(`${a.period} was already invoiced as ${existing.invoice_number}. Skipping only works on a period that has not been billed yet.`);
+      }
+      const dates = occurrencesBetween(ruleOf(s), a.period, a.period);
+      if (!dates.includes(a.period)) {
+        const near = occurrencesBetween(ruleOf(s), addDays(a.period, 62), addDays(a.period, -62));
+        return fail(`${a.period} is not an occurrence of ${s.client}'s ${everyLabel(s.every)} schedule.` +
+          (near.length ? ` Nearby occurrences: ${near.join(", ")}.` : ""));
+      }
+      const cur = currencyOf(s);
+      history.push({
+        schedule_id: s.id, period: a.period, invoice_number: "", issue_date: a.period,
+        due_date: a.period, currency: cur, total_minor: 0, skipped: true,
+        created: new Date().toISOString(),
+      });
+      setHistory(history);
+      return ok(`Skipped ${s.client} ${a.period} (${formatMoney(scheduleTotalMinor(s, cur), cur)} not billed). ` +
+        `The schedule stays active, so every other period bills as normal. Undo with schedule_skip {id: "${s.id}", period: "${a.period}", undo: true}.`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -397,6 +463,7 @@ server.registerTool("schedule_upcoming", {
       note = `Free tier looks ${FREE_UPCOMING_DAYS} days ahead; showing ${FREE_UPCOMING_DAYS} days. ${gate.upgradeText("a longer horizon")}`;
     }
     const to = addDays(today, days);
+    const upcomingDone = generatedKeys(getHistory());
     const rows: Array<Record<string, unknown>> = [];
     const totals: Record<string, number> = {};
     for (const s of getSchedules()) {
@@ -404,6 +471,7 @@ server.registerTool("schedule_upcoming", {
       const cur = currencyOf(s);
       const per = scheduleTotalMinor(s, cur);
       for (const d of occurrencesBetween(ruleOf(s), to, today)) {
+        if (upcomingDone.has(`${s.id}|${d}`)) continue;
         rows.push({
           due_date: d, schedule_id: s.id, client: s.client, every: everyLabel(s.every),
           amount: formatMoney(per, cur), currency: cur,
@@ -413,9 +481,27 @@ server.registerTool("schedule_upcoming", {
       }
     }
     rows.sort((x, y) => String(x.due_date).localeCompare(String(y.due_date)));
+    // D-R5: "what is due" also means the periods that already fell due and were never
+    // invoiced. Looking only forward hid a whole unbilled month from the answer.
+    const history = getHistory();
+    const done = generatedKeys(history);
+    const backlog: Array<Record<string, unknown>> = [];
+    for (const s of getSchedules()) {
+      if (s.status !== "active") continue;
+      const cur = currencyOf(s);
+      const per = scheduleTotalMinor(s, cur);
+      for (const d of occurrencesBetween(ruleOf(s), addDays(today, -1))) {
+        if (done.has(`${s.id}|${d}`)) continue;
+        backlog.push({ period: d, schedule_id: s.id, client: s.client, amount: formatMoney(per, cur), currency: cur });
+      }
+    }
+    backlog.sort((x, y) => String(x.period).localeCompare(String(y.period)));
     return json({
       as_of: today, horizon_days: days, to,
       count: rows.length, occurrences: rows,
+      past_due_not_yet_invoiced: backlog.length
+        ? { count: backlog.length, periods: backlog.slice(0, MAX_PERIODS_PER_RUN), hint: "run invoice_generate_due to create these" }
+        : undefined,
       totals_per_currency: Object.entries(totals).map(([c, v]) => formatMoney(v, c)),
       note: note || undefined,
     });
@@ -441,13 +527,35 @@ server.registerTool("invoice_generate_due", {
         throw new Error(`no schedule ${a.schedule_id}. List them with schedule_list.`);
       }
       const history = getHistory();
-      const rows = dueRows(schedules, history, asOf, a.schedule_id);
+      const all = dueRows(schedules, history, asOf, a.schedule_id);
+      const rows = all.slice(0, MAX_PERIODS_PER_RUN);
+      const remaining = all.length - rows.length;
+      // D-R3: history is keyed by schedule_id, so a schedule deleted and re-created gets a
+      // new id and its old periods look unbilled. Never silently re-bill without saying so.
+      // The client name comes from the invoice the row produced, so a history row whose
+      // schedule no longer exists is still recognised.
+      const nameOfInvoice = new Map(getInvoices().map((i) => [i.number, i.client.name.trim().toLowerCase()]));
+      const byClientPeriod = new Set(history.filter((h) => !h.skipped).map((h) => {
+        const name = nameOfInvoice.get(h.invoice_number)
+          ?? schedules.find((x) => x.id === h.schedule_id)?.client.trim().toLowerCase();
+        return name ? `${name}|${h.period}` : `\u0000${h.schedule_id}|${h.period}`;
+      }));
+      const duplicates = rows
+        .filter((r) => byClientPeriod.has(`${r.schedule.client.trim().toLowerCase()}|${r.period}`))
+        .map((r) => ({
+          schedule_id: r.schedule.id, client: r.schedule.client, period: r.period,
+          reason: "another schedule for this client already invoiced this period",
+        }));
       const skipped = schedules
         .filter((s) => (!a.schedule_id || s.id === a.schedule_id))
         .flatMap((s) => occurrencesBetween(ruleOf(s), asOf)
           .filter((p) => generatedKeys(history).has(`${s.id}|${p}`))
-          .map((p) => ({ schedule_id: s.id, client: s.client, period: p, reason: "already invoiced" })));
-      if (a.dry_run) return { rows, skipped, dry: true as const };
+          .map((p) => ({
+            schedule_id: s.id, client: s.client, period: p,
+            reason: history.find((h) => h.schedule_id === s.id && h.period === p)?.skipped
+              ? "skipped by schedule_skip" : "already invoiced",
+          })));
+      if (a.dry_run) return { rows, skipped, remaining, duplicates, dry: true as const };
       for (const r of rows) {
         const inv = issueInvoice(r.schedule, r.period);
         history.push({
@@ -458,7 +566,7 @@ server.registerTool("invoice_generate_due", {
         created.push({ invoice: inv, schedule: r.schedule, period: r.period });
       }
       setHistory(history);
-      return { rows, skipped, dry: false as const };
+      return { rows, skipped, remaining, duplicates, dry: false as const };
     });
     if (result.dry) {
       return json({
@@ -468,6 +576,11 @@ server.registerTool("invoice_generate_due", {
           amount: formatMoney(scheduleTotalMinor(r.schedule, currencyOf(r.schedule)), currencyOf(r.schedule)),
         })),
         skipped: result.skipped,
+        still_due_after_this_run: result.remaining,
+        duplicate_warnings: result.duplicates.length ? result.duplicates : undefined,
+        note: result.remaining > 0
+          ? `One run creates at most ${MAX_PERIODS_PER_RUN} invoices. ${result.remaining} more periods would still be due; call invoice_generate_due again to continue.`
+          : undefined,
       });
     }
 
@@ -501,6 +614,12 @@ server.registerTool("invoice_generate_due", {
       (lines.length ? lines.join("\n") + "\n\n" : "") +
       (created.length ? `Total: ${Object.entries(totals).map(([c, v]) => formatMoney(v, c)).join(", ")}\n\n` : "") +
       `They are stored in the invoice server (${invoiceDataDir()}) and appear in its invoice_list and overdue_report.` +
+      (result.remaining > 0
+        ? `\n\nOne run creates at most ${MAX_PERIODS_PER_RUN} invoices, oldest period first. ${result.remaining} period${result.remaining === 1 ? " is" : "s are"} still due; call invoice_generate_due again to continue, or check as_of and the schedule's start_date if that number looks wrong.`
+        : "") +
+      (result.duplicates.length
+        ? `\n\nWarning: ${result.duplicates.length} of these repeat a period another schedule for the same client already invoiced (${result.duplicates.slice(0, 5).map((d) => `${d.client} ${d.period}`).join(", ")}). Delete the duplicate invoices in the invoice server if that was not intended.`
+        : "") +
       `${businessMissing() ? `\n\n${NO_BUSINESS_NOTE}` : ""}`,
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -524,9 +643,9 @@ server.registerTool("schedule_history", {
     return json({
       schedule_id: id, client: s?.client, count: rows.length,
       generated: rows.map((h) => ({
-        period: h.period, invoice: h.invoice_number, issue_date: h.issue_date,
+        period: h.period, invoice: h.skipped ? null : h.invoice_number, issue_date: h.issue_date,
         due_date: h.due_date, amount: formatMoney(h.total_minor, h.currency),
-        status: paid.get(h.invoice_number)?.status ?? "deleted in the invoice server",
+        status: h.skipped ? "skipped" : (paid.get(h.invoice_number)?.status ?? "deleted in the invoice server"),
         pdf: h.pdf_path,
       })),
     });
@@ -550,11 +669,31 @@ server.registerTool("forecast", {
     const to = addMonthsIso(last.slice(0, 8) + "01", 1, 1);   // first of the month after `last`
     const end = addDays(to, -1);
     const buckets = new Map<string, Record<string, number>>();
+    // D-R7: a paused schedule used to vanish from the forecast entirely, so pausing one
+    // client answered "0" and hid everything. Paused rows are reported separately.
+    const pausedRows: Array<Record<string, unknown>> = [];
+    // D-R9: a period that is already invoiced, or that schedule_skip closed, is not future
+    // revenue. Forecasting the flat cadence contradicted schedule_skip's own answer.
+    const settled = generatedKeys(getHistory());
+    const skippedRows: Array<Record<string, unknown>> = [];
     for (const s of getSchedules()) {
-      if (s.status !== "active") continue;
       const cur = currencyOf(s);
       const per = scheduleTotalMinor(s, cur);
-      for (const d of occurrencesBetween(ruleOf(s), end, today)) {
+      const dates = occurrencesBetween(ruleOf(s), end, today);
+      if (s.status !== "active") {
+        if (dates.length) {
+          pausedRows.push({
+            schedule_id: s.id, client: s.client, occurrences: dates.length,
+            would_be: formatMoney(per * dates.length, cur), months: dates.map((d) => d.slice(0, 7)),
+          });
+        }
+        continue;
+      }
+      for (const d of dates) {
+        if (settled.has(`${s.id}|${d}`)) {
+          skippedRows.push({ schedule_id: s.id, client: s.client, period: d, amount: formatMoney(per, cur) });
+          continue;
+        }
         const m = d.slice(0, 7);
         const b = buckets.get(m) ?? {};
         b[cur] = (b[cur] ?? 0) + per;
@@ -568,6 +707,10 @@ server.registerTool("forecast", {
     return json({
       from: today, months, through: end, count: rows.length, per_month: rows,
       total_per_currency: Object.entries(totals).map(([c, v]) => formatMoney(v, c)),
+      excluded_already_invoiced_or_skipped: skippedRows.length ? skippedRows : undefined,
+      paused_not_included: pausedRows.length
+        ? { count: pausedRows.length, schedules: pausedRows, hint: "resume with schedule_resume, or skip one period with schedule_skip" }
+        : undefined,
       note: note || undefined,
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }

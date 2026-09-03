@@ -51,6 +51,8 @@ export interface HistoryEntry {
   currency: string;
   total_minor: number;
   pdf_path?: string;
+  /** A period the user deliberately skipped: no invoice was ever created for it. */
+  skipped?: boolean;
   created: string;
 }
 
