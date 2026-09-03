@@ -4,7 +4,7 @@ Ask your assistant what something is worth in another currency and get a real an
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
-<img src="../../assets/currency-logo.png" alt="mcp-currency" width="120" />
+![currency demo](../../assets/demo-currency.gif)
 
 **Real ECB exchange rates in your chat -- no API key, cached locally, works offline.**
 

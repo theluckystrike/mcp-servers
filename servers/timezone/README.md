@@ -9,7 +9,7 @@ as plain JSON on your own machine.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
-![mcp-timezone](../../assets/timezone-logo.png)
+![timezone demo](../../assets/demo-timezone.gif)
 
 **Find a meeting time that works for everyone abroad, convert any time between cities, and write the invite -- zero setup, all local.**
 

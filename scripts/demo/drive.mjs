@@ -98,6 +98,36 @@ function startFixtureShop() {
   });
 }
 
+function startEcbFixture() {
+  const iso = (d) => d.toISOString().slice(0, 10);
+  const daysAgo = (n) => iso(new Date(Date.now() - n * 86_400_000));
+  const D0 = daysAgo(0), D1 = daysAgo(1), D2 = daysAgo(2), D5 = daysAgo(5);
+  const day = (t, usd, gbp, pln) =>
+    `<Cube time='${t}'><Cube currency='USD' rate='${usd}'/><Cube currency='GBP' rate='${gbp}'/>` +
+    `<Cube currency='PLN' rate='${pln}'/></Cube>`;
+  const HEAD = `<?xml version="1.0" encoding="UTF-8"?>` +
+    `<gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01" xmlns="http://www.ecb.int/vocabulary/2002-08-01/eurofxref"><Cube>`;
+  const TAIL = `</Cube></gesmes:Envelope>`;
+  const DAILY_XML = HEAD + day(D0, "1.0812", "0.85023", "4.2650") + TAIL;
+  const HIST_XML = HEAD +
+    day(D0, "1.0812", "0.85023", "4.2650") +
+    day(D1, "1.0790", "0.85110", "4.2710") +
+    day(D2, "1.0755", "0.85240", "4.2800") +
+    day(D5, "1.0731", "0.85310", "4.2890") +
+    TAIL;
+  const srv = createServer((req, res) => {
+    if (req.url.includes("eurofxref-daily.xml")) { res.writeHead(200, { "content-type": "text/xml" }); res.end(DAILY_XML); return; }
+    if (req.url.includes("eurofxref-hist.xml")) { res.writeHead(200, { "content-type": "text/xml" }); res.end(HIST_XML); return; }
+    res.writeHead(404); res.end("no");
+  });
+  return new Promise((resolve) => {
+    srv.listen(0, "127.0.0.1", () => resolve({
+      url: `http://127.0.0.1:${srv.address().port}`,
+      close: () => srv.close(),
+    }));
+  });
+}
+
 function say(line) { console.log(line); }
 function toolLine(name, args) {
   const a = args && Object.keys(args).length ? " " + JSON.stringify(args) : "";
@@ -110,7 +140,13 @@ function resultLine(text) {
 async function run(name) {
   const entry = join(ROOT, "servers", name, "dist", "index.js");
   const showStderr = name === "office-suite" ? (line) => line.startsWith("mcp-office-suite ready") : undefined;
-  const c = client(entry, {}, { showStderr });
+  let ecb;
+  const env = {};
+  if (name === "currency") {
+    ecb = await startEcbFixture();
+    env.ECB_BASE_URL = ecb.url;
+  }
+  const c = client(entry, env, { showStderr });
   await c.init();
 
   const today = new Date().toISOString().slice(0, 10);
@@ -204,8 +240,69 @@ async function run(name) {
     resultLine(await c.call("invoice_from_hours", { client: "Acme GmbH", hours: 6, rate: 120, currency: "EUR", tax_rate: 23 }));
   }
 
+  if (name === "currency") {
+    say("$ Convert an amount, compare a few currencies, and see how a pair has moved.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("convert", { amount: 100, from: "USD", to: "PLN" });
+    resultLine(await c.call("convert", { amount: 100, from: "USD", to: "PLN" }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("fx_rates_for", { target: "USD", currencies: ["EUR", "GBP"] });
+    resultLine(await c.call("fx_rates_for", { target: "USD", currencies: ["EUR", "GBP"] }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("rate_history", { from: "USD", to: "PLN", days: 30 });
+    resultLine(await c.call("rate_history", { from: "USD", to: "PLN", days: 30 }));
+  }
+
+  if (name === "timezone") {
+    say("$ Convert a time across cities, find a meeting slot, and write the invite.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("convert_time", { time: "2026-09-10 15:00", from_zone: "Warsaw", to_zones: ["Denver", "Sydney"] });
+    resultLine(await c.call("convert_time", { time: "2026-09-10 15:00", from_zone: "Warsaw", to_zones: ["Denver", "Sydney"] }));
+    await sleep(STEP_DELAY_MS);
+    const participants = [
+      { name: "Mike", zone: "Warsaw" },
+      { name: "Dana", zone: "London" },
+      { name: "Priya", zone: "New York" },
+    ];
+    toolLine("find_meeting_slots", { participants, duration_minutes: 30, limit: 3 });
+    resultLine(await c.call("find_meeting_slots", { participants, duration_minutes: 30, limit: 3 }));
+    await sleep(STEP_DELAY_MS);
+    const icsPath = join(c.sandbox, "meeting.ics");
+    toolLine("ics_create", { title: "Roadmap sync", start: "2026-09-10 15:00", zone: "Warsaw", duration_minutes: 30, attendees: ["dana@example.com", "priya@example.com"] });
+    resultLine(await c.call("ics_create", { title: "Roadmap sync", start: "2026-09-10 15:00", zone: "Warsaw", duration_minutes: 30, attendees: ["dana@example.com", "priya@example.com"], out_path: icsPath }));
+  }
+
+  if (name === "docx") {
+    say("$ Set a business profile, write a client proposal, and read it back.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("business_set", { name: "Lucky Strike Software", default_currency: "EUR", default_tax_rate: 23 });
+    resultLine(await c.call("business_set", { name: "Lucky Strike Software", default_currency: "EUR", default_tax_rate: 23 }));
+    await sleep(STEP_DELAY_MS);
+    const proposalArgs = {
+      client: "Acme GmbH",
+      project_title: "Checkout rebuild",
+      summary: "Rebuild the checkout flow to cut cart abandonment.",
+      scope: ["Audit current checkout", "Rebuild payment step"],
+      deliverables: ["New checkout flow in production"],
+      timeline: [
+        { phase: "Discovery", duration: "1 week" },
+        { phase: "Build", duration: "3 weeks" },
+        { phase: "Launch", duration: "1 week" },
+      ],
+      price: { amount: 4500, currency: "EUR", terms: "50% on signature, 50% on delivery" },
+    };
+    toolLine("proposal_create", proposalArgs);
+    const proposalResult = await c.call("proposal_create", proposalArgs);
+    resultLine(proposalResult);
+    await sleep(STEP_DELAY_MS);
+    const docPath = JSON.parse(proposalResult.split("\n\n")[1]).file;
+    toolLine("doc_read", { path: docPath });
+    resultLine(await c.call("doc_read", { path: docPath }));
+  }
+
   await sleep(STEP_DELAY_MS);
   c.close();
+  if (ecb) ecb.close();
 }
 
 const name = process.argv[2];

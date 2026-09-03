@@ -2,6 +2,8 @@
 
 Say "write a proposal for Beta Corp, checkout rebuild, 4,500 EUR, three phases" and get a real `.docx` you can send. This MCP server writes Word documents from chat -- proposals, quotes, service agreements, statements of work and letters -- with your letterhead, headings, bullet and numbered lists and tables. It also turns markdown into `.docx`, reads an existing `.docx` back as text and outline, and fills `{{placeholders}}` in a template you already use, keeping every style, table, header and image of the original. Everything runs locally: no upload, no account, no native dependency.
 
+![docx demo](../../assets/demo-docx.gif)
+
 **Real Word documents from chat -- proposals, contracts and letters, without a template site or an office subscription.**
 
 ## 60-second install

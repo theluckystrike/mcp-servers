@@ -151,3 +151,72 @@ artifacts (this update):
 - assets/demo-expense-tracker.gif, assets/demo-office-suite.gif
 - servers/expense-tracker/README.md, servers/office-suite/README.md
 - README.md
+
+
+---
+
+## Update 2026-09-03: currency, timezone and docx demos
+
+Added demos for the three remaining servers not covered by the original six (currency, timezone, docx),
+following the same driver/tape pattern.
+
+1. Driver changes (`scripts/demo/drive.mjs`):
+   - `startEcbFixture()`: a local HTTP fixture serving `eurofxref-daily.xml` and `eurofxref-hist.xml` (USD, GBP,
+     PLN over several days), the same approach as `servers/currency/test/smoke.test.mjs`. When `run("currency")`
+     is called, the driver starts this fixture and passes its URL to the spawned server via `ECB_BASE_URL`, so
+     the demo makes zero external network calls and produces identical output on every run.
+   - New `currency` sequence: `convert` (100 USD -> PLN, with rate date), `fx_rates_for` (USD target vs EUR/GBP),
+     `rate_history` (USD/PLN, 30 days, summary with min/max/avg/change_pct).
+   - New `timezone` sequence: `convert_time` (Warsaw 15:00 -> Denver, Sydney), `find_meeting_slots` for three
+     participants (Warsaw, London, New York -- chosen because Denver/Sydney together have no realistic 9-5
+     overlap; Warsaw/London/New York overlap by roughly 2 hours UTC), limited to 3 results for a readable demo,
+     and `ics_create` writing a real `.ics` file into the sandbox data dir.
+   - New `docx` sequence: `business_set`, `proposal_create` (Acme GmbH, Checkout rebuild, EUR 4,500, three
+     timeline phases -- summary/scope/deliverables kept short to keep the recorded output, and so the GIF, small),
+     then `doc_read` of the resulting `.docx` path (parsed out of the `proposal_create` JSON response) to show a
+     round trip.
+
+2. Tapes: `scripts/demo/currency.tape`, `scripts/demo/timezone.tape`, `scripts/demo/docx.tape` -- identical
+   settings to the existing six (900x480, Dracula, 40ms typing, `Sleep 10s`).
+
+   Command run for each: `vhs scripts/demo/<name>.tape` from repo root.
+
+   Output sizes (limit 400 KB):
+   - assets/demo-currency.gif  229,518 bytes (224.1 KB) (convert, fx_rates_for, rate_history)
+   - assets/demo-timezone.gif  181,435 bytes (177.2 KB) (convert_time, find_meeting_slots, ics_create)
+   - assets/demo-docx.gif      285,043 bytes (278.4 KB) (business_set, proposal_create, doc_read)
+   All three under 400 KB.
+
+3. Verification (`file` + `ffprobe`):
+   ```
+   $ file assets/demo-currency.gif assets/demo-timezone.gif assets/demo-docx.gif
+   assets/demo-currency.gif: GIF image data, version 89a, 900 x 480
+   assets/demo-timezone.gif: GIF image data, version 89a, 900 x 480
+   assets/demo-docx.gif:     GIF image data, version 89a, 900 x 480
+
+   $ ffprobe -v error -select_streams v -show_entries stream=width,height,nb_frames,avg_frame_rate \
+       -of default=noprint_wrappers=1 assets/demo-<name>.gif
+   currency: width=900 height=480 avg_frame_rate=25/1 nb_frames=268
+   timezone: width=900 height=480 avg_frame_rate=25/1 nb_frames=267
+   docx:     width=900 height=480 avg_frame_rate=25/1 nb_frames=264
+   ```
+   All three are valid 900x480 GIFs at 25 fps with roughly 265-270 frames (about 10-11s), matching the existing
+   six demos.
+
+4. README updates:
+   - `servers/currency/README.md`: replaced the `<img src="../../assets/currency-logo.png" ...>` line with
+     `![currency demo](../../assets/demo-currency.gif)` (only that line changed).
+   - `servers/timezone/README.md`: replaced `![mcp-timezone](../../assets/timezone-logo.png)` with
+     `![timezone demo](../../assets/demo-timezone.gif)` (only that line changed).
+   - `servers/docx/README.md`: had no logo image line, so a `![docx demo](../../assets/demo-docx.gif)` line was
+     inserted right after the intro paragraph, matching where the other five READMEs place their demo GIF.
+   - `README.md` (root): added three table rows (mcp-currency, mcp-timezone, mcp-docx) after the existing six,
+     matching the existing row format exactly (link, thumbnail, one-line description, npx install line with the
+     `*` footnote marker). No other rows or prose changed.
+
+artifacts (this update):
+- scripts/demo/drive.mjs (extended)
+- scripts/demo/currency.tape, scripts/demo/timezone.tape, scripts/demo/docx.tape
+- assets/demo-currency.gif, assets/demo-timezone.gif, assets/demo-docx.gif
+- servers/currency/README.md, servers/timezone/README.md, servers/docx/README.md
+- README.md

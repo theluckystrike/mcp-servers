@@ -17,6 +17,9 @@ six are also reachable as a hosted remote endpoint with no install at all (see b
 | [mcp-invoice](servers/invoice/README.md) | ![invoice](assets/demo-invoice.gif) | Create numbered invoices with tax lines and render professional PDFs | `npx -y @theluckystrike/mcp-invoice`* |
 | [mcp-expense-tracker](servers/expense-tracker/README.md) | ![expense-tracker](assets/demo-expense-tracker.gif) | Log receipts and mileage in chat, split the VAT, rebill onto an invoice | `npx -y @theluckystrike/mcp-expense-tracker`* |
 | [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that proxies all five servers above behind a single config line | `npx -y @theluckystrike/mcp-office-suite`* |
+| [mcp-currency](servers/currency/README.md) | ![currency](assets/demo-currency.gif) | Real ECB exchange rates in chat: convert, compare pairs, rate history, cached offline | `npx -y @theluckystrike/mcp-currency`* |
+| [mcp-timezone](servers/timezone/README.md) | ![timezone](assets/demo-timezone.gif) | Convert times across cities, find meeting slots everyone can make, write the invite | `npx -y @theluckystrike/mcp-timezone`* |
+| [mcp-docx](servers/docx/README.md) | ![docx](assets/demo-docx.gif) | Write real Word documents from chat: proposals, contracts, letters and templates | `npx -y @theluckystrike/mcp-docx`* |
 
 \* npm publish is still pending for all six packages (see npm status below). Until then, the fastest path is the
 `.mcpb` one-click bundle from the
