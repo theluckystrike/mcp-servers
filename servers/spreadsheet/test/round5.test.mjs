@@ -74,13 +74,15 @@ test("D-R12: coerce decides by pattern, not by string length", () => {
   // Ambiguous or identifier-shaped strings stay text.
   assert.equal(coerce("007"), "007");
   assert.equal(coerce("0123"), "0123");
-  assert.equal(coerce("1.250,00"), "1.250,00");
-  assert.equal(coerce("1,25"), "1,25");
+  // v3 #4 supersedes the original D-R12 expectation for these two: a comma followed by
+  // exactly two digits at the end, with dots grouping, is the unambiguous European shape.
+  assert.equal(coerce("1.250,00"), 1250);
+  assert.equal(coerce("1,25"), 1.25);
   assert.equal(coerce("1,2500.00"), "1,2500.00");
   assert.equal(coerce("$1,250.00"), "$1,250.00");
   assert.equal(coerce("-"), "-");
   assert.equal(coerce("1."), "1.");
-  for (const v of ["007", "1.250,00"]) assert.equal(typeof coerce(v), "string", v);
+  for (const v of ["007", "1,2500.00", "$1,250.00"]) assert.equal(typeof coerce(v), "string", v);
 });
 
 test("D-R12: sheet_convert writes .00 money as numeric xlsx cells", async (t) => {
@@ -99,7 +101,7 @@ test("D-R12: sheet_convert writes .00 money as numeric xlsx cells", async (t) =>
   assert.equal(ws.C3.t, "n"); assert.equal(ws.C3.v, 1250);   // 1250.00
   assert.equal(ws.C4.t, "n"); assert.equal(ws.C4.v, 12);     // 12.00
   assert.equal(ws.C5.t, "s"); assert.equal(ws.C5.v, "007");  // identifier, stays text
-  assert.equal(ws.C6.t, "s"); assert.equal(ws.C6.v, "1.250,00"); // ambiguous, stays text
+  assert.equal(ws.C6.t, "n"); assert.equal(ws.C6.v, 1250);   // v3 #4: European "1.250,00"
 });
 
 test("D-R13: a VAT column over 2-decimal money is rounded to 2 decimals", async (t) => {

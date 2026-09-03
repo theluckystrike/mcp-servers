@@ -196,6 +196,21 @@ nothing else to copy.
 - The `where`/`formula` language is intentionally small: no regular expressions, no custom functions,
   no cross-sheet references in a single formula. It covers comparisons, boolean logic and arithmetic,
   nothing more.
+- **Writing an xlsx replaces one sheet, not the workbook.** `sheet_write` with `append` or `overwrite`
+  reads the whole workbook, swaps the sheet you named and writes every other sheet back, so
+  `Sheet2` and its data survive an append to `Sheet1`. What is *not* preserved is the sheet being
+  written: it is rebuilt from values, so formulas, cell formatting, conditional formatting, charts,
+  data validation and merged cells on **that one sheet** become plain values. Other sheets keep their
+  cells as read. Take a copy first if the target sheet carries formatting you cannot recreate.
+- **Numbers written as text are read with locale-aware rules.** `1,250.00`, `1 250.00`, `$1,250.00`,
+  `12,99`, `1.234,56` and `EUR 1 250,00` all read as numbers; a decimal comma is only accepted in the
+  unambiguous shape (a comma with exactly two digits at the end, dots or spaces grouping). Anything
+  that mixes separators another way (`1,2500.00`) stays text rather than being guessed at. Values
+  with leading zeros (`007`) and integers too large for exact arithmetic
+  (over 9,007,199,254,740,991) stay text so they are never silently altered.
+- **Dates keep their cell type.** A date cell read from an xlsx stays a date through queries and
+  through a conversion back to xlsx. In text, CSV and JSON output it is rendered as ISO:
+  `2026-09-04` for a date, `2026-09-03T15:30:00` when the cell carries a time.
 - `sheet_info`'s header-row guess is a heuristic (looks for the first row with lower emptiness and higher
   text density than the rows above it). It handles a title row and a blank row above the header; it is
   not proof against every layout, and you can always confirm what it picked before querying.

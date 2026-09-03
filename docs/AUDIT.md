@@ -419,3 +419,141 @@ validation db: /Users/mike/mcp-servers/data/validation.json run 36: 121/121
 One behaviour change visible to existing callers: the ambiguity refusal now reads "Nothing was written or
 reported" (it is returned by read tools too), and `servers/time-tracker/test/currency.test.mjs:156` was
 updated to match.
+
+## Codex v3 fixes (spreadsheet)
+
+Scope: `servers/spreadsheet` only. Items 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17 of
+`docs/CODEX_REVIEW_V3.md`. Item 2 (UTF-16 BOM) and item 10 are noted at the end.
+
+### One shared locale-aware numeric parser (items 4, 7)
+
+New file `servers/spreadsheet/src/num.ts`. Every place that turns text into a number now calls it:
+`servers/spreadsheet/src/csv.ts:109` (`coerce`, CSV import), `servers/spreadsheet/src/sheet.ts:226`
+(`toNumber`, aggregation and `sheet_stats`), `servers/spreadsheet/src/expr.ts:149` (`num`, expression
+comparison). There is no second private parser left: the one in `sheet_stats`
+(`servers/spreadsheet/src/index.ts:461`) was deleted in favour of `toNumber`.
+
+Separator rules, `servers/spreadsheet/src/num.ts:22-26`:
+
+- `PLAIN` `42`, `-1.5`, `.5`, `1e3`, `1250.00`
+- `EN_GROUPED` `1,250.00`, `1,250`
+- `SPACE_GROUPED` `1 250.00` (also NBSP / narrow NBSP / figure space)
+- `EU_DECIMAL` `/^[+-]?(?:\d{1,3}(?:[. ]\d{3})+|\d+),\d{2}$/` — a decimal comma is accepted **only**
+  in the unambiguous European shape: a comma followed by exactly two digits at the end, with dots or
+  spaces (never commas) grouping the integer part.
+
+Measured: `12,99` -> 12.99 (was 1299), `1.234,56` -> 1234.56, `EUR 1 250,00` -> 1250 (was 125000),
+`1,250.00` -> 1250, `1.234` -> 1.234, and `1,2500.00` / `1,234,56` stay text.
+
+Three entry points, `servers/spreadsheet/src/num.ts:64`, `:83`, `:106`:
+`parseNumberStrict` (CSV import: no currency stripping, identifiers and unsafe integers stay text),
+`parseNumberLoose` (aggregation: strips currency symbols and codes, `%`, accounting parentheses) and
+`parseNumberForCompare` (expressions: lenient, but a leading-zero identifier is not a number).
+
+Consequence for comparisons, `servers/spreadsheet/src/expr.ts:145`: `[Code] = 7` on `"007"` is now
+false (both sides compare as strings, `"007"` vs `"7"`), and `[Price] > 13` on `"12,99"` is false
+because the value is 12.99, not 1299.
+
+This supersedes two D-R12 expectations, updated in place with a comment:
+`servers/spreadsheet/test/round5.test.mjs:77` (`coerce("1.250,00")` is now 1250, not text) and
+`servers/spreadsheet/test/round5.test.mjs:102` (that cell is now a numeric xlsx cell).
+
+### Unsafe integers stay strings (item 5)
+
+`servers/spreadsheet/src/num.ts:52` — an integer with no exponent whose parsed value is not a safe
+integer is rejected, so `9007199254740993` stays the string `"9007199254740993"` instead of being
+imported as 9007199254740992.
+
+### Early-exit CSV read for limit/offset (item 6)
+
+- `servers/spreadsheet/src/csv.ts:62` — `parseCsv(text, delimiter, {maxRows, partial})` stops at
+  `maxRows` completed rows and reports `consumed` (bytes used) and `complete`.
+- `servers/spreadsheet/src/sheet.ts:110` — `readCsvHead` reads the file in 1 MiB chunks through a
+  `StringDecoder` and stops as soon as enough complete rows exist; the rest of the file is never read.
+- `servers/spreadsheet/src/sheet.ts:107` — `loadWorkbook(path, {rowBudget})`, and
+  `servers/spreadsheet/src/index.ts:91` — `rowBudget()` supplies it only when no `where`, `sort`,
+  `range`, `group_by` or `aggregate` is requested (anything that consults the whole sheet disables it).
+  Wired at `servers/spreadsheet/src/index.ts:249` (`sheet_read`) and `:392` (`sheet_query`).
+- When the budget applied, the row-count line says so instead of quoting a row count that was never
+  computed: "showing 5 rows from offset 10 (only the rows asked for were read)".
+
+Measured on the 50,000-row file built by the test: `parseCsv` with `maxRows: 101` consumes under
+1/20th of the file (`servers/spreadsheet/test/codexv3.test.mjs:161`), and
+`loadWorkbook(f, {rowBudget: 100})` returns 101 rows with `partial === true`.
+
+### Header-row guess rejects a one-cell title (item 9)
+
+`servers/spreadsheet/src/sheet.ts:186` — a candidate row with fewer than two filled cells is now
+scored against the next five rows; if any of them has two or more filled cells, the candidate is a
+title, not a header. `"Sales report\nName,Amount\nA,1"` now picks row index 1. A genuinely
+single-column sheet (`Name / A / B`) still picks row 0.
+
+### Aggregate alias collisions (item 13)
+
+`servers/spreadsheet/src/index.ts:311` — aliases are checked case-insensitively against the group
+columns and against each other before any grouping runs:
+`aggregate alias "Region" collides with group column "Region". Give this aggregate a different "as" name.`
+
+### xlsx writes preserve the other sheets (item 16)
+
+`servers/spreadsheet/src/sheet.ts:80` exposes the parsed workbook as `Workbook.raw`;
+`servers/spreadsheet/src/index.ts:141` (`writeMatrix`) takes it as `base`, clones `SheetNames`/`Sheets`,
+replaces only the named worksheet and writes the whole workbook back. `sheet_write` passes it for
+`append` and `overwrite` (`servers/spreadsheet/src/index.ts:555`) and adds a note naming the sheets
+that were kept. Documented as a limitation in `servers/spreadsheet/README.md:199`: the sheet being
+written is rebuilt from values, so formulas and formatting **on that sheet** are lost; other sheets
+keep their cells as read.
+
+### xlsx date cells (item 17)
+
+`Cell` now includes `Date` (`servers/spreadsheet/src/sheet.ts:35`), `normMatrix` no longer flattens a
+date to `YYYY-MM-DD`, and `XLSX.utils.aoa_to_sheet(aoa, {cellDates: true})` writes it back as a date
+cell. `formatCellDate` (`servers/spreadsheet/src/sheet.ts:38`) renders ISO from local components with
+the time only when the cell carries one; `cellText`/`jsonCell` apply it at every output boundary
+(table, CSV, JSON, `sheet_find`, `sheet_stats`). Measured: a cell of 2026-09-03 15:30 converted
+xlsx -> xlsx comes back as `t: "d"` with hours 15 and minutes 30, and reads as
+`"2026-09-03T15:30:00"`; a midnight cell reads as `"2026-09-04"`. Documented at
+`servers/spreadsheet/README.md:211`.
+
+### Also fixed while in the file
+
+- Item 3 — `servers/spreadsheet/src/csv.ts:95`: EOF inside a quoted field throws `CsvError`
+  ("unterminated quoted field") instead of swallowing the rest of the file into one cell.
+- Item 8 — `servers/spreadsheet/src/expr.ts:224`: an ordered comparison between a number and
+  non-numeric text returns false instead of falling back to a lexical compare (`[v] > 2` on `"abc"`).
+- Item 11 — `servers/spreadsheet/src/index.ts:331`: a global aggregate with no group columns always
+  produces exactly one group, so `where: "1 = 0"` with `count(*)` answers 0 rather than no row.
+- Item 12 — `servers/spreadsheet/src/index.ts:305`: `col: "*"` with anything but `count` is refused.
+- Item 14 — `servers/spreadsheet/src/sheet.ts:231`: `minMax()` replaces `Math.min(...nums)`; the test
+  asserts the spread it replaced does throw `RangeError` at 150,000 values.
+- Item 15 — `servers/spreadsheet/src/index.ts:175`: an array append validates the first array as the
+  header row and removes it, or refuses when it does not match the file's columns.
+- Item 10 (partly) — `servers/spreadsheet/src/index.ts:326`: group keys are type-tagged
+  (`` `${typeof v}:${cellText(v)}` ``) so numeric 1 and text "1" no longer merge.
+
+Not fixed here: item 2 (UTF-16 BOM detection) — it needs the byte-level decode to move ahead of the
+chunked reader added for item 6, and is left for a separate change.
+
+### Evidence
+
+`npm run build` in `servers/spreadsheet`: clean, no output.
+
+`npm test` in `servers/spreadsheet` (39 pre-existing + 16 new in
+`servers/spreadsheet/test/codexv3.test.mjs`):
+
+```
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1710.164041
+```
+
+`node scripts/validate.mjs`:
+
+```
+spreadsheet: 18/18 in 376 ms
+```
