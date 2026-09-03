@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, eight endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, eleven endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -18,6 +18,9 @@ import { createServer as createSpreadsheet } from "./vendor/spreadsheet/index.js
 import { createServer as createCurrency } from "./vendor/currency/index.js";
 import { createServer as createTimezone } from "./vendor/timezone/index.js";
 import { createServer as createDocx } from "./vendor/docx/index.js";
+import { createServer as createResume } from "./vendor/resume/index.js";
+import { createServer as createRecurring } from "./vendor/recurring/index.js";
+import { createServer as createClauses } from "./vendor/clauses/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -44,7 +47,16 @@ interface ServerCfg {
   maxBytes?: number;
   /** Which virtual paths belong in the tenant document at all. Default: all of them. */
   persist?: (path: string) => boolean;
+  /**
+   * A second tenant document this endpoint reads and writes. /mcp/recurring creates
+   * invoices in the SAME invoice store /mcp/invoice serves, so it hydrates both keys
+   * and flushes each path back to the document that owns it.
+   */
+  sharedDoc?: { server: string; owns: (path: string) => boolean };
 }
+
+/** The invoice server's data directory inside the virtual filesystem (homedir shim). */
+const INVOICE_DIR = "/home/mcp/.local/share/mcp-servers/invoice/";
 
 const SERVERS: Record<string, ServerCfg> = {
   "time-tracker": {
@@ -83,6 +95,24 @@ const SERVERS: Record<string, ServerCfg> = {
     // everything this server writes lands under /docs/ and is a transient download.
     publish: (p) => p.startsWith("/docs/"),
     maxBytes: DOCX_MAX_BYTES,
+  },
+  "resume": {
+    factory: createResume as () => McpServer,
+    // The profile and the letter history are the tenant's state; uploads live under
+    // /uploads/ and every generated resume, letter or HTML lands under /docs/ as a
+    // transient download.
+    publish: (p) => p.startsWith("/docs/"),
+    maxBytes: DOCX_MAX_BYTES,
+  },
+  "recurring": {
+    factory: createRecurring as () => McpServer,
+    // Schedules and history are this endpoint's own document; the invoices it generates
+    // belong to the invoice store, which /mcp/invoice serves for the same token.
+    sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
+  },
+  "clauses": {
+    factory: createClauses as () => McpServer,
+    publish: (p) => p.startsWith("/docs/"),
   },
 };
 
@@ -222,10 +252,14 @@ async function hydrate(env: Env, tenant: string, server: string): Promise<Map<st
 }
 
 /** The set of files that persist: no scratch files, and no transient download outputs. */
-function persistable(files: Map<string, string>, cfg: ServerCfg, published: Map<string, string>): Record<string, string> {
+function persistable(
+  files: Map<string, string>, cfg: ServerCfg, published: Map<string, string>,
+  only?: (path: string) => boolean,
+): Record<string, string> {
   const obj: Record<string, string> = {};
   for (const [k, v] of files) {
     if (TMP_RE.test(k)) continue;
+    if (only && !only(k)) continue;
     if (cfg.persist && !cfg.persist(k)) continue;
     if (published.has(k) && !cfg.persistPublished) continue;
     obj[k] = v;
@@ -335,6 +369,9 @@ const TOOLS: Record<string, string[]> = {
   "currency": ["rates_latest", "convert", "convert_many", "fx_rates_for", "rate_history", "rate_on", "currencies_list", "cache_status", "license_status", "license_activate"],
   "timezone": ["now", "convert_time", "overlap", "find_meeting_slots", "dst_changes", "business_days", "contacts_set", "contacts_list", "ics_create", "license_status", "license_activate"],
   "docx": ["doc_upload", "doc_files", "doc_delete_upload", "business_set", "doc_create", "doc_from_markdown", "doc_read", "doc_to_html", "doc_fill_template", "proposal_create", "contract_create", "license_status", "license_activate"],
+  "resume": ["doc_upload", "doc_files", "doc_delete_upload", "profile_set", "profile_get", "resume_create", "resume_to_markdown", "resume_to_html", "resume_read", "cover_letter_create", "tailor_to_job", "license_status", "license_activate"],
+  "recurring": ["schedule_create", "schedule_list", "schedule_get", "schedule_update", "schedule_pause", "schedule_resume", "schedule_delete", "schedule_skip", "schedule_upcoming", "invoice_generate_due", "schedule_history", "forecast", "license_status", "license_activate"],
+  "clauses": ["clause_add", "clause_get", "clause_update", "clause_delete", "clause_list", "clause_search", "clause_import", "clause_export", "contract_assemble", "variables_list", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -382,11 +419,32 @@ function indexDoc(base: string) {
         free_limits: "3 proposals or contracts per calendar month, templates up to 10 placeholders, footer line and default letterhead",
         storage: `${DOCX_MAX_BYTES / 1048576} MB of uploaded documents per token, and at most 2 MB in one upload (the ${MAX_BODY_BYTES / 1024} KB request-body cap binds first)`,
       },
+      {
+        name: "resume", url: `${base}/mcp/resume`, tools: TOOLS["resume"],
+        mode: "upload and download",
+        how: "The profile is stored per token: profile_set once, then resume_create, resume_to_html, resume_to_markdown, cover_letter_create and tailor_to_job read it. There is no disk here, so resume_read takes docx_base64 directly, or a name uploaded with doc_upload {name, docx_base64}.",
+        outputs: "resume_create, resume_to_html and cover_letter_create return a download link valid for one hour; .docx comes back as the real binary file. resume_to_markdown returns the markdown in the answer.",
+        free_limits: "3 cover letters per calendar month, the \"modern\" resume style, one default profile variant, 2,000 characters of job description in tailor_to_job",
+        storage: `${DOCX_MAX_BYTES / 1048576} MB of profile, letter history and uploaded documents per token`,
+      },
+      {
+        name: "recurring", url: `${base}/mcp/recurring`, tools: TOOLS["recurring"],
+        mode: "shares the invoice store",
+        how: "invoice_generate_due writes real invoices into the same per-token invoice data the /mcp/invoice endpoint serves, under the same number series, so invoice_list and overdue_report there show them. Set the issuer and the clients once with business_set and client_add on /mcp/invoice.",
+        outputs: "each generated invoice comes back as a print-ready HTML document behind a one-hour download link (there is no PDF renderer on Workers)",
+        free_limits: "3 active schedules, 30 days of schedule_upcoming, 12 periods per forecast",
+      },
+      {
+        name: "clauses", url: `${base}/mcp/clauses`, tools: TOOLS["clauses"],
+        how: "The clause library is per token and is seeded with the starter set on first use. clause_import needs a file on a disk, which this endpoint does not have: add clauses with clause_add, or import locally over stdio.",
+        outputs: "contract_assemble and clause_export return a download link valid for one hour; .docx comes back as the real binary file.",
+        free_limits: "10 clauses of your own on top of the starter set, 8 clauses per assembled document, markdown import and export (JSON is Pro)",
+      },
     ],
     limits: {
       request_body_bytes: MAX_BODY_BYTES,
       jsonrpc_batching: "not accepted - send one request object per POST",
-      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, currency: "no per-token storage" },
+      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, currency: "no per-token storage" },
       download_ttl_seconds: DOWNLOAD_TTL,
       idle_data_retention_days: SWEEP_AFTER_DAYS,
     },
@@ -576,6 +634,12 @@ export default {
     }
 
     const files = await hydrate(env, auth.tenant, product);
+    // /mcp/recurring works inside the invoice store: its document is hydrated on top of
+    // this endpoint's, and every path is flushed back to whichever document owns it.
+    if (cfg.sharedDoc) {
+      for (const [k, v] of await hydrate(env, auth.tenant, cfg.sharedDoc.server)) files.set(k, v);
+    }
+    const ownPaths = cfg.sharedDoc ? (p2: string) => !cfg.sharedDoc!.owns(p2) : undefined;
     const maxBytes = cfg.maxBytes ?? DEFAULT_MAX_BYTES;
     const counted = recount(files);
 
@@ -597,7 +661,10 @@ export default {
       shared,
       fds: new Map(), nextFd: 100,
     };
-    const before = JSON.stringify(persistable(files, cfg, rctx.published));
+    const before = JSON.stringify(persistable(files, cfg, rctx.published, ownPaths));
+    const sharedBefore = cfg.sharedDoc
+      ? JSON.stringify(persistable(files, cfg, rctx.published, cfg.sharedDoc.owns))
+      : "";
 
     return await STORE.run(rctx, async () => {
       const server = cfg.factory();
@@ -625,7 +692,11 @@ export default {
           res = new Response(out, { status: res.status, headers: h });
         }
         if (ecbBefore) await flushEcb(env, files, ecbBefore);
-        await flush(env, auth.tenant, product, JSON.stringify(persistable(files, cfg, rctx.published)), before);
+        await flush(env, auth.tenant, product, JSON.stringify(persistable(files, cfg, rctx.published, ownPaths)), before);
+        if (cfg.sharedDoc) {
+          await flush(env, auth.tenant, cfg.sharedDoc.server,
+            JSON.stringify(persistable(files, cfg, rctx.published, cfg.sharedDoc.owns)), sharedBefore);
+        }
         await touch(env, auth.tenant);
         if (auth.kind === "anon") {
           await env.REMOTE_DATA.put(`tok:anon_${auth.tenant.slice(5)}`, String(Date.now()), { expirationTtl: ANON_TTL });

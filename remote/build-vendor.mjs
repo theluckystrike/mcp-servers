@@ -20,12 +20,15 @@ const OUT = join(ROOT, "remote", "src", "vendor");
 const SERVERS = {
   "time-tracker": ["index.ts", "day.ts", "jsonstore.ts"],
   "price-tracker": ["index.ts", "extract.ts", "fetch.ts", "redirect.ts", "store.ts"],
-  "invoice": ["index.ts", "money.ts", "store.ts"],
+  "invoice": ["index.ts", "money.ts", "store.ts", "lib.ts"],
   "expense-tracker": ["index.ts", "money.ts", "store.ts"],
   "spreadsheet": ["index.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts"],
   "currency": ["index.ts", "ecb.ts", "money.ts", "rates.ts", "store.ts"],
   "timezone": ["index.ts", "jsonstore.ts", "tz.ts", "zones.ts"],
-  "docx": ["index.ts", "blocks.ts", "build.ts", "md.ts", "store.ts", "wordxml.ts", "zip.ts"],
+  "docx": ["index.ts", "blocks.ts", "build.ts", "md.ts", "store.ts", "wordxml.ts", "zip.ts", "lib.ts"],
+  "resume": ["index.ts", "letter.ts", "profile.ts", "read.ts", "render.ts", "tailor.ts"],
+  "recurring": ["index.ts", "currency.ts", "period.ts", "store.ts"],
+  "clauses": ["index.ts", "assemble.ts", "library.ts", "starter.ts", "store.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
@@ -35,6 +38,10 @@ function rewriteSpec(spec, depth) {
   if (spec === "node:fs") return `${up}shims/fs.js`;
   if (spec === "node:os") return `${up}shims/os.js`;
   if (spec === "@theluckystrike/mcp-license") return `${up}shims/license.js`;
+  // A sibling engine: "@theluckystrike/mcp-<x>/lib" is that server's own lib.ts, which is
+  // vendored next to this one (servers/docx/src/lib.ts, servers/invoice/src/lib.ts).
+  const sib = /^@theluckystrike\/mcp-([a-z-]+)\/lib$/.exec(spec);
+  if (sib) return `${"../".repeat(depth - 1)}${sib[1]}/lib.js`;
   return spec;
 }
 
@@ -537,6 +544,148 @@ function patchDocxIndex(src) {
   return src;
 }
 
+/* ------------------------------------------------- shared engine libraries */
+
+function patchInvoiceLib(src) {
+  // servers/invoice/src/lib.ts re-exports the pdfkit renderer, which the remote build
+  // deliberately does not vendor; ../../shims/pdf.js exports both names (RenderOptions
+  // and renderInvoicePdf, the HTML renderer that returns a one-hour download URL).
+  src = must(src, 'export type { RenderOptions } from "./pdf.js";\nexport { renderInvoicePdf } from "./pdf.js";',
+    'export type { RenderOptions } from "../../shims/pdf.js";\nexport { renderInvoicePdf } from "../../shims/pdf.js";',
+    "invoice lib pdf re-export");
+  return src;
+}
+
+/* --------------------------------------------------------------- resume */
+
+/** The name-not-path rewrite shared by resume and clauses (same shape as docx). */
+const NAME_PATH = (what) => `function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  if (!raw) throw new Error("path is required: it names a document uploaded with doc_upload");
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "");
+  const m = /^([A-Za-z0-9_-]{1,64})(\\.[A-Za-z0-9]{1,8})?$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable ${what} name. On this hosted endpoint a path is just a name - \` +
+      \`the one you uploaded a file under, or the one to give a new document: 1-64 characters of letters, \` +
+      \`digits, underscore or dash, optionally with an extension.\`);
+  }
+  const ext = (m[2] ?? ".docx").toLowerCase();
+  const upload = \`/uploads/\${m[1]}.docx\`;
+  if (ext === ".docx" && existsSync(upload)) return upload;
+  return \`/docs/\${m[1]}\${ext}\`;
+}
+`;
+
+const OUTPUT_PATH = `function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {
+  const name = expandPath(out ?? fallbackName).split("/").pop() as string;
+  const withExt = name.toLowerCase().endsWith(ext) ? name : \`\${name.replace(/\\.[A-Za-z0-9]{1,8}$/, "")}\${ext}\`;
+  const full = \`/docs/\${withExt}\`;
+  if (!overwrite && existsSync(full)) {
+    throw new Error(
+      \`this call already produced a document named \${withExt} and nothing was written. \` +
+      \`Pass overwrite: true to replace it, or give a different out_path.\`);
+  }
+  return full;
+}
+`;
+
+function patchResumeIndex(src) {
+  // No disk: an existing .docx is uploaded (doc_upload, or a one-off docx_base64) and
+  // everything this server writes lands under /docs/ as a one-hour download link.
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/, NAME_PATH("document"), "resume expandPath");
+  src = must(src, /function outputPath\(out: string \| undefined[\s\S]*?\n\}\n/, OUTPUT_PATH, "resume outputPath");
+
+  src = must(src, "    writeFileSync(path, buf);\n    return json({\n      path,\n      style,",
+    "    writeFileSync(path, buf);\n    publishFile(path);\n    return json({\n      path,\n      style,",
+    "resume resume_create publish");
+  src = must(src, '    writeFileSync(path, toHtml(p.name, cleanBlocks(blocks)), "utf8");',
+    '    writeFileSync(path, toHtml(p.name, cleanBlocks(blocks)), "utf8");\n    publishFile(path);',
+    "resume resume_to_html publish");
+  src = must(src, "    writeFileSync(path, buf);\n    let note = \"\";",
+    "    writeFileSync(path, buf);\n    publishFile(path);\n    let note = \"\";",
+    "resume cover_letter_create publish");
+
+  // resume_read takes the document itself, base64, as an alternative to uploading it.
+  src = must(src,
+    "    path: z.string().min(1),\n" +
+    '    save: z.boolean().default(false).describe("Store the result as the profile. Review it first."),',
+    '    path: z.string().min(1).optional().describe("Name of a document uploaded with doc_upload"),\n' +
+    '    docx_base64: z.string().optional().describe("The .docx itself, base64-encoded, instead of uploading it first"),\n' +
+    '    save: z.boolean().default(false).describe("Store the result as the profile. Review it first."),',
+    "resume resume_read schema");
+  src = must(src,
+    "    const file = expandPath(a.path);\n" +
+    "    if (!/\\.docx$/i.test(file)) return fail(`${file} is not a .docx file. Legacy .doc and .rtf are not readable here.`);\n" +
+    "    const blocks = readDocx(readFileSync(file));",
+    '    if (!a.path && !a.docx_base64) return fail("give either path (a document uploaded with doc_upload) or docx_base64 (the file itself, base64-encoded).");\n' +
+    "    const file = a.docx_base64 ? stageUpload(a.path ?? \"inline\", a.docx_base64) : expandPath(a.path as string);\n" +
+    "    if (!existsSync(file)) return fail(`nothing is uploaded under the name ${JSON.stringify(file.split(\"/\").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded.`);\n" +
+    "    if (!/\\.docx$/i.test(file)) return fail(`${file} is not a .docx file. Legacy .doc and .rtf are not readable here.`);\n" +
+    "    const blocks = readDocx(readFileSync(file));",
+    "resume resume_read handler");
+
+  src = must(src, "gate.registerTools(server);",
+    "gate.registerTools(server);\nregisterDocxUpload(server as unknown as { registerTool: Function });",
+    "resume doc_upload registration");
+  return src;
+}
+
+/* ------------------------------------------------------------- recurring */
+
+function patchRecurringIndex(src) {
+  // renderInvoicePdf comes from the vendored invoice lib, which the remote build points
+  // at the HTML shim: it takes a file name and returns a one-hour download URL.
+  src = must(src,
+    "      const out = join(invoiceDataDir(), \"pdf\", `${c.invoice.number}.pdf`);\n" +
+    "      await renderInvoicePdf(c.invoice, biz, out, { branded: !pro, logo: pro });",
+    "      const out = await renderInvoicePdf(c.invoice, biz, `${c.invoice.number}.html`, { branded: !pro, logo: pro });",
+    "recurring pdf render");
+  src = must(src,
+    "      `They are stored in the invoice server (${invoiceDataDir()}) and appear in its invoice_list and overdue_report.` +",
+    "      \"They are written into the same invoice data your /mcp/invoice endpoint reads, so invoice_list and \" +\n" +
+    "      \"overdue_report there show them. Each link above is an HTML invoice (print to PDF) valid for one hour.\" +",
+    "recurring invoice-store note");
+  return src;
+}
+
+/* --------------------------------------------------------------- clauses */
+
+function patchClausesIndex(src) {
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/, NAME_PATH("document"), "clauses expandPath");
+  src = must(src, /function outputPath\(out: string \| undefined[\s\S]*?\n\}\n/, OUTPUT_PATH, "clauses outputPath");
+
+  // clause_import wants a file on the caller's disk; there is none here.
+  src = must(src, "    if (!existsSync(file)) return fail(`no such file: ${file}`);",
+    "    if (!existsSync(file)) return fail(`this hosted endpoint has no filesystem, so there is no file at ${JSON.stringify(a.path)} to import. ` +\n" +
+    "      \"Add clauses one at a time with clause_add, or run the server locally over stdio (npx -y @theluckystrike/mcp-clauses) to import a file.\");",
+    "clauses clause_import message");
+
+  // clause_export and both assembly outputs become one-hour download links.
+  src = must(src,
+    "    const file = expandPath(a.path);\n    mkdirSync(dirname(file), { recursive: true });\n" +
+    "    if (a.overwrite !== true) {\n" +
+    "      try { closeSync(openSync(file, \"wx\")); } catch (e) {\n" +
+    "        if ((e as NodeJS.ErrnoException).code !== \"EEXIST\") throw e;\n" +
+    "        return fail(`${file} already exists and nothing was written. Pass overwrite: true to replace it, or give a different path.`);\n" +
+    "      }\n" +
+    "    }\n" +
+    "    writeFileSync(file, a.format === \"json\" ? toClauseJson(list) : toMarkdown(list));\n" +
+    "    return ok(`Exported ${list.length} clauses to ${file} as ${a.format}.`);",
+    "    const file = outputPath(a.path, `clauses.${a.format === \"json\" ? \"json\" : \"md\"}`, a.format === \"json\" ? \".json\" : \".md\", a.overwrite === true);\n" +
+    "    writeFileSync(file, a.format === \"json\" ? toClauseJson(list) : toMarkdown(list));\n" +
+    "    publishFile(file);\n" +
+    "    return ok(`Exported ${list.length} clauses as ${a.format}. Download: ${file}`);",
+    "clauses clause_export download");
+  src = must(src, "      writeFileSync(file, result.markdown);",
+    "      writeFileSync(file, result.markdown);\n      publishFile(file);",
+    "clauses assemble markdown publish");
+  src = must(src, "    writeFileSync(file, buf);\n    return json({\n      path: file, format,",
+    "    writeFileSync(file, buf);\n    publishFile(file);\n    return json({\n      path: file, format,",
+    "clauses assemble docx publish");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -544,6 +693,11 @@ const EXTRA_IMPORTS = {
     'import { registerDocxUpload, stageUpload } from "../../shims/docx-upload.js";',
     'import { publishFile } from "../../shims/fs.js";',
   ],
+  resume: [
+    'import { registerDocxUpload, stageUpload } from "../../shims/docx-upload.js";',
+    'import { existsSync, publishFile } from "../../shims/fs.js";',
+  ],
+  clauses: ['import { publishFile } from "../../shims/fs.js";'],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -562,6 +716,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "currency" && f === "store.ts") src = patchCurrencyStore(src);
       if (name === "currency" && f === "ecb.ts") src = patchCurrencyEcb(src);
       if (name === "docx" && f === "store.ts") src = patchDocxStore(src);
+      if (name === "invoice" && f === "lib.ts") src = patchInvoiceLib(src);
       writeFileSync(join(dir, f), rewriteImports(src, 2));
       continue;
     }
@@ -573,6 +728,9 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "currency") src = patchCurrencyIndex(src);
     if (name === "timezone") src = patchTimezoneIndex(src);
     if (name === "docx") src = patchDocxIndex(src);
+    if (name === "resume") src = patchResumeIndex(src);
+    if (name === "recurring") src = patchRecurringIndex(src);
+    if (name === "clauses") src = patchClausesIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {

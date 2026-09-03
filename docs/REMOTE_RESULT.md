@@ -896,3 +896,90 @@ $ docx doc_fill_template {docx_base64: <file>} -> "template.docx contains no {{p
   name `inline` / `template`) rather than discarding it; `doc_delete_upload` removes it.
 - `business_set {logo_path}` still takes a path this endpoint cannot read, so the hosted
   letterhead never carries a logo; Pro branding otherwise applies.
+
+## Extension 3: resume, recurring, clauses
+
+The last three servers are hosted, so all eleven are: `POST /mcp/resume`, `/mcp/recurring`,
+`/mcp/clauses` on the same worker, same auth, same per-tenant caps.
+
+### Vendoring the shared engines
+
+resume and clauses import `@theluckystrike/mcp-docx/lib`; recurring imports
+`@theluckystrike/mcp-invoice/lib`. Neither package is on npm, so `remote/build-vendor.mjs`
+gained a generic rule instead of a third hard-coded case:
+
+- `SERVERS.docx` and `SERVERS.invoice` now vendor `lib.ts` alongside their other sources, so
+  the engine's own public module is copied, not re-implemented.
+- `rewriteSpec` maps `@theluckystrike/mcp-<x>/lib` to `../<x>/lib.js` -- a sibling of the
+  importing vendor directory, which is where that server's `lib.ts` now lands.
+- `patchInvoiceLib` redirects the two names `servers/invoice/src/lib.ts` re-exports from
+  `./pdf.js` (`RenderOptions`, `renderInvoicePdf`) to `../../shims/pdf.js`. pdfkit needs a
+  real filesystem for its AFM metrics; the shim renders a print-ready HTML invoice and
+  returns a one-hour download URL, and it already exported both names.
+- `patchResumeIndex` and `patchClausesIndex` replace `expandPath`/`outputPath` with the same
+  name-not-path rewrite the docx endpoint uses (`/uploads/<name>.docx` for an uploaded file,
+  `/docs/<name><ext>` for anything generated), and add `publishFile` after each finished
+  write, so every `.docx`, `.md` and `.html` comes back as a download link.
+- `patchRecurringIndex` swaps the `join(invoiceDataDir(), "pdf", ...)` + `renderInvoicePdf`
+  pair for the shim's one-call form and rewrites the "stored in the invoice server (path)"
+  sentence, which named a directory no caller can see.
+
+Every substitution goes through `must()`, so a drift in `servers/*/src` fails the build
+instead of silently vendoring un-patched code.
+
+### recurring shares the invoice store
+
+`invoice_generate_due` must write into the same invoice data `/mcp/invoice` serves, under the
+same number series -- that seam is the whole point of the server. Tenant documents are keyed
+`${tenant}:${server}`, so `ServerCfg` gained `sharedDoc`: the recurring endpoint hydrates
+`${tenant}:invoice` on top of `${tenant}:recurring`, and on flush every path is written back
+to the document that owns it (`persistable` took an optional path filter; the invoice data
+directory `/home/mcp/.local/share/mcp-servers/invoice/` is the split). No code in the
+vendored recurring server knows about any of this: it just calls `invoiceDataDir()`.
+
+### Verified live (anonymous token, two POSTs each)
+
+```
+$ resume profile_set {name: "Ada Lovelace", ...}   -> Profile "default" stored: 1 roles, ...
+$ resume resume_create {target_role: "Staff Engineer", keywords: ["TypeScript"]}
+  path https://mcp.zovo.one/mcp/download/7254c4e9... (valid 1 hour), 1 page, 858-word budget,
+  keywords_matched ["TypeScript"]
+  GET that URL -> 9,854 bytes starting "PK",
+  content-disposition: attachment; filename="ada-lovelace-resume.docx"
+
+$ recurring schedule_create {client: "Beta Corp", every: "monthly", start_date: "2026-07-01"}
+  Created schedule 0436d871, next_due 2026-10-01
+$ recurring invoice_generate_due {}
+  created 3 invoices: INV-2026-0001/0002/0003, EUR 150000.00 each, total EUR 450000.00,
+  each with its own /mcp/download/... HTML invoice
+$ invoice invoice_list {}     (the OTHER endpoint, same token)
+  count 3, INV-2026-0001 Beta Corp 2026-07-01 ... unpaid    <- the shared store works
+  GET one of the recurring download links -> "<!doctype html>...<title>Invoice INV-2026-0001"
+
+$ clauses clause_search {query: "payment"}   -> 5 results, top payment-terms (score 124)
+$ clauses contract_assemble {title: "Service Agreement", categories: ["payment"],
+                             client: "Beta Corp", values: {fee: "4500"}}
+  4 clauses, filled [client, fee], 6 unfilled returned as bracketed prompts
+  GET the link -> 10,448 bytes starting "PK", filename="beta-corp-service-agreement.docx"
+```
+
+`GET /mcp` now lists eleven endpoints. `tools/list`: resume 13, recurring 14, clauses 12.
+`servers/{resume,recurring,clauses}/remotes.json` were added in the `time-tracker` shape, and
+`scripts/validate.mjs` covers the three endpoints plus one real call each:
+**remote 26/26, whole run 247/247.**
+
+### Limitations
+
+- `clause_import` reads a file from a disk this endpoint does not have. It now says so and
+  points at `clause_add` or the stdio server, rather than reporting "no such file: <path>".
+- The clause library is seeded per token from the vendored starter module on first use, so a
+  fresh token's `clause_list` is the starter set, not an empty library.
+- Generated documents are transient: `/docs/` is never persisted into the tenant document, so
+  an `out_path` collision can only be hit inside one request. The `overwrite` flag still
+  works; it just has little to collide with.
+- recurring is charged the default 512 KB tenant cap, and the invoice files it hydrates count
+  against it. A tenant with hundreds of invoices will hit that before the invoice endpoint's
+  own limits.
+- `renderInvoicePdf` on recurring returns HTML, like `invoice_pdf` does; there is no PDF
+  renderer on Workers. `history.pdf_path` therefore holds a one-hour URL, and the link in
+  `schedule_history` is dead once that hour passes.
