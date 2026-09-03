@@ -106,3 +106,43 @@ test("D-9: productToken picks the identifier, not the slug or a marker", () => {
   assert.equal(productToken("https://www.ikea.com/us/en/p/billy-bookcase-white-00522047/"), null);
   assert.equal(productToken("https://shop.example.com/p/widget-123"), null);
 });
+
+/* Codex v3 item 35: a product route is not a listing when the identity survives. */
+
+test("v3-35: /item/<sku> canonicalised to /products/<slug>?sku=<sku> is accepted", () => {
+  const v = checkRedirect(
+    "https://shop.example.com/item/12345",
+    "https://shop.example.com/products/widget?sku=12345",
+    "Acme Widget, oak",
+  );
+  assert.equal(v.ok, true, v.reason);
+});
+
+test("v3-35: the same redirect with a generic title is still refused", () => {
+  const v = checkRedirect(
+    "https://shop.example.com/item/12345",
+    "https://shop.example.com/products/widget?sku=12345",
+    "Products",
+  );
+  assert.equal(v.ok, false);
+});
+
+test("v3-35: a /products/ redirect that drops the identity is still a listing", () => {
+  const v = checkRedirect(
+    "https://shop.example.com/item/12345",
+    "https://shop.example.com/products/widgets",
+    "Widgets, all of them",
+  );
+  assert.equal(v.ok, false);
+  assert.match(v.reason, /"products" listing page/);
+});
+
+test("v3-35: ikea /p/ to /cat/ stays refused", () => {
+  const v = checkRedirect(
+    "https://www.ikea.com/us/en/p/billy-bookcase-white-00522047/",
+    "https://www.ikea.com/us/en/cat/billy-bookcases-58288/",
+    "BILLY Bookcases - IKEA",
+  );
+  assert.equal(v.ok, false);
+  assert.match(v.reason, /"cat" listing page/);
+});

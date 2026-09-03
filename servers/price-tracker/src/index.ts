@@ -7,7 +7,7 @@ import { extractPrice, normalizeNumber, currencyFrom, type Confidence } from "./
 import { fetchPage, FetchError } from "./fetch.js";
 import { checkRedirect } from "./redirect.js";
 import {
-  canonicalUrl, dataDir, dbPath, findWatch, latest, load, newId, nowIso, pctChange, previous, save,
+  canonicalUrl, dataDir, dbPath, findWatch, latest, load, newId, nowIso, pctChange, previous, save, StoreError,
   type Observation, type Watch,
 } from "./store.js";
 import { join } from "node:path";
@@ -129,8 +129,25 @@ function watchRow(w: Watch): Record<string, unknown> {
 
 const server = new McpServer({ name: "price-tracker", version: "0.1.0" });
 
+/**
+ * Every tool goes through here so a StoreError - an unreadable or corrupt
+ * database - is reported to the user as a tool error instead of crossing the
+ * transport as an exception (Codex v3 item 1). Nothing is written while the
+ * store is in that state.
+ */
+function registerTool(name: string, config: any, handler: (args: any) => Promise<ToolResult> | ToolResult): void {
+  server.registerTool(name, config, (async (args: any) => {
+    try {
+      return await handler(args);
+    } catch (e) {
+      if (e instanceof StoreError) return fail(e.message);
+      return fail(String((e as Error)?.message ?? e));
+    }
+  }) as any);
+}
+
 /* ---------------- price_check ---------------- */
-server.registerTool(
+registerTool(
   "price_check",
   {
     title: "Check a price now",
@@ -174,7 +191,7 @@ server.registerTool(
 );
 
 /* ---------------- watch_add ---------------- */
-server.registerTool(
+registerTool(
   "watch_add",
   {
     title: "Watch a price",
@@ -255,7 +272,7 @@ server.registerTool(
 );
 
 /* ---------------- watch_list ---------------- */
-server.registerTool(
+registerTool(
   "watch_list",
   {
     title: "List watches",
@@ -272,7 +289,7 @@ server.registerTool(
 );
 
 /* ---------------- watch_remove ---------------- */
-server.registerTool(
+registerTool(
   "watch_remove",
   {
     title: "Remove a watch",
@@ -297,7 +314,7 @@ server.registerTool(
 );
 
 /* ---------------- watch_refresh ---------------- */
-server.registerTool(
+registerTool(
   "watch_refresh",
   {
     title: "Refresh prices",
@@ -355,7 +372,7 @@ server.registerTool(
 );
 
 /* ---------------- price_history ---------------- */
-server.registerTool(
+registerTool(
   "price_history",
   {
     title: "Price history",
@@ -387,7 +404,7 @@ server.registerTool(
 );
 
 /* ---------------- price_add_manual ---------------- */
-server.registerTool(
+registerTool(
   "price_add_manual",
   {
     title: "Record a price by hand",
@@ -432,7 +449,7 @@ server.registerTool(
 );
 
 /* ---------------- alerts_pending ---------------- */
-server.registerTool(
+registerTool(
   "alerts_pending",
   {
     title: "Pending alerts",

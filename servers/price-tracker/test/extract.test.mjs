@@ -172,3 +172,80 @@ test("confidence tiers: structured data high, markup hints medium, regex low", (
   assert.equal(confidenceOf("class:product-price"), "medium");
   assert.equal(confidenceOf("regex-fallback"), "low");
 });
+
+/* Codex v3: JSON-LD product selection, twitter:data1, struck prices, explicit currency. */
+
+test("v3-30: offers are never pooled across products; the page's own product wins", () => {
+  const html = page(
+    `<title>Main Widget - Shop</title>
+     <script type="application/ld+json">${JSON.stringify([
+       { "@context": "https://schema.org", "@type": "Product", name: "Main Widget",
+         offers: { "@type": "Offer", price: "100.00", priceCurrency: "USD" } },
+       { "@context": "https://schema.org", "@type": "Product", name: "Recommended Gadget",
+         offers: { "@type": "Offer", price: "10.00", priceCurrency: "USD" } },
+     ])}</script>`,
+    `<h1>Main Widget</h1>`
+  );
+  const r = extractPrice(html, "https://shop.example.com/p/main-widget");
+  assert.equal(r.price, "100.00");
+  assert.equal(r.currency, "USD");
+  assert.equal(r.title, "Main Widget");
+  assert.equal(r.source, "json-ld");
+});
+
+test("v3-30: with no title match the first product with offers is used, not the cheapest", () => {
+  const html = page(
+    ``,
+    `<script type="application/ld+json">${JSON.stringify([
+       { "@type": "Product", name: "Alpha", offers: { "@type": "Offer", price: "100.00", priceCurrency: "USD" } },
+       { "@type": "Product", name: "Beta", offers: { "@type": "Offer", price: "10.00", priceCurrency: "USD" } },
+     ])}</script>`
+  );
+  const r = extractPrice(html, "https://shop.example.com/p/alpha");
+  assert.equal(r.price, "100.00");
+  assert.equal(r.title, "Alpha");
+});
+
+test("v3-31: twitter:data1 is not a price source", () => {
+  const html = page(
+    `<title>Camera bag</title>
+     <meta name="twitter:data1" content="Free shipping over $50">`,
+    `<div>Camera bag</div>`
+  );
+  assert.equal(extractPrice(html, "https://shop.example.com/p/bag"), null);
+});
+
+test("v3-32: a struck-through old price is skipped for the current one", () => {
+  const html = page(
+    `<title>Acme Widget</title>`,
+    `<span class="price"><s>$199</s></span><span class="price">$99</span>`
+  );
+  const r = extractPrice(html, "https://shop.example.com/p/widget");
+  assert.equal(r.price, "99");
+  assert.equal(r.currency, "USD");
+  assert.match(r.source, /^class:/);
+});
+
+test("v3-32: old-price, was-price and compare-at containers are skipped", () => {
+  for (const cls of ["old-price", "price was", "compare-at-price", "price--regular", "list-price", "price-rrp"]) {
+    const html = page(
+      `<title>Acme Widget</title>`,
+      `<div class="${cls}">$199.00</div><div class="price">$99.00</div>`
+    );
+    const r = extractPrice(html, "https://shop.example.com/p/widget");
+    assert.equal(r.price, "99.00", `class ${cls} leaked the old price`);
+  }
+});
+
+test("v3-34: an explicit ISO code next to the number beats the ccTLD guess", () => {
+  const html = page(`<title>Acme Widget</title>`, `<span class="price">$10 USD</span>`);
+  const r = extractPrice(html, "https://shop.ca/p/widget");
+  assert.equal(r.price, "10");
+  assert.equal(r.currency, "USD");
+});
+
+test("v3-34: a bare dollar sign still follows the ccTLD", () => {
+  const html = page(`<title>Acme Widget</title>`, `<span class="price">$10</span>`);
+  const r = extractPrice(html, "https://shop.ca/p/widget");
+  assert.equal(r.currency, "CAD");
+});

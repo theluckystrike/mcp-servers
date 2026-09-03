@@ -141,6 +141,8 @@ Prices are stored as decimal strings in the major unit with a `.` decimal separa
 
 Every reading carries a **confidence**: `high` for JSON-LD, microdata, `meta itemprop` and Open Graph; `medium` for `data-price` attributes and price class or id hints; `low` for the regex fallback. A `low` reading on a page with no product title is reported but never stored.
 
+Where a page describes several products in JSON-LD (recommendations, "customers also bought"), the offers of one product are never pooled with another's: the product whose name matches the page title wins, otherwise the first product carrying offers. Crossed-out and previous prices (`<s>`, `<del>`, `<strike>`, and classes such as `old-price`, `was`, `compare-at-price`, `list-price`, `rrp`) are skipped, so a struck 199 next to a live 99 reports 99. An ISO code written next to the number ("$10 USD") wins over the currency guessed from the domain, and `twitter:data1` - free text such as "Free shipping over $50" - is not read as a price.
+
 Pages are fetched with a desktop browser User-Agent, a 12 second timeout, redirects followed, and a 2 MB body cap. After the fetch the final URL is compared with the one you asked for: if the shop redirected off the product path - a different path depth, a category or home page, or a generic title such as "Products", "Home", the shop name alone, or "not found" - you get `the shop redirected to <finalUrl>, which is not a product page` instead of the cheapest item on the listing it landed on. A redirect that only inserts a canonical slug in front of the same product id or path (Newegg, Amazon `/dp/`, Zalando-style URLs) is accepted, not refused.
 
 ## How it stores data
@@ -152,6 +154,11 @@ Watches and their price history live in one JSON file:
 interleave. `price_check` and read-only tools do not need the lock. Saves write to a temporary file and
 rename it into place, so an interrupted write cannot leave a half-written file. To back up your watch
 history, copy `watches.json`.
+
+Only a missing file counts as "no watches yet". If `watches.json` exists but cannot be read or parsed, the
+server never treats it as empty: the unreadable bytes are moved to `watches.json.corrupt-<timestamp>`, the
+fault is written to stderr, and every tool answers with an error naming that file until the server is
+restarted. A damaged database can therefore never be silently overwritten by the next price you record.
 
 ## Limits and honest caveats
 

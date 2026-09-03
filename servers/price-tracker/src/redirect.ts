@@ -74,6 +74,14 @@ export function keepsProductIdentity(requestedUrl: string, finalUrl: string): bo
   return false;
 }
 
+/**
+ * Path words that route to ONE product. A redirect that introduces one of
+ * these is not a listing when the requested product's identity survives
+ * (Codex v3 item 35): /item/12345 -> /products/widget?sku=12345 is the same
+ * product under a canonical route, not a category page.
+ */
+const PRODUCT_ROUTE_SEGMENTS = new Set(["products", "product", "p", "dp"]);
+
 /** Titles that no real product page has. */
 const GENERIC_TITLE = /^(products?|home|homepage|home\s*page|shop|store|search|search\s+results?|categor(y|ies)|all\s+products|welcome|index)$/i;
 const NOT_FOUND = /not\s*found|404|page\s+unavailable|no\s+longer\s+available/i;
@@ -137,14 +145,22 @@ export function checkRedirect(requestedUrl: string, finalUrl: string, title: str
 
   // Landed inside a category / listing path the request was not already in.
   const wantSet = new Set(want.map((s) => s.toLowerCase()));
-  const listing = got.find((s) => CATEGORY_SEGMENTS.has(s.toLowerCase()) && !wantSet.has(s.toLowerCase()));
+  const t = (title ?? "").trim();
+  const head = t.split(/\s+[|\u2013\u2014-]\s+/)[0].trim();
+  const namedProduct = !!t && !NOT_FOUND.test(t) && !GENERIC_TITLE.test(t) && !GENERIC_TITLE.test(head);
+  const listing = got.find((s) => {
+    const seg = s.toLowerCase();
+    if (!CATEGORY_SEGMENTS.has(seg) || wantSet.has(seg)) return false;
+    // A product route plus a surviving product identity plus a real product
+    // title is a canonical product URL, not a listing.
+    if (PRODUCT_ROUTE_SEGMENTS.has(seg) && sameProduct && namedProduct) return false;
+    return true;
+  });
   if (listing) return reason(`it is a "${listing}" listing page`);
 
-  const t = (title ?? "").trim();
   if (t) {
     if (NOT_FOUND.test(t)) return reason(`the page title is "${t}"`);
-    // Strip a "Name - Shop" suffix before judging genericness.
-    const head = t.split(/\s+[|–—-]\s+/)[0].trim();
+    // "Name - Shop" was already reduced to its head above.
     if (GENERIC_TITLE.test(head) || GENERIC_TITLE.test(t)) return reason(`the page title is "${t}"`);
     const brand = shopName(finalUrl);
     if (brand && t.toLowerCase().replace(/[^a-z0-9]+/g, "") === brand.toLowerCase().replace(/[^a-z0-9]+/g, "")) {
