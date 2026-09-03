@@ -35,8 +35,37 @@ for (const f of docs) {
     }
   }
 }
+// data/defect_overrides.json is the hand triage of every id the prose scraper above cannot
+// resolve: a defect closed in a LATER round's table, a superseded id, or something that was
+// never a server defect at all. Only status "open" counts against the open backlog.
+const OPEN_STATUS = "open";
+const overridePath = `${ROOT}/data/defect_overrides.json`;
+const overrides = existsSync(overridePath) ? JSON.parse(readFileSync(overridePath, "utf8")) : {};
+const unknownOverrides = [];
+for (const [id, o] of Object.entries(overrides)) {
+  if (id.startsWith("_") || !o || typeof o !== "object") continue;
+  if (!ledger[id]) { unknownOverrides.push(id); continue; }
+  ledger[id].scraped_status = ledger[id].status;
+  ledger[id].status = o.status || ledger[id].status;
+  if (o.note) ledger[id].note = o.note;
+  ledger[id].triaged = true;
+}
 const servers = [...new Set(rounds.flatMap((r) => Object.keys(r.per_server)))].sort();
 const matrix = servers.map((s) => { const cells = rounds.map((r) => r.per_server[s] ? `${r.per_server[s].score}/${r.per_server[s].max}` : ""); const best = rounds.filter((r) => r.per_server[s]).map((r) => r.per_server[s].score / (r.per_server[s].max || 1)); return { server: s, cells, best_pct: best.length ? Math.round(100 * Math.max(...best)) : null, last_round: rounds.filter((r) => r.per_server[s]).map((r) => r.round).pop() ?? null }; });
-const out = { generated_at: new Date().toISOString(), rounds, servers, matrix, ledger: Object.values(ledger).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })), counts: { defects: Object.keys(ledger).length, fixed: Object.values(ledger).filter((d) => d.status === "fixed").length } };
+const out = { generated_at: new Date().toISOString(), rounds, servers, matrix, ledger: Object.values(ledger).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })), counts: (() => {
+  const all = Object.values(ledger);
+  const by = {};
+  for (const d of all) by[d.status] = (by[d.status] ?? 0) + 1;
+  return {
+    defects: all.length,
+    fixed: all.filter((d) => d.status === "fixed").length,
+    open: all.filter((d) => d.status === OPEN_STATUS || d.status.startsWith("open")).length,
+    triaged: all.filter((d) => d.triaged).length,
+    by_status: by,
+    unknown_overrides: unknownOverrides,
+  };
+})() };
 writeFileSync(`${ROOT}/data/user_value_index.json`, JSON.stringify(out, null, 2));
-console.log(`rounds ${rounds.length}, servers ${servers.length}, defects ${out.counts.defects} (${out.counts.fixed} fixed)`);
+console.log(`rounds ${rounds.length}, servers ${servers.length}, defects ${out.counts.defects} (${out.counts.fixed} fixed, ${out.counts.open} open, ${out.counts.triaged} triaged)`);
+console.log(Object.entries(out.counts.by_status).map(([k, v]) => `  ${k}: ${v}`).join("\n"));
+if (unknownOverrides.length) console.log(`WARNING: overrides for ids not in the ledger: ${unknownOverrides.join(", ")}`);

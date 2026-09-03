@@ -70,7 +70,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `convert_many` | One amount into several currencies at once, all off the same rate date. |
 | `fx_rates_for` | Returns the `fx_rates` object the expense tracker's `expense_to_invoice` takes, plus the rate date. |
 | `rate_history` | A pair over a window, with min, max, average and the change across it. |
-| `rate_on` | The rate on one date, falling back to the last published rate on or before it and saying so. |
+| `rate_on` | The rate on one date, falling back to the last published rate on or before it and saying so. Both directions are returned (`rate` and `inverse_rate`) and `published_direction` names which way round the ECB itself quotes the pair, so the reciprocal is never relayed as the published figure. |
 | `currencies_list` | Every currency the ECB quotes, with its euro rate and its number of decimal places. |
 | `cache_status` | What is cached, how old it is, when it refreshes next, and where it lives. |
 | `license_status` / `license_activate` | Check or activate a Pro key. Verified offline. |

@@ -1,0 +1,322 @@
+{
+  "at": "2026-09-03T08:55:00Z",
+  "round": 9,
+  "compares_to": "data/user_value_r8.json",
+  "scope": "REGRESSION round. Round 8's freelancer's week re-run verbatim, same twelve prompts in the same order in one conversation through the office-suite bundle. Only the eight scenarios that scored below 3 in round 8 (1, 3, 4, 5, 6, 9, 10, 11) are scored; 2, 7, 8 and 12 were re-run to keep the conversation whole and carry their round-8 score.",
+  "method": "servers/office-suite/dist/index.js v0.4.1 registered as ONE server 'office'; tools/list returns 108 tools and the per-tool allowlist was written from that live list, mcp__office__-prefixed (--allowedTools 'mcp__*' grants nothing, D-E4; an unprefixed first attempt was refused on every call and that lane was discarded, not scored). One lane /private/tmp/uv51, fresh XDG_DATA_HOME/XDG_CONFIG_HOME, MCP_LICENSE_KEY='' (free tier throughout), one conversation via --session-id then thirteen --resume. claude -p --strict-mcp-config --model sonnet --output-format stream-json --verbose --max-turns 18. Only fixture: one ECB cache warm (seed.mjs). Clock: run start 08:41 UTC, Thursday 2026-09-03, declared home zone Europe/Warsaw.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "scenarios": [
+    {
+      "surface": "bundle/invoice",
+      "id": "1",
+      "prompt_source": "docs/USER_VALUE_R8.md scenario 1, verbatim",
+      "r8_score": 2,
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.1,
+      "tools": [
+        "invoice_business_set"
+      ],
+      "note": "One invoice_business_set; the response names the shared profile at mcp-servers/profile/business.json and the seven servers that read it. The model did NOT leave the bundle to write the same facts into the CLI memory directory, which it did twice in round 8. profile/business.json verified on disk with all seven fields plus timezone Europe/Warsaw. D-R31 fixed."
+    },
+    {
+      "surface": "bundle/clauses+docx",
+      "id": "3",
+      "prompt_source": "docs/USER_VALUE_R8.md scenario 3, verbatim",
+      "r8_score": 2,
+      "score": 3,
+      "tool_calls": 4,
+      "seconds": 42.3,
+      "tools": [
+        "clause_list",
+        "clause_get x2",
+        "proposal_create"
+      ],
+      "note": "proposal_create succeeded on the FIRST call: no missing-profile refusal, one reference burned (PROP-2026-0001), exactly one row in docx/documents.json, no phantom path. word/document.xml contains zero @ characters and prints [add: email]; the model asked for one instead of inventing it. D-R31, D-R32, D-R40 fixed."
+    },
+    {
+      "surface": "bundle/clauses",
+      "id": "4",
+      "prompt_source": "docs/USER_VALUE_R8.md scenario 4, verbatim",
+      "r8_score": 2,
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 18.2,
+      "tools": [
+        "clause_get x2",
+        "contract_assemble"
+      ],
+      "note": "contract_assemble payload: resolved_references [], missing_references [scope-of-work -> revisions, governing-law -> dispute-resolution], note 'The document cites nothing it does not contain'. The model relayed both to the user. Round 8's contract cited two clauses it did not contain. D-R37 fixed."
+    },
+    {
+      "surface": "bundle/time-tracker",
+      "id": "5",
+      "prompt_source": "docs/USER_VALUE_R8.md scenario 5, verbatim",
+      "r8_score": 2,
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 20.2,
+      "tools": [
+        "timer_start",
+        "timer_stop",
+        "entry_add"
+      ],
+      "note": "time-tracker/data.json: entry 34d46877 (the 11 s timer) has no rateCents and no currency - round 8 wrote USD 0.00 into a EUR business. Entry dae76464 starts 2026-09-02T07:00:00.000Z = 09:00 Europe/Warsaw, the zone declared in sentence 1; round 8 stamped 02:00 Warsaw off the machine zone. EUR 270.00 exact. D-R35 fixed."
+    },
+    {
+      "surface": "bundle/expense-tracker",
+      "id": "6",
+      "prompt_source": "docs/USER_VALUE_R8.md scenario 6, verbatim",
+      "r8_score": 1,
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 12.9,
+      "tools": [
+        "expense_add",
+        "mileage_add"
+      ],
+      "note": "expense_add returned Net EUR 50.00, VAT EUR 11.50 at 23% (your shared business profile default_tax_rate) - 61.50 / 1.23 = 50.00 exactly, the split round 8 missed. mileage_add stated 'Project: none - this drive will NOT appear in expense_summary {by: project} or in expense_to_invoice' and 'Billable: yes', and the model relayed both correctly; round 8 told the user the opposite of what the store held. D-R34, D-R36 fixed."
+    },
+    {
+      "surface": "bundle/recurring",
+      "id": "9",
+      "prompt_source": "docs/USER_VALUE_R8.md scenario 9, verbatim",
+      "r8_score": 2,
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 21.2,
+      "tools": [
+        "schedule_create",
+        "schedule_upcoming"
+      ],
+      "note": "Two calls instead of round 8's three: the 23% inherited from the profile was EXPLAINED rather than silently corrected, and tax_note was offered by name. schedule_upcoming {days: 100} honoured the horizon: horizon_days 100, to 2026-12-12, count 3, occurrences_found_in_horizon 3, free_tier_occurrence_cap 3, three real dates 2026-10-01/11-01/12-01 at EUR 2,214.00, totals EUR 6,642.00. Round 8 clamped the window to 30 days and returned one. D-R39 fixed."
+    },
+    {
+      "surface": "bundle/time-tracker+expense-tracker+spreadsheet",
+      "id": "10",
+      "prompt_source": "docs/USER_VALUE_R8.md scenario 10, verbatim",
+      "r8_score": 2,
+      "score": 2,
+      "tool_calls": 4,
+      "seconds": 30.4,
+      "tools": [
+        "export_csv",
+        "expense_export",
+        "sheet_read x2"
+      ],
+      "note": "Totals exact against both files: EUR 270.00 time, EUR 61.50 expense. Two of round 8's three deductions are gone - the expense CSV carries an amount column so the column-name error does not recur (D-R38), and the timer stub row is written with blank rate/currency/amount rather than a fake 0.00 (D-R35). Still 2: the PLN 34.50 airport drive is absent from 'this week's expenses' because it has no project and nothing said so at this point, and 'by type' was aggregated by the model over two sheet_read dumps rather than by sheet_query. D-R41."
+    },
+    {
+      "surface": "bundle/resume",
+      "id": "11",
+      "prompt_source": "docs/USER_VALUE_R8.md scenario 11, verbatim",
+      "r8_score": 2,
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 45.2,
+      "tools": [
+        "profile_set",
+        "tailor_to_job",
+        "resume_create"
+      ],
+      "note": "tailor_to_job reported the gap as read-only and the model wrote the tailored document with resume_create instead of re-writing the stored profile. resume/profiles.json still holds the user's own sentence verbatim - 'Wrote the OpenAPI style guide two of those clients still use' - and the string 'governance documentation' that round 8 silently inserted does not appear anywhere in the file. 15 of 30 keywords matched and bolded, nothing fabricated, two near-miss keywords offered as wording tweaks for the user to approve."
+    }
+  ],
+  "carried_from_r8": {
+    "scenarios": {
+      "2": 3,
+      "7": 3,
+      "8": 3,
+      "12": 3
+    },
+    "why": "re-run so the conversation holds (sentence 8 cannot invoice what sentence 5 never logged) but not re-scored: each was already 3/3 in round 8."
+  },
+  "totals": {
+    "score": 23,
+    "max": 24,
+    "pct": 96,
+    "tool_calls": 22,
+    "seconds": 201.5,
+    "r8_on_same_scenarios": {
+      "score": 15,
+      "max": 24,
+      "pct": 63,
+      "tool_calls": 34,
+      "seconds": 328.5
+    },
+    "whole_week_equivalent": {
+      "r9": "35/36",
+      "r8": "27/36"
+    },
+    "by_scenario": {
+      "1": "3/3",
+      "3": "3/3",
+      "4": "3/3",
+      "5": "3/3",
+      "6": "3/3",
+      "9": "3/3",
+      "10": "2/3",
+      "11": "3/3"
+    },
+    "by_scenario_r8": {
+      "1": "2/3",
+      "3": "2/3",
+      "4": "2/3",
+      "5": "2/3",
+      "6": "1/3",
+      "9": "2/3",
+      "10": "2/3",
+      "11": "2/3"
+    },
+    "by_server": {
+      "invoice": {
+        "calls": 1,
+        "tools": [
+          "invoice_business_set"
+        ],
+        "scenarios": [
+          "1"
+        ]
+      },
+      "clauses": {
+        "calls": 6,
+        "tools": [
+          "clause_list",
+          "clause_get x4",
+          "contract_assemble"
+        ],
+        "scenarios": [
+          "3",
+          "4"
+        ]
+      },
+      "docx": {
+        "calls": 1,
+        "tools": [
+          "proposal_create"
+        ],
+        "scenarios": [
+          "3"
+        ]
+      },
+      "time-tracker": {
+        "calls": 4,
+        "tools": [
+          "timer_start",
+          "timer_stop",
+          "entry_add",
+          "export_csv"
+        ],
+        "scenarios": [
+          "5",
+          "10"
+        ]
+      },
+      "expense-tracker": {
+        "calls": 3,
+        "tools": [
+          "expense_add",
+          "mileage_add",
+          "expense_export"
+        ],
+        "scenarios": [
+          "6",
+          "10"
+        ]
+      },
+      "recurring": {
+        "calls": 2,
+        "tools": [
+          "schedule_create",
+          "schedule_upcoming"
+        ],
+        "scenarios": [
+          "9"
+        ]
+      },
+      "spreadsheet": {
+        "calls": 2,
+        "tools": [
+          "sheet_read x2"
+        ],
+        "scenarios": [
+          "10"
+        ]
+      },
+      "resume": {
+        "calls": 3,
+        "tools": [
+          "profile_set",
+          "tailor_to_job",
+          "resume_create"
+        ],
+        "scenarios": [
+          "11"
+        ]
+      }
+    },
+    "tool_selection": "22 of 22 scored calls used a bundle tool and none errored. The one selection miss is not a wrong tool but an unasked one: sheet_query was never called in s10, the model aggregated two sheet_read dumps itself.",
+    "left_the_bundle": "Not once in any of the fourteen turns. Round 8 left it in scenario 1 to write the business profile into the CLI's own memory directory; the shared-profile response makes that pointless and the model did not do it."
+  },
+  "verification": {
+    "shared_profile": "profile/business.json after one invoice_business_set: name, address, vat_id PL1234567890, default_currency EUR, default_tax_rate 23, payment_terms_days 14, invoice_prefix INV, timezone Europe/Warsaw. PASS (D-R31)",
+    "documents_burned": "docx/documents.json holds exactly 1 entry, PROP-2026-0001. PASS (D-R32)",
+    "no_invented_email": "word/document.xml of api-redesign.docx: zero @ matches, '[add: email]' present; contract note repeats it. PASS (D-R40)",
+    "contract_references": "contract_assemble: resolved_references [], missing_references [scope-of-work -> revisions, governing-law -> dispute-resolution]. PASS (D-R37)",
+    "timer_stub": "time-tracker/data.json entry 34d46877: seconds 11, billable true, NO rateCents, NO currency. PASS (D-R35)",
+    "home_zone": "entry dae76464 start 2026-09-02T07:00:00.000Z = 09:00 Europe/Warsaw (UTC+02). PASS (D-R35)",
+    "vat_split": "expense_add: Net EUR 50.00, VAT EUR 11.50 at 23% from the shared profile; 61.50/1.23 = 50.00. PASS (D-R34)",
+    "mileage_disclosure": "mileage_add names 'Project: none' and 'Billable: yes'; the model relayed both. PASS (D-R36)",
+    "recurring_horizon": "schedule_upcoming {days:100}: horizon_days 100, to 2026-12-12, count 3, occurrences_found_in_horizon 3, free_tier_occurrence_cap 3, totals EUR 6642.00 = 3 x 2214.00. PASS (D-R39)",
+    "retainer_arithmetic": "20 x 90 = 1800 net; 1800 x 1.23 = 2214.00 on every occurrence and in schedules.json. PASS",
+    "resume_profile_untouched": "resume/profiles.json contains 'Wrote the OpenAPI style guide two of those clients still use'; 'governance documentation' appears nowhere in the file. PASS (D-R33)",
+    "expense_csv_columns": "expenses-2026-08-31-to-2026-09-03.csv header: id,date,currency,amount,gross,net,vat,vat_rate,... - amount present, no tool error in the lane. PASS (D-R38)",
+    "week_totals": "time CSV 3 h at EUR 90 = 270 plus a 0 h stub with blank money; expense CSV one row 61.50 gross / 50.00 net / 11.50 VAT. PASS"
+  },
+  "r8_defects_retested": {
+    "D-R31": "fixed and exercised live",
+    "D-R32": "fixed and exercised live",
+    "D-R33": "fixed and exercised live",
+    "D-R34": "fixed and exercised live",
+    "D-R35": "fixed and exercised live",
+    "D-R36": "fixed and exercised live",
+    "D-R37": "fixed and exercised live",
+    "D-R38": "fixed and exercised live",
+    "D-R39": "fixed and exercised live",
+    "D-R40": "fixed and exercised live"
+  },
+  "defects": [
+    {
+      "id": "D-R41",
+      "severity": "low",
+      "server": "expense-tracker + spreadsheet",
+      "side": "server",
+      "title": "an unprojected mileage line is silently absent from the week's export, and the aggregation left the server",
+      "repro": "/private/tmp/uv51/out/s10.jsonl, CALLS(4): export_csv, expense_export, sheet_read, sheet_read. expense_export {project: 'Nova Labs'} writes 1 row; the PLN 34.50 mileage from s6 has no project and is filtered out without being counted.",
+      "fix_direction": "expense_export should report how many rows it filtered out and why, the way report {unbilled_only: true} already volunteers 'N entries are hidden because they have already been invoiced'. Separately, sheet_query's description should claim the 'total it by' phrasing so an aggregation is asked of the server rather than done over a sheet_read dump."
+    }
+  ],
+  "ledger_triage": {
+    "file": "data/defect_overrides.json",
+    "applied_by": "scripts/uv-index.mjs",
+    "counts": {
+      "triaged": 25,
+      "fixed": 19,
+      "superseded": 1,
+      "client": 2,
+      "harness": 3,
+      "still_open": 0
+    },
+    "server_side_fix_this_round": [
+      "D-C4 (currency rate_on now returns both directions and names the ECB's published direction)"
+    ]
+  },
+  "artifacts": [
+    "docs/USER_VALUE_R9.md",
+    "data/user_value_r9.json",
+    "data/defect_overrides.json",
+    "/private/tmp/uv51/{mcp.json,allow.txt,run.sh,seed.mjs,tools.mjs,show.py}",
+    "/private/tmp/uv51/out/*.jsonl (14 transcripts)",
+    "/private/tmp/uv51/data/mcp-servers/{profile,invoice,docx,clauses,time-tracker,expense-tracker,recurring,resume,timezone,currency}"
+  ]
+}

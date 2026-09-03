@@ -308,3 +308,30 @@ test("an amount too large to represent is refused, not formatted as Infinity", a
   const neg = JSON.parse((await c.call("convert", { amount: -250.5, from: "EUR", to: "USD" })).text);
   assert.equal(neg.result, "USD -270.84");
 });
+
+/* D-C4: "the ECB rate for USD" quoted as USD -> EUR returned 0.8589, the reciprocal of the
+   figure the ECB publishes. Both directions are now in the payload and the published
+   direction is named, so the reciprocal cannot be relayed as the published rate. */
+test("D-C4: rate_on carries both directions and names the ECB's published direction", async (t) => {
+  const { srv, url } = await ecbServer();
+  t.after(() => srv.close());
+  const c = client({ ECB_BASE_URL: url });
+  t.after(() => c.close());
+  await init(c);
+
+  const rev = JSON.parse((await c.call("rate_on", { from: "USD", to: "EUR", date: D0 })).text);
+  assert.equal(rev.pair, "USD/EUR");
+  assert.equal(rev.inverse_rate, 1.0812);
+  assert.match(rev.inverse_meaning, /^1 EUR = 1\.0812 USD on /);
+  assert.match(rev.published_direction, /The ECB publishes this pair the other way round: 1 EUR = 1\.0812 USD/);
+  assert.match(rev.published_direction, /reciprocal/);
+  assert.match(rev.ecb_quoting_convention, /per 1 EUR/);
+
+  const fwd = JSON.parse((await c.call("rate_on", { from: "EUR", to: "USD", date: D0 })).text);
+  assert.equal(fwd.rate, 1.0812);
+  assert.match(fwd.published_direction, /ECB's own published direction/);
+
+  const cross = JSON.parse((await c.call("rate_on", { from: "USD", to: "PLN", date: D0 })).text);
+  assert.match(cross.published_direction, /Neither side is EUR/);
+  assert.match(cross.published_direction, /cross rate/);
+});

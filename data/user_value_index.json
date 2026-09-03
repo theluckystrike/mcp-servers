@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T08:23:08.129Z",
+  "generated_at": "2026-09-03T08:50:31.390Z",
   "rounds": [
     {
       "round": 1,
@@ -172,6 +172,17 @@
       "per_server": {},
       "at": "2026-09-03T07:15:00Z",
       "method": "servers/office-suite/dist/index.js v0.4.0 registered as ONE server 'office'; tools/list returns 108 tools and the per-tool allowlist was written from that live "
+    },
+    {
+      "round": 9,
+      "file": "user_value_r9.json",
+      "score": 23,
+      "max": 24,
+      "pct": 96,
+      "scenarios": 8,
+      "per_server": {},
+      "at": "2026-09-03T08:55:00Z",
+      "method": "servers/office-suite/dist/index.js v0.4.1 registered as ONE server 'office'; tools/list returns 108 tools and the per-tool allowlist was written from that live "
     }
   ],
   "servers": [
@@ -194,6 +205,7 @@
         "3/3",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -207,6 +219,7 @@
         "2/3",
         "",
         "6/6",
+        "",
         "",
         "",
         ""
@@ -224,6 +237,7 @@
         "1/3",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -235,6 +249,7 @@
         "",
         "",
         "8/12",
+        "",
         "",
         "",
         "",
@@ -254,6 +269,7 @@
         "3/3",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -269,6 +285,7 @@
         "4/6",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -282,6 +299,7 @@
         "9/9",
         "",
         "9/9",
+        "",
         "",
         "",
         ""
@@ -303,14 +321,20 @@
       "first_seen": "USER_VALUE.md",
       "severity": "",
       "title": "D-2).",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "price-tracker redirect guard. Verified in round 2 (docs/USER_VALUE_R2.md line 55): the IKEA URL now errors naming the cat listing page instead of returning USD 39.",
+      "triaged": true
     },
     {
       "id": "D-3",
       "first_seen": "USER_VALUE.md",
       "severity": "high",
       "title": "D-3 (high, time-tracker) — the rate has no currency, so \"90 euros\" becomes USD.**",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "time-tracker rate carries a currency. Verified in round 2: 'EUR 90.00/h = EUR 225.00' (docs/USER_VALUE.md fix at line 318).",
+      "triaged": true
     },
     {
       "id": "D-4",
@@ -324,28 +348,40 @@
       "first_seen": "USER_VALUE.md",
       "severity": "medium",
       "title": "D-5 (medium, price-tracker) — `watch_add` stores a watch nothing ever checks.**",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "price-tracker watch_add states the no-polling contract and names watch_refresh. Verified in round 2 (pt2).",
+      "triaged": true
     },
     {
       "id": "D-6",
       "first_seen": "USER_VALUE.md",
       "severity": "medium",
       "title": "D-6 (medium, spreadsheet) — no aggregation, so every \"who sold the most\" question leaves the server.**",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "spreadsheet sheet_query aggregates in one call (docs/USER_VALUE.md line 301). Round 2 called it partial only because of D-10, which is itself closed.",
+      "triaged": true
     },
     {
       "id": "D-7",
       "first_seen": "USER_VALUE.md",
       "severity": "low",
       "title": "D-7 (low, time-tracker) — no project name reconciliation.**",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "time-tracker project reconciliation. Verified in round 2: 'Acme' resolved to 'Acme website' and announced.",
+      "triaged": true
     },
     {
       "id": "D-8",
       "first_seen": "USER_VALUE.md",
       "severity": "low",
       "title": "D-8 (low, invoice) — client auto-created with no address, and line amounts carry no currency symbol.**",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "invoice currency on every line amount and the missing-address note. Verified in round 2 against the generated PDF.",
+      "triaged": true
     },
     {
       "id": "D-9",
@@ -394,7 +430,10 @@
       "first_seen": "CURRENCY_AUDIT.md",
       "severity": "",
       "title": "D-C4 |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "Round 9 fix: rate_on now returns inverse_rate / inverse_meaning, ecb_quoting_convention and published_direction, which names the ECB's own direction when the pair is quoted the other way round. servers/currency/src/index.ts rate_on; test servers/currency/test/smoke.test.mjs 'D-C4: rate_on carries both directions'.",
+      "triaged": true
     },
     {
       "id": "D-C5",
@@ -415,7 +454,10 @@
       "first_seen": "DOCX_AUDIT.md",
       "severity": "",
       "title": "D-D2 | cosmetic | s5 expanded \"Lucky Strike\" to the stored profile name \"Lucky Strike Software\". Defensible, but the client, not the server,",
-      "status": "open"
+      "status": "client",
+      "scraped_status": "open",
+      "note": "docx: the server passes the value through verbatim; the client expanded 'Lucky Strike' to the stored profile name. No server change (docs/DOCX_AUDIT.md line 136).",
+      "triaged": true
     },
     {
       "id": "D-E1",
@@ -429,7 +471,10 @@
       "first_seen": "EXPENSE_AUDIT.md",
       "severity": "",
       "title": "D-E2) |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "expense-tracker markup_percent is no longer Pro-gated (servers/expense-tracker/src/index.ts:706 comment); the Pro wall that produced a wrong invoice line is gone. docs/EXPENSE_AUDIT.md line 81.",
+      "triaged": true
     },
     {
       "id": "D-E3",
@@ -443,7 +488,10 @@
       "first_seen": "CLAUSES_AUDIT.md",
       "severity": "",
       "title": "D-E4 already measured.",
-      "status": "open (client or accepted)"
+      "status": "harness",
+      "scraped_status": "open (client or accepted)",
+      "note": "--allowedTools 'mcp__*' grants nothing. A CLI fact, not a server defect; every round since 3 writes a per-tool allowlist from a live tools/list because of it.",
+      "triaged": true
     },
     {
       "id": "D-E5",
@@ -506,49 +554,70 @@
       "first_seen": "RECURRING_AUDIT.md",
       "severity": "",
       "title": "D-R8 | `forecast` and `schedule_upcoming` projected periods that were already invoiced or skipped | `schedule_skip` October, `forecast {mont",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "recurring: forecast and schedule_upcoming exclude settled periods and list them. docs/RECURRING_AUDIT.md line 153.",
+      "triaged": true
     },
     {
       "id": "D-R9",
       "first_seen": "RECURRING_AUDIT.md",
       "severity": "",
       "title": "D-R9 | A fire-and-forget JSON-RPC probe races a stateful server and reports false PASSes | send `schedule_create` and `invoice_generate_due`",
-      "status": "open"
+      "status": "harness",
+      "scraped_status": "open",
+      "note": "A fire-and-forget JSON-RPC probe races a stateful server. docs/RECURRING_AUDIT.md line 154 records it as a harness defect; part 1 uses a sequential probe.",
+      "triaged": true
     },
     {
       "id": "D-R10",
       "first_seen": "USER_VALUE_R4.md",
       "severity": "low",
       "title": "D-R10 (low, harness, new) — without `WebFetch` in the allowlist, pt1 dies rather than falling back.**",
-      "status": "open (client or accepted)"
+      "status": "harness",
+      "scraped_status": "open (client or accepted)",
+      "note": "Without WebFetch in the allowlist the client dies rather than falling back. Allowlist composition, not a server behaviour.",
+      "triaged": true
     },
     {
       "id": "D-R11",
       "first_seen": "USER_VALUE_R5.md",
       "severity": "",
       "title": "D-R11. |",
-      "status": "open"
+      "status": "superseded",
+      "scraped_status": "open",
+      "note": "Superseded by D-R19 as one defect class (docs/USER_VALUE_R6.md line 179); D-R19 was fixed in round 6 (tool descriptions claim the trigger words) and did not recur in rounds 7 or 8.",
+      "triaged": true
     },
     {
       "id": "D-R12",
       "first_seen": "USER_VALUE_R5.md",
       "severity": "",
       "title": "D-R12, D-R13. |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "Round 5 fix: coerce decides by pattern, never by string length. servers/spreadsheet/src/csv.ts:104 via parseNumberStrict; test servers/spreadsheet/test/round5.test.mjs:63 and :88. Probed: coerce('403.00') and coerce('1,250.00') both return numbers.",
+      "triaged": true
     },
     {
       "id": "D-R13",
       "first_seen": "USER_VALUE_R5.md",
       "severity": "",
       "title": "D-R13 |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "Round 5 fix: sheet_add_column infers 2 decimals for money columns and takes an explicit decimals argument. servers/spreadsheet/src/index.ts:574, :588; tests round5.test.mjs:107 and :124.",
+      "triaged": true
     },
     {
       "id": "D-R14",
       "first_seen": "USER_VALUE_R5.md",
       "severity": "",
       "title": "D-R14. |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "expense_to_invoice takes target_currency + fx_rates. Fixed and verified in round 6 (docs/USER_VALUE_R6.md line 179), exercised again for real in round 8 scenario 8 (USD 383.80).",
+      "triaged": true
     },
     {
       "id": "D-R15",
@@ -569,7 +638,10 @@
       "first_seen": "USER_VALUE_R5.md",
       "severity": "low",
       "title": "D-R17 (low, client) — `ToolSearch` needs the `mcp__office__` prefix.** Scenario 5 wasted a turn:",
-      "status": "open"
+      "status": "client",
+      "scraped_status": "open",
+      "note": "ToolSearch needs the mcp__office__ prefix. A client lookup convention; nothing in the servers to change.",
+      "triaged": true
     },
     {
       "id": "D-R18",
@@ -583,35 +655,50 @@
       "first_seen": "USER_VALUE_R6.md",
       "severity": "",
       "title": "D-R19. |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "Round-6 fix: six sheet_*/price_check/watch_add descriptions open with an imperative claiming the trigger words, under the 220-char ratchet. docs/USER_VALUE_R6.md line 284. Did not recur in round 7 (line 194) or round 8.",
+      "triaged": true
     },
     {
       "id": "D-R20",
       "first_seen": "USER_VALUE_R6.md",
       "severity": "",
       "title": "D-R20, D-R21. With `billable: true` the same call returns **`unit_price: 48.6`, `total_net: \"USD 48.60\"`**. |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "Round-6 fix: an empty rebill set returns no fx_note and no vat_note at all, and next_step names the two usual causes. servers/expense-tracker/src/index.ts:808-830; test round6.test.mjs:89.",
+      "triaged": true
     },
     {
       "id": "D-R21",
       "first_seen": "USER_VALUE_R6.md",
       "severity": "medium",
       "title": "D-R21 (medium, expense-tracker) — `expense_add` defaults `billable: false`, which silently",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "Round-6 fix: billable defaults to true when a project is set, and the response always states the value used and where it came from. servers/expense-tracker/src/index.ts:193-196.",
+      "triaged": true
     },
     {
       "id": "D-R22",
       "first_seen": "USER_VALUE_R6.md",
       "severity": "",
       "title": "D-R22. |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "Round-6 fix: tag grouping is free (the Pro gate is deleted) and group_by is optional, defaulting to a plain total. servers/time-tracker/src/index.ts:729, :735; scripts/validate.mjs:78-81 asserts it on both tiers.",
+      "triaged": true
     },
     {
       "id": "D-R23",
       "first_seen": "USER_VALUE_R6.md",
       "severity": "low",
       "title": "D-R23 (low, time-tracker) — the `.corrupt` marker file's contents are a path, and read as data.**",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "Round-6 fix: the .corrupt marker is one line of self-describing JSON with a hint, and markerQuarantinePath falls back to the raw text for pre-fix markers. jsonstore.ts:28, expense-tracker store.ts:79.",
+      "triaged": true
     },
     {
       "id": "D-R24",
@@ -733,6 +820,13 @@
       "status": "fixed"
     },
     {
+      "id": "D-R41",
+      "first_seen": "USER_VALUE_R9.md",
+      "severity": "",
+      "title": "D-R41. |",
+      "status": "open"
+    },
+    {
       "id": "D-T1",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
@@ -744,18 +838,34 @@
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
       "title": "D-T2 | `find_meeting_slots` returns only a text refusal when no slot fits, so the model burns turns re-calling it with guessed working hours",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "find_meeting_slots now returns the least-bad near misses alongside the refusal: findNearMissSlots (servers/timezone/src/tz.ts:691) ranks by total minutes outside anyone's window and the answer prints the work_start/work_end that would make the first one fit. servers/timezone/src/index.ts:306; test tz.test.mjs:384.",
+      "triaged": true
     },
     {
       "id": "D-T3",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
       "title": "D-T3 | A named (non-email) attendee is written as `ATTENDEE;CN=Tom:invalid:nomail` | s5 `nova.ics` | server | **open by design**: RFC 5545 r",
-      "status": "open (client or accepted)"
+      "status": "fixed",
+      "scraped_status": "open (client or accepted)",
+      "note": "Closed by the D-R27 fix: a name with no email is no longer written as ATTENDEE;CN=Tom:invalid:nomail; it moves to DESCRIPTION with the reason, and only real addresses become an ATTENDEE CAL-ADDRESS. servers/timezone/src/tz.ts:817-877. Verified on the live file in round 8 scenario 7.",
+      "triaged": true
     }
   ],
   "counts": {
-    "defects": 66,
-    "fixed": 41
+    "defects": 67,
+    "fixed": 60,
+    "open": 1,
+    "triaged": 25,
+    "by_status": {
+      "harness": 3,
+      "fixed": 60,
+      "client": 2,
+      "superseded": 1,
+      "open": 1
+    },
+    "unknown_overrides": []
   }
 }
