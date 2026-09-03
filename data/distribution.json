@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03T16:45:00Z",
+  "updated_at": "2026-09-03T00:00:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -49,12 +49,12 @@
     "docker-mcp-catalog": {
       "status": "submitted",
       "url": "https://github.com/docker/mcp-registry/pull/4892",
-      "note": "PR adds servers/{time-tracker,price-tracker,spreadsheet,invoice}/server.yaml + tools.json; source.dockerfile=servers/<name>/Dockerfile with repo root as build context; cmd/validate 11/11 per server; task build not run (no Docker daemon on this machine); awaiting Docker team review; expense-tracker added same PR (server.yaml+tools.json); currency, timezone, docx added same PR (server.yaml+tools.json), tools.json generated from a live tools/list of each dist/index.js; resume, recurring, clauses added same PR (server.yaml+tools.json), resume/clauses depend on @theluckystrike/mcp-docx and recurring on @theluckystrike/mcp-invoice, both build from repo root context per their Dockerfiles; all eleven entries source.commit repinned together to 2f47c581212dcaa080d33e3f04dafefab34c733d (theluckystrike/mcp-servers HEAD at task start); PR still OPEN, 0 comments, no labels | Round 7 check: PR #4892 state OPEN, mergeable, statusCheckRollup empty (no checks configured), 0 comments -- unchanged since submission, no maintainer action yet."
+      "note": "PR adds servers/{time-tracker,price-tracker,spreadsheet,invoice}/server.yaml + tools.json; source.dockerfile=servers/<name>/Dockerfile with repo root as build context; cmd/validate 11/11 per server; task build not run (no Docker daemon on this machine); awaiting Docker team review; expense-tracker added same PR (server.yaml+tools.json); currency, timezone, docx added same PR (server.yaml+tools.json), tools.json generated from a live tools/list of each dist/index.js; resume, recurring, clauses added same PR (server.yaml+tools.json), resume/clauses depend on @theluckystrike/mcp-docx and recurring on @theluckystrike/mcp-invoice, both build from repo root context per their Dockerfiles; all eleven entries source.commit repinned together to 2f47c581212dcaa080d33e3f04dafefab34c733d (theluckystrike/mcp-servers HEAD at task start); PR still OPEN, 0 comments, no labels | Round 7 check: PR #4892 state OPEN, mergeable, statusCheckRollup empty (no checks configured), 0 comments -- unchanged since submission, no maintainer action yet. | Round 5: added servers/{pdf,calendar}/server.yaml+tools.json (tools.json from a live tools/list of each dist/index.js, pdf 12 tools, calendar 12 tools); all 13 entries (11 prior + pdf, calendar) source.commit and icon repinned together to 75e358fce74fef68c20051209af64f51c917e798 (theluckystrike/mcp-servers origin/main HEAD at task start); cmd/validate 11/11 per server across all 13; pushed to fork branch add-theluckystrike-mcp-servers, commit 0ad018f; PR #4892 still OPEN, mergeable, 0 comments, no labels."
     },
     "cline-marketplace": {
       "status": "submitted",
       "url": "https://github.com/cline/mcp-marketplace/issues/2397",
-      "note": "eleven submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice, 2401 expense-tracker, 2408 currency, 2409 timezone, 2410 docx, 2411 resume, 2412 recurring, 2413 clauses; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install; all eleven OPEN, 0 comments, no labels | Round 7 check: all 11 issues (2397-2401, 2408-2413) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet."
+      "note": "eleven submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice, 2401 expense-tracker, 2408 currency, 2409 timezone, 2410 docx, 2411 resume, 2412 recurring, 2413 clauses; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install; all eleven OPEN, 0 comments, no labels | Round 7 check: all 11 issues (2397-2401, 2408-2413) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 5: two new submission issues, 2416 pdf and 2417 calendar, same honest-checkbox format; all 13 issues (2397-2401, 2408-2413, 2416-2417) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet."
     },
     "guides": {
       "status": "published",
@@ -316,6 +316,18 @@
       "registry": "published",
       "npm": "missing",
       "hosted": "published"
+    },
+    "pdf": {
+      "github": "published",
+      "registry": "pending (v0.5.0)",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted"
+    },
+    "calendar": {
+      "github": "published",
+      "registry": "pending (v0.5.0)",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted"
     }
   }
 }
