@@ -3094,6 +3094,430 @@
         "invoice": "not published"
       },
       "billing_health": true
+    },
+    {
+      "at": "2026-09-03T04:52:35.404Z",
+      "github": {
+        "stars": 0,
+        "forks": 0,
+        "watchers": 0,
+        "views_14d": 0,
+        "uniques_14d": 0,
+        "clones_14d": 0,
+        "clone_uniques_14d": 0
+      },
+      "release_downloads": [
+        {
+          "tag": "v0.3.2",
+          "name": "currency.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.3.2",
+          "name": "docx.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.3.2",
+          "name": "expense-tracker.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.3.2",
+          "name": "invoice.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.3.2",
+          "name": "office-suite.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.3.2",
+          "name": "price-tracker.mcpb",
+          "downloads": 6
+        },
+        {
+          "tag": "v0.3.2",
+          "name": "spreadsheet.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.3.2",
+          "name": "time-tracker.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.3.2",
+          "name": "timezone.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "currency.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "docx.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "expense-tracker.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "invoice.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "office-suite.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "price-tracker.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "spreadsheet.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "time-tracker.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.3.1",
+          "name": "timezone.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "currency.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "docx.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "expense-tracker.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "invoice.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "office-suite.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "price-tracker.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "spreadsheet.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "time-tracker.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.3.0",
+          "name": "timezone.mcpb",
+          "downloads": 2
+        },
+        {
+          "tag": "v0.2.5",
+          "name": "expense-tracker.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.5",
+          "name": "invoice.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.5",
+          "name": "office-suite.mcpb",
+          "downloads": 6
+        },
+        {
+          "tag": "v0.2.5",
+          "name": "price-tracker.mcpb",
+          "downloads": 6
+        },
+        {
+          "tag": "v0.2.5",
+          "name": "spreadsheet.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.5",
+          "name": "time-tracker.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.4",
+          "name": "expense-tracker.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.4",
+          "name": "invoice.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.4",
+          "name": "office-suite.mcpb",
+          "downloads": 6
+        },
+        {
+          "tag": "v0.2.4",
+          "name": "price-tracker.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.4",
+          "name": "spreadsheet.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.4",
+          "name": "time-tracker.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.3",
+          "name": "expense-tracker.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.3",
+          "name": "invoice.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.3",
+          "name": "office-suite.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.3",
+          "name": "price-tracker.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.3",
+          "name": "spreadsheet.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.3",
+          "name": "time-tracker.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.2",
+          "name": "expense-tracker.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.2",
+          "name": "invoice.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.2",
+          "name": "office-suite.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.2",
+          "name": "price-tracker.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.2",
+          "name": "spreadsheet.mcpb",
+          "downloads": 5
+        },
+        {
+          "tag": "v0.2.2",
+          "name": "time-tracker.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.1",
+          "name": "expense-tracker.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.1",
+          "name": "invoice.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.1",
+          "name": "office-suite.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.1",
+          "name": "price-tracker.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.1",
+          "name": "spreadsheet.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.1",
+          "name": "time-tracker.mcpb",
+          "downloads": 4
+        },
+        {
+          "tag": "v0.2.0",
+          "name": "expense-tracker.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.0",
+          "name": "invoice.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.0",
+          "name": "price-tracker.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.0",
+          "name": "spreadsheet.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.2.0",
+          "name": "time-tracker.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.1.1",
+          "name": "invoice.mcpb",
+          "downloads": 8
+        },
+        {
+          "tag": "v0.1.1",
+          "name": "price-tracker.mcpb",
+          "downloads": 8
+        },
+        {
+          "tag": "v0.1.1",
+          "name": "spreadsheet.mcpb",
+          "downloads": 8
+        },
+        {
+          "tag": "v0.1.1",
+          "name": "time-tracker.mcpb",
+          "downloads": 9
+        },
+        {
+          "tag": "v0.1.0",
+          "name": "invoice.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.1.0",
+          "name": "price-tracker.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.1.0",
+          "name": "spreadsheet.mcpb",
+          "downloads": 3
+        },
+        {
+          "tag": "v0.1.0",
+          "name": "time-tracker.mcpb",
+          "downloads": 3
+        }
+      ],
+      "release_downloads_total": 286,
+      "registry_entries": [
+        "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless@0.3.0",
+        "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless@0.3.1",
+        "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless@0.3.2",
+        "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown@0.3.0",
+        "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown@0.3.1",
+        "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown@0.3.2",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.1.1",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.2.0",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.2.1",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.2.2",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.2.3",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.2.4",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.2.5",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.3.0",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.3.1",
+        "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.3.2",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.2.0",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.2.1",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.2.2",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.2.3",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.2.4",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.2.5",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.3.0",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.3.1",
+        "io.github.theluckystrike/expense-tracker-receipts-mileage@0.3.2",
+        "io.github.theluckystrike/invoice@0.1.0",
+        "io.github.theluckystrike/invoice@0.1.1",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.1.1",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.2.0",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.2.1",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.2.2",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.2.3",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.2.4",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.2.5",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.3.0",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.3.1",
+        "io.github.theluckystrike/invoice-pdf-billing-generator@0.3.2",
+        "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.2.1",
+        "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.2.2",
+        "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.2.3",
+        "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.2.4",
+        "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.2.5",
+        "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.3.0",
+        "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.3.1",
+        "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.3.2",
+        "io.github.theluckystrike/price-tracker@0.1.0",
+        "io.github.theluckystrike/price-tracker@0.1.1",
+        "io.github.theluckystrike/price-tracker-drop-alert-watch@0.1.1",
+        "io.github.theluckystrike/price-tracker-drop-alert-watch@0.2.0",
+        "io.github.theluckystrike/price-tracker-drop-alert-watch@0.2.1"
+      ],
+      "npm_weekly_downloads": {
+        "time-tracker": "not published",
+        "price-tracker": "not published",
+        "spreadsheet": "not published",
+        "invoice": "not published"
+      },
+      "billing_health": true
     }
   ]
 }

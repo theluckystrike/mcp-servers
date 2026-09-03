@@ -118,6 +118,18 @@
         19
       ],
       [
+        "recurring",
+        "prod_VBqQaTPyG0MWjP",
+        "price_1UBSjCJKCamubEm1gOmfW2db",
+        19
+      ],
+      [
+        "clauses",
+        "prod_VBqQnbiMOGUcFJ",
+        "price_1UBSjDJKCamubEm1sA7KYyQs",
+        19
+      ],
+      [
         "bundle",
         "prod_VBafU5C9o9d0f3",
         "price_1UBDU9JKCamubEm1dWgRjtoW",
@@ -267,6 +279,26 @@
       "free": "Profile, modern-style resume, markdown and HTML exports, 3 cover letters per calendar month, tailoring on job posts up to 2,000 characters.",
       "pro": "All styles, unlimited cover letters and tailoring, profile variants, letterhead colours.",
       "storage": "~/.local/share/mcp-servers/resume/"
+    },
+    "recurring": {
+      "title": "MCP Recurring Invoices",
+      "tagline": "Scheduled invoices, generated into your invoice book with PDFs.",
+      "does": "Keeps billing schedules per client (weekly, monthly, quarterly, yearly or every N days) with month-end and leap-day rules, shows what falls due, generates exactly one invoice per schedule per period into the invoice server store with PDF rendering, never duplicates on a rerun, keeps a history, and forecasts revenue per month per currency.",
+      "for": "Freelancers and small studios with retainers and subscriptions.",
+      "example": "\"Bill Acme 12 hours a month at 90 EUR starting September.\" ... \"Generate what is due and show me the next 30 days.\"",
+      "free": "3 active schedules, 30-day upcoming view, generate due invoices.",
+      "pro": "Unlimited schedules, 12-month forecast, audit history, end-of-month and anchor-day rules.",
+      "storage": "~/.local/share/mcp-servers/recurring/ plus the invoice store"
+    },
+    "clauses": {
+      "title": "MCP Clause Library",
+      "tagline": "Reusable contract clauses, searched and assembled into Word.",
+      "does": "Ships 25 generic freelance clauses (scope, payment terms, IP, confidentiality, termination, liability, governing law and more), each marked as a template with variables, lets you add and search your own, extracts variables, fills them, and assembles a contract or proposal into .docx or markdown through the docx engine with a not-legal-advice line.",
+      "for": "Freelancers who reuse the same terms across contracts and proposals.",
+      "example": "\"Assemble a contract for Acme with payment terms, late fees, IP assignment and Polish governing law, 4,500 EUR.\" ... \"What variables are still open?\"",
+      "free": "Starter set plus 10 own clauses, search, assembly up to 8 clauses, markdown export.",
+      "pro": "Unlimited clauses, jurisdiction and tag filters, JSON import and export, unlimited assembly, clause versions.",
+      "storage": "~/.local/share/mcp-servers/clauses/"
     }
   },
   "version": "0.1.1"

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T03:03:11.043Z",
+  "generated_at": "2026-09-03T04:58:41.681Z",
   "session": {
-    "count": 25,
+    "count": 26,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -102,6 +102,10 @@
       {
         "at": "2026-09-03T03:03:11.015Z",
         "note": "loop 3 closed: v0.3.2, 8 servers + bundle, 321 tests, validation 184/184, round 7 16/18"
+      },
+      {
+        "at": "2026-09-03T04:58:41.645Z",
+        "note": "loop 4: resume, recurring, clauses in build; organic R3 fleet 99.2, downloads 286"
       }
     ]
   },
@@ -165,7 +169,7 @@
       "build_ok": true,
       "test_summary": "# pass 8 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1759,
+      "loc": 1815,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -311,6 +315,43 @@
       "test_summary": "# pass 18 / # fail 0",
       "result_status": "DONE",
       "loc": 1480,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "resume",
+      "npm_name": "@theluckystrike/mcp-resume",
+      "version": "0.4.0",
+      "dir": "servers/resume",
+      "tools": [
+        "profile_set",
+        "profile_get",
+        "resume_create",
+        "resume_to_markdown",
+        "resume_to_html",
+        "resume_read",
+        "cover_letter_create",
+        "tailor_to_job"
+      ],
+      "tool_count": 8,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 1336,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -493,6 +534,11 @@
         "url": "https://mcp.zovo.one/buy/price-tracker"
       },
       {
+        "id": "resume",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/resume"
+      },
+      {
         "id": "spreadsheet",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/spreadsheet"
@@ -611,6 +657,10 @@
       "first_line": "INTEL_R3 — re-measuring the three servers now in build (currency, docx, timezone)"
     },
     {
+      "file": "docs/INTEL_R4.md",
+      "first_line": "INTEL_R4 — next two servers after resume/cover-letter"
+    },
+    {
       "file": "docs/LAUNCH_POSTS.md",
       "first_line": "Launch posts"
     },
@@ -633,6 +683,10 @@
     {
       "file": "docs/ORGANIC_R2.md",
       "first_line": "ORGANIC_R2.md -- organic re-measurement after v0.2.0, 2026-09-02"
+    },
+    {
+      "file": "docs/ORGANIC_R3.md",
+      "first_line": "ORGANIC_R3 -- organic re-measurement after v0.3.2, 2026-09-03"
     },
     {
       "file": "docs/README_DEPTH_RESULT.md",
