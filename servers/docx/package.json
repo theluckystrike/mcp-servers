@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-docx",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Turn a chat into a real Word document: proposals, quotes, contracts, statements of work and letters as .docx files, plus reading and filling existing .docx templates. Everything stays on your machine.",
   "type": "module",
   "bin": {

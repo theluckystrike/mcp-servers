@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
   "description": "One MCP server for the whole freelancer office: time tracking, price watching, spreadsheets, PDF.",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.3.2/office-suite.mcpb",
-      "version": "0.3.2",
-      "fileSha256": "369bb19ace55b8537c2ef7fe5fcb4dd7b086b7e6a96e76ff50744e70fe447322",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.0/office-suite.mcpb",
+      "version": "0.4.0",
+      "fileSha256": "74c0a877fb6efc0b34553e9c6d4eec3c10ac3462e2c3b62bdb0804bec4a0d81b",
       "transport": {
         "type": "stdio"
       },

@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/resume-cover-letter-docx-generator",
-  "description": "Tailor a resume and write a cover letter as real Word .docx files, from facts you stored once. Nothing is invented.",
+  "description": "Tailor a resume and write a cover letter as real Word .docx files, from facts you stored once..",
   "version": "0.4.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.0/resume.mcpb",
       "version": "0.4.0",
-      "fileSha256": "TBD",
+      "fileSha256": "9891c8575eb856190dbdeeef0c459fb7fc97260893637f2ed72397584f467b4b",
       "transport": {
         "type": "stdio"
       },

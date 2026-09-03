@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless",
   "description": "Convert currencies and read exchange rate history from the European Central Bank. No API key,.",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.3.2/currency.mcpb",
-      "version": "0.3.2",
-      "fileSha256": "c087296c1a709e69b14df2dd25a0ad1a49683a75046e98c49e8fd84e7e257753",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.0/currency.mcpb",
+      "version": "0.4.0",
+      "fileSha256": "277d396e15ab0d3c3a3d6fdbe8ba3c8e8f572cedf81b24cfc5040762f91ce95d",
       "transport": {
         "type": "stdio"
       },

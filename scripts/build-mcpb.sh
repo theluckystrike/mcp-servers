@@ -24,6 +24,9 @@ declare -A DISPLAY_NAME=(
   [currency]="Currency Converter"
   [timezone]="Timezone Planner"
   [docx]="Docx"
+  [resume]="Resume and Cover Letter"
+  [recurring]="Recurring Invoices"
+  [clauses]="Clause Library"
 )
 
 declare -A KEYWORDS=(
@@ -35,9 +38,12 @@ declare -A KEYWORDS=(
   [currency]='["mcp","model-context-protocol","currency","exchange-rates","ecb","fx"]'
   [timezone]='["mcp","model-context-protocol","timezone","meeting","scheduling","ics"]'
   [docx]='["mcp","model-context-protocol","docx","word","proposal","contract","markdown"]'
+  [resume]='["mcp","model-context-protocol","resume","cover-letter","docx","jobs"]'
+  [recurring]='["mcp","model-context-protocol","recurring","invoices","subscription","billing"]'
+  [clauses]='["mcp","model-context-protocol","contract","clauses","proposal","docx"]'
 )
 
-for NAME in time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx; do
+for NAME in time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses; do
   echo "=== $NAME ==="
   SRC_DIR="$ROOT/servers/$NAME"
   OUT_DIR="$BUNDLES/$NAME"
@@ -62,9 +68,24 @@ for NAME in time-tracker price-tracker spreadsheet invoice expense-tracker curre
   node -e "
     const fs = require('fs');
     const pkg = require(process.argv[1]);
-    const out = { name: pkg.name, version: pkg.version, type: 'module', dependencies: pkg.dependencies || {} };
+    const path = require('path');
+    const root = process.argv[3];
+    const deps = {};
+    const seen = new Set();
+    function collect(p) {
+      for (const [k, v] of Object.entries(p.dependencies || {})) {
+        if (k.startsWith('@theluckystrike/')) {
+          const sib = k.replace('@theluckystrike/mcp-', '');
+          if (sib === 'license' || seen.has(sib)) continue;
+          seen.add(sib);
+          collect(require(path.join(root, 'servers', sib, 'package.json')));
+        } else if (!(k in deps)) deps[k] = v;
+      }
+    }
+    collect(pkg);
+    const out = { name: pkg.name, version: pkg.version, type: 'module', dependencies: deps };
     fs.writeFileSync(process.argv[2], JSON.stringify(out, null, 2) + '\n');
-  " "$PKG_JSON" "$OUT_DIR/server/package.json"
+  " "$PKG_JSON" "$OUT_DIR/server/package.json" "$ROOT"
 
   vendor_license() {
     local dest="$OUT_DIR/server/node_modules/@theluckystrike/mcp-license"
@@ -82,8 +103,36 @@ for NAME in time-tracker price-tracker spreadsheet invoice expense-tracker curre
     " "$LIC_SRC/package.json" "$dest/package.json"
   }
 
-  # 3. Vendor @theluckystrike/mcp-license (not on npm) into server/node_modules.
+  vendor_siblings() {
+    # every @theluckystrike/mcp-<sib> dependency (recursively) is a workspace package not on npm
+    node -e "
+      const fs = require('fs'), path = require('path');
+      const root = process.argv[1], serverPkg = require(process.argv[2]), nm = process.argv[3];
+      const seen = new Set();
+      function vendor(p) {
+        for (const k of Object.keys(p.dependencies || {})) {
+          if (!k.startsWith('@theluckystrike/mcp-')) continue;
+          const sib = k.replace('@theluckystrike/mcp-', '');
+          if (sib === 'license' || seen.has(sib)) continue;
+          seen.add(sib);
+          const src = path.join(root, 'servers', sib);
+          const sp = require(path.join(src, 'package.json'));
+          const dest = path.join(nm, '@theluckystrike', 'mcp-' + sib);
+          fs.rmSync(dest, { recursive: true, force: true });
+          fs.mkdirSync(path.join(dest, 'dist'), { recursive: true });
+          fs.cpSync(path.join(src, 'dist'), path.join(dest, 'dist'), { recursive: true });
+          const out = { name: sp.name, version: sp.version, type: 'module', main: sp.main || 'dist/index.js', exports: sp.exports, dependencies: sp.dependencies || {} };
+          fs.writeFileSync(path.join(dest, 'package.json'), JSON.stringify(out, null, 2) + '\n');
+          vendor(sp);
+        }
+      }
+      vendor(serverPkg);
+    " "$ROOT" "$PKG_JSON" "$OUT_DIR/server/node_modules"
+  }
+
+  # 3. Vendor @theluckystrike/mcp-license and any sibling engines (not on npm) into server/node_modules.
   vendor_license
+  vendor_siblings
 
   # 4. Install remaining production deps (sdk, zod, and any server-specific extra
   #    such as xlsx/pdfkit) into server/node_modules. --ignore-scripts and
@@ -92,8 +141,9 @@ for NAME in time-tracker price-tracker spreadsheet invoice expense-tracker curre
     > "$OUT_DIR/.npm-install.log" 2>&1 \
     || { echo "npm install failed for $NAME:"; cat "$OUT_DIR/.npm-install.log"; exit 1; }
 
-  # npm install may have removed/altered the vendored mcp-license dir; restore it last.
+  # npm install may have removed/altered the vendored packages; restore them last.
   vendor_license
+  vendor_siblings
 
   # 5. Extract tool name/description pairs from src/index.ts (registerTool calls)
   #    plus the two shared license tools from the vendored mcp-license package.
@@ -122,7 +172,7 @@ OS_SRC_DIR="$ROOT/servers/office-suite"
 OS_OUT_DIR="$BUNDLES/office-suite"
 OS_PKG_JSON="$OS_SRC_DIR/package.json"
 LIC_SRC="$ROOT/packages/mcp-license"
-CHILDREN="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx"
+CHILDREN="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses"
 
 if [ ! -d "$OS_SRC_DIR/dist" ]; then
   echo "FATAL: $OS_SRC_DIR/dist missing, run npm run build in servers/office-suite first" >&2
@@ -239,7 +289,10 @@ OS_TOOLS_JSON=$(node -e "
   "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/expense-tracker/src/index.ts" "$LIC_SRC/dist/index.js")" \
   "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/currency/src/index.ts" "$LIC_SRC/dist/index.js")" \
   "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/timezone/src/index.ts" "$LIC_SRC/dist/index.js")" \
-  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/docx/src/index.ts" "$LIC_SRC/dist/index.js")")
+  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/docx/src/index.ts" "$LIC_SRC/dist/index.js")" \
+  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/resume/src/index.ts" "$LIC_SRC/dist/index.js")" \
+  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/recurring/src/index.ts" "$LIC_SRC/dist/index.js")" \
+  "$(node "$ROOT/scripts/extract-tools.mjs" "$ROOT/servers/clauses/src/index.ts" "$LIC_SRC/dist/index.js")")
 
 # 6. Write manifest.json
 node "$ROOT/scripts/gen-manifest.mjs" \

@@ -40,7 +40,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/recurring",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-invoice": "^0.3.2",
+    "@theluckystrike/mcp-invoice": "^0.4.0",
     "@theluckystrike/mcp-license": "^0.1.0",
     "zod": "^3.25.0"
   },

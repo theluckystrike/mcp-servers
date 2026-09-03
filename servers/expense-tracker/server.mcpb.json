@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/expense-tracker-receipts-mileage",
   "description": "Log expenses, receipts and mileage from chat: auto-categorise, split VAT, summarise, export, rebill.",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.3.2/expense-tracker.mcpb",
-      "version": "0.3.2",
-      "fileSha256": "f13d4cb14a010b72fbaf7499773ec2f160f82e10440c0a958ac41f8f73622a0e",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.0/expense-tracker.mcpb",
+      "version": "0.4.0",
+      "fileSha256": "cab37642f4231f967747d9db6f177231b8dbb199f4fbf8dfb926b52825ea01d8",
       "transport": {
         "type": "stdio"
       },

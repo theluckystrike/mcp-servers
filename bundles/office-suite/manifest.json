@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
@@ -312,6 +312,126 @@
     {
       "name": "contract_create",
       "description": "Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. This is a template skeleton with labelled placeholders for a lawyer to review, not legal advice. Free tier: 3 proposals or contracts per calendar month."
+    },
+    {
+      "name": "profile_set",
+      "description": "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. One profile per data directory; Pro adds named variants. Nothing leaves the machine."
+    },
+    {
+      "name": "profile_get",
+      "description": "Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job."
+    },
+    {
+      "name": "resume_create",
+      "description": "Write the stored profile to a Word .docx. Bullets are ordered by relevance to the target role and keywords, then trimmed to fit max_pages using a measured word budget. Keywords that appear anywhere in the profile are printed in bold; keywords that do not appear are reported as missing and are never added. Free: the \"modern\" style."
+    },
+    {
+      "name": "resume_to_markdown",
+      "description": "Return the stored profile as markdown: paste it into a form, an email or an ATS box."
+    },
+    {
+      "name": "resume_to_html",
+      "description": "Write the resume as semantic HTML with a print stylesheet. Open it and print to PDF: there is no doc_to_pdf here because every pure-JavaScript route to PDF needs a native dependency."
+    },
+    {
+      "name": "resume_read",
+      "description": "Extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Best effort, section by heading. Nothing is saved unless save is true."
+    },
+    {
+      "name": "cover_letter_create",
+      "description": "Write a one-page cover letter from the stored profile: opening, fit, proof, close. It states no fact that is not in your profile. Anything it does not know is left as a bracketed prompt such as [add: metric] for you to fill in. Free: 3 letters per calendar month."
+    },
+    {
+      "name": "tailor_to_job",
+      "description": "Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new claim. Free: postings up to 2,000 characters."
+    },
+    {
+      "name": "schedule_create",
+      "description": "Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due runs. Month steps keep the start date's day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March."
+    },
+    {
+      "name": "schedule_list",
+      "description": "Every schedule with its cadence, per-period amount, next due date and status (active or paused)."
+    },
+    {
+      "name": "schedule_get",
+      "description": "The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated."
+    },
+    {
+      "name": "schedule_update",
+      "description": "Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only."
+    },
+    {
+      "name": "schedule_pause",
+      "description": "Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed."
+    },
+    {
+      "name": "schedule_resume",
+      "description": "Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due."
+    },
+    {
+      "name": "schedule_delete",
+      "description": "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Note that re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again: invoice_generate_due will warn that another schedule for that client already covered them."
+    },
+    {
+      "name": "schedule_skip",
+      "description": "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. This is the answer to \"pause this client for October\" -- schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good. Pass undo: true to un-skip a period that has not been invoiced."
+    },
+    {
+      "name": "schedule_upcoming",
+      "description": "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days."
+    },
+    {
+      "name": "invoice_generate_due",
+      "description": "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Idempotent: one invoice per schedule per period, keyed by the occurrence date, so running it twice creates nothing the second time. Reports what was created and what was skipped. Free and unlimited."
+    },
+    {
+      "name": "schedule_history",
+      "description": "The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path."
+    },
+    {
+      "name": "forecast",
+      "description": "Expected invoiced revenue per calendar month per currency from every active schedule. Free covers 3 months ahead; Pro covers up to 120."
+    },
+    {
+      "name": "clause_add",
+      "description": "Save a reusable contract or proposal clause to the library. Use {{variables}} in the body for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}. Free tier: 10 own clauses on top of the 25 starters."
+    },
+    {
+      "name": "clause_get",
+      "description": "Return a clause in full by id or by title, with its variables and, in Pro, its revision count."
+    },
+    {
+      "name": "clause_update",
+      "description": "Change the text, category, tags, variables or jurisdiction of a clause. In Pro the previous text is kept as a version; in the free tier the change is applied without history."
+    },
+    {
+      "name": "clause_delete",
+      "description": "Remove a clause from the library. A deleted starter clause is not re-seeded on the next call."
+    },
+    {
+      "name": "clause_list",
+      "description": "List every clause, newest categories first, optionally narrowed to one category."
+    },
+    {
+      "name": "clause_search",
+      "description": "Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature."
+    },
+    {
+      "name": "clause_import",
+      "description": "Bulk-load clauses from a file. Markdown form: '## Title', optional 'category:' / 'tags:' / 'variables:' lines, blank line, body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the free tier within the free clause cap."
+    },
+    {
+      "name": "clause_export",
+      "description": "Write the whole library to a file. Markdown export is free; JSON export is a Pro feature."
+    },
+    {
+      "name": "contract_assemble",
+      "description": "Build a contract or proposal from library clauses: orders them, fills {{variables}} from the values you pass, leaves every missing fact as a bracketed prompt like [late fee percent], prepends the not-legal-advice line, and writes a .docx or a markdown file. Free tier: up to 8 clauses per document."
+    },
+    {
+      "name": "variables_list",
+      "description": "Given a set of clauses, list every {{variable}} they use and which clause uses it, so nothing is missed before assembling."
     }
   ],
   "keywords": [
