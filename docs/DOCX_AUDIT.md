@@ -185,3 +185,38 @@ insight:
   fix either -- a record written before the bytes leaves a phantom row. The fix is that only one of the two
   is allowed to fail the call: the guard runs before any write, the bookkeeping after it can only annotate.
 ```
+
+## Codex v4 fixes
+
+Review items 11, 12, 13, 14, 15 of `docs/CODEX_REVIEW_V4.md`, plus D-R25 and D-R26 of
+`docs/USER_VALUE_R7.md`. Fixed in `servers/docx` only; `npm run build`, `npm test` and
+`node scripts/validate.mjs` all green.
+
+| Item | Fix | Where | Test |
+| --- | --- | --- | --- |
+| 11 | Every string that reaches `document.xml` is stripped of XML 1.0 disallowed code points (TAB, LF, CR kept; other C0 controls, U+FFFE/U+FFFF and unpaired surrogates removed) and the tool answer names the count that was removed. Template values report the placeholder keys they were removed from. | [servers/docx/src/wordxml.ts:202](../servers/docx/src/wordxml.ts#L202) `stripInvalidXml`, [src/wordxml.ts:336](../servers/docx/src/wordxml.ts#L336) `FillResult.sanitized`, [src/index.ts:247](../servers/docx/src/index.ts#L247) `cleanForXml` + `removedNote` | `test/codexv4.test.mjs:71` |
+| 12 | Placeholder replacement runs on character spans: the joined paragraph text is mapped back to the `<w:t>` nodes that hold it, and only the placeholder characters are rewritten, inside the runs that carry them. Every other run keeps its text, its `<w:rPr>` and its position, so bold runs and `<w:hyperlink>` wrappers are byte-identical after a fill. An edit that would cross a `<w:tab/>` or `<w:br/>` is refused rather than mangled. | [servers/docx/src/wordxml.ts:247](../servers/docx/src/wordxml.ts#L247) `textNodes`, [src/wordxml.ts:276](../servers/docx/src/wordxml.ts#L276) `applyEdits` | `test/codexv4.test.mjs:104` |
+| 13 | Each ordered list block allocates its own numbering instance, so a second numbered list restarts at 1 instead of continuing the first. | [servers/docx/src/build.ts:89](../servers/docx/src/build.ts#L89), [src/build.ts:195](../servers/docx/src/build.ts#L195) | `test/codexv4.test.mjs:138` |
+| 14 | Table width is the maximum column count across the header and every row. Short rows are padded, the header row is padded, no cell is discarded. | [servers/docx/src/build.ts:55](../servers/docx/src/build.ts#L55), [src/build.ts:62](../servers/docx/src/build.ts#L62) | `test/codexv4.test.mjs:155` |
+| 15 | Output paths are reserved with an exclusive create (`fs.openSync(path, "wx")`) instead of an existence check, so two processes writing one `out_path` with `overwrite: false` cannot clobber each other. | [servers/docx/src/index.ts:81](../servers/docx/src/index.ts#L81) | `test/codexv4.test.mjs:167` (two server processes, one path) |
+| D-R25 | Literal backslash-n escapes are turned into real newlines, stray whitespace collapses, and a blank line inside a paragraph argument becomes a second `<w:p>` rather than a visible `\n\n` on the page. Applied to every string that reaches the renderer. | [servers/docx/src/index.ts:236](../servers/docx/src/index.ts#L236) `normalizeText`, [src/index.ts:280](../servers/docx/src/index.ts#L280) paragraph split | `test/codexv4.test.mjs:190` |
+| D-R26 | A path the server derives itself never lands on an earlier document: the second proposal with the same title becomes `...-2.docx`. Proposals and contracts store the structured input they were built from, and the new `proposal_update {reference, ...}` tool rebuilds one in place from that data, keeping the same file and the same reference number and adding no second history row. | [servers/docx/src/index.ts:65](../servers/docx/src/index.ts#L65) derived-path loop, [src/index.ts:457](../servers/docx/src/index.ts#L457) `proposalBody`, [src/index.ts:535](../servers/docx/src/index.ts#L535) `proposal_update`, [src/store.ts:121](../servers/docx/src/store.ts#L121) `updateDoc` | `test/codexv4.test.mjs:212` |
+
+One existing assertion changed with item 12: `test/adversarial.test.mjs:132` used to require the
+filled value and the preceding run's text to sit in one `<w:t>`. In-place replacement is exactly
+the opposite guarantee, so it now reads the joined paragraph text of the header and footer parts.
+
+Verbatim test summary, `node --test test/*.test.mjs` in `servers/docx`:
+
+```
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 993.527708
+```
+
+`node scripts/validate.mjs`: `docx: 16/16 in 406 ms`, run total `184/184`.
