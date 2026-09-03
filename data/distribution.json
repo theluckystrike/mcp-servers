@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03T00:31:07Z",
+  "updated_at": "2026-09-03T02:40:05Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -49,12 +49,12 @@
     "docker-mcp-catalog": {
       "status": "submitted",
       "url": "https://github.com/docker/mcp-registry/pull/4892",
-      "note": "PR adds servers/{time-tracker,price-tracker,spreadsheet,invoice}/server.yaml + tools.json; source.dockerfile=servers/<name>/Dockerfile with repo root as build context; pinned to commit 7998ce2; cmd/validate 11/11 per server; task build not run (no Docker daemon on this machine); awaiting Docker team review; expense-tracker added same PR (server.yaml+tools.json, commit d82c613, validate 11/11)"
+      "note": "PR adds servers/{time-tracker,price-tracker,spreadsheet,invoice}/server.yaml + tools.json; source.dockerfile=servers/<name>/Dockerfile with repo root as build context; cmd/validate 11/11 per server; task build not run (no Docker daemon on this machine); awaiting Docker team review; expense-tracker added same PR (server.yaml+tools.json); currency, timezone, docx added same PR (server.yaml+tools.json), tools.json generated from a live tools/list of each dist/index.js; all eight entries' source.commit repinned together to 9a44330714a9b44b43d9ea0e106c4899a89aa813 (theluckystrike/mcp-servers HEAD); PR still OPEN, 0 comments, no labels"
     },
     "cline-marketplace": {
       "status": "submitted",
       "url": "https://github.com/cline/mcp-marketplace/issues/2397",
-      "note": "four submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install; issue 2401 expense-tracker added"
+      "note": "eight submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice, 2401 expense-tracker, 2408 currency, 2409 timezone, 2410 docx; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install; all eight OPEN, 0 comments, no labels"
     },
     "guides": {
       "status": "published",
@@ -266,7 +266,9 @@
       "hosted": "published",
       "npm": "missing",
       "smithery": "pending",
-      "glama": "pending"
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted"
     },
     "timezone": {
       "github": "published",
@@ -274,7 +276,9 @@
       "hosted": "published",
       "npm": "missing",
       "smithery": "pending",
-      "glama": "pending"
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted"
     },
     "docx": {
       "github": "published",
@@ -282,7 +286,9 @@
       "hosted": "published",
       "npm": "missing",
       "smithery": "pending",
-      "glama": "pending"
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted"
     }
   }
 }
