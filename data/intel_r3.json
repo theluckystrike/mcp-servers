@@ -1,0 +1,128 @@
+{
+  "measured_at": "2026-09-03",
+  "endpoint": {
+    "registry": "https://registry.modelcontextprotocol.io/v0/servers?search=",
+    "smithery": "https://registry.smithery.ai/servers?q=",
+    "smithery_detail": "https://registry.smithery.ai/servers/<qualifiedName>",
+    "npm": "https://registry.npmjs.org/-/v1/search?text=",
+    "github": "gh api search/repositories -f q=<query>"
+  },
+  "registry_counts": {
+    "currency": {"total": 16, "unique": 11},
+    "exchange": {"total": 82, "unique": 42},
+    "rates": {"total": 42, "unique": 20},
+    "fx": {"total": 87, "unique": 20},
+    "convert": {"total": 65, "unique": 31},
+    "docx": {"total": 20, "unique": 4},
+    "word": {"total": 285, "unique": 64},
+    "document": {"total": 98, "unique": 28},
+    "proposal": {"total": 2, "unique": 1},
+    "contract": {"total": 94, "unique": 52},
+    "timezone": {"total": 12, "unique": 5},
+    "time-zone": {"total": 0, "unique": 0},
+    "meeting": {"total": 12, "unique": 8},
+    "schedule": {"total": 18, "unique": 13},
+    "world-clock": {"total": 0, "unique": 0},
+    "ics": {"total": 907, "unique": 252, "note": "substring noise: matches statistics/logistics/basics etc, not a real ics-server supply signal"},
+    "calendar": {"total": 90, "unique": 34},
+    "converter": {"total": 41, "unique": 21},
+    "ecb": {"total": 33, "unique": 5},
+    "generator": {"total": 118, "unique": 44},
+    "scheduler": {"total": 8, "unique": 4},
+    "slots": {"total": 0, "unique": 0},
+    "overlap": {"total": 2, "unique": 1},
+    "keyless": {"total": 5, "unique": 2},
+    "daily": {"total": 42, "unique": 39},
+    "rate": {"total": 197, "unique": 92},
+    "markdown": {"total": 113, "unique": 24},
+    "template": {"total": 181, "unique": 28},
+    "templates": {"total": 1, "unique": 1, "note": "likely one server, treat as noise not trend"},
+    "writer": {"total": 27, "unique": 15},
+    "resume": {"total": 17, "unique": 11},
+    "cv": {"total": 122, "unique": 41},
+    "cover-letter": {"total": 0, "unique": 0},
+    "qr-code": {"total": 6, "unique": 2},
+    "unit-converter": {"total": 6, "unique": 3},
+    "mileage": {"total": 6, "unique": 1},
+    "tax": {"total": 66, "unique": 46},
+    "vat": {"total": 194, "unique": 64}
+  },
+  "smithery_queries": {
+    "currency": {"total": 158, "top3": [["vdineshk/sg-finance-data-mcp", 12254], ["stockvibes07/exchange-mcp", 9701], ["axel-belfort/currency-converter", 4486]]},
+    "exchange": {"total": 157, "top3": [["vdineshk/sg-finance-data-mcp", 12254], ["qbtlabs/openmm-mcp", 10546], ["nexgendata-apify/finance-mcp-server", 6135]]},
+    "rates": {"total": 176, "top3": [["vdineshk/sg-finance-data-mcp", 12254], ["capratesignals/cap-rate-signals", 6543], ["axel-belfort/currency-converter", 4486]]},
+    "fx": {"total": 148, "top3": [["nexgendata-apify/finance-mcp-server", 6135], ["loved0543/kdata-gate", 5352], ["axel-belfort/currency-converter", 4486]]},
+    "convert": {"total": 151, "top3": [["stockvibes07/exchange-mcp", 9701], ["axel-belfort/currency-converter", 4486], ["axel-belfort/screenshot-pdf", 4295]]},
+    "docx": {"total": 123, "top3": [["XJTLUmedia2/x24", 5593], ["ali-7ogs/storyflo", 4450], ["XJTLUmedia/x23", 3751]], "note": "top results are name-collisions, not docx servers"},
+    "word document": {"total": 171, "top3": [["kuibin-dev/hsk-mcp", 4831], ["linear", 3816], ["re-port-flow/reportflow-mcp", 3686]]},
+    "docx generator": {"total": 181, "top3": [["axel-belfort/color-palette", 4579], ["axel-belfort/crontab-generator", 4388], ["re-port-flow/reportflow-mcp", 3686]]},
+    "contract": {"total": 171, "top3": [["defi-io/smartcontract", 3520], ["amalgix/document-intelligence", 3322], ["agentbond/mcp-server", 3060]]},
+    "timezone": {"total": 176, "top3": [["stockvibes07/meeting-mcp", 10853], ["isdaniel/mcp_weather_server", 10680], ["heavysword1/agentflight", 6404]]},
+    "timezone converter": {"total": 159, "top3": [["stockvibes07/meeting-mcp", 10853], ["isdaniel/mcp_weather_server", 10680], ["stockvibes07/exchange-mcp", 9701]]},
+    "meeting": {"total": 175, "top3": [["googlecalendar", 17825], ["slack", 12110], ["stockvibes07/meeting-mcp", 10853]]},
+    "schedule": {"total": 172, "top3": [["subwayinfo", 22961], ["googlecalendar", 17825], ["stockvibes07/meeting-mcp", 10853]]},
+    "world clock": {"total": 186, "top3": [["stockvibes07/meeting-mcp", 10853], ["pipeworx/pipeworx", 8926], ["sincetomorrow/cultural-intelligence", 7407]]},
+    "ics calendar": {"total": 173, "top3": [["googlecalendar", 17825], ["support-ix87/onehaus", 15223], ["stockvibes07/meeting-mcp", 10853]]},
+    "calendar": {"total": 167, "top3": [["googlecalendar", 17825], ["support-ix87/onehaus", 15223], ["stockvibes07/meeting-mcp", 10853]]}
+  },
+  "top_competitors": {
+    "currency": [
+      {"name": "stockvibes07/exchange-mcp", "use": 9701, "tools": 4, "tool_names": ["get_rate", "convert", "historical", "currencies"], "hosted": true, "transport": "hosted (run.tools, x402)", "data_source": "ECB, 33 currencies, daily, keyless", "match": "ship both a historical tool and a currencies-list tool, not just convert"},
+      {"name": "axel-belfort/currency-converter", "use": 4486, "tools": 1, "tool_names": ["finance_convert_currency"], "hosted": true, "transport": "hosted (run.tools, x402)", "data_source": "ECB (fiat) + CoinGecko (crypto)", "match": "crypto cross-rate demand exists but is out of scope for a keyless-only build"},
+      {"name": "ofurkanuygur/tcmb_mcp", "use": 3115, "tools": 6, "tool_names": ["tcmb_get_current_rates", "tcmb_get_historical_rates", "tcmb_list_currencies", "tcmb_convert_currency", "tcmb_get_rate_history", "tcmb_compare_currencies"], "hosted": true, "transport": "hosted (run.tools)", "data_source": "Turkish Central Bank (TCMB), history to 1996", "match": "compare_currencies (multi-pair table) and long historical range"}
+    ],
+    "docx": [
+      {"name": "re-port-flow/reportflow-mcp", "use": 3686, "tools": 5, "tool_names": ["get_design_parameters", "list_templates", "generate_pdf_sync", "generate_pdfs_async", "suggest_params"], "hosted": true, "transport": "hosted (run.tools)", "data_source": "user-supplied templates, outputs PDF not docx", "match": "list_templates + suggest_params picker/wizard flow"},
+      {"name": "@docx-mcp/docx-mcp", "use": null, "tools": null, "hosted": false, "transport": "stdio (npx, local)", "data_source": "none, pure OOXML read/write, image support", "match": "image embedding inside generated docx"},
+      {"name": "@usejunior/docx-mcp", "use": null, "tools": null, "hosted": false, "transport": "stdio (npx, local)", "data_source": "none", "match": "tracked-changes editing of an existing .docx, and .odt support"}
+    ],
+    "timezone": [
+      {"name": "stockvibes07/meeting-mcp", "use": 10853, "tools": 6, "tool_names": ["convert_time", "get_holidays", "check_business_hours", "find_meeting_slots", "create_calendar_link", "create_event"], "hosted": true, "transport": "hosted (run.tools)", "data_source": "IANA tz + a 100+ country holiday dataset", "match": "get_holidays and check_business_hours, both absent from our planned tool list"},
+      {"name": "googlecalendar (Arcade)", "use": 17825, "tools": 9, "tool_names": ["CreateEvent", "DeleteEvent", "FindTimeSlotsWhenEveryoneIsFree", "ListCalendars", "ListEvents", "RespondToEvent", "UpdateEvent", "WhoAmI", "ListApps"], "hosted": true, "transport": "hosted, needs a Google account", "data_source": "Google Calendar API (OAuth)", "match": "FindTimeSlotsWhenEveryoneIsFree validates the overlap feature; not a fair local comparison"},
+      {"name": "axel-belfort/timezone-converter", "use": 2657, "tools": 1, "tool_names": ["utility_convert_timezone"], "hosted": true, "transport": "hosted (run.tools)", "data_source": "Intl/IANA, DST-aware", "match": "our planned slots+overlap+ics set is already a superset"}
+    ]
+  },
+  "npm_top250_both_match": {
+    "mcp currency": {"raw_or_total": 112617, "both_match": 2, "packages": ["@alcorme/mcp-currency-converter", "@radspaz/mcp-currency-converter"]},
+    "mcp docx": {"raw_or_total": 109151, "both_match": 4, "packages": ["@docx-mcp/docx-mcp", "@usejunior/docx-mcp", "@knorq/docx-mcp-server", "docx-forge-mcp"]},
+    "mcp timezone": {"raw_or_total": 104103, "both_match": 3, "packages": ["@pipeworx/mcp-timezone", "@iflow-mcp/timezone-toolkit", "@mukundakatta/timezone-mcp"]}
+  },
+  "github_repo_search": {
+    "mcp currency converter": 31,
+    "mcp exchange rates": 87,
+    "mcp docx generator": 9,
+    "mcp word document": 121,
+    "mcp timezone": 101,
+    "mcp meeting scheduler": 49
+  },
+  "name_proposals": [
+    {
+      "server": "currency",
+      "proposed_name": "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless",
+      "slug_chars": 42,
+      "tokens": {"currency": 16, "converter": 41, "ecb": 33, "rates": 42, "daily": 42, "keyless": 5}
+    },
+    {
+      "server": "docx",
+      "proposed_name": "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
+      "slug_chars": 50,
+      "tokens": {"docx": 20, "document": 98, "generator": 118, "proposal": 2, "contract": 94, "markdown": 113}
+    },
+    {
+      "server": "timezone",
+      "proposed_name": "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+      "slug_chars": 46,
+      "tokens": {"timezone": 12, "world-clock": 0, "meeting": 12, "slots": 0, "overlap": 2, "ics": 907}
+    }
+  ],
+  "fourth_candidate": {
+    "server": "resume-cover-letter-docx-generator",
+    "proposed_name": "io.github.theluckystrike/resume-cover-letter-docx-generator",
+    "slug_chars": 43,
+    "tokens": {"resume": 17, "cv": 122, "cover-letter": 0, "docx": 20, "generator": 118},
+    "buildable": true,
+    "already_shipped": false,
+    "pairs_with": ["docx (shared OOXML writer)", "office-suite / proposal-contract positioning"],
+    "note": "cover-letter=0 and resume=17 registry hits are the rarest tokens found this round after 'proposal'; not on the R1 Part-B shortlist, a genuinely new slot"
+  }
+}
