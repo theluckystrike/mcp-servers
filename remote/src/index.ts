@@ -267,6 +267,28 @@ function persistable(
   return obj;
 }
 
+/**
+ * The shared business profile (packages/mcp-license/src/profile.ts, vendored onto the
+ * fs shim by remote/src/shims/license.ts) lives at a fixed virtual path and its own
+ * tenant document, `${tenant}:profile`, independent of any one server. It is hydrated
+ * into every endpoint's request below - not just the ones that read it today - so a
+ * server added later that imports readSharedProfile needs no change here.
+ */
+const PROFILE_SERVER = "profile";
+const isProfilePath = (p: string) => p.startsWith("/profile/");
+
+/** Same shape as persistable(), but for the profile document: no server's cfg.persist
+ * applies to it (currency's `persist: () => false` must not eat the profile), and it is
+ * never a download. */
+function persistableProfile(files: Map<string, string>, published: Map<string, string>): Record<string, string> {
+  const obj: Record<string, string> = {};
+  for (const [k, v] of files) {
+    if (TMP_RE.test(k) || !isProfilePath(k) || published.has(k)) continue;
+    obj[k] = v;
+  }
+  return obj;
+}
+
 async function flush(env: Env, tenant: string, server: string, after: string, before: string): Promise<void> {
   if (after === before) return;
   await env.REMOTE_DATA.put(dataKey(tenant, server), after);
@@ -639,7 +661,12 @@ export default {
     if (cfg.sharedDoc) {
       for (const [k, v] of await hydrate(env, auth.tenant, cfg.sharedDoc.server)) files.set(k, v);
     }
-    const ownPaths = cfg.sharedDoc ? (p2: string) => !cfg.sharedDoc!.owns(p2) : undefined;
+    // The shared business profile (D-R31) is hydrated on top of every endpoint, the same
+    // way: business_set on /mcp/invoice must be visible to /mcp/docx, /mcp/expense-tracker,
+    // /mcp/recurring, /mcp/resume, /mcp/clauses, /mcp/time-tracker and /mcp/timezone for
+    // the same token, so it is not scoped to the servers that read it today.
+    for (const [k, v] of await hydrate(env, auth.tenant, PROFILE_SERVER)) files.set(k, v);
+    const ownPaths = (p2: string) => !isProfilePath(p2) && (!cfg.sharedDoc || !cfg.sharedDoc.owns(p2));
     const maxBytes = cfg.maxBytes ?? DEFAULT_MAX_BYTES;
     const counted = recount(files);
 
@@ -665,6 +692,7 @@ export default {
     const sharedBefore = cfg.sharedDoc
       ? JSON.stringify(persistable(files, cfg, rctx.published, cfg.sharedDoc.owns))
       : "";
+    const profileBefore = JSON.stringify(persistableProfile(files, rctx.published));
 
     return await STORE.run(rctx, async () => {
       const server = cfg.factory();
@@ -697,6 +725,7 @@ export default {
           await flush(env, auth.tenant, cfg.sharedDoc.server,
             JSON.stringify(persistable(files, cfg, rctx.published, cfg.sharedDoc.owns)), sharedBefore);
         }
+        await flush(env, auth.tenant, PROFILE_SERVER, JSON.stringify(persistableProfile(files, rctx.published)), profileBefore);
         await touch(env, auth.tenant);
         if (auth.kind === "anon") {
           await env.REMOTE_DATA.put(`tok:anon_${auth.tenant.slice(5)}`, String(Date.now()), { expirationTtl: ANON_TTL });

@@ -89,9 +89,28 @@ export function generatedKeys(history: HistoryEntry[]): Set<string> {
   return new Set(history.map((h) => `${h.schedule_id}|${h.period}`));
 }
 
+/**
+ * Resolve a schedule by exact id, then by exact client name, then -- only if nothing
+ * exact matched -- by partial client name. An exact id or client match always wins
+ * outright, with no ambiguity check: it is a precise reference. The partial-name
+ * fallback is not: "Acme Inc" is also a substring match for "Acme Inc (Consulting)", so
+ * more than one candidate there is refused with the candidate list instead of silently
+ * picking whichever is first in storage order (Review V5 P2), which could otherwise
+ * point schedule_pause/schedule_delete/schedule_skip at the wrong client's schedule with
+ * no warning.
+ */
 export function findSchedule(list: Schedule[], ref: string): Schedule | undefined {
   const needle = ref.trim().toLowerCase();
-  return list.find((s) => s.id === ref)
-    ?? list.find((s) => s.client.toLowerCase() === needle)
-    ?? list.find((s) => s.client.toLowerCase().includes(needle));
+  const byId = list.find((s) => s.id === ref);
+  if (byId) return byId;
+  const byClient = list.find((s) => s.client.toLowerCase() === needle);
+  if (byClient) return byClient;
+  const partial = list.filter((s) => s.client.toLowerCase().includes(needle));
+  if (partial.length > 1) {
+    throw new Error(
+      `"${ref}" matches more than one schedule: ${partial.map((s) => `${s.id} (${s.client})`).join(", ")}. ` +
+      `Pass the exact id or the exact client name.`,
+    );
+  }
+  return partial[0];
 }

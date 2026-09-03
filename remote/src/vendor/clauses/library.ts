@@ -85,9 +85,28 @@ export interface SearchOptions { category?: string; tags?: string[]; jurisdictio
 export interface Hit { clause: Clause; score: number }
 
 /**
- * Ranked substring plus tag match. Nothing here is a vector search: the score is the sum of
- * where the query terms land, title first, so "payment" ranks Payment Terms above a clause
- * that merely mentions payment in its body.
+ * A query term matches on a word boundary, case-insensitively, the same contract as
+ * servers/resume/src/render.ts:keywordRegex -- "art" never matches "party" or "contract".
+ * Punctuation is escaped so the term is matched literally, not as a mini pattern.
+ */
+function wordBoundaryRegex(term: string): RegExp {
+  const esc = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const lead = /^[a-z0-9]/i.test(term) ? "\\b" : "";
+  const tail = /[a-z0-9]$/i.test(term) ? "\\b" : "";
+  return new RegExp(`${lead}${esc}${tail}`, "gi");
+}
+
+function countWordMatches(text: string, term: string): number {
+  return (text.match(wordBoundaryRegex(term)) ?? []).length;
+}
+
+/**
+ * Ranked word-boundary match, title first, plus tag match. Nothing here is a vector
+ * search: the score is the sum of where the query terms land. A term is scored on real
+ * word boundaries -- "fee" scores a clause that says "fee" as a word, not one that only
+ * contains "fee" inside "coffee". Plain substring containment is kept only as a fallback
+ * (Review V5 P2), at a fraction of the weight, so a fluke substring hit can surface a
+ * clause that would otherwise be invisible to the query but never outranks a real match.
  */
 export function search(clauses: Clause[], query: string, o: SearchOptions = {}): Hit[] {
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -114,13 +133,18 @@ export function search(clauses: Clause[], query: string, o: SearchOptions = {}):
     for (const t of terms) {
       if (title === t) score += 100;
       else if (title.split(/\W+/).includes(t)) score += 60;
-      else if (title.includes(t)) score += 40;
+      else if (countWordMatches(title, t)) score += 60;
+      else if (title.includes(t)) score += 5;   // substring fallback, ranked well below a real match
       if (tags.includes(t)) score += 30;
       else if (tags.some((x) => x.includes(t))) score += 15;
       if (clause.category.toLowerCase() === t) score += 20;
       if (clause.id.includes(t)) score += 10;
-      const n = body.split(t).length - 1;
-      if (n) score += Math.min(n, 5) * 4;
+      const wordHits = countWordMatches(body, t);
+      if (wordHits) score += Math.min(wordHits, 5) * 4;
+      else {
+        const substringHits = body.split(t).length - 1;
+        if (substringHits) score += Math.min(substringHits, 5) * 1;   // substring fallback
+      }
     }
     if (score > 0) hits.push({ clause, score });
   }

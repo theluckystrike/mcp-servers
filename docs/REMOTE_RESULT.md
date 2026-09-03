@@ -983,3 +983,41 @@ $ clauses contract_assemble {title: "Service Agreement", categories: ["payment"]
 - `renderInvoicePdf` on recurring returns HTML, like `invoice_pdf` does; there is no PDF
   renderer on Workers. `history.pdf_path` therefore holds a one-hour URL, and the link in
   `schedule_history` is dead once that hour passes.
+
+## Shared profile
+
+`@theluckystrike/mcp-license` now exports `readSharedProfile`, `writeSharedProfile`,
+`hasSharedProfile`, `resolveEmail`, `PROFILE_FIELDS`, `profilePath`, `profileDir`,
+`SharedProfile` and `EMAIL_PLACEHOLDER` (D-R31), and `invoice`, `docx`, `expense-tracker`,
+`resume`, `time-tracker`, `timezone` and `clauses` all import from it. `remote/src/shims/license.ts`
+implements the same semantics on the fs shim at a fixed path, `/profile/business.json`
+(read/quarantine-on-corrupt-JSON/atomic tmp+rename write/sanitize unknown or wrong-typed
+fields), instead of a real disk path under `XDG_DATA_HOME`.
+
+That path is a per-tenant document independent of any one endpoint: `remote/src/index.ts`
+hydrates `${tenant}:profile` on top of every request's virtual filesystem - not only the
+servers that read it today, the same way `ServerCfg.sharedDoc` already hydrates the invoice
+store on top of `recurring` - and flushes any write under `/profile/` back to that key with
+its own before/after snapshot (`persistableProfile`, which bypasses each server's own
+`cfg.persist`, so `currency`'s `persist: () => false` can't eat it). `ownPaths` (which decides
+what a server's *own* document keeps) now always excludes `/profile/` paths, on top of any
+`cfg.sharedDoc` exclusion.
+
+Verified live against `mcp.zovo.one` with a bundle Pro key from `sign-license.mjs '*'`:
+
+```
+$ invoice business_set {name: "Warsaw Freelance Studio", default_tax_rate: 23, timezone: "Europe/Warsaw"}
+  "...saved to the shared profile at mcp-servers/profile/business.json, which docx,
+   expense-tracker, recurring, time-tracker, timezone, resume and clauses all read..."
+
+$ expense-tracker expense_add {date: "2026-09-01", project: "Client A", category: "Software",
+                                amount: 100, currency: "EUR"}   (no vat_rate passed)
+  "...Net EUR 81.30, VAT EUR 18.70 at 23% (your shared business profile default_tax_rate,
+   set with business_set)."
+
+$ docx doc_create {title: "Test Letter", style: "letter", sections: [...]}
+  GET the download link -> .docx body reads "Warsaw Freelance Studio [add: email] 2026-09-03
+  Test Letter Intro" - the business name from invoice's business_set on the docx letterhead.
+```
+
+`node scripts/validate.mjs`: **remote 26/26, whole run 247/247.**
