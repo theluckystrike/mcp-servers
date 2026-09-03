@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const dist = (f) => join(here, "..", "dist", f);
-const { parseEcbXml } = await import(dist("ecb.js"));
+const { parseEcbXml, assertComplete } = await import(dist("ecb.js"));
 const { convertAmount, resolveDate, series, stats, perEur, codesOf } = await import(dist("rates.js"));
 const { currencyDecimals, formatMoney, crossRate } = await import(dist("money.js"));
 
@@ -117,8 +117,11 @@ test("nearest previous business day: an exact hit is exact", () => {
 });
 
 test("a date before the first published rate is refused, not extrapolated", () => {
+  // DAYS is a four-row fixture, so the honest answer names the cache's own earliest date,
+  // not 1999-01-04 (see A-C3): claiming 1999 over a partial cache contradicts itself.
   const r = resolveDate(DAYS, "1998-12-31");
-  assert.match(r.error, /before the first ECB reference rate/);
+  assert.match(r.error, /earliest rate in the local cache \(2026-08-28\)/);
+  assert.match(r.error, /cache is incomplete/);
 });
 
 test("series and stats over a window", () => {
@@ -137,4 +140,41 @@ test("series and stats over a window", () => {
 test("a window with no published day is an error, not an empty table", () => {
   const r = series(DAYS, "USD", "PLN", "2026-08-29", "2026-08-30");
   assert.match(r.error, /no ECB rate for USD\/PLN/);
+});
+
+/* ------------------------------------------- audit regressions (docs/CURRENCY_AUDIT.md) */
+
+test("A-C1: an amount too large to hold in minor units is refused, never formatted as Infinity", () => {
+  const rates = { USD: 1.0812, JPY: 172.53 };
+  const big = convertAmount(rates, 1e308, "EUR", "JPY");
+  assert.ok("error" in big, "1e308 must not produce a Conversion");
+  assert.match(big.error, /too large to convert exactly/);
+  // the boundary still converts
+  const ok = convertAmount(rates, 1000000, "EUR", "JPY");
+  assert.equal("error" in ok, false);
+  assert.equal(Number.isFinite(ok.result_number), true);
+  assert.doesNotMatch(ok.result, /Infinity|NaN/);
+});
+
+test("A-C2: assertComplete rejects a body with no closing Envelope tag", () => {
+  const head = `<?xml version="1.0"?><gesmes:Envelope><Cube>`;
+  const body = head + `<Cube time='2026-09-02'><Cube currency='USD' rate='1.08'/></Cube>`;
+  assert.throws(() => assertComplete(body), /truncated in transit/);
+  assert.doesNotThrow(() => assertComplete(body + `</Cube></gesmes:Envelope>`));
+  assert.doesNotThrow(() => assertComplete(body + `</Cube></Envelope>\n`));
+  // a truncated body still parses, which is exactly why the tag has to be checked
+  assert.equal(parseEcbXml(body).length, 1);
+});
+
+test("A-C3: resolveDate does not claim 1999 as the start of an incomplete cache", () => {
+  const partial = { "2026-09-01": { USD: 1.08 }, "2026-09-02": { USD: 1.09 } };
+  const r = resolveDate(partial, "2026-08-04");
+  assert.ok("error" in r);
+  assert.match(r.error, /earliest rate in the local cache \(2026-09-01\)/);
+  assert.match(r.error, /cache is incomplete/);
+  const full = { "1999-01-04": { USD: 1.17 }, "2026-09-02": { USD: 1.09 } };
+  const r2 = resolveDate(full, "1998-06-01");
+  assert.ok("error" in r2);
+  assert.match(r2.error, /The series starts on 1999-01-04/);
+  assert.doesNotMatch(r2.error, /cache is incomplete/);
 });

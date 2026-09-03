@@ -28,6 +28,15 @@ const code = (name: string) =>
 
 const norm = (s: string) => s.trim().toUpperCase();
 
+/**
+ * A model that has read "4,500 EUR" off a receipt will hand the string through unless the
+ * schema says otherwise, so the type error names the fix instead of only the type.
+ */
+const AMOUNT = z.number({
+  invalid_type_error: 'amount must be a JSON number, not a string: send 4500.5, not "4,500.50" (no thousands separator, no currency symbol)',
+  required_error: "amount is required",
+}).finite();
+
 function dateNote(d: { date: string; refreshed?: boolean; offline_note?: string }): string {
   const bits = [`Rate date: ${d.date} (ECB reference rate).`];
   if (d.offline_note) bits.push(d.offline_note);
@@ -108,7 +117,7 @@ server.registerTool("convert", {
   title: "Convert an amount",
   description: "Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounded to the target currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places. Every answer states the rate date it used. A weekend or holiday date falls back to the last published rate on or before it, and says so.",
   inputSchema: {
-    amount: z.number().finite().describe("Amount in major units of the from currency, e.g. 100 or 12.34"),
+    amount: AMOUNT.describe("Amount in major units of the from currency, e.g. 100 or 12.34"),
     from: code("from").describe("Currency the amount is in"),
     to: code("to").describe("Currency to convert into"),
     date: z.string().max(10).optional().describe("ISO date YYYY-MM-DD. Omit for the latest published rate. Past dates beyond 90 days are Pro"),
@@ -140,7 +149,7 @@ server.registerTool("convert_many", {
   title: "Convert one amount into several currencies",
   description: "One amount, one source currency, many targets, all off the same ECB rate date. Each result is rounded to that target's own minor units.",
   inputSchema: {
-    amount: z.number().finite(),
+    amount: AMOUNT,
     from: code("from"),
     to: z.array(code("to")).min(1).max(60).describe("Target currencies"),
   },
@@ -264,7 +273,7 @@ server.registerTool("rate_history", {
 
 server.registerTool("rate_on", {
   title: "Rate on a given date",
-  description: "The ECB rate for a pair on one date. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the answer says which date that was and why. Free covers the last 90 days; Pro covers every date back to 1999-01-04.",
+  description: "The ECB rate for a pair on one date. The ECB quotes every currency per 1 euro, so \"the ECB rate for USD\" is from EUR to USD, not the other way round; ask for the inverse only if the user did. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the answer says which date that was and why. Free covers the last 90 days; Pro covers every date back to 1999-01-04.",
   inputSchema: {
     from: code("from"),
     to: code("to"),

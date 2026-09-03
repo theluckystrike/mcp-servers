@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { spawn, execFileSync } from "node:child_process";
 import { createServer } from "node:http";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -35,11 +35,18 @@ const HIST_XML = HEAD +
   TAIL;
 
 let hits = 0;
+/* When set, the fixture server truncates the history body mid-stream: valid XML, newest days
+   only, no closing tag - exactly what a dropped connection or a truncating proxy delivers. */
+let truncateHistory = false;
 function ecbServer() {
   const srv = createServer((req, res) => {
     hits++;
     if (req.url.includes("eurofxref-daily.xml")) { res.writeHead(200, { "content-type": "text/xml" }); res.end(DAILY_XML); return; }
-    if (req.url.includes("eurofxref-hist.xml")) { res.writeHead(200, { "content-type": "text/xml" }); res.end(HIST_XML); return; }
+    if (req.url.includes("eurofxref-hist.xml")) {
+      res.writeHead(200, { "content-type": "text/xml" });
+      res.end(truncateHistory ? HEAD + day(D0, "9.9999", "999.99", "9.9999", "9.9999") + "<Cube time='" : HIST_XML);
+      return;
+    }
     res.writeHead(404); res.end("no");
   });
   return new Promise((resolve) => srv.listen(0, "127.0.0.1", () => resolve({ srv, url: `http://127.0.0.1:${srv.address().port}` })));
@@ -245,4 +252,59 @@ test("offline: after one download every answer comes from the cache", async (t) 
   assert.equal(conv.result, "PLN 394.47");
   assert.equal(conv.rate_date, D0);
   assert.equal(hits, afterWarm, "a fresh cache makes no network call at all");
+});
+
+
+test("a truncated history download does not replace a good cache", async (t) => {
+  const { srv, url } = await ecbServer();
+  const home = mkdtempSync(join(tmpdir(), "mcp-currency-trunc-"));
+  const dir = join(home, "data", "mcp-servers", "currency");
+  const env = { ECB_BASE_URL: url, XDG_DATA_HOME: join(home, "data"), XDG_CONFIG_HOME: join(home, "config") };
+
+  const warm = client(env);
+  await init(warm);
+  const good = JSON.parse((await warm.call("rate_history", { from: "EUR", to: "USD", days: 30 })).text);
+  assert.equal(good.business_days, 4);
+  warm.close();
+
+  // age the cached history past its 24 h window so the next call refreshes
+  const hp = join(dir, "history.json");
+  const cached = JSON.parse(readFileSync(hp, "utf8"));
+  const beforeDays = Object.keys(cached.days).length;
+  cached.fetched_at = new Date(Date.now() - 72 * 3_600_000).toISOString();
+  writeFileSync(hp, JSON.stringify(cached));
+
+  truncateHistory = true;
+  t.after(() => { truncateHistory = false; srv.close(); });
+  const c = client(env);
+  t.after(() => c.close());
+  await init(c);
+
+  const after = JSON.parse((await c.call("rate_history", { from: "EUR", to: "USD", days: 30 })).text);
+  assert.equal(after.business_days, beforeDays, "the cached series survives a truncated download");
+  assert.equal(Object.keys(JSON.parse(readFileSync(hp, "utf8")).days).length, beforeDays, "the cache file was not overwritten");
+  assert.match(after.note, /truncated in transit|was kept/, "the answer says the refresh failed");
+  assert.doesNotMatch(JSON.stringify(after), /9\.9999/, "no rate from the truncated body reached the answer");
+});
+
+test("an amount too large to represent is refused, not formatted as Infinity", async (t) => {
+  const { srv, url } = await ecbServer();
+  t.after(() => srv.close());
+  const c = client({ ECB_BASE_URL: url });
+  t.after(() => c.close());
+  await init(c);
+
+  const big = await c.call("convert", { amount: 1e308, from: "EUR", to: "JPY" });
+  assert.equal(big.isError, true);
+  assert.match(big.text, /too large to convert exactly/);
+  assert.doesNotMatch(big.text, /Infinity/);
+
+  // a string amount is refused by the schema with a message that names the fix
+  const str = await c.send("tools/call", { name: "convert", arguments: { amount: "1,250.00", from: "EUR", to: "USD" } });
+  const msg = JSON.stringify(str.error ?? str.result);
+  assert.match(msg, /must be a JSON number, not a string/);
+
+  // a negative amount is a credit note, not an error
+  const neg = JSON.parse((await c.call("convert", { amount: -250.5, from: "EUR", to: "USD" })).text);
+  assert.equal(neg.result, "USD -270.84");
 });

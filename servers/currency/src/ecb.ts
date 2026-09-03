@@ -51,6 +51,18 @@ const RATE_RE = /<Cube\b[^>]*\bcurrency=["']([A-Za-z]{3})["'][^>]*\brate=["']([^
 export interface ParsedDay { date: string; rates: RateMap }
 
 /** Every <Cube time=...> block in the document, oldest-first order not assumed. */
+/**
+ * The ECB serves a complete document or nothing; a body that stops mid-stream (a dropped
+ * connection, a truncating proxy) still parses, because the file is newest-day-first and the
+ * head of it is valid XML. Parsing it and keeping it silently replaces a full history with its
+ * newest few days. The closing envelope tag is the only in-band proof the body is complete.
+ */
+export function assertComplete(xml: string): void {
+  if (!/<\/(?:\w+:)?Envelope\s*>\s*$/.test(xml.trimEnd())) {
+    throw new EcbError("the ECB download ended without its closing </Envelope> tag, so it was truncated in transit; the cached copy was kept.");
+  }
+}
+
 export function parseEcbXml(xml: string): ParsedDay[] {
   const marks: { date: string; at: number }[] = [];
   TIME_RE.lastIndex = 0;
@@ -171,7 +183,9 @@ async function readThrough<T extends { fetched_at: string }>(
 
 export function getDaily(): Promise<Loaded<DailyCache>> {
   return readThrough<DailyCache>("daily rates", DAILY_MAX_AGE_MS, loadDaily, dailyPath(), async () => {
-    const days = parseEcbXml(await fetchText(DAILY_URL()));
+    const xml = await fetchText(DAILY_URL());
+    assertComplete(xml);
+    const days = parseEcbXml(xml);
     const latest = days.reduce((a, b) => (a.date >= b.date ? a : b));
     if (!Object.keys(latest.rates).length) throw new EcbError("the ECB daily file held a date but no rates.");
     return { version: 1, fetched_at: new Date().toISOString(), date: latest.date, rates: latest.rates };
@@ -180,10 +194,18 @@ export function getDaily(): Promise<Loaded<DailyCache>> {
 
 export function getHistory(): Promise<Loaded<HistoryCache>> {
   return readThrough<HistoryCache>("rate history", HISTORY_MAX_AGE_MS, loadHistory, historyPath(), async () => {
-    const days = parseEcbXml(await fetchText(HISTORY_URL()));
+    const xml = await fetchText(HISTORY_URL());
+    assertComplete(xml);
+    const days = parseEcbXml(xml);
     const map: Record<string, RateMap> = {};
     for (const d of days) if (Object.keys(d.rates).length) map[d.date] = d.rates;
     if (!Object.keys(map).length) throw new EcbError("the ECB history file held no rates.");
+    // The series only ever grows. A refresh that returns fewer days than the copy already on
+    // disk is a bad download, not history being revised, and must not replace a good cache.
+    const have = Object.keys(loadHistory()?.days ?? {}).length;
+    if (have && Object.keys(map).length < have) {
+      throw new EcbError(`the ECB history download held ${Object.keys(map).length} rate days but the cache already holds ${have}; it was incomplete, so the cached copy was kept.`);
+    }
     return { version: 1, fetched_at: new Date().toISOString(), days: map };
   });
 }

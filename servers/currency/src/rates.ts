@@ -37,7 +37,14 @@ export function convertAmount(rates: RateMap, amount: number, from: string, to: 
   if (fr === undefined) return { error: unknownCode(f, rates) };
   if (tr === undefined) return { error: unknownCode(t, rates) };
   const rate = crossRate(fr, tr);
+  // 1e308 * a rate overflows to Infinity, which formats as "JPY Infinity" and serialises
+  // result_number as null. Refuse anything that cannot survive the multiplication as an exact
+  // integer number of minor units, and say so, rather than emitting a non-number as money.
+  if (!Number.isFinite(amount)) return { error: "amount must be a finite number." };
   const minor = roundHalfUp(amount * rate * Math.pow(10, currencyDecimals(t)));
+  if (!Number.isFinite(minor) || Math.abs(minor) > Number.MAX_SAFE_INTEGER) {
+    return { error: `that amount is too large to convert exactly (${amount} ${f} in ${t} exceeds what can be represented without losing minor units). The largest amount this handles is about ${Math.floor(Number.MAX_SAFE_INTEGER / (rate * Math.pow(10, currencyDecimals(t))))} ${f}.` };
+  }
   return {
     from: f, to: t, rate, amount,
     result_minor: minor,
@@ -68,7 +75,14 @@ export function resolveDate(days: Record<string, RateMap>, asked: string): Resol
     if (dates[mid] <= asked) { best = mid; lo = mid + 1; } else { hi = mid - 1; }
   }
   if (best < 0) {
-    return { error: `${asked} is before the first ECB reference rate (${dates[0]}). The series starts on 1999-01-04.` };
+    // Never quote 1999-01-04 as the start when the cache does not actually reach back that far:
+    // a partial cache saying "before the first rate (2026-09-01). The series starts on 1999-01-04"
+    // contradicts itself and hides the real cause.
+    return {
+      error: dates[0] === "1999-01-04"
+        ? `${asked} is before the first ECB reference rate. The series starts on 1999-01-04.`
+        : `${asked} is before the earliest rate in the local cache (${dates[0]}). The ECB series starts on 1999-01-04, so the cache is incomplete; run cache_status, and delete the cache to re-download it.`,
+    };
   }
   return { date: dates[best], rates: days[dates[best]], exact: false, asked };
 }
