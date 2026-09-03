@@ -129,3 +129,58 @@ expense-tracker 1, office-suite 0 -- all of them the Pro-key tests.
 its dependencies it never answers, the parent's promise stays pending, and the runner
 files the subtests under `cancelled`, not `fail` -- a summary line that reads green. Gate
 on `pass == tests`, not on `fail == 0`.
+
+## S2: three new mirrors, recursive vendoring
+
+`vendor_pkg` no longer takes a rewrite-string argument: it always rewrites a vendored
+package's own `@theluckystrike/*` deps to `file:../<pkg>` (a no-op for packages, like
+mcp-license, that have none). A new `vendor_closure` walks a package's `dependencies`
+recursively and vendors every `@theluckystrike/*` package it finds, skipping one already
+vendored in this mirror build (so mcp-license, reachable from every path, is copied once).
+`pkg_src_dir` resolves a bare package name to `packages/<name>` if it exists there, else
+`servers/<name minus the mcp- prefix>`. Per-server mirrors now vendor whatever their own
+`package.json` lists; office-suite vendors its ten proxied servers (adding resume,
+recurring, clauses to the existing seven) through the same function -- each of those in
+turn pulls in its own deps (e.g. resume -> mcp-docx -> mcp-license) automatically.
+
+`ALL_SERVERS` and `topics_for` gained resume (`resume cover-letter job-application`),
+recurring (`recurring-billing subscription forecast`) and clauses (`contract clause
+proposal`).
+
+### Two more monorepo-path defects found and fixed during verification
+
+- `servers/recurring/test/smoke.test.mjs` spawns the sibling invoice server as a second
+  process via a hardcoded `"../../invoice/dist/index.js"` monorepo-sibling path, to check
+  the invoice server's own process sees what recurring wrote. That path does not exist in
+  a mirror. New step 5a3 rewrites it to `vendor/mcp-invoice/dist/index.js`.
+- The step 5a2 fix (monorepo `node_modules` symlink three levels up from `test/`, valid in
+  the monorepo, one level too many in a mirror) was previously applied only to
+  `proxy.test.mjs` by name. `servers/office-suite/test/round7.test.mjs` has the identical
+  pattern and was still breaking (2 subtests `cancelledByParent`, the same "pass count
+  does not match tests count" failure mode documented below from the first pass). 5a2 now
+  loops over every `test/*.mjs` file and applies the same replacement, which is a no-op on
+  files that do not contain the pattern.
+
+### Fresh-clone verification (`git clone && npm install && npm run build && npm test`,
+three new mirrors plus office-suite, empty `/private/tmp` directories, no monorepo on the
+path):
+
+```
+mcp-resume        added 120 packages   # tests 32  # pass 28  # fail 0  # cancelled 0  # skipped 4
+mcp-recurring     added 160 packages   # tests 32  # pass 29  # fail 0  # cancelled 0  # skipped 3
+mcp-clauses       added 120 packages   # tests 31  # pass 24  # fail 0  # cancelled 0  # skipped 7
+mcp-office-suite  (fresh clone)        # tests 5   # pass 5   # fail 0  # cancelled 0  # skipped 0
+```
+
+`pass == tests - skipped` on all four (the gate this doc's earlier insight calls for, not
+just `fail == 0`). Skipped counts are exactly the Pro-key tests. All three new repos are
+one-commit ("sync from monorepo 98fb85fa7140dd4b8087f4a03fd482dd9bca94b6"), confirming the
+push is still idempotent. All eleven mirrors were re-pushed in the same run (`bash
+scripts/sync-mirrors.sh` with no arguments); none of the eight pre-existing mirrors
+regressed.
+
+### repos
+
+- https://github.com/theluckystrike/mcp-resume
+- https://github.com/theluckystrike/mcp-recurring
+- https://github.com/theluckystrike/mcp-clauses
