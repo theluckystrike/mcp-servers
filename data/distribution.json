@@ -119,7 +119,7 @@
     "hosted": {
       "status": "published",
       "url": "https://mcp.zovo.one/mcp",
-      "note": "streamable HTTP for all 5 servers (spreadsheet in inline-CSV mode); anon token or Pro key; hardened (mint limit, batch reject, 256 KB body, SSRF guard, tenant caps); 14/14 probes"
+      "note": "streamable HTTP for all 5 servers; hardened v2 (path confinement, delimiter-free tenant ids, streaming body cap, 64 files/tenant, POST-only sweep, constant-time secret, full-form SSRF guard, request-local fds); 14/14 probes"
     },
     "search-console": {
       "status": "submitted",

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T00:44:55.915Z",
+  "generated_at": "2026-09-03T00:56:32.881Z",
   "session": {
-    "count": 21,
+    "count": 22,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -86,6 +86,10 @@
       {
         "at": "2026-09-03T00:44:55.707Z",
         "note": "v0.2.5: round-6 fixes, 194 tests, validation 127/127; backlinks live; compare pages live"
+      },
+      {
+        "at": "2026-09-03T00:56:32.843Z",
+        "note": "loop 2 closed: v0.2.5, hosted hardening v2, 209 tests, validation 127/127, downloads 102"
       }
     ]
   },
