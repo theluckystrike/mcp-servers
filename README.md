@@ -19,6 +19,9 @@ nine products are also reachable as a hosted remote endpoint with no install at 
 | [mcp-currency](servers/currency/README.md) | ![currency](assets/demo-currency.gif) | Real ECB exchange rates in chat: convert, compare pairs, rate history, cached offline | `npx -y @theluckystrike/mcp-currency`* |
 | [mcp-docx](servers/docx/README.md) | ![docx](assets/demo-docx.gif) | Write real Word documents from chat: proposals, contracts, letters and templates | `npx -y @theluckystrike/mcp-docx`* |
 | [mcp-timezone](servers/timezone/README.md) | ![timezone](assets/demo-timezone.gif) | Convert times across cities, find meeting slots everyone can make, write the invite | `npx -y @theluckystrike/mcp-timezone`* |
+| [mcp-resume](servers/resume/README.md) | ![resume](assets/demo-resume.gif) | Tailor a resume to a posting and write a cover letter that cannot state a fact you did not give it | `npx -y @theluckystrike/mcp-resume`* |
+| [mcp-recurring](servers/recurring/README.md) | ![recurring](assets/demo-recurring.gif) | Define a repeating invoice once, generate the ones actually due, idempotent by period | `npx -y @theluckystrike/mcp-recurring`* |
+| [mcp-clauses](servers/clauses/README.md) | ![clauses](assets/demo-clauses.gif) | Assemble a contract from a searchable clause library, variables filled or flagged | `npx -y @theluckystrike/mcp-clauses`* |
 | [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that proxies all eight servers above behind a single config line, 76 tools | `npx -y @theluckystrike/mcp-office-suite`* |
 
 \* npm publish is still pending for all nine packages (see npm status below). Until then, the fastest path is the

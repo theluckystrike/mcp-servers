@@ -2,6 +2,8 @@
 
 Say "bill Acme 12 hours at 90 EUR on the 1st of every month" once, and stop remembering it. This MCP server stores recurring invoice schedules -- client, line items, cadence, start and end dates -- and then, when you ask, creates the invoices that have actually fallen due as real records in the [invoice server](../invoice), with its number series, its clients and its A4 PDF. Generation is idempotent: one invoice per schedule per period, keyed by the occurrence date, so running the billing run twice on the same day creates nothing the second time. It also answers "what falls due in the next 30 days" and "what will I invoice per month for the next year". Everything is stored in plain JSON files on your own machine; nothing is uploaded anywhere.
 
+![recurring demo](../../assets/demo-recurring.gif)
+
 **Define a repeating invoice once, generate the due PDFs from chat -- no billing SaaS required.**
 
 ## 60-second install

@@ -300,6 +300,85 @@ async function run(name) {
     resultLine(await c.call("doc_read", { path: docPath }));
   }
 
+  if (name === "resume") {
+    say("$ Store the facts once, then tailor a resume and cover letter to a posting.\n");
+    await sleep(STEP_DELAY_MS);
+    const profileArgs = {
+      name: "Mika Nowak",
+      email: "mika@example.com",
+      summary: "Backend engineer focused on payments infrastructure.",
+      skills: ["Node.js", "PostgreSQL", "AWS"],
+      experience: [{
+        company: "Northlight Systems", title: "Senior Backend Engineer", start: "2021",
+        bullets: ["Rebuilt the payments API on Node.js and PostgreSQL, cutting p99 latency 40%"],
+      }],
+      education: [{ school: "University of Warsaw", degree: "BSc Computer Science" }],
+    };
+    toolLine("profile_set", profileArgs);
+    resultLine(await c.call("profile_set", profileArgs));
+    await sleep(STEP_DELAY_MS);
+    const resumeArgs = {
+      target_role: "Senior Backend Engineer",
+      keywords: ["Node.js", "Kubernetes"],
+      max_pages: 1,
+    };
+    toolLine("resume_create", resumeArgs);
+    resultLine(await c.call("resume_create", resumeArgs));
+    await sleep(STEP_DELAY_MS);
+    const letterArgs = {
+      company: "Acme GmbH",
+      role: "Senior Backend Engineer",
+      highlights: ["cut p99 latency 40%"],
+    };
+    toolLine("cover_letter_create", letterArgs);
+    resultLine(await c.call("cover_letter_create", letterArgs));
+  }
+
+  if (name === "recurring") {
+    say("$ Define a repeating invoice once, then generate the ones actually due.\n");
+    await sleep(STEP_DELAY_MS);
+    const past = new Date(Date.now() - 20 * 86_400_000).toISOString().slice(0, 10);
+    const scheduleArgs = {
+      client: "Acme GmbH",
+      items: [{ description: "Retainer - backend support", quantity: 10, unit_price: 90 }],
+      every: "monthly",
+      start_date: past,
+    };
+    toolLine("schedule_create", scheduleArgs);
+    const scheduleResult = await c.call("schedule_create", scheduleArgs);
+    resultLine(scheduleResult);
+    await sleep(STEP_DELAY_MS);
+    toolLine("invoice_generate_due", { dry_run: true });
+    resultLine(await c.call("invoice_generate_due", { dry_run: true }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("invoice_generate_due", {});
+    resultLine(await c.call("invoice_generate_due", {}));
+    await sleep(STEP_DELAY_MS);
+    say("$ Run it again the same day: idempotent, nothing new is created.\n");
+    toolLine("invoice_generate_due", {});
+    resultLine(await c.call("invoice_generate_due", {}));
+  }
+
+  if (name === "clauses") {
+    say("$ Search the clause library, assemble a contract, and check what it still needs.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("clause_search", { query: "payment" });
+    resultLine(await c.call("clause_search", { query: "payment" }));
+    await sleep(STEP_DELAY_MS);
+    const clauseIds = ["scope-of-work", "payment-terms", "ip-assignment", "confidentiality", "termination"];
+    const assembleArgs = {
+      title: "Service Agreement - Beta Corp",
+      clause_ids: clauseIds,
+      client: "Beta Corp",
+      values: { contractor: "Lucky Strike Software", project: "website redesign", deliverables: "a redesigned marketing site", fee: "4500", currency: "EUR", payment_days: "14" },
+    };
+    toolLine("contract_assemble", assembleArgs);
+    resultLine(await c.call("contract_assemble", assembleArgs));
+    await sleep(STEP_DELAY_MS);
+    toolLine("variables_list", { clause_ids: clauseIds });
+    resultLine(await c.call("variables_list", { clause_ids: clauseIds }));
+  }
+
   await sleep(STEP_DELAY_MS);
   c.close();
   if (ecb) ecb.close();

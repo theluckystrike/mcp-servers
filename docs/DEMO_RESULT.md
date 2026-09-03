@@ -220,3 +220,72 @@ artifacts (this update):
 - assets/demo-currency.gif, assets/demo-timezone.gif, assets/demo-docx.gif
 - servers/currency/README.md, servers/timezone/README.md, servers/docx/README.md
 - README.md
+
+---
+
+## Update 2026-09-03: resume, recurring and clauses demos
+
+Added demos for the three newest servers (resume, recurring, clauses), following the same driver/tape pattern.
+
+1. Driver changes (`scripts/demo/drive.mjs`):
+   - New `resume` sequence: `profile_set` (name, summary, skills, one role with one bullet, one education entry),
+     `resume_create` with `keywords: ["Node.js", "Kubernetes"]` -- output shows `keywords_matched: ["Node.js"]`
+     and `keywords_missing: ["Kubernetes"]` (missing keywords are reported, never added), then
+     `cover_letter_create` for Acme GmbH with one highlight already in the profile -- output still carries a
+     bracketed prompt (`[add: paste the job description ...]`) because no `job_description` was passed, showing
+     the "never invents a fact" behaviour live.
+   - New `recurring` sequence: `schedule_create` (Acme GmbH, monthly, `start_date` 20 days in the past so one
+     period is already due), `invoice_generate_due {dry_run: true}` (shows the one due period without creating
+     anything), `invoice_generate_due` for real (creates 1 invoice, real PDF path in the invoice server's own
+     store since both run in the same sandboxed `XDG_DATA_HOME`), then `invoice_generate_due` again -- `created 0
+     invoices, skipped 1 already invoiced`, demonstrating idempotency.
+   - New `clauses` sequence: `clause_search {query: "payment"}` (5 ranked hits: payment-terms, late-fees,
+     kill-fee, rush-fee, ip-assignment), `contract_assemble` with 5 starter clause ids (scope-of-work,
+     payment-terms, ip-assignment, confidentiality, termination) to a `.docx`, showing `filled` vs `unfilled`
+     variables and their bracketed prompts, then `variables_list` for the same 5 clauses.
+
+2. Tapes: `scripts/demo/resume.tape`, `scripts/demo/recurring.tape`, `scripts/demo/clauses.tape` -- identical
+   settings to the existing nine (900x480, Dracula, 40ms typing, `Sleep 10s`).
+
+   Command run for each: `vhs scripts/demo/<name>.tape` from repo root.
+
+   Output sizes (limit 400 KB):
+   - assets/demo-resume.gif     324,377 bytes (316.8 KB) (profile_set, resume_create with matched/missing keywords, cover_letter_create with a bracketed prompt)
+   - assets/demo-recurring.gif  349,103 bytes (341.0 KB) (schedule_create monthly, invoice_generate_due dry run then real, second run skips)
+   - assets/demo-clauses.gif    250,525 bytes (244.7 KB) (clause_search payment, contract_assemble 5 clauses into docx, variables_list)
+   All three under 400 KB. The resume and recurring sequences were trimmed from an initial draft (fewer
+   skills/keywords on resume; a shorter due-period window on recurring) after the first recording came in over
+   the cap (456 KB and 656 KB respectively).
+
+3. Verification (`file` + `ffprobe`):
+   ```
+   $ file assets/demo-resume.gif assets/demo-recurring.gif assets/demo-clauses.gif
+   assets/demo-resume.gif:    GIF image data, version 89a, 900 x 480
+   assets/demo-recurring.gif: GIF image data, version 89a, 900 x 480
+   assets/demo-clauses.gif:   GIF image data, version 89a, 900 x 480
+
+   $ ffprobe -v error -select_streams v -show_entries stream=width,height,nb_frames,avg_frame_rate \
+       -of default=noprint_wrappers=1 assets/demo-<name>.gif
+   resume:    width=900 height=480 avg_frame_rate=25/1 nb_frames=265
+   recurring: width=900 height=480 avg_frame_rate=25/1 nb_frames=269
+   clauses:   width=900 height=480 avg_frame_rate=25/1 nb_frames=265
+   ```
+   All three are valid 900x480 GIFs at 25 fps with roughly 265-270 frames (about 10-11s), matching the existing
+   nine demos.
+
+4. README updates:
+   - `servers/resume/README.md`: replaced the `![CV](../../assets/resume-logo.png)` line with
+     `![resume demo](../../assets/demo-resume.gif)` (only that line changed).
+   - `servers/recurring/README.md` and `servers/clauses/README.md`: neither had an image line, so a demo GIF
+     line was inserted right after the intro paragraph, before the bold value-statement line -- same position
+     `servers/docx/README.md` used.
+   - `README.md` (root): added three rows (mcp-resume, mcp-recurring, mcp-clauses) to the demo-thumbnail table,
+     right before the mcp-office-suite bundle row, matching the existing row format exactly (link, thumbnail,
+     one-line description, npx install line with the `*` footnote marker). No other rows or prose changed.
+
+artifacts (this update):
+- scripts/demo/drive.mjs (extended)
+- scripts/demo/resume.tape, scripts/demo/recurring.tape, scripts/demo/clauses.tape
+- assets/demo-resume.gif, assets/demo-recurring.gif, assets/demo-clauses.gif
+- servers/resume/README.md, servers/recurring/README.md, servers/clauses/README.md
+- README.md

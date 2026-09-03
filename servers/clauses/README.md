@@ -2,6 +2,8 @@
 
 Say "draft a service agreement for Beta Corp, 4,500 EUR, 14-day terms" and get a real `.docx` built from your own clause library. This MCP server keeps the contract and proposal paragraphs you reuse -- scope, payment terms, late fees, IP assignment, confidentiality, termination, liability cap and twenty more -- as searchable clauses with `{{variables}}` in them. It ships with 25 generic freelance starters, finds the right ones by ranked search, fills the variables you supply, leaves every fact you did not supply as a visible bracketed prompt like `[late fee percent]`, and writes the assembled document to Word or markdown. Every document opens with the line that it is a generic template and not legal advice. Everything runs locally: no upload, no account, no native dependency.
 
+![clauses demo](../../assets/demo-clauses.gif)
+
 **Stop pasting last year's contract into a new file and hoping you changed every name.**
 
 ## 60-second install
