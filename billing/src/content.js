@@ -1233,9 +1233,188 @@ ${FOOT}`,
       { q: "Can I use a Pro key instead of the free token?", a: "Yes. Replace the token segment of the URL with a Pro key and the same connector uses Pro limits instead of the anonymous free tier, with no new URL and no re-adding the connector." },
     ],
   },
+
+  "pdf-merge-split-stamp-from-chat": {
+    title: "Merge, split and stamp PDFs from chat, and why some come back as glyph numbers",
+    description: "Merge, split, extract, rotate and stamp PDFs from chat. What pdf_text can and cannot read, and how it tells a scan apart from a subset-font PDF.",
+    html: `<h1>Merge, split and stamp PDFs from chat, and why some come back as glyph numbers</h1>
+<p>Most PDF work a freelancer does is small: join three files into one, pull five pages out of a scan,
+turn a contract the right way up, put PAID across an invoice before it goes in the archive folder.
+None of that needs a desktop PDF editor, and none of it should mean uploading a client's invoice to a
+web tool you do not run. MCP PDF Tools does the job in the chat, on your machine, in pure JavaScript
+with no native dependency.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add pdf -- npx -y @theluckystrike/mcp-pdf</code></pre>
+<p>Cursor's <code>.cursor/mcp.json</code> and Claude Desktop's <code>claude_desktop_config.json</code> take the
+same block:</p>
+<pre><code>{
+  "mcpServers": {
+    "pdf": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-pdf"]
+    }
+  }
+}</code></pre>
+<p>Nothing is uploaded. The server reads and writes files where you point it and makes no network request
+of any kind, not even to check a licence key, which is verified offline.</p>
+
+<h2>The jobs it actually does</h2>
+<p><code>pdf_merge</code> joins files in the order given. <code>pdf_split</code> cuts a file into ranges, so
+<code>"1-3,5,7-"</code> gives pages 1 to 3, page 5, and page 7 to the end. <code>pdf_pages</code> extracts a
+specific set into a new file, and can repeat a page or reorder as it goes: <code>"5,1,1"</code> puts page 5
+first and page 1 twice. <code>pdf_rotate</code> turns a sideways scan by a multiple of 90 degrees, added to
+whatever rotation the page already carried. <code>pdf_stamp</code> draws text on the page, PAID and DRAFT as
+presets in Free, any text, colour, position and size in Pro; a centred stamp goes on the 45-degree diagonal,
+and it is drawn text, not a flattened image, so it can still be selected and searched afterward.
+<code>pdf_watermark_business</code> reads the business name and VAT id that <code>business_set</code> in
+mcp-invoice or mcp-docx already stored, and puts it in the footer of every page.</p>
+
+<h2>Worked example</h2>
+<pre><code>You: Stamp PAID on ~/invoices/INV-2026-0007.pdf and save a copy.
+
+  pdf_stamp {
+    path: "~/invoices/INV-2026-0007.pdf",
+    text: "PAID",
+    position: "center",
+    out_path: "~/invoices/INV-2026-0007-paid.pdf"
+  }
+  -> Stamped "PAID" on 1 page
+  -> ~/invoices/INV-2026-0007-paid.pdf, 0.9 MB</code></pre>
+<p>The original file is byte-for-byte unchanged; every tool that writes refuses an <code>out_path</code>
+that already exists unless you pass <code>overwrite: true</code>, and reserves every output path before it
+writes any of them, so a multi-file <code>pdf_split</code> that fails on part 3 does not leave parts 1 and
+2 behind as a half-finished job.</p>
+
+<h2>What pdf_text can read, and what comes back as numbers instead of letters</h2>
+<p>A PDF does not store text the way a Word document does. It stores drawing operators that place glyphs on
+a page, and what those glyphs mean depends on the font's own encoding table. <code>pdf_text</code>
+decompresses each page's content stream and reads the operators that show text, with no external PDF
+library and no OCR. For a PDF written by a normal word processor or invoicing tool, with a standard or fully
+embedded font, that gives back clean, readable text.</p>
+<p>It breaks in one specific and common case: a subset-embedded font. A PDF that embeds only the glyphs it
+actually uses, which is most PDFs a modern tool produces, often renumbers those glyphs into a private table
+that has nothing to do with any standard character set, and some fonts go further and encode by a raw
+glyph index (CID) rather than by character at all. The bytes the content stream hands to
+<code>pdf_text</code> in that case are glyph numbers, not letters: extracting them without decoding that
+table gives back digits or symbols that look like text extraction succeeded but read as nonsense, which is
+worse than an empty result because nothing about it looks like an error.</p>
+<p>The server does not pretend this case is a success. It does not carry a font-encoding decoder, so instead
+of returning a string of glyph numbers as if it were the page's text, it checks whether what it extracted
+comes back as recognisable characters, and when it does not, the answer says so directly: the font's
+encoding is the reason, not a bug, and not a scan. A true scan, an image-only page with no text operators
+at all, gets a different message: the page is probably a scan, because there is no OCR here and there will
+not be one. Two different failure modes, two different reasons, in the answer, rather than one silent empty
+string that leaves you guessing which one happened.</p>
+
+<h2>What still needs a real editor</h2>
+<p>There is no OCR, no form filling, no digital signatures, no redaction, and no PDF/A. Rotation is
+recorded as page metadata in multiples of 90 degrees; nothing is redrawn. Stamp text goes through a
+built-in font covering the WinAnsi character set, so characters outside it are dropped and counted in the
+response rather than silently failing the write. Files over 100 MB are refused, because rewriting a PDF
+needs several times its size in memory, and an encrypted file is refused by every writing tool with the fix
+named in the message: open it in a reader with the password and export a new, unencrypted copy.</p>
+
+<h2>Related</h2>
+<p>Setup per client is on the <a href="/setup">setup pages</a>. <a href="/s/pdf">MCP PDF Tools</a> has the
+full tool table and the free-vs-Pro limits. <a href="/guides/track-time-in-claude-code">Billable hours</a>
+and <a href="/guides/invoice-pdf-from-chat">invoice PDFs</a> are the two guides most people read next,
+since <code>mark_invoice_paid</code> chains an invoice lookup straight into <code>pdf_stamp</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why did pdf_text return short strings of digits instead of words?", a: "The PDF's font uses a subset or CID encoding table this parser does not read, so the bytes in the content stream are glyph index numbers, not character codes. The answer names the font as the reason rather than returning the numbers as if they were text." },
+      { q: "Does this server do OCR on scanned PDFs?", a: "No, and it will not. An image-only page has no text operators to read at all, and pdf_text says the page is probably a scan instead of returning an empty string with no explanation." },
+      { q: "Can I merge more than 5 files on the free tier?", a: "No, 5 files is the free cap for pdf_merge. Files up to 30 pages are free for split, extract and rotate. Pro removes both limits." },
+      { q: "Is the PAID stamp a flattened image?", a: "No, it is drawn text through a built-in PDF font, so it can still be selected and searched in a reader afterward, unlike a stamp burned in as a picture." },
+      { q: "What happens to an encrypted PDF?", a: "Every tool that writes refuses it, with the reason and the fix in the message: open it in a reader with the password and export or print a new, unencrypted copy, then run the tool on that. pdf_info still reports encrypted: true, and pdf_count counts it as one unreadable file among the rest." },
+    ],
+  },
+
+  "calendar-ics-free-busy-in-claude": {
+    title: "Read a .ics calendar in Claude: free and busy, conflicts, and billable meetings",
+    description: "Import a Google, Apple or Outlook .ics export and ask what is on, where you are free, and what clashes. Recurrence, DST and turning a call into billable time.",
+    html: `<h1>Read a .ics calendar in Claude: free and busy, conflicts, and billable meetings</h1>
+<p>A calendar app answers "what's on Tuesday." It does not answer "where did last month actually go,"
+"which two things did I say yes to at the same time," or "how many billable hours were in that block of
+calls." MCP Calendar answers those by reading the <code>.ics</code> file your calendar already exports, no
+account connected, nothing synced, the file staying on your machine as plain text.</p>
+
+<h2>Getting the .ics out first</h2>
+<table>
+<tr><th>App</th><th>Where</th></tr>
+<tr><td>Google Calendar</td><td>Settings, Import &amp; export, Export. You get a zip; import the .ics inside it.</td></tr>
+<tr><td>Apple Calendar</td><td>File, Export, Export...</td></tr>
+<tr><td>Outlook (desktop)</td><td>File, Save Calendar, format iCalendar (.ics)</td></tr>
+<tr><td>Outlook / Microsoft 365 (web)</td><td>Settings, Calendar, Shared calendars, Publish, then the ICS link (Pro)</td></tr>
+</table>
+<p>Any other app that publishes a feed URL ending in <code>.ics</code>, or a <code>webcal://</code> link, works
+the same way on Pro. Then:</p>
+<pre><code>ics_import {path: "~/Downloads/mike@example.com.ics", name: "work"}</code></pre>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add calendar -- npx -y @theluckystrike/mcp-calendar</code></pre>
+<p>Cursor and Claude Desktop take the same block, with <code>"calendar"</code> as the key under
+<code>mcpServers</code>. There is exactly one network call in the whole server, and only when you pass a
+<code>url</code> yourself, with a 12-second timeout, a 5 MB cap, and a refusal on loopback and
+private-network addresses.</p>
+
+<h2>Recurrence, properly expanded</h2>
+<p>The parser was written against real exports, not just the RFC 5545 spec: line folding across CRLF, bare
+LF and bare CR, escaped commas and semicolons, whole-day events with an exclusive <code>DTEND</code>,
+<code>DURATION</code> in place of <code>DTEND</code>, both <code>TZID</code> and UTC times, floating times,
+<code>RRULE</code> for daily, weekly, monthly and yearly series with <code>COUNT</code>, <code>UNTIL</code>,
+<code>INTERVAL</code>, <code>BYDAY</code>, <code>BYMONTHDAY</code> and <code>BYMONTH</code>,
+<code>EXDATE</code> and <code>RDATE</code> exceptions, a <code>RECURRENCE-ID</code> override replacing the
+original occurrence instead of appearing twice, <code>STATUS:CANCELLED</code> and
+<code>TRANSP:TRANSPARENT</code>. An event the parser cannot read is skipped and counted, not allowed to cost
+you the rest of the file.</p>
+<p><code>VTIMEZONE</code> blocks are deliberately ignored. A file's own DST rules are only as fresh as the
+app that wrote it, so the server keeps the <code>TZID</code> name and computes every offset from the ICU
+data inside Node itself. That is what keeps a weekly 10:00 Warsaw meeting at 10:00 local across the March
+clock change instead of drifting to 11:00, and it is why a whole-day event spanning 1 to 3 June is 1 and 2
+June: RFC 5545 makes a whole-day <code>DTEND</code> exclusive, and the parser follows the spec rather than
+guessing what you meant.</p>
+
+<h2>Free, busy and conflicts</h2>
+<p><code>free_busy</code> merges overlapping events into busy blocks and reports the gaps inside your working
+hours, day by day; an event marked <code>TRANSP:TRANSPARENT</code> does not count as busy. <code>conflicts</code>
+checks every pair of events across every imported calendar at once, with the overlap in minutes, so a client
+call that clashes with something on a personal calendar is caught even though the two never lived in the same
+place before. <code>events_search</code> finds an event by title, description, location, organiser or
+attendee text, and <code>next_event</code> answers "what's next, and how long until it starts."</p>
+
+<h2>Turning a meeting into billable time</h2>
+<p><code>event_to_time_entry</code> takes one event and returns the exact arguments the time tracker's
+<code>entry_add</code> needs: project, task, date and duration read straight off the calendar instead of
+retyped from memory. Nothing is guessed about the rate or the project; that mapping is what you supply when
+you ask for it, the same way the price tracker and the invoice server hand off data without you restating
+it. The prompt <code>plan_my_day</code> chains the whole loop: what is on, what clashes, where the gaps are,
+and which finished meetings are worth billing.</p>
+
+<h2>What it will not do</h2>
+<p>It does not connect to a Google or Outlook account: no OAuth, no token, no sync, which also means an
+import is a snapshot rather than a live view, and re-importing is how you catch up. It writes new
+<code>.ics</code> files through <code>event_export</code> but never edits the calendar it read. Free covers 2
+calendars, windows up to 31 days and exports up to 50 events; Pro removes all three limits and adds URL and
+webcal feed imports.</p>
+
+<h2>Related</h2>
+<p>Setup per client is on the <a href="/setup">setup pages</a>. <a href="/s/calendar">MCP Calendar</a> has
+the full tool table. It reads its time zone and .ics engine from
+<a href="/guides/meeting-slots-across-time-zones">MCP Timezone Planner</a>, and hands finished meetings to
+<a href="/guides/track-time-in-claude-code">MCP Time Tracker</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does this connect to my Google or Outlook account?", a: "No. There is no OAuth, no token and no sync. You export a file, or paste a public feed URL on Pro, and it is read locally. An import is a snapshot, so re-import when the calendar has moved on." },
+      { q: "Why is my whole-day event one day shorter than I expected?", a: "It is not: RFC 5545 makes DTEND exclusive for a whole-day event, so 1 to 3 June means the 1st and the 2nd. This server follows the spec, which is what your calendar app does too." },
+      { q: "Does a weekly meeting stay at the right time across the DST change?", a: "Yes. VTIMEZONE blocks in the file are ignored on purpose, and every offset is computed from the ICU data inside Node from the TZID name, so a 10:00 Warsaw meeting stays 10:00 local through the March and October changes." },
+      { q: "Can it write back to my calendar?", a: "No. event_export writes a new .ics file you can import anywhere, but the server never modifies the calendar it read from." },
+      { q: "How big a file can it read?", a: "Up to 5 MB, which is a few thousand events. Export a narrower date range if a full history export is bigger than that." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars.",
 };

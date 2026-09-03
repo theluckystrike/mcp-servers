@@ -368,6 +368,42 @@ export const SETUP_SERVERS = {
     pro: "One $39 bundle key activates Pro on all five children at once.",
     measured: "Its startup line reads: proxying [time-tracker, price-tracker, spreadsheet, invoice, expense-tracker], 49 tools. Those three sentences are consecutive turns of one audited conversation that scored 12 out of 12.",
   },
+  pdf: {
+    title: "MCP PDF Tools",
+    slug: "pdf",
+    toolCount: "12 tools",
+    pkg: "@theluckystrike/mcp-pdf",
+    sPage: "/s/pdf",
+    hosted: null,
+    tagline: "Merge, split, stamp and read PDFs, pure JavaScript, no upload.",
+    does: "It merges and splits PDFs, extracts and reorders pages, rotates a sideways scan, stamps PAID or DRAFT or any text, watermarks the business name and VAT id from the shared profile, and reads text back best effort with no OCR.",
+    prompts: [
+      ["Stamp PAID on this invoice and save a copy.", "pdf_stamp"],
+      ["Join these three PDFs into one file.", "pdf_merge"],
+      ["Split the scan: pages 1-3 are the invoice, 4 onwards is the receipt.", "pdf_split"],
+    ],
+    free: "info, count and text unlimited; merge up to 5 files; edits on files up to 30 pages; the PAID and DRAFT stamp presets.",
+    pro: "Any number of files and pages, custom stamp text and colour, business watermark, page reorder.",
+    measured: "The worked run stamped PAID on a 1-page invoice and wrote a new 0.9 MB file; the original file was byte-for-byte unchanged, which every writing tool here guarantees on purpose.",
+  },
+  calendar: {
+    title: "MCP Calendar",
+    slug: "calendar",
+    toolCount: "12 tools",
+    pkg: "@theluckystrike/mcp-calendar",
+    sPage: "/s/calendar",
+    hosted: null,
+    tagline: "Read .ics calendars: events, free and busy, conflicts, exports.",
+    does: "It imports a .ics export from Google, Apple or Outlook, expands recurring series correctly across DST, lists events, computes free and busy blocks, flags overlapping events across every imported calendar, exports a selection, and turns a meeting into a time entry.",
+    prompts: [
+      ["What is on my calendar next week and where am I free for two hours?", "events_list then free_busy"],
+      ["Do any of my meetings clash this week?", "conflicts"],
+      ["Log yesterday's Nova call as billable time.", "event_to_time_entry"],
+    ],
+    free: "2 calendars, windows up to 31 days, exports up to 50 events.",
+    pro: "Unlimited calendars, any window, unlimited exports, URL and webcal feed imports.",
+    measured: "VTIMEZONE blocks in the file are ignored on purpose: every offset is computed from the ICU data inside Node from the TZID name, which is what keeps a weekly 10:00 Warsaw meeting at 10:00 local across the March clock change instead of drifting to 11:00.",
+  },
 };
 
 export const SERVER_ORDER = Object.keys(SETUP_SERVERS);
@@ -473,6 +509,22 @@ const ANGLE = {
     windsurf: "One entry rather than five, and the arithmetic is worth doing: 49 tools against Cascade's ceiling of 100 leaves room for roughly one more server of this size, not four.",
     cline: "One entry with one autoApprove array covering 49 tools. Set that array deliberately rather than emptying it: it now spans tools that write invoices, spreadsheets and PDFs.",
   },
+  pdf: {
+    "claude-desktop": "Claude Desktop has no filesystem sandbox of its own restricting where pdf_stamp or pdf_merge can write, so the out_path you give is exactly where the file lands, absolute path required like every other entry in this config.",
+    "claude-code": "Merging or stamping a PDF sits well next to the rest of a terminal workflow: `claude mcp add pdf -- npx -y @theluckystrike/mcp-pdf --scope project` puts it in the repository the invoices or contracts already live in.",
+    cursor: "The pattern that saves the most time here is asking in the same chat that just generated a docx proposal: print it, then merge it with a signed cover page before it goes out.",
+    vscode: "In agent mode pdf_merge and pdf_stamp are tools the agent can reach mid-task, so \"stamp this PAID, then attach it to the release notes\" is one instruction instead of a manual export step.",
+    windsurf: "Twelve tools out of Cascade's 100-tool ceiling is a cheap seat for something used a few times a week rather than continuously, unlike a timer or a spreadsheet tool held open all day.",
+    cline: "pdf_info, pdf_count and pdf_text are safe to auto-approve since none of them write a file; leave pdf_merge, pdf_split, pdf_stamp and the rest behind a click, since each one creates a new file on disk.",
+  },
+  calendar: {
+    "claude-desktop": "The .ics file you exported has to reach Claude Desktop's sandboxed process, so give ics_import an absolute path under your home directory rather than a relative one, the same rule every path in this config follows.",
+    "claude-code": "Importing a calendar once and asking free_busy questions in the same session as a repo's billing work is the point: `claude mcp add calendar -- npx -y @theluckystrike/mcp-calendar --scope project` keeps the import local to that project.",
+    cursor: "The useful chain here starts with a calendar question and ends in the time tracker: \"what did I do this week\" through events_list, then event_to_time_entry for the calls that were billable.",
+    vscode: "In agent mode, free_busy and conflicts are tools the agent can call mid-task, so scheduling a follow-up around what is already on the calendar is one instruction rather than a manual lookup first.",
+    windsurf: "Twelve tools against Cascade's 100-tool ceiling, and this one is read from a file you re-import occasionally rather than a service polled continuously, so it costs little to leave enabled.",
+    cline: "events_list, free_busy, conflicts and next_event are read-only and safe to auto-approve; leave ics_import, event_export and ics_forget, which write or remove local data, behind a click.",
+  },
 };
 
 /** One sentence per server for the claude-web (claude.ai / Claude Desktop connector) client.
@@ -489,6 +541,8 @@ const WEB_ANGLE = {
   resume: "The generated .docx is a one-hour download link rather than a path, so the practical habit is to download it the same session you ask for it, before the link expires.",
   recurring: "The schedule and the invoices it generates live in the hosted store behind the token, so the dry run and the real run both read the same state whether you connect from claude.ai or Claude Desktop.",
   clauses: "The assembled document is a download link, and the library itself lives behind the token, so the same clause set is there whether you connect from claude.ai in a browser or Claude Desktop.",
+  pdf: "A merged or stamped PDF comes back as a one-hour download link rather than a path, and pdf_watermark_business needs the shared business profile to already exist behind that same token, since there is no local profile.json to read it from.",
+  calendar: "There is no local .ics file to import from over a browser connector, so the practical route here is ics_import with a url or webcal feed, which is a Pro feature: the free tier's local-file import has nothing to point at from claude.ai.",
 };
 
 const FAQ = {

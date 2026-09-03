@@ -6,7 +6,7 @@
 
 export const COMPARE_INDEX = {
   title: "MCP server comparisons: ours against the closest alternatives",
-  description: "Eleven honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
+  description: "Thirteen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
 };
 
 const t = (rows) =>
@@ -902,6 +902,145 @@ claude mcp add --transport http open-agreements https://openagreements.org/api/m
       { q: "Does my contract text leave my machine?", a: "Not with ours: every clause and every assembled document stays in your data directory and the server makes no network call at all. OpenAgreements says local stdio stays on your machine and its hosted mode does not store filled documents, with some field-selector workflows downloading an official source document at runtime. dingdawg-legal-agent sends the contract to its own service for analysis." },
       { q: "What do they cost?", a: "OpenAgreements is free and Apache-2.0. dingdawg-legal-agent has a free tier of 10 reviews a day with basic analysis only; Pro is $49 a month for 100 calls a day and pay as you go is $0.25 a call. Ours has a free tier and a one-time $19 Pro key with no subscription." },
       { q: "Where can I read the competitor facts myself?", a: "Every row comes from the npm registry record and README for @open-agreements/contract-templates-mcp and dingdawg-legal-agent, plus the OpenAgreements documentation at github.com/open-agreements/open-agreements, all read on 2026-09-03. Neither was installed, so the tool lists are as documented." },
+    ],
+  },
+
+  pdf: {
+    title: "MCP PDF Tools vs pdf-mcp and DocWand: which MCP server to pick",
+    description: "A pure-JavaScript page-level PDF server against a full editing suite and a browser-based signing tool. Tool counts, what pdf_text can and cannot read, and where each one runs.",
+    html: `<h1>MCP PDF Tools vs pdf-mcp and DocWand: which MCP server to pick</h1>
+<p>All three say they merge, split and stamp a PDF from chat. <a href="https://github.com/nitaiaharoni1/pdf-mcp">pdf-mcp</a>
+(npm package <code>mcp-pdf</code>) goes much further than page-level jobs, adding form filling, annotations
+and signature fields. <a href="https://docwand.app">DocWand</a> runs the opposite way: no install at all, a
+hosted MCP endpoint whose signing and form-filling actually execute in your browser tab rather than on the
+server. Ours sits between them: page-level jobs only, done locally, with an honest answer about the one
+thing none of the three can promise -- reading text out of a PDF whose font was not built for it.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["pdf-mcp", "DocWand"], body: [
+  ["Tools", "12 (10 pdf tools plus 2 license tools)", "~24 across documents, forms, pages, signatures, security, export", "4 documented flows: sign, fill, merge, split"],
+  ["Transport", "stdio, no hosted route yet", "stdio (npx or global install)", "streamable HTTP only, hosted at mcp.docwand.app"],
+  ["Runs where", "Your machine, no network call of any kind", "Your machine", "Your browser, on the DocWand site, files stay client-side"],
+  ["Text extraction", "pdf_text: names the reason when it fails (scan, or subset/CID font returning glyph numbers)", "Extract Text listed as a feature; the README marks it \"requires additional implementation\"", "Not offered; it is a sign-and-fill tool, not an extraction tool"],
+  ["Encrypted PDFs", "Refused with the fix named in the message; pdf_info still reports encrypted: true", "Encrypt/decrypt are listed features with limited support noted", "Not documented"],
+  ["Account or key needed", "No. No account, no API key", "No. No account, no API key", "No account for the free tools; nothing to sign up for"],
+  ["Licence", "MIT", "Not stated in the npm record", "Not published; closed-source hosted service"],
+  ["Cost", "Free tier, Pro $19 once", "Free, per its npm listing", "Free tier per its pricing page"],
+] })}
+
+<h2>When to pick pdf-mcp</h2>
+<p>Pick it for form work: it lists form field discovery, filling single or multiple fields, exporting form
+data, flattening forms and adding annotations, none of which we do at all. Its own README also marks
+several export features, including text extraction, as "requires additional implementation," so check
+that a feature you need is actually wired up before relying on it rather than trusting the feature list on
+its own. It installs the same way ours does, with <code>npx</code> in a Claude Desktop or Cursor config.</p>
+
+<h2>When to pick DocWand</h2>
+<p>Pick it when you want zero install and the file never has to touch a server you do not control at all,
+including ours: DocWand's own description is that signing, filling, merging and splitting run entirely in
+the browser tab, so the PDF never leaves the device even over its hosted MCP endpoint. It does not do
+page-level jobs like rotate, reorder or per-page stamping, and it has no page-count or metadata reporting
+tool; it is a signing and light-editing tool, not a page-manipulation one.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours for the specific page-level jobs a freelancer actually repeats: merge, split by range, extract
+or reorder pages, rotate a scan, stamp PAID or DRAFT or custom text, and a business watermark that reads the
+same shared profile <a href="/s/invoice">MCP Invoice</a> and <a href="/s/docx">MCP Docx</a> write. It runs
+fully local with no network code at all, not even for licensing, and it is specific about the one thing it
+cannot do well: <code>pdf_text</code> is a two-hundred-line parser with no <code>pdfjs</code> dependency, so
+a subset-embedded or CID-encoded font returns glyph index numbers instead of letters, and the answer names
+the font as the reason rather than returning that garbage as if it were real text.</p>
+
+<h2>What we measured</h2>
+<p>The pdf package carries 39 automated tests, all passing, covering merge, split, stamping, rotation,
+encrypted-file refusal, the operations register and the shared business profile. Neither competitor
+publishes a test count in its README or npm record.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add pdf -- npx -y @theluckystrike/mcp-pdf</code></pre>
+<p>pdf-mcp:</p>
+<pre><code>claude mcp add pdf-mcp -- npx -y mcp-pdf</code></pre>
+<p>DocWand has no install line: it is a remote connector URL, <code>https://mcp.docwand.app/mcp</code>,
+pasted into a client that accepts a remote MCP server the way <a href="/guides/connect-mcp-servers-without-installing">connect-by-URL</a> describes.</p>
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer
+walkthrough, including the glyph-index caveat in detail, is in
+<a href="/guides/pdf-merge-split-stamp-from-chat">merging, splitting and stamping PDFs from chat</a>.</p>`,
+    faq: [
+      { q: "Can I run MCP PDF Tools and pdf-mcp at the same time?", a: "Yes. MCP clients load several servers at once and the tool names do not collide: ours are pdf_merge, pdf_stamp and so on; pdf-mcp uses its own tool names for the same idea. Nothing is shared between them." },
+      { q: "Which one actually extracts text from a PDF?", a: "Ours does, with named limits: no OCR for scans, and glyph numbers instead of letters when a subset or CID font is in the way, both stated in the answer. pdf-mcp lists text extraction as a feature but marks it \"requires additional implementation\" in its own README. DocWand does not offer extraction at all." },
+      { q: "Does any of these upload my PDF to a server?", a: "Ours never does: no network call of any kind. pdf-mcp runs locally over stdio the same way. DocWand's processing runs in your browser tab even though the connection is a hosted MCP endpoint, per its own description." },
+      { q: "What does each cost?", a: "pdf-mcp is free per its npm listing. DocWand's core tools are free per its pricing page. Ours has a free tier and a one-time $19 Pro key, or $39 for the whole server collection, with no subscription." },
+      { q: "Where can I read the competitor facts myself?", a: "pdf-mcp's tool list and text-extraction caveat come from its README at github.com/nitaiaharoni1/pdf-mcp and its npm record for mcp-pdf. DocWand's tool set and hosted endpoint come from its official MCP registry entry, app.docwand/pdf, and docwand.app. All read on 2026-09-03." },
+    ],
+  },
+
+  calendar: {
+    title: "MCP Calendar vs mcp-ical and google-calendar-mcp: which MCP server to pick",
+    description: "A local .ics reader with free-busy and conflicts against a bare feed cache and a full Google Calendar API server. Tool counts, OAuth, and what each one actually computes.",
+    html: `<h1>MCP Calendar vs mcp-ical and google-calendar-mcp: which MCP server to pick</h1>
+<p>All three read calendar data into a chat. <a href="https://github.com/voxxit/mcp-ical">mcp-ical</a>
+(npm package <code>@voxxit/mcp-ical</code>) is the closest in shape to ours: it also reads
+<code>.ics</code> feeds with no Google or Microsoft account. <a href="https://github.com/nspady/google-calendar-mcp">google-calendar-mcp</a>
+is a different kind of tool entirely: it reads and writes real Google Calendar events over OAuth, across
+multiple accounts. Ours sits in between: read-only like mcp-ical, but computing the things a freelancer
+actually asks for, free and busy blocks, cross-calendar conflicts, and a billable time entry from a
+finished meeting, none of which mcp-ical does at all.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["mcp-ical", "google-calendar-mcp"], body: [
+  ["Tools", "12 (10 calendar tools plus 2 license tools)", "5: subscribe, list, unsubscribe, get_events, search_events", "12: list/search/get/create/update/delete events, freebusy, colors, current time, respond, manage-accounts"],
+  ["Account or key needed", "No. No account, no key", "No. Subscribes to a public .ics URL, no login", "Yes. Google OAuth 2.0 credentials, a consent screen and a browser sign-in before first use"],
+  ["Free/busy and conflicts", "free_busy merges busy blocks and daily gaps; conflicts checks every pair across all calendars", "Not offered", "get-freebusy is offered; conflict detection is a separate documented feature (cross-account conflicts)"],
+  ["Recurrence handling", "RRULE with COUNT, UNTIL, INTERVAL, BYDAY/BYMONTHDAY/BYMONTH, EXDATE, RDATE and RECURRENCE-ID overrides, computed from Node's own ICU data so DST does not drift", "RFC 5545 parsing stated as a feature; expansion detail not documented in the README", "Native to the Google Calendar API it calls, including advanced recurring-event modification"],
+  ["Turns a meeting into billable time", "event_to_time_entry, feeding directly into the time tracker's entry_add", "Not offered", "Not offered"],
+  ["Writes to the calendar", "No. Reads only; event_export writes a new file, never the source", "No. Read-only subscription and query", "Yes: create, update, delete and respond to events"],
+  ["Licence", "MIT", "Not stated in the npm record", "MIT"],
+  ["Cost", "Free tier, Pro $19 once", "Free, per its npm listing", "Free, per its npm listing"],
+] })}
+
+<h2>When to pick mcp-ical</h2>
+<p>Pick it if all you want is a cached, searchable copy of one or more public <code>.ics</code> feeds with
+no setup beyond a URL: <code>subscribe_calendar</code>, <code>list_calendars</code>,
+<code>get_events</code> and <code>search_events</code> cover that in five tools. It does not compute free
+time, does not check for conflicts across calendars, and does not hand a meeting to a time tracker; if any
+of those three is why you wanted a calendar server, it is not there.</p>
+
+<h2>When to pick google-calendar-mcp</h2>
+<p>Pick it when the calendar has to stay live and two-way with Google itself: creating, updating, deleting
+and responding to events, multiple Google accounts queried at once, and cross-account conflict detection
+built on the real API rather than a file you re-import. That comes at the cost every OAuth integration
+has: a Google Cloud project, OAuth credentials, a consent screen, and a browser sign-in flow before the
+first calendar tool works, none of which our server or mcp-ical require.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the calendar app already exports what you need and you want to ask a freelancer's actual
+questions of it without connecting an account: where am I free this week, what clashes with what, and
+which of last week's calls should have been billed. <code>free_busy</code>, <code>conflicts</code> and
+<code>event_to_time_entry</code> are the three tools neither competitor has, and the recurrence engine was
+built against real exports rather than the bare RFC, which is why a weekly Warsaw meeting stays at 10:00
+local through the March clock change instead of drifting an hour.</p>
+
+<h2>What we measured</h2>
+<p>The calendar package carries 36 automated tests, all passing, covering ICS parsing edge cases (line
+folding, escaping, DST, RECURRENCE-ID overrides), free/busy computation and conflict detection. Neither
+competitor publishes a test count in its README or npm record.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add calendar -- npx -y @theluckystrike/mcp-calendar</code></pre>
+<p>mcp-ical:</p>
+<pre><code>claude mcp add ical -- npx -y @voxxit/mcp-ical</code></pre>
+<p>google-calendar-mcp:</p>
+<pre><code>claude mcp add gcal -e GOOGLE_OAUTH_CREDENTIALS=/path/to/gcp-oauth.keys.json -- npx -y @cocal/google-calendar-mcp</code></pre>
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer
+walkthrough is in <a href="/guides/calendar-ics-free-busy-in-claude">reading a .ics calendar in Claude</a>.</p>`,
+    faq: [
+      { q: "Can I run MCP Calendar and google-calendar-mcp at the same time?", a: "Yes. Tool names do not collide: ours are events_list, free_busy and so on, google-calendar-mcp uses list-events, get-freebusy and its own names. Nothing is shared between them, so a change made in one is invisible to the other." },
+      { q: "Which one can create or edit a Google Calendar event?", a: "Only google-calendar-mcp. It reads and writes through the real Google Calendar API with create-event, update-event, delete-event and respond-to-event. Ours and mcp-ical are read-only against a file or feed and never touch a live account." },
+      { q: "Does any of these need an account?", a: "google-calendar-mcp does, with a full OAuth 2.0 setup and a browser consent flow before first use. Ours and mcp-ical need no account: ours reads a file you exported or, on Pro, a public feed URL; mcp-ical subscribes to a public .ics URL directly." },
+      { q: "What does each cost?", a: "mcp-ical and google-calendar-mcp are free per their npm listings; the Google account and API access behind google-calendar-mcp are free within Google's own quota. Ours has a free tier and a one-time $19 Pro key, or $39 for the whole server collection." },
+      { q: "Where can I read the competitor facts myself?", a: "mcp-ical's tool list comes from its README at github.com/voxxit/mcp-ical and its npm record for @voxxit/mcp-ical. google-calendar-mcp's tool list and OAuth requirement come from its README at github.com/nspady/google-calendar-mcp and its npm record for @cocal/google-calendar-mcp. All read on 2026-09-03." },
     ],
   },
 };
