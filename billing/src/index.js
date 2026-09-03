@@ -63,6 +63,27 @@ export function fulfillmentAllowed(session, product) {
   return { ok: false, reason: `payment_status is ${session.payment_status}` };
 }
 
+/** Anonymous hosted-endpoint token shape, matches remote/src/index.ts. */
+const TENANT_RE = /^anon_[0-9a-f]{32}$/;
+
+/** Pure: is this a well-formed anonymous tenant token? */
+export function validTenant(tenant) {
+  return typeof tenant === "string" && TENANT_RE.test(tenant);
+}
+
+/**
+ * Pure: decide whether a fulfilled purchase should write a hosted `bind:<tenant>`
+ * record. Only a valid tenant token on an already-fulfilled session binds; an
+ * absent or malformed tenant (someone typed `/buy/x?tenant=`) mints the key
+ * normally but writes nothing to the shared KV.
+ */
+export function bindDecision(session, fulfilled) {
+  if (!fulfilled) return { bind: false, reason: "not fulfilled" };
+  const tenant = session?.metadata?.tenant;
+  if (!validTenant(tenant)) return { bind: false, reason: "no valid tenant" };
+  return { bind: true, tenant };
+}
+
 function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
@@ -116,7 +137,7 @@ async function stripe(env, path, params, method = "POST") {
   return json;
 }
 
-async function createCheckout(env, host, productId, probeTag = "") {
+async function createCheckout(env, host, productId, probeTag = "", tenant = "") {
   const p = PRODUCTS[productId];
   const s = await stripe(env, "checkout/sessions", {
     mode: "payment",
@@ -127,10 +148,16 @@ async function createCheckout(env, host, productId, probeTag = "") {
     allow_promotion_codes: "true",
     "metadata[product]": productId,
       ...(probeTag ? { "metadata[probe]": "1" } : {}),
+      ...(tenant ? { client_reference_id: tenant, "metadata[tenant]": tenant } : {}),
     "payment_intent_data[statement_descriptor_suffix]": "MCP PRO",
     "payment_intent_data[metadata][product]": productId,
   });
   return s;
+}
+
+/** Write the hosted bind record. No TTL: a purchase is a lifetime key. */
+async function bindTenant(env, tenant, key) {
+  await env.REMOTE_DATA.put(`bind:${tenant}`, key);
 }
 
 class MintError extends Error {}
@@ -191,10 +218,16 @@ claude mcp add ${p.bin.replace(/^mcp-/, "")} -- npx -y ${p.pkg}
 }</code></pre>`;
 }
 
-function successPage(key, productId, session) {
+export function successPage(key, productId, session, boundTenant = "") {
   const p = PRODUCTS[productId];
+  const hostedNote = boundTenant
+    ? `<h2>Hosted endpoints</h2>
+<p>The hosted endpoint you were using (token <code>${esc(boundTenant)}</code>) is already Pro for ${esc(p.name)} -
+nothing further to do there. The key below still works for a local, stdio install.</p>`
+    : "";
   return page("Your MCP Pro license key", `<h1>Payment received</h1>
 <p>${esc(p.name)} - $${p.usd} one-time, lifetime.</p>
+${hostedNote}
 <h2>Your license key</h2>
 <pre class="key"><code>${esc(key)}</code></pre>
 <p class="muted">Save this key now; it is shown again only at this URL. No email is sent with the key.
@@ -386,7 +419,7 @@ ${faqHtml}
       return new Response("22fad93b71a88e2e60acae203c4288ae", { headers: { "content-type": "text/plain" } });
     }
     if (path === "/robots.txt") {
-      return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });
+      return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nDisallow: /bound\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });
     }
     if (path === "/llms.txt") {
       const lines = Object.entries(PAGES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline} Install: npx -y @theluckystrike/mcp-${k}`).join("\n");
@@ -404,8 +437,10 @@ ${faqHtml}
       const probeTag = request.headers.get("x-mcp-probe") === "1" ? "1" : "";
       const id = decodeURIComponent(path.slice("/buy/".length));
       if (!PRODUCTS[id]) return new Response(page("Not found", `<h1>Unknown product</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+      const tenantParam = url.searchParams.get("tenant") || "";
+      const tenant = validTenant(tenantParam) ? tenantParam : "";
       try {
-        const session = await createCheckout(env, host, id, probeTag);
+        const session = await createCheckout(env, host, id, probeTag, tenant);
         return new Response(null, { status: 303, headers: { Location: session.url, "cache-control": "no-store" } });
       } catch (e) {
         return new Response(page("Checkout error", `<h1>Checkout could not start</h1><p>${esc(e.message)}</p><p><a href="/">Back</a></p>`), { status: 502, headers: { "content-type": "text/html; charset=utf-8" } });
@@ -433,7 +468,15 @@ ${faqHtml}
       }
       try {
         const key = await keyForSession(env, session, productId);
-        return new Response(successPage(key, productId, session), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+        const bd = bindDecision(session, true);
+        if (bd.bind) {
+          try {
+            await bindTenant(env, bd.tenant, key);
+          } catch (e) {
+            console.error(`bind failed for ${sid} tenant ${bd.tenant}: ${e.message}`);
+          }
+        }
+        return new Response(successPage(key, productId, session, bd.bind ? bd.tenant : ""), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
       } catch (e) {
         console.error(`mint failed for ${sid}: ${e.message}`);
         return new Response(page("Key could not be issued", `<h1>Your payment went through, the key did not</h1>
@@ -491,7 +534,15 @@ ${faqHtml}
             console.error(`webhook ${event.type} not fulfilled for ${sid}: ${decision.reason}`);
             return Response.json({ received: true, fulfilled: false, reason: decision.reason });
           }
-          await keyForSession(env, session, productId);
+          const key = await keyForSession(env, session, productId);
+          const bd = bindDecision(session, true);
+          if (bd.bind) {
+            try {
+              await bindTenant(env, bd.tenant, key);
+            } catch (e) {
+              console.error(`webhook bind failed for ${sid} tenant ${bd.tenant}: ${e.message}`);
+            }
+          }
         } catch (e) {
           console.error(`webhook ${event.type} mint failed for ${sid}: ${e.message}`);
           return new Response(`mint failed: ${e.message}`, { status: 500 });
@@ -509,6 +560,19 @@ ${faqHtml}
              : { ok: false, product: null, id: null, reason: r.reason },
         { status: r.ok ? 200 : 400 }
       );
+    }
+
+    // Whether an anonymous hosted-endpoint token has been bound to a purchased
+    // key (support and the dashboard KPI). Never returns the key itself.
+    if (path === "/bound" && method === "GET") {
+      const tenant = url.searchParams.get("tenant") || "";
+      const nostore = { "cache-control": "no-store" };
+      if (!validTenant(tenant)) return Response.json({ bound: false, product: null, reason: "bad tenant" }, { status: 400, headers: nostore });
+      const key = await env.REMOTE_DATA.get(`bind:${tenant}`);
+      if (!key) return Response.json({ bound: false, product: null }, { headers: nostore });
+      const r = await verifyLicenseKey(key, null);
+      if (!r.ok) return Response.json({ bound: false, product: null, reason: r.reason }, { headers: nostore });
+      return Response.json({ bound: true, product: r.payload.p }, { headers: nostore });
     }
 
     return new Response(page("Not found", `<h1>Not found</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });

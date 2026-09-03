@@ -87,6 +87,17 @@ function writeStoredKeys(keys: Record<string, string>) {
   }
 }
 
+/**
+ * Upgrade text for a hosted (streamable-HTTP) tenant: the checkout link carries
+ * `?tenant=<anon token>` so fulfilment binds that same anonymous token to the
+ * purchased key, and the hosted endpoint recognizes it as Pro with no key paste.
+ */
+export function hostedUpgradeText(feature: string, product: string, tenant: string): string {
+  const url = `${CHECKOUT_BASE}/buy/${product}?tenant=${encodeURIComponent(tenant)}`;
+  return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime). ` +
+    `Buy at ${url} , and this hosted connection is Pro automatically once payment completes - no key to paste.`;
+}
+
 export interface LicenseGate {
   product: string;
   isPro(): boolean;

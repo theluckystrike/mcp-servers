@@ -9,3 +9,9 @@ routes = [{ pattern = "mcp.zovo.one", custom_domain = true }]
 [[kv_namespaces]]
 binding = "LICENSES"
 id = "75f8bf4872a0433285d11575cece8641"
+
+# Shared with mcp-remote (remote/wrangler.toml): fulfilment writes bind:<anon_token>
+# = the minted key so the hosted endpoints can treat that anonymous tenant as Pro.
+[[kv_namespaces]]
+binding = "REMOTE_DATA"
+id = "cf848cc5c07d4e0a9c7c65ad1c70055c"
