@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T08:59:32.781Z",
+  "generated_at": "2026-09-03T09:00:44.593Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -94,7 +94,7 @@
     {
       "cat": "Activation",
       "name": "Hosted downloads served",
-      "value": 73,
+      "value": 67,
       "target": 200,
       "unit": "files (1h TTL)",
       "how": "wrangler kv key list --remote (prefix dl)",
@@ -103,13 +103,13 @@
     },
     {
       "cat": "Activation",
-      "name": "First-prompt tool reach (round 8)",
-      "value": null,
+      "name": "First-prompt tool reach (latest round)",
+      "value": 100,
       "target": 95,
       "unit": "% of calls on the right tool",
-      "how": "docs/USER_VALUE_R8.md (50 of 51)",
+      "how": "data/user_value_r9.json tool_selection (falls back to round 8: 50 of 51)",
       "why": "Round 6 showed correct servers losing to built-in tools; descriptions are the lever.",
-      "status": "unmeasured"
+      "status": "met"
     },
     {
       "cat": "Value",
@@ -164,7 +164,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 88,
+      "value": 85,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -234,14 +234,14 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 664,
+      "total": 659,
       "by": {
         "anon": 19,
-        "dl": 73,
+        "dl": 67,
         "lic": 329,
         "meta": 99,
         "mint": 2,
-        "rl": 34,
+        "rl": 35,
         "shared": 2,
         "tok": 106
       }
@@ -251,11 +251,11 @@
       "by": {}
     },
     "latency": {
-      "p50_ms": 88,
+      "p50_ms": 85,
       "samples": [
-        959,
-        88,
-        84
+        850,
+        85,
+        82
       ]
     },
     "registry": {
