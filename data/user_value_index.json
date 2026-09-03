@@ -1,0 +1,673 @@
+{
+  "generated_at": "2026-09-03T07:16:49.776Z",
+  "rounds": [
+    {
+      "round": 1,
+      "file": "user_value.json",
+      "score": 28,
+      "max": 39,
+      "pct": 72,
+      "scenarios": 14,
+      "per_server": {
+        "time-tracker": {
+          "score": 10,
+          "max": 12
+        },
+        "price-tracker": {
+          "score": 7,
+          "max": 12
+        },
+        "spreadsheet": {
+          "score": 6,
+          "max": 9
+        },
+        "invoice": {
+          "score": 8,
+          "max": 9
+        }
+      },
+      "at": "2026-09-02T20:40:00Z",
+      "method": "claude CLI 2.1.258 as MCP client, --strict-mcp-config, model sonnet, fresh XDG_DATA_HOME=/private/tmp/uv/data (free tier)"
+    },
+    {
+      "round": 2,
+      "file": "user_value_r2.json",
+      "score": 37,
+      "max": 39,
+      "pct": 95,
+      "scenarios": 14,
+      "per_server": {
+        "time-tracker": {
+          "score": 11,
+          "max": 12
+        },
+        "price-tracker": {
+          "score": 10,
+          "max": 12
+        },
+        "spreadsheet": {
+          "score": 7,
+          "max": 9
+        },
+        "invoice": {
+          "score": 9,
+          "max": 9
+        }
+      },
+      "at": "2026-09-02T20:50:00Z",
+      "method": "claude CLI as MCP client, /private/tmp/uv2/mcp.json (four servers as node servers/<name>/dist/index.js), --strict-mcp-config --model sonnet --max-turns 12 --all"
+    },
+    {
+      "round": 3,
+      "file": "user_value_r3.json",
+      "score": 18,
+      "max": 24,
+      "pct": 75,
+      "scenarios": 12,
+      "per_server": {
+        "office-suite": {
+          "score": 8,
+          "max": 12
+        },
+        "time-tracker": {
+          "score": 9,
+          "max": 9
+        },
+        "invoice": {
+          "score": 4,
+          "max": 6
+        },
+        "price-tracker": {
+          "score": 2,
+          "max": 3
+        },
+        "spreadsheet": {
+          "score": 3,
+          "max": 3
+        },
+        "expense-tracker": {
+          "score": 2,
+          "max": 3
+        }
+      },
+      "at": "2026-09-02T21:55:00Z",
+      "method": "Three surfaces. (bundle) servers/office-suite/dist/index.js registered as ONE server named \"office\" in /private/tmp/uv4/mcp.json, fresh XDG_DATA_HOME=/private/t"
+    },
+    {
+      "round": 4,
+      "file": "user_value_r4.json",
+      "score": 20,
+      "max": 24,
+      "pct": 83,
+      "scenarios": 9,
+      "per_server": {},
+      "at": "2026-09-02T15:00:00Z",
+      "method": "(bundle) servers/office-suite/dist/index.js as ONE server \"office\" in /private/tmp/uv6/mcp.json, fresh XDG_DATA_HOME=/private/tmp/uv6/data + XDG_CONFIG_HOME=/pr"
+    },
+    {
+      "round": 5,
+      "file": "user_value_r5.json",
+      "score": 26,
+      "max": 30,
+      "pct": 87,
+      "scenarios": 11,
+      "per_server": {
+        "time-tracker": {
+          "score": 9,
+          "max": 9
+        },
+        "expense-tracker": {
+          "score": 6,
+          "max": 6
+        },
+        "price-tracker": {
+          "score": 3,
+          "max": 3
+        },
+        "bundle-licence": {
+          "score": 3,
+          "max": 3
+        },
+        "spreadsheet": {
+          "score": 4,
+          "max": 6
+        },
+        "invoice": {
+          "score": 1,
+          "max": 3
+        }
+      },
+      "at": "2026-09-03T00:00:00Z",
+      "method": "servers/office-suite/dist/index.js registered as ONE server \"office\" so any child can answer. Four independent lanes, each with its own XDG_DATA_HOME/XDG_CONFIG"
+    },
+    {
+      "round": 6,
+      "file": "user_value_r6.json",
+      "score": 13,
+      "max": 24,
+      "pct": 54,
+      "scenarios": 8,
+      "per_server": {},
+      "at": "2026-09-03T00:40:00Z",
+      "method": "servers/office-suite/dist/index.js v0.2.4 registered as ONE server 'office'. Four independent lanes, each with its own XDG_DATA_HOME/XDG_CONFIG_HOME and MCP_LIC"
+    },
+    {
+      "round": 7,
+      "file": "user_value_r7.json",
+      "score": 16,
+      "max": 18,
+      "pct": 89,
+      "scenarios": 6,
+      "per_server": {},
+      "at": "2026-09-03T02:45:00Z",
+      "method": "servers/office-suite/dist/index.js v0.3.1 registered as ONE server 'office', proxying eight children (time-tracker, price-tracker, spreadsheet, invoice, expense"
+    }
+  ],
+  "servers": [
+    "bundle-licence",
+    "expense-tracker",
+    "invoice",
+    "office-suite",
+    "price-tracker",
+    "spreadsheet",
+    "time-tracker"
+  ],
+  "matrix": [
+    {
+      "server": "bundle-licence",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "3/3",
+        "",
+        ""
+      ],
+      "best_pct": 100,
+      "last_round": 5
+    },
+    {
+      "server": "expense-tracker",
+      "cells": [
+        "",
+        "",
+        "2/3",
+        "",
+        "6/6",
+        "",
+        ""
+      ],
+      "best_pct": 100,
+      "last_round": 5
+    },
+    {
+      "server": "invoice",
+      "cells": [
+        "8/9",
+        "9/9",
+        "4/6",
+        "",
+        "1/3",
+        "",
+        ""
+      ],
+      "best_pct": 100,
+      "last_round": 5
+    },
+    {
+      "server": "office-suite",
+      "cells": [
+        "",
+        "",
+        "8/12",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "best_pct": 67,
+      "last_round": 3
+    },
+    {
+      "server": "price-tracker",
+      "cells": [
+        "7/12",
+        "10/12",
+        "2/3",
+        "",
+        "3/3",
+        "",
+        ""
+      ],
+      "best_pct": 100,
+      "last_round": 5
+    },
+    {
+      "server": "spreadsheet",
+      "cells": [
+        "6/9",
+        "7/9",
+        "3/3",
+        "",
+        "4/6",
+        "",
+        ""
+      ],
+      "best_pct": 100,
+      "last_round": 5
+    },
+    {
+      "server": "time-tracker",
+      "cells": [
+        "10/12",
+        "11/12",
+        "9/9",
+        "",
+        "9/9",
+        "",
+        ""
+      ],
+      "best_pct": 100,
+      "last_round": 5
+    }
+  ],
+  "ledger": [
+    {
+      "id": "D-1",
+      "first_seen": "USER_VALUE.md",
+      "severity": "",
+      "title": "D-1) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-2",
+      "first_seen": "USER_VALUE.md",
+      "severity": "",
+      "title": "D-2).",
+      "status": "open"
+    },
+    {
+      "id": "D-3",
+      "first_seen": "USER_VALUE.md",
+      "severity": "high",
+      "title": "D-3 (high, time-tracker) — the rate has no currency, so \"90 euros\" becomes USD.**",
+      "status": "open"
+    },
+    {
+      "id": "D-4",
+      "first_seen": "USER_VALUE.md",
+      "severity": "medium",
+      "title": "D-4 (medium, price-tracker) — the server loses tool selection to the built-in WebFetch.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-5",
+      "first_seen": "USER_VALUE.md",
+      "severity": "medium",
+      "title": "D-5 (medium, price-tracker) — `watch_add` stores a watch nothing ever checks.**",
+      "status": "open"
+    },
+    {
+      "id": "D-6",
+      "first_seen": "USER_VALUE.md",
+      "severity": "medium",
+      "title": "D-6 (medium, spreadsheet) — no aggregation, so every \"who sold the most\" question leaves the server.**",
+      "status": "open"
+    },
+    {
+      "id": "D-7",
+      "first_seen": "USER_VALUE.md",
+      "severity": "low",
+      "title": "D-7 (low, time-tracker) — no project name reconciliation.**",
+      "status": "open"
+    },
+    {
+      "id": "D-8",
+      "first_seen": "USER_VALUE.md",
+      "severity": "low",
+      "title": "D-8 (low, invoice) — client auto-created with no address, and line amounts carry no currency symbol.**",
+      "status": "open"
+    },
+    {
+      "id": "D-9",
+      "first_seen": "USER_VALUE_R2.md",
+      "severity": "high",
+      "title": "D-9 (high, price-tracker) — `checkRedirect` false-positives on slug-canonicalisation redirects.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-10",
+      "first_seen": "USER_VALUE_R2.md",
+      "severity": "",
+      "title": "D-10). |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-11",
+      "first_seen": "USER_VALUE_R2.md",
+      "severity": "",
+      "title": "D-11). |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-C1",
+      "first_seen": "CURRENCY_AUDIT.md",
+      "severity": "high",
+      "title": "D-C1 (high, fixed) -- `convert` emitted `Infinity` as money.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-C2",
+      "first_seen": "CURRENCY_AUDIT.md",
+      "severity": "high",
+      "title": "D-C2 (high, fixed) -- a truncated history download silently replaced a good cache.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-C3",
+      "first_seen": "CURRENCY_AUDIT.md",
+      "severity": "medium",
+      "title": "D-C3 (medium, fixed) -- a self-contradicting error over a partial cache.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-C4",
+      "first_seen": "CURRENCY_AUDIT.md",
+      "severity": "",
+      "title": "D-C4 |",
+      "status": "open"
+    },
+    {
+      "id": "D-C5",
+      "first_seen": "CURRENCY_AUDIT.md",
+      "severity": "low",
+      "title": "D-C5 (low, not fixed, client-side) -- every lane spent its first turn on `ToolSearch`.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-D1",
+      "first_seen": "DOCX_AUDIT.md",
+      "severity": "",
+      "title": "D-D1 | cosmetic | The free-tier branding note is long enough that the model relays it to the user as a caveat about the deliverable (\"that's",
+      "status": "fixed"
+    },
+    {
+      "id": "D-D2",
+      "first_seen": "DOCX_AUDIT.md",
+      "severity": "",
+      "title": "D-D2 | cosmetic | s5 expanded \"Lucky Strike\" to the stored profile name \"Lucky Strike Software\". Defensible, but the client, not the server,",
+      "status": "open"
+    },
+    {
+      "id": "D-E1",
+      "first_seen": "EXPENSE_AUDIT.md",
+      "severity": "",
+      "title": "D-E1) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-E2",
+      "first_seen": "EXPENSE_AUDIT.md",
+      "severity": "",
+      "title": "D-E2) |",
+      "status": "open"
+    },
+    {
+      "id": "D-E3",
+      "first_seen": "EXPENSE_AUDIT.md",
+      "severity": "medium",
+      "title": "D-E3 (medium, not fixed) — `expense_to_invoice` marks every currency group rebilled at once.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-E4",
+      "first_seen": "CLAUSES_AUDIT.md",
+      "severity": "",
+      "title": "D-E4 already measured.",
+      "status": "open (client or accepted)"
+    },
+    {
+      "id": "D-E5",
+      "first_seen": "EXPENSE_AUDIT.md",
+      "severity": "low",
+      "title": "D-E5 (low, not fixed) — `expense_summary` cannot be asked for \"this month\".**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R1",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R1: 1,520 due periods were offered; now 60 per run with the remainder named |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R2",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R2) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R3",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R3) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R4",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R4) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R5",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R5: `past_due_not_yet_invoiced` is in the payload and the answer flags \"the 2026-08-31 Acme occurrence (EUR 1,328.40) hasn't been invoiced",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R6",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R6 | No way to skip one period; pause stops everything and a resume back-bills | s6 | fixed: `schedule_skip` |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R7",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R7 | `forecast` answered 0 for a paused schedule instead of showing what was paused | pause the only schedule, `forecast {months: 3}` -> `",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R8",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R8 | `forecast` and `schedule_upcoming` projected periods that were already invoiced or skipped | `schedule_skip` October, `forecast {mont",
+      "status": "open"
+    },
+    {
+      "id": "D-R9",
+      "first_seen": "RECURRING_AUDIT.md",
+      "severity": "",
+      "title": "D-R9 | A fire-and-forget JSON-RPC probe races a stateful server and reports false PASSes | send `schedule_create` and `invoice_generate_due`",
+      "status": "open"
+    },
+    {
+      "id": "D-R10",
+      "first_seen": "USER_VALUE_R4.md",
+      "severity": "low",
+      "title": "D-R10 (low, harness, new) — without `WebFetch` in the allowlist, pt1 dies rather than falling back.**",
+      "status": "open (client or accepted)"
+    },
+    {
+      "id": "D-R11",
+      "first_seen": "USER_VALUE_R5.md",
+      "severity": "",
+      "title": "D-R11. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R12",
+      "first_seen": "USER_VALUE_R5.md",
+      "severity": "",
+      "title": "D-R12, D-R13. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R13",
+      "first_seen": "USER_VALUE_R5.md",
+      "severity": "",
+      "title": "D-R13 |",
+      "status": "open"
+    },
+    {
+      "id": "D-R14",
+      "first_seen": "USER_VALUE_R5.md",
+      "severity": "",
+      "title": "D-R14. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R15",
+      "first_seen": "USER_VALUE_R5.md",
+      "severity": "medium",
+      "title": "D-R15 (medium, cross-server) — \"today\" is UTC in invoice and expense-tracker, local in",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R16",
+      "first_seen": "USER_VALUE_R5.md",
+      "severity": "",
+      "title": "D-R16; the prompt exists and works. |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R17",
+      "first_seen": "USER_VALUE_R5.md",
+      "severity": "low",
+      "title": "D-R17 (low, client) — `ToolSearch` needs the `mcp__office__` prefix.** Scenario 5 wasted a turn:",
+      "status": "open"
+    },
+    {
+      "id": "D-R18",
+      "first_seen": "USER_VALUE_R6.md",
+      "severity": "",
+      "title": "D-R18. |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R19",
+      "first_seen": "USER_VALUE_R6.md",
+      "severity": "",
+      "title": "D-R19. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R20",
+      "first_seen": "USER_VALUE_R6.md",
+      "severity": "",
+      "title": "D-R20, D-R21. With `billable: true` the same call returns **`unit_price: 48.6`, `total_net: \"USD 48.60\"`**. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R21",
+      "first_seen": "USER_VALUE_R6.md",
+      "severity": "medium",
+      "title": "D-R21 (medium, expense-tracker) — `expense_add` defaults `billable: false`, which silently",
+      "status": "open"
+    },
+    {
+      "id": "D-R22",
+      "first_seen": "USER_VALUE_R6.md",
+      "severity": "",
+      "title": "D-R22. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R23",
+      "first_seen": "USER_VALUE_R6.md",
+      "severity": "low",
+      "title": "D-R23 (low, time-tracker) — the `.corrupt` marker file's contents are a path, and read as data.**",
+      "status": "open"
+    },
+    {
+      "id": "D-R24",
+      "first_seen": "USER_VALUE_R7.md",
+      "severity": "",
+      "title": "D-R24 rides along. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R25",
+      "first_seen": "DOCX_AUDIT.md",
+      "severity": "",
+      "title": "D-R25 and D-R26 of",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R26",
+      "first_seen": "DOCX_AUDIT.md",
+      "severity": "",
+      "title": "D-R26 | A path the server derives itself never lands on an earlier document: the second proposal with the same title becomes `...-2.docx`. P",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R27",
+      "first_seen": "TIMEZONE_AUDIT.md",
+      "severity": "",
+      "title": "D-R27 and D-R30 of docs/USER_VALUE_R7.md. Every item has a",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R28",
+      "first_seen": "USER_VALUE_R7.md",
+      "severity": "",
+      "title": "D-R28 |",
+      "status": "open"
+    },
+    {
+      "id": "D-R29",
+      "first_seen": "USER_VALUE_R7.md",
+      "severity": "medium",
+      "title": "D-R29 (medium, office-suite) — the bundle renames colliding tools but the children's own prose",
+      "status": "open"
+    },
+    {
+      "id": "D-R30",
+      "first_seen": "TIMEZONE_AUDIT.md",
+      "severity": "",
+      "title": "D-R30 - shorten the search, and answer with near misses",
+      "status": "open"
+    },
+    {
+      "id": "D-T1",
+      "first_seen": "TIMEZONE_AUDIT.md",
+      "severity": "",
+      "title": "D-T1: the tool takes holidays as input and the model passed none; the \"September has none in Poland\" clause is the model's own knowledge, no",
+      "status": "fixed"
+    },
+    {
+      "id": "D-T2",
+      "first_seen": "TIMEZONE_AUDIT.md",
+      "severity": "",
+      "title": "D-T2 | `find_meeting_slots` returns only a text refusal when no slot fits, so the model burns turns re-calling it with guessed working hours",
+      "status": "open"
+    },
+    {
+      "id": "D-T3",
+      "first_seen": "TIMEZONE_AUDIT.md",
+      "severity": "",
+      "title": "D-T3 | A named (non-email) attendee is written as `ATTENDEE;CN=Tom:invalid:nomail` | s5 `nova.ics` | server | **open by design**: RFC 5545 r",
+      "status": "open (client or accepted)"
+    }
+  ],
+  "counts": {
+    "defects": 56,
+    "fixed": 27
+  }
+}
