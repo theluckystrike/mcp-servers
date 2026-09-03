@@ -2,7 +2,7 @@ import type { Block } from "@theluckystrike/mcp-docx/lib";
 import type { Profile } from "./profile.js";
 import { profileText } from "./profile.js";
 import { countWords, dateRange, matchesKeyword } from "./render.js";
-import { extractKeywords } from "./tailor.js";
+import { extractKeywords, skillTokens } from "./tailor.js";
 
 export type Tone = "formal" | "direct" | "warm";
 
@@ -65,9 +65,11 @@ export function numbersIn(text: string): string[] {
  * fabrication and the tool refuses to write the file.
  */
 export function unsourcedNumbers(letter: string, sources: string[]): string[] {
-  const corpus = sources.join("\n");
+  // Whole-number-token comparison, never substring containment: a profile holding "2012"
+  // must not license a letter that claims "12", and "4,500" must not license "50".
+  const allowed = new Set(numbersIn(sources.join("\n")));
   const out: string[] = [];
-  for (const n of numbersIn(letter)) if (!corpus.includes(n) && !out.includes(n)) out.push(n);
+  for (const n of numbersIn(letter)) if (!allowed.has(n) && !out.includes(n)) out.push(n);
   return out;
 }
 
@@ -98,7 +100,7 @@ export function buildLetter(p: Profile, o: LetterInput): LetterResult {
   const prompts: string[] = [];
   const use = (what: string) => { const s = prompt(what); prompts.push(s); return s; };
   const jd = o.job_description ?? "";
-  const jdKeywords = jd ? extractKeywords(jd, 12) : [];
+  const jdKeywords = jd ? extractKeywords(jd, 12, skillTokens(p.skills)) : [];
   const matchedSkills = (p.skills ?? []).filter((s) => jdKeywords.some((k) => matchesKeyword(s, k) || matchesKeyword(k, s)));
 
   /* opening */
@@ -131,24 +133,46 @@ export function buildLetter(p: Profile, o: LetterInput): LetterResult {
     const ranked = rankBullets(p, jdKeywords);
     proofLines.push(...ranked.slice(0, 3));
   }
-  const recent = p.experience[0];
-  const proof: string[] = [];
-  if (recent) {
-    const range = dateRange(recent.start, recent.end);
-    proof.push(`As ${recent.title} at ${recent.company}${range ? ` (${range})` : ""}:`);
-  } else {
-    proof.push(`${use("at least one role, with company, title and dates")}:`);
-  }
-  paras.push(proof.join(" "));
 
-  const bulletItems = proofLines.map((line) =>
-    numbersIn(line).length ? line : `${line} ${use("metric")}`);
-  if (unverifiedHighlights.length) {
-    for (const h of unverifiedHighlights) {
-      const s = `${prompt(`"${h}" is not in your profile - add it there or drop it`)}`;
-      prompts.push(s);
-      bulletItems.push(s);
+  /*
+   * Every proof line is printed under the role it actually belongs to. An earlier version
+   * printed one header -- the most recent role -- and hung every ranked bullet under it,
+   * so work done at a previous employer was stated as work done at the current one. That
+   * is a fabricated fact, which is the one thing this letter may not produce.
+   */
+  const roleOf = (line: string): number => p.experience.findIndex((e) => e.bullets.includes(line));
+  const groups: { exp: number; lines: string[] }[] = [];
+  for (const line of proofLines) {
+    const ei = roleOf(line);
+    const last = groups[groups.length - 1];
+    if (last && last.exp === ei) last.lines.push(line);
+    else groups.push({ exp: ei, lines: [line] });
+  }
+
+  const proofBlocks: Block[] = [];
+  const bulletItems: string[] = [];
+  const withMetric = (line: string) => (numbersIn(line).length ? line : `${line} ${use("metric")}`);
+  if (!p.experience.length) {
+    paras.push(`${use("at least one role, with company, title and dates")}:`);
+  }
+  for (const g of groups) {
+    const e = g.exp >= 0 ? p.experience[g.exp] : undefined;
+    if (e) {
+      const range = dateRange(e.start, e.end);
+      proofBlocks.push({ type: "para", text: `As ${e.title} at ${e.company}${range ? ` (${range})` : ""}:` });
+    } else if (p.experience.length) {
+      // A traced highlight that is not one of the stored bullets: stated without an employer.
+      proofBlocks.push({ type: "para", text: "From my profile:" });
     }
+    const items = g.lines.map(withMetric);
+    bulletItems.push(...items);
+    proofBlocks.push({ type: "bullets", items, ordered: false, levels: items.map(() => 0) });
+  }
+  if (unverifiedHighlights.length) {
+    const extra = unverifiedHighlights.map((h) => prompt(`"${h}" is not in your profile - add it there or drop it`));
+    prompts.push(...extra);
+    bulletItems.push(...extra);
+    proofBlocks.push({ type: "bullets", items: extra, ordered: false, levels: extra.map(() => 0) });
   }
 
   /* close */
@@ -162,13 +186,15 @@ export function buildLetter(p: Profile, o: LetterInput): LetterResult {
   const blocks: Block[] = [
     { type: "para", text: salutation },
     ...paras.map((text) => ({ type: "para" as const, text })),
-    { type: "bullets", items: bulletItems, ordered: false, levels: bulletItems.map(() => 0) },
+    ...proofBlocks,
     { type: "para", text: close },
     { type: "para", text: SIGNOFFS[o.tone] },
     { type: "para", text: p.name },
   ];
 
-  const text = [salutation, ...paras, ...bulletItems.map((b) => `- ${b}`), close, SIGNOFFS[o.tone], p.name].join("\n\n");
+  const proofText = proofBlocks.map((b) =>
+    b.type === "bullets" ? b.items.map((i) => `- ${i}`).join("\n\n") : b.type === "para" ? b.text : "");
+  const text = [salutation, ...paras, ...proofText, close, SIGNOFFS[o.tone], p.name].join("\n\n");
   return {
     blocks, text, prompts, usedHighlights, unverifiedHighlights, matchedSkills,
     words: countWords(text),

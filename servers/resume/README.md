@@ -94,8 +94,13 @@ This is the part that matters, so it is enforced rather than requested:
   bullet into a stronger claim.
 - A `highlights` entry you pass is checked against the profile first. If the profile does not support it, it is
   printed as `[add: "..." is not in your profile - add it there or drop it]`, not as a claim.
-- Before the file is written, every digit run in the letter is checked against the profile and the arguments you
+- Before the file is written, every digit run in the letter is checked against your profile and the arguments you
   passed. A number that traces to neither is a refusal, not a warning -- the tool returns an error and writes nothing.
+  The job description is deliberately **not** an allowed source: the employer's revenue, headcount and throughput
+  figures are theirs, and the letter will never restate one as yours. Comparison is on whole numbers, so a profile
+  holding `2012` does not license a letter claiming `12`.
+- Each proof bullet is printed under the role it actually belongs to. A letter that quotes work from two employers
+  prints two headings; work from an earlier job is never listed under your current one.
 - A bullet that carries no figure gets ` [add: metric]` appended, so the letter asks you for the result instead of
   guessing one.
 - Missing keywords from `tailor_to_job` never become skills. The response says so in plain words.
@@ -177,6 +182,9 @@ verified offline), not for fonts, not for telemetry.
 - **"no profile stored"**: run `profile_set` once, or `resume_read {path, save: true}` from an existing resume.
 - **The resume dropped a bullet I wanted**: raise `max_pages`, or pass the posting's words in `keywords` so the
   bullet outranks the others. `bullets_dropped` in the response names every one that did not fit.
+- **Short skill names**: `tailor_to_job` keeps two- and one-character skills -- `Go`, `C`, `R`, `C#`, `C++`, `F#`,
+  `Qt`, `UI`, `UX`, `QA`, `ML`, `AI`, `AR`, `VR`, `JS`, `TS`, `K8s`, `AWS`, `GCP`, `SQL`, `iOS` -- plus any short
+  word that appears in your own `skills` list, and ranks a known skill above a longer word of the same frequency.
 - **A keyword I have is reported missing**: matching is on word boundaries, so `go` does not match `Google` and
   `k8s` does not match `Kubernetes`. Add the exact word to your skills if it is true.
 - **`resume_read` put a role in `unparsed`**: resumes have no schema. Nothing is dropped silently -- fix the fields

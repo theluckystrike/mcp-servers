@@ -168,9 +168,12 @@ server.registerTool("profile_get", {
   description: "Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job.",
   inputSchema: { variant: z.string().optional() },
 }, async (a) => {
-  const p = requireProfile(a.variant);
-  if (typeof p === "string") return fail(p);
-  return json({ variant: normalizeVariant(a.variant), variants: variantNames(), profile: p });
+  // Never throw across the transport: a corrupt store must arrive as an "Error: ..." answer.
+  try {
+    const p = requireProfile(a.variant);
+    if (typeof p === "string") return fail(p);
+    return json({ variant: normalizeVariant(a.variant), variants: variantNames(), profile: p });
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
 /* ----------------------------------------------------------------- resume */
@@ -228,10 +231,12 @@ server.registerTool("resume_to_markdown", {
   description: "Return the stored profile as markdown: paste it into a form, an email or an ATS box.",
   inputSchema: { variant: z.string().optional(), target_role: z.string().optional(), max_pages: z.number().int().min(1).max(5).default(2) },
 }, async (a) => {
-  const p = requireProfile(a.variant);
-  if (typeof p === "string") return fail(p);
-  const r = renderResume(p, { style: "modern", targetRole: a.target_role, maxPages: a.max_pages });
-  return ok(blocksToMarkdown(p.name, r.blocks));
+  try {
+    const p = requireProfile(a.variant);
+    if (typeof p === "string") return fail(p);
+    const r = renderResume(p, { style: "modern", targetRole: a.target_role, maxPages: a.max_pages });
+    return ok(blocksToMarkdown(p.name, r.blocks));
+  } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
 server.registerTool("resume_to_html", {
@@ -317,9 +322,11 @@ server.registerTool("cover_letter_create", {
       job_description: a.job_description, tone: a.tone as Tone, highlights: a.highlights,
     });
     // Nothing numeric may appear that no allowed source states. A hit here is a bug, not a warning.
-    const sources = [JSON.stringify(p), a.company, a.role, a.hiring_manager ?? "", a.job_description ?? "", ...(a.highlights ?? [])];
+    // The posting is deliberately NOT a source: its revenue figures, headcounts and throughput
+    // numbers are the employer's, and the letter may never restate one as the candidate's.
+    const sources = [JSON.stringify(p), a.company, a.role, a.hiring_manager ?? "", ...(a.highlights ?? [])];
     const bad = unsourcedNumbers(letter.text, sources);
-    if (bad.length) return fail(`refusing to write the letter: it states ${bad.join(", ")}, which is in neither your profile nor the posting. This is a bug; please report it.`);
+    if (bad.length) return fail(`refusing to write the letter: it states ${bad.join(", ")}, which your profile does not. Figures from the posting are the employer's and are never restated as yours. This is a bug; please report it.`);
 
     const path = outputPath(a.out_path, `${slug(a.company)}-${slug(a.role)}-cover-letter.docx`, ".docx", a.overwrite);
     const buf = await buildDocx({
@@ -342,7 +349,7 @@ server.registerTool("cover_letter_create", {
       highlights_used: letter.usedHighlights,
       highlights_not_in_profile: letter.unverifiedHighlights,
       skills_the_posting_asked_for: letter.matchedSkills,
-      number_check: `every figure in the letter traces to your profile or the posting`,
+      number_check: `every figure in the letter traces to your profile; no figure from the posting was restated as yours`,
       free_tier: usedNow === null ? undefined : `${usedNow} of ${FREE_LETTERS_PER_MONTH} free letters used in ${month}.`,
       note: (letter.prompts.length ? "Fill every [add: ...] prompt before you send this." : "No gaps: nothing was left bracketed.") + note,
     });
