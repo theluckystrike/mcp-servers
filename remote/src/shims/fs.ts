@@ -254,8 +254,12 @@ export default {
 // fd emulation for chunked readers (spreadsheet readCsvHead). Descriptors live in the
 // request context, never in module scope, so two concurrent requests cannot see each
 // other's files, and a null position advances that descriptor's own offset.
-export function openSync(p: string, _flags?: unknown): number {
+export function openSync(p: string, flags?: unknown): number {
   const c = ctx();
+  if (typeof flags === "string" && flags.includes("x")) {
+    if (c.files.has(p)) { const e: any = new Error(`EEXIST: file already exists, open '${p}'`); e.code = "EEXIST"; throw e; }
+    writeFileSync(p, "");
+  }
   const v = c.files.get(p);
   if (v === undefined) throw enoent(p);
   const buf = isBin(v) ? Buffer.from(v.slice(BIN.length), "base64") : Buffer.from(v, "utf8");

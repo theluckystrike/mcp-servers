@@ -46,18 +46,6 @@ function element(xml: string, name: string, from: number): { inner: string; end:
   return null;
 }
 
-/** The visible text of one `<w:p>` body. */
-export function paragraphText(inner: string): string {
-  let out = "";
-  const re = /<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:t\s*\/>|<w:tab\s*\/>|<w:br\s*\/>|<w:cr\s*\/>/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(inner))) {
-    if (m[1] !== undefined) out += unescapeXml(m[1]);
-    else if (m[0].startsWith("<w:tab")) out += "\t";
-    else if (m[0].startsWith("<w:br") || m[0].startsWith("<w:cr")) out += "\n";
-  }
-  return out;
-}
 
 function headingLevel(inner: string): number | null {
   const m = /<w:pStyle[^>]*w:val="([^"]*)"/.exec(inner);
@@ -206,6 +194,30 @@ export function readDocx(buf: Buffer): Block[] {
 
 const PLACEHOLDER = /\{\{\s*([^{}]+?)\s*\}\}/g;
 
+/**
+ * XML 1.0 allows only TAB, LF, CR and #x20 upward. A NUL or a stray 0x1B inside a
+ * placeholder value is well-formed after escaping but makes Word refuse the file, so
+ * every string that reaches document.xml passes through here first.
+ */
+export function stripInvalidXml(s: string): { text: string; removed: number } {
+  let out = "";
+  let removed = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    if (c === 0x09 || c === 0x0a || c === 0x0d) { out += s[i]; continue; }
+    if (c < 0x20) { removed++; continue; }
+    if (c === 0xfffe || c === 0xffff) { removed++; continue; }
+    if (c >= 0xd800 && c <= 0xdbff) {
+      const next = i + 1 < s.length ? s.charCodeAt(i + 1) : 0;
+      if (next >= 0xdc00 && next <= 0xdfff) { out += s[i] + s[i + 1]; i++; continue; }
+      removed++; continue;                       // unpaired high surrogate
+    }
+    if (c >= 0xdc00 && c <= 0xdfff) { removed++; continue; }   // unpaired low surrogate
+    out += s[i];
+  }
+  return { text: out, removed };
+}
+
 /** Every distinct {{placeholder}} in a .docx, in first-seen order. */
 export function placeholdersIn(buf: Buffer): string[] {
   const seen: string[] = [];
@@ -221,7 +233,73 @@ export function placeholdersIn(buf: Buffer): string[] {
   return seen;
 }
 
-function forEachParagraph(xml: string, fn: (joined: string) => string | null): string {
+/** One replacement, expressed as a half-open character span of the joined paragraph text. */
+interface Edit { start: number; end: number; value: string }
+
+/**
+ * A piece of a paragraph that contributes characters to the joined text: a `<w:t>` (whose
+ * content can be rewritten) or a `<w:tab/>`, `<w:br/>`, `<w:cr/>` (which cannot).
+ */
+interface TextNode { at: number; len: number; attrs: string; text: string; from: number; to: number; editable: boolean }
+
+const NODE = /<w:t(\s[^>]*?)?\/>|<w:t(\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:tab\s*\/>|<w:br\s*\/>|<w:cr\s*\/>/g;
+
+function textNodes(inner: string): TextNode[] {
+  const nodes: TextNode[] = [];
+  let cursor = 0;
+  let m: RegExpExecArray | null;
+  NODE.lastIndex = 0;
+  while ((m = NODE.exec(inner))) {
+    let text: string;
+    let editable = true;
+    let attrs = "";
+    if (m[3] !== undefined) { text = unescapeXml(m[3]); attrs = m[2] ?? ""; }
+    else if (m[0].startsWith("<w:t/") || m[0].startsWith("<w:t ")) { text = ""; attrs = m[1] ?? ""; }
+    else { editable = false; text = m[0].startsWith("<w:tab") ? "\t" : "\n"; }
+    nodes.push({ at: m.index, len: m[0].length, attrs, text, from: cursor, to: cursor + text.length, editable });
+    cursor += text.length;
+  }
+  return nodes;
+}
+
+/** The visible text of one `<w:p>` body. */
+export function paragraphText(inner: string): string {
+  return textNodes(inner).map((n) => n.text).join("");
+}
+
+/**
+ * Apply character-span edits to the runs that actually hold those characters. Every other
+ * run keeps its text, its `<w:rPr>` and its position, so bold runs and `<w:hyperlink>`
+ * wrappers elsewhere in the paragraph survive a fill untouched. Returns null when an edit
+ * would cross a `<w:tab/>` or `<w:br/>`, which no run can hold.
+ */
+function applyEdits(inner: string, edits: Edit[]): string | null {
+  const nodes = textNodes(inner);
+  if (!nodes.some((n) => n.editable)) return null;
+  for (const e of edits) {
+    if (nodes.some((n) => !n.editable && e.start < n.to && e.end > n.from)) return null;
+  }
+  let out = "";
+  let copied = 0;
+  for (const n of nodes) {
+    if (!n.editable) continue;
+    const hits = edits.filter((e) => e.start < n.to && e.end > n.from);
+    if (!hits.length) continue;
+    let text = "";
+    for (let i = n.from; i < n.to; i++) {
+      for (const e of hits) if (e.start === i) text += e.value;   // insert where the placeholder began
+      if (hits.some((e) => i >= e.start && i < e.end)) continue;  // drop the placeholder characters
+      text += n.text[i - n.from];
+    }
+    if (text === n.text) continue;
+    const a = n.attrs.replace(/\s*xml:space="[^"]*"/, "");
+    out += inner.slice(copied, n.at) + `<w:t${a} xml:space="preserve">${escapeXml(text)}</w:t>`;
+    copied = n.at + n.len;
+  }
+  return out + inner.slice(copied);
+}
+
+function forEachParagraph(xml: string, fn: (joined: string) => Edit[] | null): string {
   let out = "";
   let i = 0;        // everything before this index is already copied to `out`
   let search = 0;
@@ -236,10 +314,11 @@ function forEachParagraph(xml: string, fn: (joined: string) => string | null): s
     const openLen = xml.slice(at, el.end).indexOf(">") + 1;
     const inner = el.inner;
     const joined = paragraphText(inner);
-    const replaced = fn(joined);
+    const edits = fn(joined);
     out += xml.slice(i, at + openLen);
-    if (replaced === null || replaced === joined) out += inner;
-    else out += rewriteRuns(inner, replaced);
+    let rewritten: string | null = null;
+    if (edits && edits.length) rewritten = applyEdits(inner, edits);
+    out += rewritten ?? inner;
     out += xml.slice(at + openLen + inner.length, el.end);
     i = el.end;
     search = el.end;
@@ -247,44 +326,37 @@ function forEachParagraph(xml: string, fn: (joined: string) => string | null): s
   return out + xml.slice(i);
 }
 
-/**
- * Put the whole replaced paragraph text into the first run and blank the rest. This is
- * what makes a placeholder split across runs work: Word routinely breaks {{client}} into
- * "{{", "clie", "nt}}" after a spell-check pass, so per-run replacement silently misses it.
- * The first run's formatting is kept for the whole paragraph.
- */
-function rewriteRuns(inner: string, text: string): string {
-  let first = true;
-  return inner.replace(/<w:t(\s[^>]*)?\/>|<w:t(\s[^>]*)?>([\s\S]*?)<\/w:t>/g, (whole, selfAttrs, attrs) => {
-    if (!first) return `<w:t${attrs ?? selfAttrs ?? ""}></w:t>`.replace(/xml:space="[^"]*"/, "");
-    first = false;
-    const a = (attrs ?? selfAttrs ?? "").replace(/\s*xml:space="[^"]*"/, "");
-    return `<w:t${a} xml:space="preserve">${escapeXml(text)}</w:t>`;
-  });
-}
-
-export interface FillResult { buffer: Buffer; replaced: string[]; unfilled: string[] }
+export interface FillResult { buffer: Buffer; replaced: string[]; unfilled: string[]; sanitized: string[] }
 
 /** Replace {{key}} placeholders across document, headers and footers; everything else is byte-identical. */
 export function fillDocx(buf: Buffer, values: Record<string, string>): FillResult {
   const entries = readZip(buf);
   const replaced = new Set<string>();
   const unfilled = new Set<string>();
+  const sanitized = new Set<string>();
+  const clean: Record<string, string> = {};
+  for (const [k, v] of Object.entries(values)) {
+    const s = stripInvalidXml(String(v));
+    if (s.removed) sanitized.add(k);
+    clean[k] = s.text;
+  }
   const out = entries.map((e) => {
     if (!/^word\/(document|header\d*|footer\d*)\.xml$/.test(e.name)) return e;
     const xml = e.data.toString("utf8");
     const next = forEachParagraph(xml, (joined) => {
       if (!joined.includes("{{")) return null;
+      const edits: Edit[] = [];
       PLACEHOLDER.lastIndex = 0;
-      const s = joined.replace(PLACEHOLDER, (whole, key: string) => {
-        const hit = Object.prototype.hasOwnProperty.call(values, key) ? values[key] : undefined;
-        if (hit === undefined) { unfilled.add(key); return whole; }
+      let m: RegExpExecArray | null;
+      while ((m = PLACEHOLDER.exec(joined))) {
+        const key = m[1];
+        if (!Object.prototype.hasOwnProperty.call(clean, key)) { unfilled.add(key); continue; }
         replaced.add(key);
-        return String(hit);
-      });
-      return s === joined ? null : s;
+        edits.push({ start: m.index, end: m.index + m[0].length, value: clean[key] });
+      }
+      return edits;
     });
     return { name: e.name, data: Buffer.from(next, "utf8") };
   });
-  return { buffer: writeZip(out), replaced: [...replaced], unfilled: [...unfilled] };
+  return { buffer: writeZip(out), replaced: [...replaced], unfilled: [...unfilled], sanitized: [...sanitized] };
 }

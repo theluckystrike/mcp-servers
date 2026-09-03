@@ -4,7 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createLicenseGate } from "../../shims/license.js";
 import { z } from "zod";
 import {
-  DAILY_MAX_AGE_MS, DAILY_URL, HISTORY_MAX_AGE_MS, HISTORY_URL, PUBLISH_NOTE, baseUrl, getDaily, getHistory,
+  DAILY_MAX_AGE_MS, DAILY_URL, HISTORY_MAX_AGE_MS, HISTORY_URL, PUBLISH_NOTE, baseUrl, getDaily, getHistory, latestDay,
 } from "./ecb.js";
 import { currencyDecimals, daysBetween, isIsoDate, isoDaysAgo, isoToday } from "./money.js";
 import { BASE, codesOf, convertAmount, perEur, resolveDate, series, stats, unknownCode } from "./rates.js";
@@ -107,9 +107,21 @@ async function ratesForDate(dateArg: string | undefined): Promise<
   const h = await getHistory();
   const r = resolveDate(h.data.days, dateArg);
   if ("error" in r) return { error: r.error };
+  // A date the cache does not reach is not the same fact as a date the ECB did not publish.
+  // Only a gap INSIDE the cached range is a weekend or a TARGET holiday; a date after the
+  // cache's newest day is simply not cached yet, and the caller is told so, along with
+  // whether this call went to the ECB to look for it.
+  const latest = latestDay(h.data.days);
+  const refreshNote = h.refreshed
+    ? "The history was refreshed from the ECB on this call."
+    : h.offline_note
+      ? "A refresh was attempted on this call and failed."
+      : `No refresh was attempted: the cached history is less than ${HISTORY_MAX_AGE_MS / 3_600_000} hours old.`;
   const note = r.exact
     ? `Rate date: ${r.date} (ECB reference rate). ${PUBLISH_NOTE}`
-    : `No ECB rate was published on ${dateArg} (weekend or TARGET holiday), so the last published rate on or before it was used: ${r.date}. ${PUBLISH_NOTE}`;
+    : latest !== undefined && dateArg > latest
+      ? `No rate published yet in the cache for ${dateArg} (latest ${latest}). ${refreshNote} The last published rate on or before ${dateArg} was used: ${r.date}. ${PUBLISH_NOTE}`
+      : `No ECB rate was published on ${dateArg} (weekend or TARGET holiday), so the last published rate on or before it was used: ${r.date}. ${PUBLISH_NOTE}`;
   return { rates: r.rates, date: r.date, asked: dateArg, exact: r.exact, note: h.offline_note ? `${note} ${h.offline_note}` : note };
 }
 
@@ -132,6 +144,8 @@ server.registerTool("convert", {
     return json({
       amount: a.amount, from: c.from, to: c.to,
       rate: c.rate, rate_meaning: `1 ${c.from} = ${c.rate} ${c.to}`,
+      rate_exact: c.rate_exact,
+      rate_note: `rate is the cross rate rounded to 6 decimals for display; the conversion multiplied by the full-precision rate_exact and rounded once, at the end, to ${currencyDecimals(c.to)} decimal places. Recomputing from the 6-decimal rate can differ by a minor unit or two.`,
       rate_date: r.date,
       requested_date: r.asked,
       result: c.result,
@@ -161,7 +175,7 @@ server.registerTool("convert_many", {
     for (const t of a.to.map(norm)) {
       const c = convertAmount(d.data.rates, a.amount, norm(a.from), t);
       if ("error" in c) { unknown.push(t); continue; }
-      rows.push({ to: c.to, rate: c.rate, result: c.result, result_number: c.result_number });
+      rows.push({ to: c.to, rate: c.rate, rate_exact: c.rate_exact, result: c.result, result_number: c.result_number });
     }
     if (!rows.length) return fail(unknownCode(unknown[0] ?? norm(a.from), d.data.rates));
     return json({
@@ -292,7 +306,8 @@ server.registerTool("rate_on", {
       rate_date: r.date,
       exact: r.exact,
       rate: c.rate,
-      rate_meaning: `1 ${c.from} = ${c.rate} ${c.to} on ${r.date}`,
+      rate_exact: c.rate_exact,
+      rate_meaning: `1 ${c.from} = ${c.rate} ${c.to} on ${r.date} (rate rounded to 6 decimals for display; rate_exact is the unrounded cross rate)`,
       rule: "nearest previous business day: the last rate published on or before the date asked for",
       note: r.note,
     });

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-currency",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Live and historical exchange rates from the European Central Bank, in your AI chat. Convert amounts, read rate history, and hand invoice tools the FX rates they need. No API key, cached locally, works offline.",
   "type": "module",
   "bin": {

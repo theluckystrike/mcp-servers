@@ -9,10 +9,11 @@ import { createLicenseGate, withFileLock } from "../../shims/license.js";
 import { readJsonFile } from "./jsonstore.js";
 import {
   DROPPED_PLACES, PLACE_COUNT, UnknownZoneError, businessDays, dateKey, describe, dstChanges,
-  findSlots, hhmmToMinutes, icsCreate, offsetLabel, offsetMinutes, overlapOnDate, parseTimeIn,
-  resolveZone, timeKey, wallIn, weekdayIn, zoneAbbrev,
+  findNearMissSlots, findSlots, hhmmToMinutes, icsCreateDetailed, offsetLabel, offsetMinutes, overlapOnLocalDate,
+  parseIsoDateStrict, parseTimeIn, parseTimeInDetailed, resolveZone, timeKey, wallIn, weekdayIn,
+  zoneAbbrev, zonedToUtc,
 } from "./tz.js";
-import type { Participant } from "./tz.js";
+import type { Participant, WallPolicy } from "./tz.js";
 
 export function createServer() {
 const PRODUCT = "timezone";
@@ -87,7 +88,26 @@ function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string 
   };
 }
 
-function zoneOf(input: string): string { return resolveZone(input).zone; }
+/**
+ * A resolution can carry a note the caller has to see - "EST is a fixed offset, not
+ * New York". Notes are collected per call and appended once, deduplicated.
+ */
+function zoneOf(input: string, notes?: string[]): string {
+  const hit = resolveZone(input);
+  if (hit.note && notes && !notes.includes(hit.note)) notes.push(hit.note);
+  return hit.zone;
+}
+
+const withNotes = (body: string, notes: string[]) =>
+  notes.length ? `${body}\n\nNote: ${notes.join("\nNote: ")}` : body;
+
+/** The DST policy arguments shared by the tools that read a wall-clock time. */
+const gapArg = z.enum(["forward", "backward"]).optional()
+  .describe("What to do with a time that does not exist because the clocks jumped forward: 'forward' takes the time after the jump, 'backward' the time before it. Without this, such a time is refused.");
+const foldArg = z.enum(["first", "second"]).optional()
+  .describe("Which occurrence of a time that happens twice because the clocks went back. Default 'first'.");
+const policyOf = (a: { gap?: "forward" | "backward"; fold?: "first" | "second" }): WallPolicy =>
+  ({ gap: a.gap, fold: a.fold });
 
 function monthKey(d = new Date()): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
@@ -125,11 +145,12 @@ server.registerTool("now", {
     ? zones
     : [Intl.DateTimeFormat().resolvedOptions().timeZone, "UTC"];
   const at = new Date();
+  const notes: string[] = [];
   const rows = list.map(input => {
-    const zone = zoneOf(input);
+    const zone = zoneOf(input, notes);
     return `${input} -> ${zone}: ${describe(at, zone)}`;
   });
-  return ok(`Now (${at.toISOString()} UTC)\n${rows.join("\n")}`);
+  return ok(withNotes(`Now (${at.toISOString()} UTC)\n${rows.join("\n")}`, notes));
 }));
 
 /* ---------------------------------------------------------- convert_time */
@@ -141,28 +162,34 @@ server.registerTool("convert_time", {
     time: text(MAX_ZONE_TEXT, "time").describe("'2026-09-10 15:00', '2026-09-10T15:00:00Z', '3pm tomorrow', 'now'"),
     from_zone: text(MAX_ZONE_TEXT, "from_zone").describe("Place the time is given in, e.g. 'Warsaw' or 'Europe/Warsaw'"),
     to_zones: z.array(text(MAX_ZONE_TEXT, "a zone")).min(1).max(MAX_ZONES).describe("Places to convert into"),
+    gap: gapArg,
+    fold: foldArg,
   },
-}, guard(async ({ time, from_zone, to_zones }: { time: string; from_zone: string; to_zones: string[] }) => {
-  const from = zoneOf(from_zone);
-  const at = parseTimeIn(time, from);
+}, guard(async (a: { time: string; from_zone: string; to_zones: string[]; gap?: "forward" | "backward"; fold?: "first" | "second" }) => {
+  const { time, from_zone, to_zones } = a;
+  const notes: string[] = [];
+  const from = zoneOf(from_zone, notes);
+  const parsed = parseTimeInDetailed(time, from, new Date(), policyOf(a));
+  const at = parsed.date;
+  if (parsed.resolution?.note) notes.push(parsed.resolution.note);
   const lines = [`${from_zone} -> ${from}: ${describe(at, from)}`];
   for (const t of to_zones) {
-    const z = zoneOf(t);
+    const z = zoneOf(t, notes);
     const dayDelta = Number(dateKey(wallIn(at, z)).replace(/-/g, "")) - Number(dateKey(wallIn(at, from)).replace(/-/g, ""));
     const note = dayDelta === 0 ? "" : dayDelta > 0 ? "  (next day)" : "  (previous day)";
     lines.push(`${t} -> ${z}: ${describe(at, z)}${note}`);
   }
   lines.push(`UTC instant: ${at.toISOString()}`);
-  return ok(lines.join("\n"));
+  return ok(withNotes(lines.join("\n"), notes));
 }));
 
 /* --------------------------------------------------------------- overlap */
 
-function windowsFor(zones: string[], ws: string, we: string) {
+function windowsFor(zones: string[], ws: string, we: string, notes?: string[]) {
   const startMin = hhmmToMinutes(ws, "work_start");
   const endMin = hhmmToMinutes(we, "work_end");
   if (endMin <= startMin) throw new Error(`work_end (${we}) must be after work_start (${ws})`);
-  return zones.map(z => ({ zone: zoneOf(z), label: z, startMin, endMin }));
+  return zones.map(z => ({ zone: zoneOf(z, notes), label: z, startMin, endMin }));
 }
 
 server.registerTool("overlap", {
@@ -175,24 +202,34 @@ server.registerTool("overlap", {
     date: text(MAX_ZONE_TEXT, "date").optional().describe("Date to compute on, YYYY-MM-DD, default today"),
   },
 }, guard(async ({ zones, work_start = "09:00", work_end = "17:00", date }: { zones: string[]; work_start?: string; work_end?: string; date?: string }) => {
-  const ws = windowsFor(zones, work_start, work_end);
-  const day = date ? parseTimeIn(date, ws[0].zone) : new Date();
-  const o = overlapOnDate(ws, day);
-  const head = `Working hours ${work_start}-${work_end} local, on ${dateKey(wallIn(day, ws[0].zone))} (${ws[0].zone})`;
+  const notes: string[] = [];
+  const ws = windowsFor(zones, work_start, work_end, notes);
+  // V4-7: the day is a LOCAL calendar date, and every boundary is built from that date
+  // in its own zone. Reading it as "the UTC day containing local midnight" reported the
+  // previous day for every zone east of Greenwich.
+  const anchor = ws[0].zone;
+  const dayKey = date
+    ? (/^\d{4}-\d{2}-\d{2}$/.test(date.trim())
+        ? dateKey(parseIsoDateStrict(date, "date"))
+        : dateKey(wallIn(parseTimeIn(date, anchor), anchor)))
+    : dateKey(wallIn(new Date(), anchor));
+  const o = overlapOnLocalDate(ws, dayKey);
+  const head = `Working hours ${work_start}-${work_end} local, on ${dayKey} (local date in every zone listed)`;
   if (!o) {
-    const offs = ws.map(w => `  ${w.label} (${w.zone}): ${offsetLabel(offsetMinutes(day, w.zone))}`).join("\n");
-    return ok(`${head}\nNo overlap: the working days do not intersect.\n${offs}\nWiden work_start/work_end, or plan an asynchronous handoff.`);
+    const [yy, mm, dd] = dayKey.split("-").map(Number);
+    const noon = zonedToUtc({ y: yy, m: mm, d: dd, h: 12, mi: 0, s: 0 }, anchor, { gap: "forward" });
+    const offs = ws.map(w => `  ${w.label} (${w.zone}): ${offsetLabel(offsetMinutes(noon, w.zone))}`).join("\n");
+    return ok(withNotes(`${head}\nNo overlap: the working days do not intersect.\n${offs}\nWiden work_start/work_end, or plan an asynchronous handoff.`, notes));
   }
-  const base = Date.UTC(wallIn(day, "UTC").y, wallIn(day, "UTC").m - 1, wallIn(day, "UTC").d);
-  const startUtc = new Date(base + o.startMin * 60000);
-  const endUtc = new Date(base + o.endMin * 60000);
+  const { startUtc, endUtc } = o;
   const rows = ws.map(w =>
-    `  ${w.label} (${w.zone}): ${timeKey(wallIn(startUtc, w.zone))} - ${timeKey(wallIn(endUtc, w.zone))} ${zoneAbbrev(startUtc, w.zone)}`);
-  const mins = o.endMin - o.startMin;
-  return ok(
+    `  ${w.label} (${w.zone}): ${dateKey(wallIn(startUtc, w.zone))} ${timeKey(wallIn(startUtc, w.zone))} - ${timeKey(wallIn(endUtc, w.zone))} ${zoneAbbrev(startUtc, w.zone)}`);
+  const mins = Math.round((endUtc.getTime() - startUtc.getTime()) / 60000);
+  return ok(withNotes(
     `${head}\nOverlap: ${Math.floor(mins / 60)}h ${mins % 60}m\n` +
-    `  UTC: ${timeKey(wallIn(startUtc, "UTC"))} - ${timeKey(wallIn(endUtc, "UTC"))}\n${rows.join("\n")}`,
-  );
+    `  UTC: ${startUtc.toISOString()} - ${endUtc.toISOString()}\n${rows.join("\n")}`,
+    notes,
+  ));
 }));
 
 /* ----------------------------------------------------- find_meeting_slots */
@@ -227,13 +264,17 @@ server.registerTool("find_meeting_slots", {
 }, guard(async (a: { participants: { name: string; zone: string; work_start?: string; work_end?: string }[]; duration_minutes?: number; days?: number; earliest_date?: string; limit?: number; recurring?: boolean }) => {
   const pro = gate.isPro();
   const duration = a.duration_minutes ?? 60;
-  const days = a.days ?? 5;
+  const asked = a.days ?? 5;
   if (!pro && a.participants.length > FREE_MAX_PARTICIPANTS) {
     return gated(`a meeting with ${a.participants.length} participants (the free tier plans up to ${FREE_MAX_PARTICIPANTS})`);
   }
-  if (!pro && days > FREE_MAX_DAYS) {
-    return gated(`a ${days}-day search (the free tier searches up to ${FREE_MAX_DAYS} days)`);
-  }
+  // D-R30: a search longer than the free cap is SHORTENED, not refused. Returning only an
+  // upgrade wall to a question that has a usable answer inside the free window is worse
+  // for the user than answering and naming the cap.
+  const days = !pro && asked > FREE_MAX_DAYS ? FREE_MAX_DAYS : asked;
+  const capped = days !== asked
+    ? `\n\nSearched ${days} of the ${asked} days you asked for: the free tier searches up to ${FREE_MAX_DAYS} days ahead. ${gate.upgradeText(`a ${asked}-day search`)}`
+    : "";
   if (!pro && a.recurring) return gated("recurring-slot search");
 
   const parts = toParticipants(a.participants);
@@ -241,9 +282,23 @@ server.registerTool("find_meeting_slots", {
   const all = findSlots(parts, duration, days, first);
   if (!all.length) {
     const rows = parts.map(p => `  ${p.name} (${p.zone}): ${timeKey({ y: 0, m: 0, d: 0, h: Math.floor(p.startMin / 60), mi: p.startMin % 60, s: 0 })} - ${timeKey({ y: 0, m: 0, d: 0, h: Math.floor(p.endMin / 60), mi: p.endMin % 60, s: 0 })}`).join("\n");
+    const near = findNearMissSlots(parts, duration, days, first, 30, 3);
+    const nearText = near.length
+      ? `\n\nClosest times, all OUTSIDE someone's hours (fewest minutes outside first):\n` +
+        near.map((n, i) => {
+          const per = n.local.map(l =>
+            `${l.name} ${l.start}-${l.end} ${l.date}${l.outsideMinutes ? ` (${l.outsideMinutes} min outside; needs ${l.needStart}-${l.needEnd})` : " (inside hours)"}`,
+          ).join(" | ");
+          return `${i + 1}. ${n.startUtc.toISOString()} UTC  ${n.outsideMinutes} min outside hours in total\n   ${per}`;
+        }).join("\n") +
+        `\n\nTo make the first one fit, set: ` +
+        near[0].local.filter(l => l.outsideMinutes > 0).map(l => `${l.name} ${l.needStart}-${l.needEnd}`).join(", ") + "."
+      : "";
     return ok(
-      `No slot fits everyone's working hours in the next ${days} day(s) for ${duration} minutes.\n${rows}\n` +
-      `Try a shorter duration, widen someone's work_start/work_end, or use overlap to see how far apart the days are.`,
+      `No slot fits everyone's working hours in the next ${days} day(s) for ${duration} minutes.\n${rows}` +
+      nearText +
+      `\n\nTry a shorter duration, widen someone's work_start/work_end, or use overlap to see how far apart the days are.` +
+      capped,
     );
   }
   const limit = Math.max(1, Math.min(a.limit ?? 8, pro ? 50 : 10));
@@ -263,7 +318,7 @@ server.registerTool("find_meeting_slots", {
     extra = `\n\nRecurring (works on all ${daysSearched} searched weekdays, ${parts[0].zone} local): ` +
       (every.length ? every.join(", ") : "none");
   }
-  const note = pro ? "" : `\n\n${gate.upgradeText("more participants, longer searches and recurring slots")}`;
+  const note = pro ? "" : (capped || `\n\n${gate.upgradeText("more participants, longer searches and recurring slots")}`);
   return ok(
     `${all.length} slot(s) fit all ${parts.length} participants (${duration} min, ${days} day(s)). Best first:\n` +
     lines.join("\n") + extra + note,
@@ -300,10 +355,10 @@ server.registerTool("business_days", {
   title: "Count business days",
   description: "Business days between two dates in a place, excluding weekends and any holidays you pass. This tool has no national holiday calendar: unless you pass holidays, only weekends are excluded, so do not report the answer as a public-holiday-adjusted count. Use it for delivery dates and payment terms across a client's calendar.",
   inputSchema: {
-    from: text(MAX_ZONE_TEXT, "from").describe("Start date, YYYY-MM-DD (inclusive)"),
+    from: text(MAX_ZONE_TEXT, "from").describe("Start date, YYYY-MM-DD (inclusive). A date that does not exist, such as 2026-02-30, is refused, never rolled forward."),
     to: text(MAX_ZONE_TEXT, "to").describe("End date, YYYY-MM-DD (inclusive)"),
     zone: text(MAX_ZONE_TEXT, "zone").describe("Place whose calendar to use"),
-    holidays: z.array(text(32, "a holiday")).max(MAX_HOLIDAYS).optional().describe("Dates to exclude, YYYY-MM-DD"),
+    holidays: z.array(text(32, "a holiday")).max(MAX_HOLIDAYS).optional().describe("Dates to exclude, strict YYYY-MM-DD"),
   },
 }, guard(async ({ from, to, zone, holidays }: { from: string; to: string; zone: string; holidays?: string[] }) => {
   const z = zoneOf(zone);
@@ -333,7 +388,7 @@ server.registerTool("contacts_set", {
     work_end: text(16, "work_end").optional().describe("Local day end, default 17:00"),
   },
 }, guard(async ({ name, zone, work_start = "09:00", work_end = "17:00" }: { name: string; zone: string; work_start?: string; work_end?: string }) => {
-  const z = zoneOf(zone);
+  const z = zoneOf(zone);   // a fixed abbreviation resolves to a fixed offset; see resolveZone
   hhmmToMinutes(work_start, "work_start");
   hhmmToMinutes(work_end, "work_end");
   return withFileLock(LOCK, async () => {
@@ -384,14 +439,27 @@ server.registerTool("ics_create", {
     start: text(MAX_ZONE_TEXT, "start").describe("Start time, read in `zone` unless it carries an offset"),
     zone: text(MAX_ZONE_TEXT, "zone").describe("Place the start time is given in"),
     duration_minutes: z.number().int().positive().max(MAX_DURATION).describe("Length in minutes, at most 1440"),
-    attendees: z.array(text(MAX_TITLE, "an attendee")).max(MAX_PARTICIPANTS).optional().describe("Email addresses, or names"),
+    attendees: z.array(z.union([
+      text(MAX_TITLE, "an attendee"),
+      z.object({
+        name: text(MAX_TITLE, "an attendee name").optional().describe("Display name"),
+        email: text(MAX_TITLE, "an attendee email").optional().describe("Their email address"),
+      }),
+    ])).max(MAX_PARTICIPANTS).optional().describe("Attendees. An entry with an email is invited (ATTENDEE:mailto:...); a name with no email is listed in the description instead, because a calendar cannot invite a name."),
+    organizer_email: text(MAX_TITLE, "organizer_email").optional().describe("Your email address, written as the ORGANIZER so replies have somewhere to go"),
+    organizer_name: text(MAX_TITLE, "organizer_name").optional().describe("Your display name for the ORGANIZER line"),
     description: text(MAX_BODY, "description").optional().describe("Body text"),
     location: text(MAX_TITLE, "location").optional().describe("Where, or a meeting link"),
     out_path: text(MAX_PATH, "out_path").optional().describe("Name for the downloaded file, default meeting.ics"),
+    gap: gapArg,
+    fold: foldArg,
   },
-}, guard(async (a: { title: string; start: string; zone: string; duration_minutes: number; attendees?: string[]; description?: string; location?: string; out_path?: string }) => {
-  const z = zoneOf(a.zone);
-  const startUtc = parseTimeIn(a.start, z);
+}, guard(async (a: { title: string; start: string; zone: string; duration_minutes: number; attendees?: (string | { name?: string; email?: string })[]; organizer_email?: string; organizer_name?: string; description?: string; location?: string; out_path?: string; gap?: "forward" | "backward"; fold?: "first" | "second" }) => {
+  const notes: string[] = [];
+  const z = zoneOf(a.zone, notes);
+  const parsed = parseTimeInDetailed(a.start, z, new Date(), policyOf(a));
+  const startUtc = parsed.date;
+  if (parsed.resolution?.note) notes.push(parsed.resolution.note);
   return withFileLock(LOCK, async () => {
     const db = load();
     const mk = monthKey();
@@ -399,10 +467,18 @@ server.registerTool("ics_create", {
     if (!gate.isPro() && used >= FREE_ICS_PER_MONTH) {
       return gated(`a ${FREE_ICS_PER_MONTH + 1}th calendar file this month (the free tier writes ${FREE_ICS_PER_MONTH})`);
     }
-    const text = icsCreate({
+    const built = icsCreateDetailed({
       title: a.title, startUtc, durationMinutes: a.duration_minutes,
       attendees: a.attendees, description: a.description, location: a.location,
+      organizerEmail: a.organizer_email, organizerName: a.organizer_name,
     });
+    const text = built.text;
+    if (built.listedOnly.length) {
+      notes.push(`${built.listedOnly.join(", ")} had no email address, so ${built.listedOnly.length === 1 ? "the name is" : "the names are"} listed in the description instead of being invited. Pass {name, email} to invite them.`);
+    }
+    if (!built.organizer) {
+      notes.push(`No ORGANIZER line was written: pass organizer_email so replies and RSVPs have somewhere to go.`);
+    }
     const dir = dataDir();
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
     const path = outPathOf(a.out_path ?? join(dir, "meeting.ics"));
@@ -411,10 +487,11 @@ server.registerTool("ics_create", {
     db.ics[mk] = used + 1;
     save(db);
     const rest = gate.isPro() ? "" : ` (${FREE_ICS_PER_MONTH - used - 1} left this month on the free tier)`;
-    return ok(
+    return ok(withNotes(
       `Calendar invite ready. Download: ${path}${rest}\n${a.title}: ${describe(startUtc, z)} for ${a.duration_minutes} min\n` +
       `DTSTART ${startUtc.toISOString()} (UTC)`,
-    );
+      notes,
+    ));
   });
 }));
 

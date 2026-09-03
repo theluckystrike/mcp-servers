@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
@@ -78,6 +78,10 @@
       "description": "Export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Free tier exports the last 7 days."
     },
     {
+      "name": "entry_mark_billed",
+      "description": "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice. Pass the exact ids (the entry_ids invoice_summary returned) or a project plus a from/to range. Already-billed entries are left alone and listed back to you."
+    },
+    {
       "name": "invoice_summary",
       "description": "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00). Free for the last 7 days; Pro invoices any period from the full history."
     },
@@ -139,7 +143,7 @@
     },
     {
       "name": "invoice_from_hours",
-      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice."
+      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice. When the rate is in one currency and the invoice must be in another, pass target_currency plus fx_rates - the same pair expense_to_invoice takes: fx_rates maps the RATE's currency to the number of target units one of it buys, e.g. {\"EUR\": 1.1578} with target_currency \"USD\". Nothing here fetches or guesses a rate. Pass entry_ids (from the time tracker's invoice_summary) and they come back with the new invoice number so the tracked hours can be closed."
     },
     {
       "name": "invoice_list",
@@ -300,6 +304,10 @@
     {
       "name": "proposal_create",
       "description": "Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number that is never reused. Free tier: 3 proposals or contracts per calendar month."
+    },
+    {
+      "name": "proposal_update",
+      "description": "Rewrite an existing proposal in place from its reference. Only the fields you pass change; everything else is taken from the structured data stored when the proposal was created, so the same file and the same reference number are kept and no second document is burned."
     },
     {
       "name": "contract_create",

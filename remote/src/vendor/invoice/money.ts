@@ -2,7 +2,14 @@
  * Money is handled in integer minor units (cents) everywhere inside this server.
  *
  * Rounding contract (documented, tested in test/money.test.mjs):
- *  1. Every line is rounded on its own, first: gross_i = roundHalfUp(quantity_i * unit_price_i * 10^d).
+ *  1. The unit price is rounded into minor units FIRST, and the line is computed from
+ *     that stored value, never from the unrounded input (D-R24):
+ *       unit_i  = roundHalfUp(unit_price_i * 10^d)
+ *       gross_i = roundHalfUp(quantity_i * unit_i)
+ *     so unit_price_minor x quantity always equals gross_minor for a whole quantity, and
+ *     the arithmetic printed on the invoice reproduces exactly: 10420 x 6 = 62520.
+ *     The cost of this basis is that a converted line can sit one minor unit away from
+ *     the mathematically exact conversion; the invoice adding up is worth more.
  *  2. An invoice level discount_percent is applied per line and rounded per line:
  *     discount_i = roundHalfUp(gross_i * p / 100); net_i = gross_i - discount_i.
  *  3. Tax is computed per line and rounded per line: tax_i = roundHalfUp(net_i * rate_i / 100),
@@ -113,14 +120,19 @@ export function computeTotals(
 
   const lines: ComputedLine[] = items.map((it) => {
     const rate = it.tax_rate === undefined || it.tax_rate === null ? defaultTaxRate : it.tax_rate;
-    const gross = roundHalfUp(it.quantity * it.unit_price * f);
+    // D-R24: the line is computed from the unit price AS STORED AND PRINTED, never from
+    // the unrounded input. Round the unit price into minor units first, then multiply by
+    // the quantity, then discount, then tax. 104.202 x 6 prints "104.20" and "625.20",
+    // and 10420 x 6 = 62520 reproduces on a client's calculator.
+    const unit = roundHalfUp(it.unit_price * f);
+    const gross = roundHalfUp(it.quantity * unit);
     const discount = p ? roundHalfUp(gross * p / 100) : 0;
     const net = gross - discount;
     const tax = rate ? roundHalfUp(net * rate / 100) : 0;
     return {
       description: it.description,
       quantity: it.quantity,
-      unit_price_minor: roundHalfUp(it.unit_price * f),
+      unit_price_minor: unit,
       tax_rate: rate,
       gross_minor: gross,
       discount_minor: discount,

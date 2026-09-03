@@ -7,7 +7,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createLicenseGate, withFileLock } from "../../shims/license.js";
 import { z } from "zod";
 import {
-  addDays, computeTotals, daysBetween, formatMoney, isoDate,
+  addDays, computeTotals, daysBetween, formatMoney, isoDate, toMinor,
 } from "./money.js";
 import { renderInvoicePdf } from "../../shims/pdf.js";
 import {
@@ -374,14 +374,17 @@ server.registerTool("invoice_create", {
 
 server.registerTool("invoice_from_hours", {
   title: "Invoice from hours",
-  description: "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice.",
+  description: "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice. When the rate is in one currency and the invoice must be in another, pass target_currency plus fx_rates - the same pair expense_to_invoice takes: fx_rates maps the RATE's currency to the number of target units one of it buys, e.g. {\"EUR\": 1.1578} with target_currency \"USD\". Nothing here fetches or guesses a rate. Pass entry_ids (from the time tracker's invoice_summary) and they come back with the new invoice number so the tracked hours can be closed.",
   inputSchema: {
     client: z.string(),
     hours: amount("hours"),
-    rate: amount("rate").describe("Hourly rate in major units"),
+    rate: amount("rate").describe("Hourly rate in major units, expressed in currency (or the business default currency)"),
     description: z.string().optional().describe("Line description, default 'Consulting services'"),
     tax_rate: z.number().finite().min(-100).max(1000).optional(),
-    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional(),
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Currency the rate is in. Without target_currency this is also the invoice currency"),
+    target_currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as USD").optional().describe('Issue the invoice in this currency instead, converting the rate. Needs fx_rates for the rate currency'),
+    fx_rates: z.record(z.string(), z.number().finite().positive()).optional().describe('Rate per source currency, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.1578}. You supply the rate; nothing here fetches or guesses one'),
+    entry_ids: z.array(z.string()).optional().describe("Time-tracker entry ids these hours came from (the entry_ids invoice_summary returns). Echoed back with the new invoice number so you can call entry_mark_billed"),
     issue_date: z.string().optional(),
     due_days: z.number().optional(),
     notes: z.string().optional(),
@@ -389,20 +392,56 @@ server.registerTool("invoice_from_hours", {
   },
 }, async (a) => {
   try {
+    // D-R28: same FX semantics as expense_to_invoice, so hours and receipts convert the
+    // same way. The source currency is the rate's currency; the invoice is issued in
+    // target_currency, and the line says where its unit price came from.
+    const source = (a.currency ?? getBusiness().default_currency ?? "EUR").toUpperCase();
+    const target = a.target_currency ? a.target_currency.toUpperCase() : undefined;
+    if (a.fx_rates && !target) {
+      return fail(`fx_rates needs target_currency as well: a rate of 1.1578 means nothing until you say 1.1578 of WHAT. Pass target_currency: "USD" with it.`);
+    }
+    let unitPrice = a.rate;
+    let description = a.description ?? "Consulting services";
+    let fxUsed: number | null = null;
+    if (target && target !== source) {
+      const fx = a.fx_rates?.[source] ?? a.fx_rates?.[source.toLowerCase()];
+      if (typeof fx !== "number" || !Number.isFinite(fx) || fx <= 0) {
+        return fail(
+          `no rate for ${source}. Pass fx_rates with one entry, meaning 1 ${source} = X ${target}: ` +
+          `invoice_from_hours {client: ${JSON.stringify(a.client)}, hours: ${a.hours}, rate: ${a.rate}, currency: "${source}", ` +
+          `target_currency: "${target}", fx_rates: {"${source}": <rate>}}. Nothing here fetches or guesses a rate.`
+        );
+      }
+      fxUsed = fx;
+      unitPrice = a.rate * fx;
+      description = `${description} [converted from ${formatMoney(toMinor(a.rate, source), source)}/h at ${fx}]`;
+    }
     const r = await locked(() => createInvoice({
       client: a.client,
       items: [{
-        description: a.description ?? "Consulting services",
-        quantity: a.hours, unit_price: a.rate, tax_rate: a.tax_rate, currency: undefined,
+        description,
+        quantity: a.hours, unit_price: unitPrice, tax_rate: a.tax_rate, currency: undefined,
       }],
-      currency: a.currency, issue_date: a.issue_date, due_days: a.due_days,
+      currency: target ?? a.currency, issue_date: a.issue_date, due_days: a.due_days,
       notes: a.notes, discount_percent: a.discount_percent,
     }));
     if (r.error) return fail(r.error);
     if (r.gated) return ok(r.gated);
+    const ids = a.entry_ids ?? [];
+    const closeLine = ids.length
+      ? `\n\nThese hours are still open in the time tracker. Call entry_mark_billed {ids: ${JSON.stringify(ids)}, invoice_number: "${r.invoice!.number}"} now, or the same hours appear on the next invoice.`
+      : `\n\nIf these hours came from the time tracker, call entry_mark_billed {ids: <entry_ids from invoice_summary>, invoice_number: "${r.invoice!.number}"} so they are not billed twice.`;
     return ok(
       `Created invoice ${r.invoice!.number}.\n\n` +
-      `${JSON.stringify({ ...summarize(r.invoice!), lines: lineRows(r.invoice!) }, null, 2)}` +
+      `${JSON.stringify({
+        ...summarize(r.invoice!),
+        lines: lineRows(r.invoice!),
+        rate_currency: source,
+        target_currency: target ?? null,
+        fx_rate_used: fxUsed,
+        entry_ids: ids,
+      }, null, 2)}` +
+      closeLine +
       `${r.businessNote ? `\n\n${r.businessNote}` : ""}` +
       `${r.clientNote ? `\n\n${r.clientNote}` : ""}`
     );
