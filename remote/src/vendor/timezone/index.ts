@@ -5,7 +5,7 @@ import { homedir } from "../../shims/os.js";
 import { join, dirname, isAbsolute, resolve as pathResolve } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createLicenseGate, withFileLock } from "../../shims/license.js";
+import { createLicenseGate, EMAIL_PLACEHOLDER, readSharedProfile, withFileLock } from "../../shims/license.js";
 import { readJsonFile } from "./jsonstore.js";
 import {
   DROPPED_PLACES, PLACE_COUNT, UnknownZoneError, businessDays, dateKey, describe, dstChanges,
@@ -92,7 +92,30 @@ function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string 
  * A resolution can carry a note the caller has to see - "EST is a fixed offset, not
  * New York". Notes are collected per call and appended once, deduplicated.
  */
+const HOME_WORDS = new Set(["home", "me", "my zone", "my timezone", "my time zone", "local", "my local time"]);
+
+/**
+ * D-R31/D-R35: "home" is whatever timezone the shared business profile carries, so the zone
+ * the user declared once at onboarding is the zone every later question defaults to.
+ */
+function homeZone(): string | undefined {
+  const tz = readSharedProfile().timezone;
+  if (!tz) return undefined;
+  try { new Intl.DateTimeFormat("en-CA", { timeZone: tz }); return tz; } catch { return undefined; }
+}
+
 function zoneOf(input: string, notes?: string[]): string {
+  const word = String(input ?? "").trim().toLowerCase();
+  if (HOME_WORDS.has(word)) {
+    const home = homeZone();
+    if (home) {
+      const n = `"${input}" resolved to ${home}, the timezone on your shared business profile.`;
+      if (notes && !notes.includes(n)) notes.push(n);
+      return home;
+    }
+    const n = `No home timezone is stored: set one with business_set {timezone: "Europe/Warsaw"} in the invoice or docx server, and "home" will resolve to it everywhere.`;
+    if (notes && !notes.includes(n)) notes.push(n);
+  }
   const hit = resolveZone(input);
   if (hit.note && notes && !notes.includes(hit.note)) notes.push(hit.note);
   return hit.zone;
@@ -252,13 +275,13 @@ function toParticipants(list: { name: string; zone: string; work_start?: string;
 
 server.registerTool("find_meeting_slots", {
   title: "Find meeting slots",
-  description: "Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody. Weekends in the first participant's zone are skipped.",
+  description: "Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first.",
   inputSchema: {
-    participants: z.array(participantSchema).min(1).max(MAX_PARTICIPANTS).describe("Who has to attend, with their zone and optional working hours"),
+    participants: z.array(participantSchema).min(1).max(MAX_PARTICIPANTS).describe("Who has to attend, with their zone and optional working hours. Every slot returned is inside all of their hours; weekends in the first participant's zone are skipped. Free tier: up to 3 participants"),
     duration_minutes: z.number().int().positive().max(MAX_DURATION).optional().describe("Meeting length in minutes, default 60, at most 1440"),
-    days: z.number().int().positive().max(MAX_DAYS).optional().describe("How many days ahead to search, default 5, at most 366"),
+    days: z.number().int().positive().max(MAX_DAYS).optional().describe("How many days ahead to search, default 5, at most 366. Free tier: a search longer than 5 days is shortened to 5, not refused"),
     earliest_date: text(MAX_ZONE_TEXT, "earliest_date").optional().describe("First date to consider, YYYY-MM-DD, default today"),
-    limit: z.number().int().positive().max(100).optional().describe("How many slots to return, default 8"),
+    limit: z.number().int().positive().max(100).optional().describe("How many slots to return, default 8. Slots are ranked by fairness: the score is the WORST participant's distance in hours from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody"),
     recurring: z.boolean().optional().describe("Pro: also report the weekly recurring times that work on every searched weekday"),
   },
 }, guard(async (a: { participants: { name: string; zone: string; work_start?: string; work_end?: string }[]; duration_minutes?: number; days?: number; earliest_date?: string; limit?: number; recurring?: boolean }) => {
@@ -320,7 +343,9 @@ server.registerTool("find_meeting_slots", {
   }
   const note = pro ? "" : (capped || `\n\n${gate.upgradeText("more participants, longer searches and recurring slots")}`);
   return ok(
-    `${all.length} slot(s) fit all ${parts.length} participants (${duration} min, ${days} day(s)). Best first:\n` +
+    `${all.length} slot(s) fit all ${parts.length} participants (${duration} min, ${days} day(s)). ` +
+    `Best first, ranked by fairness: the score is the worst participant's distance in hours from 13:00 local, ` +
+    `so a slot that suits everybody outranks one that is 07:00 for someone. Weekends in ${parts[0].zone} are skipped.\n` +
     lines.join("\n") + extra + note,
   );
 }));
@@ -353,12 +378,12 @@ server.registerTool("dst_changes", {
 
 server.registerTool("business_days", {
   title: "Count business days",
-  description: "Business days between two dates in a place, excluding weekends and any holidays you pass. This tool has no national holiday calendar: unless you pass holidays, only weekends are excluded, so do not report the answer as a public-holiday-adjusted count. Use it for delivery dates and payment terms across a client's calendar.",
+  description: "Count the business days between two dates in a place, for delivery dates and payment terms. Returns the business-day count, the calendar total, and how many days fell on a weekend or on a holiday you passed.",
   inputSchema: {
-    from: text(MAX_ZONE_TEXT, "from").describe("Start date, YYYY-MM-DD (inclusive). A date that does not exist, such as 2026-02-30, is refused, never rolled forward."),
+    from: text(MAX_ZONE_TEXT, "from").describe("Start date, YYYY-MM-DD (inclusive). A date that does not exist, such as 2026-02-30, is refused, never rolled forward"),
     to: text(MAX_ZONE_TEXT, "to").describe("End date, YYYY-MM-DD (inclusive)"),
     zone: text(MAX_ZONE_TEXT, "zone").describe("Place whose calendar to use"),
-    holidays: z.array(text(32, "a holiday")).max(MAX_HOLIDAYS).optional().describe("Dates to exclude, strict YYYY-MM-DD"),
+    holidays: z.array(text(32, "a holiday")).max(MAX_HOLIDAYS).optional().describe("Dates to exclude, strict YYYY-MM-DD. This tool has no national holiday calendar: unless you pass holidays here only weekends are excluded, so do not report the answer as a public-holiday-adjusted count"),
   },
 }, guard(async ({ from, to, zone, holidays }: { from: string; to: string; zone: string; holidays?: string[] }) => {
   const z = zoneOf(zone);
@@ -433,7 +458,7 @@ server.registerTool("contacts_list", {
 
 server.registerTool("ics_create", {
   title: "Write a calendar invite",
-  description: "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale.",
+  description: "Call this tool to write a .ics calendar file for one meeting. Returns the path written and the meeting time in UTC and in the zone you gave.",
   inputSchema: {
     title: text(MAX_TITLE, "title").min(1).describe("Event title"),
     start: text(MAX_ZONE_TEXT, "start").describe("Start time, read in `zone` unless it carries an offset"),
@@ -446,7 +471,7 @@ server.registerTool("ics_create", {
         email: text(MAX_TITLE, "an attendee email").optional().describe("Their email address"),
       }),
     ])).max(MAX_PARTICIPANTS).optional().describe("Attendees. An entry with an email is invited (ATTENDEE:mailto:...); a name with no email is listed in the description instead, because a calendar cannot invite a name."),
-    organizer_email: text(MAX_TITLE, "organizer_email").optional().describe("Your email address, written as the ORGANIZER so replies have somewhere to go"),
+    organizer_email: text(MAX_TITLE, "organizer_email").optional().describe("Your email address, written as the ORGANIZER so replies have somewhere to go. Leave it out and your shared business profile's email is used; with neither, the ORGANIZER line is omitted rather than filled with an address you improvised"),
     organizer_name: text(MAX_TITLE, "organizer_name").optional().describe("Your display name for the ORGANIZER line"),
     description: text(MAX_BODY, "description").optional().describe("Body text"),
     location: text(MAX_TITLE, "location").optional().describe("Where, or a meeting link"),
@@ -470,14 +495,18 @@ server.registerTool("ics_create", {
     const built = icsCreateDetailed({
       title: a.title, startUtc, durationMinutes: a.duration_minutes,
       attendees: a.attendees, description: a.description, location: a.location,
-      organizerEmail: a.organizer_email, organizerName: a.organizer_name,
+      // D-R40: an ORGANIZER address comes from this call or from the shared business
+      // profile. In round 8 a model put the operator's own account address on a client's
+      // calendar invite because nothing else was available.
+      organizerEmail: a.organizer_email ?? readSharedProfile().email,
+      organizerName: a.organizer_name ?? readSharedProfile().name,
     });
     const text = built.text;
     if (built.listedOnly.length) {
       notes.push(`${built.listedOnly.join(", ")} had no email address, so ${built.listedOnly.length === 1 ? "the name is" : "the names are"} listed in the description instead of being invited. Pass {name, email} to invite them.`);
     }
     if (!built.organizer) {
-      notes.push(`No ORGANIZER line was written: pass organizer_email so replies and RSVPs have somewhere to go.`);
+      notes.push(`No ORGANIZER line was written (${EMAIL_PLACEHOLDER}): pass organizer_email, or store it once with business_set {email} in the invoice or docx server so every invite carries it. Do not use an address the user has not given you.`);
     }
     const dir = dataDir();
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });

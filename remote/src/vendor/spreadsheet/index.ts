@@ -11,7 +11,7 @@ import { compile, compilePredicate, columnsUsed, parse, truthy, ExprError } from
 import {
   Cell, FREE_MAX_BYTES, FREE_MAX_ROWS, FREE_WRITE_ROWS, LoadedSheet, Table, UserError,
   cellText, colLetter, expandPath, guessHeaderRow, headerNames, inferType, jsonCell,
-  loadWorkbook, minMax, outputPath, parseRange, renderTable, toNumber, toTable,
+  loadWorkbook, minMax, outputPath, parseRange, recentOpened, renderTable, toNumber, toTable,
 } from "./sheet.js";
 
 export function createServer() {
@@ -206,7 +206,10 @@ function normaliseRows(rows: any[], existingHeaders?: string[]): { headers: stri
   return { headers, matrix };
 }
 
-const server = new McpServer({ name: "mcp-spreadsheet", version: VERSION });
+const server = new McpServer(
+  { name: "mcp-spreadsheet", version: VERSION },
+  { capabilities: { tools: {}, resources: {}, prompts: {} } },
+);
 gate.registerTools(server as any);
 registerSheetLoad(server as any);
 
@@ -497,8 +500,8 @@ server.registerTool("sheet_stats", {
 // ---------------------------------------------------------------- sheet_find
 server.registerTool("sheet_find", {
   title: "Find text",
-  description: "Search every cell for text (case insensitive) and return cell addresses with a preview of the row it is on.",
-  inputSchema: { path: z.string(), text: z.string().describe("Text to look for"), sheet: z.string().optional().describe("Sheet name; default searches every sheet") },
+  description: "Call this tool to search every cell of a spreadsheet or CSV for text; built-in file readers cannot parse spreadsheets. Matching is case insensitive. Returns cell addresses with a preview of the row each hit is on.",
+  inputSchema: { path: z.string().describe("Path to the .xlsx/.xlsm/.xlsb/.ods/.csv/.tsv file (~ is expanded)"), text: z.string().describe("Text to look for; matched case insensitively anywhere inside a cell. Up to 200 hits are returned"), sheet: z.string().optional().describe("Sheet name; default searches every sheet") },
 }, guard(async ({ path, text: needle, sheet }: any) => {
   const pro = gate.isPro();
   const wb = loadWorkbook(path, { maxRows: pro ? Infinity : FREE_MAX_ROWS });
@@ -529,15 +532,13 @@ server.registerTool("sheet_find", {
 server.registerTool("sheet_write", {
   title: "Write rows",
   description:
-    "Write rows to an excel (xlsx) or csv/tsv/json file. rows may be objects (keys become headers) or arrays (first array is the header row). " +
-    "mode new_file writes a brand new file and refuses to clobber an existing one; append adds the rows under the existing data; overwrite replaces the file contents. " +
-    "Format follows the extension of out_path (.xlsx, .csv, .tsv, .json).",
+    "Call this tool to write rows to an excel (xlsx) or csv/tsv/json file. Returns the rows, columns, byte size and column names of the file written.",
   inputSchema: {
-    path: z.string().describe("Source file for append/overwrite, or the intended file for new_file"),
-    sheet: z.string().optional(),
-    rows: z.array(z.union([z.record(z.any()), z.array(z.any())])).describe("Array of objects, or array of arrays with a header row first"),
-    mode: z.enum(["new_file", "append", "overwrite"]),
-    out_path: z.string().optional().describe("Where to write; default is a new file next to the source for new_file, or the source itself for append/overwrite"),
+    path: z.string().describe("Source file for append/overwrite, or the intended file for new_file (~ is expanded)"),
+    sheet: z.string().optional().describe("Sheet to write; default is the first sheet of the source, or \"Sheet1\" for a new file. Other sheets of an existing workbook are kept unchanged"),
+    rows: z.array(z.union([z.record(z.any()), z.array(z.any())])).describe("Array of objects, whose keys become the headers, or an array of arrays with the header row first"),
+    mode: z.enum(["new_file", "append", "overwrite"]).describe("new_file writes a brand new file and refuses to clobber an existing one; append adds the rows under the existing data; overwrite replaces the file contents"),
+    out_path: z.string().optional().describe("Where to write; default is a new file next to the source for new_file, or the source itself for append/overwrite. The output format follows this extension: .xlsx, .csv, .tsv or .json. An extension is required"),
   },
 }, guard(async ({ path, sheet, rows, mode, out_path }: any) => {
   const notes: string[] = [];
@@ -577,18 +578,15 @@ server.registerTool("sheet_write", {
 server.registerTool("sheet_add_column", {
   title: "Add a column",
   description:
-    'Add a computed column and save the result to a NEW file (the source is never modified unless out_path points at it). ' +
-    'formula uses the same expression language as sheet_query over the columns of each row, e.g. "[Qty] * [Unit Price]" or \'[Country] = "PL"\'. ' +
-    "Numeric results are rounded like the inputs: when every column the formula reads holds at most 2 decimals, the result is rounded to 2 decimals, so a VAT column comes out in cents rather than as 40.7868. Pass decimals to override. " +
-    "Alternatively pass values, one per data row.",
+    "Call this tool to add a computed column and save the result to a NEW file; the source is never modified unless out_path points at it. Returns the new file path, the row count and a preview of the first rows.",
   inputSchema: {
-    path: z.string(),
-    sheet: z.string().optional(),
-    name: z.string().describe("Name of the new column"),
-    formula: z.string().optional().describe('Expression over row columns, e.g. "[Qty] * [Unit Price]"'),
+    path: z.string().describe("Path to the source .xlsx/.xlsm/.xlsb/.ods/.csv/.tsv file (~ is expanded); it is never modified"),
+    sheet: z.string().optional().describe("Sheet name; default is the first sheet"),
+    name: z.string().describe("Name of the new column. It must not already exist on the sheet"),
+    formula: z.string().optional().describe('Expression over the columns of each row, in the same expression language as sheet_query, e.g. "[Qty] * [Unit Price]" or \'[Country] = "PL"\'. Give either formula or values'),
     decimals: z.number().int().min(0).max(10).optional().describe("Round numeric formula results to this many decimals. Default: the widest decimal count of the columns the formula reads, capped at 2 when they all hold 2 or fewer (money in, money out); otherwise no rounding beyond float cleanup"),
-    values: z.array(z.any()).optional().describe("Explicit values, one per data row"),
-    out_path: z.string().optional().describe("Output file; default <source>-plus-<column>.<same ext>"),
+    values: z.array(z.any()).optional().describe("Explicit values, one per data row, instead of a formula. Missing entries are left blank"),
+    out_path: z.string().optional().describe("Output file; default <source>-plus-<column>.<same ext>. The source file is left untouched unless this points at it"),
   },
 }, guard(async ({ path, sheet, name, formula, values, out_path, decimals }: any) => {
   if (!formula && !values) throw new UserError("give either formula or values");
@@ -639,11 +637,12 @@ server.registerTool("sheet_add_column", {
 // ------------------------------------------------------------- sheet_convert
 server.registerTool("sheet_convert", {
   title: "Convert file",
-  description: "Convert a sheet between excel (xlsx), csv and json. Writes a new file next to the source unless out_path is given; the source is never modified.",
+  description: "Call this tool to convert a sheet between excel (xlsx), csv and json. Writes a new file next to the source unless out_path is given; the source is never modified. Returns the new file path with its row and column counts.",
   inputSchema: {
-    path: z.string(), to: z.enum(["csv", "xlsx", "json"]),
-    sheet: z.string().optional(),
-    out_path: z.string().optional(),
+    path: z.string().describe("Path to the source .xlsx/.xlsm/.xlsb/.ods/.csv/.tsv file (~ is expanded); it is never modified"),
+    to: z.enum(["csv", "xlsx", "json"]).describe("Target format; the default out_path takes this as its extension"),
+    sheet: z.string().optional().describe("Sheet to convert; default is the first sheet. Only that one sheet is written"),
+    out_path: z.string().optional().describe("Where to write; default is the source name with the new extension, next to the source. It must differ from the source path"),
   },
 }, guard(async ({ path, to, sheet, out_path }: any) => {
   const o = open(path, sheet);
@@ -669,6 +668,60 @@ server.registerResource(
     } catch (e) {
       return { contents: [{ uri: uri.href, mimeType: "text/plain", text: `Error: ${(e as Error).message}` }] };
     }
+  },
+);
+
+server.registerPrompt("explore_sheet", {
+  title: "Explore a spreadsheet",
+  description: "Look at an unfamiliar spreadsheet: run sheet_info first, then propose concrete sheet_query calls over the columns it actually has.",
+  argsSchema: {
+    path: z.string().optional().describe("Path to the .xlsx/.ods/.csv/.tsv file to explore"),
+    question: z.string().optional().describe("What you want out of the file, e.g. \"revenue per country in 2026\""),
+  },
+}, ({ path, question }: { path?: string; question?: string }) => {
+  const p = path && path.trim() ? path.trim() : "<path to the file>";
+  const q = question && question.trim() ? question.trim() : null;
+  return {
+    messages: [{
+      role: "user" as const,
+      content: {
+        type: "text" as const,
+        text: [
+          `Explore the spreadsheet ${p}${q ? ` so you can answer: ${q}` : ""}. Use the spreadsheet tools only - built-in file readers cannot parse spreadsheets.`,
+          `1. sheet_info {path: ${JSON.stringify(p)}} first, always. Report the sheet names, the row count, the header row and, for every column, its name, letter, inferred type and sample values.`,
+          `2. Do not guess column names. Every later call must use the exact header strings sheet_info printed.`,
+          `3. From those columns, propose three to five concrete sheet_query calls with real arguments, e.g. sheet_query {path: ${JSON.stringify(p)}, select: ["<a text column>"], aggregate: "sum", of: "<a numeric column>", group_by: "<a text column>"} and a filtered one such as sheet_query {path: ${JSON.stringify(p)}, where: "[<a date or number column>] >= <value>", limit: 20}. Say in one line what each would answer.`,
+          `4. Run the ones that bear on the question${q ? "" : " I am most likely to care about"}, and give me the numbers.`,
+          `5. If a column looks derived (a total, a VAT amount), say so and offer sheet_add_column {path: ${JSON.stringify(p)}, name: "<new column>", formula: "[<col a>] * [<col b>]"} rather than editing the source file.`,
+        ].join("\n"),
+      },
+    }],
+  };
+});
+
+// D-S5: a fixed URI alongside the sheet://{path} template. Registered as a plain
+// resource so it is matched before the template and shows up in resources/list.
+server.registerResource(
+  "recent-sheets",
+  "sheet://recent",
+  {
+    title: "Recently opened spreadsheets",
+    description: "The spreadsheet files this server has opened since it started, most recent first. Held in memory only; nothing is written to disk.",
+    mimeType: "application/json",
+  },
+  async (uri: URL) => {
+    const files = recentOpened();
+    return {
+      contents: [{
+        uri: uri.href,
+        mimeType: "application/json",
+        text: JSON.stringify({
+          count: files.length,
+          note: "Session only, most recent first. This server keeps no state on disk, so the list is empty again after a restart.",
+          files: files.map((f) => ({ path: f.path, opened: f.opened, resource: `sheet://${encodeURIComponent(f.path)}` })),
+        }, null, 2),
+      }],
+    };
   },
 );
 

@@ -127,7 +127,7 @@ function watchRow(w: Watch): Record<string, unknown> {
   };
 }
 
-const server = new McpServer({ name: "price-tracker", version: "0.1.0" });
+const server = new McpServer({ name: "mcp-price-tracker", version: "0.1.0" });
 
 /**
  * Every tool goes through here so a StoreError - an unreadable or corrupt
@@ -286,7 +286,7 @@ registerTool(
   "watch_remove",
   {
     title: "Remove a watch",
-    description: "Stop tracking an item, by watch id or by URL. Its history is deleted.",
+    description: "Call this tool to stop tracking an item, by watch id or by URL. Give either id or url. Its stored observation history is deleted and cannot be recovered.",
     inputSchema: {
       id: z.string().optional().describe("Watch id from watch_list"),
       url: z.string().optional().describe("URL of the watch, if you do not have the id"),
@@ -312,10 +312,9 @@ registerTool(
   {
     title: "Refresh prices",
     description:
-      "This is what actually checks prices: re-fetches one watch or every watch, appends the new observations and returns current, previous, min, max, change %, extraction confidence and target hits. " +
-      "Nothing runs in the background, so run this whenever the user asks about prices, drops or alerts - typically once at the start of a session, then read alerts_pending.",
+      "This is what actually checks prices: re-fetches one watch or every watch, appends the new observations and returns current, previous, min, max, change %, extraction confidence and target hits.",
     inputSchema: {
-      id: z.string().optional().describe("Watch id or URL. Omit and set all=true to refresh everything."),
+      id: z.string().optional().describe("Watch id or URL to re-fetch. Omit and set all=true to refresh everything. Nothing runs in the background, so call this whenever the user asks about prices, drops or alerts - typically once at the start of a session, then read alerts_pending."),
       all: z.boolean().optional().describe("Refresh every watch in one call (Pro; on free, refresh one id at a time)"),
     },
   },
@@ -360,6 +359,10 @@ registerTool(
     const out = [JSON.stringify(rows, null, 2)];
     if (hits.length) out.push(`Target hit: ${hits.join(", ")}`);
     if (errors.length) out.push(`Could not refresh:\n- ${errors.join("\n- ")}`);
+    out.push(
+      "Nothing runs in the background: these prices are only as fresh as this call. " +
+      "Run watch_refresh whenever the user asks about prices, drops or alerts - typically once at the start of a session - then read alerts_pending."
+    );
     return text(out.join("\n\n"));
   }
 );
@@ -369,7 +372,7 @@ registerTool(
   "price_history",
   {
     title: "Price history",
-    description: `List the stored observations for one watch, newest last, each with its price, currency, source and extraction confidence. Free shows the last ${FREE_HISTORY_LIMIT}.`,
+    description: `Call this tool to list the stored observations for one watch, newest last, each with its price, currency, source and extraction confidence. Free shows the last ${FREE_HISTORY_LIMIT}.`,
     inputSchema: {
       id: z.string().optional().describe("Watch id"),
       url: z.string().optional().describe("Watch URL"),
@@ -402,7 +405,7 @@ registerTool(
   {
     title: "Record a price by hand",
     description:
-      "Store a price you read yourself, for shops that block automated requests. Creates the watch if it does not exist yet.",
+      "Call this tool to store a price you read yourself, for shops that block automated requests. Creates the watch for that URL if it does not exist yet, and returns the stored price and the observation count.",
     inputSchema: {
       url: z.string().describe("Product page URL"),
       price: z.union([z.string(), z.number()]).describe("Price as shown, for example 1299.00 or 1.299,00"),
@@ -447,8 +450,7 @@ registerTool(
   {
     title: "Pending alerts",
     description:
-      `Answer "did anything I watch get cheaper?": lists every watch whose latest price is at or below its target, or which dropped ${DROP_ALERT_PCT}% or more against the previous observation, with the change % and the confidence of the reading. ` +
-      `Free and unlimited. It reads stored observations, so run watch_refresh first if the prices are stale.`,
+      `Answer "did anything I watch get cheaper?": lists every watch whose latest price is at or below its target, or which dropped ${DROP_ALERT_PCT}% or more against the previous observation, with the change % and the reading confidence.`,
     inputSchema: {},
   },
   async (): Promise<ToolResult> => {
@@ -476,7 +478,10 @@ registerTool(
     }
     if (!db.watches.length) return text("No watches yet, so nothing can be alerted on. Add one with watch_add {url, target_price}.");
     if (!alerts.length) return text(`No pending alerts across ${db.watches.length} watch(es). Prices are only re-read when watch_refresh runs, so run that first if the last check is old.`);
-    return text(JSON.stringify(alerts, null, 2));
+    return text(
+      `${JSON.stringify(alerts, null, 2)}\n\n` +
+      `This tool is free and unlimited. It reads stored observations only: prices are re-read when watch_refresh runs, so run that first if the last check is old.`
+    );
   }
 );
 

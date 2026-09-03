@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, statSync, unlinkSync, 
 import { homedir } from "../../shims/os.js";
 import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createLicenseGate, withFileLock } from "../../shims/license.js";
+import { createLicenseGate, readSharedProfile, withFileLock } from "../../shims/license.js";
 import { z } from "zod";
 import * as XLSX from "xlsx";
 import {
@@ -137,18 +137,18 @@ const amount = (name: string) => z.number().finite().refine((n) => n >= 0, `${na
 
 server.registerTool("expense_add", {
   title: "Add an expense",
-  description: "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when a project is given and false otherwise, and the response always states the value used. Amounts are integer minor units in the expense's own currency.",
+  description: "Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess.",
   inputSchema: {
-    amount: amount("amount").describe("Gross amount on the receipt, in major units, e.g. 12.34"),
+    amount: amount("amount").describe("Gross amount on the receipt, in major units, e.g. 12.34. It is stored as integer minor units in the expense's own currency, so nothing is lost to floating point."),
     currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("ISO code, default EUR"),
-    category: text().optional().describe("Category, e.g. software, travel, office. Omit to let the category rules decide"),
+    category: text().optional().describe("Category, e.g. software, travel, office. Omit and the stored category rules are matched against the merchant to fill it in"),
     merchant: text().optional().describe("Who was paid, e.g. Adobe"),
     date: text(10).optional().describe("ISO date YYYY-MM-DD, default today"),
     project: text().optional().describe("Project or client this belongs to"),
     note: text(2000).optional(),
     receipt_path: text(4096).optional().describe("Absolute path to the receipt file; it is checked and hashed"),
     billable: z.boolean().optional().describe("Rebillable to the client. Default: true when project is given (a receipt booked to a client project is normally rebilled), false otherwise. Pass it explicitly to override."),
-    vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent already included in amount"),
+    vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent already included in amount; it splits the gross into net and VAT. Omit to use the expense_settings default, or get no split at all when none is set"),
     tax_rate: z.number().finite().min(0).max(100).optional().describe("Alias for vat_rate"),
     vat: z.number().finite().min(0).max(100).optional().describe("Alias for vat_rate"),
   },
@@ -183,8 +183,21 @@ server.registerTool("expense_add", {
       }
       // D-R3: accept the names a caller actually uses for the same number.
       const givenRate = [a.vat_rate, a.tax_rate, a.vat].find((v) => typeof v === "number");
-      const vatRate = typeof givenRate === "number" ? givenRate : db.settings.default_vat_rate;
-      const vatFromDefault = typeof givenRate !== "number" && typeof vatRate === "number";
+      // D-R31/D-R34: the rate the user stated once at onboarding lives in the shared
+      // business profile. When neither the call nor expense_settings names a rate, use it
+      // rather than recording a gross-only row that expense_to_invoice can never correct.
+      const sharedRate = readSharedProfile().default_tax_rate;
+      let rateSource: "call" | "settings" | "profile" | "none" = "none";
+      let vatRate: number | undefined;
+      if (typeof givenRate === "number") { vatRate = givenRate; rateSource = "call"; }
+      else if (typeof db.settings.default_vat_rate === "number") { vatRate = db.settings.default_vat_rate; rateSource = "settings"; }
+      else if (typeof sharedRate === "number" && sharedRate > 0) { vatRate = sharedRate; rateSource = "profile"; }
+      const RATE_SOURCE_TEXT: Record<string, string> = {
+        call: " (the rate you passed on this call)",
+        settings: " (your expense_settings default_vat_rate)",
+        profile: " (your shared business profile default_tax_rate, set with business_set)",
+        none: "",
+      };
       // D-R21: "for <project>" is the only reason to book a client project onto a receipt,
       // and a default of false silently dead-ended expense_to_invoice one turn later.
       const billable = a.billable ?? !!a.project;
@@ -204,8 +217,8 @@ server.registerTool("expense_add", {
         (category ? ` [${category}${autoCategorised ? ", from a category rule" : ""}]` : " [uncategorised]") +
         (e.project ? ` for ${e.project}` : "") +
         (s.vat_minor
-          ? `. Net ${formatMoney(s.net_minor, currency)}, VAT ${formatMoney(s.vat_minor, currency)} at ${s.rate}%${vatFromDefault ? " (your default rate)" : ""}`
-          : ". No VAT rate was given, so net equals gross and the VAT column is 0. Pass vat_rate on the call, or set a default once with expense_settings, to get the net/VAT split") +
+          ? `. Net ${formatMoney(s.net_minor, currency)}, VAT ${formatMoney(s.vat_minor, currency)} at ${s.rate}%${RATE_SOURCE_TEXT[rateSource]}`
+          : ". No VAT rate was given and none is stored, so net equals gross and the VAT column is 0. Pass vat_rate on the call, set a default once with expense_settings, or set default_tax_rate on your business profile with business_set, to get the net/VAT split") +
         (e.billable
           ? `. Billable: yes${billableDefaulted && a.project ? " (default for an expense with a project; pass billable: false to keep it off the client's invoice)" : ""} - it will appear in expense_to_invoice.`
           : `. Billable: no${billableDefaulted ? " (default with no project)" : ""} - it will NOT appear in expense_to_invoice; pass billable: true to rebill it.`) +
@@ -329,7 +342,7 @@ server.registerTool("expense_delete", {
 server.registerTool("receipt_attach", {
   title: "Attach a receipt",
   description: "Not available on the hosted endpoint: it has no filesystem, so there is no receipt file to read or hash. Attach receipts locally with the stdio server (npx -y @theluckystrike/mcp-expense-tracker), or record the receipt reference in the expense note.",
-  inputSchema: { id: text(64), path: text(4096).describe("Path to the receipt file") },
+  inputSchema: { id: text(64).describe("Expense id from expense_add or expense_list"), path: text(4096).describe("Path to the receipt file. It must already exist; a leading ~ is expanded. The path and its sha256 are stored on the expense") },
 }, async (a) => {
   try {
     const r = hashReceipt(expandPath(a.path));
@@ -351,12 +364,12 @@ server.registerTool("receipt_attach", {
 
 server.registerTool("category_rules", {
   title: "Category rules",
-  description: "Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, and rules are applied by expense_add when no category is given.",
+  description: "Replace the merchant-to-category rules, or call with no rules to list them. Returns the stored rule list. The rules are applied by expense_add whenever a call gives no category of its own.",
   inputSchema: {
     rules: z.array(z.object({
-      match: text(200).describe("Regex or substring matched against the merchant"),
+      match: text(200).describe("Matched against the merchant as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule in the list wins"),
       category: text().describe("Category to apply"),
-    })).max(500).optional().describe("The full rule list. Omit to list the current rules"),
+    })).max(500).optional().describe("The FULL rule list; it replaces the stored one, so include the rules you want to keep. Omit to list the current rules instead"),
   },
 }, async (a) => {
   try {
@@ -380,7 +393,7 @@ server.registerTool("category_rules", {
       const db = load();
       db.rules = a.rules!.map((r) => ({ match: r.match, category: r.category }));
       save(db);
-      return ok(`Stored ${db.rules.length} category rules:\n` + db.rules.map((r) => `  ${r.match} -> ${r.category}`).join("\n"));
+      return ok(`Stored ${db.rules.length} category rules, replacing the previous list. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex; the first match wins. expense_add applies them when a call gives no category:\n` + db.rules.map((r) => `  ${r.match} -> ${r.category}`).join("\n"));
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -390,10 +403,10 @@ server.registerTool("category_rules", {
 
 server.registerTool("expense_settings", {
   title: "Expense defaults",
-  description: "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to read them. Set default_vat_rate once and every expense gets its net/VAT split without the caller having to repeat the rate.",
+  description: "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate and default_currency. Returns the stored defaults. Call with no arguments to read them without changing anything.",
   inputSchema: {
-    default_vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent to assume when a call gives none. Pass 0 to clear it"),
-    default_currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("ISO code to assume when a call gives none"),
+    default_vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany. Set it once and every later expense gets its net/VAT split without the caller repeating the rate. It applies when the expense is inserted, never retroactively. Pass 0 to clear it"),
+    default_currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("ISO 4217 code to assume when a call gives none, e.g. EUR. Default EUR"),
   },
 }, async (a) => {
   try {
@@ -403,7 +416,9 @@ server.registerTool("expense_settings", {
         default_vat_rate: s0.default_vat_rate ?? null,
         default_currency: s0.default_currency ?? "EUR",
         note: s0.default_vat_rate === undefined
-          ? "No default VAT rate is set, so an expense added without vat_rate records 0% and its net equals its gross."
+          ? (typeof readSharedProfile().default_tax_rate === "number" && readSharedProfile().default_tax_rate! > 0
+            ? `No expense_settings default is set, so expense_add falls back to your shared business profile default_tax_rate of ${readSharedProfile().default_tax_rate}%.`
+            : "No default VAT rate is set here or on your shared business profile, so an expense added without vat_rate records 0% and its net equals its gross.")
           : undefined,
       });
     }
@@ -419,7 +434,7 @@ server.registerTool("expense_settings", {
       }
       if (a.default_currency !== undefined) db.settings.default_currency = normCurrency(a.default_currency);
       save(db);
-      return ok(`Defaults: VAT ${db.settings.default_vat_rate ?? "none"}${db.settings.default_vat_rate ? "%" : ""}, currency ${db.settings.default_currency ?? "EUR"}. These apply only when a call does not name its own.`);
+      return ok(`Defaults: VAT ${db.settings.default_vat_rate ?? "none"}${db.settings.default_vat_rate ? "%" : ""}, currency ${db.settings.default_currency ?? "EUR"}. These apply only when a call does not name its own, and only at the moment an expense is inserted; expenses already stored keep the rate they were recorded with.`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -493,17 +508,17 @@ server.registerTool("expense_summary", {
 
 server.registerTool("mileage_add", {
   title: "Add a mileage claim",
-  description: "Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, no vehicle or engine class and no first-10000-mile band, so it is not a tax calculation. Pass rate_per_km for your exact scheme. currency is only accepted together with rate_per_km; a table rate always keeps its own currency. Give either km or miles.",
+  description: "Record a business trip as an expense, priced as distance x rate. Give exactly one of km or miles. Returns the saved id with the rate used, where that rate came from and the money, in the rate's own currency.",
   inputSchema: {
-    km: amount("km").optional().describe("Distance in kilometres"),
-    miles: amount("miles").optional().describe("Distance in miles"),
+    km: amount("km").optional().describe("Distance in kilometres. Give exactly one of km or miles"),
+    miles: amount("miles").optional().describe("Distance in miles. Give exactly one of km or miles"),
     date: z.string().optional().describe("ISO date, default today"),
     purpose: text(2000).describe("Why the trip was made, e.g. client meeting in Krakow"),
-    project: text().optional(),
-    region: z.enum(["PL", "UK", "US", "EU"]).optional().describe("Which rate to use. Default US for miles, EU for km"),
-    rate_per_km: z.number().finite().min(0).optional().describe("Your own rate per supplied unit, overriding the table"),
+    project: text().optional().describe("Bill the trip to a client or project - use the same name you use in time-tracker and expense_add. Without it the drive is invisible to expense_summary by project and to expense_to_invoice"),
+    region: z.enum(["PL", "UK", "US", "EU"]).optional().describe("Which built-in table rate to use: PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km. Default US for miles, EU for km. Each is one flat approximate rate per region with no effective dates, no vehicle or engine class and no first-10000-mile band, so it is NOT a tax calculation"),
+    rate_per_km: z.number().finite().min(0).optional().describe("Your own rate per supplied unit, overriding the table. Pass it whenever you need your exact scheme rather than the approximate table rate"),
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Currency for your own rate. Only accepted together with rate_per_km; a table rate keeps the table currency"),
-    billable: z.boolean().optional(),
+    billable: z.boolean().optional().describe("Whether the trip is rebilled to the client. Default true, so a mileage claim reaches expense_to_invoice unless you pass false"),
   },
 }, async (a) => {
   try {
@@ -553,8 +568,15 @@ server.registerTool("mileage_add", {
       const source = usingOwnRate
         ? "your rate_per_km"
         : `table rate ${region} ${table.rate} ${table.currency}/${table.unit}, an approximation; pass rate_per_km for your exact scheme`;
+      const billableDefaulted = typeof a.billable !== "boolean";
       return ok(`Saved ${e.id}: ${distance} ${unit}${distance === 1 ? "" : "s"} on ${date} at ${rate} ${currency}/${unit} ` +
-        `(${source}) = ${formatMoney(minor, currency)}. ${a.purpose}`);
+        `(${source}) = ${formatMoney(minor, currency)}. ${a.purpose}` +
+        (e.project
+          ? `\nProject: ${e.project}.`
+          : `\nProject: none - this drive will NOT appear in expense_summary {by: "project"} or in expense_to_invoice. Pass project to bill it to a client.`) +
+        (e.billable
+          ? ` Billable: yes${billableDefaulted ? " (default for a mileage claim; pass billable: false to keep it off the invoice)" : ""}.`
+          : " Billable: no - it will NOT appear in expense_to_invoice."));
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -566,6 +588,9 @@ function exportRows(rows: Expense[]) {
     const s = vatSplit(e.amount_minor, e.vat_rate);
     return {
       id: e.id, date: e.date, currency: e.currency,
+      // D-R38: time-tracker's export_csv calls the money column "amount". Both exports now
+      // carry "amount"; "gross" stays as an additional column for existing readers.
+      amount: toMajor(s.gross_minor, e.currency),
       gross: toMajor(s.gross_minor, e.currency),
       net: toMajor(s.net_minor, e.currency),
       vat: toMajor(s.vat_minor, e.currency),
@@ -580,7 +605,7 @@ function exportRows(rows: Expense[]) {
   });
 }
 
-const CSV_HEADERS = ["id", "date", "currency", "gross", "net", "vat", "vat_rate", "category", "merchant", "project", "billable", "note", "receipt_path", "receipt_sha256", "mileage"];
+const CSV_HEADERS = ["id", "date", "currency", "amount", "gross", "net", "vat", "vat_rate", "category", "merchant", "project", "billable", "note", "receipt_path", "receipt_sha256", "mileage"];
 
 function csvCell(v: unknown): string {
   const s = String(v ?? "");
@@ -645,16 +670,16 @@ server.registerTool("expense_export", {
 
 server.registerTool("expense_to_invoice", {
   title: "Rebill expenses to an invoice",
-  description: "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax and the line total comes back to the receipt gross. A stored rate of 0 is a rate, not a gap. An expense with NO rate recorded is rebilled gross with tax_rate 0 and a warning in its description; the expense_settings default is never applied retroactively, because it would rewrite the tax meaning of receipts entered before it existed. Pass assume_vat_rate explicitly to split those lines instead. Line items are grouped per currency because one invoice carries one currency. When the range holds MORE THAN ONE currency, pass target_currency plus fx_rates and every line is converted into one single group, each converted line carrying [converted from EUR 12.40 at 1.08] in its description; without fx_rates the response names the exact argument to pass. This is a read-only preview: marking happens only in expense_mark_rebilled, once the invoice exists.",
+  description: "Preview the unbilled billable expenses of one project as invoice_create line items (description, quantity, unit_price, tax_rate), grouped per currency. Read-only: nothing is marked rebilled here.",
   inputSchema: {
     project: text().describe("Project or client to rebill"),
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
-    markup_percent: z.number().finite().min(0).max(1000).optional().describe("Percent added to each net amount. Pro"),
+    markup_percent: z.number().finite().min(0).max(1000).optional().describe("Percent added to each net amount. Every line's unit_price is the NET amount and its tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax instead of charging it twice and the line total comes back to the receipt gross"),
     include_rebilled: z.boolean().optional().describe("Include expenses already marked as rebilled, default false"),
-    assume_vat_rate: z.number().finite().min(0).max(100).optional().describe("Split expenses that recorded NO VAT rate at this percent, flagged in the description. Only applied when you pass it here"),
-    target_currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe('Convert every line into this currency and return ONE group, e.g. "USD". Needs fx_rates for each other currency present'),
-    fx_rates: z.record(z.string(), z.number().finite().positive()).optional().describe('Rate per source currency, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.08, "GBP": 1.27}. You supply the rate; nothing here fetches or guesses one'),
+    assume_vat_rate: z.number().finite().min(0).max(100).optional().describe("Split expenses that recorded NO VAT rate at this percent, flagged in the description. Only applied when you pass it here. An expense with no rate holds a GROSS amount and is otherwise rebilled as-is with tax_rate 0 plus a warning in its description, so a default tax rate applied on the invoice would tax that receipt a second time. A stored rate of 0 is a real rate (exempt), not a gap. The expense_settings default is never applied retroactively, because that would rewrite the tax meaning of receipts entered before it existed"),
+    target_currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe('Convert every line into this currency and return ONE group, e.g. "USD". Needs fx_rates for each other currency present. Lines are otherwise grouped per currency, because one invoice carries one currency; each converted line carries "[converted from EUR 12.40 at 1.08]" in its description'),
+    fx_rates: z.record(z.string(), z.number().finite().positive()).optional().describe('Rate per source currency, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.08, "GBP": 1.27}. You supply the rate; nothing here fetches or guesses one. Omit it when the range holds several currencies and the response names the exact argument to pass'),
   },
 }, async (a) => {
   try {
@@ -831,6 +856,7 @@ server.registerTool("expense_to_invoice", {
         vat_assumed_lines: assumed,
         vat_unknown_lines: unknownVat,
         rounding_adjustment_lines: adjustments,
+        line_item_note: "Each line's unit_price is the NET amount and its tax_rate is the VAT rate recorded on the expense, so invoice_create recomputes the same tax rather than charging it a second time, and the line total comes back to the receipt gross.",
         vat_note: assumed
           ? `${assumed} line(s) had no VAT rate recorded and were split at the assume_vat_rate you passed (${assume}%), flagged "vat assumed ${assume}%" in the description.`
           : unknownVat
@@ -858,14 +884,14 @@ server.registerTool("expense_to_invoice", {
 
 server.registerTool("expense_mark_rebilled", {
   title: "Mark expenses as rebilled",
-  description: "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range marks only billable, not-yet-rebilled expenses in that one currency, so invoicing the EUR group cannot mark the PLN one. invoice_number is required: the marker records which invoice carries the expense.",
+  description: "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or that project, date range and currency. Returns what was marked.",
   inputSchema: {
     ids: z.array(text(64)).optional().describe("Expense ids, as returned per currency by expense_to_invoice. Takes precedence over project/from/to"),
     project: text().optional().describe("Project rebilled, used with from, to and currency"),
     from: text(10).optional().describe("ISO date, inclusive"),
     to: text(10).optional().describe("ISO date, inclusive"),
-    currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Required when marking by range: one invoice carries one currency"),
-    invoice_number: text(64).describe("Invoice the expenses were billed on, stored on each expense"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Required when marking by range: one invoice carries one currency. A range marks only billable, not-yet-rebilled expenses in this one currency, so invoicing the EUR group cannot mark the PLN one"),
+    invoice_number: text(64).describe("Invoice the expenses were billed on. Required: the marker records WHICH invoice carries each expense, and it is stored on every expense marked"),
   },
 }, async (a) => {
   try {
@@ -903,6 +929,9 @@ server.registerTool("expense_mark_rebilled", {
       return json({
         marked: rows.length,
         invoice_number: a.invoice_number,
+        note: a.ids?.length
+          ? `Marked by id, so exactly the ${rows.length} expense(s) you passed now carry invoice ${a.invoice_number}.`
+          : `Marked by range in ${normCurrency(a.currency!)} only: billable, not-yet-rebilled expenses in that one currency, because one invoice carries one currency.`,
         currency: a.ids?.length ? null : normCurrency(a.currency!),
         ids: rows.map((e) => e.id),
         rebilled_at: stamp,

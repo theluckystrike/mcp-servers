@@ -97,7 +97,7 @@ function patchExpenseIndex(src) {
     '(npx -y @theluckystrike/mcp-expense-tracker) to hash and store receipt files, or put the receipt reference in the expense note." };\n' +
     '}\n', "expense hashReceipt");
   src = must(src,
-    'description: "Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed.",',
+    'description: "Call this tool to attach a receipt file to a stored expense. Returns the stored path and sha256. The file must exist; it is hashed so a later audit can prove the file has not changed.",',
     'description: "Not available on the hosted endpoint: it has no filesystem, so there is no receipt file to read or hash. Attach receipts locally with the stdio server (npx -y @theluckystrike/mcp-expense-tracker), or record the receipt reference in the expense note.",',
     "expense receipt_attach description");
   // 2. XLSX.writeFile reaches for node's fs itself; write the buffer through the shim.
@@ -106,11 +106,11 @@ function patchExpenseIndex(src) {
     "expense xlsx writer");
   // 3. The export lands in KV as a one-hour download, not on the caller's disk.
   src = must(src,
-    'description: "Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all.",',
+    /description: "Call this tool to write the expenses in a date range[^\n]*",/,
     'description: "Export the expenses in a date range as csv, xlsx or json and return a download link that is valid for one hour. Nothing partial is ever written: if a limit is hit no file is produced at all.",',
     "expense export description");
   src = must(src,
-    'path: text(4096).optional().describe("Where to write it. Default is the server data directory"),',
+    /path: text\(4096\)\.optional\(\)\.describe\("(?:Where to write it|Absolute path to write to)[^"]*"\),/,
     'path: text(4096).optional().describe("Optional file name for the download, e.g. q3.csv"),',
     "expense export path description");
   src = must(src, 'return ok(`Wrote ${data.length} expenses to ${target} (${a.format}).`',
@@ -438,7 +438,7 @@ function patchTimezoneIndex(src) {
   return \`/ics/\${name}.ics\`;
 }
 `, "timezone outPathOf");
-  src = must(src, 'out_path: text(MAX_PATH, "out_path").optional().describe("Where to write the file; default meeting.ics in the data dir"),',
+  src = must(src, /out_path: text\(MAX_PATH, "out_path"\)\.optional\(\)\.describe\("Where to write the \.ics file[^"]*"\),/,
     'out_path: text(MAX_PATH, "out_path").optional().describe("Name for the downloaded file, default meeting.ics"),',
     "timezone ics out_path description");
   src = must(src, '    writeFileSync(path, text, "utf8");',
@@ -524,7 +524,7 @@ function patchDocxIndex(src) {
     "    if (!/\\.docx$/i.test(p)) return fail(`${p} is not a .docx file. Legacy .doc and .rtf are not readable here.`);",
     "docx doc_read handler");
   src = must(src,
-    '    template_path: z.string().describe("Path to the .docx template containing {{placeholders}}"),',
+    /    template_path: z\.string\(\)\.describe\("Path to the \.docx template containing \{\{placeholders\}\}[^"]*"\),/,
     '    template_path: z.string().optional().describe("Name of a template uploaded with doc_upload"),\n' +
     '    docx_base64: z.string().optional().describe("The .docx template itself, base64-encoded, instead of uploading it first"),',
     "docx doc_fill_template schema");
@@ -535,7 +535,7 @@ function patchDocxIndex(src) {
     "    if (!existsSync(tpl)) return fail(`nothing is uploaded under the name ${JSON.stringify(tpl.split(\"/\").pop())}. Upload the template with doc_upload {name, docx_base64}, or pass docx_base64 to this call.`);",
     "docx doc_fill_template handler");
   src = must(src,
-    '    path: z.string().describe("Path to the .docx file"),\n    out_path: z.string().optional().describe("Where to write the .html. Defaults next to the source file"),',
+    /    path: z\.string\(\)\.describe\("Path to the \.docx file to convert"\),\n    out_path: z\.string\(\)\.optional\(\)\.describe\("Where to write the \.html[^"]*"\),/,
     '    path: z.string().describe("Name of a document uploaded with doc_upload, or a document this server just wrote"),\n    out_path: z.string().optional().describe("Name for the downloaded .html file"),',
     "docx doc_to_html schema");
   src = must(src, "gate.registerTools(server as unknown as { registerTool: Function });",
@@ -642,7 +642,7 @@ function patchRecurringIndex(src) {
     "      const out = await renderInvoicePdf(c.invoice, biz, `${c.invoice.number}.html`, { branded: !pro, logo: pro });",
     "recurring pdf render");
   src = must(src,
-    "      `They are stored in the invoice server (${invoiceDataDir()}) and appear in its invoice_list and overdue_report.` +",
+    /      `They are stored in the invoice server \(\$\{invoiceDataDir\(\)\}\) and appear in its invoice_list and overdue_report\.? ?` \+/,
     "      \"They are written into the same invoice data your /mcp/invoice endpoint reads, so invoice_list and \" +\n" +
     "      \"overdue_report there show them. Each link above is an HTML invoice (print to PDF) valid for one hour.\" +",
     "recurring invoice-store note");

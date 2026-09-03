@@ -147,8 +147,29 @@ function readCsvHead(full: string, maxRows: number, delimiter?: string): { text:
   } finally { closeSync(fd); }
 }
 
+export interface RecentOpen { path: string; opened: string; }
+
+const RECENT_MAX = 20;
+/**
+ * D-S5: the files opened in THIS process, most recent first, for sheet://recent.
+ * In memory only - this server is stateless on disk and must stay that way.
+ */
+const recentOpens: RecentOpen[] = [];
+
+export function recentOpened(): RecentOpen[] {
+  return recentOpens.map((e) => ({ ...e }));
+}
+
+function recordOpen(full: string): void {
+  const i = recentOpens.findIndex((e) => e.path === full);
+  if (i >= 0) recentOpens.splice(i, 1);
+  recentOpens.unshift({ path: full, opened: new Date().toISOString() });
+  if (recentOpens.length > RECENT_MAX) recentOpens.length = RECENT_MAX;
+}
+
 export function loadWorkbook(pathIn: string, opts: LoadOpts = {}): Workbook {
   const full = requireExisting(pathIn);
+  recordOpen(full);
   const bytes = statSync(full).size;
   const ext = extname(full).toLowerCase();
   const maxRows = opts.maxRows ?? Infinity;
