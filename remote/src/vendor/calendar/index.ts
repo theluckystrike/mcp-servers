@@ -653,6 +653,57 @@ server.registerTool("next_event", {
  * into one VCALENDAR, so a multi-event export is byte-for-byte the shape a client
  * already accepts from this suite.
  */
+/** RFC 5545 3.3.11 TEXT escaping, for the VEVENT this server writes itself. */
+function icsText(v: string): string {
+  return String(v).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+}
+
+function foldIcsLine(l: string): string {
+  const b = Buffer.from(l, "utf8");
+  if (b.length <= 75) return l;
+  const out: string[] = [];
+  let i = 0;
+  while (i < b.length) {
+    let take = Math.min(out.length ? 74 : 75, b.length - i);
+    // never split a UTF-8 sequence: back off to the start of the last whole character
+    while (take > 1 && (b[i + take] & 0xc0) === 0x80) take--;
+    out.push(b.subarray(i, i + take).toString("utf8"));
+    i += take;
+  }
+  return out.join("\r\n ");
+}
+
+/**
+ * A whole-day event has to leave as DATE values. Routing it through the timed
+ * ics writer turned "2026-09-10 all day" into 2026-09-09T17:00Z-2026-09-10T17:00Z
+ * on a UTC+7 machine: the wrong day, and no longer all-day in the receiving client.
+ */
+function allDayVevent(occ: Occurrence, zone: string, uid: string, now: Date): string {
+  const startW = wallIn(occ.startUtc, zone);
+  const endW = wallIn(new Date(occ.endUtc.getTime() - 1), zone);
+  const d = (w: Wall) => `${w.y}${P2(w.m)}${P2(w.d)}`;
+  const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const e = occ.event;
+  const lines = [
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART;VALUE=DATE:${d(startW)}`,
+    `DTEND;VALUE=DATE:${d(addDaysWallLocal(endW, 1))}`,
+    `SUMMARY:${icsText(e.summary || "(no title)")}`,
+  ];
+  if (e.location) lines.push(`LOCATION:${icsText(e.location)}`);
+  if (e.description) lines.push(`DESCRIPTION:${icsText(e.description.slice(0, 5000))}`);
+  lines.push("END:VEVENT");
+  return lines.map(foldIcsLine).join("\r\n") + "\r\n";
+}
+
+function addDaysWallLocal(w: Wall, n: number): Wall {
+  const t = new Date(Date.UTC(w.y, w.m - 1, w.d));
+  t.setUTCDate(t.getUTCDate() + n);
+  return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), h: 0, mi: 0, s: 0 };
+}
+
 function mergeVevents(parts: string[], count: number): string {
   const head = [
     "BEGIN:VCALENDAR", "VERSION:2.0",
@@ -724,8 +775,12 @@ server.registerTool("event_export", {
     return gated(`exporting ${chosen.length} events at once (the free tier exports up to ${FREE_MAX_EXPORT_EVENTS})`);
   }
 
+  const exportedAt = new Date();
   const parts = chosen.map(({ occ }) => {
     const e = occ.event;
+    if (occ.allDay) {
+      return allDayVevent(occ, zone, `${hashHex(e.uid)}-${occ.key}@mcp-calendar`, exportedAt);
+    }
     const minutes = Math.max(1, Math.round((occ.endUtc.getTime() - occ.startUtc.getTime()) / 60000));
     return icsCreateDetailed({
       title: e.summary || "(no title)",
@@ -763,8 +818,9 @@ server.registerTool("event_to_time_entry", {
     event_id: text(200, "event_id").describe("Event id from events_list, events_search or next_event"),
     project: text(MAX_NAME, "project").describe("Project or client the meeting is billed to"),
     rate: z.union([z.number().nonnegative(), text(60, "rate")]).optional().describe("Hourly rate for this entry; a number (120) or the words the user said ('120 euros an hour')"),
+    currency: text(20, "currency").optional().describe("Currency of the rate: EUR, USD, GBP, PLN, or the word the user said ('euros'). Without it the time-tracker falls back to USD."),
   },
-}, guard(async (a: { event_id: string; project: string; rate?: number | string }) => {
+}, guard(async (a: { event_id: string; project: string; rate?: number | string; currency?: string }) => {
   const zone = defaultZone();
   const db = load();
   const p = parseOccurrenceId(a.event_id);
@@ -791,6 +847,10 @@ server.registerTool("event_to_time_entry", {
     billable: true,
   };
   if (a.rate !== undefined) args.rate = a.rate;
+  // Without this the time-tracker defaults to USD, so "90 EUR" became USD 90.00/h
+  // with no warning anywhere in the chain.
+  const cur = a.currency?.trim() || (typeof a.rate === "string" ? a.rate : "");
+  if (cur) args.currency = cur;
   return ok(
     `${ev.summary}: ${fmtLocal(occ.startUtc, zone)} to ${fmtTime(occ.endUtc, zone)} ${zone} (${hm(minutes)}).\n` +
     `Pass this to the time-tracker server's entry_add:\n${JSON.stringify(args, null, 2)}`,

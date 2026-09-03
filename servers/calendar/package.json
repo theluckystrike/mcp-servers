@@ -42,7 +42,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@theluckystrike/mcp-license": "^0.1.0",
-    "@theluckystrike/mcp-timezone": "^0.4.2",
+    "@theluckystrike/mcp-timezone": "^0.5.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

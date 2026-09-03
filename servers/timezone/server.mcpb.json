@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
   "description": "Time zone conversion, meeting-slot finding across countries, DST checks and .ics invites. All.",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.2/timezone.mcpb",
-      "version": "0.4.2",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.5.0/timezone.mcpb",
+      "version": "0.5.0",
       "fileSha256": "a10db0c77effc3b8027854c12f19f2c92b280749ca001827137d9efd834f71a8",
       "transport": {
         "type": "stdio"

@@ -4,7 +4,9 @@ import { existsSync } from "../../shims/fs.js";
 import { homedir } from "../../shims/os.js";
 import { isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createLicenseGate, readSharedProfile, withFileLock, writeSharedProfile } from "../../shims/license.js";
+import {
+  createLicenseGate, inferTimezoneFromAddress, readSharedProfile, withFileLock, writeSharedProfile,
+} from "../../shims/license.js";
 import { z } from "zod";
 import {
   addDays, computeTotals, daysBetween, formatMoney, isoDate, toMinor,
@@ -188,12 +190,39 @@ server.registerTool("business_set", {
       invoice_prefix: prefix.replace(/[^A-Za-z0-9_-]/g, "") || "INV",
     };
     setBusiness(biz);
-    if (a.phone || a.timezone) writeSharedProfile({ phone: a.phone, timezone: a.timezone });
+    // D-R48: an address with no explicit timezone infers one from the last city or
+    // country name in the address (the same place table the timezone server itself
+    // reads for a bare place name), instead of leaving the shared profile's timezone
+    // blank. An explicit timezone always wins and clears any earlier inference.
+    let tzNote = "";
+    const priorTimezone = readSharedProfile().timezone;
+    let timezoneToWrite: string | undefined = a.timezone;
+    let timezoneSource: string | null | undefined;
+    if (a.timezone) {
+      timezoneSource = null; // explicit value clears any earlier "inferred from address" marker
+    } else if (a.address && !priorTimezone) {
+      const inferred = inferTimezoneFromAddress(a.address);
+      if (inferred) {
+        timezoneToWrite = inferred.zone;
+        timezoneSource = "inferred from address";
+        tzNote = `\n\nInferred timezone ${inferred.zone} from "${inferred.matched}" in the address ` +
+          `(timezone_source: "inferred from address"). Pass timezone: "Area/City" to override.`;
+      } else {
+        tzNote = `\n\nCould not infer a timezone from the address; no city or country in it matched ` +
+          `the timezone lib's place table. Pass timezone: "Area/City" (e.g. Europe/Warsaw) if you want ` +
+          `one stored.`;
+      }
+    }
+    if (a.phone || timezoneToWrite || timezoneSource !== undefined) {
+      writeSharedProfile({ phone: a.phone, timezone: timezoneToWrite, timezone_source: timezoneSource });
+    }
     const shared = readSharedProfile();
     return ok(`Business profile saved to ${dataDir()} and to the shared profile at ` +
       `mcp-servers/profile/business.json, which docx, expense-tracker, recurring, time-tracker, ` +
       `timezone, resume and clauses all read. You do not need to repeat it anywhere else.\n\n` +
-      `${JSON.stringify({ ...biz, phone: shared.phone, timezone: shared.timezone }, null, 2)}${note}${warn}`);
+      `${JSON.stringify({
+        ...biz, phone: shared.phone, timezone: shared.timezone, timezone_source: shared.timezone_source,
+      }, null, 2)}${tzNote}${note}${warn}`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });

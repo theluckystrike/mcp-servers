@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-resume",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Turn your CV facts into a tailored Word resume and a cover letter that invents nothing: keyword matching against the posting, page-fit trimming, and bracketed prompts wherever a fact is missing. Everything stays on your machine.",
   "type": "module",
   "bin": {
@@ -39,7 +39,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/resume",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-docx": "^0.4.2",
+    "@theluckystrike/mcp-docx": "^0.5.0",
     "@theluckystrike/mcp-license": "^0.1.0",
     "zod": "^3.25.0"
   },

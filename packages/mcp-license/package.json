@@ -5,13 +5,38 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "README.md", "LICENSE"],
-  "scripts": { "build": "tsc -p tsconfig.json", "test": "node --test test/*.test.mjs" },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.mjs"
+  },
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/theluckystrike/mcp-servers" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
   "homepage": "https://github.com/theluckystrike/mcp-servers",
-  "dependencies": { "@theluckystrike/mcp-timezone": "^0.4.2" },
-  "peerDependencies": { "@modelcontextprotocol/sdk": "^1.30.0", "zod": "^3.25.0" },
-  "devDependencies": { "typescript": "^5.6.0", "@types/node": "^22.0.0", "@modelcontextprotocol/sdk": "^1.30.0", "zod": "^3.25.0" }
+  "dependencies": {
+    "@theluckystrike/mcp-timezone": "^0.5.0"
+  },
+  "peerDependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^3.25.0"
+  }
 }

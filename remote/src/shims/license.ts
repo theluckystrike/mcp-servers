@@ -243,3 +243,14 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
   };
   return gate;
 }
+
+// Shared-profile helper (mirrors packages/mcp-license/src/profile.ts): infer a zone from the
+// last recognisable place name in a postal address, using the vendored timezone engine.
+import { resolveZone as tzResolveZone } from "../vendor/timezone/lib.js";
+export function inferTimezoneFromAddress(address: string): { zone: string; matched: string } | undefined {
+  const segments = String(address ?? "").split(/[,\n]/).map((s) => s.trim()).filter((s) => s.length > 0);
+  for (let i = segments.length - 1; i >= 0; i--) {
+    try { const hit = tzResolveZone(segments[i]); return { zone: hit.zone, matched: segments[i] }; } catch { /* try the previous segment */ }
+  }
+  return undefined;
+}
