@@ -26,6 +26,7 @@ const uv6 = js("data/user_value_r6.json", null);
 const uv7 = js("data/user_value_r7.json", null);
 const uv8 = js("data/user_value_r8.json", null);
 const uvi = js("data/user_value_index.json", null);
+const kpi = js("data/kpi.json", null);
 const metrics = js("data/metrics.json", { snapshots: [] });
 const m = metrics.snapshots.at(-1);
 const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
@@ -62,7 +63,7 @@ const locTotal = servers.reduce((a, s) => a + (s.loc || 0), 0);
 const surfaces = Object.entries(dist.surfaces || {});
 const live = surfaces.filter(([, v]) => v.status === "published").length;
 const revenue = ledger.revenue?.stripe_live_sales ?? 0;
-const pill = (s) => { const f = String(s).match(/^(\d+)\/(\d+)$/); const c = (f && f[1] === f[2]) ? "ok" : f ? "bad" : /published|DONE|ok|live|fixed/i.test(s) ? "ok" : /blocked|fail|missing/i.test(s) ? "bad" : "pend"; return `<span class="pill ${c}">${esc(s)}</span>`; };
+const pill = (s) => { const f = String(s).match(/^(\d+)\/(\d+)$/); const c = (f && f[1] === f[2]) ? "ok" : f ? "bad" : /published|DONE|ok|live|fixed|^met$/i.test(s) ? "ok" : /blocked|fail|missing/i.test(s) ? "bad" : "pend"; return `<span class="pill ${c}">${esc(s)}</span>`; };
 
 // ---- next actions (derived) ----
 const next = [];
@@ -119,7 +120,7 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
+<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button><button data-tab="kpi">KPIs${kpi ? ` (${kpi.kpis.filter(k => k.status === "met").length}/${kpi.kpis.length} met)` : ""}</button></div>
 <div class="tab on" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
@@ -255,6 +256,20 @@ ${uv2 ? `<h2>Round 2 after the value fixes (v0.1.1): ${uv2.totals.score}/${uv2.t
 <div class="tw"><table><tr><th>URL</th><th>HTTP</th><th>Price</th><th>Currency</th><th>Source</th><th>Correct</th></tr>${uv.price_hits.map(x => `<tr><td class="mono dim">${esc(String(x.url).slice(0, 70))}</td><td class="num">${esc(x.status)}</td><td class="num">${esc(x.price ?? "")}</td><td>${esc(x.currency ?? "")}</td><td class="dim">${esc(x.source ?? "")}</td><td>${pill(x.correct === true ? "ok" : x.correct === false ? "fail" : "n/a")}</td></tr>`).join("")}</table></div>
 <div class="grid2"><div><h2>Invoice PDF</h2><div class="card"><p>${esc(uv.pdf.detail || "")}</p><a href="${esc(uv.pdf.png)}"><img src="${esc(uv.pdf.png)}" alt="invoice sample" style="max-width:100%;border:1px solid var(--line);border-radius:6px"></a></div></div>
 <div><h2>Free tier in a first session</h2><div class="card"><ul>${(uv.free_tier.limits_hit || []).map(l => `<li><b>${esc(l.server)}</b>: ${esc(l.limit)} at ${esc(l.where)} (${esc(l.severity)}). ${esc(l.note)}</li>`).join("")}</ul></div></div></div>` : `<p>No user-value run yet.</p>`}
+</div>
+
+<div class="tab" id="tab-kpi">
+${kpi ? `<p class="dim">What an MCP product owner should measure, in funnel order: discovered, installed, first call, value delivered, reliable, paid. Every indicator names its instrument so it can be re-collected with <code>node scripts/kpi.mjs</code>. Collected ${esc(kpi.generated_at)}. Status: met = at or past target; progress = non-zero and below target; zero = instrument works and reads zero; unmeasured = instrument not yet wired.</p>
+<div class="kpis">${["Discovery", "Install", "Activation", "Value", "Reliability", "Monetization"].map(c => { const g = kpi.kpis.filter(k => k.cat === c); return `<div class="kpi"><div class="n">${g.filter(k => k.status === "met").length}/${g.length}</div><div class="k">${c} indicators met</div></div>`; }).join("")}</div>
+${["Discovery", "Install", "Activation", "Value", "Reliability", "Monetization"].map(c => `<h2>${c}</h2><div class="tw"><table><tr><th>Indicator</th><th>Now</th><th>Target</th><th>Status</th><th>Instrument</th><th>Why it matters</th></tr>${kpi.kpis.filter(k => k.cat === c).map(k => `<tr><td><b>${esc(k.name)}</b></td><td class="num">${k.value === null || k.value === undefined ? "<span class=dim>n/a</span>" : esc(String(k.value))} <span class="dim">${esc(k.unit)}</span></td><td class="num">${esc(String(k.target ?? ""))}${k.lower_is_better ? " <span class=dim>(lower)</span>" : ""}</td><td>${pill(k.status === "met" ? "met" : k.status === "unmeasured" ? "unmeasured" : k.status === "zero" ? "zero" : "progress")}</td><td class="mono dim">${esc(k.how)}</td><td class="dim">${esc(k.why)}</td></tr>`).join("")}</table></div>`).join("")}
+<h2>Reading the KPIs as a specialist</h2>
+<div class="card"><ul>
+<li><b>Hosted activation is the leading indicator.</b> Registries and directories only count hosted use, and an anonymous token is the cheapest possible first call. Watch anon tokens and tenant documents before downloads.</li>
+<li><b>Tool reach beats tool count.</b> A server that is correct on direct probes but loses to a built-in reader delivers nothing; the first-prompt reach rate is the number to protect, and descriptions are its lever.</li>
+<li><b>Probes contaminate funnel metrics.</b> Validation runs create checkout sessions and Pro tenants; since 2026-09-03 they are tagged (metadata.probe, signed keys) and excluded. Pre-tag sessions are excluded by timestamp.</li>
+<li><b>Latency has a cliff, not a curve.</b> Round 4 measured first-prompt misses when connect plus tools/list ran past about a second; p50 is tracked against 800 ms.</li>
+<li><b>Until paid sessions are non-zero, every other number is a proxy.</b> The KPI that closes the loop is paid sessions and minted keys; the rest exist to explain why it is still zero.</li>
+</ul></div>` : `<p>Run <code>node scripts/kpi.mjs</code> to collect KPIs.</p>`}
 </div>
 
 <div class="tab" id="tab-organic">

@@ -116,7 +116,7 @@ async function stripe(env, path, params, method = "POST") {
   return json;
 }
 
-async function createCheckout(env, host, productId) {
+async function createCheckout(env, host, productId, probeTag = "") {
   const p = PRODUCTS[productId];
   const s = await stripe(env, "checkout/sessions", {
     mode: "payment",
@@ -126,6 +126,7 @@ async function createCheckout(env, host, productId) {
     cancel_url: `https://${host}/`,
     allow_promotion_codes: "true",
     "metadata[product]": productId,
+      ...(probeTag ? { "metadata[probe]": "1" } : {}),
     "payment_intent_data[statement_descriptor_suffix]": "MCP PRO",
     "payment_intent_data[metadata][product]": productId,
   });
@@ -399,10 +400,12 @@ ${faqHtml}
     }
 
     if (path.startsWith("/buy/") && method === "GET") {
+      // validation probes tag their sessions so funnel metrics can exclude them
+      const probeTag = request.headers.get("x-mcp-probe") === "1" ? "1" : "";
       const id = decodeURIComponent(path.slice("/buy/".length));
       if (!PRODUCTS[id]) return new Response(page("Not found", `<h1>Unknown product</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
       try {
-        const session = await createCheckout(env, host, id);
+        const session = await createCheckout(env, host, id, probeTag);
         return new Response(null, { status: 303, headers: { Location: session.url, "cache-control": "no-store" } });
       } catch (e) {
         return new Response(page("Checkout error", `<h1>Checkout could not start</h1><p>${esc(e.message)}</p><p><a href="/">Back</a></p>`), { status: 502, headers: { "content-type": "text/html; charset=utf-8" } });

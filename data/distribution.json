@@ -163,7 +163,8 @@
       "mcpserverfinder.com": "blocked: email-only",
       "mcpindex.net": "dead",
       "mcp.pizza": "dead",
-      "mcpcentral.io": "dead"
+      "mcpcentral.io": "dead",
+      "hosted": "published"
     },
     "price-tracker": {
       "npm": "missing",
@@ -185,7 +186,8 @@
       "mcpserverfinder.com": "blocked: email-only",
       "mcpindex.net": "dead",
       "mcp.pizza": "dead",
-      "mcpcentral.io": "dead"
+      "mcpcentral.io": "dead",
+      "hosted": "published"
     },
     "spreadsheet": {
       "npm": "missing",
@@ -230,7 +232,8 @@
       "mcpserverfinder.com": "blocked: email-only",
       "mcpindex.net": "dead",
       "mcp.pizza": "dead",
-      "mcpcentral.io": "dead"
+      "mcpcentral.io": "dead",
+      "hosted": "published"
     },
     "expense-tracker": {
       "npm": "missing",
@@ -295,21 +298,24 @@
       "cline-marketplace": "submitted",
       "github": "published",
       "registry": "published",
-      "npm": "missing"
+      "npm": "missing",
+      "hosted": "published"
     },
     "recurring": {
       "docker-mcp-catalog": "submitted",
       "cline-marketplace": "submitted",
       "github": "published",
       "registry": "published",
-      "npm": "missing"
+      "npm": "missing",
+      "hosted": "published"
     },
     "clauses": {
       "docker-mcp-catalog": "submitted",
       "cline-marketplace": "submitted",
       "github": "published",
       "registry": "published",
-      "npm": "missing"
+      "npm": "missing",
+      "hosted": "published"
     }
   }
 }

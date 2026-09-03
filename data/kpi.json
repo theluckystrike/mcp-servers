@@ -1,0 +1,267 @@
+{
+  "generated_at": "2026-09-03T08:10:48.792Z",
+  "kpis": [
+    {
+      "cat": "Discovery",
+      "name": "Registry entries at latest version",
+      "value": 12,
+      "target": 12,
+      "unit": "entries",
+      "how": "registry search theluckystrike",
+      "why": "The official registry is the index Claude, Cursor and VS Code pickers read.",
+      "status": "met"
+    },
+    {
+      "cat": "Discovery",
+      "name": "Registry findable share",
+      "value": 35,
+      "target": 60,
+      "unit": "% of tracked tokens",
+      "how": "data/organic.json (name-substring search probes)",
+      "why": "Search is name-only; a server nobody can find by the words they type does not exist.",
+      "status": "progress"
+    },
+    {
+      "cat": "Discovery",
+      "name": "Distribution surfaces live",
+      "value": 9,
+      "target": 28,
+      "unit": "of 28",
+      "how": "data/distribution.json",
+      "why": "Each free registry or catalog is a compounding source of installs.",
+      "status": "progress"
+    },
+    {
+      "cat": "Discovery",
+      "name": "Pages indexed on the storefront sitemap",
+      "value": 116,
+      "target": 150,
+      "unit": "URLs",
+      "how": "curl mcp.zovo.one/sitemap.xml",
+      "why": "Long-tail search queries are the only paid-free channel with measured intent.",
+      "status": "progress"
+    },
+    {
+      "cat": "Install",
+      "name": "Bundle downloads (all releases)",
+      "value": 290,
+      "target": 1000,
+      "unit": "downloads",
+      "how": "gh api releases (scripts/measure.mjs)",
+      "why": "The first hard signal that a listing turned into an install attempt.",
+      "status": "progress"
+    },
+    {
+      "cat": "Install",
+      "name": "npm weekly downloads",
+      "value": 0,
+      "target": 100,
+      "unit": "per package per week",
+      "how": "api.npmjs.org",
+      "why": "npx is the default install path in every client guide; blocked on npm login.",
+      "status": "zero"
+    },
+    {
+      "cat": "Install",
+      "name": "Hosted endpoints coverage",
+      "value": 11,
+      "target": 11,
+      "unit": "of 11 servers",
+      "how": "data/distribution.json per_server.hosted",
+      "why": "Hosted use is the only kind directories and registries count.",
+      "status": "met"
+    },
+    {
+      "cat": "Activation",
+      "name": "Anonymous hosted tokens minted",
+      "value": 17,
+      "target": 100,
+      "unit": "tokens",
+      "how": "wrangler kv key list --remote (prefix anon)",
+      "why": "Someone reached a hosted endpoint without a key: a zero-friction first call.",
+      "status": "progress"
+    },
+    {
+      "cat": "Activation",
+      "name": "Hosted tenants with stored data",
+      "value": 100,
+      "target": 100,
+      "unit": "tenants",
+      "how": "wrangler kv key list --remote (prefix tok)",
+      "why": "A tenant document exists only after a mutating call succeeded.",
+      "status": "met"
+    },
+    {
+      "cat": "Activation",
+      "name": "Hosted downloads served",
+      "value": 79,
+      "target": 200,
+      "unit": "files (1h TTL)",
+      "how": "wrangler kv key list --remote (prefix dl)",
+      "why": "A produced document is a completed job, not just a call.",
+      "status": "progress"
+    },
+    {
+      "cat": "Activation",
+      "name": "First-prompt tool reach (round 8)",
+      "value": 98,
+      "target": 95,
+      "unit": "% of calls on the right tool",
+      "how": "docs/USER_VALUE_R8.md (50 of 51)",
+      "why": "Round 6 showed correct servers losing to built-in tools; descriptions are the lever.",
+      "status": "met"
+    },
+    {
+      "cat": "Value",
+      "name": "User-value score, latest round",
+      "value": 75,
+      "target": 90,
+      "unit": "%",
+      "how": "scripts/uv-index.mjs from data/user_value*.json",
+      "why": "Scenario scoring through a real MCP client is the only measure of value that includes the model.",
+      "status": "progress"
+    },
+    {
+      "cat": "Value",
+      "name": "Seam defects fixed of found",
+      "value": 31,
+      "target": 66,
+      "unit": "of 66",
+      "how": "defect ledger in the user-value tab",
+      "why": "Every lost point since round 3 was a handoff between servers.",
+      "status": "progress"
+    },
+    {
+      "cat": "Value",
+      "name": "Servers that reached 100% in a round",
+      "value": 6,
+      "target": 11,
+      "unit": "of 11",
+      "how": "per-server matrix",
+      "why": "Shows which servers are done and which still lose points on natural prompts.",
+      "status": "progress"
+    },
+    {
+      "cat": "Reliability",
+      "name": "Live validation checks passing",
+      "value": "247/247",
+      "target": "all",
+      "unit": "checks",
+      "how": "node scripts/validate.mjs",
+      "why": "Stdio, hosted and billing exercised end to end on every change.",
+      "status": "met"
+    },
+    {
+      "cat": "Reliability",
+      "name": "Unit tests passing",
+      "value": 464,
+      "target": "all",
+      "unit": "tests",
+      "how": "npm test",
+      "why": "Regression floor; contract suites enforce stdout hygiene, quarantine, caps, licensing.",
+      "status": "measured"
+    },
+    {
+      "cat": "Reliability",
+      "name": "Hosted tools/list latency p50",
+      "value": 976,
+      "target": 800,
+      "unit": "ms",
+      "lower_is_better": true,
+      "how": "3 timed POSTs to /mcp/time-tracker",
+      "why": "Above about a second, clients start their first prompt before the server answers (round 4 D-R5).",
+      "status": "progress"
+    },
+    {
+      "cat": "Reliability",
+      "name": "Silent-partial-result defects open",
+      "value": 0,
+      "target": 0,
+      "unit": "open",
+      "how": "audits: truncated history, capped loops, partial files all fixed",
+      "why": "A plausible wrong answer costs more than an error.",
+      "status": "met"
+    },
+    {
+      "cat": "Monetization",
+      "name": "Checkout sessions from humans (last 100)",
+      "value": 0,
+      "target": 50,
+      "unit": "sessions",
+      "how": "stripe checkout sessions list --live, metadata.probe absent",
+      "why": "Validation probes create sessions too; only untagged ones are demand.",
+      "status": "zero"
+    },
+    {
+      "cat": "Monetization",
+      "name": "Paid sessions",
+      "value": 0,
+      "target": 5,
+      "unit": "paid",
+      "how": "stripe checkout sessions list --live payment_status",
+      "why": "The number that matters.",
+      "status": "zero"
+    },
+    {
+      "cat": "Monetization",
+      "name": "License keys minted",
+      "value": 0,
+      "target": 5,
+      "unit": "keys",
+      "how": "wrangler kv key list --remote on LICENSES",
+      "why": "One key per paid session; zero means no purchase reached /success.",
+      "status": "zero"
+    },
+    {
+      "cat": "Monetization",
+      "name": "Pro tenants on hosted endpoints",
+      "value": 281,
+      "target": 20,
+      "unit": "tenants (includes validation keys)",
+      "how": "wrangler kv key list --remote (prefix lic)",
+      "why": "Real Pro usage on hosted; today inflated by validation runs with signed keys.",
+      "status": "met"
+    }
+  ],
+  "raw": {
+    "stripe": {
+      "sessions_last100": 100,
+      "probe_sessions": 25,
+      "human_sessions": 0,
+      "paid": 0,
+      "note": "sessions created before 2026-09-03 08:55 UTC predate probe tagging and are excluded",
+      "untagged_before_tagging": 100
+    },
+    "sales_charges_seen": 0,
+    "remote_kv": {
+      "total": 591,
+      "by": {
+        "anon": 17,
+        "dl": 79,
+        "lic": 281,
+        "meta": 88,
+        "mint": 2,
+        "rl": 22,
+        "shared": 2,
+        "tok": 100
+      }
+    },
+    "license_kv": {
+      "total": 0,
+      "by": {}
+    },
+    "latency": {
+      "p50_ms": 976,
+      "samples": [
+        1723,
+        940,
+        976
+      ]
+    },
+    "registry": {
+      "entries": 12,
+      "hosted": 8
+    },
+    "sitemap_urls": 116
+  }
+}
