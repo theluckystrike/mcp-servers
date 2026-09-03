@@ -1,0 +1,371 @@
+{
+  "at": "2026-09-03T02:45:00Z",
+  "round": 7,
+  "compares_to": "data/user_value_r6.json",
+  "scope": "CROSS-SERVER round. Six scenarios, each a single freelancer sentence that cannot be served by one child server: time-tracker + expense-tracker + currency + invoice (1), time-tracker + docx (2), timezone + docx (3), currency over the invoice (4), invoice + docx (5), timezone (6). The question is no longer whether each tool works -- rounds 1-6 plus docs/CURRENCY_AUDIT.md, docs/DOCX_AUDIT.md and docs/TIMEZONE_AUDIT.md answered that -- but whether the chain holds when a number has to cross from one server into another.",
+  "method": "servers/office-suite/dist/index.js v0.3.1 registered as ONE server 'office', proxying eight children (time-tracker, price-tracker, spreadsheet, invoice, expense-tracker, currency, docx, timezone); tools/list returns 76 tools, with the colliding business_set exposed as invoice_business_set and docx_business_set. One lane /private/tmp/uv40, fresh XDG_DATA_HOME/XDG_CONFIG_HOME, MCP_LICENSE_KEY='' (free tier), one conversation via --session-id then five --resume. claude -p --strict-mcp-config --model sonnet --output-format stream-json --verbose --max-turns 16, allowlist written out per tool name (all 76) because --allowedTools 'mcp__*' grants nothing (D-E4). Fixture seeded by direct JSON-RPC before the client ran (/private/tmp/uv40/seed.mjs): Nova 2026-08-31 09:00-13:00 (4.00 h) and 2026-09-01 10:00-13:00 (3.00 h), both EUR 90/h, plus one real download of eurofxref-daily.xml and eurofxref-hist.xml to warm the ECB cache. Local zone UTC+07, start 09:36 local = 02:36 UTC on Thursday 2026-09-03, so the ECB has not published 2026-09-03 and 'today's rates' must resolve to 2026-09-02. Tool-call counts exclude the client's own ToolSearch.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn or a workaround. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "scenarios": [
+    {
+      "surface": "bundle/time-tracker+expense-tracker+currency+invoice",
+      "id": "1",
+      "prompt": "Log 6 hours today on Nova at 90 EUR, plus a 45 GBP train receipt for Nova. Invoice Nova in USD at today's ECB rates, 0% VAT, due in 30 days.",
+      "score": 3,
+      "tool_calls": 8,
+      "seconds": 63.5,
+      "tools": [
+        "client_list",
+        "now",
+        "entry_add",
+        "expense_add",
+        "fx_rates_for",
+        "expense_to_invoice",
+        "invoice_create",
+        "expense_mark_rebilled"
+      ],
+      "note": "entry_add 6.00 h EUR 540.00; expense_add GBP 45.00 defaulted billable: true with a project (the D-R21 fix) and said so; fx_rates_for {target USD, currencies [EUR, GBP]} -> EUR 1.1578, GBP 1.348317, rate_date 2026-09-02; expense_to_invoice converted the receipt; invoice_create USD, due_days 30, tax_rate 0 -> INV-2026-0001 USD 685.88; expense_mark_rebilled closed the receipt. The model volunteered that the rate date is 2026-09-02 because 2026-09-03 is not published until ~16:00 CET. Every figure reproduces from data/mcp-servers/currency/daily.json. Carries D-R24 (line unit price x quantity != line amount) and D-R28 (the 6 h stay open in the tracker)."
+    },
+    {
+      "surface": "bundle/time-tracker+docx",
+      "id": "2",
+      "prompt": "Write a proposal for Nova based on the hours I logged this week: the work so far, then a phase 2 of 20 hours at the same rate, in EUR. Save it as a Word file.",
+      "score": 2,
+      "tool_calls": 3,
+      "seconds": 52.5,
+      "tools": [
+        "entry_list",
+        "report",
+        "proposal_create"
+      ],
+      "note": "report {group_by day} -> 13.00 h, EUR 1170.00; proposal_create wrote nova-engagement-phase-2-proposal.docx (PROP-2026-0001). word/document.xml carries 'totaling 13 hours', a timeline row 'Phase 1 ... 13 hours', 'Phase 2 - Implementation 20 hours' and EUR 1,800.00 twice (20 x 90). unzip -t clean. Marked down: the shipped file prints the literal characters \\n\\n mid-sentence (D-R25), and the EUR 1,170.00 already earned never appears in the client-facing document, only in the chat."
+    },
+    {
+      "surface": "bundle/timezone+docx",
+      "id": "3",
+      "prompt": "Set up a kickoff call with Nova's team: Sara in Sydney and Tom in Austin, next week, one hour. Give me the ics and put the meeting date into the proposal's timeline.",
+      "score": 2,
+      "tool_calls": 5,
+      "seconds": 71.5,
+      "tools": [
+        "find_meeting_slots",
+        "find_meeting_slots",
+        "find_meeting_slots",
+        "ics_create",
+        "proposal_create"
+      ],
+      "note": "find_meeting_slots {days 7} hit the free-tier paywall (cap 5); {days 5} returned 'No slot fits everyone's working hours' because Sydney and Austin 09:00-17:00 do not intersect; the model widened Sara to 07:00-17:00 and Tom to 09:00-19:00 by itself and got 25 slots. ics_create wrote DTSTART 20260907T220000Z / DTEND 20260907T230000Z = Mon 07 Sep 17:00 CDT Austin = Tue 08 Sep 08:00 AEST Sydney, correct. The timeline row landed verbatim in the docx. Marked down for the paywall on the plainest reading of 'next week' (D-R30), for silently rewriting both participants' working hours, and for a regenerated proposal that overwrote the first file and burned a second reference number (D-R26)."
+    },
+    {
+      "surface": "bundle/currency+invoice arithmetic",
+      "id": "4",
+      "prompt": "What did 1 EUR cost in USD on the day I logged the first Nova hours, and how much would the invoice have been then?",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 21.8,
+      "tools": [
+        "rate_on",
+        "rate_on"
+      ],
+      "note": "rate_on {EUR->USD, 2026-08-31} -> 1.1596, exact: true; then unprompted rate_on {GBP->USD} -> 1.353914 because the invoice mixes currencies. Recomputed 540 x 1.1596 = USD 626.18 and 45 x 1.353914 = USD 60.93, total USD 687.11, and named the +1.23 delta against the real invoice and the rate date each side used. Independently exact against history.json days['2026-08-31'] (USD 1.1596, GBP 0.85648)."
+    },
+    {
+      "surface": "bundle/invoice+docx",
+      "id": "5",
+      "prompt": "Convert my invoice to a Word document I can edit.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 25.6,
+      "tools": [
+        "invoice_get",
+        "doc_create"
+      ],
+      "note": "invoice_get {INV-2026-0001} -> doc_create {style letter} with a 5-column line table. word/document.xml matches the store to the cent: USD 104.20 / 6 / 0% / USD 625.21, USD 60.67, Subtotal USD 685.88, Tax (0%) USD 0.00, Total due USD 685.88, plus both FX annotations. The model framed it correctly as editable text rather than a PDF."
+    },
+    {
+      "surface": "bundle/timezone",
+      "id": "6",
+      "prompt": "How many working days did I have between the first and last Nova entry, in Poland?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.1,
+      "tools": [
+        "business_days"
+      ],
+      "note": "business_days {2026-08-31..2026-09-03, zone 'Poland'} -> Europe/Warsaw, 4 business days of 4 calendar days (0 weekend, 0 holiday), days listed. The tool states it has no national holiday calendar; the model relayed that limit and then checked the specific window rather than hiding behind it."
+    }
+  ],
+  "totals": {
+    "score": 16,
+    "max": 18,
+    "tool_calls": 21,
+    "seconds": 246,
+    "by_scenario": {
+      "1": "3/3",
+      "2": "2/3",
+      "3": "2/3",
+      "4": "3/3",
+      "5": "3/3",
+      "6": "3/3"
+    },
+    "by_server": {
+      "timezone": {
+        "calls": 6,
+        "tools": [
+          "now",
+          "find_meeting_slots x3",
+          "ics_create",
+          "business_days"
+        ],
+        "scenarios": [
+          "3",
+          "6"
+        ]
+      },
+      "time-tracker": {
+        "calls": 3,
+        "tools": [
+          "entry_add",
+          "entry_list",
+          "report"
+        ],
+        "scenarios": [
+          "1",
+          "2"
+        ]
+      },
+      "expense-tracker": {
+        "calls": 3,
+        "tools": [
+          "expense_add",
+          "expense_to_invoice",
+          "expense_mark_rebilled"
+        ],
+        "scenarios": [
+          "1"
+        ]
+      },
+      "currency": {
+        "calls": 3,
+        "tools": [
+          "fx_rates_for",
+          "rate_on x2"
+        ],
+        "scenarios": [
+          "1",
+          "4"
+        ]
+      },
+      "invoice": {
+        "calls": 3,
+        "tools": [
+          "client_list",
+          "invoice_create",
+          "invoice_get"
+        ],
+        "scenarios": [
+          "1",
+          "5"
+        ]
+      },
+      "docx": {
+        "calls": 3,
+        "tools": [
+          "proposal_create x2",
+          "doc_create"
+        ],
+        "scenarios": [
+          "2",
+          "3",
+          "5"
+        ]
+      },
+      "spreadsheet": {
+        "calls": 0,
+        "tools": [],
+        "scenarios": []
+      },
+      "price-tracker": {
+        "calls": 0,
+        "tools": [],
+        "scenarios": []
+      }
+    },
+    "tool_selection": "21/21 calls used the right tool. D-R19 (the specific tool is never reached) did not recur once: no Read, no curl, no WebFetch in any of the six transcripts."
+  },
+  "verification": [
+    {
+      "check": "'today's' ECB rate is 2026-09-02, not 2026-09-03",
+      "method": "data/mcp-servers/currency/daily.json: date 2026-09-02, USD 1.1578, GBP 0.8587",
+      "result": "PASS"
+    },
+    {
+      "check": "GBP->USD cross rate",
+      "method": "1.1578 / 0.8587 = 1.3483172237...; server returned 1.348317",
+      "result": "PASS"
+    },
+    {
+      "check": "invoice total",
+      "method": "6 x (90 x 1.1578) = 625.212 -> 625.21; 45 x 1.348317 = 60.674265 -> 60.67; invoices.json subtotal_minor 68588, total_minor 68588, tax []",
+      "result": "PASS"
+    },
+    {
+      "check": "unit price x quantity equals the line amount",
+      "method": "invoices.json line: unit_price_minor 10420, quantity 6, gross_minor 62521; 10420 x 6 = 62520",
+      "result": "FAIL, D-R24"
+    },
+    {
+      "check": "due date",
+      "method": "issue 2026-09-03 + 30 days -> due_date 2026-10-03",
+      "result": "PASS"
+    },
+    {
+      "check": "expense billable by default with a project (D-R21 fix)",
+      "method": "expense-tracker/data.json: billable true with no billable argument passed, plus rebilled_at and rebilled_invoice INV-2026-0001",
+      "result": "PASS"
+    },
+    {
+      "check": "hours in the proposal docx",
+      "method": "word/document.xml: 'totaling 13 hours', timeline 'Phase 1 ... 13 hours', 'Phase 2 - Implementation 20 hours'",
+      "result": "PASS"
+    },
+    {
+      "check": "amount in the proposal docx",
+      "method": "word/document.xml: 'EUR 1,800.00' in the investment row and the total; 20 x 90 = 1800",
+      "result": "PASS"
+    },
+    {
+      "check": "proposal package integrity",
+      "method": "unzip -t -> No errors detected",
+      "result": "PASS"
+    },
+    {
+      "check": "literal \\n\\n in the proposal body",
+      "method": "word/document.xml contains 'confidence.\\n\\nBuilding on that foundation' as character data",
+      "result": "FAIL, D-R25"
+    },
+    {
+      "check": "proposal file overwritten",
+      "method": "documents.json holds PROP-2026-0001 and PROP-2026-0002 with the same path; one file on disk, reading 'Ref PROP-2026-0002'",
+      "result": "FAIL, D-R26"
+    },
+    {
+      "check": "meeting instant",
+      "method": "meeting.ics DTSTART 20260907T220000Z / DTEND 20260907T230000Z = 17:00 CDT Austin Mon 07 Sep = 08:00 AEST Sydney Tue 08 Sep",
+      "result": "PASS"
+    },
+    {
+      "check": "ics attendee syntax",
+      "method": "ATTENDEE;CN=Sara:invalid:nomail -- not a CAL-ADDRESS URI, and no ORGANIZER line",
+      "result": "FAIL, D-R27"
+    },
+    {
+      "check": "rate on the first-entry day",
+      "method": "history.json days['2026-08-31'] USD 1.1596, GBP 0.85648; 1.1596/0.85648 = 1.3539136... -> 1.353914",
+      "result": "PASS"
+    },
+    {
+      "check": "scenario 4 arithmetic",
+      "method": "540 x 1.1596 = 626.184 -> 626.18; 45 x 1.353914 = 60.926 -> 60.93; total 687.11, exactly as reported",
+      "result": "PASS"
+    },
+    {
+      "check": "invoice docx matches the store",
+      "method": "word/document.xml: USD 104.20 / 6 / 0% / USD 625.21, USD 60.67, Subtotal USD 685.88, Tax (0%) USD 0.00, Total due USD 685.88, both FX notes",
+      "result": "PASS"
+    },
+    {
+      "check": "working days",
+      "method": "business_days -> 4 of 4 calendar days, days 2026-08-31, 09-01, 09-02, 09-03, all Mon-Thu",
+      "result": "PASS"
+    },
+    {
+      "check": "billed hours are closed in the tracker",
+      "method": "time-tracker/data.json after INV-2026-0001: three entries, each with rateCents 9000 and no invoiced/billed marker of any kind",
+      "result": "FAIL, D-R28"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R24",
+      "severity": "high",
+      "server": "invoice",
+      "side": "server",
+      "title": "a line's unit price times its quantity does not equal the line amount",
+      "repro": "invoice_create {items: [{quantity: 6, unit_price: 104.202, tax_rate: 0}], currency: 'USD', client: 'Nova'} -> stored unit_price_minor 10420, gross_minor 62521; the JSON and the docx both print USD 104.20 / 6 / USD 625.21, and 104.20 x 6 = 625.20. servers/invoice/src/money.ts:116 computes gross from the UNROUNDED unit price while :123 stores the rounded one, so any converted (sub-cent) unit price makes the two disagree. Live in this round's real invoice INV-2026-0001.",
+      "fix": "Pick one basis and state it: either round the unit price first and derive gross from the rounded value (the line always adds up), or keep the precise basis and display the extra precision in the unit price with a note. Make expense_to_invoice -> invoice_create pass whichever it is; today it hands six-decimal unit prices to a two-decimal display."
+    },
+    {
+      "id": "D-R25",
+      "severity": "medium",
+      "server": "docx",
+      "side": "client-side, server-mitigable",
+      "title": "a literal \\n\\n reaches the printed page",
+      "repro": "/private/tmp/uv40/out/s2.jsonl; unzip -p .../nova-engagement-phase-2-proposal.docx word/document.xml shows 'proceed with confidence.\\n\\nBuilding on that foundation'. proposal_create renders summary as one paragraph, so a model wanting two paragraphs writes the escape and it survives into character data.",
+      "fix": "Split summary and other free-text blocks on real newlines into separate w:p elements, and additionally treat a literal backslash-n as a paragraph break (no proposal legitimately contains that sequence). Say 'newlines start a new paragraph' in the argument description so the model stops reaching for the escape."
+    },
+    {
+      "id": "D-R26",
+      "severity": "high",
+      "server": "docx",
+      "side": "server",
+      "title": "proposal_create silently overwrites an earlier proposal when it derives its own path",
+      "repro": "Call proposal_create twice with client 'Nova' and project_title 'Nova Engagement - Phase 2 Proposal' and no out_path: documents.json records PROP-2026-0001 and PROP-2026-0002 against the SAME path and only the second file exists. The round-6 collision guard covers an explicit out_path only; the slugged default path has no guard. The model told the user 'Proposal updated: same file' -- nothing updated anything, the first document is gone.",
+      "fix": "Apply the same collision guard to derived paths, and on collision suffix the slug with the new reference (nova-engagement-phase-2-proposal-PROP-2026-0002.docx) rather than refusing, since regeneration is normal. Related root cause: a generated document cannot be edited -- doc_fill_template needs {{placeholders}} that proposal_create does not emit -- so 'put the meeting date into the proposal' can only be served by rebuilding it, which costs one of three free-tier generations and burns a reference number."
+    },
+    {
+      "id": "D-R27",
+      "severity": "medium",
+      "server": "timezone",
+      "side": "server",
+      "title": "ics_create writes an invalid ATTENDEE value and no ORGANIZER",
+      "repro": "ics_create {title, start, zone, duration_minutes: 60, attendees: ['Sara','Tom']} -> /private/tmp/uv40/data/mcp-servers/timezone/meeting.ics contains ATTENDEE;CN=Sara:invalid:nomail. RFC 5545 ATTENDEE is a CAL-ADDRESS (normally mailto:); 'invalid:nomail' is a placeholder scheme. Strict parsers reject the property, lenient ones show an unreachable attendee, and there is no ORGANIZER at all, so the invite is not actionable in a calendar client.",
+      "fix": "Accept attendees as a name or {name, email}; emit ATTENDEE only where an address exists and put bare names in DESCRIPTION. Give contacts_set an optional email so the saved-contact path (which is what the kickoff case uses) resolves itself."
+    },
+    {
+      "id": "D-R28",
+      "severity": "high",
+      "server": "time-tracker + invoice (cross-server)",
+      "side": "server",
+      "title": "invoicing hours leaves the hours open, and there is no FX path that would have closed them",
+      "repro": "Scenario 1, /private/tmp/uv40/out/s1.jsonl: because the invoice currency (USD) differs from the rate currency (EUR), invoice_from_hours (servers/invoice/src/index.ts:396 -- bare hours and rate, no target_currency/fx_rates, no knowledge of the tracker) cannot serve it, so the model hand-built the line in invoice_create. After INV-2026-0001 was issued, grep -c invoiced /private/tmp/uv40/data/mcp-servers/time-tracker/data.json returns 0: the next 'invoice Nova' bills the same 6 hours again. expense_to_invoice, by contrast, converts, sets rebilled_at and names the invoice.",
+      "fix": "Give time-tracker the shape expense-tracker already has: hours_to_invoice {project, from, to, target_currency, fx_rates, markup_percent} returning invoice-ready lines, and entries_mark_invoiced {ids, invoice_number} writing invoiced_at/invoiced_invoice, with report and invoice_summary excluding already-invoiced entries by default."
+    },
+    {
+      "id": "D-R29",
+      "severity": "medium",
+      "server": "office-suite",
+      "side": "server (the bundle)",
+      "title": "the bundle renames colliding tools but the children's own prose still names the old tool",
+      "repro": "business_set exists in invoice and docx, so the bundle exposes invoice_business_set and docx_business_set. Every child response ending 'Run business_set {name, address, email, vat_id} and create it again' names a tool that does not exist on the bundle; the model relayed that text to the user in scenarios 2 and 3 before deducing the prefixed name in scenario 5. Any proposal_create or invoice_create response in /private/tmp/uv40/out/.",
+      "fix": "The proxy already knows both names (servers/office-suite/src/index.ts:176). When a tool was renamed, rewrite whole-word occurrences of the child's own tool names in the forwarded text content, and list the renames in the bundle's startup line and README."
+    },
+    {
+      "id": "D-R30",
+      "severity": "medium",
+      "server": "timezone",
+      "side": "server",
+      "title": "the free tier gates the plainest reading of 'next week', and a zero-overlap pair gets no fallback",
+      "repro": "/private/tmp/uv40/out/s3.jsonl calls 1 and 2: find_meeting_slots {days: 7} -> upgrade text (free cap is 5), so the first call of the scenario bought a paywall; {days: 5} with Sydney and Austin both 09:00-17:00 -> 'No slot fits everyone's working hours ... Try a shorter duration, widen someone's work_start/work_end'. The model widened both participants' hours itself and never told the user it had changed their constraints.",
+      "fix": "When nothing fits, return the best near-misses ranked by how far outside working hours each side sits, flagged as outside_working_hours: ['Sara'] -- that is the answer a Sydney/Austin pair wants, and it removes the incentive to silently rewrite the constraints. Separately, consider a free-tier day cap of 7, since 'next week' is the modal request."
+    }
+  ],
+  "fixed_since_r6": [
+    {
+      "id": "D-R19",
+      "status": "NOT REPRODUCED",
+      "evidence": "Six scenarios crossing eight servers, 21 calls, every one the right tool; no Read, curl or WebFetch fallback in any transcript. No spreadsheet or price-tracker sentence was in scope this round, so the two round-6 description fixes themselves are untested; the failure mode did not appear."
+    },
+    {
+      "id": "D-R21",
+      "status": "FIXED, verified",
+      "evidence": "expense_add {amount 45, currency GBP, merchant Train, project Nova} with no billable argument stored billable: true and the response said 'Billable: yes - it will appear in expense_to_invoice.' The rebill in the same turn returned count 1."
+    },
+    {
+      "id": "D-R14",
+      "status": "FIXED, still holds",
+      "evidence": "expense_to_invoice {target_currency USD, fx_rates {EUR 1.1578, GBP 1.348317}} converted the GBP receipt to USD 60.67 with the rate written into the line description."
+    }
+  ],
+  "still_open": "D-R18, D-R20, D-R22 and D-R23 were fixed in round 6 and were not re-exercised by these six sentences (no rate change, no empty rebill, no tag grouping, no corrupt store). D-R16 and D-R17 stand as recorded in docs/USER_VALUE_R5.md. The spreadsheet and price-tracker description fixes from round 6 remain unmeasured until a round puts a CSV or a product URL in front of the bundle.",
+  "artifacts": "docs/USER_VALUE_R7.md; lane /private/tmp/uv40 (mcp.json, allow.txt, seed.mjs, run.sh, sid.txt, out/s1..s6.jsonl, data/mcp-servers/**, data/mcp-servers/docx/documents/*.docx, data/mcp-servers/timezone/meeting.ics)"
+}

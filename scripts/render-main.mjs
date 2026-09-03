@@ -23,6 +23,7 @@ const uv3 = js("data/user_value_r3.json", null);
 const uv4 = js("data/user_value_r4.json", null);
 const uv5 = js("data/user_value_r5.json", null);
 const uv6 = js("data/user_value_r6.json", null);
+const uv7 = js("data/user_value_r7.json", null);
 const metrics = js("data/metrics.json", { snapshots: [] });
 const m = metrics.snapshots.at(-1);
 const orgHeadline = organic.surfaces.length ? Math.round(organic.surfaces.reduce((a, s) => a + s.score * s.reach, 0) / organic.surfaces.reduce((a, s) => a + s.reach, 0)) : 0;
@@ -116,7 +117,7 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a><a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
+<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button></div>
 <div class="tab on" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
@@ -218,6 +219,9 @@ ${promo.actions.slice().sort((a, b) => b.impact - a.impact).map(a => `<tr><td cl
 <div class="tab" id="tab-uservalue">
 ${uv ? `<p class="dim">${esc(uv.method || "")} Run at ${esc(uv.at)}. Full report: <a href="docs/USER_VALUE.md">docs/USER_VALUE.md</a>.</p>
 <div class="kpis"><div class="kpi"><div class="n">${uv.totals.score}/${uv.totals.max}</div><div class="k">scenario points (0-3 each, real MCP client)</div></div><div class="kpi"><div class="n">${Math.round(uv.totals.hit_rate * 100)}%</div><div class="k">real retailer price hit rate (${esc(uv.totals.hit_rate_of_reachable)})</div></div><div class="kpi"><div class="n">${esc(uv.pdf.verdict)}</div><div class="k">invoice PDF visual check</div></div><div class="kpi"><div class="n">${(uv.free_tier.limits_hit || []).length}</div><div class="k">free limits hit in first session</div></div></div>
+${uv7 ? `<h2>Round 7, cross-server flows through the eight-server bundle (76 tools): ${uv7.totals?.score ?? ""}/${uv7.totals?.max ?? ""}</h2>
+<div class="tw"><table><tr><th>Scenario</th><th>Score</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${(uv7.scenarios || []).map(x => `<tr><td>${esc(x.prompt || x.id)}</td><td class="num"><b>${x.score}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
+<p class="dim">Report: <a href="docs/USER_VALUE_R7.md">docs/USER_VALUE_R7.md</a>. Every call picked the right tool; the invoice landed at USD 685.88 from EUR hours and a GBP receipt at ECB rates. Seven seam defects found, fixes in v0.3.2.</p>` : ""}
 ${uv6 ? `<h2>Round 6 regression on the v0.2.4 changes: ${uv6.totals?.score ?? ""}/${uv6.totals?.max ?? ""} through the client, 8/8 correct on direct probes</h2>
 <div class="tw"><table><tr><th>Scenario</th><th>Score</th><th>Calls</th><th>Sec</th><th>Note</th></tr>${(uv6.scenarios || []).map(x => `<tr><td>${esc(x.prompt || x.id)}</td><td class="num"><b>${x.score}</b>/3</td><td class="num">${x.tool_calls ?? ""}</td><td class="num">${x.seconds ?? ""}</td><td class="dim">${esc(x.note)}</td></tr>`).join("")}</table></div>
 <p class="dim">Report: <a href="docs/USER_VALUE_R6.md">docs/USER_VALUE_R6.md</a>. Every changed behaviour was correct when invoked; the points lost were the client choosing built-in readers over the tools. Fixes for the six follow-up defects are in v0.2.5.</p>` : ""}
