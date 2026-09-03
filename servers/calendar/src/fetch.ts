@@ -1,3 +1,4 @@
+import { decodeIcs } from "./ics.js";
 /**
  * Fetching a calendar feed. Only ever called when the user explicitly passed a URL:
  * nothing here runs on a file or text import, and there is no background refresh.
@@ -84,7 +85,7 @@ async function readCapped(res: Response): Promise<{ text: string; bytes: number;
   if (!body) {
     const t = await res.text();
     const b = Buffer.from(t, "utf8");
-    return { text: b.slice(0, MAX_BYTES).toString("utf8"), bytes: b.length, truncated: b.length > MAX_BYTES };
+    return { text: decodeIcs(b.subarray(0, MAX_BYTES)), bytes: b.length, truncated: b.length > MAX_BYTES };
   }
   const reader = body.getReader();
   const chunks: Buffer[] = [];
@@ -106,5 +107,5 @@ async function readCapped(res: Response): Promise<{ text: string; bytes: number;
     throw new FetchError(`the feed is larger than ${MAX_BYTES / (1024 * 1024)} MB; nothing was imported. Export a narrower date range.`);
   }
   const buf = Buffer.concat(chunks);
-  return { text: buf.toString("utf8"), bytes: buf.length, truncated: false };
+  return { text: decodeIcs(buf), bytes: buf.length, truncated: false };
 }

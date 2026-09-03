@@ -100,12 +100,21 @@ what clashes, where the free stretches are, and which finished meetings to bill.
 
 ### What the parser handles
 
-Written against real exports, not just the spec: line folding (CRLF, bare LF and bare CR), `\n \, \; \\` escaping,
+Written against real exports, not just the spec: line folding (CRLF, bare LF and bare CR, and folds that Exchange
+places inside a multi-byte character, which are rejoined on the bytes before decoding), `\n \, \; \\` escaping,
 whole-day events with an exclusive `DTEND`, `DURATION` instead of `DTEND`, `TZID` and UTC times, floating times,
-`RRULE` for `DAILY`, `WEEKLY`, `MONTHLY` and `YEARLY` with `COUNT`, `UNTIL` (inclusive), `INTERVAL`, `BYDAY`,
-`BYMONTHDAY` and `BYMONTH`, `EXDATE`, `RDATE`, `RECURRENCE-ID` overrides (the moved instance replaces the original
-instead of appearing twice), `STATUS:CANCELLED`, `TRANSP:TRANSPARENT`, and `VALARM` blocks inside an event. An event
-it cannot read is skipped and counted rather than costing you the rest of the file.
+`RRULE` for `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` and `YEARLY` with `COUNT`, `UNTIL` (inclusive), `INTERVAL`,
+`BYDAY` including ordinals (`2MO`, `-1FR`), `BYMONTHDAY`, `BYMONTH` and `BYSETPOS`, `EXDATE`, `RDATE`,
+`RECURRENCE-ID` overrides (the moved instance replaces the original instead of appearing twice),
+`STATUS:CANCELLED`, `TRANSP:TRANSPARENT`, and `VALARM` blocks inside an event. An event it cannot read is skipped
+and counted rather than costing you the rest of the file.
+
+`FREQ=MINUTELY` and `FREQ=SECONDLY` are deliberately not expanded: one such rule fills any window with thousands of
+occurrences and buries the rest of the week. Those events are listed at their first occurrence and the reason is
+said out loud. A rule with no `COUNT` and no `UNTIL` is expanded only as far as the window you asked for.
+
+Exports written by this server keep whole-day events as `DATE` values, so a holiday leaves as the same day it
+arrived rather than a timed block on the day before in your machine's zone.
 
 `VTIMEZONE` is deliberately ignored. A file's inline DST rules are only as fresh as the app that wrote it; the `TZID`
 is kept and every offset is computed from the ICU data inside your Node build instead, which is what keeps a weekly

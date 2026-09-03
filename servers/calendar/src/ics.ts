@@ -37,6 +37,24 @@ export interface Prop {
  * Outlook folds with a bare LF and Apple sometimes with a bare CR, so all three
  * line endings are accepted.
  */
+/**
+ * Undo folding on the raw bytes, before any UTF-8 decoding. Exchange and some Outlook
+ * exporters fold a line at exactly 75 octets even when that lands inside a multi-byte
+ * character, so decoding first turns the split sequence into replacement characters and
+ * the summary is corrupted. Unfolding at the byte level puts the two halves back together.
+ */
+export function decodeIcs(buf: Buffer): string {
+  const out = Buffer.allocUnsafe(buf.length);
+  let n = 0;
+  for (let i = 0; i < buf.length; i++) {
+    const b = buf[i];
+    if (b === 0x0d && buf[i + 1] === 0x0a && (buf[i + 2] === 0x20 || buf[i + 2] === 0x09)) { i += 2; continue; }
+    if ((b === 0x0d || b === 0x0a) && (buf[i + 1] === 0x20 || buf[i + 1] === 0x09)) { i += 1; continue; }
+    out[n++] = b;
+  }
+  return out.subarray(0, n).toString("utf8").replace(/^\uFEFF/, "");
+}
+
 export function unfold(text: string): string[] {
   const raw = text.replace(/^﻿/, "").split(/\r\n|\r|\n/);
   const out: string[] = [];
@@ -187,13 +205,14 @@ export const DOW = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 export interface ByDay { ord: number | null; dow: number }
 export interface RRule {
-  freq: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+  freq: "HOURLY" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
   interval: number;
   count?: number;
   until?: DateVal;
   byDay?: ByDay[];
   byMonthDay?: number[];
   byMonth?: number[];
+  bySetPos?: number[];
   wkst: number;
 }
 
@@ -205,8 +224,12 @@ export function parseRRule(prop: Prop, warnings: string[] = []): RRule | null {
     parts[seg.slice(0, eq).trim().toUpperCase()] = seg.slice(eq + 1).trim();
   }
   const freq = (parts.FREQ ?? "").toUpperCase();
-  if (freq !== "DAILY" && freq !== "WEEKLY" && freq !== "MONTHLY" && freq !== "YEARLY") {
-    if (freq) warnings.push(`FREQ=${freq} is not expanded; those events are listed at their first occurrence only.`);
+  if (freq !== "HOURLY" && freq !== "DAILY" && freq !== "WEEKLY" && freq !== "MONTHLY" && freq !== "YEARLY") {
+    if (freq === "MINUTELY" || freq === "SECONDLY") {
+      warnings.push(`FREQ=${freq} is deliberately not expanded: one such rule fills any window with thousands of occurrences. Those events are listed at their first occurrence only.`);
+    } else if (freq) {
+      warnings.push(`FREQ=${freq} is not expanded; those events are listed at their first occurrence only.`);
+    }
     return null;
   }
   const interval = Math.max(1, Math.min(1000, Number(parts.INTERVAL ?? 1) || 1));
@@ -229,6 +252,10 @@ export function parseRRule(prop: Prop, warnings: string[] = []): RRule | null {
   if (parts.BYMONTHDAY) {
     const l = parts.BYMONTHDAY.split(",").map(s => Number(s.trim())).filter(n => Number.isInteger(n) && n !== 0 && Math.abs(n) <= 31);
     if (l.length) rule.byMonthDay = l;
+  }
+  if (parts.BYSETPOS) {
+    const l = parts.BYSETPOS.split(",").map(s => Number(s.trim())).filter(n => Number.isInteger(n) && n !== 0 && Math.abs(n) <= 366);
+    if (l.length) rule.bySetPos = l;
   }
   if (parts.BYMONTH) {
     const l = parts.BYMONTH.split(",").map(s => Number(s.trim())).filter(n => Number.isInteger(n) && n >= 1 && n <= 12);
@@ -374,6 +401,10 @@ function buildEvent(props: Record<string, Prop[]>, warn: (w: string) => void): C
     durationMs = 0;
   }
 
+  if (end && !durationMs && !start.allDay && wallKey(end.wall, false) < wallKey(start.wall, false)) {
+    warn(`DTEND is before DTSTART on "${(one("SUMMARY") ? unescapeText(one("SUMMARY")!.value).trim() : "an event").slice(0, 60)}"; that event is read as zero length.`);
+  }
+
   const uid = one("UID") ? unescapeText(one("UID")!.value).trim() : "";
   const attendees: string[] = [];
   for (const a of props.ATTENDEE ?? []) {
@@ -468,6 +499,12 @@ function dowOf(y: number, m: number, d: number): number {
   return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
 }
 
+function addHoursWall(w: Wall, hours: number): Wall {
+  const t = new Date(Date.UTC(w.y, w.m - 1, w.d, w.h, w.mi, w.s));
+  t.setUTCHours(t.getUTCHours() + hours);
+  return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), h: t.getUTCHours(), mi: t.getUTCMinutes(), s: t.getUTCSeconds() };
+}
+
 function addDaysWall(w: Wall, days: number): Wall {
   const t = new Date(Date.UTC(w.y, w.m - 1, w.d));
   t.setUTCDate(t.getUTCDate() + days);
@@ -498,10 +535,24 @@ export function zoneOfEvent(e: CalEvent, defaultZone: string): string {
   return isValidZone(z) ? z : defaultZone;
 }
 
+/** RFC 5545 3.3.10 BYSETPOS: keep only the named positions of one period's candidate set. */
+function applySetPos<T>(list: T[], pos?: number[]): T[] {
+  if (!pos?.length) return list;
+  const out: T[] = [];
+  for (const p of pos) {
+    const i = p > 0 ? p - 1 : list.length + p;
+    if (i >= 0 && i < list.length && !out.includes(list[i])) out.push(list[i]);
+  }
+  return out;
+}
+
 /** Every start wall clock the rule produces, in order, starting at DTSTART. */
 function* ruleWalls(start: Wall, r: RRule): Generator<Wall> {
   let steps = 0;
   const guard = () => { if (++steps > MAX_CANDIDATES) throw new IcsError("this recurrence rule produces too many dates to expand; narrow the window."); };
+  if (r.freq === "HOURLY") {
+    for (let n = 0; ; n++) { guard(); yield addHoursWall(start, n * r.interval); }
+  }
   if (r.freq === "DAILY") {
     for (let n = 0; ; n++) { guard(); yield addDaysWall(start, n * r.interval); }
   }
@@ -513,11 +564,12 @@ function* ruleWalls(start: Wall, r: RRule): Generator<Wall> {
     const weekStart = addDaysWall(start, -startOffset);
     for (let w = 0; ; w++) {
       const base = addDaysWall(weekStart, w * r.interval * 7);
-      for (const off of days) {
+      for (const off of applySetPos(days, r.bySetPos)) {
         guard();
         const cand = addDaysWall(base, off);
         if (wallLE(start, cand)) yield cand;
       }
+      guard();
     }
   }
   if (r.freq === "MONTHLY") {
@@ -548,7 +600,7 @@ function* ruleWalls(start: Wall, r: RRule): Generator<Wall> {
         days.push(start.d);
       }
       days.sort((a, b) => a - b);
-      for (const d of days) {
+      for (const d of applySetPos(days, r.bySetPos)) {
         guard();
         const cand: Wall = { y, m, d, h: start.h, mi: start.mi, s: start.s };
         if (wallLE(start, cand)) yield cand;
@@ -560,16 +612,28 @@ function* ruleWalls(start: Wall, r: RRule): Generator<Wall> {
   for (let n = 0; ; n++) {
     const y = start.y + n * r.interval;
     const months = r.byMonth?.length ? [...r.byMonth].sort((a, b) => a - b) : [start.m];
+    const yearCands: Wall[] = [];
     for (const m of months) {
       const dim = daysInMonth(y, m);
       const days = r.byMonthDay?.length
         ? r.byMonthDay.map(md => (md > 0 ? md : dim + md + 1)).filter(d => d >= 1 && d <= dim).sort((a, b) => a - b)
-        : (start.d <= dim ? [start.d] : []);          // 29 February is skipped in a common year
-      for (const d of days) {
-        guard();
-        const cand: Wall = { y, m, d, h: start.h, mi: start.mi, s: start.s };
-        if (wallLE(start, cand)) yield cand;
-      }
+        : r.byDay?.length
+          ? (() => {
+              const acc: number[] = [];
+              for (const b of r.byDay!) {
+                const all: number[] = [];
+                for (let d = 1; d <= dim; d++) if (dowOf(y, m, d) === b.dow) all.push(d);
+                if (b.ord === null) acc.push(...all);
+                else { const pick = b.ord > 0 ? all[b.ord - 1] : all[all.length + b.ord]; if (pick) acc.push(pick); }
+              }
+              return acc.sort((a, b) => a - b);
+            })()
+          : (start.d <= dim ? [start.d] : []);          // 29 February is skipped in a common year
+      for (const d of days) yearCands.push({ y, m, d, h: start.h, mi: start.mi, s: start.s });
+    }
+    for (const cand of applySetPos(yearCands, r.bySetPos)) {
+      guard();
+      if (wallLE(start, cand)) yield cand;
     }
     guard();
   }
