@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T07:16:49.776Z",
+  "generated_at": "2026-09-03T07:22:35.079Z",
   "rounds": [
     {
       "round": 1,
@@ -161,6 +161,17 @@
       "per_server": {},
       "at": "2026-09-03T02:45:00Z",
       "method": "servers/office-suite/dist/index.js v0.3.1 registered as ONE server 'office', proxying eight children (time-tracker, price-tracker, spreadsheet, invoice, expense"
+    },
+    {
+      "round": 8,
+      "file": "user_value_r8.json",
+      "score": 27,
+      "max": 36,
+      "pct": 75,
+      "scenarios": 12,
+      "per_server": {},
+      "at": "2026-09-03T07:15:00Z",
+      "method": "servers/office-suite/dist/index.js v0.4.0 registered as ONE server 'office'; tools/list returns 108 tools and the per-tool allowlist was written from that live "
     }
   ],
   "servers": [
@@ -182,6 +193,7 @@
         "",
         "3/3",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -195,6 +207,7 @@
         "2/3",
         "",
         "6/6",
+        "",
         "",
         ""
       ],
@@ -210,6 +223,7 @@
         "",
         "1/3",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -221,6 +235,7 @@
         "",
         "",
         "8/12",
+        "",
         "",
         "",
         "",
@@ -238,6 +253,7 @@
         "",
         "3/3",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -252,6 +268,7 @@
         "",
         "4/6",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -265,6 +282,7 @@
         "9/9",
         "",
         "9/9",
+        "",
         "",
         ""
       ],
@@ -600,7 +618,7 @@
       "first_seen": "USER_VALUE_R7.md",
       "severity": "",
       "title": "D-R24 rides along. |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R25",
@@ -628,21 +646,91 @@
       "first_seen": "USER_VALUE_R7.md",
       "severity": "",
       "title": "D-R28 |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R29",
       "first_seen": "USER_VALUE_R7.md",
       "severity": "medium",
       "title": "D-R29 (medium, office-suite) — the bundle renames colliding tools but the children's own prose",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R30",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
       "title": "D-R30 - shorten the search, and answer with near misses",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R31",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R31. The model also left the bundle here — twice — to write the same facts into the CLI's own memory directory. |",
       "status": "open"
+    },
+    {
+      "id": "D-R32",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R32 |",
+      "status": "open"
+    },
+    {
+      "id": "D-R33",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R33. The keyword list is still noisy (`end`, `run`, `accretion`, `ten-year-old`, `austin-anchored` outrank nothing). |",
+      "status": "open"
+    },
+    {
+      "id": "D-R34",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R34. `mileage_add {km: 30, region: \"PL\"}` -> `PLN 34.50` correctly, but with **no project and no billable flag**, so the drive is invisibl",
+      "status": "open"
+    },
+    {
+      "id": "D-R35",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R35. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R36",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R36. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R37",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R37. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R38",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R38. \"By type\" was answered per file, not per expense category. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R39",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R39. |",
+      "status": "open"
+    },
+    {
+      "id": "D-R40",
+      "first_seen": "USER_VALUE_R8.md",
+      "severity": "",
+      "title": "D-R40 |",
+      "status": "open (client or accepted)"
     },
     {
       "id": "D-T1",
@@ -667,7 +755,7 @@
     }
   ],
   "counts": {
-    "defects": 56,
-    "fixed": 27
+    "defects": 66,
+    "fixed": 31
   }
 }

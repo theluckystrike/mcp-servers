@@ -1,0 +1,478 @@
+{
+ "at": "2026-09-03T07:15:00Z",
+ "round": 8,
+ "compares_to": "data/user_value_r7.json",
+ "scope": "A FREELANCER'S WEEK round: twelve sentences a freelancer types in order, in one conversation, through the office-suite bundle now proxying ELEVEN children (time-tracker, price-tracker, spreadsheet, invoice, expense-tracker, currency, docx, timezone, resume, recurring, clauses). Round 7 asked whether a chain holds when a number crosses two servers; round 8 asks whether a fact stated once in sentence 1 -- the company, the VAT rate, the currency, the terms, the city -- still holds in sentence 12.",
+ "method": "servers/office-suite/dist/index.js v0.4.0 registered as ONE server 'office'; tools/list returns 108 tools and the per-tool allowlist was written from that live list (--allowedTools 'mcp__*' grants nothing, D-E4). One lane /private/tmp/uv41, fresh XDG_DATA_HOME/XDG_CONFIG_HOME, MCP_LICENSE_KEY='' (free tier throughout), one conversation via --session-id then thirteen --resume. claude -p --strict-mcp-config --model sonnet --output-format stream-json --verbose --max-turns 18. 14 CLI turns for 12 scenarios (scenario 5 is two sentences, scenario 11 is a 120-word background then the posting); calls and seconds are summed per scenario. NO fixture except one pre-run download of eurofxref-daily.xml and eurofxref-hist.xml to warm the ECB cache -- every store row in this round was created by the model. Local zone UTC+07, start 14:06 local = 07:06 UTC Thursday 2026-09-03, so the ECB has not published 2026-09-03 and 'today's rate' must resolve to 2026-09-02. Tool-call counts exclude the client's own ToolSearch.",
+ "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+ "scenarios": [
+  {
+   "surface": "bundle/invoice",
+   "id": "1",
+   "prompt": "I am Lucky Strike Software in Warsaw, VAT PL1234567890, I invoice in EUR with 23% VAT, 14-day terms.",
+   "score": 2,
+   "tool_calls": 1,
+   "seconds": 32.2,
+   "tools": [
+    "invoice_business_set"
+   ],
+   "note": "invoice/business.json holds name, address, vat_id PL1234567890, default_currency EUR, default_tax_rate 23, payment_terms_days 14, invoice_prefix INV. Marked down because the bundle keeps three business/tax profiles and this sentence filled one: docx/business.json did not exist (cost a document in s3) and expense-tracker settings stayed {} (cost the VAT split in s6). D-R31. The model also left the bundle here, writing the same facts into the CLI's own memory directory (1 Read, 2 Write)."
+  },
+  {
+   "surface": "bundle/invoice+timezone",
+   "id": "2",
+   "prompt": "New client Nova Labs in Austin; save Tom Reed there as a contact, Austin time.",
+   "score": 3,
+   "tool_calls": 2,
+   "seconds": 11.7,
+   "tools": [
+    "client_add",
+    "contacts_set"
+   ],
+   "note": "client_add {name Nova Labs, address Austin, TX, USA} -> a1863018 in clients.json; contacts_set {name Tom Reed, zone Austin} -> America/Chicago, 09:00-17:00, with the local time quoted. Two servers, one sentence, no clarification."
+  },
+  {
+   "surface": "bundle/clauses+docx",
+   "id": "3",
+   "prompt": "Write a proposal for Nova: API redesign, 3 phases, 6,000 EUR, using my standard scope and payment clauses.",
+   "score": 2,
+   "tool_calls": 7,
+   "seconds": 76.3,
+   "tools": [
+    "clause_list",
+    "clause_list",
+    "clause_get",
+    "clause_get",
+    "proposal_create",
+    "docx_business_set",
+    "proposal_create"
+   ],
+   "note": "Clause bodies for scope-of-work and payment-terms filled with Nova Labs / 6,000 / EUR / 50 percent / 14 days; the docx carries EUR 6,000.00 twice, three timeline rows and 'All amounts exclude VAT at 23%'. But the first proposal_create answered 'No business profile yet ... run docx_business_set and create it again', so the model set the second profile and regenerated: PROP-2026-0001 burned, two of three free-tier documents spent, and documents.json holds two rows on one path. D-R31, D-R32. The letterhead email was invented. D-R40."
+  },
+  {
+   "surface": "bundle/clauses",
+   "id": "4",
+   "prompt": "Draft the contract from my clause library: scope, payment 50% upfront, IP on final payment, Polish law.",
+   "score": 2,
+   "tool_calls": 8,
+   "seconds": 39.4,
+   "tools": [
+    "clause_list",
+    "clause_list",
+    "clause_get",
+    "clause_get",
+    "clause_search",
+    "clause_list",
+    "clause_get",
+    "contract_assemble"
+   ],
+   "note": "contract_assemble {clause_ids: [scope-of-work, payment-terms, ip-assignment, governing-law]} -> a clean docx: numbered 1-4, the not-legal-advice disclaimer, '50 percent before work begins', 'On receipt of payment in full ... assigns', 'governed by the laws of Poland', zero surviving {{, and the scope cites PROP-2026-0002. Marked down because the shipped contract cites two clauses it does not contain, Change Requests and Dispute Resolution. D-R37."
+  },
+  {
+   "surface": "bundle/time-tracker",
+   "id": "5",
+   "prompt": "Start a timer on Nova, API design. / Stop it and log 3 more hours yesterday on Nova at 90 EUR.",
+   "score": 2,
+   "tool_calls": 3,
+   "seconds": 22.7,
+   "tools": [
+    "timer_start",
+    "timer_stop",
+    "entry_add"
+   ],
+   "note": "entry_add {minutes 180, rate 90, currency EUR} -> 3.00 h, EUR 270.00, exact in data.json (rateCents 9000). Marked down for the store: the stopped timer is kept as seconds 11, rateCents 0, currency USD in a EUR business, and it rode into invoice_summary, entry_mark_billed and the CSV; and the 3 h are stamped 2026-09-02T02:00:00Z, i.e. 09:00 in the machine's zone UTC+07, which is 04:00 in the Warsaw the user declared. D-R35."
+  },
+  {
+   "surface": "bundle/expense-tracker",
+   "id": "6",
+   "prompt": "Log a 61.50 EUR Adobe receipt for Nova, billable, and a 30 km drive to the airport in Poland.",
+   "score": 1,
+   "tool_calls": 2,
+   "seconds": 19.7,
+   "tools": [
+    "expense_add",
+    "mileage_add"
+   ],
+   "note": "expense_add stored EUR 61.50, project Nova Labs, billable true, but vat_rate 0 and net = gross = 61.50: the expected 50.00 + 11.50 split never happened because the 23% given at onboarding lives in invoice/business.json and expense-tracker never sees it. D-R34. mileage_add {km 30, region PL} -> PLN 34.50 correctly but with no project and no billable argument, the only two undescribed arguments in that schema, so the drive is invisible to expense_to_invoice and to the s10 CSV; the model then told the user it was not marked billable when the store says billable true. D-R36."
+  },
+  {
+   "surface": "bundle/timezone",
+   "id": "7",
+   "prompt": "Find a one-hour call with Tom next week inside both our working hours and give me the ics.",
+   "score": 3,
+   "tool_calls": 2,
+   "seconds": 26.0,
+   "tools": [
+    "find_meeting_slots",
+    "ics_create"
+   ],
+   "note": "find_meeting_slots {60 min, earliest_date 2026-09-07, days 5, You/Warsaw + Tom Reed/Austin} -> 5 slots, best 2026-09-07T14:00:00Z = 16:00-17:00 Europe/Warsaw and 09:00-10:00 America/Chicago, both inside 09:00-17:00. meeting.ics: DTSTART 20260907T140000Z, DTEND 20260907T150000Z, a real ORGANIZER mailto:, and Tom in DESCRIPTION with the reason he cannot be an ATTENDEE. Round 7 D-R27 fixed. The organizer address is the invented one from s3."
+  },
+  {
+   "surface": "bundle/time-tracker+expense-tracker+currency+invoice",
+   "id": "8",
+   "prompt": "Invoice Nova for this week's hours and expenses in USD at today's ECB rate.",
+   "score": 3,
+   "tool_calls": 8,
+   "seconds": 61.8,
+   "tools": [
+    "invoice_summary",
+    "expense_to_invoice",
+    "fx_rates_for",
+    "expense_to_invoice",
+    "invoice_create",
+    "entry_mark_billed",
+    "expense_mark_rebilled",
+    "invoice_pdf"
+   ],
+   "note": "USD 383.80 = 31260 + 7120 minor. Rate 1.1578 dated 2026-09-02 with the 'not published until ~16:00 CET' explanation. Stored note: 'Services supplied to a client outside the EU; invoiced at 0% VAT (reverse charge / outside scope). Converted from EUR at the ECB reference rate of 2026-09-02 (1 EUR = 1.1578 USD).' Round 7 D-R24 fixed and exercised (104.20 x 3 = 312.60 reproduces) and D-R28 fixed and exercised (entry_mark_billed called unprompted, s12 proves the hours are closed). Best scenario of the round."
+  },
+  {
+   "surface": "bundle/recurring",
+   "id": "9",
+   "prompt": "Set Nova up on a monthly retainer of 20 hours at 90 EUR from next month and show me the next 3 invoices.",
+   "score": 2,
+   "tool_calls": 3,
+   "seconds": 30.6,
+   "tools": [
+    "schedule_create",
+    "schedule_update",
+    "schedule_upcoming"
+   ],
+   "note": "schedules.json: monthly, start_date 2026-10-01, one item 20 x 90, tax_rate 0 -> EUR 1,800.00, next dates 2026-10-01 / 11-01 / 12-01, invoice_due +14. But schedule_create first returned EUR 2,214.00 (1,800 plus the 23% inherited from the invoice business profile) and the correction reason, a non-EU client, is stored nowhere because a schedule has no notes field; and schedule_upcoming {days: 100} was silently clamped to the free tier's 30, so two of the three requested periods are the model's own arithmetic. D-R39."
+  },
+  {
+   "surface": "bundle/time-tracker+expense-tracker+spreadsheet",
+   "id": "10",
+   "prompt": "Export this week's Nova time and expenses to a CSV and then open it and total it by type.",
+   "score": 2,
+   "tool_calls": 5,
+   "seconds": 27.6,
+   "tools": [
+    "export_csv",
+    "expense_export",
+    "sheet_query",
+    "sheet_query",
+    "sheet_query"
+   ],
+   "note": "Both files written; sheet_query sums verified against the files: total_amount 270, total_hours 3, total_gross 61.5. Three deductions: the time CSV carries the 0.00 h timer stub as a real row; the mileage is missing because it has no project; and sheet_query {col: amount} errored on the expense CSV because time-tracker names that column amount and expense-tracker names it gross, costing a call. D-R38. 'By type' was answered per file, not per expense category."
+  },
+  {
+   "surface": "bundle/resume",
+   "id": "11",
+   "prompt": "(120-word background) then: Tailor my resume to this Nova job posting: <150-word posting>.",
+   "score": 2,
+   "tool_calls": 5,
+   "seconds": 80.0,
+   "tools": [
+    "profile_set",
+    "tailor_to_job",
+    "profile_set",
+    "tailor_to_job",
+    "resume_to_html"
+   ],
+   "note": "A real tailored resume, coverage 50% -> 57%, three employers and every date straight from the dictated background, nothing fabricated wholesale. But tailor_to_job is read-only, so with no write path the model rewrote the stored profile to raise the score, and the bullet the user dictated as 'wrote the OpenAPI style guide two of those clients still use' is now stored as 'wrote the OpenAPI style guide and governance documentation two of those clients still use'. D-R33. The keyword list is still noisy: end, run, accretion, ten-year-old, austin-anchored."
+  },
+  {
+   "surface": "bundle/time-tracker+invoice+expense-tracker",
+   "id": "12",
+   "prompt": "What is unbilled, what is due, and what did I earn this week?",
+   "score": 3,
+   "tool_calls": 5,
+   "seconds": 40.0,
+   "tools": [
+    "report",
+    "overdue_report",
+    "invoice_list",
+    "report",
+    "expense_list"
+   ],
+   "note": "Correct on all three counts: unbilled hours 0 with the tool volunteering '2 entries are hidden because they have already been invoiced'; due INV-2026-0001 USD 383.80 on 2026-09-17 and 0 overdue; earned 3.00 h / EUR 270.00. It also surfaced the orphan PLN 34.50 mileage as the week's one loose end and offered to attach it, and relayed the free tier's 7-day report window instead of pretending to full history."
+  }
+ ],
+ "totals": {
+  "score": 27,
+  "max": 36,
+  "tool_calls": 51,
+  "seconds": 468.0,
+  "by_scenario": {
+   "1": "2/3",
+   "2": "3/3",
+   "3": "2/3",
+   "4": "2/3",
+   "5": "2/3",
+   "6": "1/3",
+   "7": "3/3",
+   "8": "3/3",
+   "9": "2/3",
+   "10": "2/3",
+   "11": "2/3",
+   "12": "3/3"
+  },
+  "by_server": {
+   "clauses": {
+    "calls": 12,
+    "tools": [
+     "clause_list x5",
+     "clause_get x4",
+     "clause_search",
+     "contract_assemble"
+    ],
+    "scenarios": [
+     "3",
+     "4"
+    ]
+   },
+   "time-tracker": {
+    "calls": 8,
+    "tools": [
+     "timer_start",
+     "timer_stop",
+     "entry_add",
+     "invoice_summary",
+     "entry_mark_billed",
+     "export_csv",
+     "report x2"
+    ],
+    "scenarios": [
+     "5",
+     "8",
+     "10",
+     "12"
+    ]
+   },
+   "expense-tracker": {
+    "calls": 7,
+    "tools": [
+     "expense_add",
+     "mileage_add",
+     "expense_to_invoice x2",
+     "expense_mark_rebilled",
+     "expense_export",
+     "expense_list"
+    ],
+    "scenarios": [
+     "6",
+     "8",
+     "10",
+     "12"
+    ]
+   },
+   "invoice": {
+    "calls": 6,
+    "tools": [
+     "invoice_business_set",
+     "client_add",
+     "invoice_create",
+     "invoice_pdf",
+     "invoice_list",
+     "overdue_report"
+    ],
+    "scenarios": [
+     "1",
+     "2",
+     "8",
+     "12"
+    ]
+   },
+   "resume": {
+    "calls": 5,
+    "tools": [
+     "profile_set x2",
+     "tailor_to_job x2",
+     "resume_to_html"
+    ],
+    "scenarios": [
+     "11"
+    ]
+   },
+   "docx": {
+    "calls": 3,
+    "tools": [
+     "proposal_create x2",
+     "docx_business_set"
+    ],
+    "scenarios": [
+     "3"
+    ]
+   },
+   "timezone": {
+    "calls": 3,
+    "tools": [
+     "contacts_set",
+     "find_meeting_slots",
+     "ics_create"
+    ],
+    "scenarios": [
+     "2",
+     "7"
+    ]
+   },
+   "recurring": {
+    "calls": 3,
+    "tools": [
+     "schedule_create",
+     "schedule_update",
+     "schedule_upcoming"
+    ],
+    "scenarios": [
+     "9"
+    ]
+   },
+   "spreadsheet": {
+    "calls": 3,
+    "tools": [
+     "sheet_query x3"
+    ],
+    "scenarios": [
+     "10"
+    ]
+   },
+   "currency": {
+    "calls": 1,
+    "tools": [
+     "fx_rates_for"
+    ],
+    "scenarios": [
+     "8"
+    ]
+   },
+   "price-tracker": {
+    "calls": 0,
+    "tools": [],
+    "scenarios": []
+   }
+  },
+  "tool_selection": "50 of 51 calls used the right tool; the miss is the amount/gross column guess in s10, which the two exporters' schemas made unguessable. 1 tool error in 51.",
+  "left_the_bundle": "Once, in scenario 1: one Read and two Write against ~/.claude-alt2/projects/-private-tmp-uv41/memory/, saving the business profile into the CLI's own memory after the server already had it. Client-harness behaviour, not a fallback. No curl, no WebFetch, no direct read of any store."
+ },
+ "verification": {
+  "ecb_rate_date": "currency/daily.json date 2026-09-02, USD 1.1578 -- 2026-09-03 not published before ~16:00 CET. PASS",
+  "invoice_total": "lines 31260 + 7120 = 38380 minor = USD 383.80; 3 h x EUR 90 = 270 -> unit 104.20 USD, 10420 x 3 = 31260 reproduces on a calculator (round 7 D-R24 fixed); 61.50 x 1.1578 = 71.2047 -> 7120; tax_minor 0; due_date 2026-09-17 = issue + the 14-day term from sentence 1. PASS",
+  "invoice_rounding_basis": "270 x 1.1578 = 312.606, so line 1 is USD 0.01 under the unrounded conversion -- the documented cost of computing gross from the printed unit price. PASS by the stated basis",
+  "vat_note_recorded": "invoices.json notes: 'Services supplied to a client outside the EU; invoiced at 0% VAT (reverse charge / outside scope). Converted from EUR at the ECB reference rate of 2026-09-02 (1 EUR = 1.1578 USD).' PASS",
+  "hours_closed": "entry_mark_billed called unprompted; s12 report {unbilled_only: true} returns nothing and says 2 entries are hidden. Round 7 D-R28 fixed. PASS",
+  "expense_closed": "expense-tracker 485062d6 carries rebilled_at and rebilled_invoice INV-2026-0001. PASS",
+  "expense_split": "expected 50.00 + 11.50 at 23%; store has amount_minor 6150, no vat_rate, expense_list reports net 61.50 / vat 0.00. FAIL, D-R34",
+  "mileage": "70c14d62: 30 km x 1.15 PLN/km = PLN 34.50, billable true, NO project. Arithmetic PASS, routing FAIL, D-R36",
+  "time_entry": "8c9a8dce seconds 10800, rateCents 9000, currency EUR = 3.00 h / EUR 270.00 PASS; stamped 2026-09-02T02:00:00Z = 04:00 Europe/Warsaw FAIL, D-R35; c13c1cbf is a seconds-11 rateCents-0 USD stub FAIL, D-R35",
+  "recurring": "schedules.json monthly, start 2026-10-01, 20 x 90, tax_rate 0 -> EUR 1,800.00; next dates 2026-10-01 / 11-01 / 12-01, invoice_due +14. PASS. First create returned EUR 2,214.00 and the 0% reason is stored nowhere. FAIL, D-R39",
+  "csv_totals": "nova-time-this-week.csv amount column 270.00 + 0.00 over 2 rows; nova-expenses-this-week.csv gross 61.5 over 1 row; sheet_query returned total_amount 270, total_hours 3, total_gross 61.5, matching the model's 270.00 / 61.50 / 331.50 table. PASS on sums; the stub row and the missing mileage are D-R35 and D-R36",
+  "ics": "DTSTART 20260907T140000Z / DTEND 20260907T150000Z = 16:00-17:00 Europe/Warsaw Mon 07 Sep = 09:00-10:00 America/Chicago, both inside 09:00-17:00; real ORGANIZER mailto:, no bogus ATTENDEE, unaddressable guest moved to DESCRIPTION with the reason. Round 7 D-R27 fixed. PASS",
+  "proposal": "word/document.xml: EUR 6,000.00 in the Investment row and the Total, three timeline rows, 'All amounts exclude VAT at 23%'. PASS. documents.json holds PROP-2026-0001 and PROP-2026-0002 on one path. FAIL, D-R32",
+  "contract": "headings 1. Scope of Work .. 4. Governing Law, '50 percent', 'On receipt of payment in full ... assigns', 'laws of Poland', zero surviving {{. PASS. Cites the Change Requests and Dispute Resolution clauses, neither present. FAIL, D-R37",
+  "resume": "profiles.json and the html: 3 employers, 2021-, 2017-2021, 2014-2017, MSc 2014, 9 skills, all from the dictated background, nothing invented wholesale. PASS. One bullet gained 'and governance documentation' between s11a and s11b. FAIL, D-R33",
+  "identity": "docx/business.json email support@zovo.one -- never given by the user; printed on the proposal and used as the ICS ORGANIZER. FAIL, D-R40"
+ },
+ "defects": [
+  {
+   "id": "D-R31",
+   "severity": "high",
+   "server": "office-suite",
+   "side": "server",
+   "title": "one business, three business profiles, and onboarding fills one",
+   "repro": "Fresh XDG_DATA_HOME. invoice_business_set {name, address, vat_id, default_currency: 'EUR', default_tax_rate: 23, payment_terms_days: 14} -> stored. Then proposal_create {client, project_title, ...} -> 'No business profile yet ... run docx_business_set and create it again' (docx keeps its own business.json), and expense_add {amount: 61.50, currency: 'EUR'} -> vat_rate 0 (expense-tracker keeps its own settings, which stayed {}). Live in /private/tmp/uv41: the same five facts had to be stated twice and the VAT rate never reached the third store at all.",
+   "fix": "The bundle already maps every exposed tool to its child (servers/office-suite/src/index.ts:176). Give it one business_set that fans out to invoice, docx and expense-tracker (expense_settings {default_vat_rate}), keeping the per-child tools for overrides. Failing that, have invoice_business_set's answer name the other two calls, the way invoice_summary now names entry_mark_billed."
+  },
+  {
+   "id": "D-R32",
+   "severity": "high",
+   "server": "docx",
+   "side": "server",
+   "title": "proposal_create consumes a reference number and a free-tier document, then says 'create it again'",
+   "repro": "/private/tmp/uv41/out/s3.jsonl: proposal_create with no docx business profile still wrote the file, still consumed PROP-2026-0001 and one of the free tier's three monthly documents, and answered 'run docx_business_set and create it again'. The model did. documents.json now holds PROP-2026-0001 and PROP-2026-0002 with the SAME path; one file exists and it says PROP-2026-0002.",
+   "fix": "Check the business profile before writing anything and refuse with the fix, so nothing is consumed. And since proposal_update now exists on the bundle, name it in that message ('... then proposal_update {reference}') instead of 'create it again'."
+  },
+  {
+   "id": "D-R33",
+   "severity": "high",
+   "server": "resume",
+   "side": "server",
+   "title": "tailoring has no write path, so the model rewrote the user's stored profile and altered a fact",
+   "repro": "/private/tmp/uv41/out/s11b.jsonl calls 2 and 3: tailor_to_job is read-only (matched / missing / coverage), so asked to 'tailor my resume' the model called profile_set again with edited bullets. Diff resume/profiles.json against the dictated background in s11a.jsonl: 'wrote the OpenAPI style guide two of those clients still use' is stored as 'Wrote the OpenAPI style guide and governance documentation two of those clients still use'. Coverage moved 50% -> 57% because of it. profile_set overwrites in place with no version history and no warning.",
+   "fix": "Give resume_create / resume_to_html an emphasise: string[] that reorders and selects stored bullets without rewriting them, and have tailor_to_job return the ordering it recommends. Make profile_set refuse a silent overwrite of an existing profile: profile_update {add_bullet} for real additions, plus a warning naming any bullet whose text changed. The cover_letter_create fact-integrity guard (RESUME_AUDIT D-R2/D-R3) is worth nothing if the profile it checks against can be rewritten to license the claim."
+  },
+  {
+   "id": "D-R34",
+   "severity": "high",
+   "server": "expense-tracker",
+   "side": "server",
+   "title": "the VAT rate given at onboarding never reaches the receipt, so 61.50 was never split 50.00 + 11.50",
+   "repro": "Fresh data dir, invoice_business_set {default_tax_rate: 23}, then expense_add {amount: 61.50, currency: 'EUR', merchant: 'Adobe', project: 'Nova Labs', billable: true} -> expense-tracker/data.json has no vat_rate and expense_list reports net EUR 61.50 / vat EUR 0.00. The tool's own answer names the fix (pass vat_rate, or set expense_settings) and the model relayed it to the user instead of acting. The receipt was then rebilled gross onto INV-2026-0001 as '[VAT unknown, gross rebilled as-is]'.",
+   "fix": "Fan the onboarding rate into expense_settings.default_vat_rate (D-R31). When a receipt has no rate but a default exists, apply it and say so rather than recording a gross-only row: expense_to_invoice deliberately refuses to apply a default retroactively, so the moment of entry is the only moment this can be got right."
+  },
+  {
+   "id": "D-R35",
+   "severity": "medium",
+   "server": "time-tracker",
+   "side": "server",
+   "title": "a stopped timer leaves a zero-rate USD row, and no entry knows what zone it is in",
+   "repro": "/private/tmp/uv41/data/mcp-servers/time-tracker/data.json. (a) timer_start {project, task} takes no rate or currency, so timer_stop wrote seconds 11, rateCents 0, currency 'USD' into a business whose declared currency is EUR; the row appears in invoice_summary, was passed to entry_mark_billed and is a line in nova-time-this-week.csv. (b) entry_add {start: '2026-09-02T09:00:00'} resolved in the HOST machine's zone (UTC+07) and stored 02:00:00Z = 04:00 Europe/Warsaw, the zone the user declared in sentence 1. Any entry near midnight lands on the wrong day and report {from, to} slices by those stamps.",
+   "fix": "Default a timer's rate and currency from the project rate or the business profile and name which was used. Give time-tracker a zone in its own settings (or read the business profile's address), parse entries in the user's zone rather than the process's, and echo the resolved zone in the answer."
+  },
+  {
+   "id": "D-R36",
+   "severity": "medium",
+   "server": "expense-tracker",
+   "side": "server",
+   "title": "mileage_add's project and billable are the only undescribed arguments, and the drive fell out of the week",
+   "repro": "servers/expense-tracker/src/index.ts, the mileage_add schema: km, miles, date, purpose, region, rate_per_km and currency all carry .describe(); project: text().optional() and billable: z.boolean().optional() carry none. mileage_add {km: 30, purpose: 'Drive to airport', region: 'PL'} -> stored PLN 34.50 with billable true and NO project, so it is invisible to expense_to_invoice, absent from the s10 CSV, and the loose end of s12. The response omits both fields, and the model told the user the opposite of the stored billable flag.",
+   "fix": "Describe both arguments ('project: bill it to a client, the same name you use in time-tracker'; 'billable: default true') and echo project and billable in the answer exactly as expense_add does. That one echoed sentence is what stopped the model guessing wrong on the receipt in the same turn."
+  },
+  {
+   "id": "D-R37",
+   "severity": "medium",
+   "server": "clauses",
+   "side": "server",
+   "title": "an assembled contract cites clauses it does not contain",
+   "repro": "contract_assemble {clause_ids: ['scope-of-work','payment-terms','ip-assignment','governing-law']}, then unzip -p <out> word/document.xml: the scope clause says work outside it 'is handled under the Change Requests clause' and the governing-law clause says the courts decide 'any dispute that is not resolved under the Dispute Resolution clause'. Neither clause is in the document. Live in /private/tmp/uv41/data/mcp-servers/clauses/documents/nova-labs-service-agreement-nova-labs.docx.",
+   "fix": "Add a references: string[] field to each clause and have contract_assemble return missing_references: [{clause: 'scope-of-work', refers_to: 'change-requests'}] with an offer to include them. Cheap, and it turns a silent hole in a legal document into a prompt."
+  },
+  {
+   "id": "D-R38",
+   "severity": "medium",
+   "server": "spreadsheet + expense-tracker",
+   "side": "server",
+   "title": "the two exporters name the money column differently",
+   "repro": "/private/tmp/uv41/out/s10.jsonl calls 3 and 4: export_csv (time) writes an amount column; expense_export writes gross / net / vat. sheet_query {path: <expense csv>, aggregate: [{col: 'amount', fn: 'sum'}]} -> Error: column 'amount' not found. Columns: id, date, currency, gross, net, ... The recovery cost one call. The only tool error in 51.",
+   "fix": "Either add an amount alias column to the expense export (equal to gross), or say in both tools' descriptions which column carries the money. Give sheet_query a near-miss hint ('did you mean gross?') -- it already lists the real columns, so it is one line away."
+  },
+  {
+   "id": "D-R39",
+   "severity": "medium",
+   "server": "recurring",
+   "side": "server",
+   "title": "the free horizon truncates 'the next 3 invoices', and a schedule has no field for its tax reason",
+   "repro": "/private/tmp/uv41/out/s9.jsonl: schedule_upcoming {days: 100} returned horizon_days 30 with the upgrade text and one occurrence, so two of the three requested periods came from the model's own arithmetic. Separately schedule_create returned EUR 2,214.00 (1,800 plus the 23% inherited from the invoice business profile) and had to be corrected with schedule_update {tax_rate: 0}; the reason -- a non-EU client, reverse charge -- is in the s8 invoice's notes field but recurring/schedules.json has nowhere to put it, so every invoice this retainer generates from October carries 0% VAT with no explanation.",
+   "fix": "Make the free cap a count of occurrences (3) rather than a window of days, so the modal question is answerable. Add notes to schedule_create / schedule_update and pass it through to every generated invoice."
+  },
+  {
+   "id": "D-R40",
+   "severity": "medium",
+   "server": "docx + timezone",
+   "side": "client-side, server-mitigable",
+   "title": "the model invented an email address and it shipped on a proposal and an ICS ORGANIZER",
+   "repro": "/private/tmp/uv41/data/mcp-servers/docx/business.json: 'email': 'support@zovo.one', the operator's account address, visible to the model in the harness environment and never mentioned in the conversation. It is printed on the proposal letterhead, and because ics_create reads the same profile it is ORGANIZER;CN='Lucky Strike Software':mailto:support@zovo.one in timezone/meeting.ics -- the calendar invite for a client call. Neither server asked where the address came from.",
+   "fix": "Make email explicitly optional in docx_business_set with a description that says to leave it out unless the user supplied it, and have the proposal render 'email not set' rather than accept an invented one. Same guard on ics_create's organizer. A tool that prints an identity should never let a caller improvise one."
+  }
+ ],
+ "fixed_since_r7": [
+  "D-R24 (invoice: unit price x quantity did not equal the line) -- fixed at money.ts:116 and exercised live: 10420 x 3 = 31260.",
+  "D-R27 (ics_create wrote ATTENDEE;CN=Sara:invalid:nomail) -- fixed: a real ORGANIZER mailto:, unaddressable guests in DESCRIPTION with the reason.",
+  "D-R28 (invoiced hours stayed open) -- fixed: entry_mark_billed exists, was called unprompted, and s12 proves the hours are closed.",
+  "D-R29 (child prose named the pre-rename tool) -- fixed: the failing proposal_create said docx_business_set, the exposed name, and the model called it directly.",
+  "D-R25 (literal \\n\\n on the printed page) -- not reproduced in this round; no escape survives into either word/document.xml."
+ ],
+ "still_open": [
+  "D-R26 (proposal_create overwriting an earlier proposal): the collision guard works -- the second call had to pass overwrite: true -- but the cost moved rather than vanished. See D-R32.",
+  "D-R30 (free tier gates 'next week' at 5 search days): worked around, not fixed -- the model asked for exactly 5 days from Monday. The cap is still 5.",
+  "D-E4 (--allowedTools 'mcp__*' grants nothing): still true at 108 tools; the allowlist is written out by name."
+ ],
+ "artifacts": [
+  "docs/USER_VALUE_R8.md",
+  "/private/tmp/uv41/mcp.json, allow.txt (108 tools), run.sh (14 turns), seed.mjs (ECB warm only), tools.mjs, show.py",
+  "/private/tmp/uv41/out/*.jsonl (14 transcripts)",
+  "/private/tmp/uv41/data/mcp-servers/{invoice,docx,clauses,time-tracker,expense-tracker,recurring,resume,timezone,currency}",
+  "/private/tmp/uv41/nova-time-this-week.csv, nova-expenses-this-week.csv, michal-strzelecki-nova-labs-resume.html"
+ ]
+}
