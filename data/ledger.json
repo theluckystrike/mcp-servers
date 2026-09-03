@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T08:59:33.045Z",
+  "generated_at": "2026-09-03T09:19:09.459Z",
   "session": {
-    "count": 30,
+    "count": 31,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -122,6 +122,10 @@
       {
         "at": "2026-09-03T08:59:32.975Z",
         "note": "loop 6: v0.4.2, connect by URL, purchase binding, p50 78 ms, round 9 23/24, backlog 25 to 1, KPI + sprint tabs"
+      },
+      {
+        "at": "2026-09-03T09:19:09.417Z",
+        "note": "loop 6 addendum: 7 registry name variants on empty tokens (stdio-only, remote URLs cannot be shared)"
       }
     ]
   },
@@ -797,6 +801,10 @@
     {
       "file": "docs/MIRRORS_RESULT.md",
       "first_line": "MIRRORS_RESULT.md -- one public repo per server, 2026-09-02"
+    },
+    {
+      "file": "docs/NAMING_R2_RESULT.md",
+      "first_line": "NAMING_R2_RESULT.md — registry name variants, round 2, 2026-09-03"
     },
     {
       "file": "docs/NAMING_RESULT.md",

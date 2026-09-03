@@ -19,7 +19,7 @@
     "registry": {
       "status": "published",
       "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
-      "note": "12 entries at v0.4.2 (11 servers + office-suite); 11 hosted via remotes[]; word-rich names; variants in progress"
+      "note": "19 entries at v0.4.2: 12 primary word-rich names (11 hosted via remotes[]) plus 7 stdio-only variants on empty tokens (invoices, expenses, retainer, timer, exchange-fx, prices-deal, calendar)"
     },
     "smithery": {
       "status": "blocked",
