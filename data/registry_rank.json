@@ -1702,5 +1702,1257 @@
     "best_rank_by_server": {}
    }
   }
+ },
+ "variants_r2_2026-09-03": {
+  "note": "Task 3 round 2. Bounded single-page probe (GET .../v0/servers?search=<token>&limit=100, one request per token, 25s timeout with 3 retries; '100+' means the page was full and a nextCursor existed, i.e. true total is higher but irrelevant for near-empty-token selection since those are always under 100 and captured on one page). 47 tokens probed pre-publish. 7 variants published (2026-09-03) as new registry entries pointing at the same v0.4.2 mcpb package/sha as the parent server; remotes[] was DROPPED from every variant because the registry rejects a second server row reusing the same remote URL (400: 'remote URL ... is already used by server ...') -- so variants are stdio-only (mcpb) while the parent names keep their hosted remotes[]. Post-publish re-probe could not complete: registry.modelcontextprotocol.io/v0/servers started timing out on every request (10-25s, all retries) during the re-measurement window, a live API outage/degradation distinct from the previously-documented 1-3 minute index lag. Numbers below are therefore the PRE-publish baseline only; the after-side of data/organic.json carries the variant names as newly-held-by-definition (the registry row now exists under that exact name) but keeps pre-publish rank/result-count figures with a flag that live re-verification is pending.",
+  "published": {
+   "time-tracker": {
+    "registry_name": "io.github.theluckystrike/timer-tracking",
+    "tokens": [
+     "timer",
+     "tracking"
+    ]
+   },
+   "price-tracker": {
+    "registry_name": "io.github.theluckystrike/prices-deal",
+    "tokens": [
+     "prices",
+     "deal"
+    ]
+   },
+   "invoice": {
+    "registry_name": "io.github.theluckystrike/invoices-invoicing",
+    "tokens": [
+     "invoices",
+     "invoicing"
+    ]
+   },
+   "expense-tracker": {
+    "registry_name": "io.github.theluckystrike/expenses",
+    "tokens": [
+     "expenses"
+    ]
+   },
+   "currency": {
+    "registry_name": "io.github.theluckystrike/exchange-fx",
+    "tokens": [
+     "exchange",
+     "fx"
+    ]
+   },
+   "timezone": {
+    "registry_name": "io.github.theluckystrike/calendar",
+    "tokens": [
+     "calendar"
+    ]
+   },
+   "recurring": {
+    "registry_name": "io.github.theluckystrike/retainer",
+    "tokens": [
+     "retainer"
+    ]
+   }
+  },
+  "skipped_servers": {
+   "spreadsheet": "no unheld token in the 47-token probe set scores under the 100-result ceiling (excel/xlsx/csv/sheet all already held)",
+   "docx": "only unheld candidate was 'word' at 100+ results, over the acceptable ceiling",
+   "clauses": "contract/clause/proposal/docx already held by this or the docx server; no unheld token left in-budget",
+   "resume": "resume/cv/job/cover-letter all already held or over the 100+ ceiling",
+   "office-suite": "invoices/expenses/prices/deal/exchange/fx/calendar/retainer were all already assigned to a topically-closer server; no server-exclusive unheld token remained"
+  },
+  "pre_publish_probe_2026-09-03": {
+   "time": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "timer": {
+    "results_label": "12",
+    "our_rank": []
+   },
+   "timesheet": {
+    "results_label": "13",
+    "our_rank": [
+     [
+      1,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      2,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      3,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      4,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      5,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      6,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      7,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      8,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      9,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      10,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      11,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      12,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ]
+   },
+   "hours": {
+    "results_label": "13",
+    "our_rank": [
+     [
+      2,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      3,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      4,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      5,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      6,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      7,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      8,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      9,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      10,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      11,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      12,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      13,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ]
+   },
+   "billable": {
+    "results_label": "12",
+    "our_rank": [
+     [
+      1,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      2,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      3,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      4,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      5,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      6,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      7,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      8,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      9,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      10,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      11,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ],
+     [
+      12,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours"
+     ]
+    ]
+   },
+   "tracking": {
+    "results_label": "24",
+    "our_rank": []
+   },
+   "invoice": {
+    "results_label": "100+",
+    "our_rank": [
+     [
+      82,
+      "io.github.theluckystrike/invoice"
+     ],
+     [
+      83,
+      "io.github.theluckystrike/invoice"
+     ],
+     [
+      84,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      85,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      86,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      87,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      88,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      89,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      90,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      91,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      92,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      93,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      94,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      95,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      96,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      97,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      98,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      99,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      100,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ]
+    ]
+   },
+   "invoices": {
+    "results_label": "0",
+    "our_rank": []
+   },
+   "invoicing": {
+    "results_label": "68",
+    "our_rank": []
+   },
+   "billing": {
+    "results_label": "41",
+    "our_rank": [
+     [
+      28,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      29,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      30,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      31,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      32,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      33,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      34,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      35,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      36,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      37,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      38,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      39,
+      "io.github.theluckystrike/invoice-pdf-billing-generator"
+     ],
+     [
+      40,
+      "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders"
+     ],
+     [
+      41,
+      "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders"
+     ]
+    ]
+   },
+   "pdf": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "expense": {
+    "results_label": "34",
+    "our_rank": [
+     [
+      15,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      16,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      17,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      18,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      19,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      20,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      21,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      22,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      23,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      24,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      25,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      26,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      27,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      28,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      29,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      30,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      31,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      32,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      33,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      34,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ]
+    ]
+   },
+   "expenses": {
+    "results_label": "0",
+    "our_rank": []
+   },
+   "receipts": {
+    "results_label": "15",
+    "our_rank": [
+     [
+      4,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      5,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      6,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      7,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      8,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      9,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      10,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      11,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      12,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      13,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      14,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ]
+    ]
+   },
+   "mileage": {
+    "results_label": "11",
+    "our_rank": [
+     [
+      1,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      2,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      3,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      4,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      5,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      6,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      7,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      8,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      9,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      10,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ],
+     [
+      11,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage"
+     ]
+    ]
+   },
+   "spreadsheet": {
+    "results_label": "26",
+    "our_rank": [
+     [
+      13,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      14,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      15,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      16,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      17,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      18,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      19,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      20,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      21,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      22,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      23,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      24,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      25,
+      "io.github.theluckystrike/spreadsheet"
+     ],
+     [
+      26,
+      "io.github.theluckystrike/spreadsheet"
+     ]
+    ]
+   },
+   "excel": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "xlsx": {
+    "results_label": "30",
+    "our_rank": [
+     [
+      19,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      20,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      21,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      22,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      23,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      24,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      25,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      26,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      27,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      28,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      29,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      30,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ]
+    ]
+   },
+   "csv": {
+    "results_label": "29",
+    "our_rank": [
+     [
+      17,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      18,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      19,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      20,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      21,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      22,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      23,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      24,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      25,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      26,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      27,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      28,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ],
+     [
+      29,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv"
+     ]
+    ]
+   },
+   "sheet": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "price": {
+    "results_label": "100+",
+    "our_rank": [
+     [
+      98,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      99,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ],
+     [
+      100,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price"
+     ]
+    ]
+   },
+   "prices": {
+    "results_label": "21",
+    "our_rank": []
+   },
+   "tracker": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "deal": {
+    "results_label": "99",
+    "our_rank": []
+   },
+   "alert": {
+    "results_label": "56",
+    "our_rank": [
+     [
+      36,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      37,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      38,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      39,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      40,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      41,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      42,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      43,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      44,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      45,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      46,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      47,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ],
+     [
+      48,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch"
+     ]
+    ]
+   },
+   "currency": {
+    "results_label": "21",
+    "our_rank": [
+     [
+      14,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      15,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      16,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      17,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      18,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ]
+    ]
+   },
+   "exchange": {
+    "results_label": "82",
+    "our_rank": []
+   },
+   "rates": {
+    "results_label": "47",
+    "our_rank": [
+     [
+      40,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      41,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      42,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      43,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      44,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ]
+    ]
+   },
+   "fx": {
+    "results_label": "87",
+    "our_rank": []
+   },
+   "convert": {
+    "results_label": "70",
+    "our_rank": [
+     [
+      57,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      58,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      59,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      60,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ],
+     [
+      61,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless"
+     ]
+    ]
+   },
+   "docx": {
+    "results_label": "32",
+    "our_rank": [
+     [
+      21,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      22,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      23,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      24,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      25,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      26,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      27,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      28,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      29,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      30,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ],
+     [
+      31,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ],
+     [
+      32,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ]
+    ]
+   },
+   "word": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "document": {
+    "results_label": "100+",
+    "our_rank": [
+     [
+      86,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      87,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      88,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      89,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      90,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      91,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ]
+    ]
+   },
+   "proposal": {
+    "results_label": "11",
+    "our_rank": [
+     [
+      3,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      4,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      5,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      6,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      7,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      8,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      9,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      10,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      11,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ]
+    ]
+   },
+   "contract": {
+    "results_label": "100+",
+    "our_rank": [
+     [
+      90,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      91,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      92,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      93,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      94,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      95,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      96,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      97,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ],
+     [
+      98,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown"
+     ]
+    ]
+   },
+   "clause": {
+    "results_label": "5",
+    "our_rank": [
+     [
+      3,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      4,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ],
+     [
+      5,
+      "io.github.theluckystrike/contract-clause-library-proposal-template-docx"
+     ]
+    ]
+   },
+   "timezone": {
+    "results_label": "18",
+    "our_rank": [
+     [
+      13,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      14,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      15,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      16,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      17,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      18,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ]
+    ]
+   },
+   "meeting": {
+    "results_label": "18",
+    "our_rank": [
+     [
+      10,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      11,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      12,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      13,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      14,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ],
+     [
+      15,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics"
+     ]
+    ]
+   },
+   "calendar": {
+    "results_label": "90",
+    "our_rank": []
+   },
+   "ics": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "resume": {
+    "results_label": "20",
+    "our_rank": [
+     [
+      16,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ],
+     [
+      17,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ],
+     [
+      18,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ]
+    ]
+   },
+   "cv": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "cover-letter": {
+    "results_label": "3",
+    "our_rank": [
+     [
+      1,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ],
+     [
+      2,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ],
+     [
+      3,
+      "io.github.theluckystrike/resume-cover-letter-docx-generator"
+     ]
+    ]
+   },
+   "job": {
+    "results_label": "100+",
+    "our_rank": []
+   },
+   "recurring": {
+    "results_label": "3",
+    "our_rank": [
+     [
+      1,
+      "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders"
+     ],
+     [
+      2,
+      "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders"
+     ],
+     [
+      3,
+      "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders"
+     ]
+    ]
+   },
+   "subscription": {
+    "results_label": "13",
+    "our_rank": [
+     [
+      11,
+      "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders"
+     ],
+     [
+      12,
+      "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders"
+     ],
+     [
+      13,
+      "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders"
+     ]
+    ]
+   },
+   "retainer": {
+    "results_label": "0",
+    "our_rank": []
+   }
+  },
+  "post_publish_reprobe_status": "FAILED: registry API timed out on every request (single-request and paginated) for at least 10 minutes after publish; no post-publish counts were obtainable within the task's time budget"
  }
 }

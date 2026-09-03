@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/exchange-fx",
+  "description": "FX and exchange rate lookups plus currency conversion, from the European Central Bank. No API key.",
+  "version": "0.4.2",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/currency"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/currency",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.2/currency.mcpb",
+      "version": "0.4.2",
+      "fileSha256": "cee0bef7245321262bb486a70039e3dbfebd28bcf01103b3f4cda09588e68281",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/invoices-invoicing",
+  "description": "Invoices and invoicing from your AI chat: PDF generation, numbering, VAT, overdue reports.",
+  "version": "0.4.2",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/invoice"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/invoice",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.2/invoice.mcpb",
+      "version": "0.4.2",
+      "fileSha256": "482474da1bbc70ad5232f9b9c4135aecde4e25dc4238f6730f0e7e12dd3dcf28",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

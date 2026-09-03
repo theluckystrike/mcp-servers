@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/expenses",
+  "description": "Log expenses, receipts and mileage from chat: categorise, split VAT, summarise, export.",
+  "version": "0.4.2",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/expense-tracker"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/expense-tracker",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.2/expense-tracker.mcpb",
+      "version": "0.4.2",
+      "fileSha256": "afdcd0dddd19e003987910f4722583782621d2dd4bc46855dab2bcb2ff875742",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
