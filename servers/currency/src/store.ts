@@ -37,17 +37,25 @@ export function lockPath(): string { return join(dataDir(), ".lock"); }
  * byte-for-byte as <file>.corrupt-<timestamp>, writes a marker so every later call keeps
  * failing until a human resolves it, and throws.
  */
-export class CorruptDataError extends Error {}
+export class CorruptDataError extends Error {
+  /** The `<file>.corrupt-<timestamp>` copy holding the original bytes. */
+  quarantined?: string;
+  /** True only when this very call did the moving, so the caller can be told it just happened. */
+  justQuarantined = false;
+}
 
 export function markerPath(file: string): string { return `${file}.corrupt`; }
 
 function corruptStamp(): string { return new Date().toISOString().replace(/[:.]/g, "-"); }
 
-function blocked(file: string, moved: string): CorruptDataError {
-  return new CorruptDataError(
+function blocked(file: string, moved: string, justQuarantined = false): CorruptDataError {
+  const e = new CorruptDataError(
     `the cache file is corrupt; moved to ${moved}; nothing was written. ` +
     `Delete ${markerPath(file)} to let the next call re-download it from the ECB.`,
   );
+  e.quarantined = moved;
+  e.justQuarantined = justQuarantined;
+  return e;
 }
 
 export function markerBody(quarantined: string): string {
@@ -81,7 +89,10 @@ export function readJsonFile<T>(file: string): T | undefined {
     raw = readFileSync(file, "utf8");
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code === "ENOENT") return undefined;
-    throw new CorruptDataError(`cannot read the cache file ${file}: ${(e as Error).message}; nothing was written.`);
+    {
+      const err = new CorruptDataError(`cannot read the cache file ${file}: ${(e as Error).message}; nothing was written.`);
+      throw err;
+    }
   }
   try {
     return JSON.parse(raw) as T;
@@ -89,7 +100,7 @@ export function readJsonFile<T>(file: string): T | undefined {
     const moved = `${file}.corrupt-${corruptStamp()}`;
     try { renameSync(file, moved); writeFileSync(marker, markerBody(moved)); } catch { /* keep the parse error */ }
     process.stderr.write(`${file} is not valid JSON (${(e as Error).message}); moved to ${moved}\n`);
-    throw blocked(file, moved);
+    throw blocked(file, moved, true);
   }
 }
 

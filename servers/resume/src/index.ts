@@ -128,7 +128,7 @@ const educationSchema = z.object({
 
 server.registerTool("profile_set", {
   title: "Store your CV facts",
-  description: "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. One profile per data directory; Pro adds named variants. Nothing leaves the machine.",
+  description: "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. Returns a count of what was stored.",
   inputSchema: {
     name: z.string().min(1),
     email: z.string().min(1),
@@ -142,7 +142,7 @@ server.registerTool("profile_set", {
     certifications: z.array(z.string()).optional(),
     languages: z.array(z.string()).optional(),
     accent_color: z.string().optional().describe("Letterhead colour, six hex digits, e.g. 1F3864. Pro only."),
-    variant: z.string().optional().describe("Name a second profile, e.g. \"backend\". Pro only."),
+    variant: z.string().optional().describe("Name a second profile, e.g. \"backend\". One profile per data directory on the free tier; named variants are Pro only."),
   },
 }, async (a) => {
   try {
@@ -159,7 +159,8 @@ server.registerTool("profile_set", {
     const note = a.accent_color && !gate.isPro()
       ? `\n\nThe accent colour is stored but the free tier prints the default colour. ${gate.upgradeText("letterhead colours")}` : "";
     return ok(`Profile "${normalizeVariant(a.variant)}" stored: ${p.experience.length} roles, ${bullets} bullets, ` +
-      `${p.skills?.length ?? 0} skills, ${p.education.length} education entries.${note}`);
+      `${p.skills?.length ?? 0} skills, ${p.education.length} education entries. ` +
+      `Stored under ${dataDir()}; nothing leaves this machine.${note}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -180,15 +181,15 @@ server.registerTool("profile_get", {
 
 server.registerTool("resume_create", {
   title: "Write a resume .docx",
-  description: "Write the stored profile to a Word .docx. Bullets are ordered by relevance to the target role and keywords, then trimmed to fit max_pages using a measured word budget. Keywords that appear anywhere in the profile are printed in bold; keywords that do not appear are reported as missing and are never added. Free: the \"modern\" style.",
+  description: "Call this tool to write the stored profile to a Word .docx. Returns the output path, the estimated page count, which bullets were dropped to fit, and which keywords matched or are missing.",
   inputSchema: {
     variant: z.string().optional(),
-    style: z.enum(["modern", "classic", "compact"]).default("modern"),
+    style: z.enum(["modern", "classic", "compact"]).default("modern").describe("Free tier prints \"modern\" only; \"classic\" and \"compact\" are Pro."),
     target_role: z.string().optional().describe("Printed under your name and used to rank bullets"),
-    keywords: z.array(z.string()).optional().describe("From the posting. Matched, bolded, and reported."),
-    max_pages: z.number().int().min(1).max(5).default(2),
-    out_path: z.string().optional(),
-    overwrite: z.boolean().default(false),
+    keywords: z.array(z.string()).optional().describe("From the posting. A keyword that appears anywhere in the profile is printed in bold; one that does not is reported as missing and is never added to the resume."),
+    max_pages: z.number().int().min(1).max(5).default(2).describe("Bullets are ordered by relevance to target_role and keywords, then trimmed to fit this many pages against a measured word budget. Default 2."),
+    out_path: z.string().optional().describe("Where to write the .docx. Defaults to <data dir>/documents/<name>-resume.docx, numbered -2, -3, ... if that exists."),
+    overwrite: z.boolean().default(false).describe("Replace an existing file at out_path. Default false: the call fails and nothing is written."),
   },
 }, async (a) => {
   try {
@@ -218,10 +219,11 @@ server.registerTool("resume_create", {
       bullets_dropped: r.trim.dropped.map((b) => b.text),
       keywords_matched: r.keywords.matched,
       keywords_missing: r.keywords.missing,
-      note: r.keywords.missing.length
-        ? "Missing keywords were not added anywhere. Add them with profile_set only if they are true."
-        : undefined,
-      free_tier: gate.isPro() ? undefined : "Free tier: the \"modern\" style and a footer credit. " + gate.upgradeText("all styles and variants"),
+      note: "Bullets were ordered by relevance to the target role and keywords, then trimmed to fit max_pages against a measured word budget. Matched keywords are printed in bold." +
+        (r.keywords.missing.length
+          ? " Missing keywords were not added anywhere. Add them with profile_set only if they are true."
+          : ""),
+      free_tier: gate.isPro() ? undefined : "Free tier: the \"modern\" style only, and a footer credit. " + gate.upgradeText("all styles and variants"),
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -241,11 +243,12 @@ server.registerTool("resume_to_markdown", {
 
 server.registerTool("resume_to_html", {
   title: "Printable resume HTML",
-  description: "Write the resume as semantic HTML with a print stylesheet. Open it and print to PDF: there is no doc_to_pdf here because every pure-JavaScript route to PDF needs a native dependency.",
+  description: "Call this tool to write the resume as semantic HTML with a print stylesheet. Returns the output path. Open the file in a browser and print it to PDF.",
   inputSchema: {
     variant: z.string().optional(), target_role: z.string().optional(),
-    max_pages: z.number().int().min(1).max(5).default(2),
-    out_path: z.string().optional(), overwrite: z.boolean().default(false),
+    max_pages: z.number().int().min(1).max(5).default(2).describe("Bullets are trimmed to fit this many pages against a measured word budget. Default 2."),
+    out_path: z.string().optional().describe("Where to write the .html. Defaults to <data dir>/documents/<name>-resume.html, numbered -2, -3, ... if that exists."),
+    overwrite: z.boolean().default(false).describe("Replace an existing file at out_path. Default false: the call fails and nothing is written."),
   },
 }, async (a) => {
   try {
@@ -255,16 +258,16 @@ server.registerTool("resume_to_html", {
     const blocks: Block[] = [{ type: "heading", level: 1, text: p.name }, ...r.blocks];
     const path = outputPath(a.out_path, `${slug(p.name)}-resume.html`, ".html", a.overwrite);
     writeFileSync(path, toHtml(p.name, cleanBlocks(blocks)), "utf8");
-    return ok(`${path}\n\nOpen it in a browser and use Print > Save as PDF.`);
+    return ok(`${path}\n\nOpen it in a browser and use Print > Save as PDF. There is no doc_to_pdf tool here: every pure-JavaScript route to PDF needs a native dependency.`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
 server.registerTool("resume_read", {
   title: "Read an existing resume .docx",
-  description: "Extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Best effort, section by heading. Nothing is saved unless save is true.",
+  description: "Call this tool to extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Returns the parsed profile, the sections found, and anything unparsed.",
   inputSchema: {
-    path: z.string().min(1),
-    save: z.boolean().default(false).describe("Store the result as the profile. Review it first."),
+    path: z.string().min(1).describe("Path to an existing .docx. Legacy .doc and .rtf are not readable here. Parsed best effort, section by heading."),
+    save: z.boolean().default(false).describe("Store the result as the profile. Default false: nothing is saved. Review the result first."),
     variant: z.string().optional(),
   },
 }, async (a) => {
@@ -284,7 +287,7 @@ server.registerTool("resume_read", {
       roles: r.profile.experience.length,
       unparsed: r.unparsed,
       profile: r.profile,
-      note: "Best effort. Check every field before you send the result anywhere; correct it with profile_set.",
+      note: "Best effort, section by heading. Check every field before you send the result anywhere; correct it with profile_set." + (a.save ? "" : " Nothing was saved: call again with save: true, or pass the corrected fields to profile_set."),
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -293,16 +296,16 @@ server.registerTool("resume_read", {
 
 server.registerTool("cover_letter_create", {
   title: "Write a cover letter .docx",
-  description: "Write a one-page cover letter from the stored profile: opening, fit, proof, close. It states no fact that is not in your profile. Anything it does not know is left as a bracketed prompt such as [add: metric] for you to fill in. Free: 3 letters per calendar month.",
+  description: "Call this tool to write a one-page cover letter from the stored profile: opening, fit, proof, close. Returns the output path, the word count, and every bracketed prompt left for you to fill in.",
   inputSchema: {
     company: z.string().min(1),
     role: z.string().min(1),
     hiring_manager: z.string().optional(),
-    job_description: z.string().optional(),
-    tone: z.enum(["formal", "direct", "warm"]).default("formal"),
+    job_description: z.string().optional().describe("Paste the posting. Used only to pick which of your own skills to lead with; no figure from the posting is ever restated as yours."),
+    tone: z.enum(["formal", "direct", "warm"]).default("formal").describe("Default \"formal\"."),
     highlights: z.array(z.string()).optional().describe("Points to lead with. Each is checked against the profile; anything not found there is returned as a bracketed prompt, not printed as fact."),
-    out_path: z.string().optional(),
-    overwrite: z.boolean().default(false),
+    out_path: z.string().optional().describe("Where to write the .docx. Defaults to <data dir>/documents/<company>-<role>-cover-letter.docx, numbered -2, -3, ... if that exists."),
+    overwrite: z.boolean().default(false).describe("Replace an existing file at out_path. Default false: the call fails and nothing is written."),
   },
   }, async (a) => {
   try {
@@ -350,8 +353,9 @@ server.registerTool("cover_letter_create", {
       highlights_not_in_profile: letter.unverifiedHighlights,
       skills_the_posting_asked_for: letter.matchedSkills,
       number_check: `every figure in the letter traces to your profile; no figure from the posting was restated as yours`,
-      free_tier: usedNow === null ? undefined : `${usedNow} of ${FREE_LETTERS_PER_MONTH} free letters used in ${month}.`,
-      note: (letter.prompts.length ? "Fill every [add: ...] prompt before you send this." : "No gaps: nothing was left bracketed.") + note,
+      free_tier: usedNow === null ? undefined : `${usedNow} of ${FREE_LETTERS_PER_MONTH} free letters used in ${month}. The free tier allows ${FREE_LETTERS_PER_MONTH} cover letters per calendar month; resume_create, resume_to_markdown and resume_to_html stay unlimited.`,
+      note: "This letter states no fact that is not in your profile; anything it did not know was left as a bracketed prompt such as [add: metric]. " +
+        (letter.prompts.length ? "Fill every [add: ...] prompt before you send this." : "No gaps: nothing was left bracketed.") + note,
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -360,11 +364,11 @@ server.registerTool("cover_letter_create", {
 
 server.registerTool("tailor_to_job", {
   title: "Gap analysis against a posting",
-  description: "Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new claim. Free: postings up to 2,000 characters.",
+  description: "Extract what a job description actually asks for and check it against your profile. Returns the matched keywords, the missing ones, a coverage figure, and rewrites that only reorder facts you already stated.",
   inputSchema: {
-    job_description: z.string().min(1),
+    job_description: z.string().min(1).describe("Paste the posting. The free tier reads up to 2,000 characters; Pro reads any length."),
     variant: z.string().optional(),
-    limit: z.number().int().min(5).max(60).default(30),
+    limit: z.number().int().min(5).max(60).default(30).describe("How many keywords to extract from the posting. Default 30."),
   },
 }, async (a) => {
   try {
@@ -375,7 +379,11 @@ server.registerTool("tailor_to_job", {
         `Paste the requirements section only, or go Pro for the whole posting.\n\n${gate.upgradeText("unlimited tailoring")}`);
     }
     const g = analyseGap(p, a.job_description, a.limit);
-    return json({ variant: normalizeVariant(a.variant), ...g });
+    return json({
+      variant: normalizeVariant(a.variant), ...g,
+      note: "Rewrites only reorder facts you already stated. A missing keyword is reported as a warning and never becomes a new claim; add one with profile_set only if it is true." +
+        (gate.isPro() ? "" : ` Free tier: postings up to ${FREE_JD_CHARS} characters.`),
+    });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 

@@ -78,6 +78,8 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 
 Resource: `invoices://open` returns every unpaid or partly paid invoice as JSON.
 
+Prompt: `monthly_invoicing` reviews what is unpaid and what is overdue for a month, then drafts the next invoice.
+
 ## What you can say
 
 | You say | Tool |

@@ -22,17 +22,17 @@ Recurring invoice schedules: define a cadence, see what is due, and generate the
 | tool | description |
 | --- | --- |
 | `forecast` | Expected invoiced revenue per calendar month per currency from every active schedule. Free covers 3 months ahead; Pro covers up to 120. |
-| `invoice_generate_due` | Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Idempotent: one invoice per schedule per period, keyed by the occurrence date, so running it twice creates nothing the second time. Reports what was created and what was skipped. Free and unlimited. |
+| `invoice_generate_due` | Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Returns what was created, what was skipped and what is still due. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
 | `license_status` | Show whether this server runs in free or Pro mode and where to upgrade. |
-| `schedule_create` | Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due runs. Month steps keep the start date's day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March. |
-| `schedule_delete` | Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Note that re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again: invoice_generate_due will warn that another schedule for that client already covered them. |
+| `schedule_create` | Define a repeating invoice: a client, the line items, how often to bill, and when it starts and ends. Returns the schedule id, a summary and its next dates. Nothing is invoiced until invoice_generate_due runs. |
+| `schedule_delete` | Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Returns the client and how many invoices and history rows remain. |
 | `schedule_get` | The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated. |
 | `schedule_history` | The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path. |
 | `schedule_list` | Every schedule with its cadence, per-period amount, next due date and status (active or paused). |
 | `schedule_pause` | Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed. |
 | `schedule_resume` | Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due. |
-| `schedule_skip` | Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. This is the answer to "pause this client for October" -- schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good. Pass undo: true to un-skip a period that has not been invoiced. |
+| `schedule_skip` | Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. Returns the amount that will not be billed and how to undo it. |
 | `schedule_upcoming` | Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days. |
 | `schedule_update` | Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only. |
 
@@ -50,13 +50,13 @@ Expected invoiced revenue per calendar month per currency from every active sche
 
 Title: Generate the invoices that are due
 
-Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Idempotent: one invoice per schedule per period, keyed by the occurrence date, so running it twice creates nothing the second time. Reports what was created and what was skipped. Free and unlimited.
+Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Returns what was created, what was skipped and what is still due.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `as_of` | string | no | YYYY-MM-DD, defaults to today |
-| `dry_run` | boolean | no | List what would be created without creating anything. Default false |
-| `schedule_id` | string | no | Only this schedule |
+| `as_of` | string | no | YYYY-MM-DD, defaults to today. Every occurrence on or before this date that has not been invoiced is billed. Idempotent: one invoice per schedule per period, keyed by the occurrence date, so running it twice creates nothing the second time |
+| `dry_run` | boolean | no | List what would be created without creating anything. Default false. One run creates at most 60 invoices, oldest period first |
+| `schedule_id` | string | no | Only this schedule. Free and unlimited on every tier |
 
 ### `license_activate`
 
@@ -80,7 +80,7 @@ No arguments.
 
 Title: Create a recurring invoice schedule
 
-Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due runs. Month steps keep the start date's day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March.
+Define a repeating invoice: a client, the line items, how often to bill, and when it starts and ends. Returns the schedule id, a summary and its next dates. Nothing is invoiced until invoice_generate_due runs.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -91,20 +91,20 @@ Define a repeating invoice: a client, the line items, how often to bill (weekly,
 | `due_days` | integer | no | Days until each invoice is due, defaults to your payment terms |
 | `end_date` | string | no | YYYY-MM-DD, INCLUSIVE: an occurrence landing exactly on it is still generated |
 | `end_of_month` | boolean | no | Pro: always bill on the last day of the month |
-| `every` | "weekly" \| "monthly" \| "quarterly" \| "yearly" \| object{days} | yes | How often to bill: "weekly", "monthly", "quarterly", "yearly", or {days: 10} |
+| `every` | "weekly" \| "monthly" \| "quarterly" \| "yearly" \| object{days} | yes | How often to bill: "weekly", "monthly", "quarterly", "yearly", or {days: 10}. Month steps keep the start date's day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March |
 | `items` | object{description, quantity, tax_rate, unit_price}[] | yes | The line items billed every period |
 | `notes` | string | no | Free text printed under the totals of every generated invoice |
-| `start_date` | string | yes | YYYY-MM-DD. The first invoice falls on this date |
+| `start_date` | string | yes | YYYY-MM-DD. The first invoice falls on this date, and for weekly/monthly/quarterly/yearly steps its day of month is the billing day for every later period |
 
 ### `schedule_delete`
 
 Title: Delete a schedule
 
-Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Note that re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again: invoice_generate_due will warn that another schedule for that client already covered them.
+Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Returns the client and how many invoices and history rows remain.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `id` | string | yes |  |
+| `id` | string | yes | Schedule id, or a client name. Deletion is permanent; re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again |
 
 ### `schedule_get`
 
@@ -160,13 +160,13 @@ Make a paused schedule active again. Periods that fell due while it was paused a
 
 Title: Skip one period
 
-Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. This is the answer to "pause this client for October" -- schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good. Pass undo: true to un-skip a period that has not been invoiced.
+Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. Returns the amount that will not be billed and how to undo it.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
 | `id` | string | yes | Schedule id, or a client name |
-| `period` | string | yes | The occurrence date to skip, YYYY-MM-DD, exactly as it appears in schedule_upcoming or forecast |
-| `undo` | boolean | no | Remove a previous skip so the period becomes due again. Default false |
+| `period` | string | yes | The occurrence date to skip, YYYY-MM-DD, exactly as it appears in schedule_upcoming or forecast. This is the answer to "pause this client for October": schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good |
+| `undo` | boolean | no | Remove a previous skip so the period becomes due again. Works only on a period that has not been invoiced. Default false |
 
 ### `schedule_upcoming`
 
@@ -193,7 +193,7 @@ Change a schedule's client, items, currency, cadence, dates, due days, notes or 
 | `due_days` | integer | no |  |
 | `end_date` | string \| null | no | null clears the end date |
 | `end_of_month` | boolean | no | Pro |
-| `every` | "weekly" \| "monthly" \| "quarterly" \| "yearly" \| object{days} | no | How often to bill: "weekly", "monthly", "quarterly", "yearly", or {days: 10} |
+| `every` | "weekly" \| "monthly" \| "quarterly" \| "yearly" \| object{days} | no | How often to bill: "weekly", "monthly", "quarterly", "yearly", or {days: 10}. Month steps keep the start date's day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March |
 | `id` | string | yes |  |
 | `items` | object{description, quantity, tax_rate, unit_price}[] | no |  |
 | `notes` | string | no |  |

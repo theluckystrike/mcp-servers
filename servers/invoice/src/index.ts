@@ -106,7 +106,7 @@ function expandPath(p: string): string {
 
 const server = new McpServer(
   { name: "mcp-invoice", version: "0.1.0" },
-  { capabilities: { tools: {}, resources: {} } },
+  { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
 /* ------------------------------------------------------------------ business */
@@ -349,11 +349,11 @@ function createInvoice(a: {
 
 server.registerTool("invoice_create", {
   title: "Create an invoice",
-  description: "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed. Items may carry a per-line currency; every line on one invoice must agree with the invoice currency, and a mix is refused with the exact conversion argument to pass rather than billed as if it were one currency.",
+  description: "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused) and returns the stored invoice with its subtotal, discount, one tax line per rate and the total.",
   inputSchema: {
     client: z.string().describe("Client name or id. Unknown names are added automatically"),
-    items: z.array(itemSchema).describe("Line items"),
-    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional(),
+    items: z.array(itemSchema).describe("Line items. Amounts are held as integer minor units and every line is rounded first, then summed, so the printed lines can never disagree with the total. A line may carry its own currency"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Invoice currency, 3-letter ISO code. Defaults to the one currency every item agrees on, else your business default. Every line on one invoice must agree with it; a mix is refused with the exact conversion argument to pass rather than billed as if it were one currency"),
     issue_date: z.string().optional().describe("YYYY-MM-DD, defaults to today"),
     due_days: z.number().optional().describe("Days until due, defaults to your payment terms"),
     notes: z.string().optional().describe("Free text printed under the totals"),
@@ -367,6 +367,8 @@ server.registerTool("invoice_create", {
     return ok(
       `Created invoice ${r.invoice!.number}.\n\n` +
       `${JSON.stringify({ ...summarize(r.invoice!), lines: lineRows(r.invoice!) }, null, 2)}\n\n` +
+      `Amounts are integer minor units: each line was rounded first and then summed, so the total always agrees with the printed lines. ` +
+      `Every line on this invoice is in ${r.invoice!.currency}; to bill a line in another currency, convert it yourself and pass the converted unit_price.\n\n` +
       `Render it with invoice_pdf.${r.businessNote ? `\n\n${r.businessNote}` : ""}${r.clientNote ? `\n\n${r.clientNote}` : ""}`
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -374,7 +376,7 @@ server.registerTool("invoice_create", {
 
 server.registerTool("invoice_from_hours", {
   title: "Invoice from hours",
-  description: "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice. When the rate is in one currency and the invoice must be in another, pass target_currency plus fx_rates - the same pair expense_to_invoice takes: fx_rates maps the RATE's currency to the number of target units one of it buys, e.g. {\"EUR\": 1.1578} with target_currency \"USD\". Nothing here fetches or guesses a rate. Pass entry_ids (from the time tracker's invoice_summary) and they come back with the new invoice number so the tracked hours can be closed.",
+  description: "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates and returns a single-line invoice, converting the rate into target_currency when you supply fx_rates, and echoing back any entry_ids.",
   inputSchema: {
     client: z.string(),
     hours: amount("hours"),
@@ -383,7 +385,7 @@ server.registerTool("invoice_from_hours", {
     tax_rate: z.number().finite().min(-100).max(1000).optional(),
     currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Currency the rate is in. Without target_currency this is also the invoice currency"),
     target_currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as USD").optional().describe('Issue the invoice in this currency instead, converting the rate. Needs fx_rates for the rate currency'),
-    fx_rates: z.record(z.string(), z.number().finite().positive()).optional().describe('Rate per source currency, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.1578}. You supply the rate; nothing here fetches or guesses one'),
+    fx_rates: z.record(z.string(), z.number().finite().positive()).optional().describe('Conversion rates, the same pair expense_to_invoice takes: fx_rates maps the RATE\'s currency to the number of target units one of it buys, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.1578} with target_currency "USD". You supply the rate; nothing here fetches or guesses one'),
     entry_ids: z.array(z.string()).optional().describe("Time-tracker entry ids these hours came from (the entry_ids invoice_summary returns). Echoed back with the new invoice number so you can call entry_mark_billed"),
     issue_date: z.string().optional(),
     due_days: z.number().optional(),
@@ -428,6 +430,11 @@ server.registerTool("invoice_from_hours", {
     if (r.error) return fail(r.error);
     if (r.gated) return ok(r.gated);
     const ids = a.entry_ids ?? [];
+    // D-S1: the fx direction contract is actionable at call time, so the response
+    // states it as well as the fx_rates argument description.
+    const fxLine = fxUsed !== null
+      ? `\n\nfx_rates is directional: {${JSON.stringify(source)}: ${fxUsed}} means 1 ${source} = ${fxUsed} ${target}, the number of ${target} units one ${source} buys, so the rate was multiplied by it. It is the same pair expense_to_invoice takes, and nothing here fetches or guesses a rate.`
+      : "";
     const closeLine = ids.length
       ? `\n\nThese hours are still open in the time tracker. Call entry_mark_billed {ids: ${JSON.stringify(ids)}, invoice_number: "${r.invoice!.number}"} now, or the same hours appear on the next invoice.`
       : `\n\nIf these hours came from the time tracker, call entry_mark_billed {ids: <entry_ids from invoice_summary>, invoice_number: "${r.invoice!.number}"} so they are not billed twice.`;
@@ -441,6 +448,7 @@ server.registerTool("invoice_from_hours", {
         fx_rate_used: fxUsed,
         entry_ids: ids,
       }, null, 2)}` +
+      fxLine +
       closeLine +
       `${r.businessNote ? `\n\n${r.businessNote}` : ""}` +
       `${r.clientNote ? `\n\n${r.clientNote}` : ""}`
@@ -512,10 +520,10 @@ server.registerTool("invoice_mark_paid", {
 
 server.registerTool("invoice_pdf", {
   title: "Render invoice PDF",
-  description: "Render an invoice as an A4 PDF you can send: issuer block, BILL TO client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Every money value on the page carries its currency code. Returns the file path.",
+  description: "Call this tool to render a stored invoice as an A4 PDF you can send. Returns the path of the file written.",
   inputSchema: {
-    number: z.string(),
-    out_path: z.string().optional().describe("Where to write the PDF. Defaults to the data directory"),
+    number: z.string().describe("Invoice number to render, as returned by invoice_create"),
+    out_path: z.string().optional().describe("Where to write the PDF; defaults to <data dir>/pdf/<number>.pdf. The page carries the issuer block, the BILL TO client block, dates, an item table with wrapped descriptions, subtotal, discount, one tax line per rate, the total, payment details and notes, and every money value on it carries its currency code. Use a .pdf path: the bytes written are always PDF"),
   },
 }, async (a) => {
   try {
@@ -582,6 +590,38 @@ server.registerResource("open-invoices", "invoices://open", {
       getInvoices().filter((i) => i.status !== "paid").map(summarize), null, 2),
   }],
 }));
+
+/* ------------------------------------------------------------------- prompts */
+
+server.registerPrompt("monthly_invoicing", {
+  title: "Monthly invoicing",
+  description: "Review what is unpaid and what is overdue, then draft the next invoice for the client that owes the most.",
+  argsSchema: {
+    month: z.string().optional().describe("YYYY-MM, default the current month"),
+    client: z.string().optional().describe("Limit the review, and the drafted invoice, to one client name or id"),
+  },
+}, ({ month, client }: { month?: string; client?: string }) => {
+  const m = month && /^\d{4}-\d{2}$/.test(month) ? month : isoDate().slice(0, 7);
+  const from = `${m}-01`;
+  const to = new Date(Date.UTC(Number(m.slice(0, 4)), Number(m.slice(5, 7)), 0)).toISOString().slice(0, 10);
+  const who = client && client.trim() ? client.trim() : null;
+  return {
+    messages: [{
+      role: "user" as const,
+      content: {
+        type: "text" as const,
+        text: [
+          `Run the invoicing round for ${m} (${from} to ${to}) with the invoice tools and report it as one short summary:`,
+          `1. invoice_list {status: "unpaid"}${who ? ` and invoice_list {status: "unpaid", client: ${JSON.stringify(who)}}` : ""} - list every unpaid invoice with its number, client, issue date, due date and amount.`,
+          `2. invoice_list {status: "partial"} - add the part-paid ones, showing the balance still due on each.`,
+          `3. overdue_report {as_of: "${to}"} - name every overdue invoice with its days overdue and outstanding amount, and give the outstanding total per currency. Do not add across currencies.`,
+          `4. Draft the next invoice: invoice_create {client: ${JSON.stringify(who ?? "<client name>")}, items: [{description: "<work>", quantity: 1, unit_price: 0}], issue_date: "${to}"} - or invoice_from_hours {client: ${JSON.stringify(who ?? "<client name>")}, hours: 0, rate: 0, issue_date: "${to}"} when it is billed by the hour. Ask me for the real line items and rate before you call either one.`,
+          `5. Render whatever you created with invoice_pdf {number: "<the number invoice_create returned>"} and give me the file path.`,
+        ].join("\n"),
+      },
+    }],
+  };
+});
 
 gate.registerTools(server as unknown as { registerTool: Function });
 

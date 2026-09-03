@@ -80,7 +80,7 @@ Prompt: `write_proposal_from_hours` turns tracked hours (or an `invoice_summary`
 
 ## There is no `doc_to_pdf`, and that is deliberate
 
-Every pure-JavaScript path from Word to PDF needs either a native dependency (LibreOffice, a Chromium binary, a C++ rendering library) or a cloud API. This collection ships neither, so `npx` works on any machine with Node and nothing else. `doc_to_html` writes semantic HTML with a print stylesheet instead: open it, print to PDF, and the result is what you would have got. The tool description says the same thing, so the model does not promise a PDF it cannot produce.
+Every pure-JavaScript path from Word to PDF needs either a native dependency (LibreOffice, a Chromium binary, a C++ rendering library) or a cloud API. This collection ships neither, so `npx` works on any machine with Node and nothing else. `doc_to_html` writes semantic HTML with a print stylesheet instead: open it, print to PDF, and the result is what you would have got. The tool description and the tool's own answer say the same thing, so the model does not promise a PDF it cannot produce.
 
 ## What you can say
 

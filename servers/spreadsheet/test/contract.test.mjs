@@ -27,16 +27,8 @@ const IMPERATIVE = /^(Call this tool|Use this)\b/;
  * The suite is a ratchet: an existing entry is reported, a NEW one fails. Both lists are
  * defects, tracked in docs/SPEC_RESULT.md; the fix is in src, not here.
  */
-const OVER_LENGTH_BASELINE = [
-  "sheet_add_column",
-  "sheet_write"
-];
-const NON_IMPERATIVE_BASELINE = [
-  "sheet_add_column",
-  "sheet_convert",
-  "sheet_find",
-  "sheet_write"
-];
+const OVER_LENGTH_BASELINE = [];
+const NON_IMPERATIVE_BASELINE = [];
 
 const GARBAGE = '{"version":1, <<< truncated by a crash';
 

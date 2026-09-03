@@ -121,10 +121,10 @@ const server = new McpServer({ name: "mcp-clauses", version: VERSION });
 
 server.registerTool("clause_add", {
   title: "Add a clause",
-  description: "Save a reusable contract or proposal clause to the library. Use {{variables}} in the body for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}. Free tier: 10 own clauses on top of the 25 starters.",
+  description: "Save a reusable contract or proposal clause to the library. Returns the stored clause id, title, category, tags and the variables detected in its body, plus how many clauses of your own the library now holds.",
   inputSchema: {
     title: z.string().min(1).describe("Clause heading, for example 'Late Payment'"),
-    body: z.string().min(1).describe("The clause text. {{variable}} placeholders are filled at assembly time"),
+    body: z.string().min(1).describe("The clause text. Use {{variable}} placeholders for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}; contract_assemble fills them at assembly time. Free tier: 10 clauses of your own on top of the 25 starters"),
     category: z.string().describe(`Grouping. The known ones, in assembly order, are ${CATEGORY_ORDER.join(", ")} -- reuse one of these; any other name is accepted but sorts last in a category-based assembly`),
     tags: z.array(z.string()).optional(),
     variables: z.array(z.string()).optional().describe("Declared variable names. Anything {{...}} in the body is detected anyway"),
@@ -154,7 +154,10 @@ server.registerTool("clause_add", {
       };
       db.clauses.push(c);
       save(db);
-      return json({ added: summary(c), own_clauses: own + 1 });
+      return json({
+        added: summary(c), own_clauses: own + 1,
+        note: gate.isPro() ? undefined : `The free tier holds ${FREE_OWN_CLAUSES} clauses of your own on top of the 25 starter clauses; ${own + 1} of ${FREE_OWN_CLAUSES} used.`,
+      });
     });
   } catch (e) { return fail((e as Error).message); }
 });
@@ -276,9 +279,9 @@ server.registerTool("clause_search", {
 
 server.registerTool("clause_import", {
   title: "Import clauses",
-  description: "Bulk-load clauses from a file. Markdown form: '## Title', optional 'category:' / 'tags:' / 'variables:' lines, blank line, body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the free tier within the free clause cap.",
+  description: "Call this tool to bulk-load clauses into the library from a markdown or JSON file. Returns how many clauses were added, replaced, skipped and blocked by the free clause cap, plus the new library total.",
   inputSchema: {
-    path: z.string().describe("Path to a .md or .json file"),
+    path: z.string().describe("Path to a .md or .json file. Markdown form: '## Title', then optional 'category:' / 'tags:' / 'variables:' lines, a blank line, then the body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the free tier, within the free clause cap"),
     overwrite: z.boolean().optional().describe("Replace clauses whose title already exists instead of skipping them"),
   },
 }, async (a) => {
@@ -330,10 +333,10 @@ server.registerTool("clause_import", {
 
 server.registerTool("clause_export", {
   title: "Export clauses",
-  description: "Write the whole library to a file. Markdown export is free; JSON export is a Pro feature.",
+  description: "Call this tool to write the whole clause library out to one file. Returns the destination path, the format used and how many clauses were written.",
   inputSchema: {
-    path: z.string().describe("Destination file path"),
-    format: z.enum(["json", "markdown"]).describe("json (Pro) or markdown (free)"),
+    path: z.string().describe("Destination file path. The clauses are written in assembly order, categories first"),
+    format: z.enum(["json", "markdown"]).describe("json (a Pro feature) or markdown (works in the free tier)"),
     overwrite: z.boolean().optional().describe("Replace the destination if a file is already there. Without it an existing file is never touched"),
   },
 }, async (a) => {
@@ -377,17 +380,24 @@ function selectClauses(all: Clause[], ids: string[] | undefined, categories: str
   return { error: "pass clause_ids or categories" };
 }
 
+function assembleNote(pro: boolean, unfilled: number): string {
+  const parts = [`The document opens with the not-legal-advice line: ${DISCLAIMER}`];
+  if (unfilled) parts.push(`${unfilled} fact(s) had no value and are left in the document as bracketed prompts; fill them before sending.`);
+  if (!pro) parts.push(`The free tier assembles up to ${FREE_ASSEMBLE_CLAUSES} clauses per document.`);
+  return parts.join(" ");
+}
+
 server.registerTool("contract_assemble", {
   title: "Assemble a contract",
-  description: "Build a contract or proposal from library clauses: orders them, fills {{variables}} from the values you pass, leaves every missing fact as a bracketed prompt like [late fee percent], prepends the not-legal-advice line, and writes a .docx or a markdown file. Free tier: up to 8 clauses per document.",
+  description: "Call this tool to build a contract or proposal document from library clauses. Returns the path written, the clauses used in document order, which variables were filled, and the facts still missing as bracketed prompts.",
   inputSchema: {
     title: z.string().describe("Document title, for example 'Service Agreement - Beta Corp'"),
-    clause_ids: z.array(z.string()).optional().describe("Clause ids in the order they should appear"),
-    categories: z.array(z.string()).optional().describe("Instead of ids: every clause in these categories, ordered by category"),
-    values: z.record(z.string()).optional().describe("Variable values, for example {\"fee\":\"4500\",\"late_fee_percent\":\"2\"}"),
+    clause_ids: z.array(z.string()).optional().describe("Clause ids in the order they should appear; this is the document order. Free tier: up to 8 clauses per document"),
+    categories: z.array(z.string()).optional().describe("Instead of ids: every clause in these categories, ordered by category. Free tier: up to 8 clauses per document"),
+    values: z.record(z.string()).optional().describe("Values for the {{variables}} in the chosen clauses, for example {\"fee\":\"4500\",\"late_fee_percent\":\"2\"}. Any variable you leave out stays in the document as a bracketed prompt such as [late fee percent], never as an invented value"),
     client: z.string().optional().describe("Client name; also fills the {{client}} variable"),
-    out_path: z.string().optional().describe("Where to write the file. Default: the server data directory"),
-    format: z.enum(["docx", "markdown"]).optional().describe("docx (default) or markdown"),
+    out_path: z.string().optional().describe("Where to write the file. Default: the server data directory, under a name built from the client and the title"),
+    format: z.enum(["docx", "markdown"]).optional().describe("docx (default) or markdown; the document opens with the not-legal-advice line either way"),
     overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Without it an existing file is never touched"),
   },
 }, async (a) => {
@@ -407,7 +417,13 @@ server.registerTool("contract_assemble", {
     if (format === "markdown") {
       const file = outputPath(a.out_path, `${name}.md`, ".md", a.overwrite === true);
       writeFileSync(file, result.markdown);
-      return json({ path: file, format, clauses: picked.map((c) => c.id), filled: result.filled, unfilled: result.unfilled, disclaimer: DISCLAIMER });
+      return json({
+        path: file, format, clauses: picked.map((c) => c.id),
+        filled: result.filled, unfilled: result.unfilled,
+        unfilled_prompts: result.unfilled.map(promptFor),
+        disclaimer: DISCLAIMER,
+        note: assembleNote(pro, result.unfilled.length),
+      });
     }
     const file = outputPath(a.out_path, `${name}.docx`, ".docx", a.overwrite === true);
     const buf = await buildDocx({
@@ -423,6 +439,7 @@ server.registerTool("contract_assemble", {
       filled: result.filled, unfilled: result.unfilled,
       unfilled_prompts: result.unfilled.map(promptFor),
       disclaimer: DISCLAIMER,
+      note: assembleNote(pro, result.unfilled.length),
     });
   } catch (e) { return fail((e as Error).message); }
 });

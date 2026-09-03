@@ -21,13 +21,13 @@ Timezone arithmetic for scheduling: current time in several zones, overlap betwe
 
 | tool | description |
 | --- | --- |
-| `business_days` | Business days between two dates in a place, excluding weekends and any holidays you pass. This tool has no national holiday calendar: unless you pass holidays, only weekends are excluded, so do not report the answer as a public-holiday-adjusted count. Use it for delivery dates and payment terms across a client's calendar. |
+| `business_days` | Count the business days between two dates in a place, for delivery dates and payment terms. Returns the business-day count, the calendar total, and how many days fell on a weekend or on a holiday you passed. |
 | `contacts_list` | Everyone you have saved, with their current local time and whether they are inside working hours right now. |
 | `contacts_set` | Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later. |
 | `convert_time` | Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'. |
 | `dst_changes` | The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October. |
-| `find_meeting_slots` | Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody. Weekends in the first participant's zone are skipped. |
-| `ics_create` | Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale. |
+| `find_meeting_slots` | Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first. |
+| `ics_create` | Call this tool to write a .ics calendar file for one meeting. Returns the path written and the meeting time in UTC and in the zone you gave. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
 | `license_status` | Show whether this server runs in free or Pro mode and where to upgrade. |
 | `now` | The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC. |
@@ -37,12 +37,12 @@ Timezone arithmetic for scheduling: current time in several zones, overlap betwe
 
 Title: Count business days
 
-Business days between two dates in a place, excluding weekends and any holidays you pass. This tool has no national holiday calendar: unless you pass holidays, only weekends are excluded, so do not report the answer as a public-holiday-adjusted count. Use it for delivery dates and payment terms across a client's calendar.
+Count the business days between two dates in a place, for delivery dates and payment terms. Returns the business-day count, the calendar total, and how many days fell on a weekend or on a holiday you passed.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `from` | string | yes | Start date, YYYY-MM-DD (inclusive). A date that does not exist, such as 2026-02-30, is refused, never rolled forward. (maxLength 100) |
-| `holidays` | string[] | no | Dates to exclude, strict YYYY-MM-DD |
+| `from` | string | yes | Start date, YYYY-MM-DD (inclusive). A date that does not exist, such as 2026-02-30, is refused, never rolled forward (maxLength 100) |
+| `holidays` | string[] | no | Dates to exclude, strict YYYY-MM-DD. This tool has no national holiday calendar: unless you pass holidays here only weekends are excluded, so do not report the answer as a public-holiday-adjusted count |
 | `to` | string | yes | End date, YYYY-MM-DD (inclusive) (maxLength 100) |
 | `zone` | string | yes | Place whose calendar to use (maxLength 100) |
 
@@ -96,22 +96,22 @@ The clock changes in a place for a year, with the exact UTC instant and the offs
 
 Title: Find meeting slots
 
-Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody. Weekends in the first participant's zone are skipped.
+Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `days` | integer | no | How many days ahead to search, default 5, at most 366 (max 366) |
+| `days` | integer | no | How many days ahead to search, default 5, at most 366. Free tier: a search longer than 5 days is shortened to 5, not refused (max 366) |
 | `duration_minutes` | integer | no | Meeting length in minutes, default 60, at most 1440 (max 1440) |
 | `earliest_date` | string | no | First date to consider, YYYY-MM-DD, default today (maxLength 100) |
-| `limit` | integer | no | How many slots to return, default 8 (max 100) |
-| `participants` | object{name, work_end, work_start, zone}[] | yes | Who has to attend, with their zone and optional working hours |
+| `limit` | integer | no | How many slots to return, default 8. Slots are ranked by fairness: the score is the WORST participant's distance in hours from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody (max 100) |
+| `participants` | object{name, work_end, work_start, zone}[] | yes | Who has to attend, with their zone and optional working hours. Every slot returned is inside all of their hours; weekends in the first participant's zone are skipped. Free tier: up to 3 participants |
 | `recurring` | boolean | no | Pro: also report the weekly recurring times that work on every searched weekday |
 
 ### `ics_create`
 
 Title: Write a calendar invite
 
-Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale.
+Call this tool to write a .ics calendar file for one meeting. Returns the path written and the meeting time in UTC and in the zone you gave.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -123,7 +123,7 @@ Write a .ics calendar file for one meeting. Times are stored in UTC, so the invi
 | `location` | string | no | Where, or a meeting link (maxLength 200) |
 | `organizer_email` | string | no | Your email address, written as the ORGANIZER so replies have somewhere to go (maxLength 200) |
 | `organizer_name` | string | no | Your display name for the ORGANIZER line (maxLength 200) |
-| `out_path` | string | no | Where to write the file; default meeting.ics in the data dir (maxLength 4096) |
+| `out_path` | string | no | Where to write the .ics file; default meeting.ics in the data dir. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale (maxLength 4096) |
 | `start` | string | yes | Start time, read in `zone` unless it carries an offset (maxLength 100) |
 | `title` | string | yes | Event title (minLength 1, maxLength 200) |
 | `zone` | string | yes | Place the start time is given in (maxLength 100) |

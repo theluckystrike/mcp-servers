@@ -27,16 +27,8 @@ const IMPERATIVE = /^(Call this tool|Use this)\b/;
  * The suite is a ratchet: an existing entry is reported, a NEW one fails. Both lists are
  * defects, tracked in docs/SPEC_RESULT.md; the fix is in src, not here.
  */
-const OVER_LENGTH_BASELINE = [
-  "clause_add",
-  "clause_import",
-  "contract_assemble"
-];
-const NON_IMPERATIVE_BASELINE = [
-  "clause_export",
-  "clause_import",
-  "contract_assemble"
-];
+const OVER_LENGTH_BASELINE = [];
+const NON_IMPERATIVE_BASELINE = [];
 
 const GARBAGE = '{"version":1, <<< truncated by a crash';
 

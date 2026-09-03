@@ -367,7 +367,7 @@ const FREE_WINDOW_NOTE =
 /* ---------------------------------------------------------------- server */
 
 const server = new McpServer(
-  { name: "time-tracker", version: "0.1.0" },
+  { name: "mcp-time-tracker", version: "0.1.0" },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
@@ -392,12 +392,12 @@ function stopRunning(db: DB, endDate: Date, note?: string): Entry {
 
 server.registerTool("timer_start", {
   title: "Start timer",
-  description: "Start a stopwatch for billable work on a project or client (timesheet / hours per project). Only one timer runs at a time: starting a new one stops and logs the previous one. Accepts an hourly rate and a currency, e.g. rate '90 euros'.",
+  description: "Start a stopwatch for billable work on a project or client (timesheet / hours per project). Only one timer runs at a time: starting a new one stops and logs the previous one.",
   inputSchema: {
     project: z.string().min(1).describe("Project or client name, e.g. 'acme-website'. A partial name that matches exactly one existing project is used as that project."),
     task: z.string().optional().describe("What you are working on right now"),
     tags: z.array(z.string()).optional().describe("Free-form tags, e.g. ['dev','meeting']"),
-    rate: z.union([z.number().nonnegative(), z.string()]).optional().describe("Hourly rate for this timer only; a number (90) or the words the user said ('90 euros an hour'). Defaults to the project rate."),
+    rate: z.union([z.number().nonnegative(), z.string()]).optional().describe("Hourly rate for this timer only; a number (90) or the words the user said, e.g. rate '90 euros an hour'. Defaults to the project rate set by project_set_rate."),
     currency: z.string().optional().describe("Currency of the rate: EUR, USD, GBP, PLN, or words like 'euros'. Defaults to the project currency, else USD."),
   },
 }, guard(async ({ project, task, tags, rate, currency }: { project: string; task?: string; tags?: string[]; rate?: number | string; currency?: string }) => {
@@ -614,12 +614,12 @@ server.registerTool("entry_edit", {
 
 server.registerTool("project_set_rate", {
   title: "Set project rate",
-  description: "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Pass apply_to_existing to re-rate time already logged for that project (add only_missing to touch only entries that carry no rate).",
+  description: "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Returns the new rate and, when re-rating is asked for, how many already logged entries changed.",
   inputSchema: {
     project: z.string().min(1).describe("Project or client name. A partial name that matches exactly one existing project is used as that project."),
     hourly_rate: z.union([z.number().nonnegative(), z.string()]).describe("Hourly rate: a number (85) or the words the user said ('90 euros an hour'). '1,200 USD' is 1200; '12,50 EUR' is 12.50; anything ambiguous is refused."),
     currency: z.string().optional().describe("Currency: a code (EUR, USD, GBP, PLN) or a word ('euros', 'pounds', 'zl'). Default USD."),
-    apply_to_existing: z.boolean().optional().describe("Re-rate time already logged for this project: every entry is re-stamped with the new rate, including entries that already carry one. Default false: the new rate applies to future entries only."),
+    apply_to_existing: z.boolean().optional().describe("Re-rate time already logged for this project: every entry is re-stamped with the new rate, including entries that already carry one. Default false: the new rate applies to future entries only, because each entry captures the rate in force when it was logged."),
     only_missing: z.boolean().optional().describe("Only meaningful with apply_to_existing. True restores the old fill-the-gaps behaviour: only entries that carry no rate of their own are touched. Default false, which re-stamps every entry of the project."),
   },
 }, guard(async (a: { project: string; hourly_rate: number | string; currency?: string; apply_to_existing?: boolean; only_missing?: boolean }) => {
@@ -741,12 +741,12 @@ const TAG_OVERLAP_NOTE =
 
 server.registerTool("report", {
   title: "Time report",
-  description: "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency. Money is grouped by currency and never mixes EUR with USD. Free tier covers the last 7 days.",
+  description: "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency.",
   inputSchema: {
-    from: z.string().describe("ISO date/time start of the period"),
-    to: z.string().describe("ISO date/time end of the period"),
-    group_by: z.enum(GROUPS).optional().describe("project | day | task | tag. Optional: omit it for the plain total per currency, with no breakdown."),
-    format: z.enum(["table", "json", "csv"]).optional().describe("table (default), json or csv"),
+    from: z.string().describe("ISO date/time start of the period. On the free tier the window is clamped to the last 7 days; Pro reports over the full history."),
+    to: z.string().describe("ISO date/time end of the period. On the free tier the window is clamped to the last 7 days; Pro reports over the full history."),
+    group_by: z.enum(GROUPS).optional().describe("project | day | task | tag. Optional: omit it for the plain total per currency, with no breakdown. Money is grouped by currency and EUR is never added to USD."),
+    format: z.enum(["table", "json", "csv"]).optional().describe("table (default), json or csv. Every format carries one amount per currency, never a mixed-currency sum."),
     project: z.string().optional().describe("Optional project filter"),
     unbilled_only: z.boolean().optional().describe("Default true: hours already put on an invoice (entry_mark_billed) are excluded, so the report answers 'what is still to bill'. Pass false for the full timesheet including invoiced work."),
   },
@@ -770,6 +770,9 @@ server.registerTool("report", {
   const totalParts = nonZero(totals.amounts);
   const currency = totalParts.length ? totalParts[0][0] : "USD";
   const fmt = a.format ?? "table";
+  const mixed = totalParts.length > 1
+    ? "\nAmounts are grouped by currency: EUR is never added to USD, so read one total per currency."
+    : "";
   const note = (!pro && w.clamped ? FREE_WINDOW_NOTE : "") + billedNote;
 
   if (fmt === "json") {
@@ -816,7 +819,7 @@ server.registerTool("report", {
   }
   if (!a.group_by) {
     if (entries.length === 0) return ok(`No time tracked in that period.${note}`);
-    return ok(`Total ${hours(totalSec)} h, ${moneyOf(totals.amounts)}.${note}`);
+    return ok(`Total ${hours(totalSec)} h, ${moneyOf(totals.amounts)}.${mixed}${note}`);
   }
   if (buckets.length === 0) return ok(`No time tracked in that period.${note}`);
   const body = table(
@@ -824,17 +827,17 @@ server.registerTool("report", {
     buckets.map(b => [b.key, hours(b.seconds), hours(b.billableSeconds), moneyOf(b.amounts)]),
   );
   const overlap = a.group_by === "tag" ? `\n${TAG_OVERLAP_NOTE}` : "";
-  return ok(`${body}\n\nTotal ${hours(totalSec)} h, ${moneyOf(totals.amounts)}.${overlap}${note}`);
+  return ok(`${body}\n\nTotal ${hours(totalSec)} h, ${moneyOf(totals.amounts)}.${mixed}${overlap}${note}`);
 }));
 
 server.registerTool("export_csv", {
   title: "Export entries to CSV",
-  description: "Export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Free tier exports the last 7 days.",
+  description: "Call this tool to export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Returns the file path written.",
   inputSchema: {
-    from: z.string().optional().describe("ISO date/time lower bound"),
-    to: z.string().optional().describe("ISO date/time upper bound"),
+    from: z.string().optional().describe("ISO date/time lower bound. On the free tier the export is clamped to the last 7 days; Pro exports the full history."),
+    to: z.string().optional().describe("ISO date/time upper bound. On the free tier the export is clamped to the last 7 days; Pro exports the full history."),
     project: z.string().optional().describe("Optional project filter"),
-    path: z.string().optional().describe("Target file path; defaults to a file in the local data directory"),
+    path: z.string().optional().describe("Target file path; a relative path resolves against the working directory. Defaults to a timestamped file in the local data directory, and the full path is returned."),
   },
 }, guard(async (a: { from?: string; to?: string; project?: string; path?: string }) => {
   const pro = gate.isPro();
@@ -870,10 +873,10 @@ server.registerTool("export_csv", {
 
 server.registerTool("entry_mark_billed", {
   title: "Mark time entries as billed",
-  description: "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice. Pass the exact ids (the entry_ids invoice_summary returned) or a project plus a from/to range. Already-billed entries are left alone and listed back to you.",
+  description: "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice.",
   inputSchema: {
-    ids: z.array(z.string()).optional().describe("Entry ids, e.g. the entry_ids from invoice_summary"),
-    project: z.string().optional().describe("Project or client, used with from and to instead of ids"),
+    ids: z.array(z.string()).optional().describe("Exact entry ids, normally the entry_ids invoice_summary returned. Pass either ids or project plus from and to. Entries already billed are left alone and listed back to you."),
+    project: z.string().optional().describe("Project or client, used with from and to instead of ids; every billable entry in that range is stamped."),
     from: z.string().optional().describe("ISO date/time start of the billed period, used with project"),
     to: z.string().optional().describe("ISO date/time end of the billed period, used with project"),
     invoice_number: z.string().min(1).describe("The invoice these hours were put on, e.g. INV-2026-0001"),
@@ -923,11 +926,11 @@ server.registerTool("entry_mark_billed", {
 
 server.registerTool("invoice_summary", {
   title: "Invoice summary",
-  description: "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00). Free for the last 7 days; Pro invoices any period from the full history.",
+  description: "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00).",
   inputSchema: {
     project: z.string().min(1).describe("Project or client to invoice"),
-    from: z.string().describe("ISO date/time start of the billing period"),
-    to: z.string().describe("ISO date/time end of the billing period"),
+    from: z.string().describe("ISO date/time start of the billing period. Free covers the last 7 days; Pro invoices any period from the full history."),
+    to: z.string().describe("ISO date/time end of the billing period. Free covers the last 7 days; Pro invoices any period from the full history."),
     unbilled_only: z.boolean().optional().describe("Default true: hours already put on an invoice (entry_mark_billed) are left out, so the same hours are never billed twice. Pass false to see the whole period including invoiced work."),
   },
 }, guard(async (a: { project: string; from: string; to: string; unbilled_only?: boolean }) => {

@@ -21,33 +21,33 @@ Keeps a structured profile and writes resumes, cover letters and job-tailored va
 
 | tool | description |
 | --- | --- |
-| `cover_letter_create` | Write a one-page cover letter from the stored profile: opening, fit, proof, close. It states no fact that is not in your profile. Anything it does not know is left as a bracketed prompt such as [add: metric] for you to fill in. Free: 3 letters per calendar month. |
+| `cover_letter_create` | Call this tool to write a one-page cover letter from the stored profile: opening, fit, proof, close. Returns the output path, the word count, and every bracketed prompt left for you to fill in. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
 | `license_status` | Show whether this server runs in free or Pro mode and where to upgrade. |
 | `profile_get` | Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job. |
-| `profile_set` | Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. One profile per data directory; Pro adds named variants. Nothing leaves the machine. |
-| `resume_create` | Write the stored profile to a Word .docx. Bullets are ordered by relevance to the target role and keywords, then trimmed to fit max_pages using a measured word budget. Keywords that appear anywhere in the profile are printed in bold; keywords that do not appear are reported as missing and are never added. Free: the "modern" style. |
-| `resume_read` | Extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Best effort, section by heading. Nothing is saved unless save is true. |
-| `resume_to_html` | Write the resume as semantic HTML with a print stylesheet. Open it and print to PDF: there is no doc_to_pdf here because every pure-JavaScript route to PDF needs a native dependency. |
+| `profile_set` | Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. Returns a count of what was stored. |
+| `resume_create` | Call this tool to write the stored profile to a Word .docx. Returns the output path, the estimated page count, which bullets were dropped to fit, and which keywords matched or are missing. |
+| `resume_read` | Call this tool to extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Returns the parsed profile, the sections found, and anything unparsed. |
+| `resume_to_html` | Call this tool to write the resume as semantic HTML with a print stylesheet. Returns the output path. Open the file in a browser and print it to PDF. |
 | `resume_to_markdown` | Return the stored profile as markdown: paste it into a form, an email or an ATS box. |
-| `tailor_to_job` | Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new claim. Free: postings up to 2,000 characters. |
+| `tailor_to_job` | Extract what a job description actually asks for and check it against your profile. Returns the matched keywords, the missing ones, a coverage figure, and rewrites that only reorder facts you already stated. |
 
 ### `cover_letter_create`
 
 Title: Write a cover letter .docx
 
-Write a one-page cover letter from the stored profile: opening, fit, proof, close. It states no fact that is not in your profile. Anything it does not know is left as a bracketed prompt such as [add: metric] for you to fill in. Free: 3 letters per calendar month.
+Call this tool to write a one-page cover letter from the stored profile: opening, fit, proof, close. Returns the output path, the word count, and every bracketed prompt left for you to fill in.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
 | `company` | string | yes | (minLength 1) |
 | `highlights` | string[] | no | Points to lead with. Each is checked against the profile; anything not found there is returned as a bracketed prompt, not printed as fact. |
 | `hiring_manager` | string | no |  |
-| `job_description` | string | no |  |
-| `out_path` | string | no |  |
-| `overwrite` | boolean | no | (default false) |
+| `job_description` | string | no | Paste the posting. Used only to pick which of your own skills to lead with; no figure from the posting is ever restated as yours. |
+| `out_path` | string | no | Where to write the .docx. Defaults to <data dir>/documents/<company>-<role>-cover-letter.docx, numbered -2, -3, ... if that exists. |
+| `overwrite` | boolean | no | Replace an existing file at out_path. Default false: the call fails and nothing is written. (default false) |
 | `role` | string | yes | (minLength 1) |
-| `tone` | "formal" \| "direct" \| "warm" | no | (default "formal") |
+| `tone` | "formal" \| "direct" \| "warm" | no | Default "formal". (default "formal") |
 
 ### `license_activate`
 
@@ -81,7 +81,7 @@ Return the stored profile as JSON, exactly as it will be used by resume_create, 
 
 Title: Store your CV facts
 
-Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. One profile per data directory; Pro adds named variants. Nothing leaves the machine.
+Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. Returns a count of what was stored.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -97,21 +97,21 @@ Store the profile every resume and cover letter is built from: contact details, 
 | `phone` | string | no |  |
 | `skills` | string[] | no |  |
 | `summary` | string | no | Two or three lines. Used verbatim as the fit paragraph of a cover letter. |
-| `variant` | string | no | Name a second profile, e.g. "backend". Pro only. |
+| `variant` | string | no | Name a second profile, e.g. "backend". One profile per data directory on the free tier; named variants are Pro only. |
 
 ### `resume_create`
 
 Title: Write a resume .docx
 
-Write the stored profile to a Word .docx. Bullets are ordered by relevance to the target role and keywords, then trimmed to fit max_pages using a measured word budget. Keywords that appear anywhere in the profile are printed in bold; keywords that do not appear are reported as missing and are never added. Free: the "modern" style.
+Call this tool to write the stored profile to a Word .docx. Returns the output path, the estimated page count, which bullets were dropped to fit, and which keywords matched or are missing.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `keywords` | string[] | no | From the posting. Matched, bolded, and reported. |
-| `max_pages` | integer | no | (min 1, max 5, default 2) |
-| `out_path` | string | no |  |
-| `overwrite` | boolean | no | (default false) |
-| `style` | "modern" \| "classic" \| "compact" | no | (default "modern") |
+| `keywords` | string[] | no | From the posting. A keyword that appears anywhere in the profile is printed in bold; one that does not is reported as missing and is never added to the resume. |
+| `max_pages` | integer | no | Bullets are ordered by relevance to target_role and keywords, then trimmed to fit this many pages against a measured word budget. Default 2. (min 1, max 5, default 2) |
+| `out_path` | string | no | Where to write the .docx. Defaults to <data dir>/documents/<name>-resume.docx, numbered -2, -3, ... if that exists. |
+| `overwrite` | boolean | no | Replace an existing file at out_path. Default false: the call fails and nothing is written. (default false) |
+| `style` | "modern" \| "classic" \| "compact" | no | Free tier prints "modern" only; "classic" and "compact" are Pro. (default "modern") |
 | `target_role` | string | no | Printed under your name and used to rank bullets |
 | `variant` | string | no |  |
 
@@ -119,25 +119,25 @@ Write the stored profile to a Word .docx. Bullets are ordered by relevance to th
 
 Title: Read an existing resume .docx
 
-Extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Best effort, section by heading. Nothing is saved unless save is true.
+Call this tool to extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Returns the parsed profile, the sections found, and anything unparsed.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `path` | string | yes | (minLength 1) |
-| `save` | boolean | no | Store the result as the profile. Review it first. (default false) |
+| `path` | string | yes | Path to an existing .docx. Legacy .doc and .rtf are not readable here. Parsed best effort, section by heading. (minLength 1) |
+| `save` | boolean | no | Store the result as the profile. Default false: nothing is saved. Review the result first. (default false) |
 | `variant` | string | no |  |
 
 ### `resume_to_html`
 
 Title: Printable resume HTML
 
-Write the resume as semantic HTML with a print stylesheet. Open it and print to PDF: there is no doc_to_pdf here because every pure-JavaScript route to PDF needs a native dependency.
+Call this tool to write the resume as semantic HTML with a print stylesheet. Returns the output path. Open the file in a browser and print it to PDF.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `max_pages` | integer | no | (min 1, max 5, default 2) |
-| `out_path` | string | no |  |
-| `overwrite` | boolean | no | (default false) |
+| `max_pages` | integer | no | Bullets are trimmed to fit this many pages against a measured word budget. Default 2. (min 1, max 5, default 2) |
+| `out_path` | string | no | Where to write the .html. Defaults to <data dir>/documents/<name>-resume.html, numbered -2, -3, ... if that exists. |
+| `overwrite` | boolean | no | Replace an existing file at out_path. Default false: the call fails and nothing is written. (default false) |
 | `target_role` | string | no |  |
 | `variant` | string | no |  |
 
@@ -157,12 +157,12 @@ Return the stored profile as markdown: paste it into a form, an email or an ATS 
 
 Title: Gap analysis against a posting
 
-Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new claim. Free: postings up to 2,000 characters.
+Extract what a job description actually asks for and check it against your profile. Returns the matched keywords, the missing ones, a coverage figure, and rewrites that only reorder facts you already stated.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `job_description` | string | yes | (minLength 1) |
-| `limit` | integer | no | (min 5, max 60, default 30) |
+| `job_description` | string | yes | Paste the posting. The free tier reads up to 2,000 characters; Pro reads any length. (minLength 1) |
+| `limit` | integer | no | How many keywords to extract from the posting. Default 30. (min 5, max 60, default 30) |
 | `variant` | string | no |  |
 
 ## Resources

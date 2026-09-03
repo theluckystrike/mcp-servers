@@ -94,7 +94,7 @@ const itemSchema = z.object({
 const everySchema = z.union([
   z.enum(["weekly", "monthly", "quarterly", "yearly"]),
   z.object({ days: z.number().int().min(1).max(3650) }),
-]).describe('How often to bill: "weekly", "monthly", "quarterly", "yearly", or {days: 10}');
+]).describe('How often to bill: "weekly", "monthly", "quarterly", "yearly", or {days: 10}. Month steps keep the start date\'s day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March');
 
 function ruleOf(s: Schedule): PeriodRule {
   return {
@@ -208,13 +208,13 @@ const server = new McpServer(
 
 server.registerTool("schedule_create", {
   title: "Create a recurring invoice schedule",
-  description: "Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due runs. Month steps keep the start date's day of month and clamp it to shorter months, so a schedule starting on the 31st bills on the 28th/29th in February and back on the 31st in March.",
+  description: "Define a repeating invoice: a client, the line items, how often to bill, and when it starts and ends. Returns the schedule id, a summary and its next dates. Nothing is invoiced until invoice_generate_due runs.",
   inputSchema: {
     client: z.string().describe("Client name or id, as in the invoice server. Unknown names are created on the first generated invoice"),
     items: z.array(itemSchema).min(1).max(MAX_ITEMS, `a schedule can carry at most ${MAX_ITEMS} line items`).describe("The line items billed every period"),
     currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Defaults to your business default currency"),
     every: everySchema,
-    start_date: z.string().describe("YYYY-MM-DD. The first invoice falls on this date"),
+    start_date: z.string().describe("YYYY-MM-DD. The first invoice falls on this date, and for weekly/monthly/quarterly/yearly steps its day of month is the billing day for every later period"),
     end_date: z.string().optional().describe("YYYY-MM-DD, INCLUSIVE: an occurrence landing exactly on it is still generated"),
     due_days: z.number().int().optional().describe("Days until each invoice is due, defaults to your payment terms"),
     notes: z.string().optional().describe("Free text printed under the totals of every generated invoice"),
@@ -265,7 +265,9 @@ server.registerTool("schedule_create", {
       return ok(
         `Created schedule ${s.id} for ${s.client}, ${everyLabel(s.every)} from ${s.start_date}.\n\n` +
         `${JSON.stringify({ ...summarize(s, today), next_dates: preview }, null, 2)}\n\n` +
-        `Nothing is invoiced yet. Run invoice_generate_due when you want the due invoices created.` +
+        `Nothing is invoiced yet. Run invoice_generate_due when you want the due invoices created. ` +
+        `Month steps keep ${s.start_date}'s day of month and clamp it to shorter months.` +
+        `${gate.isPro() ? "" : ` The free tier allows ${FREE_ACTIVE_SCHEDULES} active schedules.`}` +
         `${businessMissing() ? `\n\n${NO_BUSINESS_NOTE}` : ""}${note}`,
       );
     });
@@ -387,8 +389,8 @@ server.registerTool("schedule_resume", {
 
 server.registerTool("schedule_delete", {
   title: "Delete a schedule",
-  description: "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Note that re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again: invoice_generate_due will warn that another schedule for that client already covered them.",
-  inputSchema: { id: z.string() },
+  description: "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Returns the client and how many invoices and history rows remain.",
+  inputSchema: { id: z.string().describe("Schedule id, or a client name. Deletion is permanent; re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again") },
 }, async (a) => {
   try {
     return await locked(() => {
@@ -404,11 +406,11 @@ server.registerTool("schedule_delete", {
 
 server.registerTool("schedule_skip", {
   title: "Skip one period",
-  description: "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. This is the answer to \"pause this client for October\" -- schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good. Pass undo: true to un-skip a period that has not been invoiced.",
+  description: "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. Returns the amount that will not be billed and how to undo it.",
   inputSchema: {
     id: z.string().describe("Schedule id, or a client name"),
-    period: z.string().describe("The occurrence date to skip, YYYY-MM-DD, exactly as it appears in schedule_upcoming or forecast"),
-    undo: z.boolean().optional().describe("Remove a previous skip so the period becomes due again. Default false"),
+    period: z.string().describe("The occurrence date to skip, YYYY-MM-DD, exactly as it appears in schedule_upcoming or forecast. This is the answer to \"pause this client for October\": schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good"),
+    undo: z.boolean().optional().describe("Remove a previous skip so the period becomes due again. Works only on a period that has not been invoiced. Default false"),
   },
 }, async (a) => {
   try {
@@ -444,7 +446,8 @@ server.registerTool("schedule_skip", {
       });
       setHistory(history);
       return ok(`Skipped ${s.client} ${a.period} (${formatMoney(scheduleTotalMinor(s, cur), cur)} not billed). ` +
-        `The schedule stays active, so every other period bills as normal. Undo with schedule_skip {id: "${s.id}", period: "${a.period}", undo: true}.`);
+        `The schedule stays active, so every other period bills as normal, and this period is closed for good: no invoice will ever be created for it. ` +
+        `Undo with schedule_skip {id: "${s.id}", period: "${a.period}", undo: true} while it has not been invoiced.`);
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -510,11 +513,11 @@ server.registerTool("schedule_upcoming", {
 
 server.registerTool("invoice_generate_due", {
   title: "Generate the invoices that are due",
-  description: "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Idempotent: one invoice per schedule per period, keyed by the occurrence date, so running it twice creates nothing the second time. Reports what was created and what was skipped. Free and unlimited.",
+  description: "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Returns what was created, what was skipped and what is still due.",
   inputSchema: {
-    as_of: z.string().optional().describe("YYYY-MM-DD, defaults to today"),
-    schedule_id: z.string().optional().describe("Only this schedule"),
-    dry_run: z.boolean().optional().describe("List what would be created without creating anything. Default false"),
+    as_of: z.string().optional().describe("YYYY-MM-DD, defaults to today. Every occurrence on or before this date that has not been invoiced is billed. Idempotent: one invoice per schedule per period, keyed by the occurrence date, so running it twice creates nothing the second time"),
+    schedule_id: z.string().optional().describe("Only this schedule. Free and unlimited on every tier"),
+    dry_run: z.boolean().optional().describe(`List what would be created without creating anything. Default false. One run creates at most ${MAX_PERIODS_PER_RUN} invoices, oldest period first`),
   },
 }, async (a) => {
   try {
@@ -578,9 +581,10 @@ server.registerTool("invoice_generate_due", {
         skipped: result.skipped,
         still_due_after_this_run: result.remaining,
         duplicate_warnings: result.duplicates.length ? result.duplicates : undefined,
-        note: result.remaining > 0
-          ? `One run creates at most ${MAX_PERIODS_PER_RUN} invoices. ${result.remaining} more periods would still be due; call invoice_generate_due again to continue.`
-          : undefined,
+        note: `Nothing was created: dry_run was true. This tool is idempotent, one invoice per schedule per period keyed by the occurrence date, so running it twice creates nothing the second time.` +
+          (result.remaining > 0
+            ? ` One run creates at most ${MAX_PERIODS_PER_RUN} invoices. ${result.remaining} more periods would still be due; call invoice_generate_due again to continue.`
+            : ""),
       });
     }
 
@@ -613,7 +617,8 @@ server.registerTool("invoice_generate_due", {
       `as_of ${asOf}: created ${created.length} invoice${created.length === 1 ? "" : "s"}, skipped ${result.skipped.length} already invoiced.\n\n` +
       (lines.length ? lines.join("\n") + "\n\n" : "") +
       (created.length ? `Total: ${Object.entries(totals).map(([c, v]) => formatMoney(v, c)).join(", ")}\n\n` : "") +
-      `They are stored in the invoice server (${invoiceDataDir()}) and appear in its invoice_list and overdue_report.` +
+      `They are stored in the invoice server (${invoiceDataDir()}) and appear in its invoice_list and overdue_report. ` +
+      `This tool is idempotent -- one invoice per schedule per period, keyed by the occurrence date -- so running it again creates nothing for a period already billed.` +
       (result.remaining > 0
         ? `\n\nOne run creates at most ${MAX_PERIODS_PER_RUN} invoices, oldest period first. ${result.remaining} period${result.remaining === 1 ? " is" : "s are"} still due; call invoice_generate_due again to continue, or check as_of and the schedule's start_date if that number looks wrong.`
         : "") +

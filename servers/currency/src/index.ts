@@ -55,10 +55,10 @@ const server = new McpServer(
 
 server.registerTool("rates_latest", {
   title: "Latest ECB reference rates",
-  description: "The most recent European Central Bank daily reference rates, re-expressed against any base. The answer always states the rate date, because ECB rates are published once a day around 16:00 CET on TARGET business days and a Sunday carries Friday's rate. Rates are cached locally and refreshed only when the copy is more than 6 hours old, so repeated calls and offline machines cost nothing.",
+  description: "Call this tool for the most recent European Central Bank daily reference rates, re-expressed against any base. Returns the rates, the ECB rate date they belong to, and how old the local cache is.",
   inputSchema: {
-    base: code("base").optional().describe("Base currency, default EUR. A rate of 1.0812 for USD means 1 base = 1.0812 USD"),
-    quotes: z.array(code("quote")).max(200).optional().describe("Only these currencies. Omit for all of them"),
+    base: code("base").optional().describe("Base currency, default EUR. A rate of 1.0812 for USD means 1 base = 1.0812 USD. Cross rates go through the euro, the only pair the ECB publishes"),
+    quotes: z.array(code("quote")).max(200).optional().describe("Only these currencies, at most 200. Omit for all of them"),
   },
 }, async (a) => {
   try {
@@ -127,12 +127,12 @@ async function ratesForDate(dateArg: string | undefined): Promise<
 
 server.registerTool("convert", {
   title: "Convert an amount",
-  description: "Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounded to the target currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places. Every answer states the rate date it used. A weekend or holiday date falls back to the last published rate on or before it, and says so.",
+  description: "Call this tool to convert an amount between any two ECB-quoted currencies, today or on a past date. Returns the converted amount, the cross rate to 6 decimals, the rounding applied and the rate date used.",
   inputSchema: {
     amount: AMOUNT.describe("Amount in major units of the from currency, e.g. 100 or 12.34"),
-    from: code("from").describe("Currency the amount is in"),
-    to: code("to").describe("Currency to convert into"),
-    date: z.string().max(10).optional().describe("ISO date YYYY-MM-DD. Omit for the latest published rate. Past dates beyond 90 days are Pro"),
+    from: code("from").describe("Currency the amount is in. Cross rates go through the euro, the only pair the ECB publishes"),
+    to: code("to").describe("Currency to convert into. The result is rounded once, at the end, to this currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places"),
+    date: z.string().max(10).optional().describe("ISO date YYYY-MM-DD. Omit for the latest published rate. A weekend or TARGET holiday falls back to the last rate published on or before it, and the answer says so. Past dates beyond 90 days are Pro"),
   },
 }, async (a) => {
   try {
@@ -190,10 +190,10 @@ server.registerTool("convert_many", {
 
 server.registerTool("fx_rates_for", {
   title: "FX rates in the shape expense-tracker wants",
-  description: 'Return exactly the object that the expense tracker\'s expense_to_invoice takes as fx_rates: {"EUR": 1.08, "GBP": 1.27} meaning 1 unit of that currency = X units of the target. Call this when a rebill or an invoice spans more than one currency, then pass the fx_rates object straight through with target_currency, instead of asking the user for rates. The rate date is returned alongside so it can be written on the invoice.',
+  description: "Call this tool when a rebill or an invoice spans more than one currency, instead of asking the user for rates. Returns the fx_rates object expense_to_invoice takes, plus the rate date to write on the invoice.",
   inputSchema: {
-    target: code("target").describe("The currency the invoice will be issued in"),
-    currencies: z.array(code("currency")).min(1).max(60).describe("The other currencies present, e.g. [\"EUR\", \"GBP\"]"),
+    target: code("target").describe("The currency the invoice will be issued in. Pass it on as target_currency alongside the fx_rates object"),
+    currencies: z.array(code("currency")).min(1).max(60).describe("The other currencies present, e.g. [\"EUR\", \"GBP\"]. Direction: each returned rate means 1 unit of that key = X units of the target, so {\"EUR\": 1.08} is 1 EUR = 1.08 of the target. The target needs no rate of its own"),
   },
 }, async (a) => {
   try {
@@ -227,12 +227,12 @@ server.registerTool("fx_rates_for", {
 
 server.registerTool("rate_history", {
   title: "Rate history for a pair",
-  description: "The ECB rate for one currency pair over a window, with min, max, average and the change across the window. Give days for a trailing window, or from_date and to_date for an explicit one. Only TARGET business days have rates, so a 30-day window holds about 21 rows. Free reads up to 90 days; Pro reads the whole series back to 1999-01-04.",
+  description: "Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change over the whole window.",
   inputSchema: {
-    from: code("from"),
-    to: code("to"),
-    days: z.number().int().min(1).max(20000).optional().describe("Trailing window in calendar days, default 30"),
-    from_date: z.string().max(10).optional().describe("ISO date, inclusive. Overrides days"),
+    from: code("from").describe("Base currency of the pair"),
+    to: code("to").describe("Quote currency of the pair. Each row is 1 from = X to"),
+    days: z.number().int().min(1).max(20000).optional().describe("Trailing window in calendar days, default 30. Only TARGET business days carry a rate, so 30 days holds about 21 rows. Free reads up to 90 days back; Pro reads the whole series back to 1999-01-04"),
+    from_date: z.string().max(10).optional().describe("ISO date, inclusive. Overrides days. Free is limited to the last 90 days"),
     to_date: z.string().max(10).optional().describe("ISO date, inclusive, default today"),
     max_rows: z.number().int().min(1).max(2000).optional().describe("Cap the table, default 200. min/max/avg still cover the whole window"),
   },
@@ -287,11 +287,11 @@ server.registerTool("rate_history", {
 
 server.registerTool("rate_on", {
   title: "Rate on a given date",
-  description: "The ECB rate for a pair on one date. The ECB quotes every currency per 1 euro, so \"the ECB rate for USD\" is from EUR to USD, not the other way round; ask for the inverse only if the user did. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the answer says which date that was and why. Free covers the last 90 days; Pro covers every date back to 1999-01-04.",
+  description: "Call this tool for the ECB rate of one currency pair on one date. Returns the rate, the date the rate actually came from, and whether that was an exact match for the date asked for.",
   inputSchema: {
-    from: code("from"),
-    to: code("to"),
-    date: z.string().max(10).describe("ISO date YYYY-MM-DD"),
+    from: code("from").describe("Base currency. The ECB quotes every currency per 1 euro, so \"the ECB rate for USD\" is from EUR to USD, not the other way round; invert only if the user asked for the inverse"),
+    to: code("to").describe("Quote currency. The rate returned is 1 from = X to"),
+    date: z.string().max(10).describe("ISO date YYYY-MM-DD. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last rate published on or before it is returned and the answer names that date. Free covers the last 90 days; Pro covers every date back to 1999-01-04"),
   },
 }, async (a) => {
   try {
@@ -347,8 +347,26 @@ server.registerTool("cache_status", {
 }, async () => {
   try {
     let daily, history;
-    try { daily = loadDaily(); } catch (e) { daily = undefined; }
-    try { history = loadHistory(); } catch (e) { history = undefined; }
+    /**
+     * D-S3: reading the cache is also what discovers that it is corrupt, and the discovery
+     * moves the file. Swallowing that told the caller the cache was fine on the very call
+     * that quarantined it. A quarantine performed by THIS call is now an error, and it
+     * names the copy holding the original bytes.
+     */
+    const quarantined: string[] = [];
+    const note = (e: unknown) => {
+      const c = e as { justQuarantined?: boolean; quarantined?: string };
+      if (c && c.justQuarantined && c.quarantined) quarantined.push(c.quarantined);
+    };
+    try { daily = loadDaily(); } catch (e) { note(e); daily = undefined; }
+    try { history = loadHistory(); } catch (e) { note(e); history = undefined; }
+    if (quarantined.length) {
+      return fail(
+        `the rate cache did not parse and was quarantined by this call; nothing was overwritten. ` +
+        `Original bytes kept at ${quarantined.join(" and ")}. ` +
+        `Delete the matching .corrupt marker file to let the next call re-download from the ECB.`,
+      );
+    }
     const age = (t?: string) => (t && Number.isFinite(Date.parse(t)) ? Math.round((Date.now() - Date.parse(t)) / 60000) : undefined);
     const days = history ? Object.keys(history.days).sort() : [];
     return json({

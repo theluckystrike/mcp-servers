@@ -113,7 +113,7 @@ test("stdio server: initialize, tools/list, manual price, watch, refresh, histor
   t.after(async () => { c.stop(); await shop.close(); });
 
   const initRes = await init(c);
-  assert.equal(initRes.result.serverInfo.name, "price-tracker");
+  assert.equal(initRes.result.serverInfo.name, "mcp-price-tracker");
 
   const list = await c.send("tools/list", {});
   const names = list.result.tools.map((x) => x.name).sort();

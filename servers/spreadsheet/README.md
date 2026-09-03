@@ -75,6 +75,9 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `license_activate` | Activate a Pro key (verified offline) |
 
 Resource template: `sheet://<path>` returns the `sheet_info` summary for that file.
+Resource: `sheet://recent` lists the files this server has opened since it started, most recent first (in memory only -- nothing is written to disk, so the list is empty again after a restart).
+
+Prompt: `explore_sheet` walks an unfamiliar file -- `sheet_info` first, then concrete `sheet_query` calls built from the columns it actually found.
 
 ## What you can say
 

@@ -21,15 +21,15 @@ A local clause library for contracts: store your own clauses, search them, and a
 
 | tool | description |
 | --- | --- |
-| `clause_add` | Save a reusable contract or proposal clause to the library. Use {{variables}} in the body for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}. Free tier: 10 own clauses on top of the 25 starters. |
+| `clause_add` | Save a reusable contract or proposal clause to the library. Returns the stored clause id, title, category, tags and the variables detected in its body, plus how many clauses of your own the library now holds. |
 | `clause_delete` | Remove a clause from the library. A deleted starter clause is not re-seeded on the next call. |
-| `clause_export` | Write the whole library to a file. Markdown export is free; JSON export is a Pro feature. |
+| `clause_export` | Call this tool to write the whole clause library out to one file. Returns the destination path, the format used and how many clauses were written. |
 | `clause_get` | Return a clause in full by id or by title, with its variables and, in Pro, its revision count. |
-| `clause_import` | Bulk-load clauses from a file. Markdown form: '## Title', optional 'category:' / 'tags:' / 'variables:' lines, blank line, body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the free tier within the free clause cap. |
+| `clause_import` | Call this tool to bulk-load clauses into the library from a markdown or JSON file. Returns how many clauses were added, replaced, skipped and blocked by the free clause cap, plus the new library total. |
 | `clause_list` | List every clause, newest categories first, optionally narrowed to one category. |
 | `clause_search` | Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature. |
 | `clause_update` | Change the text, category, tags, variables or jurisdiction of a clause. In Pro the previous text is kept as a version; in the free tier the change is applied without history. |
-| `contract_assemble` | Build a contract or proposal from library clauses: orders them, fills {{variables}} from the values you pass, leaves every missing fact as a bracketed prompt like [late fee percent], prepends the not-legal-advice line, and writes a .docx or a markdown file. Free tier: up to 8 clauses per document. |
+| `contract_assemble` | Call this tool to build a contract or proposal document from library clauses. Returns the path written, the clauses used in document order, which variables were filled, and the facts still missing as bracketed prompts. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
 | `license_status` | Show whether this server runs in free or Pro mode and where to upgrade. |
 | `variables_list` | Given a set of clauses, list every {{variable}} they use and which clause uses it, so nothing is missed before assembling. |
@@ -38,11 +38,11 @@ A local clause library for contracts: store your own clauses, search them, and a
 
 Title: Add a clause
 
-Save a reusable contract or proposal clause to the library. Use {{variables}} in the body for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}. Free tier: 10 own clauses on top of the 25 starters.
+Save a reusable contract or proposal clause to the library. Returns the stored clause id, title, category, tags and the variables detected in its body, plus how many clauses of your own the library now holds.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `body` | string | yes | The clause text. {{variable}} placeholders are filled at assembly time (minLength 1) |
+| `body` | string | yes | The clause text. Use {{variable}} placeholders for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}; contract_assemble fills them at assembly time. Free tier: 10 clauses of your own on top of the 25 starters (minLength 1) |
 | `category` | string | yes | Grouping. The known ones, in assembly order, are parties, scope, payment, expenses, ip, confidentiality, data, term, liability, warranty, disputes, general -- reuse one of these; any other name is accepted but sorts last in a category-based assembly |
 | `jurisdiction` | string | no | Where the clause is meant to apply, for example 'PL' or 'England and Wales' |
 | `language` | string | no | ISO language code, default en |
@@ -64,13 +64,13 @@ Remove a clause from the library. A deleted starter clause is not re-seeded on t
 
 Title: Export clauses
 
-Write the whole library to a file. Markdown export is free; JSON export is a Pro feature.
+Call this tool to write the whole clause library out to one file. Returns the destination path, the format used and how many clauses were written.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `format` | "json" \| "markdown" | yes | json (Pro) or markdown (free) |
+| `format` | "json" \| "markdown" | yes | json (a Pro feature) or markdown (works in the free tier) |
 | `overwrite` | boolean | no | Replace the destination if a file is already there. Without it an existing file is never touched |
-| `path` | string | yes | Destination file path |
+| `path` | string | yes | Destination file path. The clauses are written in assembly order, categories first |
 
 ### `clause_get`
 
@@ -87,12 +87,12 @@ Return a clause in full by id or by title, with its variables and, in Pro, its r
 
 Title: Import clauses
 
-Bulk-load clauses from a file. Markdown form: '## Title', optional 'category:' / 'tags:' / 'variables:' lines, blank line, body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the free tier within the free clause cap.
+Call this tool to bulk-load clauses into the library from a markdown or JSON file. Returns how many clauses were added, replaced, skipped and blocked by the free clause cap, plus the new library total.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
 | `overwrite` | boolean | no | Replace clauses whose title already exists instead of skipping them |
-| `path` | string | yes | Path to a .md or .json file |
+| `path` | string | yes | Path to a .md or .json file. Markdown form: '## Title', then optional 'category:' / 'tags:' / 'variables:' lines, a blank line, then the body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the free tier, within the free clause cap |
 
 ### `clause_list`
 
@@ -138,18 +138,18 @@ Change the text, category, tags, variables or jurisdiction of a clause. In Pro t
 
 Title: Assemble a contract
 
-Build a contract or proposal from library clauses: orders them, fills {{variables}} from the values you pass, leaves every missing fact as a bracketed prompt like [late fee percent], prepends the not-legal-advice line, and writes a .docx or a markdown file. Free tier: up to 8 clauses per document.
+Call this tool to build a contract or proposal document from library clauses. Returns the path written, the clauses used in document order, which variables were filled, and the facts still missing as bracketed prompts.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `categories` | string[] | no | Instead of ids: every clause in these categories, ordered by category |
-| `clause_ids` | string[] | no | Clause ids in the order they should appear |
+| `categories` | string[] | no | Instead of ids: every clause in these categories, ordered by category. Free tier: up to 8 clauses per document |
+| `clause_ids` | string[] | no | Clause ids in the order they should appear; this is the document order. Free tier: up to 8 clauses per document |
 | `client` | string | no | Client name; also fills the {{client}} variable |
-| `format` | "docx" \| "markdown" | no | docx (default) or markdown |
-| `out_path` | string | no | Where to write the file. Default: the server data directory |
+| `format` | "docx" \| "markdown" | no | docx (default) or markdown; the document opens with the not-legal-advice line either way |
+| `out_path` | string | no | Where to write the file. Default: the server data directory, under a name built from the client and the title |
 | `overwrite` | boolean | no | Replace out_path if a file is already there. Without it an existing file is never touched |
 | `title` | string | yes | Document title, for example 'Service Agreement - Beta Corp' |
-| `values` | object | no | Variable values, for example {"fee":"4500","late_fee_percent":"2"} |
+| `values` | object | no | Values for the {{variables}} in the chosen clauses, for example {"fee":"4500","late_fee_percent":"2"}. Any variable you leave out stays in the document as a bracketed prompt such as [late fee percent], never as an invented value |
 
 ### `license_activate`
 

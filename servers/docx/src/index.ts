@@ -140,9 +140,9 @@ const server = new McpServer(
 
 server.registerTool("business_set", {
   title: "Set your business details",
-  description: "Store the sender profile printed on every proposal, contract and letter: your name, address, email, VAT id, bank details and defaults (currency, payment terms). Same profile shape as mcp-invoice. Call this once before creating documents.",
+  description: "Store the sender profile printed on every proposal, contract and letter. Returns the saved profile and the directory it was written to. Call this once before creating documents.",
   inputSchema: z.object({
-    name: z.string().describe("Your business or freelancer name"),
+    name: z.string().describe("Your business or freelancer name, printed on the letterhead of every proposal, contract and letter"),
     address: z.string().optional().describe("Postal address, newlines allowed"),
     email: z.string().optional(),
     vat_id: z.string().optional().describe("VAT / tax registration id"),
@@ -153,7 +153,7 @@ server.registerTool("business_set", {
     default_currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("ISO code, e.g. EUR, USD. Default EUR"),
     default_tax_rate: z.number().optional().describe("Default VAT percent, quoted on proposals"),
     payment_terms_days: z.number().optional().describe("Default days until payment is due. Default 14"),
-    invoice_prefix: z.string().optional().describe("Reference prefix used by mcp-invoice; kept here so one profile serves both"),
+    invoice_prefix: z.string().optional().describe("Reference prefix used by mcp-invoice; this profile has the same field shape as mcp-invoice, so one profile serves both"),
     tax_rate: z.number().optional().describe("Alias for default_tax_rate"),
     vat_rate: z.number().optional().describe("Alias for default_tax_rate"),
     vat: z.number().optional().describe("Alias for default_tax_rate"),
@@ -298,12 +298,12 @@ async function writeDoc(
 
 server.registerTool("doc_create", {
   title: "Create a Word document",
-  description: "Write a real .docx file from structured sections: headings, paragraphs, bullet or numbered lists and tables. Choose plain, letter (sender block top right, date, addressee) or proposal (letterhead band and cover title) layout. Returns the file path. Free and unlimited.",
+  description: "Call this tool to write a real .docx file from structured sections. Returns the file path, the number of blocks written and the layout used. Free and unlimited.",
   inputSchema: {
     title: z.string().describe("Document title, used as the top heading and the file name"),
-    sections: z.array(sectionSchema).describe("Sections in order"),
+    sections: z.array(sectionSchema).describe("Sections in order. Each one may carry a heading, paragraphs, a bullet or numbered list and a table"),
     out_path: z.string().optional().describe("Where to write the .docx. Defaults to the data directory"),
-    style: z.enum(["plain", "letter", "proposal"]).optional().describe("Layout, default plain"),
+    style: z.enum(["plain", "letter", "proposal"]).optional().describe("Layout, default plain. plain is the title and the body; letter adds a sender block top right, a date and the addressee; proposal adds a letterhead band and a cover title"),
     recipient: z.string().optional().describe("Addressee block for the letter layout"),
     date: z.string().optional().describe("Date line for the letter layout, default today"),
     overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
@@ -323,9 +323,9 @@ server.registerTool("doc_create", {
 
 server.registerTool("doc_from_markdown", {
   title: "Markdown to Word",
-  description: "Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and **bold** / *italic* / `code` inline. Returns the file path. Free and unlimited.",
+  description: "Call this tool to turn markdown into a .docx. Returns the file path and a count of the blocks written, by type. Free and unlimited.",
   inputSchema: {
-    markdown: z.string().describe("The markdown source"),
+    markdown: z.string().describe("The markdown source. ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables and fenced code blocks as monospace are honoured, as are **bold**, *italic* and `code` inline"),
     out_path: z.string().optional().describe("Where to write the .docx. Defaults to the data directory"),
     title: z.string().optional().describe("Document title; defaults to the first heading in the markdown"),
     style: z.enum(["plain", "letter", "proposal"]).optional(),
@@ -350,10 +350,10 @@ server.registerTool("doc_from_markdown", {
 
 server.registerTool("doc_read", {
   title: "Read a Word document",
-  description: "Extract the text of an existing .docx: headings with their levels, paragraphs, list items and tables, in document order. Works on files Word, Google Docs or this server produced. Free and unlimited.",
+  description: "Call this tool to extract the text of an existing .docx. Returns an outline of the headings and the full text in document order, or the block structure. Free and unlimited.",
   inputSchema: {
-    path: z.string().describe("Path to the .docx file"),
-    format: z.enum(["text", "json"]).optional().describe("text (default) returns the readable text, json returns the block structure"),
+    path: z.string().describe("Path to the .docx file. Files produced by Word, Google Docs or this server all work; legacy .doc and .rtf do not"),
+    format: z.enum(["text", "json"]).optional().describe("text (default) returns the readable text, json returns the block structure: headings with their levels, paragraphs, list items and tables, in document order"),
   },
 }, async (a) => {
   try {
@@ -374,10 +374,10 @@ server.registerTool("doc_read", {
 
 server.registerTool("doc_to_html", {
   title: "Word document to HTML",
-  description: "Convert a .docx to semantic HTML you can open in a browser and print to PDF. Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native dependency or a headless browser, and this server stays install-free, so printing the HTML is the supported route. Free and unlimited.",
+  description: "Call this tool to convert a .docx to semantic HTML you can open in a browser and print to PDF. Returns the path of the .html file. This is the supported PDF route; no PDF is rendered here. Free and unlimited.",
   inputSchema: {
-    path: z.string().describe("Path to the .docx file"),
-    out_path: z.string().optional().describe("Where to write the .html. Defaults next to the source file"),
+    path: z.string().describe("Path to the .docx file to convert"),
+    out_path: z.string().optional().describe("Where to write the .html. Defaults next to the source file. Open the result and print it to PDF; direct PDF output is not offered here"),
     overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
@@ -390,15 +390,17 @@ server.registerTool("doc_to_html", {
     writeFileSync(out, toHtml(title, blocks), "utf8");
     const note = record("html", title, out);
     return ok(`Wrote ${out}${note}\n\nOpen it in a browser and use File > Print > Save as PDF. ` +
-      `This server has no native dependency, so it does not render PDF bytes itself.`);
+      `Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native ` +
+      `dependency or a headless browser, and this server stays install-free, so printing the HTML is ` +
+      `the supported route. This server has no native dependency, so it does not render PDF bytes itself.`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
 server.registerTool("doc_fill_template", {
   title: "Fill a Word template",
-  description: "Replace {{placeholders}} in an existing .docx and write a new file, keeping every style, table, header, footer and image of the original. Placeholders split across runs by Word's editor are handled, because the substitution runs on the joined text of each paragraph. Call with no values to list the placeholders a template contains.",
+  description: "Call this tool to replace {{placeholders}} in an existing .docx and write a new file. Returns the new path and which placeholders were replaced, unfilled or ignored. Call with no values to list a template's placeholders.",
   inputSchema: {
-    template_path: z.string().describe("Path to the .docx template containing {{placeholders}}"),
+    template_path: z.string().describe("Path to the .docx template containing {{placeholders}}. Every style, table, header, footer and image of the original is kept. Placeholders split across runs by Word's editor are handled, because the substitution runs on the joined text of each paragraph"),
     values: z.record(z.union([z.string(), z.number(), z.boolean()])).optional()
       .describe("Placeholder name to value, e.g. {client: \"Acme\", fee: \"EUR 4,500.00\"}"),
     out_path: z.string().optional().describe("Where to write the filled .docx. Defaults to <template>-filled.docx"),
@@ -487,9 +489,9 @@ function proposalBody(a: ProposalInput): { blocks: Block[]; total: string; terms
 
 server.registerTool("proposal_create", {
   title: "Create a proposal",
-  description: "Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number that is never reused. Free tier: 3 proposals or contracts per calendar month.",
+  description: "Call this tool to produce a client-ready .docx proposal from summary, scope, deliverables, timeline, price and terms. Returns the reference, the total and the file path. Free tier: 3 proposals or contracts per month.",
   inputSchema: {
-    client: z.string().describe("Client name, printed as 'Prepared for'"),
+    client: z.string().describe("Client name, printed as 'Prepared for'. The letterhead comes from your business_set profile"),
     project_title: z.string().describe("Project title"),
     summary: z.string().describe("One or two paragraphs on the problem and the approach"),
     scope: z.array(z.string()).describe("What is in scope, one bullet each"),
@@ -504,7 +506,7 @@ server.registerTool("proposal_create", {
       terms: z.string().optional().describe("e.g. '50% on signature, 50% on delivery'"),
     }),
     valid_until: z.string().optional().describe("YYYY-MM-DD, the date the quote expires"),
-    out_path: z.string().optional(),
+    out_path: z.string().optional().describe("Where to write the .docx. Defaults to the data directory"),
     overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
@@ -522,7 +524,9 @@ server.registerTool("proposal_create", {
       return { path: w.path, note: w.note, number };
     });
     return ok(
-      `Created proposal ${out.number} for ${a.client}.\n\n` +
+      `Created proposal ${out.number} for ${a.client}. The letterhead came from your business_set profile, ` +
+      `and reference ${out.number} is never reused. To revise this proposal later, call proposal_update ` +
+      `with the reference rather than creating a second one.\n\n` +
       JSON.stringify({
         reference: out.number, client: a.client, project: a.project_title,
         total, terms, valid_until: a.valid_until, phases: a.timeline.length, file: out.path,
@@ -534,9 +538,9 @@ server.registerTool("proposal_create", {
 
 server.registerTool("proposal_update", {
   title: "Update a proposal",
-  description: "Rewrite an existing proposal in place from its reference. Only the fields you pass change; everything else is taken from the structured data stored when the proposal was created, so the same file and the same reference number are kept and no second document is burned.",
+  description: "Rewrite an existing proposal in place from its reference. Only the fields you pass change; the rest comes from the data stored at creation. Returns the fields that changed and the file path.",
   inputSchema: {
-    reference: z.string().describe("The proposal reference, e.g. PROP-2026-0001"),
+    reference: z.string().describe("The proposal reference, e.g. PROP-2026-0001. The same file and the same reference number are kept, so no second document is burned against the free-tier monthly count"),
     client: z.string().optional(),
     project_title: z.string().optional(),
     summary: z.string().optional(),
@@ -576,7 +580,9 @@ server.registerTool("proposal_update", {
       },
     ));
     return ok(
-      `Updated proposal ${ref} in place; the reference and the file are unchanged.\n\n` +
+      `Updated proposal ${ref} in place; the reference and the file are unchanged. Every field you did not ` +
+      `pass was taken from the data stored when the proposal was created, and no second document was burned ` +
+      `against the free-tier monthly count.\n\n` +
       JSON.stringify({
         reference: ref, client: merged.client, project: merged.project_title,
         total, terms, valid_until: merged.valid_until, phases: merged.timeline.length,
@@ -588,10 +594,10 @@ server.registerTool("proposal_update", {
 
 server.registerTool("contract_create", {
   title: "Create a service agreement",
-  description: "Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. This is a template skeleton with labelled placeholders for a lawyer to review, not legal advice. Free tier: 3 proposals or contracts per calendar month.",
+  description: "Call this tool to produce a freelance service agreement .docx. Returns the reference, the fee and the file path. It is a template skeleton for a lawyer to review, not legal advice. Free tier: 3 agreements per month.",
   inputSchema: {
     client: z.string().describe("The client's legal name"),
-    services: z.string().describe("What you will do, one or two sentences"),
+    services: z.string().describe("What you will do, one or two sentences. The document adds parties, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability, termination and governing law"),
     start_date: z.string().describe("YYYY-MM-DD"),
     end_date: z.string().optional().describe("YYYY-MM-DD, omit for an open-ended engagement"),
     fee: z.object({
@@ -601,7 +607,7 @@ server.registerTool("contract_create", {
     }),
     governing_law: z.string().optional().describe("e.g. 'the laws of Poland'"),
     clauses: z.array(z.string()).optional().describe("Extra clauses to append, one paragraph each"),
-    out_path: z.string().optional(),
+    out_path: z.string().optional().describe("Where to write the .docx. Defaults to the data directory"),
     overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
@@ -664,7 +670,7 @@ server.registerTool("contract_create", {
     return ok(
       `Created service agreement ${out.number} for ${a.client}.\n\n` +
       JSON.stringify({ reference: out.number, client: a.client, fee, schedule: a.fee.schedule, start_date: a.start_date, end_date: a.end_date, governing_law: law, file: out.path }, null, 2) + out.note +
-      `\n\nThis is a template, not legal advice. Have a lawyer review every clause and complete every [BRACKETED PLACEHOLDER] before anyone signs.` +
+      `\n\nThis is a template skeleton with labelled placeholders, not legal advice. Have a lawyer review every clause and complete every [BRACKETED PLACEHOLDER] before anyone signs. The free tier allows 3 proposals or contracts per calendar month, combined.` +
       `${businessMissing() ? `\n\n${NO_BUSINESS_NOTE}` : ""}${brandingNote()}`,
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }

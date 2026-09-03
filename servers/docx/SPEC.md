@@ -21,23 +21,23 @@ Writes real .docx files: documents from markdown or sections, proposals, contrac
 
 | tool | description |
 | --- | --- |
-| `business_set` | Store the sender profile printed on every proposal, contract and letter: your name, address, email, VAT id, bank details and defaults (currency, payment terms). Same profile shape as mcp-invoice. Call this once before creating documents. |
-| `contract_create` | Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. This is a template skeleton with labelled placeholders for a lawyer to review, not legal advice. Free tier: 3 proposals or contracts per calendar month. |
-| `doc_create` | Write a real .docx file from structured sections: headings, paragraphs, bullet or numbered lists and tables. Choose plain, letter (sender block top right, date, addressee) or proposal (letterhead band and cover title) layout. Returns the file path. Free and unlimited. |
-| `doc_fill_template` | Replace {{placeholders}} in an existing .docx and write a new file, keeping every style, table, header, footer and image of the original. Placeholders split across runs by Word's editor are handled, because the substitution runs on the joined text of each paragraph. Call with no values to list the placeholders a template contains. |
-| `doc_from_markdown` | Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and **bold** / *italic* / `code` inline. Returns the file path. Free and unlimited. |
-| `doc_read` | Extract the text of an existing .docx: headings with their levels, paragraphs, list items and tables, in document order. Works on files Word, Google Docs or this server produced. Free and unlimited. |
-| `doc_to_html` | Convert a .docx to semantic HTML you can open in a browser and print to PDF. Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native dependency or a headless browser, and this server stays install-free, so printing the HTML is the supported route. Free and unlimited. |
+| `business_set` | Store the sender profile printed on every proposal, contract and letter. Returns the saved profile and the directory it was written to. Call this once before creating documents. |
+| `contract_create` | Call this tool to produce a freelance service agreement .docx. Returns the reference, the fee and the file path. It is a template skeleton for a lawyer to review, not legal advice. Free tier: 3 agreements per month. |
+| `doc_create` | Call this tool to write a real .docx file from structured sections. Returns the file path, the number of blocks written and the layout used. Free and unlimited. |
+| `doc_fill_template` | Call this tool to replace {{placeholders}} in an existing .docx and write a new file. Returns the new path and which placeholders were replaced, unfilled or ignored. Call with no values to list a template's placeholders. |
+| `doc_from_markdown` | Call this tool to turn markdown into a .docx. Returns the file path and a count of the blocks written, by type. Free and unlimited. |
+| `doc_read` | Call this tool to extract the text of an existing .docx. Returns an outline of the headings and the full text in document order, or the block structure. Free and unlimited. |
+| `doc_to_html` | Call this tool to convert a .docx to semantic HTML you can open in a browser and print to PDF. Returns the path of the .html file. This is the supported PDF route; no PDF is rendered here. Free and unlimited. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
 | `license_status` | Show whether this server runs in free or Pro mode and where to upgrade. |
-| `proposal_create` | Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number that is never reused. Free tier: 3 proposals or contracts per calendar month. |
-| `proposal_update` | Rewrite an existing proposal in place from its reference. Only the fields you pass change; everything else is taken from the structured data stored when the proposal was created, so the same file and the same reference number are kept and no second document is burned. |
+| `proposal_create` | Call this tool to produce a client-ready .docx proposal from summary, scope, deliverables, timeline, price and terms. Returns the reference, the total and the file path. Free tier: 3 proposals or contracts per month. |
+| `proposal_update` | Rewrite an existing proposal in place from its reference. Only the fields you pass change; the rest comes from the data stored at creation. Returns the fields that changed and the file path. |
 
 ### `business_set`
 
 Title: Set your business details
 
-Store the sender profile printed on every proposal, contract and letter: your name, address, email, VAT id, bank details and defaults (currency, payment terms). Same profile shape as mcp-invoice. Call this once before creating documents.
+Store the sender profile printed on every proposal, contract and letter. Returns the saved profile and the directory it was written to. Call this once before creating documents.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -48,9 +48,9 @@ Store the sender profile printed on every proposal, contract and letter: your na
 | `default_tax_rate` | number | no | Default VAT percent, quoted on proposals |
 | `email` | string | no |  |
 | `iban` | string | no | IBAN or account number for payment |
-| `invoice_prefix` | string | no | Reference prefix used by mcp-invoice; kept here so one profile serves both |
+| `invoice_prefix` | string | no | Reference prefix used by mcp-invoice; this profile has the same field shape as mcp-invoice, so one profile serves both |
 | `logo_path` | string | no | Path to a PNG or JPG logo for the letterhead (Pro) |
-| `name` | string | yes | Your business or freelancer name |
+| `name` | string | yes | Your business or freelancer name, printed on the letterhead of every proposal, contract and letter |
 | `payment_terms_days` | number | no | Default days until payment is due. Default 14 |
 | `tax_rate` | number | no | Alias for default_tax_rate |
 | `vat` | number | no | Alias for default_tax_rate |
@@ -61,7 +61,7 @@ Store the sender profile printed on every proposal, contract and letter: your na
 
 Title: Create a service agreement
 
-Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. This is a template skeleton with labelled placeholders for a lawyer to review, not legal advice. Free tier: 3 proposals or contracts per calendar month.
+Call this tool to produce a freelance service agreement .docx. Returns the reference, the fee and the file path. It is a template skeleton for a lawyer to review, not legal advice. Free tier: 3 agreements per month.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -70,16 +70,16 @@ Produce a plain freelance service agreement .docx: parties, services, term, fee 
 | `end_date` | string | no | YYYY-MM-DD, omit for an open-ended engagement |
 | `fee` | object{amount, currency, schedule} | yes |  |
 | `governing_law` | string | no | e.g. 'the laws of Poland' |
-| `out_path` | string | no |  |
+| `out_path` | string | no | Where to write the .docx. Defaults to the data directory |
 | `overwrite` | boolean | no | Replace out_path if a file is already there. Default false: an existing file is never overwritten |
-| `services` | string | yes | What you will do, one or two sentences |
+| `services` | string | yes | What you will do, one or two sentences. The document adds parties, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability, termination and governing law |
 | `start_date` | string | yes | YYYY-MM-DD |
 
 ### `doc_create`
 
 Title: Create a Word document
 
-Write a real .docx file from structured sections: headings, paragraphs, bullet or numbered lists and tables. Choose plain, letter (sender block top right, date, addressee) or proposal (letterhead band and cover title) layout. Returns the file path. Free and unlimited.
+Call this tool to write a real .docx file from structured sections. Returns the file path, the number of blocks written and the layout used. Free and unlimited.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -87,32 +87,32 @@ Write a real .docx file from structured sections: headings, paragraphs, bullet o
 | `out_path` | string | no | Where to write the .docx. Defaults to the data directory |
 | `overwrite` | boolean | no | Replace out_path if a file is already there. Default false: an existing file is never overwritten |
 | `recipient` | string | no | Addressee block for the letter layout |
-| `sections` | object{bullets, heading, level, numbered, paragraphs, table}[] | yes | Sections in order |
-| `style` | "plain" \| "letter" \| "proposal" | no | Layout, default plain |
+| `sections` | object{bullets, heading, level, numbered, paragraphs, table}[] | yes | Sections in order. Each one may carry a heading, paragraphs, a bullet or numbered list and a table |
+| `style` | "plain" \| "letter" \| "proposal" | no | Layout, default plain. plain is the title and the body; letter adds a sender block top right, a date and the addressee; proposal adds a letterhead band and a cover title |
 | `title` | string | yes | Document title, used as the top heading and the file name |
 
 ### `doc_fill_template`
 
 Title: Fill a Word template
 
-Replace {{placeholders}} in an existing .docx and write a new file, keeping every style, table, header, footer and image of the original. Placeholders split across runs by Word's editor are handled, because the substitution runs on the joined text of each paragraph. Call with no values to list the placeholders a template contains.
+Call this tool to replace {{placeholders}} in an existing .docx and write a new file. Returns the new path and which placeholders were replaced, unfilled or ignored. Call with no values to list a template's placeholders.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
 | `out_path` | string | no | Where to write the filled .docx. Defaults to <template>-filled.docx |
 | `overwrite` | boolean | no | Replace out_path if a file is already there. Default false: an existing file is never overwritten |
-| `template_path` | string | yes | Path to the .docx template containing {{placeholders}} |
+| `template_path` | string | yes | Path to the .docx template containing {{placeholders}}. Every style, table, header, footer and image of the original is kept. Placeholders split across runs by Word's editor are handled, because the substitution runs on the joined text of each paragraph |
 | `values` | object | no | Placeholder name to value, e.g. {client: "Acme", fee: "EUR 4,500.00"} |
 
 ### `doc_from_markdown`
 
 Title: Markdown to Word
 
-Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and **bold** / *italic* / `code` inline. Returns the file path. Free and unlimited.
+Call this tool to turn markdown into a .docx. Returns the file path and a count of the blocks written, by type. Free and unlimited.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `markdown` | string | yes | The markdown source |
+| `markdown` | string | yes | The markdown source. ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables and fenced code blocks as monospace are honoured, as are **bold**, *italic* and `code` inline |
 | `out_path` | string | no | Where to write the .docx. Defaults to the data directory |
 | `overwrite` | boolean | no | Replace out_path if a file is already there. Default false: an existing file is never overwritten |
 | `style` | "plain" \| "letter" \| "proposal" | no |  |
@@ -122,24 +122,24 @@ Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists,
 
 Title: Read a Word document
 
-Extract the text of an existing .docx: headings with their levels, paragraphs, list items and tables, in document order. Works on files Word, Google Docs or this server produced. Free and unlimited.
+Call this tool to extract the text of an existing .docx. Returns an outline of the headings and the full text in document order, or the block structure. Free and unlimited.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `format` | "text" \| "json" | no | text (default) returns the readable text, json returns the block structure |
-| `path` | string | yes | Path to the .docx file |
+| `format` | "text" \| "json" | no | text (default) returns the readable text, json returns the block structure: headings with their levels, paragraphs, list items and tables, in document order |
+| `path` | string | yes | Path to the .docx file. Files produced by Word, Google Docs or this server all work; legacy .doc and .rtf do not |
 
 ### `doc_to_html`
 
 Title: Word document to HTML
 
-Convert a .docx to semantic HTML you can open in a browser and print to PDF. Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native dependency or a headless browser, and this server stays install-free, so printing the HTML is the supported route. Free and unlimited.
+Call this tool to convert a .docx to semantic HTML you can open in a browser and print to PDF. Returns the path of the .html file. This is the supported PDF route; no PDF is rendered here. Free and unlimited.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `out_path` | string | no | Where to write the .html. Defaults next to the source file |
+| `out_path` | string | no | Where to write the .html. Defaults next to the source file. Open the result and print it to PDF; direct PDF output is not offered here |
 | `overwrite` | boolean | no | Replace out_path if a file is already there. Default false: an existing file is never overwritten |
-| `path` | string | yes | Path to the .docx file |
+| `path` | string | yes | Path to the .docx file to convert |
 
 ### `license_activate`
 
@@ -163,13 +163,13 @@ No arguments.
 
 Title: Create a proposal
 
-Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number that is never reused. Free tier: 3 proposals or contracts per calendar month.
+Call this tool to produce a client-ready .docx proposal from summary, scope, deliverables, timeline, price and terms. Returns the reference, the total and the file path. Free tier: 3 proposals or contracts per month.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `client` | string | yes | Client name, printed as 'Prepared for' |
+| `client` | string | yes | Client name, printed as 'Prepared for'. The letterhead comes from your business_set profile |
 | `deliverables` | string[] | yes | What the client receives, one bullet each |
-| `out_path` | string | no |  |
+| `out_path` | string | no | Where to write the .docx. Defaults to the data directory |
 | `overwrite` | boolean | no | Replace out_path if a file is already there. Default false: an existing file is never overwritten |
 | `price` | object{amount, currency, terms} | yes |  |
 | `project_title` | string | yes | Project title |
@@ -182,7 +182,7 @@ Produce a client-ready .docx proposal from the parts you already know: summary, 
 
 Title: Update a proposal
 
-Rewrite an existing proposal in place from its reference. Only the fields you pass change; everything else is taken from the structured data stored when the proposal was created, so the same file and the same reference number are kept and no second document is burned.
+Rewrite an existing proposal in place from its reference. Only the fields you pass change; the rest comes from the data stored at creation. Returns the fields that changed and the file path.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -190,7 +190,7 @@ Rewrite an existing proposal in place from its reference. Only the fields you pa
 | `deliverables` | string[] | no |  |
 | `price` | object{amount, currency, terms} | no |  |
 | `project_title` | string | no |  |
-| `reference` | string | yes | The proposal reference, e.g. PROP-2026-0001 |
+| `reference` | string | yes | The proposal reference, e.g. PROP-2026-0001. The same file and the same reference number are kept, so no second document is burned against the free-tier monthly count |
 | `scope` | string[] | no |  |
 | `summary` | string | no |  |
 | `timeline` | object{duration, phase}[] | no |  |

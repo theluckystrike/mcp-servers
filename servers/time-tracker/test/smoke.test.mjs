@@ -64,7 +64,7 @@ function client(env) {
         capabilities: {},
         clientInfo: { name: "smoke", version: "0.0.0" },
       });
-      assert.equal(r.result.serverInfo.name, "time-tracker");
+      assert.equal(r.result.serverInfo.name, "mcp-time-tracker");
       notify("notifications/initialized");
       return r.result;
     },

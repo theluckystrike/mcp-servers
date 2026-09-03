@@ -22,15 +22,15 @@ ECB reference rates: convert amounts, look up a rate on a past date, and read th
 | tool | description |
 | --- | --- |
 | `cache_status` | What is cached on this machine, how old it is, and when it will next be refreshed. Answer this before trusting a rate on a machine that has been offline. |
-| `convert` | Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounded to the target currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places. Every answer states the rate date it used. A weekend or holiday date falls back to the last published rate on or before it, and says so. |
+| `convert` | Call this tool to convert an amount between any two ECB-quoted currencies, today or on a past date. Returns the converted amount, the cross rate to 6 decimals, the rounding applied and the rate date used. |
 | `convert_many` | One amount, one source currency, many targets, all off the same ECB rate date. Each result is rounded to that target's own minor units. |
 | `currencies_list` | Every currency in the ECB daily reference set, with its rate against the euro and the number of decimal places it is rounded to. Anything not on this list cannot be converted here. |
-| `fx_rates_for` | Return exactly the object that the expense tracker's expense_to_invoice takes as fx_rates: {"EUR": 1.08, "GBP": 1.27} meaning 1 unit of that currency = X units of the target. Call this when a rebill or an invoice spans more than one currency, then pass the fx_rates object straight through with target_currency, instead of asking the user for rates. The rate date is returned alongside so it can be written on the invoice. |
+| `fx_rates_for` | Call this tool when a rebill or an invoice spans more than one currency, instead of asking the user for rates. Returns the fx_rates object expense_to_invoice takes, plus the rate date to write on the invoice. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
 | `license_status` | Show whether this server runs in free or Pro mode and where to upgrade. |
-| `rate_history` | The ECB rate for one currency pair over a window, with min, max, average and the change across the window. Give days for a trailing window, or from_date and to_date for an explicit one. Only TARGET business days have rates, so a 30-day window holds about 21 rows. Free reads up to 90 days; Pro reads the whole series back to 1999-01-04. |
-| `rate_on` | The ECB rate for a pair on one date. The ECB quotes every currency per 1 euro, so "the ECB rate for USD" is from EUR to USD, not the other way round; ask for the inverse only if the user did. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the answer says which date that was and why. Free covers the last 90 days; Pro covers every date back to 1999-01-04. |
-| `rates_latest` | The most recent European Central Bank daily reference rates, re-expressed against any base. The answer always states the rate date, because ECB rates are published once a day around 16:00 CET on TARGET business days and a Sunday carries Friday's rate. Rates are cached locally and refreshed only when the copy is more than 6 hours old, so repeated calls and offline machines cost nothing. |
+| `rate_history` | Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change over the whole window. |
+| `rate_on` | Call this tool for the ECB rate of one currency pair on one date. Returns the rate, the date the rate actually came from, and whether that was an exact match for the date asked for. |
+| `rates_latest` | Call this tool for the most recent European Central Bank daily reference rates, re-expressed against any base. Returns the rates, the ECB rate date they belong to, and how old the local cache is. |
 
 ### `cache_status`
 
@@ -44,14 +44,14 @@ No arguments.
 
 Title: Convert an amount
 
-Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounded to the target currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places. Every answer states the rate date it used. A weekend or holiday date falls back to the last published rate on or before it, and says so.
+Call this tool to convert an amount between any two ECB-quoted currencies, today or on a past date. Returns the converted amount, the cross rate to 6 decimals, the rounding applied and the rate date used.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
 | `amount` | number | yes | Amount in major units of the from currency, e.g. 100 or 12.34 |
-| `date` | string | no | ISO date YYYY-MM-DD. Omit for the latest published rate. Past dates beyond 90 days are Pro (maxLength 10) |
-| `from` | string | yes | Currency the amount is in (pattern `^[A-Za-z]{3}$`) |
-| `to` | string | yes | Currency to convert into (pattern `^[A-Za-z]{3}$`) |
+| `date` | string | no | ISO date YYYY-MM-DD. Omit for the latest published rate. A weekend or TARGET holiday falls back to the last rate published on or before it, and the answer says so. Past dates beyond 90 days are Pro (maxLength 10) |
+| `from` | string | yes | Currency the amount is in. Cross rates go through the euro, the only pair the ECB publishes (pattern `^[A-Za-z]{3}$`) |
+| `to` | string | yes | Currency to convert into. The result is rounded once, at the end, to this currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places (pattern `^[A-Za-z]{3}$`) |
 
 ### `convert_many`
 
@@ -77,12 +77,12 @@ No arguments.
 
 Title: FX rates in the shape expense-tracker wants
 
-Return exactly the object that the expense tracker's expense_to_invoice takes as fx_rates: {"EUR": 1.08, "GBP": 1.27} meaning 1 unit of that currency = X units of the target. Call this when a rebill or an invoice spans more than one currency, then pass the fx_rates object straight through with target_currency, instead of asking the user for rates. The rate date is returned alongside so it can be written on the invoice.
+Call this tool when a rebill or an invoice spans more than one currency, instead of asking the user for rates. Returns the fx_rates object expense_to_invoice takes, plus the rate date to write on the invoice.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `currencies` | string[] | yes | The other currencies present, e.g. ["EUR", "GBP"] |
-| `target` | string | yes | The currency the invoice will be issued in (pattern `^[A-Za-z]{3}$`) |
+| `currencies` | string[] | yes | The other currencies present, e.g. ["EUR", "GBP"]. Direction: each returned rate means 1 unit of that key = X units of the target, so {"EUR": 1.08} is 1 EUR = 1.08 of the target. The target needs no rate of its own |
+| `target` | string | yes | The currency the invoice will be issued in. Pass it on as target_currency alongside the fx_rates object (pattern `^[A-Za-z]{3}$`) |
 
 ### `license_activate`
 
@@ -106,39 +106,39 @@ No arguments.
 
 Title: Rate history for a pair
 
-The ECB rate for one currency pair over a window, with min, max, average and the change across the window. Give days for a trailing window, or from_date and to_date for an explicit one. Only TARGET business days have rates, so a 30-day window holds about 21 rows. Free reads up to 90 days; Pro reads the whole series back to 1999-01-04.
+Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change over the whole window.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `days` | integer | no | Trailing window in calendar days, default 30 (min 1, max 20000) |
-| `from` | string | yes | (pattern `^[A-Za-z]{3}$`) |
-| `from_date` | string | no | ISO date, inclusive. Overrides days (maxLength 10) |
+| `days` | integer | no | Trailing window in calendar days, default 30. Only TARGET business days carry a rate, so 30 days holds about 21 rows. Free reads up to 90 days back; Pro reads the whole series back to 1999-01-04 (min 1, max 20000) |
+| `from` | string | yes | Base currency of the pair (pattern `^[A-Za-z]{3}$`) |
+| `from_date` | string | no | ISO date, inclusive. Overrides days. Free is limited to the last 90 days (maxLength 10) |
 | `max_rows` | integer | no | Cap the table, default 200. min/max/avg still cover the whole window (min 1, max 2000) |
-| `to` | string | yes | (pattern `^[A-Za-z]{3}$`) |
+| `to` | string | yes | Quote currency of the pair. Each row is 1 from = X to (pattern `^[A-Za-z]{3}$`) |
 | `to_date` | string | no | ISO date, inclusive, default today (maxLength 10) |
 
 ### `rate_on`
 
 Title: Rate on a given date
 
-The ECB rate for a pair on one date. The ECB quotes every currency per 1 euro, so "the ECB rate for USD" is from EUR to USD, not the other way round; ask for the inverse only if the user did. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the answer says which date that was and why. Free covers the last 90 days; Pro covers every date back to 1999-01-04.
+Call this tool for the ECB rate of one currency pair on one date. Returns the rate, the date the rate actually came from, and whether that was an exact match for the date asked for.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `date` | string | yes | ISO date YYYY-MM-DD (maxLength 10) |
-| `from` | string | yes | (pattern `^[A-Za-z]{3}$`) |
-| `to` | string | yes | (pattern `^[A-Za-z]{3}$`) |
+| `date` | string | yes | ISO date YYYY-MM-DD. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last rate published on or before it is returned and the answer names that date. Free covers the last 90 days; Pro covers every date back to 1999-01-04 (maxLength 10) |
+| `from` | string | yes | Base currency. The ECB quotes every currency per 1 euro, so "the ECB rate for USD" is from EUR to USD, not the other way round; invert only if the user asked for the inverse (pattern `^[A-Za-z]{3}$`) |
+| `to` | string | yes | Quote currency. The rate returned is 1 from = X to (pattern `^[A-Za-z]{3}$`) |
 
 ### `rates_latest`
 
 Title: Latest ECB reference rates
 
-The most recent European Central Bank daily reference rates, re-expressed against any base. The answer always states the rate date, because ECB rates are published once a day around 16:00 CET on TARGET business days and a Sunday carries Friday's rate. Rates are cached locally and refreshed only when the copy is more than 6 hours old, so repeated calls and offline machines cost nothing.
+Call this tool for the most recent European Central Bank daily reference rates, re-expressed against any base. Returns the rates, the ECB rate date they belong to, and how old the local cache is.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `base` | string | no | Base currency, default EUR. A rate of 1.0812 for USD means 1 base = 1.0812 USD (pattern `^[A-Za-z]{3}$`) |
-| `quotes` | string[] | no | Only these currencies. Omit for all of them |
+| `base` | string | no | Base currency, default EUR. A rate of 1.0812 for USD means 1 base = 1.0812 USD. Cross rates go through the euro, the only pair the ECB publishes (pattern `^[A-Za-z]{3}$`) |
+| `quotes` | string[] | no | Only these currencies, at most 200. Omit for all of them |
 
 ## Resources
 
@@ -216,4 +216,5 @@ Literal error-message heads found in `servers/currency/src/*.ts`. Each is return
 - `Error: the ECB history file held no rates.`
 - `Error: the ECB returned HTTP`
 - `Error: the cache file is corrupt; moved to`
+- `Error: the rate cache did not parse and was quarantined by this call; nothing was overwritten.`
 - `Error: to_date must be YYYY-MM-DD, got`

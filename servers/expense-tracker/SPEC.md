@@ -21,42 +21,42 @@ Logs business expenses with categories, VAT, mileage and receipts, and hands the
 
 | tool | description |
 | --- | --- |
-| `category_rules` | Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, and rules are applied by expense_add when no category is given. |
-| `expense_add` | Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when a project is given and false otherwise, and the response always states the value used. Amounts are integer minor units in the expense's own currency. |
+| `category_rules` | Replace the merchant-to-category rules, or call with no rules to list them. Returns the stored rule list. The rules are applied by expense_add whenever a call gives no category of its own. |
+| `expense_add` | Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess. |
 | `expense_delete` | Delete one expense by id. The receipt file itself is left on disk. |
-| `expense_export` | Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all. |
+| `expense_export` | Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path written. Nothing partial is ever written: if a limit is hit the file is not created at all. |
 | `expense_list` | List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed. |
-| `expense_mark_rebilled` | Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range marks only billable, not-yet-rebilled expenses in that one currency, so invoicing the EUR group cannot mark the PLN one. invoice_number is required: the marker records which invoice carries the expense. |
-| `expense_settings` | Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to read them. Set default_vat_rate once and every expense gets its net/VAT split without the caller having to repeat the rate. |
+| `expense_mark_rebilled` | Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or that project, date range and currency. Returns what was marked. |
+| `expense_settings` | Read or set the defaults expense_add uses when a call does not name them: default_vat_rate and default_currency. Returns the stored defaults. Call with no arguments to read them without changing anything. |
 | `expense_summary` | Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together. |
-| `expense_to_invoice` | Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax and the line total comes back to the receipt gross. A stored rate of 0 is a rate, not a gap. An expense with NO rate recorded is rebilled gross with tax_rate 0 and a warning in its description; the expense_settings default is never applied retroactively, because it would rewrite the tax meaning of receipts entered before it existed. Pass assume_vat_rate explicitly to split those lines instead. Line items are grouped per currency because one invoice carries one currency. When the range holds MORE THAN ONE currency, pass target_currency plus fx_rates and every line is converted into one single group, each converted line carrying [converted from EUR 12.40 at 1.08] in its description; without fx_rates the response names the exact argument to pass. This is a read-only preview: marking happens only in expense_mark_rebilled, once the invoice exists. |
+| `expense_to_invoice` | Preview the unbilled billable expenses of one project as invoice_create line items (description, quantity, unit_price, tax_rate), grouped per currency. Read-only: nothing is marked rebilled here. |
 | `expense_update` | Change any field of a stored expense by id. Only the fields you pass are changed. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
 | `license_status` | Show whether this server runs in free or Pro mode and where to upgrade. |
-| `mileage_add` | Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, no vehicle or engine class and no first-10000-mile band, so it is not a tax calculation. Pass rate_per_km for your exact scheme. currency is only accepted together with rate_per_km; a table rate always keeps its own currency. Give either km or miles. |
-| `receipt_attach` | Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed. |
+| `mileage_add` | Record a business trip as an expense, priced as distance x rate. Give exactly one of km or miles. Returns the saved id with the rate used, where that rate came from and the money, in the rate's own currency. |
+| `receipt_attach` | Call this tool to attach a receipt file to a stored expense. Returns the stored path and sha256. The file must exist; it is hashed so a later audit can prove the file has not changed. |
 
 ### `category_rules`
 
 Title: Category rules
 
-Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, and rules are applied by expense_add when no category is given.
+Replace the merchant-to-category rules, or call with no rules to list them. Returns the stored rule list. The rules are applied by expense_add whenever a call gives no category of its own.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `rules` | object{category, match}[] | no | The full rule list. Omit to list the current rules |
+| `rules` | object{category, match}[] | no | The FULL rule list; it replaces the stored one, so include the rules you want to keep. Omit to list the current rules instead |
 
 ### `expense_add`
 
 Title: Add an expense
 
-Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when a project is given and false otherwise, and the response always states the value used. Amounts are integer minor units in the expense's own currency.
+Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `amount` | number | yes | Gross amount on the receipt, in major units, e.g. 12.34 |
+| `amount` | number | yes | Gross amount on the receipt, in major units, e.g. 12.34. It is stored as integer minor units in the expense's own currency, so nothing is lost to floating point. |
 | `billable` | boolean | no | Rebillable to the client. Default: true when project is given (a receipt booked to a client project is normally rebilled), false otherwise. Pass it explicitly to override. |
-| `category` | string | no | Category, e.g. software, travel, office. Omit to let the category rules decide (maxLength 500) |
+| `category` | string | no | Category, e.g. software, travel, office. Omit and the stored category rules are matched against the merchant to fill it in (maxLength 500) |
 | `currency` | string | no | ISO code, default EUR (pattern `^[A-Za-z]{3}$`) |
 | `date` | string | no | ISO date YYYY-MM-DD, default today (maxLength 10) |
 | `merchant` | string | no | Who was paid, e.g. Adobe (maxLength 500) |
@@ -65,7 +65,7 @@ Record one expense. The amount is the gross amount on the receipt; vat_rate spli
 | `receipt_path` | string | no | Absolute path to the receipt file; it is checked and hashed (maxLength 4096) |
 | `tax_rate` | number | no | Alias for vat_rate (min 0, max 100) |
 | `vat` | number | no | Alias for vat_rate (min 0, max 100) |
-| `vat_rate` | number | no | VAT percent already included in amount (min 0, max 100) |
+| `vat_rate` | number | no | VAT percent already included in amount; it splits the gross into net and VAT. Omit to use the expense_settings default, or get no split at all when none is set (min 0, max 100) |
 
 ### `expense_delete`
 
@@ -81,7 +81,7 @@ Delete one expense by id. The receipt file itself is left on disk.
 
 Title: Export expenses
 
-Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all.
+Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path written. Nothing partial is ever written: if a limit is hit the file is not created at all.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -89,7 +89,7 @@ Write the expenses in a date range to a csv, xlsx or json file and return its pa
 | `category` | string | no | (maxLength 500) |
 | `format` | "csv" \| "xlsx" \| "json" | yes |  |
 | `from` | string | yes | ISO date, inclusive (maxLength 10) |
-| `path` | string | no | Where to write it. Default is the server data directory (maxLength 4096) |
+| `path` | string | no | Absolute path to write to; a leading ~ is expanded and missing parent directories are created. Default is an exports folder in the server data directory (maxLength 4096) |
 | `project` | string | no | (maxLength 500) |
 | `to` | string | yes | ISO date, inclusive (maxLength 10) |
 
@@ -111,14 +111,14 @@ List expenses in a date range, optionally filtered by project, category or billa
 
 Title: Mark expenses as rebilled
 
-Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range marks only billable, not-yet-rebilled expenses in that one currency, so invoicing the EUR group cannot mark the PLN one. invoice_number is required: the marker records which invoice carries the expense.
+Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or that project, date range and currency. Returns what was marked.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `currency` | string | no | Required when marking by range: one invoice carries one currency (pattern `^[A-Za-z]{3}$`) |
+| `currency` | string | no | Required when marking by range: one invoice carries one currency. A range marks only billable, not-yet-rebilled expenses in this one currency, so invoicing the EUR group cannot mark the PLN one (pattern `^[A-Za-z]{3}$`) |
 | `from` | string | no | ISO date, inclusive (maxLength 10) |
 | `ids` | string[] | no | Expense ids, as returned per currency by expense_to_invoice. Takes precedence over project/from/to |
-| `invoice_number` | string | yes | Invoice the expenses were billed on, stored on each expense (maxLength 64) |
+| `invoice_number` | string | yes | Invoice the expenses were billed on. Required: the marker records WHICH invoice carries each expense, and it is stored on every expense marked (maxLength 64) |
 | `project` | string | no | Project rebilled, used with from, to and currency (maxLength 500) |
 | `to` | string | no | ISO date, inclusive (maxLength 10) |
 
@@ -126,12 +126,12 @@ Mark expenses as rebilled once the invoice that carries them actually exists. Pa
 
 Title: Expense defaults
 
-Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to read them. Set default_vat_rate once and every expense gets its net/VAT split without the caller having to repeat the rate.
+Read or set the defaults expense_add uses when a call does not name them: default_vat_rate and default_currency. Returns the stored defaults. Call with no arguments to read them without changing anything.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `default_currency` | string | no | ISO code to assume when a call gives none (pattern `^[A-Za-z]{3}$`) |
-| `default_vat_rate` | number | no | VAT percent to assume when a call gives none. Pass 0 to clear it (min 0, max 100) |
+| `default_currency` | string | no | ISO 4217 code to assume when a call gives none, e.g. EUR. Default EUR (pattern `^[A-Za-z]{3}$`) |
+| `default_vat_rate` | number | no | VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany. Set it once and every later expense gets its net/VAT split without the caller repeating the rate. It applies when the expense is inserted, never retroactively. Pass 0 to clear it (min 0, max 100) |
 
 ### `expense_summary`
 
@@ -151,17 +151,17 @@ Totals for a date range grouped by category, project, month or merchant. Every g
 
 Title: Rebill expenses to an invoice
 
-Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax and the line total comes back to the receipt gross. A stored rate of 0 is a rate, not a gap. An expense with NO rate recorded is rebilled gross with tax_rate 0 and a warning in its description; the expense_settings default is never applied retroactively, because it would rewrite the tax meaning of receipts entered before it existed. Pass assume_vat_rate explicitly to split those lines instead. Line items are grouped per currency because one invoice carries one currency. When the range holds MORE THAN ONE currency, pass target_currency plus fx_rates and every line is converted into one single group, each converted line carrying [converted from EUR 12.40 at 1.08] in its description; without fx_rates the response names the exact argument to pass. This is a read-only preview: marking happens only in expense_mark_rebilled, once the invoice exists.
+Preview the unbilled billable expenses of one project as invoice_create line items (description, quantity, unit_price, tax_rate), grouped per currency. Read-only: nothing is marked rebilled here.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `assume_vat_rate` | number | no | Split expenses that recorded NO VAT rate at this percent, flagged in the description. Only applied when you pass it here (min 0, max 100) |
+| `assume_vat_rate` | number | no | Split expenses that recorded NO VAT rate at this percent, flagged in the description. Only applied when you pass it here. An expense with no rate holds a GROSS amount and is otherwise rebilled as-is with tax_rate 0 plus a warning in its description, so a default tax rate applied on the invoice would tax that receipt a second time. A stored rate of 0 is a real rate (exempt), not a gap. The expense_settings default is never applied retroactively, because that would rewrite the tax meaning of receipts entered before it existed (min 0, max 100) |
 | `from` | string | yes | ISO date, inclusive (maxLength 10) |
-| `fx_rates` | object | no | Rate per source currency, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.08, "GBP": 1.27}. You supply the rate; nothing here fetches or guesses one |
+| `fx_rates` | object | no | Rate per source currency, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.08, "GBP": 1.27}. You supply the rate; nothing here fetches or guesses one. Omit it when the range holds several currencies and the response names the exact argument to pass |
 | `include_rebilled` | boolean | no | Include expenses already marked as rebilled, default false |
-| `markup_percent` | number | no | Percent added to each net amount. Pro (min 0, max 1000) |
+| `markup_percent` | number | no | Percent added to each net amount. Every line's unit_price is the NET amount and its tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax instead of charging it twice and the line total comes back to the receipt gross (min 0, max 1000) |
 | `project` | string | yes | Project or client to rebill (maxLength 500) |
-| `target_currency` | string | no | Convert every line into this currency and return ONE group, e.g. "USD". Needs fx_rates for each other currency present (pattern `^[A-Za-z]{3}$`) |
+| `target_currency` | string | no | Convert every line into this currency and return ONE group, e.g. "USD". Needs fx_rates for each other currency present. Lines are otherwise grouped per currency, because one invoice carries one currency; each converted line carries "[converted from EUR 12.40 at 1.08]" in its description (pattern `^[A-Za-z]{3}$`) |
 | `to` | string | yes | ISO date, inclusive (maxLength 10) |
 
 ### `expense_update`
@@ -207,30 +207,30 @@ No arguments.
 
 Title: Add a mileage claim
 
-Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, no vehicle or engine class and no first-10000-mile band, so it is not a tax calculation. Pass rate_per_km for your exact scheme. currency is only accepted together with rate_per_km; a table rate always keeps its own currency. Give either km or miles.
+Record a business trip as an expense, priced as distance x rate. Give exactly one of km or miles. Returns the saved id with the rate used, where that rate came from and the money, in the rate's own currency.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
 | `billable` | boolean | no |  |
 | `currency` | string | no | Currency for your own rate. Only accepted together with rate_per_km; a table rate keeps the table currency (pattern `^[A-Za-z]{3}$`) |
 | `date` | string | no | ISO date, default today |
-| `km` | number | no | Distance in kilometres |
-| `miles` | number | no | Distance in miles |
+| `km` | number | no | Distance in kilometres. Give exactly one of km or miles |
+| `miles` | number | no | Distance in miles. Give exactly one of km or miles |
 | `project` | string | no | (maxLength 500) |
 | `purpose` | string | yes | Why the trip was made, e.g. client meeting in Krakow (maxLength 2000) |
-| `rate_per_km` | number | no | Your own rate per supplied unit, overriding the table (min 0) |
-| `region` | "PL" \| "UK" \| "US" \| "EU" | no | Which rate to use. Default US for miles, EU for km |
+| `rate_per_km` | number | no | Your own rate per supplied unit, overriding the table. Pass it whenever you need your exact scheme rather than the approximate table rate (min 0) |
+| `region` | "PL" \| "UK" \| "US" \| "EU" | no | Which built-in table rate to use: PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km. Default US for miles, EU for km. Each is one flat approximate rate per region with no effective dates, no vehicle or engine class and no first-10000-mile band, so it is NOT a tax calculation |
 
 ### `receipt_attach`
 
 Title: Attach a receipt
 
-Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed.
+Call this tool to attach a receipt file to a stored expense. Returns the stored path and sha256. The file must exist; it is hashed so a later audit can prove the file has not changed.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
-| `id` | string | yes | (maxLength 64) |
-| `path` | string | yes | Path to the receipt file (maxLength 4096) |
+| `id` | string | yes | Expense id from expense_add or expense_list (maxLength 64) |
+| `path` | string | yes | Path to the receipt file. It must already exist; a leading ~ is expanded. The path and its sha256 are stored on the expense (maxLength 4096) |
 
 ## Resources
 

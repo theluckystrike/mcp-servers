@@ -250,13 +250,13 @@ function toParticipants(list: { name: string; zone: string; work_start?: string;
 
 server.registerTool("find_meeting_slots", {
   title: "Find meeting slots",
-  description: "Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody. Weekends in the first participant's zone are skipped.",
+  description: "Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first.",
   inputSchema: {
-    participants: z.array(participantSchema).min(1).max(MAX_PARTICIPANTS).describe("Who has to attend, with their zone and optional working hours"),
+    participants: z.array(participantSchema).min(1).max(MAX_PARTICIPANTS).describe("Who has to attend, with their zone and optional working hours. Every slot returned is inside all of their hours; weekends in the first participant's zone are skipped. Free tier: up to 3 participants"),
     duration_minutes: z.number().int().positive().max(MAX_DURATION).optional().describe("Meeting length in minutes, default 60, at most 1440"),
-    days: z.number().int().positive().max(MAX_DAYS).optional().describe("How many days ahead to search, default 5, at most 366"),
+    days: z.number().int().positive().max(MAX_DAYS).optional().describe("How many days ahead to search, default 5, at most 366. Free tier: a search longer than 5 days is shortened to 5, not refused"),
     earliest_date: text(MAX_ZONE_TEXT, "earliest_date").optional().describe("First date to consider, YYYY-MM-DD, default today"),
-    limit: z.number().int().positive().max(100).optional().describe("How many slots to return, default 8"),
+    limit: z.number().int().positive().max(100).optional().describe("How many slots to return, default 8. Slots are ranked by fairness: the score is the WORST participant's distance in hours from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody"),
     recurring: z.boolean().optional().describe("Pro: also report the weekly recurring times that work on every searched weekday"),
   },
 }, guard(async (a: { participants: { name: string; zone: string; work_start?: string; work_end?: string }[]; duration_minutes?: number; days?: number; earliest_date?: string; limit?: number; recurring?: boolean }) => {
@@ -318,7 +318,9 @@ server.registerTool("find_meeting_slots", {
   }
   const note = pro ? "" : (capped || `\n\n${gate.upgradeText("more participants, longer searches and recurring slots")}`);
   return ok(
-    `${all.length} slot(s) fit all ${parts.length} participants (${duration} min, ${days} day(s)). Best first:\n` +
+    `${all.length} slot(s) fit all ${parts.length} participants (${duration} min, ${days} day(s)). ` +
+    `Best first, ranked by fairness: the score is the worst participant's distance in hours from 13:00 local, ` +
+    `so a slot that suits everybody outranks one that is 07:00 for someone. Weekends in ${parts[0].zone} are skipped.\n` +
     lines.join("\n") + extra + note,
   );
 }));
@@ -351,12 +353,12 @@ server.registerTool("dst_changes", {
 
 server.registerTool("business_days", {
   title: "Count business days",
-  description: "Business days between two dates in a place, excluding weekends and any holidays you pass. This tool has no national holiday calendar: unless you pass holidays, only weekends are excluded, so do not report the answer as a public-holiday-adjusted count. Use it for delivery dates and payment terms across a client's calendar.",
+  description: "Count the business days between two dates in a place, for delivery dates and payment terms. Returns the business-day count, the calendar total, and how many days fell on a weekend or on a holiday you passed.",
   inputSchema: {
-    from: text(MAX_ZONE_TEXT, "from").describe("Start date, YYYY-MM-DD (inclusive). A date that does not exist, such as 2026-02-30, is refused, never rolled forward."),
+    from: text(MAX_ZONE_TEXT, "from").describe("Start date, YYYY-MM-DD (inclusive). A date that does not exist, such as 2026-02-30, is refused, never rolled forward"),
     to: text(MAX_ZONE_TEXT, "to").describe("End date, YYYY-MM-DD (inclusive)"),
     zone: text(MAX_ZONE_TEXT, "zone").describe("Place whose calendar to use"),
-    holidays: z.array(text(32, "a holiday")).max(MAX_HOLIDAYS).optional().describe("Dates to exclude, strict YYYY-MM-DD"),
+    holidays: z.array(text(32, "a holiday")).max(MAX_HOLIDAYS).optional().describe("Dates to exclude, strict YYYY-MM-DD. This tool has no national holiday calendar: unless you pass holidays here only weekends are excluded, so do not report the answer as a public-holiday-adjusted count"),
   },
 }, guard(async ({ from, to, zone, holidays }: { from: string; to: string; zone: string; holidays?: string[] }) => {
   const z = zoneOf(zone);
@@ -431,7 +433,7 @@ server.registerTool("contacts_list", {
 
 server.registerTool("ics_create", {
   title: "Write a calendar invite",
-  description: "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale.",
+  description: "Call this tool to write a .ics calendar file for one meeting. Returns the path written and the meeting time in UTC and in the zone you gave.",
   inputSchema: {
     title: text(MAX_TITLE, "title").min(1).describe("Event title"),
     start: text(MAX_ZONE_TEXT, "start").describe("Start time, read in `zone` unless it carries an offset"),
@@ -448,7 +450,7 @@ server.registerTool("ics_create", {
     organizer_name: text(MAX_TITLE, "organizer_name").optional().describe("Your display name for the ORGANIZER line"),
     description: text(MAX_BODY, "description").optional().describe("Body text"),
     location: text(MAX_TITLE, "location").optional().describe("Where, or a meeting link"),
-    out_path: text(MAX_PATH, "out_path").optional().describe("Where to write the file; default meeting.ics in the data dir"),
+    out_path: text(MAX_PATH, "out_path").optional().describe("Where to write the .ics file; default meeting.ics in the data dir. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale"),
     gap: gapArg,
     fold: foldArg,
   },

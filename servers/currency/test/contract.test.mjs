@@ -27,13 +27,7 @@ const IMPERATIVE = /^(Call this tool|Use this)\b/;
  * The suite is a ratchet: an existing entry is reported, a NEW one fails. Both lists are
  * defects, tracked in docs/SPEC_RESULT.md; the fix is in src, not here.
  */
-const OVER_LENGTH_BASELINE = [
-  "convert",
-  "fx_rates_for",
-  "rate_history",
-  "rate_on",
-  "rates_latest"
-];
+const OVER_LENGTH_BASELINE = [];
 const NON_IMPERATIVE_BASELINE = [];
 
 const GARBAGE = '{"version":1, <<< truncated by a crash';
@@ -161,9 +155,10 @@ test("corrupt store: the garbage is quarantined byte-for-byte and nothing is ove
   await c.init();
   const r = await c.call("cache_status", {});
   // every mutating tool in this server refreshes from the ECB over the network, which a test must not do; cache_status is the offline read that touches the same file.
-  // DEFECT D-S3: this call reports success while quarantining the cache underneath it.
-  // The quarantine itself is asserted below; the result flag is only reported.
-  t.diagnostic(`currency cache_status on a corrupt cache: isError=${r.isError}`);
+  // D-S3 fixed: the call that quarantines the cache must say so, and name the quarantined copy.
+  assert.equal(r.isError, true, `cache_status must report an error on the call that quarantines the cache: ${r.text}`);
+  assert.match(r.text, /quarantined by this call/, r.text);
+  assert.match(r.text, /daily\.json\.corrupt-/, r.text);
 
   const moved = readdirSync(dir).filter((f) => f.startsWith("daily.json.corrupt-"));
   assert.equal(moved.length, 1, `expected one quarantined copy, found ${JSON.stringify(readdirSync(dir))}`);
