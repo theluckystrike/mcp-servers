@@ -1,0 +1,310 @@
+{
+  "generated_at": "2026-09-03T08:34:58.630Z",
+  "total_commits": 154,
+  "sessions": 29,
+  "loops": [
+    {
+      "name": "Loop 1: build, billing, registry",
+      "sessions": 16,
+      "commits": 0
+    },
+    {
+      "name": "Loop 2: mirrors, setup pages, backlinks, correctness",
+      "sessions": 1,
+      "commits": 63
+    },
+    {
+      "name": "Loop 3: currency, docx, timezone",
+      "sessions": 8,
+      "commits": 0
+    },
+    {
+      "name": "Loop 4: resume, recurring, clauses",
+      "sessions": 3,
+      "commits": 0
+    },
+    {
+      "name": "Loop 5: specs, shared profile, KPIs",
+      "sessions": 1,
+      "commits": 27
+    },
+    {
+      "name": "Loop 6: connect by URL, binding, variants, round 9",
+      "sessions": 0,
+      "commits": 64
+    }
+  ],
+  "rows": [
+    {
+      "n": 1,
+      "at": "2026-09-02T12:48:50.865Z",
+      "note": "dashboard scaffold",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 2,
+      "at": "2026-09-02T12:48:56.403Z",
+      "note": "second run check",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 3,
+      "at": "2026-09-02T12:49:13.569Z",
+      "note": "final verification run",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 4,
+      "at": "2026-09-02T12:52:39.358Z",
+      "note": "session 1: 4 servers built, billing live at mcp.zovo.one, repo pushed",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 5,
+      "at": "2026-09-02T12:59:24.589Z",
+      "note": "billing hardened (Codex review), validation db 82/82, tabbed main dashboard",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 6,
+      "at": "2026-09-02T13:01:29.102Z",
+      "note": "mcpb bundles released on GitHub v0.1.0",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 7,
+      "at": "2026-09-02T13:03:54.867Z",
+      "note": "audit: 58 probes, 9 fixes; price bounds; bundles rebuilt; validation 82/82",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 8,
+      "at": "2026-09-02T13:22:10.830Z",
+      "note": "directories: glama.json committed, awesome-mcp-servers PR 13473 open, smithery needs one browser login, mcp.so skipped (paid $39)",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 9,
+      "at": "2026-09-02T13:28:41.899Z",
+      "note": "docker + cline submissions",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 10,
+      "at": "2026-09-02T13:41:54.846Z",
+      "note": "v0.1.1 released; value fixes D-1..D-8; registry 0.1.1; docker/cline/awesome submitted",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 11,
+      "at": "2026-09-02T13:58:26.208Z",
+      "note": "wave 1 done: naming (18/34 tokens), 5 guides live, demo GIFs, intel; wave 2: remote endpoint, expense-tracker, office-suite, README depth",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 12,
+      "at": "2026-09-02T14:09:39.197Z",
+      "note": "wave 2: remote endpoints live (mcp.zovo.one/mcp), expense-tracker + office-suite built, READMEs deepened, forms submitted",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 13,
+      "at": "2026-09-02T14:25:00.976Z",
+      "note": "v0.2.0: 5 servers, hosted remotes in registry, expense audit 21 tests, 130 unit tests, validation green",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 14,
+      "at": "2026-09-02T14:48:44.534Z",
+      "note": "wave 3: all 5 hosted + hardened, round-3 fixes, validation 121/121",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 15,
+      "at": "2026-09-02T14:52:07.198Z",
+      "note": "v0.2.1: 6 registry entries, 5 hosted, office-suite bundle 51 tools",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 16,
+      "at": "2026-09-02T15:18:02.368Z",
+      "note": "v0.2.2: Codex correctness fixes; 4h loop closing: 6 products, 6 registry entries, 5 hosted, 121/121 validation, user value R4 20/24",
+      "loop": "Loop 1: build, billing, registry",
+      "commits": 63,
+      "subjects": [
+        "Scaffold monorepo, license package, conventions",
+        "Add four servers, billing worker, docs",
+        "Add dashboard generator and ledger",
+        "Main dashboard, facts, distribution state, how-it-works page, Codex review",
+        "Validation database runner, tabbed main dashboard with server descriptions",
+        "Harden billing fulfillment and license verifier per review",
+        "Add .mcpb bundle build scripts and manifests",
+        "Dashboard: mcpb release",
+        "Audit fixes, price input bounds, dashboard refresh",
+        "Registry: mcpb package variants published as v0.1.0",
+        "Add glama.json maintainer claim at root and per server",
+        "Storefront: per-server product pages, sitemap, robots, llms.txt"
+      ]
+    },
+    {
+      "n": 17,
+      "at": "2026-09-02T23:45:35.725Z",
+      "note": "loop 2 wave A: 6 mirror repos, demo GIFs, intel R2 (downloads 79), round 5 26/30",
+      "loop": "Loop 2: mirrors, setup pages, backlinks, correctness",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 18,
+      "at": "2026-09-03T00:00:41.020Z",
+      "note": "v0.2.3: round-5 fixes, 162 tests, 43 setup pages, mirrors resynced",
+      "loop": "Loop 3: currency, docx, timezone",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 19,
+      "at": "2026-09-03T00:22:05.148Z",
+      "note": "v0.2.4: Codex v3 fixes (P0 store guard, windows, locale numbers, extraction), 186 tests; compare pages; backlinks pushed",
+      "loop": "Loop 3: currency, docx, timezone",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 20,
+      "at": "2026-09-03T00:29:36.097Z",
+      "note": "estate backlinks live on ukmoneycalc + statewage (78 pages)",
+      "loop": "Loop 3: currency, docx, timezone",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 21,
+      "at": "2026-09-03T00:44:55.707Z",
+      "note": "v0.2.5: round-6 fixes, 194 tests, validation 127/127; backlinks live; compare pages live",
+      "loop": "Loop 3: currency, docx, timezone",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 22,
+      "at": "2026-09-03T00:56:32.843Z",
+      "note": "loop 2 closed: v0.2.5, hosted hardening v2, 209 tests, validation 127/127, downloads 102",
+      "loop": "Loop 3: currency, docx, timezone",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 23,
+      "at": "2026-09-03T02:15:48.115Z",
+      "note": "loop 3: currency, docx, timezone built (21/8/23 tests); Stripe products live; validation 178/178; audits + hosting + content in flight",
+      "loop": "Loop 3: currency, docx, timezone",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 24,
+      "at": "2026-09-03T02:34:23.811Z",
+      "note": "loop 3: v0.3.1, 8 servers + bundle, all hosted, 9 registry entries, audits done, 27 new pages",
+      "loop": "Loop 3: currency, docx, timezone",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 25,
+      "at": "2026-09-03T03:03:11.015Z",
+      "note": "loop 3 closed: v0.3.2, 8 servers + bundle, 321 tests, validation 184/184, round 7 16/18",
+      "loop": "Loop 3: currency, docx, timezone",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 26,
+      "at": "2026-09-03T04:58:41.645Z",
+      "note": "loop 4: resume, recurring, clauses in build; organic R3 fleet 99.2, downloads 286",
+      "loop": "Loop 4: resume, recurring, clauses",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 27,
+      "at": "2026-09-03T05:12:46.191Z",
+      "note": "loop 4: resume, recurring, clauses built (12/13/15 tests); validation 241/241; audits, packaging, content, demos, submissions in flight",
+      "loop": "Loop 4: resume, recurring, clauses",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 28,
+      "at": "2026-09-03T05:56:54.330Z",
+      "note": "loop 4 closed: v0.4.0, 11 servers + bundle, 399 tests, validation 241/241, three audits, 24 pages, 12 registry entries",
+      "loop": "Loop 4: resume, recurring, clauses",
+      "commits": 27,
+      "subjects": [
+        "Add demo GIFs for expense-tracker and office-suite",
+        "Add INTEL_R2: submission status, directory listings, registry slot movement",
+        "Mirror each server to its own repo for name-matched search",
+        "Dashboard: round 5, mirrors, intel R2",
+        "setup: 43 long-tail /setup/<client>/<server> pages",
+        "Round 5: fix D-R11..D-R15 in spreadsheet, invoice, expense-tracker, time-tracker",
+        "v0.2.3 release, dashboard",
+        "Codex v3 correctness review",
+        "Add /compare pages: five head-to-head comparisons against verified competitors",
+        "price-tracker: Codex v3 fixes (store P0, JSON-LD, currency, redirect)",
+        "Codex v3 fixes: corrupt-store P0 in three servers, time-tracker rates, windows and totals",
+        "spreadsheet: Codex v3 fixes (items 3-17)"
+      ]
+    },
+    {
+      "n": 29,
+      "at": "2026-09-03T08:24:28.884Z",
+      "note": "loop 5 closed: v0.4.1, shared business profile, SPEC.md + contract tests, round 8 27/36, all 11 hosted, 12 mirrors, KPI tab",
+      "loop": "Loop 5: specs, shared profile, KPIs",
+      "commits": 64,
+      "subjects": [
+        "Billing: currency, docx, timezone products",
+        "Billing: currency, docx, timezone products live",
+        "Add INTEL_R3: re-measure currency/docx/timezone build slots",
+        "Add servers/currency: ECB exchange rates and conversion",
+        "Wire currency into office-suite, bundles, mirrors, pages, validation",
+        "timezone: new server (world clock, meeting slots, DST, ics)",
+        "docx: Word document server (proposals, contracts, templates)",
+        "Wire docx and timezone; intel registry names; tools.json for new servers",
+        "Product pages for currency, timezone, docx",
+        "Dashboard: loop 3 wave 1",
+        "currency: adversarial audit fixes (truncated history, amount overflow)",
+        "Add VHS demo GIFs for currency, timezone and docx servers"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+// Builds data/sprint_log.json: every session note from the ledger joined with git commits in its window and loop labels.
+import { readFileSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+const led = JSON.parse(readFileSync(`${ROOT}/data/ledger.json`, "utf8"));
+const commits = execFileSync("git", ["log", "--date=iso-strict", "--pretty=%H|%ad|%s"], { cwd: ROOT, encoding: "utf8" }).trim().split("\n").map((l) => { const [h, d, ...s] = l.split("|"); return { h: h.slice(0, 7), at: d, subject: s.join("|") }; }).reverse();
+const hist = led.session.history.map((h, i) => ({ n: i + 1, at: h.at, note: h.note }));
+const loops = [["2026-09-02T00:00:00Z", "2026-09-02T17:00:00Z", "Loop 1: build, billing, registry"], ["2026-09-02T17:00:00Z", "2026-09-03T00:00:00Z", "Loop 2: mirrors, setup pages, backlinks, correctness"], ["2026-09-03T00:00:00Z", "2026-09-03T03:30:00Z", "Loop 3: currency, docx, timezone"], ["2026-09-03T03:30:00Z", "2026-09-03T06:20:00Z", "Loop 4: resume, recurring, clauses"], ["2026-09-03T06:20:00Z", "2026-09-03T08:40:00Z", "Loop 5: specs, shared profile, KPIs"], ["2026-09-03T08:40:00Z", "2099-01-01T00:00:00Z", "Loop 6: connect by URL, binding, variants, round 9"]];
+const loopOf = (t) => (loops.find(([a, b]) => t >= a && t < b) || [])[2] || "";
+const rows = hist.map((h, i) => { const next = hist[i + 1]?.at || "2099-01-01T00:00:00Z"; const cs = commits.filter((c) => c.at >= h.at && c.at < next); return { ...h, loop: loopOf(h.at), commits: cs.length, subjects: cs.map((c) => c.subject).slice(0, 12) }; });
+const out = { generated_at: new Date().toISOString(), total_commits: commits.length, sessions: rows.length, loops: loops.map(([a, b, name]) => ({ name, sessions: rows.filter((r) => r.loop === name).length, commits: commits.filter((c) => c.at >= a && c.at < b).length })), rows };
+writeFileSync(`${ROOT}/data/sprint_log.json`, JSON.stringify(out, null, 2));
+console.log(`sprint log: ${rows.length} sessions, ${commits.length} commits, ${out.loops.filter((l) => l.sessions).length} loops`);
