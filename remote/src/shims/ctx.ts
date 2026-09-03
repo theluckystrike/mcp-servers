@@ -14,6 +14,13 @@ export interface RequestCtx {
   tenant: string;
   server: string;
   isPro: boolean;
+  /**
+   * The anonymous bearer token of this request (`anon_<32 hex>`), when the caller is
+   * anonymous. It is the tenant key a checkout binds to, so the free-cap upgrade text
+   * can carry /buy/<product>?tenant=<anonToken> and the purchase needs no key paste.
+   * Absent for licence-key callers, who are Pro already.
+   */
+  anonToken?: string;
   /** virtual filesystem: absolute path -> file contents (binary values carry the BIN sentinel) */
   files: Map<string, string>;
   dirs: Set<string>;

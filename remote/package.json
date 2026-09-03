@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "vendor": "node build-vendor.mjs",
-    "deploy": "node build-vendor.mjs && wrangler deploy"
+    "deploy": "node build-vendor.mjs && wrangler deploy",
+    "test": "node --test test/*.test.mjs"
   }
 }

@@ -182,9 +182,19 @@ export interface LicenseGate {
   registerTools(server: { registerTool: Function }): void;
 }
 
+/**
+ * Checkout URL for this product. On the hosted endpoint an anonymous caller never has to
+ * paste a key: the token is carried into checkout as ?tenant=<anonToken>, the billing
+ * worker writes `bind:<anonToken>` = key on payment, and this endpoint reads that binding
+ * on the next request and serves the same anonymous data document in Pro mode.
+ */
+function buyUrl(product: string): string {
+  const anon = ctx().anonToken;
+  return `${CHECKOUT_BASE}/buy/${product}` + (anon ? `?tenant=${encodeURIComponent(anon)}` : "");
+}
+
 export function createLicenseGate(opts: { product: string }): LicenseGate {
   const product = opts.product;
-  const upgradeUrl = `${CHECKOUT_BASE}/buy/${product}`;
   const gate: LicenseGate = {
     product,
     isPro: () => ctx().isPro,
@@ -194,11 +204,15 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       transport: "remote streamable-http",
       tenant: ctx().tenant,
       source: "Authorization: Bearer",
-      upgradeUrl,
+      upgradeUrl: buyUrl(product),
     }),
-    upgradeText: (feature: string) =>
-      `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime). ` +
-      `Buy at ${upgradeUrl} , then send the key as "Authorization: Bearer <key>" to this endpoint.`,
+    upgradeText: (feature: string) => {
+      const url = buyUrl(product);
+      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime). ` +
+        (ctx().anonToken
+          ? `Buy at ${url} - that link carries your token, so Pro switches on for this same connection right after payment, with nothing to paste and no data to move.`
+          : `Buy at ${url} , then send the key as "Authorization: Bearer <key>" to this endpoint.`);
+    },
     registerTools(server) {
       server.registerTool("license_status",
         { title: "License status", description: "Show whether this endpoint runs in free or Pro mode for your token, and where to upgrade.", inputSchema: {} },

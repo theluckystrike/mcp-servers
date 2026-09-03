@@ -287,7 +287,7 @@ server.registerTool("rate_history", {
 
 server.registerTool("rate_on", {
   title: "Rate on a given date",
-  description: "Call this tool for the ECB rate of one currency pair on one date. Returns the rate, the date the rate actually came from, and whether that was an exact match for the date asked for.",
+  description: "Call this tool for the ECB rate of one pair on one date. Returns both directions, the date the rate came from, and which way round the ECB publishes the pair, so a reciprocal is never reported as the published figure.",
   inputSchema: {
     from: code("from").describe("Base currency. The ECB quotes every currency per 1 euro, so \"the ECB rate for USD\" is from EUR to USD, not the other way round; invert only if the user asked for the inverse"),
     to: code("to").describe("Quote currency. The rate returned is 1 from = X to"),
@@ -300,6 +300,17 @@ server.registerTool("rate_on", {
     if ("error" in r) return fail(r.error);
     const c = convertAmount(r.rates, 1, norm(a.from), norm(a.to));
     if ("error" in c) return fail(c.error);
+    // D-C4: asked for "the ECB rate for USD" a caller can pick USD -> EUR and get 0.8589,
+    // the arithmetic reciprocal of the number the ECB actually publishes (1 EUR = 1.1643 USD).
+    // Both directions are now in the payload, and when the pair is quoted the other way round
+    // from the ECB's own convention the published direction is named explicitly.
+    const inv = convertAmount(r.rates, 1, norm(a.to), norm(a.from));
+    const inverse_rate = "error" in inv ? undefined : inv.rate;
+    const publishedNote = c.to === BASE && c.from !== BASE
+      ? `The ECB publishes this pair the other way round: 1 ${BASE} = ${inverse_rate} ${c.from} on ${r.date}. The ${c.rate} above is its reciprocal, ${c.from} priced in ${BASE}. If the user asked for "the ECB rate for ${c.from}", they almost certainly mean the published figure.`
+      : c.from === BASE
+        ? `This is the ECB's own published direction: every rate in the reference set is quoted per 1 ${BASE}.`
+        : `Neither side is ${BASE}. The ECB publishes no ${c.from}/${c.to} rate; this is the cross rate of the two published per-${BASE} rates on ${r.date}.`;
     return json({
       pair: `${c.from}/${c.to}`,
       requested_date: a.date,
@@ -308,6 +319,10 @@ server.registerTool("rate_on", {
       rate: c.rate,
       rate_exact: c.rate_exact,
       rate_meaning: `1 ${c.from} = ${c.rate} ${c.to} on ${r.date} (rate rounded to 6 decimals for display; rate_exact is the unrounded cross rate)`,
+      inverse_rate,
+      inverse_meaning: inverse_rate === undefined ? undefined : `1 ${c.to} = ${inverse_rate} ${c.from} on ${r.date}`,
+      ecb_quoting_convention: `the ECB quotes every currency per 1 ${BASE}`,
+      published_direction: publishedNote,
       rule: "nearest previous business day: the last rate published on or before the date asked for",
       note: r.note,
     });

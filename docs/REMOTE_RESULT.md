@@ -1021,3 +1021,158 @@ $ docx doc_create {title: "Test Letter", style: "letter", sections: [...]}
 ```
 
 `node scripts/validate.mjs`: **remote 26/26, whole run 247/247.**
+
+## Connect by URL, binding, latency
+
+### Connect by URL
+
+Claude.ai custom connectors, the Claude Desktop connector dialog and several IDE pickers
+take a remote MCP URL and nothing else. There is no field for a header, so a bearer token
+was a wall in front of every one of them. The token now travels in the URL:
+
+```
+Authorization: Bearer <token>                 the header form, unchanged
+https://mcp.zovo.one/mcp/<server>/t/<token>   the same token as a path segment
+https://mcp.zovo.one/mcp/<server>?token=...   the same token as a query parameter
+```
+
+The path form is the one to hand out: it survives clients that strip query strings, and
+both `anon_<32 hex>` and a full `MCPL1.<payload>.<signature>` key are URL-safe as they
+stand, so a Pro user pastes their key where the anonymous token goes and nothing needs
+escaping. `/mcp/<server>/t/<token>` is stripped back to `/mcp/<server>` before routing, so
+the transport, the download links and every existing path are untouched. An `Authorization`
+header still wins when both are present. A URL that carries a token is a URL that grants
+access, and it is treated exactly like a bearer: same tiers, same rate limits, same tenant,
+same 401s.
+
+`GET /mcp/connect` is the page that makes this usable. It mints an anonymous token under
+the same per-IP hourly ceiling as `/mcp/token` (the minting code is now one function both
+call), prints the token, prints the ready URL for all eleven servers, and gives the exact
+steps for Claude.ai, Claude Desktop, Claude Code (`claude mcp add --transport http <name>
+<url>`, no `--header`), Cursor (`~/.cursor/mcp.json`) and VS Code (`.vscode/mcp.json`),
+plus the Pro variant. One HTML document, no external assets, no scripts, light and dark.
+Reloading with `?token=<yours>` re-renders the page for that token instead of stranding
+the data space behind a fresh one.
+
+`GET /mcp` now documents all three forms under `auth.forms`, with `precedence`, the connect
+page, `whoami`, and a `remote_install_no_header` line beside the existing one.
+
+Verified against the live worker, with no `Authorization` header anywhere:
+
+```
+$ curl -s https://mcp.zovo.one/mcp/connect            -> 200 text/html, 7,097 bytes
+$ POST /mcp/time-tracker/t/anon_2962...  tools/list   -> 13 tools
+$ POST /mcp/time-tracker/t/anon_2962...  timer_start  -> Started timer for "url-token-probe"
+$ POST /mcp/time-tracker?token=anon_2962...  timer_status -> Running: "url-token-probe" 00:00:02
+$ POST /mcp/invoice/t/anon_dead...(unminted)          -> 401 unknown_token
+$ POST /mcp/invoice  (no token at all)                -> 401, body lists all three forms
+
+$ claude mcp add --transport http zovo-time https://mcp.zovo.one/mcp/time-tracker/t/anon_2962...
+$ claude mcp list
+  zovo-time: https://mcp.zovo.one/mcp/time-tracker/t/anon_2962... (HTTP) - Connected
+$ claude mcp remove zovo-time
+```
+
+One deliberate asymmetry: the SDK transport refuses a POST whose `Accept` does not name
+both `application/json` and `text/event-stream`. The cached `tools/list` path answers
+before the transport sees the request and so is lenient about it. That is strictly more
+permissive on the one method a bare-URL client is most likely to send by hand, and
+`tools/list` has no streaming variant to negotiate.
+
+### Tenant binding: buying without pasting a key
+
+An anonymous token is a data document, not a tier. On authentication with `anon_...` the
+worker now also reads `bind:<token>` from KV. If it holds a value, that value is verified
+as an MCPL1 key with the same public key and the same product check as a pasted key, and
+if it holds, the request runs **Pro against the same anonymous document**. Nothing is
+copied and nothing is migrated: the tenant id stays `anon:<id>`, so every invoice, clause
+and sheet the free user already created is still there, at the same URL, one call later.
+
+The billing worker owns the write. This endpoint only ever reads `bind:`.
+
+The other half is the link. `remote/src/shims/license.ts` builds the checkout URL from the
+request context instead of at gate-construction time, so an anonymous caller's free-cap
+answer now carries the tenant:
+
+```
+$ clauses clause_add   (the 11th own clause, free cap is 10)
+  "The free tier holds 10 of your own clauses on top of the 25 starter clauses, and you
+   have 10. "an unlimited clause library" is a Pro feature. Pro is a one-time $19 (or $39
+   for every server, lifetime). Buy at
+   https://mcp.zovo.one/buy/clauses?tenant=anon_29629c18a33be92b42830373dba743a7 - that
+   link carries your token, so Pro switches on for this same connection right after
+   payment, with nothing to paste and no data to move."
+```
+
+A licence-key caller has no anonymous token and gets the plain `/buy/<product>` URL with
+the old "send the key as a bearer" wording, as before.
+
+`GET /mcp/whoami` (and `/mcp/whoami/t/<token>`) reports the decision:
+
+```
+{ "tenant": "anon:29629c18a33be92b42830373dba743a7", "tier": "free", "bound": false,
+  "kind": "anon", "rate_limit_per_hour": 600,
+  "how": "an anonymous token with no purchase bound to it" }
+```
+
+whoami is not one endpoint, so it verifies a licence key with the product check waived
+(`verifyLicense(key, "*")`); token shape, existence and binding are decided exactly as on
+a real call.
+
+The policy itself is one exported pure function, `decideBinding()`, and
+`remote/test/binding.test.mjs` covers it with `node --test` (6 tests, no Worker, no build
+step): no binding leaves the tenant free; a verified binding gives Pro at the Pro rate
+limit and `bound: true`; a bad signature, an expired key and a key signed for another
+product each fall back to free rather than erroring, so a broken binding can never lock a
+user out of the free tier they already had.
+
+### Latency
+
+Same curl loop before and after: six `tools/list` POSTs against each of
+`/mcp/time-tracker`, `/mcp/spreadsheet` and `/mcp/currency`, with `-w` breaking out
+`time_namelookup`, `time_connect`, `time_appconnect`, `time_starttransfer` and
+`time_total`. DNS is about 3 ms and TCP+TLS about 125 ms in every run, on every build, so
+the entire difference below is server time.
+
+| | before | after tools/list cache + lazy hydration | after deferring the counter writes |
+|---|---|---|---|
+| p50 total (18 samples) | 1,143 ms | 661 ms | **218 ms** |
+| min | 1,060 ms | 612 ms | 201 ms |
+| cold (first call to an isolate) | 2,395 ms | 967 ms | 612 ms |
+| server time at p50 (total minus TLS) | ~1,018 ms | ~536 ms | ~93 ms |
+
+Target was 800 ms warm. Three changes, in order of what they were worth:
+
+1. **`tools/list` cached in module scope.** It is the first thing every client sends and
+   it is pure: the answer depends on the endpoint and the tier, never on the tenant's
+   data. It was costing three KV reads, an `McpServer` with every zod schema, and a
+   transport, for an answer that is byte-identical for every caller. It is now built once
+   per isolate per `(BUILD_VERSION, endpoint, tier)` by running that same real path once,
+   and served from a `Map` afterwards. Built from the real server rather than a
+   hand-written table, so a vendored change to a description or a schema cannot drift away
+   from what the endpoint returns. A paginated request (`params.cursor`) is not cached and
+   takes the full path.
+2. **Lazy hydration.** `initialize`, `notifications/initialized`, `ping`, `tools/list` and
+   the empty `prompts/list` / `resources/list` / `resources/templates/list` cannot read or
+   write a tenant document. They now hydrate nothing - not the endpoint document, not the
+   shared invoice document, not the shared profile - and flush nothing, so the two calls
+   every client makes before it does any work cost no KV at all. The shared ECB cache is on
+   the same switch, on top of the `needsEcbHistory` check that already kept the 6 MB
+   history file out of requests that do not read it.
+3. **Deferring the bookkeeping writes.** The rate-limit counter, the sweep's `meta:` stamp
+   and the anonymous token's TTL refresh are all writes nothing in the same request reads.
+   They now go through `ctx.waitUntil`. The rate-limit **read** still decides, so the cap
+   is unchanged; only the increment moved off the caller's clock. That counter was already
+   approximate - two concurrent requests read the same value and both write `n+1` - so
+   deferring it gives up nothing that was ever guaranteed. This was the single biggest
+   win: 661 ms to 218 ms.
+
+`McpServer` construction stays per request, as it must for a stateless transport; it is
+simply no longer on the `tools/list` path.
+
+`scripts/kpi.mjs` measures the same thing from node over a reused connection, so its
+numbers carry no TLS handshake at all: the "Hosted tools/list latency p50" indicator moves
+from **1,319 ms to 78 ms**, against a target of 800, and is the first time that indicator
+has been met. Its probe was not changed - the endpoint shape it posts to is the same.
+
+`node scripts/validate.mjs`: **remote 26/26, whole run 247/247.**

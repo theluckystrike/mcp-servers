@@ -37,6 +37,14 @@ const DEFAULT_MAX_BYTES = 512 * 1024;            // stored document per token pe
 const MAX_BODY_BYTES = 256 * 1024;               // request body ceiling
 const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour per client IP
 
+/**
+ * Bumped whenever a tool set or a description changes. It is the invalidation key of the
+ * module-scope tools/list cache below: an isolate started before a deploy is replaced by
+ * the deploy, so the only thing the version has to guarantee is that two builds never
+ * share a cache entry inside one isolate.
+ */
+const BUILD_VERSION = "2026-09-03.1";
+
 interface ServerCfg {
   factory: () => McpServer;
   /** Which finished atomic writes become one-hour download links. */
@@ -138,7 +146,37 @@ function publicKey(): Promise<CryptoKey> {
   return keyPromise;
 }
 
-interface Auth { tenant: string; isPro: boolean; kind: "license" | "anon"; limit: number }
+interface Auth {
+  tenant: string;
+  isPro: boolean;
+  kind: "license" | "anon";
+  limit: number;
+  /** The anonymous bearer token itself, when kind is "anon". */
+  anonToken?: string;
+  /** True when an anonymous tenant is Pro because of a bound purchase, not a pasted key. */
+  bound?: boolean;
+}
+
+/**
+ * The tenant-binding decision, isolated so it can be tested without a Worker.
+ *
+ * An anonymous token is a data document, not a tier. When a purchase is made from a
+ * hosted connection the billing worker writes `bind:<anonToken>` = the minted MCPL1 key;
+ * this endpoint reads that key, verifies it with the same public key it verifies a pasted
+ * key with, and if it holds, runs the request in Pro mode **against the same anonymous
+ * document**. Nothing is copied, nothing is migrated, and a binding that is missing,
+ * malformed, expired or signed for another product simply leaves the tenant free.
+ */
+export function decideBinding(
+  verified: { ok: boolean; reason?: string } | null,
+  limits: { free: number; pro: number } = { free: RATE_LIMIT_FREE, pro: RATE_LIMIT_PRO },
+): { isPro: boolean; limit: number; bound: boolean; reason: string } {
+  if (verified === null) return { isPro: false, limit: limits.free, bound: false, reason: "no binding" };
+  if (!verified.ok) {
+    return { isPro: false, limit: limits.free, bound: false, reason: verified.reason ?? "binding rejected" };
+  }
+  return { isPro: true, limit: limits.pro, bound: true, reason: "bound key verified" };
+}
 
 /**
  * What may appear in a tenant id. KV keys are built as `${tenant}:${server}` and the
@@ -148,7 +186,8 @@ interface Auth { tenant: string; isPro: boolean; kind: "license" | "anon"; limit
  */
 const TENANT_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 
-/** Verify an MCPL1 key exactly the way packages/mcp-license does, with WebCrypto. */
+/** Verify an MCPL1 key exactly the way packages/mcp-license does, with WebCrypto.
+ * `product` of "*" means "any product": used by /mcp/whoami, which is not one endpoint. */
 async function verifyLicense(key: string, product: string): Promise<{ ok: boolean; reason?: string; id?: string; p?: string }> {
   const parts = key.trim().split(".");
   if (parts.length !== 3 || parts[0] !== "MCPL1") return { ok: false, reason: "malformed key" };
@@ -162,22 +201,41 @@ async function verifyLicense(key: string, product: string): Promise<{ ok: boolea
   } catch { sigOk = false; }
   if (!sigOk) return { ok: false, reason: "signature invalid" };
   if (payload?.v !== 1 || typeof payload.p !== "string" || typeof payload.id !== "string") return { ok: false, reason: "bad payload" };
-  if (payload.p !== "*" && payload.p !== product) return { ok: false, reason: `key is for ${payload.p}, not ${product}` };
+  if (product !== "*" && payload.p !== "*" && payload.p !== product) return { ok: false, reason: `key is for ${payload.p}, not ${product}` };
   if (payload.exp !== undefined && payload.exp <= Math.floor(Date.now() / 1000)) return { ok: false, reason: "expired" };
   return { ok: true, id: payload.id, p: payload.p };
 }
 
-async function authenticate(req: Request, env: Env, product: string): Promise<Auth | Response> {
+/**
+ * Two equivalent ways to present a token, because several MCP clients accept a remote URL
+ * and nothing else - Claude.ai custom connectors, the Claude Desktop connector dialog and
+ * some IDE pickers have no field for a header:
+ *
+ *   Authorization: Bearer <token>          the header form
+ *   /mcp/<server>/t/<token>                the same token as a path segment
+ *   /mcp/<server>?token=<token>            the same token as a query parameter
+ *
+ * The header wins when both are present. A token in a URL is a URL that grants access, so
+ * it is treated exactly like a bearer: same tiers, same rate limits, same tenants.
+ */
+async function authenticate(req: Request, env: Env, product: string, urlToken = ""): Promise<Auth | Response> {
   const header = req.headers.get("authorization") ?? "";
-  const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
+  const fromHeader = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
+  const token = fromHeader || urlToken.trim();
   if (!token) {
     return json({
       error: "unauthorized",
-      message: "This endpoint needs an Authorization: Bearer token. Two kinds are accepted.",
-      options: [
-        { kind: "anonymous", how: "GET https://mcp.zovo.one/mcp/token", tier: "free", limits: "600 calls/hour, free-tier server limits, data kept 30 days" },
-        { kind: "pro", how: "Buy a key at https://mcp.zovo.one/buy/" + product + " and send it as the bearer token", tier: "pro", limits: "6000 calls/hour, no server limits" },
+      message: "This endpoint needs a token. Put it in the Authorization header, or in the URL if your client cannot set headers.",
+      forms: [
+        { form: "header", how: "Authorization: Bearer <token>" },
+        { form: "url path", how: `https://mcp.zovo.one/mcp/${product}/t/<token>`, note: "for clients that accept only a URL (Claude.ai and Claude Desktop custom connectors, several IDE pickers)" },
+        { form: "url query", how: `https://mcp.zovo.one/mcp/${product}?token=<token>` },
       ],
+      options: [
+        { kind: "anonymous", how: "GET https://mcp.zovo.one/mcp/token, or open https://mcp.zovo.one/mcp/connect for ready-made URLs", tier: "free", limits: "600 calls/hour, free-tier server limits, data kept 30 days" },
+        { kind: "pro", how: "Buy a key at https://mcp.zovo.one/buy/" + product + " and send it as the token", tier: "pro", limits: "6000 calls/hour, no server limits" },
+      ],
+      connect: "https://mcp.zovo.one/mcp/connect",
       guide: GUIDE,
     }, 401, { "www-authenticate": `Bearer realm="mcp.zovo.one", error="invalid_token"` });
   }
@@ -196,21 +254,35 @@ async function authenticate(req: Request, env: Env, product: string): Promise<Au
   if (/^anon_[0-9a-f]{32}$/.test(token)) {
     const id = token.slice(5);
     if (!TENANT_ID_RE.test(id)) return json({ error: "invalid_token", guide: GUIDE }, 401);
-    const seen = await env.REMOTE_DATA.get(`tok:${token}`);
+    // The token's own record and any purchase bound to it are two independent reads; one
+    // round trip, not two, because tools/list is on this path as well.
+    const [seen, boundKey] = await Promise.all([
+      env.REMOTE_DATA.get(`tok:${token}`),
+      env.REMOTE_DATA.get(`bind:${token}`),
+    ]);
     if (seen === null) return json({ error: "unknown_token", message: "Mint a new one at GET https://mcp.zovo.one/mcp/token", guide: GUIDE }, 401);
-    return { tenant: `anon:${id}`, isPro: false, kind: "anon", limit: RATE_LIMIT_FREE };
+    // The billing worker writes bind:<token> on payment; this endpoint only ever reads it.
+    const verified = boundKey ? await verifyLicense(boundKey.trim(), product) : null;
+    const d = decideBinding(verified);
+    return { tenant: `anon:${id}`, isPro: d.isPro, kind: "anon", limit: d.limit, anonToken: token, bound: d.bound };
   }
   return json({ error: "invalid_token", message: "Token is neither an MCPL1 licence key nor an anonymous token.", guide: GUIDE }, 401);
 }
 
-async function rateLimit(env: Env, auth: Auth): Promise<Response | null> {
+/**
+ * The read decides; the counter write is deferred with waitUntil so it is not on the
+ * caller's clock. The counter was already approximate - two concurrent requests read the
+ * same value and both write n+1 - so deferring the write loses nothing that was ever
+ * guaranteed, and takes a KV write out of every single call.
+ */
+async function rateLimit(env: Env, auth: Auth, ctx: ExecutionContext): Promise<Response | null> {
   const bucket = Math.floor(Date.now() / 3_600_000);
   const key = `rl:${auth.tenant}:${bucket}`;
   const n = Number((await env.REMOTE_DATA.get(key)) ?? "0") + 1;
   if (n > auth.limit) {
     return json({ error: "rate_limited", limit: auth.limit, window: "1 hour", guide: GUIDE }, 429, { "retry-after": "3600" });
   }
-  await env.REMOTE_DATA.put(key, String(n), { expirationTtl: 7200 });
+  ctx.waitUntil(env.REMOTE_DATA.put(key, String(n), { expirationTtl: 7200 }));
   return null;
 }
 
@@ -404,10 +476,37 @@ function indexDoc(base: string) {
     protocol: "MCP streamable HTTP (2025-06-18)",
     transport: "streamable-http",
     auth: {
-      scheme: "Authorization: Bearer <token>",
-      oauth: "none - this endpoint deliberately has no OAuth flow; a static bearer token is all a client needs",
+      oauth: "none - this endpoint deliberately has no OAuth flow; a static token is all a client needs",
+      forms: [
+        {
+          form: "header",
+          scheme: "Authorization: Bearer <token>",
+          use_when: "your client can set a header (Claude Code with --header, curl, an SDK)",
+          example: `${base}/mcp/<server>`,
+        },
+        {
+          form: "url-path",
+          scheme: `${base}/mcp/<server>/t/<token>`,
+          use_when: "your client accepts a URL and nothing else - Claude.ai custom connectors, the Claude Desktop connector dialog, several IDE pickers",
+          note: "the same token, the same tiers and the same rate limits as the header; the URL itself is the credential, so treat it as private",
+        },
+        {
+          form: "url-query",
+          scheme: `${base}/mcp/<server>?token=<token>`,
+          use_when: "a client that takes a query string but not a header",
+        },
+      ],
+      precedence: "an Authorization header wins over a token in the URL",
+      connect_page: { url: `${base}/mcp/connect`, what: "mints a free token and prints the ready URL for every server, with per-client instructions" },
+      whoami: { url: `${base}/mcp/whoami`, also: `${base}/mcp/whoami/t/<token>`, returns: "{tenant, tier, bound}" },
       anonymous: { mint: `${base}/mcp/token`, format: "anon_<32 hex>", tier: "free", data_retention_days: 30, rate_limit: `${RATE_LIMIT_FREE}/hour`, mint_rate_limit: `${TOKEN_MINTS_PER_IP}/hour per client IP` },
-      pro: { buy: `${base}/buy/<product>`, format: "MCPL1.<payload>.<signature>", verified: "Ed25519, offline", rate_limit: `${RATE_LIMIT_PRO}/hour` },
+      pro: {
+        buy: `${base}/buy/<product>`,
+        format: "MCPL1.<payload>.<signature>",
+        verified: "Ed25519, offline",
+        rate_limit: `${RATE_LIMIT_PRO}/hour`,
+        bound_purchase: `Buying through ${base}/buy/<product>?tenant=<anon token> binds that purchase to the anonymous token: the same URL then runs in Pro mode over the same anonymous data document, with no key to paste and nothing to move. The free-cap answers on this endpoint already carry that link.`,
+      },
       guide: GUIDE,
     },
     endpoints: [
@@ -472,6 +571,7 @@ function indexDoc(base: string) {
     },
     stdio_install: "claude mcp add <name> -- npx -y @theluckystrike/mcp-<name>",
     remote_install: 'claude mcp add --transport http <name> https://mcp.zovo.one/mcp/<name> --header "Authorization: Bearer <token>"',
+    remote_install_no_header: "claude mcp add --transport http <name> https://mcp.zovo.one/mcp/<name>/t/<token>",
     source: "https://github.com/theluckystrike/mcp-servers",
   };
 }
@@ -508,6 +608,201 @@ async function sweep(env: Env): Promise<{ scanned: number; expired: number; dele
     cursor = page.list_complete ? undefined : page.cursor;
   } while (cursor);
   return { scanned, expired, deleted };
+}
+
+/* ------------------------------------------------- tools/list, cached */
+
+/**
+ * tools/list is the first thing every client sends and it is pure: the answer depends on
+ * the endpoint and the tier, never on the tenant's data. It used to cost a full request -
+ * three KV reads, an McpServer with every zod schema, a transport - for an answer that is
+ * byte-identical for every caller. It is now built once per isolate per (build, endpoint,
+ * tier) by running that same real path once, and served from module scope afterwards.
+ *
+ * Built from the real server rather than from a hand-written table, so a vendored change
+ * to a tool's description or schema cannot drift away from what this returns.
+ */
+const toolsCache = new Map<string, string>();
+
+async function toolsJson(product: string, cfg: ServerCfg, isPro: boolean, base: string): Promise<string> {
+  const key = `${BUILD_VERSION}:${product}:${isPro ? "pro" : "free"}`;
+  const hit = toolsCache.get(key);
+  if (hit !== undefined) return hit;
+  // An empty virtual filesystem: listing tools reads no tenant state, and a handler that
+  // tried to would not run here anyway.
+  const rctx: RequestCtx = {
+    tenant: "cache:tools", server: product, isPro,
+    files: new Map(), dirs: new Set(), downloads: [], baseUrl: base,
+    publish: cfg.publish, published: new Map(), maxBytes: cfg.maxBytes ?? DEFAULT_MAX_BYTES,
+    bytes: 0, nfiles: 0, fds: new Map(), nextFd: 100,
+  };
+  const text = await STORE.run(rctx, async () => {
+    const server = cfg.factory();
+    const transport = new WebStandardStreamableHTTPServerTransport({
+      sessionIdGenerator: undefined, enableJsonResponse: true,
+    });
+    try {
+      await server.connect(transport);
+      const res = await transport.handleRequest(new Request(`${base}/mcp/${product}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", accept: "application/json, text/event-stream" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }),
+      }));
+      return await res.text();
+    } finally {
+      await transport.close().catch(() => {});
+      await server.close().catch(() => {});
+    }
+  });
+  const tools = (JSON.parse(text) as { result?: { tools?: unknown } })?.result?.tools;
+  if (!Array.isArray(tools)) throw new Error(`tools/list for ${product} did not return a tool array`);
+  const out = JSON.stringify(tools);
+  toolsCache.set(key, out);
+  return out;
+}
+
+/** The JSON-RPC method and id of a request body, without committing to a full parse twice. */
+function rpcEnvelope(body: string): { method: string | null; id: unknown; hasId: boolean; hasCursor: boolean } {
+  try {
+    const o = JSON.parse(body) as Record<string, unknown>;
+    const params = (o?.params ?? {}) as Record<string, unknown>;
+    return {
+      method: typeof o?.method === "string" ? o.method : null,
+      id: o?.id,
+      hasId: o !== null && typeof o === "object" && "id" in o && o.id !== null,
+      hasCursor: typeof params?.cursor === "string",
+    };
+  } catch {
+    return { method: null, id: null, hasId: false, hasCursor: false };
+  }
+}
+
+/**
+ * Methods that cannot touch a tenant document. They are answered without hydrating KV at
+ * all - three reads saved on the two calls every client makes before it does any work.
+ */
+const DATALESS_METHODS = new Set(["tools/list", "initialize", "notifications/initialized", "ping", "prompts/list", "resources/list", "resources/templates/list"]);
+
+/* ------------------------------------------------------------ connect page */
+
+const CONNECT_CSS = `:root{color-scheme:light dark}
+body{margin:0;font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#fbfbfa;color:#1a1a1a}
+main{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:34px 0 10px}h3{font-size:15px;margin:22px 0 6px}
+p{margin:10px 0}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+pre{background:#f0efec;border:1px solid #e0dedb;border-radius:6px;padding:10px 12px;overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px}
+th,td{border:1px solid #e0dedb;padding:6px 8px;text-align:left;vertical-align:top}
+th{background:#f0efec;font-weight:600}
+td.u{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+.tok{background:#f0efec;border:1px solid #e0dedb;border-radius:6px;padding:10px 12px;word-break:break-all}
+.note{color:#5a5a5a;font-size:13px}
+a{color:#1a4fd6}
+@media (prefers-color-scheme:dark){body{background:#16161a;color:#e8e8e6}pre,th,.tok{background:#202027;border-color:#33333c}td,th{border-color:#33333c}.note{color:#a3a3a8}a{color:#8ab4ff}}`;
+
+const esc = (x: string) => x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+function connectPage(base: string, token: string): string {
+  const rows = Object.keys(SERVERS).map((n) =>
+    `<tr><td>${n}</td><td class="u">${esc(`${base}/mcp/${n}/t/${token}`)}</td></tr>`).join("\n");
+  const first = Object.keys(SERVERS)[0];
+  const ready = `${base}/mcp/${first}/t/${token}`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect to mcp.zovo.one</title><style>${CONNECT_CSS}</style></head><body><main>
+<h1>Connect an MCP client</h1>
+<p>Every URL below already carries a free anonymous token, so there is no header to set and
+nothing to install. Paste one into your client and it works.</p>
+
+<h2>Your token</h2>
+<p class="tok">${esc(token)}</p>
+<p class="note">Free tier: 600 calls an hour, free-tier server limits, data kept 30 days and
+refreshed for another 30 on every write. Anyone holding this token holds your data space, so
+treat the URLs as private. Reloading this page mints a new token and a new, empty data space;
+keep this one to keep your data.</p>
+
+<h2>Ready URLs</h2>
+<table><thead><tr><th>Server</th><th>URL</th></tr></thead><tbody>
+${rows}
+</tbody></table>
+
+<h2>How to add it</h2>
+
+<h3>Claude.ai (custom connector)</h3>
+<p>Settings &rarr; Connectors &rarr; Add custom connector. Give it a name, paste the URL,
+leave OAuth empty, save, then enable it in a chat.</p>
+<pre>${esc(ready)}</pre>
+
+<h3>Claude Desktop (connectors)</h3>
+<p>Settings &rarr; Connectors &rarr; Add custom connector, paste the same URL. Desktop treats
+it as a remote MCP server over streamable HTTP; no config file edit and no npx.</p>
+
+<h3>Claude Code</h3>
+<pre>claude mcp add --transport http ${esc(first)} ${esc(ready)}</pre>
+<p class="note">No <code>--header</code> is needed: the token is in the URL.</p>
+
+<h3>Cursor</h3>
+<p>Settings &rarr; MCP &rarr; Add new MCP server, or add this to <code>~/.cursor/mcp.json</code>:</p>
+<pre>{
+  "mcpServers": {
+    "${esc(first)}": { "url": "${esc(ready)}" }
+  }
+}</pre>
+
+<h3>VS Code (remote MCP)</h3>
+<p>Command palette &rarr; MCP: Add Server &rarr; HTTP, paste the URL. Or add it to
+<code>.vscode/mcp.json</code>:</p>
+<pre>{
+  "servers": {
+    "${esc(first)}": { "type": "http", "url": "${esc(ready)}" }
+  }
+}</pre>
+
+<h2>Pro</h2>
+<p>Pro lifts every free-tier limit. Two ways to get there:</p>
+<p><strong>Buy from inside the client.</strong> When a free limit is reached the answer
+carries a checkout link that already knows this token. Pay, and this same URL runs in Pro
+mode on your next call - no key to paste, and the data you already created stays where it is.</p>
+<p><strong>Or paste a key you already own.</strong> Put the key where the token is:</p>
+<pre>${esc(`${base}/mcp/${first}/t/MCPL1.<payload>.<signature>`)}</pre>
+<p>A key bought for one server works on that server; the bundle key works on all of them.
+Keys are at <a href="${esc(base)}/buy/bundle">${esc(base)}/buy/bundle</a>.</p>
+
+<h2>Other forms</h2>
+<p>A client that can set headers can use the plain endpoint instead:</p>
+<pre>${esc(`${base}/mcp/${first}`)}
+Authorization: Bearer ${esc(token)}</pre>
+<p>A client that can take a query string but not a header can use:</p>
+<pre>${esc(`${base}/mcp/${first}?token=${token}`)}</pre>
+<p class="note">Machine-readable index: <a href="${esc(base)}/mcp">${esc(base)}/mcp</a>.
+Free versus Pro: <a href="${esc(GUIDE)}">the guide</a>.
+Check what a token is: <code>${esc(`${base}/mcp/whoami/t/${token}`)}</code>.</p>
+</main></body></html>`;
+}
+
+/**
+ * Mint one anonymous token, under the same per-IP hourly ceiling wherever it is minted
+ * from - the JSON endpoint or the connect page. Returns the token, or the 429 to send.
+ */
+async function mintAnonToken(req: Request, env: Env): Promise<string | Response> {
+  const ip = req.headers.get("cf-connecting-ip") ?? "unknown";
+  const bucket = Math.floor(Date.now() / 3_600_000);
+  const mintKey = `mint:${ip}:${bucket}`;
+  const minted = Number((await env.REMOTE_DATA.get(mintKey)) ?? "0") + 1;
+  if (minted > TOKEN_MINTS_PER_IP) {
+    return json({
+      error: "rate_limited",
+      message: `This address has minted ${TOKEN_MINTS_PER_IP} anonymous tokens in the last hour, which is the limit. Reuse the token you already have: one token is one data space, and it is refreshed for another 30 days on every write.`,
+      limit: TOKEN_MINTS_PER_IP, window: "1 hour", guide: GUIDE,
+    }, 429, { "retry-after": "3600" });
+  }
+  await env.REMOTE_DATA.put(mintKey, String(minted), { expirationTtl: 7200 });
+  const b = new Uint8Array(16);
+  crypto.getRandomValues(b);
+  const token = "anon_" + Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+  await env.REMOTE_DATA.put(`tok:${token}`, String(Date.now()), { expirationTtl: ANON_TTL });
+  return token;
 }
 
 /* ---------------------------------------------------------------- worker */
@@ -558,12 +853,58 @@ export default {
     ctx.waitUntil(sweep(env).then((r) => console.log(`sweep: ${JSON.stringify(r)}`)));
   },
 
-  async fetch(req: Request, env: Env): Promise<Response> {
+  async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(req.url);
     const base = `${url.protocol}//${url.host}`;
-    const path = url.pathname.replace(/\/+$/, "") || "/mcp";
+    let path = url.pathname.replace(/\/+$/, "") || "/mcp";
+
+    // A token carried by the URL rather than a header, for clients whose only input is a
+    // URL. `/mcp/<name>/t/<token>` is stripped back to `/mcp/<name>` here and the token is
+    // handed to authenticate(), which still prefers an Authorization header if one is set.
+    let urlToken = url.searchParams.get("token") ?? "";
+    const tokenInPath = path.match(/^(\/mcp\/[a-z-]+)\/t\/(.+)$/);
+    if (tokenInPath) {
+      path = tokenInPath[1];
+      try { urlToken = decodeURIComponent(tokenInPath[2]); } catch { urlToken = tokenInPath[2]; }
+    }
 
     if (path === "/mcp") return json(indexDoc(base));
+
+    if (path === "/mcp/connect") {
+      if (req.method !== "GET" && req.method !== "HEAD") return json({ error: "method_not_allowed" }, 405, { allow: "GET" });
+      // Reusing a token that was passed in is deliberate: a reload with ?token= keeps the
+      // caller's data space instead of quietly stranding it behind a fresh one.
+      let token = /^anon_[0-9a-f]{32}$/.test(urlToken) ? urlToken : "";
+      if (!token) {
+        const minted = await mintAnonToken(req, env);
+        if (typeof minted !== "string") return minted;
+        token = minted;
+      }
+      return new Response(connectPage(base, token), {
+        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+      });
+    }
+
+    if (path === "/mcp/whoami") {
+      // Not one endpoint, so the licence product check is waived ("*"); everything else -
+      // token shape, existence, binding - is decided exactly as it is on a real call.
+      const who = await authenticate(req, env, "*", urlToken);
+      if (who instanceof Response) return who;
+      return json({
+        tenant: who.tenant,
+        tier: who.isPro ? "pro" : "free",
+        bound: who.bound === true,
+        kind: who.kind,
+        rate_limit_per_hour: who.limit,
+        how: who.kind === "license"
+          ? "a licence key was presented"
+          : who.bound
+            ? "an anonymous token whose purchase is bound to it in KV: Pro tier, same anonymous data document"
+            : "an anonymous token with no purchase bound to it",
+        connect: `${base}/mcp/connect`,
+        guide: GUIDE,
+      });
+    }
 
     if (path === "/mcp/admin/sweep") {
       // Method first: the sweep deletes data, so it is never reachable by a link,
@@ -580,22 +921,9 @@ export default {
 
     if (path === "/mcp/token") {
       if (req.method !== "GET" && req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
-      const ip = req.headers.get("cf-connecting-ip") ?? "unknown";
-      const bucket = Math.floor(Date.now() / 3_600_000);
-      const mintKey = `mint:${ip}:${bucket}`;
-      const minted = Number((await env.REMOTE_DATA.get(mintKey)) ?? "0") + 1;
-      if (minted > TOKEN_MINTS_PER_IP) {
-        return json({
-          error: "rate_limited",
-          message: `This address has minted ${TOKEN_MINTS_PER_IP} anonymous tokens in the last hour, which is the limit. Reuse the token you already have: one token is one data space, and it is refreshed for another 30 days on every write.`,
-          limit: TOKEN_MINTS_PER_IP, window: "1 hour", guide: GUIDE,
-        }, 429, { "retry-after": "3600" });
-      }
-      await env.REMOTE_DATA.put(mintKey, String(minted), { expirationTtl: 7200 });
-      const b = new Uint8Array(16);
-      crypto.getRandomValues(b);
-      const token = "anon_" + Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
-      await env.REMOTE_DATA.put(`tok:${token}`, String(Date.now()), { expirationTtl: ANON_TTL });
+      const minted = await mintAnonToken(req, env);
+      if (typeof minted !== "string") return minted;
+      const token = minted;
       return json({
         token,
         tier: "free",
@@ -628,9 +956,9 @@ export default {
       return json({ error: "not_found", index: `${base}/mcp` }, 404);
     }
 
-    const auth = await authenticate(req, env, product);
+    const auth = await authenticate(req, env, product, urlToken);
     if (auth instanceof Response) return auth;
-    const limited = await rateLimit(env, auth);
+    const limited = await rateLimit(env, auth, ctx);
     if (limited) return limited;
 
     // Body cap and batch rejection happen before anything is parsed as JSON-RPC.
@@ -655,17 +983,34 @@ export default {
       request = new Request(req.url, { method: "POST", headers: req.headers, body });
     }
 
-    const files = await hydrate(env, auth.tenant, product);
+    const rpc = rpcEnvelope(bodyText);
+
+    // tools/list is answered from module scope: no KV read, no McpServer, no transport.
+    // A paginated request (params.cursor) is not cached and takes the full path.
+    if (req.method === "POST" && rpc.method === "tools/list" && rpc.hasId && !rpc.hasCursor) {
+      const tools = await toolsJson(product, cfg, auth.isPro, base);
+      return new Response(
+        `{"jsonrpc":"2.0","id":${JSON.stringify(rpc.id)},"result":{"tools":${tools}}}`,
+        { headers: { "content-type": "application/json", "cache-control": "no-store" } });
+    }
+
+    // Lazy hydration. initialize, ping and the empty list methods cannot read or write a
+    // tenant document, so they pay for none of the three KV reads and none of the writes.
+    const dataless = req.method === "POST" && rpc.method !== null && DATALESS_METHODS.has(rpc.method);
+
+    const files = dataless ? new Map<string, string>() : await hydrate(env, auth.tenant, product);
     // /mcp/recurring works inside the invoice store: its document is hydrated on top of
     // this endpoint's, and every path is flushed back to whichever document owns it.
-    if (cfg.sharedDoc) {
+    if (!dataless && cfg.sharedDoc) {
       for (const [k, v] of await hydrate(env, auth.tenant, cfg.sharedDoc.server)) files.set(k, v);
     }
     // The shared business profile (D-R31) is hydrated on top of every endpoint, the same
     // way: business_set on /mcp/invoice must be visible to /mcp/docx, /mcp/expense-tracker,
     // /mcp/recurring, /mcp/resume, /mcp/clauses, /mcp/time-tracker and /mcp/timezone for
     // the same token, so it is not scoped to the servers that read it today.
-    for (const [k, v] of await hydrate(env, auth.tenant, PROFILE_SERVER)) files.set(k, v);
+    if (!dataless) {
+      for (const [k, v] of await hydrate(env, auth.tenant, PROFILE_SERVER)) files.set(k, v);
+    }
     const ownPaths = (p2: string) => !isProfilePath(p2) && (!cfg.sharedDoc || !cfg.sharedDoc.owns(p2));
     const maxBytes = cfg.maxBytes ?? DEFAULT_MAX_BYTES;
     const counted = recount(files);
@@ -674,14 +1019,14 @@ export default {
     // never charged to this token, and listed in `shared` so no write charges them either.
     const shared = new Set<string>();
     let ecbBefore: Map<string, string | null> | null = null;
-    if (product === "currency") {
+    if (product === "currency" && !dataless) {
       ecbBefore = await hydrateEcb(env, files, bodyText);
       shared.add(ECB_DAILY_PATH);
       shared.add(ECB_HISTORY_PATH);
     }
 
     const rctx: RequestCtx = {
-      tenant: auth.tenant, server: product, isPro: auth.isPro,
+      tenant: auth.tenant, server: product, isPro: auth.isPro, anonToken: auth.anonToken,
       files, dirs: new Set<string>(), downloads: [], baseUrl: base,
       publish: cfg.publish, published: new Map<string, string>(), maxBytes,
       bytes: counted.bytes, nfiles: counted.nfiles,
@@ -720,15 +1065,21 @@ export default {
           res = new Response(out, { status: res.status, headers: h });
         }
         if (ecbBefore) await flushEcb(env, files, ecbBefore);
-        await flush(env, auth.tenant, product, JSON.stringify(persistable(files, cfg, rctx.published, ownPaths)), before);
-        if (cfg.sharedDoc) {
-          await flush(env, auth.tenant, cfg.sharedDoc.server,
-            JSON.stringify(persistable(files, cfg, rctx.published, cfg.sharedDoc.owns)), sharedBefore);
-        }
-        await flush(env, auth.tenant, PROFILE_SERVER, JSON.stringify(persistableProfile(files, rctx.published)), profileBefore);
-        await touch(env, auth.tenant);
-        if (auth.kind === "anon") {
-          await env.REMOTE_DATA.put(`tok:anon_${auth.tenant.slice(5)}`, String(Date.now()), { expirationTtl: ANON_TTL });
+        // Nothing was hydrated, so there is nothing to flush and no last-seen stamp to
+        // move: a dataless method leaves KV exactly as it found it.
+        if (!dataless) {
+          await flush(env, auth.tenant, product, JSON.stringify(persistable(files, cfg, rctx.published, ownPaths)), before);
+          if (cfg.sharedDoc) {
+            await flush(env, auth.tenant, cfg.sharedDoc.server,
+              JSON.stringify(persistable(files, cfg, rctx.published, cfg.sharedDoc.owns)), sharedBefore);
+          }
+          await flush(env, auth.tenant, PROFILE_SERVER, JSON.stringify(persistableProfile(files, rctx.published)), profileBefore);
+          // Sweep stamp and token TTL refresh are bookkeeping, not the answer: deferred,
+          // so a tool call does not wait on two KV writes nobody reads in this request.
+          ctx.waitUntil(touch(env, auth.tenant));
+          if (auth.kind === "anon") {
+            ctx.waitUntil(env.REMOTE_DATA.put(`tok:anon_${auth.tenant.slice(5)}`, String(Date.now()), { expirationTtl: ANON_TTL }));
+          }
         }
         return res;
       } finally {
