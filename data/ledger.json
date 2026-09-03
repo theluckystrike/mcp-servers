@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T00:29:36.127Z",
+  "generated_at": "2026-09-03T00:44:55.915Z",
   "session": {
-    "count": 20,
+    "count": 21,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -82,6 +82,10 @@
       {
         "at": "2026-09-03T00:29:36.097Z",
         "note": "estate backlinks live on ukmoneycalc + statewage (78 pages)"
+      },
+      {
+        "at": "2026-09-03T00:44:55.707Z",
+        "note": "v0.2.5: round-6 fixes, 194 tests, validation 127/127; backlinks live; compare pages live"
       }
     ]
   },
@@ -89,7 +93,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -111,7 +115,7 @@
       "build_ok": true,
       "test_summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818",
       "result_status": "DONE",
-      "loc": 1239,
+      "loc": 1295,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -130,7 +134,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -150,7 +154,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 1101,
+      "loc": 1104,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -169,7 +173,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -197,7 +201,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -215,7 +219,7 @@
       "build_ok": true,
       "test_summary": "# pass 18 / # fail 0",
       "result_status": "DONE",
-      "loc": 1473,
+      "loc": 1480,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -234,7 +238,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -252,7 +256,7 @@
       "build_ok": true,
       "test_summary": "# pass 31 / # fail 0",
       "result_status": "DONE",
-      "loc": 1484,
+      "loc": 1478,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -271,7 +275,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -292,7 +296,7 @@
       "build_ok": true,
       "test_summary": "# pass 2 / # fail 0",
       "result_status": "DONE",
-      "loc": 1017,
+      "loc": 1061,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -376,6 +380,10 @@
     {
       "file": "docs/CODEX_REVIEW_REMOTE.md",
       "first_line": "1. `remote/src/index.ts:173` — P1 — `/mcp/token` is unauthenticated and unlimited, so callers can mint new tenants to reset hourly limits and free-tier quotas while generating unlimited KV records. Fix: rate-limit token issuance by IP/device and require a durable abuse-control identity or challenge."
+    },
+    {
+      "file": "docs/CODEX_REVIEW_REMOTE_V2.md",
+      "first_line": "1. `remote/src/shims/fs.ts:75` — High — Paths are raw map keys; traversal segments are not rejected, and names ending `.tmp` are silently excluded from persistence. Trigger: `sheet_load` with `name=\"../data.json\"` or `\"x.tmp\"`. Fix: normalize paths, enforce `/sheets/` confinement, and reject reserved suffixes."
     },
     {
       "file": "docs/CODEX_REVIEW_V2.md",
