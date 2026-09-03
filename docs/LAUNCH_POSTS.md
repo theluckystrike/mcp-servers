@@ -20,14 +20,14 @@ They're free to use with limits, $19 one-time per server or $39 for the bundle, 
 subscription. License keys verify offline with Ed25519, no phone-home.
 <!-- pricing/licensing: README.md line 9, line 29; data/facts.json pricing block -->
 
-What's measured, not claimed: 130 unit tests across the six servers plus the shared license
+What's measured, not claimed: 186 unit tests across the six servers plus the shared license
 package (protocol smoke tests over real stdio, adversarial cases: bad input, path traversal,
 concurrent writers), a 121-check validation database that's currently green at 121/121, and five
 rounds of user-value testing where a real Claude client ran actual prompts end to end, not unit
 tests. The most recent full run scored 26/30 on ten fresh scenarios it had never seen before; the
 round before that went from 13/24 to 20/24 after fixing the defects that round found, including a
 6-call chain that assembled a cross-currency invoice at EUR 338.25 correctly on its own.
-<!-- 130 unit tests, 121-check db: README.md "Validation" section -->
+<!-- 186 unit tests, 121-check db: README.md "Validation" section -->
 <!-- 121/121 run 29: docs/USER_VALUE_R5.md "Verbatim test summaries" -->
 <!-- 26/30 fresh scenarios: docs/USER_VALUE_R5.md scorecard heading -->
 <!-- 13/24 -> 20/24: docs/USER_VALUE_R4.md "Scorecard" heading -->
