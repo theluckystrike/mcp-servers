@@ -83,13 +83,14 @@ function blockChildren(blocks: Block[], color: string): (Paragraph | Table)[] {
         out.push(textPara(b.text, { spacing: { after: 140 } }));
         break;
       case "bullets":
-        for (const item of b.items) {
+        b.items.forEach((item, i) => {
+          const level = Math.min(8, Math.max(0, b.levels?.[i] ?? 0));
           out.push(new Paragraph({
             children: runs(inlineRuns(item)),
             spacing: { after: 60 },
-            ...(b.ordered ? { numbering: { reference: NUM_REF, level: 0 } } : { bullet: { level: 0 } }),
+            ...(b.ordered ? { numbering: { reference: NUM_REF, level } } : { bullet: { level } }),
           }));
-        }
+        });
         break;
       case "table":
         out.push(tableOf(b, color));
@@ -183,8 +184,13 @@ export async function buildDocx(o: BuildOptions): Promise<Buffer> {
     numbering: {
       config: [{
         reference: NUM_REF,
-        levels: [{ level: 0, format: "decimal", text: "%1.", alignment: AlignmentType.START,
-          style: { paragraph: { indent: { left: 720, hanging: 360 } } } }],
+        levels: Array.from({ length: 9 }, (_, level) => ({
+          level,
+          format: level % 3 === 0 ? "decimal" : level % 3 === 1 ? "lowerLetter" : "lowerRoman",
+          text: `%${level + 1}.`,
+          alignment: AlignmentType.START,
+          style: { paragraph: { indent: { left: 720 * (level + 1), hanging: 360 } } },
+        })),
       }],
     },
     styles: {
@@ -224,6 +230,25 @@ function inlineHtml(text: string): string {
   }).join("");
 }
 
+/** Nested <ul>/<ol> from a flat item list plus its per-item levels; sublists sit inside their <li>. */
+function listHtml(b: Extract<Block, { type: "bullets" }>): string {
+  const tag = b.ordered ? "ol" : "ul";
+  const openLi: boolean[] = [false];
+  let html = `<${tag}>`;
+  let depth = 0;
+  for (let i = 0; i < b.items.length; i++) {
+    const level = Math.min(8, Math.max(0, b.levels?.[i] ?? 0));
+    while (depth < level) { html += `<${tag}>`; depth++; openLi[depth] = false; }
+    while (depth > level) { if (openLi[depth]) html += "</li>"; html += `</${tag}>`; depth--; }
+    if (openLi[depth]) html += "</li>";
+    html += `<li>${inlineHtml(b.items[i])}`;
+    openLi[depth] = true;
+  }
+  while (depth > 0) { if (openLi[depth]) html += "</li>"; html += `</${tag}>`; depth--; }
+  if (openLi[0]) html += "</li>";
+  return html + `</${tag}>`;
+}
+
 /** Semantic HTML with a print stylesheet: open it in a browser and print to PDF. */
 export function toHtml(title: string, blocks: Block[]): string {
   const body: string[] = [];
@@ -231,10 +256,7 @@ export function toHtml(title: string, blocks: Block[]): string {
     if (b.type === "heading") body.push(`<h${Math.min(6, b.level)}>${inlineHtml(b.text)}</h${Math.min(6, b.level)}>`);
     else if (b.type === "para") body.push(`<p>${inlineHtml(b.text)}</p>`);
     else if (b.type === "code") body.push(`<pre>${esc(b.text)}</pre>`);
-    else if (b.type === "bullets") {
-      const tag = b.ordered ? "ol" : "ul";
-      body.push(`<${tag}>${b.items.map((i) => `<li>${inlineHtml(i)}</li>`).join("")}</${tag}>`);
-    } else {
+    else if (b.type === "bullets") body.push(listHtml(b)); else {
       body.push(
         `<table><thead><tr>${b.headers.map((h) => `<th>${inlineHtml(h)}</th>`).join("")}</tr></thead>` +
         `<tbody>${b.rows.map((r) => `<tr>${r.map((c) => `<td>${inlineHtml(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`,

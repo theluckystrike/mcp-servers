@@ -1,5 +1,8 @@
 import type { Block } from "./blocks.js";
 
+/** Word models nine list levels; deeper markdown indentation is clamped to the last one. */
+export const MAX_LIST_LEVEL = 8;
+
 /** Markdown to blocks: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code. */
 export function parseMarkdown(src: string): Block[] {
   const lines = src.replace(/\r\n?/g, "\n").split("\n");
@@ -37,15 +40,21 @@ export function parseMarkdown(src: string): Block[] {
       out.push({ type: "table", headers, rows });
       continue;
     }
-    const ul = /^\s*[-*+]\s+(.*)$/.exec(line);
-    const ol = /^\s*\d+[.)]\s+(.*)$/.exec(line);
+    const ul = /^(\s*)[-*+]\s+(.*)$/.exec(line);
+    const ol = /^(\s*)\d+[.)]\s+(.*)$/.exec(line);
     if (ul || ol) {
       flush();
       const ordered = !!ol;
-      const item = (ul ?? ol)![1].trim();
+      const m2 = (ul ?? ol)!;
+      const item = m2[2].trim();
+      // Word supports 9 list levels (0-8). Two spaces or one tab of indent is one level.
+      const indent = m2[1].replace(/\t/g, "  ").length;
+      const level = Math.min(MAX_LIST_LEVEL, Math.floor(indent / 2));
       const prev = out[out.length - 1];
-      if (prev && prev.type === "bullets" && prev.ordered === ordered) prev.items.push(item);
-      else out.push({ type: "bullets", items: [item], ordered });
+      if (prev && prev.type === "bullets" && prev.ordered === ordered) {
+        prev.items.push(item);
+        prev.levels!.push(level);
+      } else out.push({ type: "bullets", items: [item], ordered, levels: [level] });
       continue;
     }
     if (/^\s*>\s?/.test(line)) { para.push(line.replace(/^\s*>\s?/, "")); continue; }

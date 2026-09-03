@@ -65,7 +65,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | --- | --- |
 | `business_set` | Store the sender profile printed on every document: name, address, email, VAT id, IBAN, bank, logo, letterhead colour, default currency, tax rate, payment terms. Same field set as [mcp-invoice](../invoice), so one profile serves both |
 | `doc_create` | Write a `.docx` from sections: headings, paragraphs, bullet lists, numbered lists and tables. Layouts: `plain`, `letter` (sender block, date, addressee) and `proposal` (letterhead band, cover title) |
-| `doc_from_markdown` | Markdown to `.docx`: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and `**bold**` / `*italic*` / `` `code` `` inline |
+| `doc_from_markdown` | Markdown to `.docx`: ATX headings, paragraphs, bullet and numbered lists (indentation kept, up to Word's nine levels), GFM pipe tables, fenced code blocks as monospace, and `**bold**` / `*italic*` / `` `code` `` inline |
 | `doc_read` | Extract text, headings with levels, list items and tables from any existing `.docx`, in document order. `format: "json"` returns the block structure |
 | `doc_to_html` | Convert a `.docx` to semantic HTML with a print stylesheet. This is the PDF route -- see the note below |
 | `doc_fill_template` | Replace `{{placeholders}}` in a `.docx` and write a new file, keeping every style, table, header, footer and image. Called with no `values`, it lists the placeholders the template contains |
@@ -142,6 +142,19 @@ Documents are written with [`docx`](https://www.npmjs.com/package/docx), a pure-
 Reading and template filling use no dependency at all. A `.docx` is a ZIP, so `node:zlib` opens it and a small WordprocessingML walk pulls out paragraphs, heading levels (from `w:pStyle`), list items and tables in document order. Numbered lists are told apart from bullets by resolving each paragraph's `w:numId` against `word/numbering.xml`, which is the only place that distinction is recorded -- without it every numbered list reads back as bullets.
 
 Template filling substitutes on the **joined text of each paragraph**, not per run. Word routinely breaks a placeholder you typed as `{{client}}` into three runs (`{{cli`, `ent}}`, ...) after an edit or a spell-check pass, and per-run replacement silently misses those -- the document comes back with the placeholder still in it. The replaced text goes into the first run, keeping its formatting, and the remaining runs of that paragraph are blanked. Every other part of the package is copied byte-for-byte, so styles, images, headers, footers and section setup survive. A placeholder with no value is left in place and reported, never blanked.
+
+## Existing files are never overwritten
+
+Every tool that writes a file (`doc_create`, `doc_from_markdown`, `doc_to_html`, `doc_fill_template`,
+`proposal_create`, `contract_create`) refuses an `out_path` that already exists and tells you so:
+
+```
+Error: /path/acme-proposal.docx already exists and nothing was written.
+Pass overwrite: true to replace it, or give a different out_path.
+```
+
+The check runs before anything is built or written, so a refused call leaves the disk untouched and burns
+no reference number. Pass `overwrite: true` when replacing the file is what you want.
 
 ## How it stores data
 

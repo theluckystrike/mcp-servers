@@ -14,7 +14,7 @@ import {
   addDoc, dataDir, docsInMonth, getBusiness, getDocs, hasBusiness, nextNumber,
   setBusiness, type Business, type DocKind,
 } from "./store.js";
-import { fillDocx, placeholdersIn, readDocx } from "./wordxml.js";
+import { assertDocx, fillDocx, placeholdersIn, readDocx } from "./wordxml.js";
 
 const FREE_AGREEMENTS_PER_MONTH = 3;
 const FREE_TEMPLATE_PLACEHOLDERS = 10;
@@ -56,9 +56,15 @@ function slug(s: string): string {
   return s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "document";
 }
 
-function outputPath(out: string | undefined, fallbackName: string, ext: string): string {
+function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {
   const p = expandPath(out ?? join(dataDir(), "documents", fallbackName));
   const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;
+  if (!overwrite && existsSync(withExt)) {
+    throw new Error(
+      `${withExt} already exists and nothing was written. ` +
+      `Pass overwrite: true to replace it, or give a different out_path.`,
+    );
+  }
   mkdirSync(dirname(withExt), { recursive: true });
   return withExt;
 }
@@ -70,8 +76,19 @@ function money(amount: number, currency: string): string {
   return `${currency.toUpperCase()} ${s}`;
 }
 
-function record(kind: DocKind, title: string, path: string, client?: string, number?: string) {
-  addDoc({ id: randomBytes(4).toString("hex"), kind, title, client, number, path, created: new Date().toISOString() });
+/**
+ * Recording is best-effort on purpose: the .docx is already on disk by the time the
+ * history is touched, so a corrupt store must not be reported as "nothing was written".
+ * The reason is returned and appended to the tool's own answer instead.
+ */
+function record(kind: DocKind, title: string, path: string, client?: string, number?: string): string {
+  try {
+    addDoc({ id: randomBytes(4).toString("hex"), kind, title, client, number, path, created: new Date().toISOString() });
+    return "";
+  } catch (e) {
+    return `\n\nThe file was written, but it could not be added to the document history: ` +
+      `${String((e as Error).message ?? e)}`;
+  }
 }
 
 function agreementLimit(): string | null {
@@ -185,16 +202,16 @@ function sectionBlocks(sections: z.infer<typeof sectionSchema>[]): Block[] {
 
 async function writeDoc(
   title: string, blocks: Block[], style: DocStyle, out: string | undefined,
-  kind: DocKind, opts: { client?: string; number?: string; date?: string } = {},
-): Promise<string> {
-  const path = outputPath(out, `${slug(title)}.docx`, ".docx");
+  kind: DocKind, opts: { client?: string; number?: string; date?: string; overwrite?: boolean } = {},
+): Promise<{ path: string; note: string }> {
+  const path = outputPath(out, `${slug(title)}.docx`, ".docx", opts.overwrite === true);
   const buf = await buildDocx({
     title, blocks, style, business: issuer(), pro: gate.isPro(),
     date: opts.date, recipient: opts.client,
   });
   writeFileSync(path, buf);
-  record(kind, title, path, opts.client, opts.number);
-  return path;
+  const note = record(kind, title, path, opts.client, opts.number);
+  return { path, note };
 }
 
 server.registerTool("doc_create", {
@@ -207,16 +224,17 @@ server.registerTool("doc_create", {
     style: z.enum(["plain", "letter", "proposal"]).optional().describe("Layout, default plain"),
     recipient: z.string().optional().describe("Addressee block for the letter layout"),
     date: z.string().optional().describe("Date line for the letter layout, default today"),
+    overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
   try {
     const blocks = sectionBlocks(a.sections);
     if (!blocks.length) return fail("a document needs at least one section with a heading, paragraphs, bullets or a table.");
     const style = (a.style ?? "plain") as DocStyle;
-    const path = await locked(() => writeDoc(a.title, blocks, style, a.out_path, "document", {
-      client: a.recipient, date: style === "letter" ? (a.date ?? isoDate()) : a.date,
+    const res = await locked(() => writeDoc(a.title, blocks, style, a.out_path, "document", {
+      client: a.recipient, date: style === "letter" ? (a.date ?? isoDate()) : a.date, overwrite: a.overwrite,
     }));
-    return ok(`Wrote Word document ${path}\n\n${blocks.length} blocks, style ${style}.` +
+    return ok(`Wrote Word document ${res.path}\n\n${blocks.length} blocks, style ${style}.${res.note}` +
       `${businessMissing() && style !== "plain" ? `\n\n${NO_BUSINESS_NOTE}` : ""}${brandingNote()}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -229,6 +247,7 @@ server.registerTool("doc_from_markdown", {
     out_path: z.string().optional().describe("Where to write the .docx. Defaults to the data directory"),
     title: z.string().optional().describe("Document title; defaults to the first heading in the markdown"),
     style: z.enum(["plain", "letter", "proposal"]).optional(),
+    overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
   try {
@@ -241,9 +260,9 @@ server.registerTool("doc_from_markdown", {
       if (first.type === "heading" && first.level === 1) { title = first.text; body = blocks.slice(1); }
       else title = "Document";
     }
-    const path = await locked(() => writeDoc(title!, body, (a.style ?? "plain") as DocStyle, a.out_path, "markdown"));
+    const res = await locked(() => writeDoc(title!, body, (a.style ?? "plain") as DocStyle, a.out_path, "markdown", { overwrite: a.overwrite }));
     const counts = body.reduce<Record<string, number>>((acc, b) => { acc[b.type] = (acc[b.type] ?? 0) + 1; return acc; }, {});
-    return ok(`Wrote Word document ${path}\n\n${JSON.stringify({ title, blocks: counts }, null, 2)}${brandingNote()}`);
+    return ok(`Wrote Word document ${res.path}\n\n${JSON.stringify({ title, blocks: counts }, null, 2)}${res.note}${brandingNote()}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -277,6 +296,7 @@ server.registerTool("doc_to_html", {
   inputSchema: {
     path: z.string().describe("Path to the .docx file"),
     out_path: z.string().optional().describe("Where to write the .html. Defaults next to the source file"),
+    overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
   try {
@@ -284,10 +304,10 @@ server.registerTool("doc_to_html", {
     if (!existsSync(p)) return fail(`no file at ${p}.`);
     const blocks = readDocx(readFileSync(p));
     const title = blocks.find((b) => b.type === "heading")?.text ?? basename(p).replace(/\.docx$/i, "");
-    const out = outputPath(a.out_path ?? p.replace(/\.docx$/i, ".html"), `${slug(title)}.html`, ".html");
+    const out = outputPath(a.out_path ?? p.replace(/\.docx$/i, ".html"), `${slug(title)}.html`, ".html", a.overwrite === true);
     writeFileSync(out, toHtml(title, blocks), "utf8");
-    record("html", title, out);
-    return ok(`Wrote ${out}\n\nOpen it in a browser and use File > Print > Save as PDF. ` +
+    const note = record("html", title, out);
+    return ok(`Wrote ${out}${note}\n\nOpen it in a browser and use File > Print > Save as PDF. ` +
       `This server has no native dependency, so it does not render PDF bytes itself.`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -300,12 +320,14 @@ server.registerTool("doc_fill_template", {
     values: z.record(z.union([z.string(), z.number(), z.boolean()])).optional()
       .describe("Placeholder name to value, e.g. {client: \"Acme\", fee: \"EUR 4,500.00\"}"),
     out_path: z.string().optional().describe("Where to write the filled .docx. Defaults to <template>-filled.docx"),
+    overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
   try {
     const tpl = expandPath(a.template_path);
     if (!existsSync(tpl)) return fail(`no template at ${tpl}.`);
     const buf = readFileSync(tpl);
+    assertDocx(buf, tpl);
     const found = placeholdersIn(buf);
     if (!a.values || !Object.keys(a.values).length) {
       return ok(found.length
@@ -320,12 +342,12 @@ server.registerTool("doc_fill_template", {
     const values: Record<string, string> = {};
     for (const [k, v] of Object.entries(a.values)) values[k] = String(v);
     const res = fillDocx(buf, values);
-    const out = outputPath(a.out_path ?? tpl.replace(/\.docx$/i, "-filled.docx"), `${slug(basename(tpl))}-filled.docx`, ".docx");
+    const out = outputPath(a.out_path ?? tpl.replace(/\.docx$/i, "-filled.docx"), `${slug(basename(tpl))}-filled.docx`, ".docx", a.overwrite === true);
     writeFileSync(out, res.buffer);
-    await locked(() => record("template", basename(out), out));
+    const note = await locked(() => record("template", basename(out), out));
     const unused = Object.keys(values).filter((k) => !res.replaced.includes(k));
     return ok(
-      `Wrote ${out}\n\nReplaced ${res.replaced.length}: ${res.replaced.map((k) => `{{${k}}}`).join(", ") || "(none)"}` +
+      `Wrote ${out}${note}\n\nReplaced ${res.replaced.length}: ${res.replaced.map((k) => `{{${k}}}`).join(", ") || "(none)"}` +
       (res.unfilled.length ? `\n\nStill unfilled, no value was given: ${res.unfilled.map((k) => `{{${k}}}`).join(", ")}` : "") +
       (unused.length ? `\n\nNot present in the template, ignored: ${unused.join(", ")}` : ""),
     );
@@ -354,6 +376,7 @@ server.registerTool("proposal_create", {
     }),
     valid_until: z.string().optional().describe("YYYY-MM-DD, the date the quote expires"),
     out_path: z.string().optional(),
+    overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
   try {
@@ -389,18 +412,18 @@ server.registerTool("proposal_create", {
 
     const out = await locked(async () => {
       const number = nextNumber("PROP", isoDate().slice(0, 4));
-      const path = await writeDoc(
+      const w = await writeDoc(
         a.project_title, blocks, "proposal", a.out_path, "proposal",
-        { client: a.client, number, date: `${isoDate()}   |   Ref ${number}` },
+        { client: a.client, number, date: `${isoDate()}   |   Ref ${number}`, overwrite: a.overwrite },
       );
-      return { path, number };
+      return { path: w.path, note: w.note, number };
     });
     return ok(
       `Created proposal ${out.number} for ${a.client}.\n\n` +
       JSON.stringify({
         reference: out.number, client: a.client, project: a.project_title,
         total, terms, valid_until: a.valid_until, phases: a.timeline.length, file: out.path,
-      }, null, 2) +
+      }, null, 2) + out.note +
       `${businessMissing() ? `\n\n${NO_BUSINESS_NOTE}` : ""}${brandingNote()}`,
     );
   } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -422,6 +445,7 @@ server.registerTool("contract_create", {
     governing_law: z.string().optional().describe("e.g. 'the laws of Poland'"),
     clauses: z.array(z.string()).optional().describe("Extra clauses to append, one paragraph each"),
     out_path: z.string().optional(),
+    overwrite: z.boolean().optional().describe("Replace out_path if a file is already there. Default false: an existing file is never overwritten"),
   },
 }, async (a) => {
   try {
@@ -474,15 +498,15 @@ server.registerTool("contract_create", {
 
     const out = await locked(async () => {
       const number = nextNumber("AGR", (a.start_date.slice(0, 4).match(/^\d{4}$/) ? a.start_date.slice(0, 4) : isoDate().slice(0, 4)));
-      const path = await writeDoc(
+      const w = await writeDoc(
         `Service Agreement - ${a.client}`, blocks, "proposal", a.out_path, "contract",
-        { client: a.client, number, date: `${isoDate()}   |   Ref ${number}` },
+        { client: a.client, number, date: `${isoDate()}   |   Ref ${number}`, overwrite: a.overwrite },
       );
-      return { path, number };
+      return { path: w.path, note: w.note, number };
     });
     return ok(
       `Created service agreement ${out.number} for ${a.client}.\n\n` +
-      JSON.stringify({ reference: out.number, client: a.client, fee, schedule: a.fee.schedule, start_date: a.start_date, end_date: a.end_date, governing_law: law, file: out.path }, null, 2) +
+      JSON.stringify({ reference: out.number, client: a.client, fee, schedule: a.fee.schedule, start_date: a.start_date, end_date: a.end_date, governing_law: law, file: out.path }, null, 2) + out.note +
       `\n\nThis is a template, not legal advice. Have a lawyer review every clause and complete every [BRACKETED PLACEHOLDER] before anyone signs.` +
       `${businessMissing() ? `\n\n${NO_BUSINESS_NOTE}` : ""}${brandingNote()}`,
     );

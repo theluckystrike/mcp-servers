@@ -2,7 +2,7 @@
 export type Block =
   | { type: "heading"; level: number; text: string }
   | { type: "para"; text: string }
-  | { type: "bullets"; items: string[]; ordered: boolean }
+  | { type: "bullets"; items: string[]; ordered: boolean; levels?: number[] }
   | { type: "table"; headers: string[]; rows: string[][] }
   | { type: "code"; text: string };
 

@@ -42,8 +42,8 @@ test("doc_create output is a real .docx and reads back with headings, lists and 
   assert.ok(back.some((b) => b.type === "para" && b.text === "We will build the thing for Beta Corp."), text);
   const lists = back.filter((b) => b.type === "bullets");
   assert.equal(lists.length, 2, `bullet and numbered lists must stay separate: ${text}`);
-  assert.deepEqual(lists[0], { type: "bullets", items: ["Discovery", "Build"], ordered: false });
-  assert.deepEqual(lists[1], { type: "bullets", items: ["Phase one", "Phase two"], ordered: true });
+  assert.deepEqual(lists[0], { type: "bullets", items: ["Discovery", "Build"], ordered: false, levels: [0, 0] });
+  assert.deepEqual(lists[1], { type: "bullets", items: ["Phase one", "Phase two"], ordered: true, levels: [0, 0] });
   const table = back.find((b) => b.type === "table");
   assert.deepEqual(table.headers, ["Phase", "Duration"]);
   assert.deepEqual(table.rows, [["Discovery", "2 weeks"], ["Build", "4 weeks"]]);

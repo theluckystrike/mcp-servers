@@ -92,14 +92,15 @@ export function numberingFormats(numberingXml: string): NumFormats {
   return out;
 }
 
-function listInfo(inner: string, fmts?: NumFormats): { list: boolean; ordered: boolean; numId: string } {
+function listInfo(inner: string, fmts?: NumFormats): { list: boolean; ordered: boolean; numId: string; level: number } {
   const numPr = /<w:numPr[\s>]/.test(inner);
   const style = /<w:pStyle[^>]*w:val="(ListParagraph|ListBullet|ListNumber)"/i.exec(inner);
   const id = /<w:numId[^>]*w:val="(\d+)"/.exec(inner);
   const numId = id ? id[1] : "";
   let ordered = /<w:pStyle[^>]*w:val="ListNumber"/i.test(inner);
   if (numId && fmts?.has(numId)) ordered = fmts.get(numId) !== "bullet";
-  return { list: numPr || !!style, ordered, numId };
+  const ilvl = /<w:ilvl[^>]*w:val="(\d+)"/.exec(inner);
+  return { list: numPr || !!style, ordered, numId, level: ilvl ? Math.min(8, Number(ilvl[1])) : 0 };
 }
 
 function tableBlock(inner: string): Block | null {
@@ -133,9 +134,10 @@ export function blocksOf(xml: string, fmts?: NumFormats): Block[] {
   let lastNumId = "";
   let i = 0;
   while (i < xml.length) {
-    const p = xml.indexOf("<w:p", i);
+    let p = xml.indexOf("<w:p", i);
+    while (p >= 0 && !/^<w:p[\s/>]/.test(xml.slice(p, p + 5))) p = xml.indexOf("<w:p", p + 4);
     const t = xml.indexOf("<w:tbl", i);
-    const pOk = p >= 0 && /^<w:p[\s/>]/.test(xml.slice(p, p + 5));
+    const pOk = p >= 0;
     const next = pOk && (t < 0 || p < t) ? { at: p, kind: "p" as const } : t >= 0 ? { at: t, kind: "tbl" as const } : null;
     if (!next) break;
     if (next.kind === "tbl") {
@@ -158,8 +160,10 @@ export function blocksOf(xml: string, fmts?: NumFormats): Block[] {
       const prev = out[out.length - 1];
       // A new numId starts a new list even when both are bullets: Word models
       // "bullets, paragraph, more bullets" that way and merging them loses the break.
-      if (prev && prev.type === "bullets" && prev.ordered === li.ordered && lastNumId === li.numId) prev.items.push(text.trim());
-      else out.push({ type: "bullets", items: [text.trim()], ordered: li.ordered });
+      if (prev && prev.type === "bullets" && prev.ordered === li.ordered && lastNumId === li.numId) {
+        prev.items.push(text.trim());
+        prev.levels!.push(li.level);
+      } else out.push({ type: "bullets", items: [text.trim()], ordered: li.ordered, levels: [li.level] });
       lastNumId = li.numId;
       continue;
     }
@@ -167,6 +171,19 @@ export function blocksOf(xml: string, fmts?: NumFormats): Block[] {
     out.push({ type: "para", text });
   }
   return out;
+}
+
+/**
+ * Refuse anything that is a ZIP but not a Word package. Without this, doc_fill_template
+ * happily rewrites an arbitrary .zip and hands back a "-filled.docx" that Word cannot open.
+ */
+export function assertDocx(buf: Buffer, path: string): void {
+  const entries = readZip(buf);
+  if (!entries.some((e) => e.name === "word/document.xml")) {
+    throw new Error(
+      `${path} is a ZIP but has no word/document.xml, so it is not a Word .docx; nothing was written.`,
+    );
+  }
 }
 
 export function documentXml(buf: Buffer): string {
@@ -206,12 +223,16 @@ export function placeholdersIn(buf: Buffer): string[] {
 
 function forEachParagraph(xml: string, fn: (joined: string) => string | null): string {
   let out = "";
-  let i = 0;
-  while (i < xml.length) {
-    const at = xml.indexOf("<w:p", i);
-    if (at < 0 || !/^<w:p[\s/>]/.test(xml.slice(at, at + 5))) break;
+  let i = 0;        // everything before this index is already copied to `out`
+  let search = 0;
+  while (search < xml.length) {
+    const at = xml.indexOf("<w:p", search);
+    if (at < 0) break;
+    // <w:pgSz>, <w:permStart>, <w:proofErr> all start "<w:p": skip them, never stop the scan,
+    // or every placeholder after one of them is silently left unfilled.
+    if (!/^<w:p[\s/>]/.test(xml.slice(at, at + 5))) { search = at + 4; continue; }
     const el = element(xml, "p", at);
-    if (!el) break;
+    if (!el) { search = at + 4; continue; }
     const openLen = xml.slice(at, el.end).indexOf(">") + 1;
     const inner = el.inner;
     const joined = paragraphText(inner);
@@ -221,6 +242,7 @@ function forEachParagraph(xml: string, fn: (joined: string) => string | null): s
     else out += rewriteRuns(inner, replaced);
     out += xml.slice(at + openLen + inner.length, el.end);
     i = el.end;
+    search = el.end;
   }
   return out + xml.slice(i);
 }
