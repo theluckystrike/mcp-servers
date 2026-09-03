@@ -750,3 +750,149 @@ and written at the end, so two concurrent requests for one token both write a wh
 document and the later one wins; the sweep is likewise not fenced against an active
 tenant. Accepted for the same reason as 7 - one token is one client, and the failure mode
 is a lost update, not cross-tenant leakage.
+
+## Extension 2: currency, timezone, docx
+
+status: DONE
+
+Three more endpoints through the same vendoring pipeline (in-memory fs, licence shim,
+`withFileLock` no-op). Worker `mcp-remote`, version ID `3210aba7-e9ec-44ef-b941-3968a5e9f528`,
+same KV namespace `REMOTE_DATA`. `node scripts/validate.mjs` run 49: `remote: 14/14`,
+178/178 overall.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/currency | 10 | ECB cache is shared across all tenants, not per token; only `www.ecb.europa.eu` is fetchable |
+| https://mcp.zovo.one/mcp/timezone | 11 | contacts per token; `ics_create` returns a one-hour download link |
+| https://mcp.zovo.one/mcp/docx | 13 | `doc_upload` replaces the file path; generated `.docx` comes back as the real binary behind a download link |
+
+### currency: one shared ECB cache, not one per tenant
+
+`eurofxref-hist.xml` is about 6 MB and its parsed form is ~2.9 MB of JSON. The same bytes
+for every caller multiplied by every token would be the entire KV budget, so the two cache
+files live under **one shared pair of keys** - `shared:ecb:daily` and `shared:ecb:history` -
+and are hydrated into each request's in-memory filesystem at the paths the vendored store
+module reads (`/currency/daily.json`, `/currency/history.json`; `dataDir()` is patched to
+the fixed root `/currency`, because there is no home directory here). The refresh limits are
+the stdio server's own: 6 h for the daily file, 24 h for the history.
+
+Three things make that safe:
+
+1. **The shared bytes are nobody's tenant data.** `RequestCtx` gained `shared`, a set of
+   paths (and, through `TMP_RE`, the scratch file of an atomic write onto one) that the fs
+   shim exempts from the per-token byte and file counters. Without it the first
+   `writeFileSync` of a 2.9 MB history into a 512 KB tenant would have thrown the cap error.
+2. **Nothing under `/currency/` is ever written into a tenant document.** `ServerCfg` gained
+   `persist`, and currency sets `persist: () => false`: not the cache, and not a quarantine
+   marker for it, which would otherwise have poisoned one token's endpoint permanently.
+   The endpoint keeps no per-token state at all.
+3. **The 6 MB file is hydrated only when it is needed.** `needsEcbHistory()` reads the request
+   body: `rate_history`, `rate_on`, `cache_status` and any call carrying a `date` get the
+   history, everything else gets only the 465-byte daily file. If a tool needs it anyway, the
+   vendored read-through simply downloads it, which is correct, just slower.
+
+A refresh happens at most once per worker invocation, because the vendored read-through only
+downloads when its own copy is over the age limit. Concurrency across isolates is guarded
+**best effort** with `shared:ecb:lock:<key>` (60 s TTL): a request that finds the cache stale
+and the lock held re-reads the key once, in case the holder has just finished, and otherwise
+takes the lock itself. Two isolates can still download the same file; both then write the
+same content and the last one wins, which is exactly the stdio server's own tmp+rename
+guarantee. On a successful refresh the new bytes are put back to the shared key and the lock
+is dropped.
+
+**SSRF: an allowlist, not a denylist.** `baseUrl()` no longer reads `ECB_BASE_URL`, and
+`fetchText` runs `guardEcbUrl()` first: `https:` only, host exactly `www.ecb.europa.eu` or
+`ecb.europa.eu`. That is strictly stronger than the price-tracker's private-range guard -
+no private, loopback or metadata address can name itself the ECB.
+
+`cache_status` reports the shared cache honestly instead of a per-machine data directory.
+
+### timezone
+
+Contacts and the monthly `.ics` counter are per token (`dataDir()` -> `/timezone`, the same
+KV document mechanism as time-tracker). `outPathOf` is rewritten: there is no disk, so
+`out_path` is only the name the downloaded file carries (1-64 characters of
+`[A-Za-z0-9_-]`, no directories, no traversal), the invite is written to `/ics/<name>.ics`,
+published as a one-hour download, and the result says "Calendar invite ready. Download: ..."
+instead of "Wrote <path>".
+
+### docx
+
+The `docx` npm package builds for Workers unchanged, and `node:zlib`'s `deflateRawSync` /
+`inflateRawSync` (the whole of `zip.ts`, so `doc_read` and `doc_fill_template`) works under
+`nodejs_compat`, so nothing had to be dropped: all 8 stdio tools ship, plus 3 hosted ones.
+
+Two virtual roots, and `expandPath` is rewritten to map every `path` argument onto them:
+
+- `/uploads/` - documents the caller sent. `doc_upload {name, docx_base64}` (new, in
+  `remote/src/shims/docx-upload.ts`) stores one, 2 MB per document, through the fs shim so it
+  counts against the tenant's caps (2 MB per token for this endpoint). `doc_read` and
+  `doc_fill_template` also take `docx_base64` directly, which stores the file under the same
+  root. `doc_files` lists them, `doc_delete_upload` removes one. Names are rejected, not
+  sanitised, exactly as `sheet_load` does it.
+- `/docs/` - everything this server writes. `outputPath` forces that root regardless of the
+  `out_path` given, each write calls `publishFile`, and the worker substitutes the download
+  URL for the virtual path in the response body. Published files are not persisted, so a
+  generated document never eats the tenant's 2 MB. `.docx` is served as
+  `application/vnd.openxmlformats-officedocument.wordprocessingml.document`.
+
+The 256 KB request-body cap binds before the 2 MB upload cap: the largest `.docx` that fits
+in one POST is about 190 KB.
+
+### Verification
+
+Two POSTs per endpoint, anonymous token, against the deployed worker.
+
+```
+$ tools/list
+currency  HTTP 200 10 tools   timezone HTTP 200 11 tools   docx HTTP 200 13 tools
+
+$ currency convert {amount: 100, from: "USD", to: "PLN"}
+  "rate": 3.736828, "result": "PLN 373.68", "rate_date": "2026-09-02",
+  "note": "Rate date: 2026-09-02 (ECB reference rate). ECB reference rates are published
+           around 16:00 CET on TARGET business days..."
+
+$ currency rate_history {from: "USD", to: "PLN", days: 10}      (hydrates the shared history)
+  8 business days, min 3.681121 on 2026-08-26, max 3.737101 on 2026-09-01   [6.1 s, cold]
+$ currency cache_status
+  daily 465 bytes, history 2,982,997 bytes, data_dir "hosted: the ECB files are one shared
+  cache for the whole endpoint..."
+$ currency rate_on {date: "2026-08-15"} on a SECOND anonymous token
+  1 EUR = 1.1567 USD on 2026-08-14 (nearest previous business day)          [2.2 s, no download]
+
+$ timezone find_meeting_slots {Mike Europe/Warsaw, Ann America/New_York, 60 min, 2 days}
+  6 slots, best 2026-09-03T13:30:00.000Z, fairness 3.00 h
+$ timezone contacts_set {name: "Ann", zone: "America/New_York"}   then contacts_list
+  1 contact(s): Ann: America/New_York ... (state survived the POST boundary)
+$ timezone ics_create -> "Calendar invite ready. Download: .../mcp/download/3144847396..."
+  GET that URL -> BEGIN:VCALENDAR / VERSION:2.0 / PRODID:-//theluckystrike//mcp-timezone//EN
+
+$ docx doc_from_markdown {markdown: "# Remote probe ..."}
+  "Wrote Word document https://mcp.zovo.one/mcp/download/d1d6935f... (valid 1 hour)"
+  GET that URL -> 9,664 bytes starting "PK",
+  content-type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+  content-disposition: attachment; filename="remote-probe.docx"
+$ docx doc_upload {name: "probe", docx_base64: <that file>}   -> Uploaded "probe.docx" (9664 bytes)
+$ docx doc_read {path: "probe"}            (second POST)
+  probe.docx: 3 blocks, 54 characters. OUTLINE Remote probe / TEXT Remote probe ...
+$ docx doc_read {docx_base64: <file>}      -> inline.docx: 3 blocks, 54 characters
+$ docx doc_fill_template {docx_base64: <file>} -> "template.docx contains no {{placeholders}}"
+```
+
+`GET /mcp` now lists eight endpoints, with the currency and docx modes and the
+`stored_bytes_per_token_per_endpoint` map (`docx: 2097152`, `currency: "no per-token storage"`).
+`servers/{currency,timezone,docx}/remotes.json` were added in the `time-tracker` shape.
+
+### Limitations
+
+- The ECB refresh lock is best effort (KV, 60 s): two isolates that find the cache stale at
+  the same instant can both download the file. They write identical content, so the cache is
+  never left half-written; the cost is one duplicate 6 MB fetch.
+- A cold `rate_history` costs ~6 s (the ECB download plus a 2.9 MB KV write). Every later
+  call on any token is a KV read.
+- An uploaded `.docx` is capped at 2 MB, but the 256 KB request body caps it at ~190 KB in
+  practice. Larger templates need the stdio server.
+- `doc_read`/`doc_fill_template` with `docx_base64` store the file under `/uploads/` (default
+  name `inline` / `template`) rather than discarding it; `doc_delete_upload` removes it.
+- `business_set {logo_path}` still takes a path this endpoint cannot read, so the hosted
+  letterhead never carries a logo; Pro branding otherwise applies.

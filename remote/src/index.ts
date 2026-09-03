@@ -1,7 +1,7 @@
 /**
- * mcp-remote: the four stdio servers' tool sets served over MCP streamable HTTP.
+ * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, three endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, eight endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -15,6 +15,9 @@ import { createServer as createPriceTracker } from "./vendor/price-tracker/index
 import { createServer as createInvoice } from "./vendor/invoice/index.js";
 import { createServer as createExpenseTracker } from "./vendor/expense-tracker/index.js";
 import { createServer as createSpreadsheet } from "./vendor/spreadsheet/index.js";
+import { createServer as createCurrency } from "./vendor/currency/index.js";
+import { createServer as createTimezone } from "./vendor/timezone/index.js";
+import { createServer as createDocx } from "./vendor/docx/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -26,6 +29,7 @@ const RATE_LIMIT_FREE = 600;          // calls per hour per token
 const RATE_LIMIT_PRO = 6000;
 const SWEEP_AFTER_DAYS = 35;          // orphan sweep: docs untouched this long are deleted
 const SPREADSHEET_MAX_BYTES = 2 * 1024 * 1024;   // inline-data mode, per token
+const DOCX_MAX_BYTES = 2 * 1024 * 1024;          // uploaded .docx templates, per token
 const DEFAULT_MAX_BYTES = 512 * 1024;            // stored document per token per endpoint
 const MAX_BODY_BYTES = 256 * 1024;               // request body ceiling
 const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour per client IP
@@ -38,6 +42,8 @@ interface ServerCfg {
   persistPublished?: boolean;
   /** Ceiling on the tenant document for this endpoint. */
   maxBytes?: number;
+  /** Which virtual paths belong in the tenant document at all. Default: all of them. */
+  persist?: (path: string) => boolean;
 }
 
 const SERVERS: Record<string, ServerCfg> = {
@@ -59,6 +65,24 @@ const SERVERS: Record<string, ServerCfg> = {
     publish: () => true,
     persistPublished: true,
     maxBytes: SPREADSHEET_MAX_BYTES,
+  },
+  "currency": {
+    factory: createCurrency as () => McpServer,
+    // The ECB files are one shared, cross-tenant cache (see hydrateEcb); this endpoint
+    // keeps no per-token state at all, so nothing under /currency/ is ever persisted
+    // into a tenant document - not the cache, and not a quarantine marker for it.
+    persist: () => false,
+  },
+  "timezone": {
+    factory: createTimezone as () => McpServer,
+    publish: (p) => p.endsWith(".ics"),
+  },
+  "docx": {
+    factory: createDocx as () => McpServer,
+    // Uploaded templates (/uploads/) and the document register are the tenant's state;
+    // everything this server writes lands under /docs/ and is a transient download.
+    publish: (p) => p.startsWith("/docs/"),
+    maxBytes: DOCX_MAX_BYTES,
   },
 };
 
@@ -202,6 +226,7 @@ function persistable(files: Map<string, string>, cfg: ServerCfg, published: Map<
   const obj: Record<string, string> = {};
   for (const [k, v] of files) {
     if (TMP_RE.test(k)) continue;
+    if (cfg.persist && !cfg.persist(k)) continue;
     if (published.has(k) && !cfg.persistPublished) continue;
     obj[k] = v;
   }
@@ -218,6 +243,87 @@ async function touch(env: Env, tenant: string): Promise<void> {
   await env.REMOTE_DATA.put(`meta:${tenant}`, JSON.stringify({ last_seen: Date.now() }));
 }
 
+/* -------------------------------------------------- shared ECB rate cache */
+
+/**
+ * The currency server caches two ECB files. They are the same bytes for every caller and
+ * eurofxref-hist.xml is about 6 MB, so a per-tenant copy would multiply that by the number
+ * of tokens; they live under one shared pair of KV keys instead, and are hydrated into
+ * every request's in-memory filesystem at the paths the vendored store module reads.
+ * Nothing about them is per-token, so they are exempt from the tenant caps (ctx.shared)
+ * and never written into a tenant document (SERVERS.currency.persist).
+ *
+ * Refresh happens at most once per worker invocation, because the vendored read-through
+ * cache only downloads when its own copy is older than the age limit. A KV lock key makes
+ * a concurrent refresh in another isolate unlikely rather than impossible: it is
+ * best effort, and the worst case is two isolates downloading the same file, after which
+ * both write the same content and the last one wins.
+ */
+const ECB_DAILY_PATH = "/currency/daily.json";
+const ECB_HISTORY_PATH = "/currency/history.json";
+const SHARED_DAILY = "shared:ecb:daily";
+const SHARED_HISTORY = "shared:ecb:history";
+const SHARED_LOCK = "shared:ecb:lock";
+const ECB_DAILY_MAX_AGE_MS = 6 * 60 * 60 * 1000;    // same limits as servers/currency/src/ecb.ts
+const ECB_HISTORY_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const ECB_LOCK_TTL = 60;                            // seconds; KV's minimum
+
+/** Which tool calls need the 6 MB history file. The daily file is always hydrated. */
+function needsEcbHistory(body: string): boolean {
+  return /rate_history|rate_on|cache_status|"date"/.test(body);
+}
+
+function ecbAgeMs(raw: string | null): number {
+  if (raw === null) return Number.POSITIVE_INFINITY;
+  try {
+    const t = Date.parse((JSON.parse(raw) as { fetched_at?: string }).fetched_at ?? "");
+    return Number.isFinite(t) ? Date.now() - t : Number.POSITIVE_INFINITY;
+  } catch { return Number.POSITIVE_INFINITY; }
+}
+
+async function hydrateOneEcb(
+  env: Env, key: string, path: string, maxAgeMs: number, files: Map<string, string>,
+): Promise<string | null> {
+  let raw = await env.REMOTE_DATA.get(key);
+  if (raw === null || ecbAgeMs(raw) >= maxAgeMs) {
+    // Stale or missing: this request will go to the ECB unless someone else already is.
+    const lock = `${SHARED_LOCK}:${key}`;
+    if ((await env.REMOTE_DATA.get(lock)) !== null) {
+      const again = await env.REMOTE_DATA.get(key);   // the holder may have just finished
+      if (again !== null) raw = again;
+    } else {
+      await env.REMOTE_DATA.put(lock, String(Date.now()), { expirationTtl: ECB_LOCK_TTL });
+    }
+  }
+  if (raw !== null) files.set(path, raw);
+  return raw;
+}
+
+/** Hydrate the shared cache; returns what was hydrated, so a refresh can be detected. */
+async function hydrateEcb(env: Env, files: Map<string, string>, body: string): Promise<Map<string, string | null>> {
+  const before = new Map<string, string | null>();
+  const wantHistory = needsEcbHistory(body);
+  const [daily, history] = await Promise.all([
+    hydrateOneEcb(env, SHARED_DAILY, ECB_DAILY_PATH, ECB_DAILY_MAX_AGE_MS, files),
+    wantHistory
+      ? hydrateOneEcb(env, SHARED_HISTORY, ECB_HISTORY_PATH, ECB_HISTORY_MAX_AGE_MS, files)
+      : Promise.resolve(null),
+  ]);
+  before.set(ECB_DAILY_PATH, daily);
+  before.set(ECB_HISTORY_PATH, wantHistory ? history : null);
+  return before;
+}
+
+/** Write a refreshed shared file back, and drop the lock so the next refresh is not blocked. */
+async function flushEcb(env: Env, files: Map<string, string>, before: Map<string, string | null>): Promise<void> {
+  for (const [path, key] of [[ECB_DAILY_PATH, SHARED_DAILY], [ECB_HISTORY_PATH, SHARED_HISTORY]] as const) {
+    const now = files.get(path);
+    if (now === undefined || now === before.get(path)) continue;
+    await env.REMOTE_DATA.put(key, now);
+    await env.REMOTE_DATA.delete(`${SHARED_LOCK}:${key}`);
+  }
+}
+
 /* ----------------------------------------------------------------- index */
 
 const TOOLS: Record<string, string[]> = {
@@ -226,6 +332,9 @@ const TOOLS: Record<string, string[]> = {
   "invoice": ["business_set", "client_add", "client_list", "invoice_create", "invoice_from_hours", "invoice_list", "invoice_get", "invoice_mark_paid", "invoice_pdf", "overdue_report", "license_status", "license_activate"],
   "expense-tracker": ["expense_add", "expense_list", "expense_update", "expense_delete", "receipt_attach", "category_rules", "expense_settings", "expense_summary", "mileage_add", "expense_export", "expense_to_invoice", "license_status", "license_activate"],
   "spreadsheet": ["sheet_load", "sheet_files", "sheet_unload", "sheet_info", "sheet_read", "sheet_query", "sheet_stats", "sheet_find", "sheet_add_column", "sheet_convert", "sheet_write", "license_status", "license_activate"],
+  "currency": ["rates_latest", "convert", "convert_many", "fx_rates_for", "rate_history", "rate_on", "currencies_list", "cache_status", "license_status", "license_activate"],
+  "timezone": ["now", "convert_time", "overlap", "find_meeting_slots", "dst_changes", "business_days", "contacts_set", "contacts_list", "ics_create", "license_status", "license_activate"],
+  "docx": ["doc_upload", "doc_files", "doc_delete_upload", "business_set", "doc_create", "doc_from_markdown", "doc_read", "doc_to_html", "doc_fill_template", "proposal_create", "contract_create", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -255,11 +364,29 @@ function indexDoc(base: string) {
         free_limits: "5,000 rows and 5 MB read per sheet, 500 rows written per file",
         storage: `${SPREADSHEET_MAX_BYTES / 1048576} MB of loaded sheets per token`,
       },
+      {
+        name: "currency", url: `${base}/mcp/currency`, tools: TOOLS["currency"],
+        free_limits: "historical rates over the last 90 days (Pro reads the series back to 1999-01-04)",
+        notes: "ECB reference rates. The two ECB files are one shared cache for the whole endpoint, refreshed at most every 6 hours (daily) and 24 hours (history); nothing here is per-token, and only https://www.ecb.europa.eu is ever fetched",
+      },
+      {
+        name: "timezone", url: `${base}/mcp/timezone`, tools: TOOLS["timezone"],
+        free_limits: "3 participants, 5 days per search, 5 saved contacts, 3 calendar files per month",
+        notes: "contacts are kept per token; ics_create returns a download link valid for one hour instead of a local file path, and out_path is only the name that file carries",
+      },
+      {
+        name: "docx", url: `${base}/mcp/docx`, tools: TOOLS["docx"],
+        mode: "upload and download",
+        how: "There is no disk here: doc_upload {name, docx_base64} stores an existing .docx under your token and every tool takes that name as its `path`; doc_read and doc_fill_template also accept docx_base64 directly, which stores the file under the same root (default name 'inline' / 'template'). doc_files lists what is uploaded, doc_delete_upload removes one.",
+        outputs: "doc_create, doc_from_markdown, proposal_create, contract_create, doc_fill_template and doc_to_html return a download link valid for one hour; .docx comes back as the real binary file (application/vnd.openxmlformats-officedocument.wordprocessingml.document).",
+        free_limits: "3 proposals or contracts per calendar month, templates up to 10 placeholders, footer line and default letterhead",
+        storage: `${DOCX_MAX_BYTES / 1048576} MB of uploaded documents per token, and at most 2 MB in one upload (the ${MAX_BODY_BYTES / 1024} KB request-body cap binds first)`,
+      },
     ],
     limits: {
       request_body_bytes: MAX_BODY_BYTES,
       jsonrpc_batching: "not accepted - send one request object per POST",
-      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES },
+      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, currency: "no per-token storage" },
       download_ttl_seconds: DOWNLOAD_TTL,
       idle_data_retention_days: SWEEP_AFTER_DAYS,
     },
@@ -428,6 +555,7 @@ export default {
 
     // Body cap and batch rejection happen before anything is parsed as JSON-RPC.
     let request = req;
+    let bodyText = "";
     if (req.method === "POST") {
       const declared = Number(req.headers.get("content-length") ?? "0");
       if (declared > MAX_BODY_BYTES) {
@@ -443,6 +571,7 @@ export default {
           error: { code: -32600, message: "JSON-RPC batching is not supported on this endpoint. Send one request object per POST." },
         }, 400);
       }
+      bodyText = body;
       request = new Request(req.url, { method: "POST", headers: req.headers, body });
     }
 
@@ -450,11 +579,22 @@ export default {
     const maxBytes = cfg.maxBytes ?? DEFAULT_MAX_BYTES;
     const counted = recount(files);
 
+    // The ECB cache is shared across tenants: hydrated after recount(), so its bytes are
+    // never charged to this token, and listed in `shared` so no write charges them either.
+    const shared = new Set<string>();
+    let ecbBefore: Map<string, string | null> | null = null;
+    if (product === "currency") {
+      ecbBefore = await hydrateEcb(env, files, bodyText);
+      shared.add(ECB_DAILY_PATH);
+      shared.add(ECB_HISTORY_PATH);
+    }
+
     const rctx: RequestCtx = {
       tenant: auth.tenant, server: product, isPro: auth.isPro,
       files, dirs: new Set<string>(), downloads: [], baseUrl: base,
       publish: cfg.publish, published: new Map<string, string>(), maxBytes,
       bytes: counted.bytes, nfiles: counted.nfiles,
+      shared,
       fds: new Map(), nextFd: 100,
     };
     const before = JSON.stringify(persistable(files, cfg, rctx.published));
@@ -484,6 +624,7 @@ export default {
           h.delete("content-length");
           res = new Response(out, { status: res.status, headers: h });
         }
+        if (ecbBefore) await flushEcb(env, files, ecbBefore);
         await flush(env, auth.tenant, product, JSON.stringify(persistable(files, cfg, rctx.published)), before);
         await touch(env, auth.tenant);
         if (auth.kind === "anon") {

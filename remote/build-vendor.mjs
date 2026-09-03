@@ -23,6 +23,9 @@ const SERVERS = {
   "invoice": ["index.ts", "money.ts", "store.ts"],
   "expense-tracker": ["index.ts", "money.ts", "store.ts"],
   "spreadsheet": ["index.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts"],
+  "currency": ["index.ts", "ecb.ts", "money.ts", "rates.ts", "store.ts"],
+  "timezone": ["index.ts", "jsonstore.ts", "tz.ts", "zones.ts"],
+  "docx": ["index.ts", "blocks.ts", "build.ts", "md.ts", "store.ts", "wordxml.ts", "zip.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
@@ -365,8 +368,182 @@ export function guardTarget(u: URL): void {
 }
 `;
 
+
+/* ------------------------------------------------------------- currency */
+
+function patchCurrencyStore(src) {
+  // One fixed virtual root instead of $XDG_DATA_HOME/~: there is no home directory here,
+  // and the ECB cache under it is hydrated from a shared KV key for every tenant.
+  src = must(src, /export function dataDir\(\): string \{[\s\S]*?\n\}\n/,
+    'export function dataDir(): string { return "/currency"; }\n', "currency dataDir");
+  return src;
+}
+
+function patchCurrencyEcb(src) {
+  // SSRF: this worker will run whatever URL the code hands it, so the ECB host is an
+  // explicit allowlist (stricter than the price-tracker denylist: no private address,
+  // and no environment override, can name a host that is not the ECB).
+  src = must(src, /export function baseUrl\(\): string \{[\s\S]*?\n\}\n/,
+    'export const ECB_HOSTS = ["www.ecb.europa.eu", "ecb.europa.eu"];\n' +
+    'export function baseUrl(): string { return "https://www.ecb.europa.eu/stats/eurofxref"; }\n' +
+    '\n/** Allowlist, not a denylist: only https://(www.)ecb.europa.eu is ever fetched. */\n' +
+    'export function guardEcbUrl(raw: string): void {\n' +
+    '  let u: URL;\n' +
+    '  try { u = new URL(raw); } catch { throw new EcbError(`${raw} is not a URL.`); }\n' +
+    '  const host = u.hostname.toLowerCase().replace(/\\.$/, "");\n' +
+    '  if (u.protocol !== "https:" || !ECB_HOSTS.includes(host)) {\n' +
+    '    throw new EcbError(\n' +
+    '      `this hosted endpoint only fetches https://www.ecb.europa.eu (asked for ${u.protocol}//${u.hostname}); nothing was downloaded.`);\n' +
+    '  }\n' +
+    '}\n', "currency baseUrl allowlist");
+  src = must(src, "async function fetchText(url: string): Promise<string> {\n  const ctrl = new AbortController();",
+    "async function fetchText(url: string): Promise<string> {\n  guardEcbUrl(url);\n  const ctrl = new AbortController();",
+    "currency fetchText guard");
+  return `import { Buffer } from "node:buffer";\n${src}`;
+}
+
+function patchCurrencyIndex(src) {
+  // cache_status describes a local data directory in the stdio server; here the two ECB
+  // files are one shared, cross-tenant cache, and no caller can delete or corrupt them.
+  src = must(src,
+    '      data_dir: dataDir(),',
+    '      data_dir: "hosted: the ECB files are one shared cache for the whole endpoint, refreshed at most once every 6 h (daily) / 24 h (history); nothing about them is per-token",',
+    "currency cache_status data_dir");
+  return src;
+}
+
+/* ------------------------------------------------------------- timezone */
+
+function patchTimezoneIndex(src) {
+  src = must(src, /function dataDir\(\): string \{[\s\S]*?\n\}\n/,
+    'function dataDir(): string { return "/timezone"; }\n', "timezone dataDir");
+  // There is no disk to write an invite to: the .ics becomes a one-hour download link,
+  // so out_path is just the name the downloaded file carries.
+  src = must(src, /function outPathOf\(p: string\): string \{[\s\S]*?\n\}\n/,
+    `function outPathOf(p: string): string {
+  const base = (String(p ?? "").split(/[\\\\/]/).pop() ?? "").replace(/\\.ics$/i, "");
+  const name = base || "meeting";
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(name)) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable file name. On this hosted endpoint the invite comes back as a \` +
+      \`download link, so out_path is only the name the file carries: 1-64 characters of letters, digits, underscore or dash.\`);
+  }
+  return \`/ics/\${name}.ics\`;
+}
+`, "timezone outPathOf");
+  src = must(src, 'out_path: text(MAX_PATH, "out_path").optional().describe("Where to write the file; default meeting.ics in the data dir"),',
+    'out_path: text(MAX_PATH, "out_path").optional().describe("Name for the downloaded file, default meeting.ics"),',
+    "timezone ics out_path description");
+  src = must(src, '    writeFileSync(path, text, "utf8");',
+    '    writeFileSync(path, text, "utf8");\n    publishFile(path);',
+    "timezone ics publish");
+  src = must(src, "      `Wrote ${path}${rest}\\n${a.title}: ${describe(startUtc, z)} for ${a.duration_minutes} min\\n` +",
+    "      `Calendar invite ready. Download: ${path}${rest}\\n${a.title}: ${describe(startUtc, z)} for ${a.duration_minutes} min\\n` +",
+    "timezone ics result text");
+  return src;
+}
+
+/* ----------------------------------------------------------------- docx */
+
+function patchDocxStore(src) {
+  src = must(src, /export function dataDir\(\): string \{[\s\S]*?\n\}\n/,
+    'export function dataDir(): string { mkdirSync("/docx", { recursive: true }); return "/docx"; }\n',
+    "docx dataDir");
+  return src;
+}
+
+function patchDocxIndex(src) {
+  // No disk: an existing .docx is uploaded (doc_upload, or a one-off docx_base64) and
+  // lives under /uploads/; everything this server writes lands under /docs/ and comes
+  // back as a one-hour download link.
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+    `function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  if (!raw) throw new Error("path is required: it names a document uploaded with doc_upload");
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "");
+  const m = /^([A-Za-z0-9_-]{1,64})(\\.[A-Za-z0-9]{1,8})?$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint a path is just a name - \` +
+      \`the one you uploaded a file under with doc_upload, or the one to give a new document: 1-64 characters \` +
+      \`of letters, digits, underscore or dash, optionally with an extension. doc_files lists what is uploaded.\`);
+  }
+  const ext = (m[2] ?? ".docx").toLowerCase();
+  const upload = \`/uploads/\${m[1]}.docx\`;
+  if (ext === ".docx" && existsSync(upload)) return upload;
+  return \`/docs/\${m[1]}\${ext}\`;
+}
+`, "docx expandPath");
+  src = must(src, /function outputPath\([\s\S]*?\n\}\n/,
+    `function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {
+  const name = expandPath(out ?? fallbackName).split("/").pop() as string;
+  const withExt = name.toLowerCase().endsWith(ext) ? name : \`\${name.replace(/\\.[A-Za-z0-9]{1,8}$/, "")}\${ext}\`;
+  const full = \`/docs/\${withExt}\`;
+  if (!overwrite && existsSync(full)) {
+    throw new Error(
+      \`this call already produced a document named \${withExt} and nothing was written. \` +
+      \`Pass overwrite: true to replace it, or give a different out_path.\`);
+  }
+  return full;
+}
+`, "docx outputPath");
+
+  // Every generated document becomes a download link (the worker substitutes the URL
+  // for the virtual path in the response body).
+  src = must(src, "  writeFileSync(path, buf);\n  const note = record(kind, title, path, opts.client, opts.number);",
+    "  writeFileSync(path, buf);\n  publishFile(path);\n  const note = record(kind, title, path, opts.client, opts.number);",
+    "docx writeDoc publish");
+  src = must(src, '    writeFileSync(out, toHtml(title, blocks), "utf8");\n    const note = record("html", title, out);',
+    '    writeFileSync(out, toHtml(title, blocks), "utf8");\n    publishFile(out);\n    const note = record("html", title, out);',
+    "docx to_html publish");
+  src = must(src, "    writeFileSync(out, res.buffer);\n    const note = await locked(() => record(\"template\", basename(out), out));",
+    "    writeFileSync(out, res.buffer);\n    publishFile(out);\n    const note = await locked(() => record(\"template\", basename(out), out));",
+    "docx fill_template publish");
+
+  // doc_read and doc_fill_template take the document itself, base64, as an alternative
+  // to uploading it first.
+  src = must(src,
+    '    path: z.string().describe("Path to the .docx file"),\n' +
+    '    format: z.enum(["text", "json"]).optional().describe("text (default) returns the readable text, json returns the block structure"),',
+    '    path: z.string().optional().describe("Name of a document uploaded with doc_upload"),\n' +
+    '    docx_base64: z.string().optional().describe("The .docx itself, base64-encoded, instead of uploading it first"),\n' +
+    '    format: z.enum(["text", "json"]).optional().describe("text (default) returns the readable text, json returns the block structure"),',
+    "docx doc_read schema");
+  src = must(src,
+    "    const p = expandPath(a.path);\n    if (!existsSync(p)) return fail(`no file at ${p}.`);\n    if (!/\\.docx$/i.test(p)) return fail(`${p} is not a .docx file. Legacy .doc and .rtf are not readable here.`);",
+    '    if (!a.path && !a.docx_base64) return fail("give either path (a document uploaded with doc_upload) or docx_base64 (the file itself, base64-encoded).");\n' +
+    "    const p = a.docx_base64 ? stageUpload(a.path ?? \"inline\", a.docx_base64) : expandPath(a.path as string);\n" +
+    "    if (!existsSync(p)) return fail(`nothing is uploaded under the name ${JSON.stringify(p.split(\"/\").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded.`);\n" +
+    "    if (!/\\.docx$/i.test(p)) return fail(`${p} is not a .docx file. Legacy .doc and .rtf are not readable here.`);",
+    "docx doc_read handler");
+  src = must(src,
+    '    template_path: z.string().describe("Path to the .docx template containing {{placeholders}}"),',
+    '    template_path: z.string().optional().describe("Name of a template uploaded with doc_upload"),\n' +
+    '    docx_base64: z.string().optional().describe("The .docx template itself, base64-encoded, instead of uploading it first"),',
+    "docx doc_fill_template schema");
+  src = must(src,
+    "    const tpl = expandPath(a.template_path);\n    if (!existsSync(tpl)) return fail(`no template at ${tpl}.`);",
+    '    if (!a.template_path && !a.docx_base64) return fail("give either template_path (a template uploaded with doc_upload) or docx_base64 (the template itself, base64-encoded).");\n' +
+    "    const tpl = a.docx_base64 ? stageUpload(a.template_path ?? \"template\", a.docx_base64) : expandPath(a.template_path as string);\n" +
+    "    if (!existsSync(tpl)) return fail(`nothing is uploaded under the name ${JSON.stringify(tpl.split(\"/\").pop())}. Upload the template with doc_upload {name, docx_base64}, or pass docx_base64 to this call.`);",
+    "docx doc_fill_template handler");
+  src = must(src,
+    '    path: z.string().describe("Path to the .docx file"),\n    out_path: z.string().optional().describe("Where to write the .html. Defaults next to the source file"),',
+    '    path: z.string().describe("Name of a document uploaded with doc_upload, or a document this server just wrote"),\n    out_path: z.string().optional().describe("Name for the downloaded .html file"),',
+    "docx doc_to_html schema");
+  src = must(src, "gate.registerTools(server as unknown as { registerTool: Function });",
+    "gate.registerTools(server as unknown as { registerTool: Function });\nregisterDocxUpload(server as unknown as { registerTool: Function });",
+    "docx doc_upload registration");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
+  timezone: ['import { publishFile } from "../../shims/fs.js";'],
+  docx: [
+    'import { registerDocxUpload, stageUpload } from "../../shims/docx-upload.js";',
+    'import { publishFile } from "../../shims/fs.js";',
+  ],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -382,6 +559,9 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (f !== "index.ts") {
       if (name === "spreadsheet" && f === "sheet.ts") src = patchSpreadsheetSheet(src);
       if (name === "price-tracker" && f === "fetch.ts") src = patchPriceFetch(src);
+      if (name === "currency" && f === "store.ts") src = patchCurrencyStore(src);
+      if (name === "currency" && f === "ecb.ts") src = patchCurrencyEcb(src);
+      if (name === "docx" && f === "store.ts") src = patchDocxStore(src);
       writeFileSync(join(dir, f), rewriteImports(src, 2));
       continue;
     }
@@ -390,6 +570,9 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "invoice") src = patchInvoiceIndex(src);
     if (name === "expense-tracker") src = patchExpenseIndex(src);
     if (name === "spreadsheet") src = patchSpreadsheetIndex(src);
+    if (name === "currency") src = patchCurrencyIndex(src);
+    if (name === "timezone") src = patchTimezoneIndex(src);
+    if (name === "docx") src = patchDocxIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {

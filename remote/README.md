@@ -1,7 +1,9 @@
 # remote - hosted MCP endpoints
 
 One Cloudflare Worker serving the tool sets of `servers/time-tracker`,
-`servers/price-tracker` and `servers/invoice` over MCP streamable HTTP at
+`servers/price-tracker`, `servers/invoice`, `servers/expense-tracker`,
+`servers/spreadsheet`, `servers/currency`, `servers/timezone` and `servers/docx`
+over MCP streamable HTTP at
 https://mcp.zovo.one/mcp/<name> . `mcp-billing` keeps the rest of the domain; this
 worker is mounted on the route pattern `mcp.zovo.one/mcp*`.
 

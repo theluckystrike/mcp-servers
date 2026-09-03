@@ -29,6 +29,12 @@ export interface RequestCtx {
   bytes: number;
   /** Persisted file count (scratch files excluded), kept incrementally by the fs shim. */
   nfiles: number;
+  /**
+   * Paths hydrated from a cross-tenant shared cache (the ECB rate files). They are not
+   * this tenant's data: they are exempt from the per-tenant byte and file caps, and the
+   * worker never writes them into the tenant document.
+   */
+  shared?: Set<string>;
   /** Open file descriptors, request-local: fd -> buffer plus its own read offset. */
   fds: Map<number, { buf: Buffer; pos: number }>;
   nextFd: number;

@@ -23,6 +23,8 @@ const MIME: Record<string, string> = {
   json: "application/json; charset=utf-8",
   html: "text/html; charset=utf-8",
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ics: "text/calendar; charset=utf-8",
   xlsm: "application/vnd.ms-excel.sheet.macroEnabled.12",
   pdf: "application/pdf",
 };
@@ -98,6 +100,18 @@ export const MAX_FILES = 64;
 function entrySize(k: string, v: string): number { return k.length + byteLen(v); }
 
 /**
+ * True for a path that belongs to a cross-tenant shared cache, and for the scratch file
+ * of an atomic write onto one. Those bytes are not the tenant's, so they are neither
+ * charged against the tenant's caps nor persisted into the tenant document.
+ */
+export function isShared(c: RequestCtx, p: string): boolean {
+  const s = c.shared;
+  if (!s || s.size === 0) return false;
+  if (s.has(p)) return true;
+  return TMP_RE.test(p) && s.has(p.replace(TMP_RE, ""));
+}
+
+/**
  * Persisted-byte and file counters for a hydrated map. Called once per request; every
  * later mutation adjusts the counters incrementally, so no write rescans the map.
  */
@@ -162,6 +176,7 @@ function countError(c: RequestCtx): Error {
 /** Write through the counters: c.bytes and c.nfiles cover the persisted (non-scratch) files. */
 function setFile(c: RequestCtx, k: string, v: string): void {
   const prev = c.files.get(k);
+  if (isShared(c, k)) { c.files.set(k, v); return; }
   if (!TMP_RE.test(k)) {
     if (prev === undefined) c.nfiles++; else c.bytes -= entrySize(k, prev);
     c.bytes += entrySize(k, v);
@@ -172,12 +187,14 @@ function setFile(c: RequestCtx, k: string, v: string): void {
 function delFile(c: RequestCtx, k: string): void {
   const prev = c.files.get(k);
   if (prev === undefined) return;
+  if (isShared(c, k)) { c.files.delete(k); return; }
   if (!TMP_RE.test(k)) { c.bytes -= entrySize(k, prev); c.nfiles--; }
   c.files.delete(k);
 }
 
 /** Both caps, checked before the map is touched. Throws with caller-facing text. */
 function checkCaps(c: RequestCtx, p: string, value: string): void {
+  if (isShared(c, p)) return;   // shared cache bytes are nobody's tenant data
   const cap = c.maxBytes;
   if (cap !== undefined && projectedBytes(c, p, value) > cap) throw capError(c, cap);
   const isNew = !c.files.has(p);
@@ -205,7 +222,7 @@ export function renameSync(from: string, to: string): void {
   const c = ctx();
   const v = c.files.get(from);
   if (v === undefined) throw enoent(from);
-  if (!c.files.has(to)) {
+  if (!c.files.has(to) && !isShared(c, to)) {
     if (!TMP_RE.test(to) && c.nfiles >= MAX_FILES) throw countError(c);
   }
   setFile(c, to, v);
