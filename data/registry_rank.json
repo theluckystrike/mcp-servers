@@ -1175,5 +1175,532 @@
     "best_v0.2.0_row": null
    }
   }
+ },
+ "after_v3_2026-09-03_v0.3.2": {
+  "note": "re-probe after v0.3.2 (9 registry entries: 8 servers hosted with remotes[] + office-suite live but stdio-only). currency, docx, timezone are new servers this pass; resume/cover-letter are unmatched control tokens (no server targets them). Endpoint fully paginated (limit=100, cursor loop) this time instead of single-page.",
+  "tokens": {
+   "time": {
+    "results": 317,
+    "best_rank_by_server": {
+     "time-tracker": [
+      223,
+      "io.github.theluckystrike/time-tracker",
+      "0.1.0",
+      false
+     ],
+     "office-suite": [
+      215,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+      "0.2.1",
+      false
+     ],
+     "timezone": [
+      235,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "timer": {
+    "results": 12,
+    "best_rank_by_server": {}
+   },
+   "timesheet": {
+    "results": 11,
+    "best_rank_by_server": {
+     "time-tracker": [
+      1,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "hours": {
+    "results": 11,
+    "best_rank_by_server": {
+     "time-tracker": [
+      2,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "billable": {
+    "results": 10,
+    "best_rank_by_server": {
+     "time-tracker": [
+      1,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "tracking": {
+    "results": 24,
+    "best_rank_by_server": {}
+   },
+   "time-tracker": {
+    "results": 14,
+    "best_rank_by_server": {
+     "time-tracker": [
+      3,
+      "io.github.theluckystrike/time-tracker",
+      "0.1.0",
+      false
+     ]
+    }
+   },
+   "time tracker": {
+    "results": 0,
+    "best_rank_by_server": {}
+   },
+   "price": {
+    "results": 131,
+    "best_rank_by_server": {
+     "price-tracker": [
+      106,
+      "io.github.theluckystrike/price-tracker",
+      "0.1.0",
+      false
+     ],
+     "office-suite": [
+      98,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+      "0.2.1",
+      false
+     ]
+    }
+   },
+   "prices": {
+    "results": 21,
+    "best_rank_by_server": {}
+   },
+   "deal": {
+    "results": 99,
+    "best_rank_by_server": {}
+   },
+   "drop": {
+    "results": 173,
+    "best_rank_by_server": {
+     "price-tracker": [
+      159,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "alert": {
+    "results": 53,
+    "best_rank_by_server": {
+     "price-tracker": [
+      36,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "watch": {
+    "results": 149,
+    "best_rank_by_server": {
+     "price-tracker": [
+      130,
+      "io.github.theluckystrike/price-tracker-drop-alert-watch",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "product": {
+    "results": 126,
+    "best_rank_by_server": {}
+   },
+   "shop": {
+    "results": 115,
+    "best_rank_by_server": {}
+   },
+   "price-tracker": {
+    "results": 17,
+    "best_rank_by_server": {
+     "price-tracker": [
+      5,
+      "io.github.theluckystrike/price-tracker",
+      "0.1.0",
+      false
+     ]
+    }
+   },
+   "price tracker": {
+    "results": 0,
+    "best_rank_by_server": {}
+   },
+   "spreadsheet": {
+    "results": 24,
+    "best_rank_by_server": {
+     "spreadsheet": [
+      13,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "excel": {
+    "results": 180,
+    "best_rank_by_server": {
+     "spreadsheet": [
+      160,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+      "0.1.1",
+      false
+     ],
+     "office-suite": [
+      170,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+      "0.2.1",
+      false
+     ]
+    }
+   },
+   "xlsx": {
+    "results": 28,
+    "best_rank_by_server": {
+     "spreadsheet": [
+      19,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "csv": {
+    "results": 26,
+    "best_rank_by_server": {
+     "spreadsheet": [
+      17,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "sheet": {
+    "results": 133,
+    "best_rank_by_server": {
+     "time-tracker": [
+      121,
+      "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+      "0.1.1",
+      false
+     ],
+     "spreadsheet": [
+      109,
+      "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "sheets": {
+    "results": 80,
+    "best_rank_by_server": {}
+   },
+   "table": {
+    "results": 131,
+    "best_rank_by_server": {}
+   },
+   "data": {
+    "results": 2897,
+    "best_rank_by_server": {}
+   },
+   "invoice": {
+    "results": 110,
+    "best_rank_by_server": {
+     "invoice": [
+      82,
+      "io.github.theluckystrike/invoice",
+      "0.1.0",
+      false
+     ],
+     "office-suite": [
+      94,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+      "0.2.1",
+      false
+     ]
+    }
+   },
+   "invoices": {
+    "results": 0,
+    "best_rank_by_server": {}
+   },
+   "invoicing": {
+    "results": 68,
+    "best_rank_by_server": {}
+   },
+   "billing": {
+    "results": 37,
+    "best_rank_by_server": {
+     "invoice": [
+      28,
+      "io.github.theluckystrike/invoice-pdf-billing-generator",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "pdf": {
+    "results": 290,
+    "best_rank_by_server": {
+     "invoice": [
+      258,
+      "io.github.theluckystrike/invoice-pdf-billing-generator",
+      "0.1.1",
+      false
+     ]
+    }
+   },
+   "receipt": {
+    "results": 24,
+    "best_rank_by_server": {
+     "expense-tracker": [
+      15,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage",
+      "0.2.0",
+      false
+     ]
+    }
+   },
+   "quote": {
+    "results": 63,
+    "best_rank_by_server": {}
+   },
+   "freelance": {
+    "results": 6,
+    "best_rank_by_server": {}
+   },
+   "expense": {
+    "results": 31,
+    "best_rank_by_server": {
+     "expense-tracker": [
+      15,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage",
+      "0.2.0",
+      false
+     ],
+     "office-suite": [
+      24,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+      "0.2.1",
+      false
+     ]
+    }
+   },
+   "expenses": {
+    "results": 0,
+    "best_rank_by_server": {}
+   },
+   "receipts": {
+    "results": 13,
+    "best_rank_by_server": {
+     "expense-tracker": [
+      4,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage",
+      "0.2.0",
+      false
+     ]
+    }
+   },
+   "mileage": {
+    "results": 9,
+    "best_rank_by_server": {
+     "expense-tracker": [
+      1,
+      "io.github.theluckystrike/expense-tracker-receipts-mileage",
+      "0.2.0",
+      false
+     ]
+    }
+   },
+   "office": {
+    "results": 40,
+    "best_rank_by_server": {
+     "office-suite": [
+      33,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+      "0.2.1",
+      false
+     ]
+    }
+   },
+   "suite": {
+    "results": 94,
+    "best_rank_by_server": {
+     "office-suite": [
+      78,
+      "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+      "0.2.1",
+      false
+     ]
+    }
+   },
+   "currency": {
+    "results": 19,
+    "best_rank_by_server": {
+     "currency": [
+      14,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "exchange": {
+    "results": 82,
+    "best_rank_by_server": {}
+   },
+   "ecb": {
+    "results": 36,
+    "best_rank_by_server": {
+     "currency": [
+      34,
+      "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "fx": {
+    "results": 87,
+    "best_rank_by_server": {}
+   },
+   "docx": {
+    "results": 23,
+    "best_rank_by_server": {
+     "docx": [
+      21,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "word": {
+    "results": 285,
+    "best_rank_by_server": {}
+   },
+   "proposal": {
+    "results": 5,
+    "best_rank_by_server": {
+     "docx": [
+      3,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "contract": {
+    "results": 97,
+    "best_rank_by_server": {
+     "docx": [
+      90,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "markdown": {
+    "results": 116,
+    "best_rank_by_server": {
+     "docx": [
+      112,
+      "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "timezone": {
+    "results": 15,
+    "best_rank_by_server": {
+     "timezone": [
+      13,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "meeting": {
+    "results": 15,
+    "best_rank_by_server": {
+     "timezone": [
+      10,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "slots": {
+    "results": 3,
+    "best_rank_by_server": {
+     "timezone": [
+      1,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "overlap": {
+    "results": 5,
+    "best_rank_by_server": {
+     "timezone": [
+      3,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "ics": {
+    "results": 910,
+    "best_rank_by_server": {
+     "timezone": [
+      857,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "world-clock": {
+    "results": 3,
+    "best_rank_by_server": {
+     "timezone": [
+      1,
+      "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+      "0.3.0",
+      true
+     ]
+    }
+   },
+   "resume": {
+    "results": 17,
+    "best_rank_by_server": {}
+   },
+   "cover-letter": {
+    "results": 0,
+    "best_rank_by_server": {}
+   }
+  }
  }
 }

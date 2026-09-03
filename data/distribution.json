@@ -39,7 +39,7 @@
     "awesome-mcp-servers": {
       "status": "blocked",
       "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13473",
-      "note": "PR 13473 open: 4 entries (Workplace & Productivity: time-tracker, spreadsheet; Finance & Fintech: invoice; E-Commerce: price-tracker)"
+      "note": "PR 13473 open: 4 entries (Workplace & Productivity: time-tracker, spreadsheet; Finance & Fintech: invoice; E-Commerce: price-tracker); as of 2026-09-03 CI applied labels missing-glama, valid-name, missing-emoji -- 2 bot comments (glama-check: must be listed+passing on Glama with a score badge per entry; emoji-check: each entry needs a permitted category emoji). Hard blocker: none of the 4 servers are on Glama at all yet"
     },
     "mcp.so": {
       "status": "skipped: paid",
