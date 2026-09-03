@@ -6,7 +6,7 @@
 
 export const COMPARE_INDEX = {
   title: "MCP server comparisons: ours against the closest alternatives",
-  description: "Eight honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
+  description: "Eleven honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
 };
 
 const t = (rows) =>
@@ -619,6 +619,289 @@ rather than a guess.</p>
       { q: "Which ones run without a network?", a: "Ours and timezone-toolkit run locally. meeting-mcp is a hosted endpoint, so every call is a request, and its listing prices calls at $0.01 through x402." },
       { q: "How does the slot ranking actually work?", a: "Each candidate is scored by the worst participant's distance from 13:00 in their own local time, in hours, and slots are sorted ascending. A fairness of 0 would be midday for everyone; under about 2 is comfortable. Three hours on a Warsaw and New York pair is the truth about that pair, not a ranking failure." },
       { q: "Where can I read the competitor facts myself?", a: "meeting-mcp publishes its tool list, transport and pricing on its Smithery registry entry; timezone-toolkit publishes its tool table, licence and dependencies on npm. Both were read on 2026-09-03 and the URLs are in docs/CONTENT_R3_RESULT.md." },
+    ],
+  },
+  resume: {
+    title: "MCP Resume and Cover Letter vs cv-forge and mcp-resume: which MCP server to pick",
+    description: "Word output and a letter that cannot invent a number, against a 14-tool PDF and email generator and a one-tool Chinese CV renderer that uploads the file.",
+    html: `<h1>MCP Resume and Cover Letter vs cv-forge and mcp-resume: which MCP server to pick</h1>
+<p>Three servers that turn stored facts into a job application, and then differ on almost everything
+else. <a href="https://www.npmjs.com/package/cv-forge">cv-forge</a> is the broadest: fourteen tools that
+parse a posting, write a CV in four formats, draft a cover letter and an email, and can do all of it in
+one call. <a href="https://www.npmjs.com/package/@tgapk/mcp-resume">@tgapk/mcp-resume</a> is one tool
+that renders a Chinese-language CV to PDF with bundled CJK fonts. Ours is narrower on purpose: one
+profile, Word output, and a letter that is checked against your facts before it is written.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["cv-forge", "@tgapk/mcp-resume"], body: [
+  ["Tools", "8 plus license_status and license_activate", "14, numbered in its README", "1: generate_resume"],
+  ["Transport", "stdio (npx or .mcpb bundle)", "stdio", "stdio"],
+  ["Account or API key needed", "No", "No. Its env vars are output formatting only", "No"],
+  ["Output format", ".docx, markdown, printable HTML", "PDF, HTML, markdown, text", "PDF"],
+  ["Where the files go", "Local disk, no network call at all", "Local disk, an outputPath per tool", "Rendered locally, then uploaded to a hosted URL by default"],
+  ["Cover letter", "Yes, fact-checked against the profile", "Yes, plus four email templates", "No"],
+  ["Licence", "MIT", "MIT", "ISC"],
+  ["Latest release read", "publish pending; .mcpb bundle and clone-and-build", "1.0.3, published 2025-10-27", "1.1.6, published 2025-12-09"],
+  ["Public source repository", "Yes", "Yes", "No. repository is null in the npm record"],
+  ["Cost", "Free tier, Pro $19 once", "Free", "Free"],
+] })}
+<p>Every row was read on 2026-09-03 from the npm registry record for that package and from the README in
+it. Download figures below are the last-month point from the npm downloads API for 2026-07-31 to
+2026-08-29. Neither competitor was installed or executed, so the tool counts are as documented.</p>
+
+<h2>When to pick cv-forge</h2>
+<p>Pick it when you want the whole application produced in one call and you are happy with PDF. Its
+<code>draft_complete_application</code> returns the CV, the cover letter and the email together, and
+<code>generate_email_template</code> writes four kinds of message, application, follow-up, inquiry and
+thank-you, extracting the recipient address and the hiring manager's name from the posting text. We
+have nothing that writes the covering email, and no plan to. It also emits PDF, HTML, markdown and text
+with configurable page size and margins, where our only PDF route is printing the HTML. It is MIT,
+needs no key, and ran 806 downloads in the month read. Two things to check before you commit: the last
+publish was 2025-10-27 across four versions, and although <code>docx</code> is listed as a dependency in
+its npm record, no DOCX tool is documented, so we could not confirm Word output is reachable.</p>
+
+<h2>When to pick @tgapk/mcp-resume</h2>
+<p>Pick it if you are writing a Chinese-language CV. It bundles NotoSerifCJK in regular and bold so the
+typesetting is correct, and it takes an <code>order</code> array to arrange education, experience,
+projects, skills and honours. That is real work we have not done: our document engine has no CJK font
+bundled. Be clear about the rest of it. There is one tool and no cover letter, the README, field labels
+and examples are Chinese only, output is PDF, and by default the generated file is <strong>uploaded</strong>
+to a hard-coded third-party endpoint on an <code>.icu</code> domain, which its own README tells you to
+replace with your own. There is no public repository to audit. It ran 114 downloads in the month read.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the output is a Word file somebody will edit, and when a letter that cannot overstate
+you is worth more than a letter written faster. The fact-integrity rule is enforced in code, not asked
+for in a prompt: every proof line in the letter is a verbatim bullet from your profile, a highlight the
+profile does not support is printed as a bracketed prompt rather than a claim, and every digit run is
+checked against the profile and your arguments before the file is written. A number that traces to
+neither returns an error and writes nothing. The job description is deliberately not an allowed source,
+so the employer's revenue and headcount never come back as yours. Proof lines are printed under the
+employer that actually holds them.</p>
+
+<h2>What we measured</h2>
+<p>Ten cover letters were generated against ten postings deliberately stuffed with figures: zero posting
+numbers reached a letter. Sixty JSON-RPC probes ran over five fresh data directories with no non-JSON
+line on stdout, and 26 of 26 automated tests pass. Five scenarios were then driven through the real
+Claude CLI with no tool names mentioned, scoring 14 of 15.</p>
+<p>That run also produced the useful surprise. With 300 experience bullets stored, a one-page request
+kept 78 and dropped 222, filling 390 words against a 392-word budget in 27 ms. With a realistic profile,
+the same request used 134 of a 361-word budget and dropped nothing, while coverage against the posting
+came back at 75% with a required keyword missing. Real profiles are too thin, not too fat, which is why
+<code>tailor_to_job</code> reports the gap rather than filling it.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add resume -- npx -y @theluckystrike/mcp-resume</code></pre>
+<p>cv-forge:</p>
+<pre><code>npm install -g cv-forge
+claude mcp add cv-forge -- cv-forge</code></pre>
+<p>@tgapk/mcp-resume:</p>
+<pre><code>claude mcp add resume-cn -- npx -y @tgapk/mcp-resume</code></pre>
+<p>Per client config paths for ours are on the <a href="/setup">setup pages</a>, the product page is
+<a href="/s/resume">MCP Resume and Cover Letter</a>, and the walkthrough is in
+<a href="/guides/resume-and-cover-letter-from-chat">writing a resume and cover letter from chat</a>.</p>`,
+    faq: [
+      { q: "Which of them writes a .docx?", a: "Ours does. cv-forge documents PDF, HTML, markdown and text tools; it lists docx as a dependency in its npm record but no DOCX tool appears in its README, so we could not confirm it. @tgapk/mcp-resume writes PDF only." },
+      { q: "Can any of them export a PDF directly?", a: "cv-forge and @tgapk/mcp-resume do. Ours does not, because every pure JavaScript route from Word to PDF needs a native dependency or a cloud API. resume_to_html writes HTML with a print stylesheet, so you print that to PDF." },
+      { q: "Does anything leave my machine?", a: "Not with ours: the server makes no network request of any kind, including for licence checks. cv-forge writes to a local outputPath. @tgapk/mcp-resume renders locally and then uploads the PDF to a hard-coded third-party endpoint unless you change it, which its own README tells you to do." },
+      { q: "Which has the most tools?", a: "cv-forge, with 14 documented against our 8 plus two licence tools and @tgapk/mcp-resume's single tool. Its email templates and one-call complete application are genuine capabilities we do not have." },
+      { q: "Where can I read the competitor facts myself?", a: "Every row comes from the package's npm registry record and the README inside it, read on 2026-09-03: registry.npmjs.org/cv-forge and registry.npmjs.org/@tgapk/mcp-resume. Download figures are the last-month point from api.npmjs.org for 2026-07-31 to 2026-08-29." },
+    ],
+  },
+
+  recurring: {
+    title: "MCP Recurring Invoices vs invovate-mcp-server and paddle-mcp: which MCP server to pick",
+    description: "Local retainer schedules that generate invoices you own, against a hosted PDF and UBL renderer and the official client for a merchant of record.",
+    html: `<h1>MCP Recurring Invoices vs invovate-mcp-server and paddle-mcp: which MCP server to pick</h1>
+<p>Start with the finding, because it shapes the page. Searching npm and the official MCP registry on
+2026-09-03 turned up no MCP server that keeps recurring billing schedules locally and generates invoices
+into a store you own. The invoice servers are one-shot document generators with no scheduling at all,
+and the subscription servers are clients for a vendor's billing platform. Those are the two sides of the
+gap, and the two honest comparisons.
+<a href="https://www.npmjs.com/package/invovate-mcp-server">invovate-mcp-server</a> renders one invoice
+at a time through a hosted API. <a href="https://www.npmjs.com/package/@paddle/paddle-mcp">@paddle/paddle-mcp</a>
+is Paddle's own server, and it does real subscription billing against a real payment rail.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["invovate-mcp-server", "@paddle/paddle-mcp"], body: [
+  ["Tools", "11 plus license_status and license_activate", "4", "Documented by name and grouped by resource; its README claims near parity with the Paddle API and states no total"],
+  ["Transport", "stdio (npx or .mcpb bundle)", "stdio, as a thin client over the hosted Invovate API", "stdio"],
+  ["Account or API key needed", "No. No account, no key", "Yes for anything that renders a file: INVOVATE_API_KEY, free signup", "Yes. A Paddle merchant account and PADDLE_API_KEY"],
+  ["Recurring schedules", "Yes. weekly, monthly, quarterly, yearly or every N days", "None", "Yes, as Paddle subscriptions"],
+  ["Where the data lives", "Local JSON, invoices in the invoice server's own store", "Invovate servers; hosted links expire and the invoice is deleted after 7 days", "The merchant's Paddle account"],
+  ["Money actually collected", "No. It produces the invoice and the PDF", "No", "Yes, Paddle is the payment rail"],
+  ["Licence", "MIT", "MIT", "Apache-2.0"],
+  ["Latest release read", "publish pending; .mcpb bundle and clone-and-build", "0.1.3, published 2026-06-07", "0.1.6, published 2026-04-15"],
+  ["Works with no network", "Yes, entirely", "No", "No"],
+] })}
+<p>Every row was read on 2026-09-03 from that package's npm registry record and the README inside it.
+Neither competitor was installed or executed.</p>
+
+<h2>When to pick invovate-mcp-server</h2>
+<p>Pick it when the invoice has to leave your language or your alphabet. It renders invoices in eleven
+languages, including right-to-left Arabic and Japanese, Hindi and Cyrillic scripts, and it emits UBL 2.1
+XML alongside the PDF, plus QR codes and shareable hosted links. We do none of that: our PDF is A4 in
+the currency and wording you set. Read two things in its README before you rely on it. The UBL export
+is explicitly not regulated e-invoicing, with no Peppol, Factur-X, ZUGFeRD or XRechnung compliance and
+no network delivery. And its npm description says no signup, which is true only of
+<code>calculate_invoice_totals</code> and <code>get_invoice_capabilities</code>: rendering a PDF or a
+UBL file needs the API key. Hosted links expire and the invoice is deleted after 7 days, though a
+<code>save_path</code> argument writes the file locally.</p>
+
+<h2>When to pick @paddle/paddle-mcp</h2>
+<p>Pick it if you sell a subscription and need the money to actually arrive. This is the official Paddle
+server, and nothing in our collection is in the same category: it manages products, prices, discounts
+and discount groups, customers, addresses and credit balances, subscription lifecycle, transactions and
+financial reports, against a live payment rail with Paddle acting as merchant of record. It also ships a
+<code>PADDLE_MCP_TOOLS=non-destructive</code> mode that hides the write tools, which is a good idea for
+an agent holding billing credentials. It is Apache-2.0 and free as a package; the account behind it is
+not, and we did not verify Paddle's fee schedule, so no rate is quoted here. Two caveats from its own
+README and record: Paddle Classic is not supported, only Paddle Billing, and it is still 0.x, last
+published 2026-04-15.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the retainer is an invoice rather than a subscription: you are not charging a card,
+you are sending a document with payment terms, and the only thing you keep forgetting is to send it. You
+define the schedule once and the invoices land in <a href="/s/invoice">the invoice server's</a> own
+store, in its number series, with its A4 PDF, its client list and its overdue report. There is no
+account, no key and no vendor. The whole thing works with the network off, and a client under NDA never
+appears on anybody's server.</p>
+
+<h2>What we measured</h2>
+<p>Two design decisions here are worth more than a feature list.</p>
+<p><strong>The idempotency key is the period.</strong> History rows are keyed on the schedule id plus the
+occurrence date, not on a timestamp and not on the day the run happened. In the worked run, the first
+call on 3 September created 4 invoices totalling EUR 4,320.00 and the second call five minutes later
+created 0 and skipped 4. Because the key is the period, a repeated billing run is a no-op, and deleting
+a schedule keeps its history so a re-created one cannot double-bill.</p>
+<p><strong>A run is capped at 60 invoices, and the cap was measured into existence.</strong> Before it
+existed, a schedule starting 1900-01-01 offered 1,520 due periods, and one call with a mistyped
+<code>as_of</code> year created 1,193 real invoices and 1,193 PDFs, 6.0 MB in 6.8 seconds, burning 1,193
+numbers out of a series that never reuses one. The run now bills the oldest periods first, stops at 60
+and says how many remain.</p>
+<p>The month step is the third: it keeps the start date's day of month and clamps it to the target
+month's length without carrying the clamp forward, so a 31st retainer bills on 28 February and returns
+to 31 March instead of moving permanently to the 28th.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add recurring -- npx -y @theluckystrike/mcp-recurring
+claude mcp add invoice   -- npx -y @theluckystrike/mcp-invoice</code></pre>
+<p>invovate-mcp-server:</p>
+<pre><code>claude mcp add invovate -e INVOVATE_API_KEY=inv_your-key -- npx -y invovate-mcp-server</code></pre>
+<p>@paddle/paddle-mcp:</p>
+<pre><code>claude mcp add paddle -e PADDLE_API_KEY=your-key -e PADDLE_ENVIRONMENT=sandbox -- npx -y @paddle/paddle-mcp</code></pre>
+<p>Per client config paths for ours are on the <a href="/setup">setup pages</a>, the product page is
+<a href="/s/recurring">MCP Recurring Invoices</a>, and the walkthrough is in
+<a href="/guides/recurring-invoices-on-a-schedule">billing a retainer on a schedule</a>.</p>`,
+    faq: [
+      { q: "Is there another MCP server that does local recurring invoicing?", a: "None was found on npm or in the official MCP registry on 2026-09-03. The invoice servers we checked generate one document per call with no scheduling, and the subscription servers are clients for a vendor's billing platform. If you know of one, mail support@zovo.one and this page will say so." },
+      { q: "Does any of them take the payment?", a: "Only Paddle, which is the point of it: it is a live payment rail with Paddle as merchant of record. Ours produces the invoice record and the PDF; collecting and chasing are yours, and overdue_report in the invoice server lists who is late. invovate-mcp-server renders documents and does not collect either." },
+      { q: "What do the accounts cost?", a: "Ours needs none. invovate-mcp-server needs a free Invovate account for PDF and UBL rendering; no paid tier is documented in its README, and we did not verify whether one exists. Paddle's package is free and Apache-2.0, but it needs a Paddle merchant account, whose fee schedule we did not verify and therefore do not quote." },
+      { q: "Where do my invoices live?", a: "With ours, in plain JSON under your home directory, in the invoice server's data directory with the PDFs beside them. Invovate renders on its own servers and deletes the hosted invoice after 7 days, though save_path writes a local copy. With Paddle, everything is in your Paddle account." },
+      { q: "Where can I read the competitor facts myself?", a: "Every row comes from the package's npm registry record and the README inside it, read on 2026-09-03: registry.npmjs.org/invovate-mcp-server and registry.npmjs.org/@paddle/paddle-mcp. Neither was installed, so the tool lists are as documented." },
+    ],
+  },
+
+  clauses: {
+    title: "MCP Clause Library vs OpenAgreements and dingdawg-legal-agent: which MCP server to pick",
+    description: "A searchable clause library assembled into Word, against a catalogue of real standard forms with source licences, and a paid contract review service.",
+    html: `<h1>MCP Clause Library vs OpenAgreements and dingdawg-legal-agent: which MCP server to pick</h1>
+<p>Three servers that a freelancer might reach for when a contract is due, doing three different jobs.
+<a href="https://www.npmjs.com/package/@open-agreements/contract-templates-mcp">@open-agreements/contract-templates-mcp</a>
+fills real, named standard forms: the Common Paper set, the four Y Combinator SAFEs and seven NVCA
+venture financing documents. <a href="https://www.npmjs.com/package/dingdawg-legal-agent">dingdawg-legal-agent</a>
+reads a contract somebody sent you and scores it. Ours keeps the paragraphs you reuse as searchable
+clauses and assembles a document out of the ones you pick.</p>
+<p>None of the three is legal advice, and ours says so on every document it writes.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["OpenAgreements", "dingdawg-legal-agent"], body: [
+  ["Tools", "10 plus license_status and license_activate", "3: list_templates, get_template, fill_template", "4: review_contract, legal_research, draft_clause, compliance_checklist"],
+  ["Transport", "stdio (npx or .mcpb bundle)", "stdio, plus a hosted endpoint at openagreements.org/api/mcp", "stdio, backed by a remote API"],
+  ["Account or API key needed", "No", "None documented, for either the local or the hosted mode", "Yes, DINGDAWG_API_KEY"],
+  ["What it holds", "Your own clauses plus 25 generic starters, searchable", "Named upstream standard forms with source and licence metadata", "Nothing. It analyses text you send it"],
+  ["Clause-level search", "Yes, ranked over titles, tags, categories and bodies", "No. Whole forms only", "No"],
+  ["Document output", ".docx or markdown", ".docx", "None documented"],
+  ["Where the text goes", "Your disk. No network call at all", "Local stdio stays on your machine; hosted mode does not store filled documents", "Sent to dingdawg.com for analysis"],
+  ["Licence", "MIT", "Apache-2.0 for the code; each template's content is licensed separately", "BUSL-1.1, not an open source licence"],
+  ["Latest release read", "publish pending; .mcpb bundle and clone-and-build", "0.9.0, published 2026-08-28", "2.0.12, published 2026-07-15"],
+  ["Cost", "Free tier, Pro $19 once", "Free", "Free tier of 10 reviews a day; Pro $49 a month; $0.25 a call pay as you go"],
+] })}
+<p>Every row was read on 2026-09-03 from that project's npm registry record, the README inside it, or
+its published documentation. Neither competitor was installed or executed.</p>
+
+<h2>When to pick OpenAgreements</h2>
+<p>Pick it when you need a real standard form rather than a paragraph. This is the strongest competitor
+on this site and it deserves a plain description: its catalogue is upstream-authoritative documents with
+their source and licence recorded, including the Common Paper mutual NDA, cloud service agreements with
+and without an SLA and an AI variant, order forms, design partner and pilot agreements, the four YC
+SAFEs and seven NVCA venture financing documents. Around them sit jurisdiction guides citing primary
+law, 650 verbatim case excerpts linked to CourtListener, review checklists, installable agent skills, a
+Gemini CLI extension and a Cursor plugin manifest. It renders DOCX exactly as we do, it is Apache-2.0,
+it is actively published, and its CLI ran 7,391 downloads in the month read against 470 for the MCP
+package. If you are signing an NDA or raising on a SAFE, use it rather than us.</p>
+<p>Two facts bound it. It has three tools and no clause-level search: it fills a whole form, it does not
+assemble a document from a library you maintain. And its legal guidance is United States only. Note also
+that the NVCA templates are not redistributed; for those it publishes transformation instructions rather
+than the source file, so some workflows download the official document at runtime, which its own privacy
+note states.</p>
+
+<h2>When to pick dingdawg-legal-agent</h2>
+<p>Pick it for the opposite direction of travel: the contract arrived and you want to know what is wrong
+with it. It scores clause-level risk against specific sections, flags provisions that are missing,
+identifies termination, confidentiality, governing law, force majeure and liability limitation clauses,
+returns statute and case law citations with jurisdiction references, and emits a governance receipt per
+call. We do none of that and are not attempting it. Price it before you install: the free tier is 10
+reviews a day with basic analysis only, where <code>draft_clause</code> is template based and
+<code>legal_research</code> is topic classification only; Pro is $49 a month for 100 calls a day, or
+$0.25 a call pay as you go. Your contract text is sent to the vendor for analysis, and the package is
+BUSL-1.1, which is not an open source licence.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when your terms have already diverged from a generic form. After a few years the clauses
+that matter are yours: the revision count you allow, the late fee you actually charge, the kill fee, the
+jurisdiction you work in. A form filler cannot hold those and a review service cannot write them. This
+server keeps them as clauses with <code>{{variables}}</code>, ranks a search over titles, tags,
+categories and bodies so a title match beats a body mention, and assembles the ones you pick into a
+numbered document. Twenty-five generic freelance starters across eleven categories are there to be
+edited or deleted, and a deleted starter is not re-seeded. Everything stays on your machine and the
+server makes no network call at all.</p>
+
+<h2>What we measured</h2>
+<p><code>variables_list</code> is the tool that makes this work: give it the clauses you picked and it
+returns every variable they need and which clause needs it, before the document exists. Variables are
+read in first-appearance order, declared ones first and then any the body uses without declaring, so a
+clause written in a hurry reports what it actually needs.</p>
+<p>A variable you do not supply is never left as raw braces, never blanked and never guessed. It is
+printed as a visible bracketed prompt in the document, and the response returns the real names in
+<code>unfilled</code>. The prompt prints with spaces for a measured reason: the shared document engine
+parses inline markdown, so <code>[late_fee_percent]</code> reaches Word as
+<code>[latefeepercent]</code>, because the underscore pair is read as an italic marker and dropped along
+with the word boundaries. That defect throws no error and does not look wrong enough to catch by eye.</p>
+<p>The disclaimer is a constant in the source, prepended to the .docx, to the markdown and returned in
+the tool's own JSON response, so choosing a different output format cannot lose it. It reads: generic
+template, not legal advice, have a qualified lawyer review this document before you sign it. No clause
+here has been reviewed by a lawyer in any jurisdiction.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add clauses -- npx -y @theluckystrike/mcp-clauses</code></pre>
+<p>OpenAgreements, local or hosted:</p>
+<pre><code>claude mcp add open-agreements -- npx -y @open-agreements/contract-templates-mcp
+claude mcp add --transport http open-agreements https://openagreements.org/api/mcp</code></pre>
+<p>dingdawg-legal-agent:</p>
+<pre><code>claude mcp add legal -e DINGDAWG_API_KEY=your-key -- npx -y dingdawg-legal-agent</code></pre>
+<p>Per client config paths for ours are on the <a href="/setup">setup pages</a>, the product page is
+<a href="/s/clauses">MCP Clause Library</a>, and the walkthrough is in
+<a href="/guides/contract-clauses-library-assembly">assembling a contract from your own clause library</a>.</p>`,
+    faq: [
+      { q: "Is any of this legal advice?", a: "No. Our 25 starter clauses are generic freelance templates, not drafted for your country, your trade or your deal, and no clause has been reviewed by a lawyer. Every assembled document opens with a line saying so. OpenAgreements publishes real standard forms with their sources; dingdawg-legal-agent is an analysis service. Take any of their output to a qualified lawyer." },
+      { q: "Which one should I use for an NDA or a SAFE?", a: "OpenAgreements. It carries the Common Paper mutual NDA and the four Y Combinator SAFEs as upstream-authoritative forms with their licences recorded, which is a different and better thing than a generic clause somebody wrote. Ours is for the terms that are specific to you." },
+      { q: "Does my contract text leave my machine?", a: "Not with ours: every clause and every assembled document stays in your data directory and the server makes no network call at all. OpenAgreements says local stdio stays on your machine and its hosted mode does not store filled documents, with some field-selector workflows downloading an official source document at runtime. dingdawg-legal-agent sends the contract to its own service for analysis." },
+      { q: "What do they cost?", a: "OpenAgreements is free and Apache-2.0. dingdawg-legal-agent has a free tier of 10 reviews a day with basic analysis only; Pro is $49 a month for 100 calls a day and pay as you go is $0.25 a call. Ours has a free tier and a one-time $19 Pro key with no subscription." },
+      { q: "Where can I read the competitor facts myself?", a: "Every row comes from the npm registry record and README for @open-agreements/contract-templates-mcp and dingdawg-legal-agent, plus the OpenAgreements documentation at github.com/open-agreements/open-agreements, all read on 2026-09-03. Neither was installed, so the tool lists are as documented." },
     ],
   },
 };

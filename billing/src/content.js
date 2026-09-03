@@ -810,9 +810,342 @@ ${FOOT}`,
       { q: "Why does the ics file have no VTIMEZONE block?", a: "Because a hand-written VTIMEZONE with stale DST rules is the common way an invite arrives an hour off. The file carries UTC times instead, which every calendar client resolves against its own current rules." },
     ],
   },
+  "resume-and-cover-letter-from-chat": {
+    title: "Write a resume and a cover letter from chat, without inventing anything",
+    description: "One stored profile, a resume trimmed to the page, and a letter whose every proof line is a bullet you wrote. Measured: 0 of 10 postings leaked a number.",
+    html: `<h1>Write a resume and a cover letter from chat, without inventing anything</h1>
+<p>An assistant will happily write you a cover letter. The problem is not the prose, it is that the
+prose contains claims. Ask for a letter for a payments role and you get a sentence about scaling a
+platform to a throughput figure that appears nowhere in your career, because the figure was in the job
+posting. MCP Resume and Cover Letter exists to make that impossible: you store your facts once, and
+every output is assembled from those facts and nothing else.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add resume -- npx -y @theluckystrike/mcp-resume</code></pre>
+<p>Cursor and Claude Desktop take the same server as a config block:</p>
+<pre><code>{
+  "mcpServers": {
+    "resume": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-resume"]
+    }
+  }
+}</code></pre>
+<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
+release or a clone and build. Per client paths are on the
+<a href="/setup/claude-code/resume">setup pages</a>. The document engine is shared with
+<a href="/s/docx">MCP Docx</a> rather than duplicated, so a clone build lists both.</p>
+
+<h2>Store the profile once</h2>
+<p><code>profile_set</code> takes name, email, phone, location, links, a summary, skills, roles with
+their bullets, education, certifications and languages. You can dictate it in one message, or point
+<code>resume_read</code> at a <code>.docx</code> you already have and let it read the sections back into
+the profile shape. Nothing is saved from a read unless you pass <code>save: true</code>, and a role it
+could not parse lands in <code>unparsed</code> rather than being dropped quietly.</p>
+
+<h2>The measured surprise: profiles are too thin, not too fat</h2>
+<p>The obvious worry about a resume generator is that it will not fit. It was probed from both ends.
+With 300 experience bullets stored, a one-page request kept 78 and dropped 222, filling 390 words
+against a 392-word budget, in 27 ms. That is the case everybody designs for.</p>
+<p>The case that actually happens looked different. Driving the server with the real Claude CLI against
+a realistic profile, a one-page modern resume targeting a senior backend role used <strong>134 of a
+361-word budget</strong> and dropped <strong>zero</strong> bullets. The trimmer never engaged. Against
+the posting in the same session, coverage came back at 75%, with a required keyword missing entirely.</p>
+<p>So the constraint on a real application is not space, it is evidence. The tool that earns its place
+is <code>tailor_to_job</code>, which returns the keywords the posting asks for, the ones your profile
+already supports, the ones it does not, and a coverage figure. Missing keywords never become skills,
+and the response says so in plain words. The right response to 75% is to add a true fact to your
+profile, not to let something add a false one to your resume.</p>
+
+<h2>The fact-integrity rule</h2>
+<p>This is enforced in code rather than asked for in a prompt, and it has five parts.</p>
+<p><strong>Every proof line is a verbatim bullet.</strong> The letter quotes what you wrote. It never
+paraphrases a bullet into a stronger claim.</p>
+<p><strong>A highlight you pass is checked first.</strong> If your profile does not support it, it is
+printed as a bracketed prompt saying so, not as a claim.</p>
+<p><strong>Every digit run is checked before the file is written.</strong> A number that traces neither
+to your profile nor to the arguments you passed is a refusal: the tool returns an error and writes
+nothing. The job description is deliberately not an allowed source, because the employer's revenue and
+headcount are theirs, not yours. Comparison is on whole numbers, so a profile holding
+<code>2012</code> does not license a letter claiming <code>12</code>. Ten letters were generated against
+ten postings stuffed with figures: zero posting numbers reached a letter.</p>
+<p><strong>Proof lines are printed under the role that holds them.</strong> An audit caught the opposite
+behaviour and it was the worst defect found in this server: every ranked bullet was printed under the
+most recent employer's heading, so work done at a previous job read as work done at the current one.
+That is a fabricated fact from the one tool whose entire promise is that it fabricates none. The letter
+now emits one heading per employer it quotes.</p>
+<p><strong>A bullet with no figure asks you for one.</strong> It gets <code>[add: metric]</code>
+appended rather than a guessed result. The response lists every bracketed prompt in
+<code>fills_required</code>, so the letter tells you what it is short of instead of covering it.</p>
+
+<h2>How the page budget works</h2>
+<p>There is no page-layout engine in pure JavaScript and this server does not pretend to have one. It
+uses a word budget: a full A4 page at 11pt with 2cm margins holds about 520 words of body text, and a
+resume spends roughly a seventh of the page on headings, blank lines and the contact block, which gives
+450 words per page, or 540 in the <code>compact</code> style. Contact block, summary, skills, role
+headers, education, certifications and languages are counted first; the remainder goes to experience
+bullets, highest score first. Every role keeps its first bullet before any role gets a second, so
+trimming never leaves a job on the page with nothing under it. The response reports the budget, the
+words used, the estimated pages and every bullet dropped, so you see the decision rather than discover
+it in Word.</p>
+
+<h2>Keywords that are two characters long</h2>
+<p>The keyword extractor used to delete every token under three characters as noise, which is correct
+until the token is <code>Go</code>, <code>R</code>, <code>C#</code>, <code>ML</code> or <code>UI</code>.
+Ties used to break by length, so <code>everywhere</code> outranked <code>kafka</code>. Both are fixed:
+short skills are kept, a known skill outranks a longer word of the same frequency, and matching is on
+word boundaries, so <code>go</code> does not match <code>Google</code>.</p>
+
+<h2>There is no resume_to_pdf</h2>
+<p>Every pure JavaScript route from Word to PDF needs a native dependency, a headless browser or a cloud
+API, and this collection ships none of them. <code>resume_to_html</code> writes semantic HTML with a
+print stylesheet: open it and print to PDF. <code>resume_to_markdown</code> covers the application form
+that wants plain text in a box.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free covers the profile, the <code>modern</code> style, markdown and HTML export without limit, three
+cover letters per calendar month, and tailoring against postings up to 2,000 characters. Pro ($19 once)
+adds all three styles, unlimited letters and tailoring, named profile variants and your own accent
+colour. Product page: <a href="/s/resume">MCP Resume and Cover Letter</a>. Side by side with the
+alternatives: <a href="/compare/resume">resume comparison</a>. Everything runs locally: your employment
+history makes no network request, including for licence checks.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can it write a cover letter about something not in my profile?", a: "No, and it fails loudly rather than quietly. Every digit run in the letter is checked against your profile and the arguments you passed before the file is written; a number that traces to neither returns an error and writes nothing. A highlight the profile does not support is printed as a bracketed prompt, not as a claim." },
+      { q: "Does the job posting count as a source of facts?", a: "Deliberately not. The employer's revenue, headcount and throughput figures are theirs. Ten letters were generated against ten postings full of numbers and none of those numbers reached a letter." },
+      { q: "What happens if I have too much experience for one page?", a: "Bullets are ranked by keyword hits and recency and trimmed against a word budget of 450 words per page, 540 in compact style. Every role keeps its first bullet before any role gets a second, and the response names every bullet it dropped. With 300 bullets stored, a one-page request kept 78." },
+      { q: "Can it export a PDF?", a: "No. Every pure JavaScript route from Word to PDF needs a native dependency or a cloud API, and this collection ships neither. resume_to_html writes HTML with a print stylesheet, so you open it and print to PDF, and resume_to_markdown covers plain-text application boxes." },
+      { q: "Does my CV leave my machine?", a: "No. The server reads and writes files on your computer, stores the profile under your data directory, and makes no network request of any kind. Pro keys are Ed25519 signatures verified locally, so even activation is offline." },
+    ],
+  },
+
+  "recurring-invoices-on-a-schedule": {
+    title: "Bill a retainer on a schedule without a billing SaaS",
+    description: "Define the schedule once, generate the invoices that fell due, and run it twice safely. Month-end clamping, the idempotency key and the 60-invoice cap.",
+    html: `<h1>Bill a retainer on a schedule without a billing SaaS</h1>
+<p>A retainer is the easiest money to invoice and the easiest to forget. The amount does not change, the
+date does not move, and that is exactly why nobody notices when a month goes unbilled. MCP Recurring
+Invoices holds the schedule so you do not have to: client, line items, cadence, start date, terms. When
+you ask, it creates the invoices that have actually fallen due as real records in
+<a href="/s/invoice">the invoice server</a>, with its number series, its client list and its A4 PDF.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add recurring -- npx -y @theluckystrike/mcp-recurring</code></pre>
+<pre><code>{
+  "mcpServers": {
+    "recurring": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-recurring"]
+    }
+  }
+}</code></pre>
+<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
+release or a clone and build; build <code>servers/invoice</code> first, because the engine is imported
+from it. Per client paths are on the <a href="/setup/claude-code/recurring">setup pages</a>. Install the
+invoice server too: this one has no <code>business_set</code> of its own on purpose, so there is exactly
+one issuer profile to keep correct.</p>
+
+<h2>One schedule, then nothing</h2>
+<pre><code>schedule_create {
+  client: "Acme Retainer", currency: "EUR", every: "monthly",
+  start_date: "2026-06-01", due_days: 14,
+  items: [{ description: "Retainer hours", quantity: 12, unit_price: 90 }]
+}
+-> schedule 9f2c1a04, next dates 2026-06-01, 2026-07-01, 2026-08-01, 2026-09-01</code></pre>
+<p>Cadences are <code>weekly</code>, <code>monthly</code>, <code>quarterly</code>, <code>yearly</code> or
+<code>{days: n}</code>. Occurrence 0 is the start date itself, so a schedule starting today is due
+today. <code>end_date</code> is inclusive: an occurrence landing exactly on it is generated and the next
+one is not.</p>
+
+<h2>The month-end rule</h2>
+<p>This is the part a naive date library gets wrong, and getting it wrong changes a client's payment
+date permanently. The month step keeps the day of month of the start date and clamps it to the length of
+the target month, and it <strong>never carries the clamp forward</strong>. From
+<code>2026-01-31</code> the series is 01-31, <strong>02-28</strong>, 03-31, 04-30, 05-31.</p>
+<p>The naive version adds one month to 31 January, lands on 28 February, and then adds one month to that,
+so March becomes the 28th and every month after it does too. February silently turns a month-end
+retainer into a 28th-of-the-month retainer, and nobody reads the invoice date closely enough to catch
+it. The same rule makes a yearly schedule starting <code>2028-02-29</code> fall on 02-28 in common years
+and back on <strong>02-29</strong> in the next leap year, because the anchor day is 29 throughout.</p>
+<p>On Pro, <code>anchor_day</code> replaces the day of month before clamping, so
+<code>anchor_day: 31</code> means the last day of every month regardless of what the start date was, and
+<code>end_of_month: true</code> says the same thing explicitly. Both are ignored for
+<code>weekly</code> and <code>{days: n}</code>, which have no month to anchor to. An anchored first
+occurrence that would land before the start date is dropped rather than billed early.</p>
+
+<h2>The idempotency key is the period, not the day</h2>
+<p>Here is the run that matters. On 3 September, against the schedule above:</p>
+<pre><code>invoice_generate_due {}
+-> as_of 2026-09-03: created 4 invoices, skipped 0 already invoiced.
+   INV-2026-0001  period 2026-06-01  EUR 1080.00  due 2026-06-15
+   INV-2026-0002  period 2026-07-01  EUR 1080.00  due 2026-07-15
+   INV-2026-0003  period 2026-08-01  EUR 1080.00  due 2026-08-15
+   INV-2026-0004  period 2026-09-01  EUR 1080.00  due 2026-09-15
+   Total: EUR 4320.00
+
+invoice_generate_due {}      # five minutes later, having forgotten
+-> as_of 2026-09-03: created 0 invoices, skipped 4 already invoiced.</code></pre>
+<p>The second call is the whole design. The key written to the history is
+<code>(schedule_id, period)</code>, not a timestamp and not the calendar day the run happened on. That
+choice is what makes a billing run safe to repeat, safe to run from two clients, and safe to run after
+a crash halfway through. Key it on the run date instead and a second run on a different day re-bills
+everything; key it on the day and a run at 23:59 followed by one at 00:01 does the same. Because the
+period is the key, "did I already bill September" is a question the data answers rather than one you
+have to remember, and <code>dry_run</code> shows you the run before it happens.</p>
+<p>The same key survives deletion. Deleting a schedule keeps its history rows deliberately, so a
+re-created schedule cannot double-bill a period that was already invoiced, and the tool warns when a new
+schedule's periods were covered by an old one.</p>
+
+<h2>Why a run is capped at 60 invoices</h2>
+<p>A mistyped year is an ordinary typo. Before the cap existed, a schedule starting 1900-01-01 offered
+1,520 due periods, and one call with <code>as_of: "2126-01-01"</code> on a plain monthly schedule
+created <strong>1,193 real invoices and 1,193 PDFs, 6.0 MB in 6.8 seconds</strong>, burning 1,193
+numbers out of the shared invoice number series. Numbers are never reused, so that damage is permanent
+in the sequence a tax authority reads. A run now stops at 60, oldest periods first, and the answer says
+how many are still due. Idempotency is untouched by the cap, because the key is still the period: another
+call simply continues.</p>
+
+<h2>Two locks, always in the same order</h2>
+<p>Anything that writes an invoice takes the recurring lock first and the invoice lock second, always in
+that order, so a billing run and a hand-written invoice in the other server cannot interleave, cannot
+allocate the same number and cannot deadlock. Numbers are allocated inside the lock and the PDFs are
+rendered after it is released, so a slow render never holds up the counter.</p>
+<p>One more thing worth knowing: if <code>schedules.json</code> or <code>history.json</code> is
+unreadable, it is never treated as empty. The file is moved aside byte for byte, a marker is written and
+every tool fails loudly until you restore it. A history file read as empty would re-bill every period
+the schedule has ever covered, which is the worst failure this server could have.</p>
+
+<h2>What it does not do</h2>
+<p>Nothing runs in the background. This is a stdio MCP server: it exists while your client runs it.
+There is no daemon, no cron and no email, so invoices appear when you ask for them, typically through
+the <code>monthly_billing_run</code> prompt. Delivering the invoice and chasing payment are still yours;
+<code>overdue_report</code> in the invoice server tells you who to chase. There is no proration, no
+mid-period cancellation credit and no currency conversion.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free gives 3 active schedules, unlimited generation, a 30 day upcoming view and a 3 month forecast.
+Pro ($19 once) gives unlimited schedules, a 10 year horizon, a 120 month forecast, the
+<code>schedule_history</code> audit log and the anchor day and end of month rules. Product page:
+<a href="/s/recurring">MCP Recurring Invoices</a>. Side by side with the alternatives:
+<a href="/compare/recurring">recurring billing comparison</a>. The one-sentence invoice for everything
+that is not on a retainer is in <a href="/guides/invoice-pdf-from-chat">the invoice guide</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "What happens if I run the billing twice?", a: "Nothing the second time. The history key is the schedule id plus the period, not the run date, so a repeated run reports created 0, skipped 4. That is what makes it safe to run from two clients, after a crash, or when you cannot remember whether you already did it." },
+      { q: "My retainer bills on the 31st. What happens in February?", a: "It bills on 28 February, then back on 31 March. The month step keeps the start date's day of month and clamps it to the target month's length without carrying the clamp forward, so February does not permanently move a month-end retainer to the 28th." },
+      { q: "Does it send the invoice to my client?", a: "No. It creates the invoice record and renders the PDF into the invoice server's store. Delivery and chasing are yours; overdue_report in the invoice server lists who is late." },
+      { q: "Where do the generated invoices go?", a: "Into the invoice server's own data directory, with the PDFs in its pdf subfolder, so they appear in invoice_list, count in overdue_report and can be re-rendered with invoice_pdf. Both servers must see the same XDG_DATA_HOME or you end up with two stores." },
+      { q: "Can one call create hundreds of invoices by accident?", a: "Not any more. A run is capped at 60 periods, oldest first, and says how many remain. Before the cap, one call with a mistyped as_of year created 1,193 invoices and PDFs and burned 1,193 numbers out of a series that never reuses one." },
+    ],
+  },
+
+  "contract-clauses-library-assembly": {
+    title: "Assemble a contract from your own clause library, in chat",
+    description: "Twenty-five starter freelance clauses with variables, ranked search, and an assembled Word file whose unfinished facts are visible. Not legal advice.",
+    html: `<h1>Assemble a contract from your own clause library, in chat</h1>
+<p>The way most freelancers write a contract is to open last year's signed one, save a copy, and change
+every name. It works until the third find-and-replace, when a paragraph keeps the previous client's
+jurisdiction and nobody notices for a year. MCP Clause Library replaces the copy with a library: the
+paragraphs you reuse, kept as clauses with <code>{{variables}}</code> in them, searched, filled and
+assembled into a numbered document.</p>
+
+<h2>This is not legal advice</h2>
+<p>Stated first because it decides how you should use the rest of the page. The 25 starter clauses are
+generic freelance templates in plain language. They are not drafted for your country, your trade or your
+deal, and no clause here has been reviewed by a lawyer. Every starter carries the note that it is a
+generic template, and every document <code>contract_assemble</code> writes opens with the line: generic
+template, not legal advice, have a qualified lawyer review this document before you sign it. That
+sentence is a constant in the source, prepended to the <code>.docx</code> and to the markdown and
+returned in the tool's own JSON response, so it cannot be lost by choosing a different output format.
+Treat what comes out as the draft you take to a lawyer, not the contract you send to a client.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add clauses -- npx -y @theluckystrike/mcp-clauses</code></pre>
+<pre><code>{
+  "mcpServers": {
+    "clauses": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-clauses"]
+    }
+  }
+}</code></pre>
+<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
+release or a clone and build. Per client paths are on the
+<a href="/setup/cursor/clauses">setup pages</a>. The document engine is shared with
+<a href="/s/docx">MCP Docx</a>, so a clone build lists both.</p>
+
+<h2>What ships in the box</h2>
+<p>Twenty-five starter clauses across eleven categories, in assembly order: scope (scope of work,
+revisions, acceptance of deliverables, change requests), payment (payment terms, late payment, kill fee,
+rush fee), expenses, IP (assignment, portfolio and credit), confidentiality, data protection, term,
+liability, warranty, disputes, and eight general clauses covering governing law, force majeure,
+independent contractor status, non-solicitation, notices, entire agreement, severability and assignment.
+<code>clause_add</code> puts your own next to them, and a deleted starter is not re-seeded on the next
+call, so pruning the set to the ones you actually use is permanent.</p>
+
+<h2>Variables are the whole mechanism</h2>
+<p>A clause body holds placeholders such as <code>{{client}}</code>, <code>{{contractor}}</code>,
+<code>{{project}}</code>, <code>{{fee}}</code>, <code>{{currency}}</code>,
+<code>{{payment_days}}</code>, <code>{{deposit_percent}}</code>, <code>{{late_fee_percent}}</code>,
+<code>{{liability_cap}}</code>, <code>{{notice_days}}</code>, <code>{{revision_rounds}}</code>,
+<code>{{acceptance_days}}</code>, <code>{{kill_fee_percent}}</code>,
+<code>{{rush_fee_percent}}</code> and <code>{{jurisdiction}}</code>.</p>
+<p>The tool that makes this usable is <code>variables_list</code>, which takes the clauses you picked and
+returns every variable they need and which clause needs it, <em>before</em> you assemble anything. That
+is the difference between filling in a form you can see and discovering a blank in Word. Variables are
+read in first-appearance order, declared ones first and then any the body uses without declaring, so a
+clause you wrote in a hurry still reports what it actually needs rather than what it claims to.</p>
+<pre><code>variables_list { clause_ids: ["scope-of-work", "payment-terms", "late-payment",
+                              "intellectual-property-assignment", "governing-law"] }
+-> client, contractor, project, fee, currency, payment_days,
+   late_fee_percent, jurisdiction</code></pre>
+
+<h2>A missing fact is printed, never guessed</h2>
+<p>Assemble with the values you have and the rest are not left as raw <code>{{braces}}</code>, not
+blanked, and not invented. They come back as a visible bracketed prompt in the document text, such as
+<code>[late fee percent]</code>, and the response also returns the real names in
+<code>unfilled</code>. The document you open is therefore readable by a human as a document, with the
+unfinished parts obvious at a glance, while the machine-readable list of what is missing stays exact.</p>
+<p>The prompt is printed with spaces rather than underscores for a measured reason. The shared document
+engine parses inline markdown, so <code>[late_fee_percent]</code> reaches Word as
+<code>[latefeepercent]</code>: the pair of underscores is read as an italic marker and dropped, taking
+the word boundaries with it. Printing the prompt with spaces is both safe for the writer and easier for
+a person to fill in, and <code>unfilled</code> keeps the underscored names for anything programmatic.
+This is the sort of defect that never throws an error and never looks wrong enough to catch by eye.</p>
+
+<h2>Search, assemble, export</h2>
+<p><code>clause_search</code> ranks over titles, tags, categories and bodies, and a title match outranks
+a body mention, so "late payment" finds the late payment clause rather than every clause that mentions
+paying late. <code>contract_assemble</code> takes clause ids or whole categories, orders them by
+category rank, numbers them, fills the variables, brackets what is missing, prepends the disclaimer and
+writes <code>.docx</code> or markdown.</p>
+<p>Assembling to markdown first is worth the extra call: it is the version you can read line by line in
+an editor, and the <code>.docx</code> is the version you send. <code>clause_export</code> writes the
+whole library to markdown on the free tier, which means the terms you reuse can live in a repository and
+be diffed like anything else you maintain, rather than existing only inside one machine's data
+directory. <code>clause_import</code> reads the same markdown shape back.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free gives the 25 starters plus 10 clauses of your own, ranked search and category filtering, up to 8
+clauses per assembled document, and markdown import and export. Pro ($19 once) gives unlimited clauses,
+jurisdiction and tag filters, JSON import and export, unlimited clauses per document and version history
+on <code>clause_update</code>. Everything stays on your machine and the server makes no network call at
+all. Product page: <a href="/s/clauses">MCP Clause Library</a>. Side by side with the alternatives:
+<a href="/compare/clauses">clause library comparison</a>. The clause you agreed on payment terms is the
+term you bill on: see <a href="/guides/recurring-invoices-on-a-schedule">recurring invoices</a> and
+<a href="/guides/word-documents-proposals-from-chat">Word proposals and contracts</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Are these clauses safe to sign?", a: "No. They are generic freelance templates in plain language, not drafted for your country, your trade or your deal, and no clause has been reviewed by a lawyer. Every assembled document opens with a line saying it is a generic template and not legal advice. Take the output to a qualified lawyer." },
+      { q: "What happens to a variable I do not fill in?", a: "It is printed in the document as a visible bracketed prompt such as [late fee percent], never blanked and never guessed, and the response returns the exact names in unfilled. Run variables_list on your selection first and the document tells you what it needs before it exists." },
+      { q: "Why does the bracketed prompt use spaces instead of underscores?", a: "Because the shared document engine parses inline markdown, so [late_fee_percent] reaches Word as [latefeepercent]: the underscore pair is read as an italic marker and dropped. The printed prompt uses spaces, and the machine-readable unfilled list keeps the real underscored names." },
+      { q: "Can I keep my clause library in version control?", a: "Yes. clause_export writes the whole library to markdown on the free tier and clause_import reads the same shape back, so the terms you reuse can be committed and diffed. JSON import and export is a Pro feature." },
+      { q: "Does it replace the contract generator in the docx server?", a: "They do different things. MCP Docx writes a fixed freelance service agreement skeleton in one call. This server assembles a document from the specific clauses you keep and have edited, which is what you want once your terms have diverged from a generic template." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: track billable hours, invoice PDFs, expenses, Excel queries, price watching, ECB currency rates, Word proposals and meeting slots.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes.",
 };

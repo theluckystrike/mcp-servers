@@ -6,7 +6,7 @@
  * number quoted in the generated prose comes from docs/USER_VALUE_R4.md or from the
  * server READMEs, not from invention.
  *
- * The page bodies are composed from three sources so no two of the 36 pages read alike:
+ * The page bodies are composed from three sources so no two of the 72 pages read alike:
  * the client row (config path, key name, CLI, caveat), the server row (prompts, tools,
  * free tier), and ANGLE[server][client], one sentence written per pair.
  */
@@ -272,6 +272,60 @@ export const SETUP_SERVERS = {
     pro: "Unlimited participants, days, contacts and ics files, plus recurring slot search.",
     measured: "Warsaw and New York on 09:00 to 17:00 days share 2 hours on 2026-09-10 and 3 hours on 2026-03-16, because the United States moves to daylight time on 8 March and Europe on 29 March. The overlap is computed on a real date, so it says so.",
   },
+  resume: {
+    title: "MCP Resume and Cover Letter",
+    slug: "resume",
+    toolCount: "10 tools",
+    pkg: "@theluckystrike/mcp-resume",
+    sPage: "/s/resume",
+    hosted: null,
+    tagline: "Resumes and cover letters as Word files, from one stored profile.",
+    does: "It keeps one structured profile, writes the resume as .docx trimmed to a page budget with the posting's keywords bolded where you actually have them, drafts a one-page cover letter whose every proof line is a verbatim bullet from that profile, and reports the gaps against a job description instead of filling them in.",
+    prompts: [
+      ["Here is my CV: Ada Rowe, backend engineer, Acme Pay since 2021.", "profile_set"],
+      ["How well do I match this posting?", "tailor_to_job"],
+      ["Make me a one-page resume for this role and write the letter, direct tone.", "resume_create then cover_letter_create"],
+    ],
+    free: "profile, the modern style, markdown and HTML exports, 3 cover letters a month, postings up to 2,000 characters.",
+    pro: "All three styles, unlimited letters and tailoring, named profile variants, your own accent colour.",
+    measured: "There is no page-layout engine in pure JavaScript, so trimming runs on a word budget: 450 words of body text per A4 page, 540 in the compact style. Every role keeps its first bullet before any role gets a second, and every bullet dropped is named in the response.",
+  },
+  recurring: {
+    title: "MCP Recurring Invoices",
+    slug: "recurring",
+    toolCount: "13 tools",
+    pkg: "@theluckystrike/mcp-recurring",
+    sPage: "/s/recurring",
+    hosted: null,
+    tagline: "Retainers and subscriptions billed on a schedule you set once.",
+    does: "It stores a billing schedule per client, weekly, monthly, quarterly, yearly or every N days, shows what falls due, and generates exactly one invoice per schedule per period into the invoice server's own store with its number series and its A4 PDF.",
+    prompts: [
+      ["Bill Acme 12 hours at 90 EUR every month from the 1st, 14 day terms.", "schedule_create"],
+      ["Show me what this month's billing run would create before you create it.", "invoice_generate_due with dry_run"],
+      ["What is due in the next 30 days?", "schedule_upcoming"],
+    ],
+    free: "3 active schedules, unlimited generation, a 30 day upcoming view and a 3 month forecast.",
+    pro: "Unlimited schedules, a 10 year horizon, a 120 month forecast, the audit log, anchor day and end of month rules.",
+    measured: "The worked run created 4 invoices totalling EUR 4,320.00 and, repeated five minutes later, created 0 and skipped 4. The key is the period, not the calendar day, so a billing run you forgot you already did is a no-op rather than four duplicate invoices.",
+  },
+  clauses: {
+    title: "MCP Clause Library",
+    slug: "clauses",
+    toolCount: "12 tools",
+    pkg: "@theluckystrike/mcp-clauses",
+    sPage: "/s/clauses",
+    hosted: null,
+    tagline: "Reusable contract clauses, searched and assembled into Word.",
+    does: "It ships 25 generic freelance clauses across 11 categories, each holding {{variables}}, lets you add and rank-search your own, lists which variables a selection still needs, and assembles the picked clauses into a numbered .docx or markdown document that opens with a not-legal-advice line.",
+    prompts: [
+      ["What clauses do I have about late payment?", "clause_search"],
+      ["What do I still need to fill in for those five clauses?", "variables_list"],
+      ["Draft a service agreement for Beta Corp: scope, payment, IP, termination. 4,500 EUR, 14 day terms.", "contract_assemble"],
+    ],
+    free: "the 25 starters plus 10 of your own, ranked search, up to 8 clauses per document, markdown import and export.",
+    pro: "Unlimited clauses, jurisdiction and tag filters, JSON import and export, unlimited assembly, clause versions.",
+    measured: "A variable you do not supply is never guessed and never blanked: it is printed as a visible bracketed prompt such as [late fee percent], so the unfinished part of the draft is the part you can see. Nothing here has been reviewed by a lawyer in any jurisdiction.",
+  },
   "office-suite": {
     title: "MCP Office Suite",
     slug: "office-suite",
@@ -362,6 +416,30 @@ const ANGLE = {
     vscode: "The .ics lands in the workspace and can be opened, checked and sent from the Explorer, which matters because an invite is one of the few outputs here you cannot un-send after the fact.",
     windsurf: "Eleven tools out of Cascade's ceiling of 100, no network calls and no account. Because mcp_config.json applies to every workspace, the contacts you save are reachable from whichever project you are in when a client emails.",
     cline: "Put now, convert_time, overlap and dst_changes in autoApprove: they are pure calculation. Keep ics_create out, because on the free tier it spends one of three files a month, and keep contacts_set out because it writes.",
+  },
+  resume: {
+    "claude-desktop": "A job application is the one thing on this list you do outside a repository, in the evening, in the client you already have open. Give an absolute path when you ask it to read your old resume, and open the .docx it hands back from Finder without leaving the window.",
+    "claude-code": "The apply_to_job prompt chains the gap analysis, the resume and the letter against one posting in a single turn, and reporting the gaps back at you rather than filling them in is easier to read in a terminal than in a chat bubble.",
+    cursor: "Keep the profile in one place and the postings in another: paste the job text into the chat, read the coverage figure, and let the .docx land in the folder you have open so the version you actually sent is the version on disk.",
+    vscode: "The printable HTML lands in the Explorer, opens in a preview and prints to PDF with its own print stylesheet, which is the whole PDF story here because there is no resume_to_pdf.",
+    windsurf: "Ten tools out of Cascade's ceiling of 100, and no network calls at all, so a server holding your employment history costs nothing to leave enabled and sends nothing anywhere.",
+    cline: "Put profile_get, tailor_to_job and resume_to_markdown in autoApprove and keep cover_letter_create out, because on the free tier each letter spends one of three that month.",
+  },
+  recurring: {
+    "claude-desktop": "This is a monthly ritual rather than a daily one, and Claude Desktop is where people do monthly rituals. Ask for the dry run first, read the four lines it would create, then say run it.",
+    "claude-code": "The whole month closes in one session: run the schedules, then invoice the ad hoc hours out of the time tracker into the same invoice store, then read overdue_report. All three servers write to the same directory.",
+    cursor: "If you keep one repository per client, the retainer schedule belongs in that project's .cursor/mcp.json next to the invoice server, so the recurring part of that client's billing is scoped to that client's project.",
+    vscode: "The invoices and their PDFs are written to the invoice server's data directory rather than the workspace, so the useful thing agent mode adds here is reading the dry run back before anything is issued.",
+    windsurf: "One config file for every workspace suits a tool you touch once a month: the schedules are reachable from whichever project happens to be open on the first.",
+    cline: "Put schedule_list, schedule_upcoming and forecast in autoApprove and keep invoice_generate_due behind a click. Reading what is due is harmless; generating consumes invoice numbers that never repeat.",
+  },
+  clauses: {
+    "claude-desktop": "Assembling a contract is a reading task, so the client with a window is the right one: ask for the variables list, read what is still bracketed, then assemble and open the .docx from the path it prints.",
+    "claude-code": "Keep the library in one data directory and the assembled drafts out of your repositories. The one command worth running first is variables_list, because it names every fact the document needs before the document exists.",
+    cursor: "Commit nothing but the exported markdown library. clause_export writes the whole set to markdown on the free tier, so the terms you reuse can live in a repository and be diffed like anything else you maintain.",
+    vscode: "Assemble to markdown first and read it in the editor. The .docx is the version you send; the markdown is the version you can review line by line before anyone signs it.",
+    windsurf: "Twelve tools out of Cascade's ceiling of 100, no network calls and no account, for a server whose entire content is text you wrote or edited yourself.",
+    cline: "Put clause_search, clause_list, clause_get and variables_list in autoApprove and keep clause_delete out of it: a deleted starter clause is not re-seeded on the next call.",
   },
   "office-suite": {
     "claude-desktop": "One entry in claude_desktop_config.json instead of five, which matters more here than anywhere else: this is the client where each extra server is another absolute path to get right.",
@@ -614,7 +692,7 @@ export function clientHub(clientId) {
   if (!c) return null;
   const canonical = `${BASE}/setup/${clientId}`;
   const title = `MCP servers for ${c.name}: install guides`;
-  const description = fitDesc(`Nine MCP servers set up in ${c.name}, each with the exact ${c.file} entry: time tracking, invoices, expenses, spreadsheets, price watching, currency, Word documents and time zones.`);
+  const description = fitDesc(`Twelve MCP servers set up in ${c.name}, each with the exact ${c.file} entry: time, invoices, recurring billing, expenses, spreadsheets, prices, currency, Word, clauses, resumes and time zones.`);
   const rows = SERVER_ORDER.map(
     (id) =>
       `<tr><td><a href="/setup/${clientId}/${id}">${esc(SETUP_SERVERS[id].title)} in ${esc(c.name)}</a><br><span class="muted">${esc(SETUP_SERVERS[id].tagline)}</span></td></tr>`
@@ -639,7 +717,7 @@ export function clientHub(clientId) {
 export function setupIndex() {
   const canonical = `${BASE}/setup`;
   const title = "Set up an MCP server in your client";
-  const description = "Exact config file paths and entries for nine MCP servers in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline.";
+  const description = "Exact config file paths and entries for twelve MCP servers in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline.";
   const clientRows = CLIENT_ORDER.map(
     (id) =>
       `<tr><td><a href="/setup/${id}">${esc(CLIENTS[id].name)}</a></td><td><code>${esc(CLIENTS[id].file)}</code></td><td><code>${esc(CLIENTS[id].key)}</code></td><td>${esc(CLIENTS[id].caveatShort)}</td></tr>`
@@ -650,7 +728,7 @@ export function setupIndex() {
   ).join("");
   const body = `<p class="muted"><a href="/">Home</a></p>
 <h1>${esc(title)}</h1>
-<p>Nine servers, six clients, one page each: the config file that client actually reads, the entry to put in it, three prompts that were run against the server, and the hosted endpoint if you would rather install nothing. The two facts that cause most failed installs are in the table below: the file name and the top-level key are not the same across clients.</p>
+<p>Twelve servers, six clients, one page each: the config file that client actually reads, the entry to put in it, three prompts that were run against the server, and the hosted endpoint if you would rather install nothing. The two facts that cause most failed installs are in the table below: the file name and the top-level key are not the same across clients.</p>
 <table><tr><th>Client</th><th>Config file</th><th>Key</th><th>Watch out for</th></tr>${clientRows}</table>
 <h2>Pages</h2>
 <table><tr><th>Server</th><th>In</th></tr>${serverRows}</table>

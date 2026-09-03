@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03T00:00:00Z",
+  "updated_at": "2026-09-03T12:45:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -59,7 +59,7 @@
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "9 guides, 54 setup pages, 8 compare pages, 8 product pages; sitemap 89 URLs"
+      "note": "12 guides, 72 setup pages, 11 compare pages, 11 product pages; sitemap 116 URLs. Round 4 added the resume, recurring and clauses sets on 2026-09-03: 3 guides, 18 setup pages, 3 compare pages, all HTTP 200 and accepted by IndexNow"
     },
     "mcpservers.org": {
       "status": "submitted",
@@ -134,7 +134,7 @@
     "setup": {
       "status": "published",
       "url": "https://mcp.zovo.one/setup",
-      "note": "43 URLs, all HTTP 200; 36 client-by-server pages 490-551 words each with FAQPage JSON-LD and canonical; client facts verified against each client's public docs on 2026-09-03; IndexNow POST 200 for all 43"
+      "note": "79 URLs, all HTTP 200; 72 client-by-server pages with FAQPage JSON-LD and canonical, the 18 round-4 pages 547-646 words each; client facts verified against each client's public docs on 2026-09-03"
     },
     "estate-backlinks": {
       "status": "published",
