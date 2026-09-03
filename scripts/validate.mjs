@@ -75,8 +75,19 @@ const PROBES = {
     const b = await c.tool("timer_stop", {}); ok(`${tier}: timer_stop`, !b.isError && /s|min|h/.test(b.text), b.text);
     const now = new Date(); const from = new Date(now.getTime() - 86400e3).toISOString();
     const r = await c.tool("report", { from, to: new Date(now.getTime() + 3600e3).toISOString(), group_by: "project", format: "json" }); ok(`${tier}: report`, !r.isError && r.text.includes("acme"), r.text);
+    // D-R22: tag grouping is FREE on both tiers now - it is a corrected total, not a
+    // premium capability. Pro still keeps full history and unlimited rated projects.
     const g = await c.tool("report", { from, to: now.toISOString(), group_by: "tag", format: "table" });
-    ok(`${tier}: tag grouping ${tier === "pro" ? "allowed" : "gated with upgrade link"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(g.text) : /mcp\.zovo\.one\/buy\/time-tracker/.test(g.text), g.text);
+    ok(`${tier}: tag grouping allowed (not gated)`, !g.isError && !/mcp\.zovo\.one/.test(g.text), g.text);
+    // D-R22: group_by is optional and defaults to the plain total per currency.
+    const p = await c.tool("report", { from, to: new Date(now.getTime() + 3600e3).toISOString(), format: "table" });
+    ok(`${tier}: report without group_by returns a plain total`, !p.isError && /Total /.test(p.text) && !/\bproject\b\s*\|/.test(p.text), p.text);
+    // D-R18: apply_to_existing re-stamps EVERY entry of the project.
+    await c.tool("project_set_rate", { project: "acme", hourly_rate: 100, currency: "USD" });
+    const rr = await c.tool("project_set_rate", { project: "acme", hourly_rate: 120, currency: "USD", apply_to_existing: true });
+    ok(`${tier}: apply_to_existing re-rates logged entries and states the new total`, !rr.isError && /1 of 1 already logged entries re-rated/.test(rr.text) && /New total for "acme"/.test(rr.text), rr.text);
+    const om = await c.tool("project_set_rate", { project: "acme", hourly_rate: 140, currency: "USD", apply_to_existing: true, only_missing: true });
+    ok(`${tier}: only_missing true keeps the old fill-the-gaps behaviour`, !om.isError && /0 of 1 entries that had no rate of their own re-rated/.test(om.text), om.text);
   },
   "price-tracker": async (c, tmp, tier, ok) => {
     const a = await c.tool("price_add_manual", { url: "https://example.com/p/1", price: "1.299,00", currency: "EUR", label: "probe" }); ok(`${tier}: price_add_manual normalises 1.299,00`, !a.isError && /1299/.test(a.text), a.text);

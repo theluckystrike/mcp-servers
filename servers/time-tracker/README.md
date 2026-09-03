@@ -75,8 +75,8 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `entry_list` | Compact table of entries, filtered by date range and project. |
 | `entry_edit` | Change any field of an entry. |
 | `entry_delete` | Delete an entry by id. |
-| `project_set_rate` | Set the hourly rate and currency used for money totals (currency accepts codes or words: EUR, euros, pounds, zl). |
-| `report` | Hours and money for a period, grouped by project, day, task or tag; table, JSON or CSV. |
+| `project_set_rate` | Set the hourly rate and currency used for money totals (currency accepts codes or words: EUR, euros, pounds, zl). `apply_to_existing: true` re-rates time already logged for that project; add `only_missing: true` to touch only entries that carry no rate. |
+| `report` | Hours and money for a period, optionally grouped by project, day, task or tag; omit `group_by` for the plain total per currency. Table, JSON or CSV. |
 | `export_csv` | Write entries to a CSV file and return the path. |
 | `invoice_summary` | Invoice-ready line items for one project: hours, rate, amount, total, in the currency the time was logged in. One line per task and rate, so no line ever shows a blended rate nobody agreed. Free for the last 7 days, Pro for any period from full history. |
 | `license_status` | Free or Pro, and where to upgrade. |
@@ -193,8 +193,10 @@ carry on. Nothing is overwritten in the meantime.
   worked example instead of being read as the wrong number.
 - **Rates are captured when the time is logged.** `entry_add` and `timer_stop` store the effective hourly
   rate and currency on the entry, and reports and invoices use that stored rate. `project_set_rate`
-  therefore applies to future entries only; pass `apply_to_existing: true` to backfill entries that never
-  captured a rate of their own.
+  therefore applies to future entries only; pass `apply_to_existing: true` to re-rate the time already
+  logged for that project. That re-stamps EVERY entry of the project, including entries that already
+  carry a rate, and the response says how many changed and the project's new total. Add
+  `only_missing: true` to touch only entries that captured no rate of their own.
 - **Tag rows overlap.** In `group_by: "tag"` an entry tagged `dev` and `meeting` appears in both rows; the
   total is computed from the entries once, so it is never the sum of the rows.
 
@@ -204,7 +206,8 @@ carry on. Nothing is overwritten in the meantime.
   entries themselves are unlimited and nothing is ever deleted -- the window just narrows what a free
   call can read back.
 - Free tier supports hourly rates on 2 projects; a third rated project needs Pro.
-- `report` grouped by tag is Pro-only; grouping by project, day or task is free.
+- Every `report` grouping is free, tag included: the tag total is a correctness fix, not a premium
+  feature. `group_by` itself is optional -- omit it for the plain total per currency.
 - Only one timer can run at a time. Starting a second one stops and logs the first -- there is no
   concurrent-timer mode.
 - There is no reminder or idle-detection: if you forget to stop a timer, it keeps running until you stop

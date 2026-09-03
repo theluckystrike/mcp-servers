@@ -345,3 +345,21 @@ test("free history keeps the last 30 observations", async (t) => {
   assert.match(ht, /30 of 34 observation/);
   assert.match(ht, /Free shows the last 30 observations/);
 });
+
+// D-R19: in round 6 the model answered "what is the price here: <url>" with curl and a
+// question back to the user; price_check was never called. The first sentence of both
+// URL-taking tools is now an imperative aimed at the client.
+test("D-R19: price_check and watch_add lead with the client-directed claim", async (t) => {
+  const c = client();
+  t.after(() => c.stop());
+  await init(c);
+  const list = await c.send("tools/list", {});
+  const byName = new Map(list.result.tools.map((x) => [x.name, x]));
+  const CLAIM = "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price.";
+  for (const n of ["price_check", "watch_add"]) {
+    assert.ok(byName.has(n), `${n} missing`);
+    const d = byName.get(n).description;
+    assert.ok(d.startsWith(CLAIM), `${n} does not lead with the claim: ${d.slice(0, 90)}`);
+    assert.ok(d.length < 220, `${n} description is ${d.length} chars, must stay under 220`);
+  }
+});

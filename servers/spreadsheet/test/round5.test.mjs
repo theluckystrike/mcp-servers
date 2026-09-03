@@ -140,16 +140,20 @@ test("D-R13: decimals overrides the inferred precision", async (t) => {
   assert.equal(wb0.Sheets[wb0.SheetNames[0]].C2.v, 41);
 });
 
-test("D-R11: sheet_info, sheet_read and sheet_query claim the file case in their descriptions", async (t) => {
+test("D-R11/D-R19: sheet_info, sheet_read, sheet_query and sheet_stats lead with the client-directed claim", async (t) => {
   const h = tmpHome();
   const c = new Client(h.env);
   t.after(() => c.stop());
   await c.init();
   const r = await c.send("tools/list", {});
   const byName = new Map(r.result.tools.map((x) => [x.name, x]));
-  const CLAIM = "Use for ANY .xlsx/.csv path, including paths outside the current directory; do not read the file yourself.";
-  for (const n of ["sheet_info", "sheet_read", "sheet_query"]) {
+  // D-R19: the first sentence is an imperative aimed at the client, because in round 6
+  // the model reached for a built-in file reader and never called these tools at all.
+  const CLAIM = "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them.";
+  for (const n of ["sheet_info", "sheet_read", "sheet_query", "sheet_stats"]) {
     assert.ok(byName.has(n), `${n} missing`);
-    assert.ok(byName.get(n).description.startsWith(CLAIM), `${n} does not lead with the claim: ${byName.get(n).description.slice(0, 90)}`);
+    const d = byName.get(n).description;
+    assert.ok(d.startsWith(CLAIM), `${n} does not lead with the claim: ${d.slice(0, 90)}`);
+    assert.ok(d.length < 220, `${n} description is ${d.length} chars, must stay under 220`);
   }
 });

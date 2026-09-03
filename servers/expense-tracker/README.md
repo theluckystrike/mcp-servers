@@ -63,7 +63,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 
 | Tool | What it does |
 | --- | --- |
-| `expense_add` | Log one expense: amount, currency, category, merchant, date, project, note, receipt path, billable flag, VAT rate. An empty category is filled in from the merchant rules |
+| `expense_add` | Log one expense: amount, currency, category, merchant, date, project, note, receipt path, billable flag, VAT rate. An empty category is filled in from the merchant rules. `billable` defaults to **true when a `project` is given** and false otherwise, and the response always states which value was used |
 | `expense_settings` | Read or set the defaults `expense_add` uses when a call names none: `default_vat_rate`, `default_currency` |
 | `expense_list` | List expenses in a date range, filtered by project, category or billable, with totals per currency |
 | `expense_update` | Change any field of a stored expense by id. `rebilled: false` clears both the rebilled marker and the invoice number. Amount, currency and `vat_rate` are refused on an expense already rebilled unless you pass `unlink_rebill: true`, which clears the rebill link, because the invoice charged something else |
@@ -73,7 +73,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `expense_summary` | Totals for a range grouped by category, project, month or merchant, with the gross, net and VAT per currency |
 | `mileage_add` | Log a trip in km or miles and price it from the rate table (or your own rate) |
 | `expense_export` | Write the range to csv, xlsx or json and return the path. Never writes a partial file |
-| `expense_to_invoice` | Preview a project's unbilled billable expenses as `invoice_create` line items, per currency, with an optional markup and an optional `assume_vat_rate`. Pass `target_currency` + `fx_rates` to fold every currency into one group. Marks nothing as rebilled, ever |
+| `expense_to_invoice` | Preview a project's unbilled billable expenses as `invoice_create` line items, per currency, with an optional markup and an optional `assume_vat_rate`. Pass `target_currency` + `fx_rates` to fold every currency into one group. When nothing matches it returns `count: 0`, no `fx_note`, and the plain reason. Marks nothing as rebilled, ever |
 | `expense_mark_rebilled` | Mark expenses rebilled once the invoice exists, by ids or by project, date range and `currency`. `invoice_number` is required |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |

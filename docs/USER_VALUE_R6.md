@@ -197,3 +197,175 @@ most-worked-on fixes in `docs/AUDIT.md` — both scored 0 because the model reac
 in which the same defect class costs points, and the first in which it costs full marks. The
 work that raises this score is not in the extraction or the parser; it is in the two tool
 descriptions.
+
+## Round-6 fixes
+
+Applied 2026-09-03 against v0.2.4. Every defect above except D-R16/D-R17 (out of scope for this
+round) now has code behind it. Line numbers are post-fix.
+
+### D-R18 (high, time-tracker) -- `apply_to_existing` re-rates every entry
+
+`servers/time-tracker/src/index.ts:604` adds `only_missing`, and the loop at
+`servers/time-tracker/src/index.ts:626-641` no longer skips entries that already carry a rate.
+Default `apply_to_existing: true` now re-stamps EVERY entry of the project; `only_missing: true`
+restores the old fill-the-gaps semantics. The response at
+`servers/time-tracker/src/index.ts:644-651` states how many changed, out of how many, which mode ran,
+and the project's new total:
+
+```
+Rate for "Nova" set to USD 120.00 per hour.
+2 of 2 already logged entries re-rated (only_missing: false). New total for "Nova": 3.00 h, USD 360.00.
+```
+
+Because Codex v3 #19 gives every new entry a `rateCents` (`servers/time-tracker/src/index.ts:489`),
+`only_missing` can only ever touch a legacy store, so its regression test builds one on disk
+(`servers/time-tracker/test/round6.test.mjs:85`): the entry holding USD 100 is untouched, the bare
+one takes USD 200, total USD 300.00. Tool and README text updated at
+`servers/time-tracker/src/index.ts:598` and `servers/time-tracker/README.md:78`, `:196`.
+
+### D-R22 (medium, time-tracker) -- tag grouping is free, `group_by` is optional
+
+The `if (a.group_by === "tag" && !pro) return gated(...)` line is gone
+(`servers/time-tracker/src/index.ts:735-737`): the corrected tag total is a correctness fix, not a
+premium capability. Pro still keeps full history (`:346`) and unlimited rated projects (`:613`).
+`group_by` is now optional (`servers/time-tracker/src/index.ts:729`); omitted, the report is the
+plain total per currency -- table returns `Total 5.00 h, USD 600.00.`
+(`servers/time-tracker/src/index.ts:791-794`), JSON returns `group_by: null` with empty `rows` and
+the same `total` (`:743`, `:755`, `:773`). Free-tier proof, from
+`servers/time-tracker/test/round6.test.mjs:117`: rows `review` 60000 and `demo` 36000 cents,
+`total.amount_cents` 60000, `tier: "free"`, no `mcp.zovo.one` in the response.
+
+The validate probe was adjusted as the task allows: `scripts/validate.mjs:78-81` now asserts tag
+grouping is ALLOWED on both tiers and that `report` without `group_by` returns a plain total;
+`scripts/validate.mjs:82-87` adds the D-R18 assertions. `servers/time-tracker/test/smoke.test.mjs:136`
+flipped from `assert.match(tagRep.text, /Pro feature/)` to `assert.doesNotMatch`.
+
+### D-R23 (low, all stores in scope) -- the `.corrupt` marker explains itself
+
+`markerBody()` at `servers/time-tracker/src/jsonstore.ts:28` and
+`servers/expense-tracker/src/store.ts:79` writes one line of JSON:
+
+```
+{"quarantined":"<path>","at":"2026-09-03T...Z","hint":"the original data file failed to parse; it was moved, nothing was overwritten; restore it manually or delete this marker to start fresh"}
+```
+
+`markerQuarantinePath()` (`jsonstore.ts:36`, `store.ts:87`) reads the path back out of the JSON and
+falls back to the raw text, so pre-D-R23 markers still block correctly.
+Not changed, because they are outside this task's write paths: `servers/invoice/src/store.ts:70`
+(identical helper) and `servers/price-tracker/src/store.ts:60` (quarantines without a marker file).
+
+### D-R20 (medium, expense-tracker) -- an empty rebill set asserts nothing
+
+`servers/expense-tracker/src/index.ts:808-830` returns early when `rows.length === 0`: `count: 0`,
+empty `currencies`/`source_currencies`/`line_items_per_currency`, `converted_lines: 0`, and **no
+`fx_note` and no `vat_note` keys at all**. `note` is the plain reason -- `no matching billable,
+un-rebilled expenses in this range (an expense must have billable: true and no rebilled_at)` -- and
+`next_step` names the two usual causes. Test:
+`servers/expense-tracker/test/round6.test.mjs:89`, line `:97`, asserts `"fx_note" in j === false`.
+
+### D-R21 (medium, expense-tracker) -- `billable` defaults to true with a project
+
+`servers/expense-tracker/src/index.ts:193-196`: `const billable = a.billable ?? !!a.project`. The
+response always states the value used (`servers/expense-tracker/src/index.ts:214-217`):
+
+```
+. Billable: yes (default for an expense with a project; pass billable: false to keep it off the client's invoice) - it will appear in expense_to_invoice.
+. Billable: no (default with no project) - it will NOT appear in expense_to_invoice; pass billable: true to rebill it.
+```
+
+An explicit `billable` prints neither `(default ...)` clause. Documented in the tool description
+(`servers/expense-tracker/src/index.ts:145`), the argument description (`:155`) and
+`servers/expense-tracker/README.md:66`. End to end, the round-6 scenario now works in the two calls
+the model already chose: `expense_add {amount: 45, currency: "EUR", merchant: "Amazon", project:
+"Nova"}` then `expense_to_invoice {target_currency: "USD", fx_rates: {EUR: 1.08}}` ->
+`unit_price: 48.6`, `total_net: "USD 48.60"` (`servers/expense-tracker/test/round6.test.mjs:85`).
+The `mileage_add` default (`billable: true`) is unchanged.
+
+### D-R19 (high, spreadsheet + price-tracker) -- descriptions claim the trigger words
+
+All six descriptions now open with an imperative aimed at the client and stay under 220 characters,
+so a tool list shows the claim rather than truncating it.
+
+- `servers/spreadsheet/src/index.ts:232` `sheet_info` (200 chars), `:239` `sheet_read` (206),
+  `:369` `sheet_query` (207), `:440` `sheet_stats` (209) -- each begins: `Call this tool for any
+  spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used
+  for them.`
+- `servers/price-tracker/src/index.ts:154` `price_check` (193 chars), `:194` `watch_add` (195) --
+  each begins: `Call this tool for any product URL; fetching the page with a generic web tool
+  returns raw HTML without the price.`
+
+Guarded by tests that assert both the leading sentence and the 220-char ceiling:
+`servers/spreadsheet/test/round5.test.mjs:143` (now covering `sheet_stats` too) and
+`servers/price-tracker/test/smoke.test.mjs:352`. Whether the client now calls them is a round-7
+measurement, not something these tests can prove.
+
+### Verification
+
+Verbatim `node --test` summaries, one `npm test -w servers/<id>` per server:
+
+```
+--- time-tracker
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 729.664791
+--- expense-tracker
+# tests 40
+# suites 0
+# pass 40
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2529.318709
+--- spreadsheet
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1615.399625
+--- price-tracker
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2606.815375
+--- office-suite
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 822.113875
+```
+
+Counts before this round were time-tracker 13, expense-tracker 37, spreadsheet 55, price-tracker 54:
++4 (`test/round6.test.mjs`), +3 (`test/round6.test.mjs`), +0 (one existing test widened), +1.
+
+`node scripts/validate.mjs`, verbatim:
+
+```
+expense-tracker: 22/22 in 383 ms
+time-tracker: 24/24 in 206 ms
+price-tracker: 18/18 in 244 ms
+spreadsheet: 18/18 in 360 ms
+invoice: 20/20 in 372 ms
+remote: 14/14
+billing: 11/11
+validation db: /Users/mike/mcp-servers/data/validation.json run 41: 127/127
+```
+
+time-tracker went 20 checks to 24: the tag-gating check became a tag-allowed check and three probes
+were added (plain total, `apply_to_existing`, `only_missing`).

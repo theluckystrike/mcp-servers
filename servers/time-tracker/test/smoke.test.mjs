@@ -131,10 +131,17 @@ test("free tier: initialize, tools/list, timer, report, gating", async () => {
     assert.match(invOld.text, /free tier shows the last 7 days/);
     assert.match(invOld.text, /mcp\.zovo\.one\/buy\/time-tracker/);
 
-    // free gates that remain: group_by tag blocked, 3rd rated project blocked
-
+    // D-R22: tag grouping is FREE. It is a corrected total, not a premium capability.
     const tagRep = await c.call("report", { from: `${today}T00:00:00`, to: `${today}T23:59:59`, group_by: "tag" });
-    assert.match(tagRep.text, /Pro feature/);
+    assert.doesNotMatch(tagRep.text, /Pro feature/);
+    assert.match(tagRep.text, /Tag rows can overlap/);
+
+    // D-R22: group_by is optional; without it the report is the plain total per currency.
+    const plain = await c.call("report", { from: `${today}T00:00:00`, to: `${today}T23:59:59` });
+    assert.equal(plain.isError, false);
+    assert.match(plain.text, /^Total 1\.\d\d h, USD 1\d\d\.\d\d\./);
+
+    // free gates that remain: 3rd rated project blocked
 
     await c.call("project_set_rate", { project: "beta", hourly_rate: 50 });
     const third = await c.call("project_set_rate", { project: "gamma", hourly_rate: 50 });

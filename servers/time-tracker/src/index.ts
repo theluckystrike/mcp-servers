@@ -595,14 +595,15 @@ server.registerTool("entry_edit", {
 
 server.registerTool("project_set_rate", {
   title: "Set project rate",
-  description: "Set the hourly rate and currency used to turn tracked hours into money for a project or client.",
+  description: "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Pass apply_to_existing to re-rate time already logged for that project (add only_missing to touch only entries that carry no rate).",
   inputSchema: {
     project: z.string().min(1).describe("Project or client name. A partial name that matches exactly one existing project is used as that project."),
     hourly_rate: z.union([z.number().nonnegative(), z.string()]).describe("Hourly rate: a number (85) or the words the user said ('90 euros an hour'). '1,200 USD' is 1200; '12,50 EUR' is 12.50; anything ambiguous is refused."),
     currency: z.string().optional().describe("Currency: a code (EUR, USD, GBP, PLN) or a word ('euros', 'pounds', 'zl'). Default USD."),
-    apply_to_existing: z.boolean().optional().describe("Also write this rate onto already logged entries of this project that carry no rate of their own. Default false: the new rate applies to future entries only."),
+    apply_to_existing: z.boolean().optional().describe("Re-rate time already logged for this project: every entry is re-stamped with the new rate, including entries that already carry one. Default false: the new rate applies to future entries only."),
+    only_missing: z.boolean().optional().describe("Only meaningful with apply_to_existing. True restores the old fill-the-gaps behaviour: only entries that carry no rate of their own are touched. Default false, which re-stamps every entry of the project."),
   },
-}, guard(async (a: { project: string; hourly_rate: number | string; currency?: string; apply_to_existing?: boolean }) => {
+}, guard(async (a: { project: string; hourly_rate: number | string; currency?: string; apply_to_existing?: boolean; only_missing?: boolean }) => {
   return withFileLock(LOCK, async () => {
   const db = load();
   const r = resolveProject(db, a.project);         // Codex v3 #29
@@ -619,22 +620,35 @@ server.registerTool("project_set_rate", {
     currency: normCurrency(a.currency) ?? parsed.currency ?? "USD",
   };
   const m = db.projects[project];
-  // Codex v3 #19: entries keep the rate captured when they were logged. Backfilling is
-  // opt-in and only touches entries that never captured one (older versions of this server).
-  let backfilled = 0;
+  // Codex v3 #19 kept the rate captured at log time on every entry, which made the old
+  // "backfill entries with no rate" loop dead code (D-R18): every entry written by this
+  // server already has one, so "apply the new rate to existing entries" changed nothing.
+  // apply_to_existing now RE-STAMPS every entry of the project. only_missing restores the
+  // old fill-the-gaps behaviour for callers that want it.
+  const onlyMissing = a.only_missing === true;
+  let changed = 0;
+  const projectEntries = db.entries.filter((e) => e.project === project);
   if (a.apply_to_existing) {
-    for (const e of db.entries) {
-      if (e.project !== project || typeof e.rateCents === "number") continue;
+    for (const e of projectEntries) {
+      if (onlyMissing && typeof e.rateCents === "number") continue;
+      if (e.rateCents === m.rateCents && e.currency === m.currency) continue;
       e.rateCents = m.rateCents;
-      e.currency = e.currency ?? m.currency;
-      backfilled += 1;
+      e.currency = m.currency;
+      changed += 1;
     }
   }
   save(db);
   const lines = [`Rate for "${project}" set to ${money(m.rateCents, m.currency)} per hour.`];
-  lines.push(a.apply_to_existing
-    ? `Applies to future entries; ${backfilled} already logged ${backfilled === 1 ? "entry" : "entries"} with no rate of their own were backfilled.`
-    : "Applies to future entries only: time already logged keeps the rate captured when it was logged (pass apply_to_existing to backfill entries that have no rate).");
+  if (a.apply_to_existing) {
+    const totals = totalsOf(db, projectEntries);
+    const scope = onlyMissing ? "entries that had no rate of their own" : "already logged entries";
+    lines.push(
+      `${changed} of ${projectEntries.length} ${scope} re-rated (only_missing: ${onlyMissing}). ` +
+      `New total for "${project}": ${hours(totals.seconds)} h, ${moneyOf(totals.amounts)}.`,
+    );
+  } else {
+    lines.push("Applies to future entries only: time already logged keeps the rate captured when it was logged (pass apply_to_existing to re-rate it, or apply_to_existing plus only_missing to fill only the gaps).");
+  }
   if (r.note) lines.unshift(r.note);
   return ok(lines.join("\n"));
   });
@@ -708,23 +722,25 @@ const TAG_OVERLAP_NOTE =
 
 server.registerTool("report", {
   title: "Time report",
-  description: "Timesheet report: total tracked hours and billable money for a period, grouped by (group by) project, day, task or tag - hours per project, how much to bill. Money is grouped by currency and never mixes EUR with USD. Free tier covers the last 7 days.",
+  description: "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency. Money is grouped by currency and never mixes EUR with USD. Free tier covers the last 7 days.",
   inputSchema: {
     from: z.string().describe("ISO date/time start of the period"),
     to: z.string().describe("ISO date/time end of the period"),
-    group_by: z.enum(GROUPS).describe("project | day | task | tag (tag is Pro)"),
+    group_by: z.enum(GROUPS).optional().describe("project | day | task | tag. Optional: omit it for the plain total per currency, with no breakdown."),
     format: z.enum(["table", "json", "csv"]).optional().describe("table (default), json or csv"),
     project: z.string().optional().describe("Optional project filter"),
   },
-}, guard(async (a: { from: string; to: string; group_by: Group; format?: "table" | "json" | "csv"; project?: string }) => {
+}, guard(async (a: { from: string; to: string; group_by?: Group; format?: "table" | "json" | "csv"; project?: string }) => {
   const pro = gate.isPro();
-  if (a.group_by === "tag" && !pro) return gated("group_by tag");
+  // D-R22: tag grouping is free. It is a corrected total, not a premium capability, and
+  // gating it hid the #26/#27 fix from every free user. Pro keeps full history and
+  // unlimited rated projects.
   const db = load();
   const f = resolveFilter(db, a.project);          // Codex v3 #29
   if (f.kind === "ambiguous") return ok(f.text);
   const w = windowFor(a.from, a.to, pro);
   const entries = select(db, w, f.project);
-  const buckets = aggregate(db, entries, a.group_by);
+  const buckets = a.group_by ? aggregate(db, entries, a.group_by) : [];
   const totals = totalsOf(db, entries);            // Codex v3 #26
   const totalSec = totals.seconds;
   const totalParts = nonZero(totals.amounts);
@@ -736,7 +752,7 @@ server.registerTool("report", {
     return ok(JSON.stringify({
       from: Number.isFinite(w.fromMs) ? iso(new Date(w.fromMs)) : null,
       to: Number.isFinite(w.toMs) ? iso(new Date(w.toMs)) : null,
-      group_by: a.group_by,
+      group_by: a.group_by ?? null,
       // Codex v3 #27: a scalar amount_cents/currency is emitted only when the bucket
       // holds exactly one currency; mixed buckets expose `amounts` alone.
       rows: buckets.map(b => {
@@ -754,6 +770,7 @@ server.registerTool("report", {
         ...(totalParts.length === 1 ? { amount_cents: totalParts[0][1], currency: totalParts[0][0] } : {}),
         amounts: totalParts.map(([c, cents]) => ({ currency: c, amount_cents: cents })),
       },
+      ...(a.group_by ? {} : { note: "No group_by was given, so this is the plain total for the period; rows is empty." }),
       ...(a.group_by === "tag" ? { note: TAG_OVERLAP_NOTE } : {}),
       tier: pro ? "pro" : "free",
     }, null, 2) + note);
@@ -770,6 +787,10 @@ server.registerTool("report", {
       lines.push(["TOTAL", hours(totalSec), "", (cents / 100).toFixed(2), cur].map(csvCell).join(","));
     }
     return ok(lines.join("\n") + note);
+  }
+  if (!a.group_by) {
+    if (entries.length === 0) return ok(`No time tracked in that period.${note}`);
+    return ok(`Total ${hours(totalSec)} h, ${moneyOf(totals.amounts)}.${note}`);
   }
   if (buckets.length === 0) return ok(`No time tracked in that period.${note}`);
   const body = table(
