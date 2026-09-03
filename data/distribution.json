@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03T00:20:00Z",
+  "updated_at": "2026-09-03T00:18:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -135,6 +135,11 @@
       "status": "published",
       "url": "https://mcp.zovo.one/setup",
       "note": "43 URLs, all HTTP 200; 36 client-by-server pages 490-551 words each with FAQPage JSON-LD and canonical; client facts verified against each client's public docs on 2026-09-03; IndexNow POST 200 for all 43"
+    },
+    "estate-backlinks": {
+      "status": "prepared",
+      "url": "https://github.com/theluckystrike/mcp-servers/blob/main/docs/BACKLINKS_RESULT.md",
+      "note": "Footer blocks patched for ukmoneycalc.com and statewage.com (Astro 4, both live == repo HEAD), each linking /s/invoice, /s/time-tracker, /s/expense-tracker. NOT deployed: npm ci and astro build both hang here (no registry reach, exit 124, no dist), so the mandatory pre-deploy local build could not be verified. Diffs and live baseline sha256s are in docs/BACKLINKS_RESULT.md; ~/Desktop/portfolio-empire is iCloud-dataless, use fresh clones."
     }
   },
   "per_server": {
