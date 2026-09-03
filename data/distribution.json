@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03T00:18:00Z",
+  "updated_at": "2026-09-03T00:31:07Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -138,8 +138,8 @@
     },
     "estate-backlinks": {
       "status": "published",
-      "url": "https://ukmoneycalc.com and https://statewage.com",
-      "note": "footer block live on every page of both sites (15 + 63 pages) linking /s/invoice, /s/time-tracker, /s/expense-tracker; verified by curl"
+      "url": "https://github.com/theluckystrike/mcp-servers/blob/main/docs/BACKLINKS_RESULT.md",
+      "note": "Sitewide footer links to /s/invoice, /s/time-tracker and /s/expense-tracker live on 2 owned Astro sites: ukmoneycalc.com (commit 1cab454, 15 pages, GH Actions -> wrangler pages) and statewage.com (commit 362f2d8, 63 pages, wrangler deploy version 503012c3, NOT git-connected despite its workflow comment). Live pages verified byte-identical to the locally built artifacts, diff vs baseline is the added block only, 0 assets deleted."
     }
   },
   "per_server": {
