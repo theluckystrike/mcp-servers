@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T04:58:41.681Z",
+  "generated_at": "2026-09-03T05:12:46.230Z",
   "session": {
-    "count": 26,
+    "count": 27,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -106,10 +106,53 @@
       {
         "at": "2026-09-03T04:58:41.645Z",
         "note": "loop 4: resume, recurring, clauses in build; organic R3 fleet 99.2, downloads 286"
+      },
+      {
+        "at": "2026-09-03T05:12:46.191Z",
+        "note": "loop 4: resume, recurring, clauses built (12/13/15 tests); validation 241/241; audits, packaging, content, demos, submissions in flight"
       }
     ]
   },
   "servers": [
+    {
+      "id": "clauses",
+      "npm_name": "@theluckystrike/mcp-clauses",
+      "version": "0.4.0",
+      "dir": "servers/clauses",
+      "tools": [
+        "clause_add",
+        "clause_get",
+        "clause_update",
+        "clause_delete",
+        "clause_list",
+        "clause_search",
+        "clause_import",
+        "clause_export",
+        "contract_assemble",
+        "variables_list"
+      ],
+      "tool_count": 10,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 15 / # fail 0 / ## failures",
+      "result_status": "DONE",
+      "loc": 1125,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
@@ -169,7 +212,7 @@
       "build_ok": true,
       "test_summary": "# pass 8 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1815,
+      "loc": 1828,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -249,7 +292,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 1155,
+      "loc": 1207,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -277,7 +320,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 408,
+      "loc": 411,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -331,6 +374,46 @@
       }
     },
     {
+      "id": "recurring",
+      "npm_name": "@theluckystrike/mcp-recurring",
+      "version": "0.4.0",
+      "dir": "servers/recurring",
+      "tools": [
+        "schedule_create",
+        "schedule_list",
+        "schedule_get",
+        "schedule_update",
+        "schedule_pause",
+        "schedule_resume",
+        "schedule_delete",
+        "schedule_upcoming",
+        "invoice_generate_due",
+        "schedule_history",
+        "forecast"
+      ],
+      "tool_count": 11,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 28 / # fail 0 / # pass 13 / # fail 0",
+      "result_status": "DONE",
+      "loc": 940,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
       "version": "0.4.0",
@@ -349,9 +432,9 @@
       "free_limits": "pending",
       "price_usd": 19,
       "build_ok": true,
-      "test_summary": "pending",
-      "result_status": "pending",
-      "loc": 1336,
+      "test_summary": "# tests 22   # pass 22   # fail 0 / # tests 12   # pass 12   # fail 0",
+      "result_status": "DONE",
+      "loc": 1398,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -504,6 +587,11 @@
     ],
     "products": [
       {
+        "id": "clauses",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/clauses"
+      },
+      {
         "id": "currency",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/currency"
@@ -532,6 +620,11 @@
         "id": "price-tracker",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/price-tracker"
+      },
+      {
+        "id": "recurring",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/recurring"
       },
       {
         "id": "resume",
@@ -695,6 +788,10 @@
     {
       "file": "docs/REMOTE_RESULT.md",
       "first_line": "REMOTE_RESULT.md - hosted streamable-HTTP endpoints (INTEL R1)"
+    },
+    {
+      "file": "docs/RESUME_AUDIT.md",
+      "first_line": "mcp-resume: adversarial audit and user-value run"
     },
     {
       "file": "docs/SETUP_PAGES_RESULT.md",
