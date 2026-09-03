@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T08:23:49.594Z",
+  "generated_at": "2026-09-03T08:43:24.174Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -34,7 +34,7 @@
     {
       "cat": "Discovery",
       "name": "Pages indexed on the storefront sitemap",
-      "value": 116,
+      "value": 129,
       "target": 150,
       "unit": "URLs",
       "how": "curl mcp.zovo.one/sitemap.xml",
@@ -74,7 +74,7 @@
     {
       "cat": "Activation",
       "name": "Anonymous hosted tokens minted",
-      "value": 17,
+      "value": 19,
       "target": 100,
       "unit": "tokens",
       "how": "wrangler kv key list --remote (prefix anon)",
@@ -84,7 +84,7 @@
     {
       "cat": "Activation",
       "name": "Hosted tenants with stored data",
-      "value": 102,
+      "value": 105,
       "target": 100,
       "unit": "tenants",
       "how": "wrangler kv key list --remote (prefix tok)",
@@ -94,7 +94,7 @@
     {
       "cat": "Activation",
       "name": "Hosted downloads served",
-      "value": 73,
+      "value": 67,
       "target": 200,
       "unit": "files (1h TTL)",
       "how": "wrangler kv key list --remote (prefix dl)",
@@ -124,7 +124,7 @@
     {
       "cat": "Value",
       "name": "Seam defects fixed of found",
-      "value": 41,
+      "value": 60,
       "target": 66,
       "unit": "of 66",
       "how": "defect ledger in the user-value tab",
@@ -154,7 +154,7 @@
     {
       "cat": "Reliability",
       "name": "Unit tests passing",
-      "value": 464,
+      "value": 465,
       "target": "all",
       "unit": "tests",
       "how": "npm test",
@@ -164,13 +164,13 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 1319,
+      "value": 78,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
       "how": "3 timed POSTs to /mcp/time-tracker",
       "why": "Above about a second, clients start their first prompt before the server answers (round 4 D-R5).",
-      "status": "progress"
+      "status": "met"
     },
     {
       "cat": "Reliability",
@@ -215,7 +215,7 @@
     {
       "cat": "Monetization",
       "name": "Pro tenants on hosted endpoints",
-      "value": 294,
+      "value": 308,
       "target": 20,
       "unit": "tenants (includes validation keys)",
       "how": "wrangler kv key list --remote (prefix lic)",
@@ -226,7 +226,7 @@
   "raw": {
     "stripe": {
       "sessions_last100": 100,
-      "probe_sessions": 37,
+      "probe_sessions": 61,
       "human_sessions": 0,
       "paid": 0,
       "note": "sessions created before 2026-09-03 08:55 UTC predate probe tagging and are excluded",
@@ -234,16 +234,16 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 606,
+      "total": 629,
       "by": {
-        "anon": 17,
-        "dl": 73,
-        "lic": 294,
-        "meta": 91,
+        "anon": 19,
+        "dl": 67,
+        "lic": 308,
+        "meta": 96,
         "mint": 2,
-        "rl": 25,
+        "rl": 30,
         "shared": 2,
-        "tok": 102
+        "tok": 105
       }
     },
     "license_kv": {
@@ -251,17 +251,17 @@
       "by": {}
     },
     "latency": {
-      "p50_ms": 1319,
+      "p50_ms": 78,
       "samples": [
-        1753,
-        961,
-        1319
+        463,
+        78,
+        71
       ]
     },
     "registry": {
       "entries": 12,
       "hosted": 11
     },
-    "sitemap_urls": 116
+    "sitemap_urls": 129
   }
 }

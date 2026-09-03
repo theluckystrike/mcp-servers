@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
@@ -235,7 +235,7 @@
     },
     {
       "name": "rate_on",
-      "description": "Call this tool for the ECB rate of one currency pair on one date. Returns the rate, the date the rate actually came from, and whether that was an exact match for the date asked for."
+      "description": "Call this tool for the ECB rate of one pair on one date. Returns both directions, the date the rate came from, and which way round the ECB publishes the pair, so a reciprocal is never reported as the published figure."
     },
     {
       "name": "currencies_list",

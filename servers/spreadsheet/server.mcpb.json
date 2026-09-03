@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
   "description": "Open, inspect, filter, edit and convert xlsx and csv files from your AI chat. Processing is local.",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.1/spreadsheet.mcpb",
-      "version": "0.4.1",
-      "fileSha256": "6d3e654a3ac1412718995e790772b7f510f59344bc4161294a92f8b5395fc02a",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.4.2/spreadsheet.mcpb",
+      "version": "0.4.2",
+      "fileSha256": "bef393607499b83662da43b8666e712ed93cefe7f32cfff2d049a18cbc21c5f6",
       "transport": {
         "type": "stdio"
       },
