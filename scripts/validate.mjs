@@ -57,7 +57,7 @@ const PROBES = {
     const imp = await c.tool("ics_import", { text: ics, name: "Work" }); ok(`${tier}: ics_import 3 events`, !imp.isError && /3/.test(imp.text), imp.text.slice(0, 80));
     const ev = await c.tool("events_list", { from: "2026-09-08", to: "2026-09-14", zone: "UTC" }); ok(`${tier}: events_list shows Nova call and Holiday`, !ev.isError && /Nova call/.test(ev.text) && /Holiday/.test(ev.text), ev.text.slice(0, 100));
     const cf = await c.tool("conflicts", { from: "2026-09-08", to: "2026-09-14" }); ok(`${tier}: conflicts finds the overlap`, !cf.isError && /Nova call/.test(cf.text) && /Design review/.test(cf.text), cf.text.slice(0, 100));
-    const te = await c.tool("event_to_time_entry", { event_id: (ev.text.match(/a1@probe|[0-9a-f]{8,}/) || ["a1@probe"])[0], project: "Nova" }); ok(`${tier}: event_to_time_entry returns start/end/project`, !te.isError && /Nova/.test(te.text) && /2026-09-10/.test(te.text), te.text.slice(0, 100));
+    const te = await c.tool("event_to_time_entry", { event_id: (ev.text.match(/\bwork\.[0-9a-f]+\.\d{8}T\d{6}\b/) || ["a1@probe"])[0], project: "Nova" }); ok(`${tier}: event_to_time_entry returns start/end/project`, !te.isError && /Nova/.test(te.text) && /2026-09-10/.test(te.text), te.text.slice(0, 100));
     for (const n of ["Second", "Third"]) { const r = await c.tool("ics_import", { text: ics.replace(/probe/g, n), name: n }); if (n === "Third") ok(`${tier}: 3rd calendar ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(r.text) : /mcp\.zovo\.one\/buy\/calendar/.test(r.text), r.text.slice(0, 80)); }
   },
   pdf: async (c, tmp, tier, ok) => {
