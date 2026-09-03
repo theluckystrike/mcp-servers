@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-price-tracker",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Ask your AI what something costs right now, track price drops and get told when a target price is hit. All data stays local.",
   "type": "module",
   "bin": {

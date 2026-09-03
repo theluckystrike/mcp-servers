@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-03T02:15:48.140Z — session count 23</div>
+    <div class="meta">generated 2026-09-03T02:34:23.858Z — session count 24</div>
   </header>
 
   <div class="kpi-row">
@@ -128,7 +128,7 @@
       <tbody>
         <tr>
     <td class="mono">currency</td>
-    <td class="mono">0.3.0</td>
+    <td class="mono">0.3.1</td>
     <td class="num">8</td>
     <td class="tools" title="rates_latest, convert, convert_many, fx_rates_for, rate_history, rate_on, currencies_list, cache_status">rates_latest, convert, convert_many, fx_rates_for, rate_history, rate_on, currencies_list, cache_status</td>
     <td>pending</td>
@@ -142,7 +142,7 @@
   </tr>
 <tr>
     <td class="mono">docx</td>
-    <td class="mono">0.3.0</td>
+    <td class="mono">0.3.1</td>
     <td class="num">8</td>
     <td class="tools" title="business_set, doc_create, doc_from_markdown, doc_read, doc_to_html, doc_fill_template, proposal_create, contract_create">business_set, doc_create, doc_from_markdown, doc_read, doc_to_html, doc_fill_template, proposal_create, contract_create</td>
     <td>pending</td>
@@ -156,7 +156,7 @@
   </tr>
 <tr>
     <td class="mono">expense-tracker</td>
-    <td class="mono">0.2.5</td>
+    <td class="mono">0.3.1</td>
     <td class="num">12</td>
     <td class="tools" title="expense_add, expense_list, expense_update, expense_delete, receipt_attach, category_rules, expense_settings, expense_summary, mileage_add, expense_export, expense_to_invoice, expense_mark_rebilled">expense_add, expense_list, expense_update, expense_delete, receipt_attach, category_rules, expense_settings, expense_summary, mileage_add, expense_export, expense_to_invoice, expense_mark_rebilled</td>
     <td>pending</td>
@@ -170,7 +170,7 @@
   </tr>
 <tr>
     <td class="mono">invoice</td>
-    <td class="mono">0.2.5</td>
+    <td class="mono">0.3.1</td>
     <td class="num">10</td>
     <td class="tools" title="business_set, client_add, client_list, invoice_create, invoice_from_hours, invoice_list, invoice_get, invoice_mark_paid, invoice_pdf, overdue_report">business_set, client_add, client_list, invoice_create, invoice_from_hours, invoice_list, invoice_get, invoice_mark_paid, invoice_pdf, overdue_report</td>
     <td>pending</td>
@@ -184,7 +184,7 @@
   </tr>
 <tr>
     <td class="mono">office-suite</td>
-    <td class="mono">0.2.5</td>
+    <td class="mono">0.3.1</td>
     <td class="num">0</td>
     <td class="tools" title="pending">pending</td>
     <td>pending</td>
@@ -198,7 +198,7 @@
   </tr>
 <tr>
     <td class="mono">price-tracker</td>
-    <td class="mono">0.2.5</td>
+    <td class="mono">0.3.1</td>
     <td class="num">8</td>
     <td class="tools" title="price_check, watch_add, watch_list, watch_remove, watch_refresh, price_history, price_add_manual, alerts_pending">price_check, watch_add, watch_list, watch_remove, watch_refresh, price_history, price_add_manual, alerts_pending</td>
     <td>pending</td>
@@ -212,7 +212,7 @@
   </tr>
 <tr>
     <td class="mono">spreadsheet</td>
-    <td class="mono">0.2.5</td>
+    <td class="mono">0.3.1</td>
     <td class="num">8</td>
     <td class="tools" title="sheet_info, sheet_read, sheet_query, sheet_stats, sheet_find, sheet_write, sheet_add_column, sheet_convert">sheet_info, sheet_read, sheet_query, sheet_stats, sheet_find, sheet_write, sheet_add_column, sheet_convert</td>
     <td>pending</td>
@@ -226,7 +226,7 @@
   </tr>
 <tr>
     <td class="mono">time-tracker</td>
-    <td class="mono">0.2.5</td>
+    <td class="mono">0.3.1</td>
     <td class="num">11</td>
     <td class="tools" title="timer_start, timer_stop, timer_status, entry_add, entry_list, entry_delete, entry_edit, project_set_rate, report, export_csv, invoice_summary">timer_start, timer_stop, timer_status, entry_add, entry_list, entry_delete, entry_edit, project_set_rate, report, export_csv, invoice_summary</td>
     <td>pending</td>
@@ -240,7 +240,7 @@
   </tr>
 <tr>
     <td class="mono">timezone</td>
-    <td class="mono">0.3.0</td>
+    <td class="mono">0.3.1</td>
     <td class="num">9</td>
     <td class="tools" title="now, convert_time, overlap, find_meeting_slots, dst_changes, business_days, contacts_set, contacts_list, ics_create">now, convert_time, overlap, find_meeting_slots, dst_changes, business_days, contacts_set, contacts_list, ics_create</td>
     <td>pending</td>
@@ -313,11 +313,14 @@
 <tr><td class="mono">docs/CODEX_REVIEW_V2.md</td><td>1. [servers/expense-tracker/src/money.ts:61](/Users/mike/mcp-servers/servers/expense-tracker/src/money.ts:61) — P1 — Rounding net instead of the VAT component loses VAT on half-cent cases. Fix: calculate `vat = roundHalfUp(gross * rate / (100 + rate))`, then `net = gross - vat`. Trigger: `expense_add {amount:0.03,currency:&quot;EUR&quot;,vat_rate:20}` reports VAT `EUR 0.00` instead of `EUR 0.01`.</td></tr>
 <tr><td class="mono">docs/CODEX_REVIEW_V3.md</td><td>1. `servers/time-tracker/src/index.ts:65` — P0 — Any read or JSON parse failure is treated as an empty database; the next mutation overwrites the existing history. Minimal input: malformed `data.json` followed by `timer_start`. Fix: treat only `ENOENT` as empty and fail without saving on corruption or permission errors.</td></tr>
 <tr><td class="mono">docs/COMPARE_RESULT.md</td><td>COMPARE - head-to-head pages for &quot;X vs Y&quot; and &quot;alternatives&quot; queries</td></tr>
+<tr><td class="mono">docs/CONTENT_R3_RESULT.md</td><td>Content round 3: guides, setup and compare pages for currency, docx, timezone - 2026-09-03</td></tr>
 <tr><td class="mono">docs/CONTENT_RESULT.md</td><td>Guides content run - 2026-09-02</td></tr>
+<tr><td class="mono">docs/CURRENCY_AUDIT.md</td><td>mcp-currency: adversarial audit and user-value run</td></tr>
 <tr><td class="mono">docs/DEMO_RESULT.md</td><td>status: DONE</td></tr>
 <tr><td class="mono">docs/DIRECTORIES_RESULT.md</td><td>Directories submission — RESULT</td></tr>
 <tr><td class="mono">docs/DISTRIBUTION.md</td><td>Distribution runbook — 4 MCP servers (theluckystrike)</td></tr>
 <tr><td class="mono">docs/DISTRIBUTION_RESULT.md</td><td>status: DONE</td></tr>
+<tr><td class="mono">docs/DOCX_AUDIT.md</td><td>mcp-docx: adversarial audit and user-value run</td></tr>
 <tr><td class="mono">docs/EXPENSE_AUDIT.md</td><td>mcp-expense-tracker: adversarial audit and user-value run</td></tr>
 <tr><td class="mono">docs/EXPENSE_DIST_RESULT.md</td><td>Expense tracker distribution: Docker MCP catalog, Cline marketplace, guide</td></tr>
 <tr><td class="mono">docs/FORMS_RESULT.md</td><td>Free directory submissions (forms + PR lists) — RESULT</td></tr>
@@ -334,6 +337,7 @@
 <tr><td class="mono">docs/README_DEPTH_RESULT.md</td><td>README depth pass — 2026-09-02</td></tr>
 <tr><td class="mono">docs/REMOTE_RESULT.md</td><td>REMOTE_RESULT.md - hosted streamable-HTTP endpoints (INTEL R1)</td></tr>
 <tr><td class="mono">docs/SETUP_PAGES_RESULT.md</td><td>Setup pages run - 2026-09-03</td></tr>
+<tr><td class="mono">docs/TIMEZONE_AUDIT.md</td><td>mcp-timezone: adversarial audit and user-value run</td></tr>
 <tr><td class="mono">docs/USER_VALUE.md</td><td>User value audit — 2026-09-02</td></tr>
 <tr><td class="mono">docs/USER_VALUE_R2.md</td><td>User value audit, round 2 — 2026-09-02</td></tr>
 <tr><td class="mono">docs/USER_VALUE_R3.md</td><td>User value audit, round 3 — 2026-09-02</td></tr>
@@ -351,7 +355,8 @@
     <table>
       <thead><tr><th>at</th><th>note</th></tr></thead>
       <tbody>
-        <tr><td class="mono">2026-09-03T02:15:48.115Z</td><td>loop 3: currency, docx, timezone built (21/8/23 tests); Stripe products live; validation 178/178; audits + hosting + content in flight</td></tr>
+        <tr><td class="mono">2026-09-03T02:34:23.811Z</td><td>loop 3: v0.3.1, 8 servers + bundle, all hosted, 9 registry entries, audits done, 27 new pages</td></tr>
+<tr><td class="mono">2026-09-03T02:15:48.115Z</td><td>loop 3: currency, docx, timezone built (21/8/23 tests); Stripe products live; validation 178/178; audits + hosting + content in flight</td></tr>
 <tr><td class="mono">2026-09-03T00:56:32.843Z</td><td>loop 2 closed: v0.2.5, hosted hardening v2, 209 tests, validation 127/127, downloads 102</td></tr>
 <tr><td class="mono">2026-09-03T00:44:55.707Z</td><td>v0.2.5: round-6 fixes, 194 tests, validation 127/127; backlinks live; compare pages live</td></tr>
 <tr><td class="mono">2026-09-03T00:29:36.097Z</td><td>estate backlinks live on ukmoneycalc + statewage (78 pages)</td></tr>

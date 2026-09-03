@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T02:15:48.140Z",
+  "generated_at": "2026-09-03T02:34:23.858Z",
   "session": {
-    "count": 23,
+    "count": 24,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -94,6 +94,10 @@
       {
         "at": "2026-09-03T02:15:48.115Z",
         "note": "loop 3: currency, docx, timezone built (21/8/23 tests); Stripe products live; validation 178/178; audits + hosting + content in flight"
+      },
+      {
+        "at": "2026-09-03T02:34:23.811Z",
+        "note": "loop 3: v0.3.1, 8 servers + bundle, all hosted, 9 registry entries, audits done, 27 new pages"
       }
     ]
   },
@@ -101,7 +105,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -138,7 +142,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -156,7 +160,7 @@
       "build_ok": true,
       "test_summary": "# pass 8 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1431,
+      "loc": 1508,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -175,7 +179,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.2.5",
+      "version": "0.3.1",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -216,7 +220,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.2.5",
+      "version": "0.3.1",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -255,7 +259,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.2.5",
+      "version": "0.3.1",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -283,7 +287,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.2.5",
+      "version": "0.3.1",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -320,7 +324,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.2.5",
+      "version": "0.3.1",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -357,7 +361,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.2.5",
+      "version": "0.3.1",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -397,7 +401,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -416,7 +420,7 @@
       "build_ok": true,
       "test_summary": "# pass 23 / # fail 0",
       "result_status": "DONE",
-      "loc": 1274,
+      "loc": 1328,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -533,8 +537,16 @@
       "first_line": "COMPARE - head-to-head pages for \"X vs Y\" and \"alternatives\" queries"
     },
     {
+      "file": "docs/CONTENT_R3_RESULT.md",
+      "first_line": "Content round 3: guides, setup and compare pages for currency, docx, timezone - 2026-09-03"
+    },
+    {
       "file": "docs/CONTENT_RESULT.md",
       "first_line": "Guides content run - 2026-09-02"
+    },
+    {
+      "file": "docs/CURRENCY_AUDIT.md",
+      "first_line": "mcp-currency: adversarial audit and user-value run"
     },
     {
       "file": "docs/DEMO_RESULT.md",
@@ -551,6 +563,10 @@
     {
       "file": "docs/DISTRIBUTION_RESULT.md",
       "first_line": "status: DONE"
+    },
+    {
+      "file": "docs/DOCX_AUDIT.md",
+      "first_line": "mcp-docx: adversarial audit and user-value run"
     },
     {
       "file": "docs/EXPENSE_AUDIT.md",
@@ -615,6 +631,10 @@
     {
       "file": "docs/SETUP_PAGES_RESULT.md",
       "first_line": "Setup pages run - 2026-09-03"
+    },
+    {
+      "file": "docs/TIMEZONE_AUDIT.md",
+      "first_line": "mcp-timezone: adversarial audit and user-value run"
     },
     {
       "file": "docs/USER_VALUE.md",
