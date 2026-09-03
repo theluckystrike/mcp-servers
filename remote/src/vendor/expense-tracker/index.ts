@@ -137,7 +137,7 @@ const amount = (name: string) => z.number().finite().refine((n) => n >= 0, `${na
 
 server.registerTool("expense_add", {
   title: "Add an expense",
-  description: "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. Amounts are integer minor units in the expense's own currency.",
+  description: "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when a project is given and false otherwise, and the response always states the value used. Amounts are integer minor units in the expense's own currency.",
   inputSchema: {
     amount: amount("amount").describe("Gross amount on the receipt, in major units, e.g. 12.34"),
     currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("ISO code, default EUR"),
@@ -147,7 +147,7 @@ server.registerTool("expense_add", {
     project: text().optional().describe("Project or client this belongs to"),
     note: text(2000).optional(),
     receipt_path: text(4096).optional().describe("Absolute path to the receipt file; it is checked and hashed"),
-    billable: z.boolean().optional().describe("Rebillable to the client, default false"),
+    billable: z.boolean().optional().describe("Rebillable to the client. Default: true when project is given (a receipt booked to a client project is normally rebilled), false otherwise. Pass it explicitly to override."),
     vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent already included in amount"),
     tax_rate: z.number().finite().min(0).max(100).optional().describe("Alias for vat_rate"),
     vat: z.number().finite().min(0).max(100).optional().describe("Alias for vat_rate"),
@@ -185,11 +185,15 @@ server.registerTool("expense_add", {
       const givenRate = [a.vat_rate, a.tax_rate, a.vat].find((v) => typeof v === "number");
       const vatRate = typeof givenRate === "number" ? givenRate : db.settings.default_vat_rate;
       const vatFromDefault = typeof givenRate !== "number" && typeof vatRate === "number";
+      // D-R21: "for <project>" is the only reason to book a client project onto a receipt,
+      // and a default of false silently dead-ended expense_to_invoice one turn later.
+      const billable = a.billable ?? !!a.project;
+      const billableDefaulted = typeof a.billable !== "boolean";
       const e: Expense = {
         id: newId(), date, amount_minor: minor, currency, category,
         merchant: a.merchant, project: a.project, note: a.note,
         receipt_path: receipt?.path, receipt_sha256: receipt?.sha256,
-        billable: a.billable ?? false, vat_rate: vatRate,
+        billable: billable, vat_rate: vatRate,
         created: new Date().toISOString(),
       };
       db.expenses.push(e);
@@ -201,8 +205,10 @@ server.registerTool("expense_add", {
         (e.project ? ` for ${e.project}` : "") +
         (s.vat_minor
           ? `. Net ${formatMoney(s.net_minor, currency)}, VAT ${formatMoney(s.vat_minor, currency)} at ${s.rate}%${vatFromDefault ? " (your default rate)" : ""}`
-          : ". No VAT rate was given, so net equals gross and the VAT column is 0. Pass vat_rate on the call, or set a default once with expense_settings, to get the net/VAT split.") +
-        (e.billable ? ". Billable." : "") +
+          : ". No VAT rate was given, so net equals gross and the VAT column is 0. Pass vat_rate on the call, or set a default once with expense_settings, to get the net/VAT split") +
+        (e.billable
+          ? `. Billable: yes${billableDefaulted && a.project ? " (default for an expense with a project; pass billable: false to keep it off the client's invoice)" : ""} - it will appear in expense_to_invoice.`
+          : `. Billable: no${billableDefaulted ? " (default with no project)" : ""} - it will NOT appear in expense_to_invoice; pass billable: true to rebill it.`) +
         (receipt ? `\nReceipt ${receipt.path} sha256 ${receipt.sha256.slice(0, 16)}...` : ""));
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -788,6 +794,33 @@ server.registerTool("expense_to_invoice", {
           `expense_to_invoice {project: ${JSON.stringify(a.project)}, from: "${w.from}", to: "${a.to}", target_currency: "${present[0]}", ` +
           `fx_rates: {${present.slice(1).map((c) => `"${c}": <1 ${c} in ${present[0]}>`).join(", ")}}}. ` +
           `Otherwise invoice one group now and rebill the others on their own invoices.`;
+      }
+
+      // D-R20: an empty set has no lines, so it must not assert a conversion or a tax fact
+      // about them. count 0 returns a plain reason and NO fx_note at all.
+      const empty = rows.length === 0;
+      const emptyNote =
+        "no matching billable, un-rebilled expenses in this range" +
+        (a.include_rebilled ? "" : " (an expense must have billable: true and no rebilled_at)") +
+        (w.note ? ` ${w.note}` : "");
+      if (empty) {
+        return json({
+          project: a.project, from: w.from, to: a.to,
+          markup_percent: markup,
+          count: 0,
+          marked_rebilled: false,
+          vat_assumed_lines: 0,
+          vat_unknown_lines: 0,
+          rounding_adjustment_lines: 0,
+          currencies: [],
+          source_currencies: [],
+          target_currency: target ?? null,
+          converted_lines: 0,
+          fx_rates_used: null,
+          line_items_per_currency: [],
+          next_step: "Nothing to rebill in that range. The two usual causes are: the expenses are not marked billable (expense_add defaults billable to true only when a project is given), or they were already rebilled (pass include_rebilled: true to see those). Check with expense_list {from, to, project}.",
+          note: emptyNote,
+        });
       }
 
       return json({

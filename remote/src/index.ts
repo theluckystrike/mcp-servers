@@ -9,7 +9,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { STORE, type RequestCtx, type Download } from "./shims/ctx.js";
-import { TMP_RE } from "./shims/fs.js";
+import { TMP_RE, recount } from "./shims/fs.js";
 import { createServer as createTimeTracker } from "./vendor/time-tracker/index.js";
 import { createServer as createPriceTracker } from "./vendor/price-tracker/index.js";
 import { createServer as createInvoice } from "./vendor/invoice/index.js";
@@ -86,6 +86,14 @@ function publicKey(): Promise<CryptoKey> {
 
 interface Auth { tenant: string; isPro: boolean; kind: "license" | "anon"; limit: number }
 
+/**
+ * What may appear in a tenant id. KV keys are built as `${tenant}:${server}` and the
+ * sweep deletes by the `${tenant}:` prefix, so a ":" or any other delimiter inside an
+ * id would make one tenant's prefix a prefix of another's. Ids are refused, not
+ * escaped: a licence with an unusable id is a minting mistake, not a caller mistake.
+ */
+const TENANT_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
+
 /** Verify an MCPL1 key exactly the way packages/mcp-license does, with WebCrypto. */
 async function verifyLicense(key: string, product: string): Promise<{ ok: boolean; reason?: string; id?: string; p?: string }> {
   const parts = key.trim().split(".");
@@ -122,12 +130,21 @@ async function authenticate(req: Request, env: Env, product: string): Promise<Au
   if (token.startsWith("MCPL1.")) {
     const r = await verifyLicense(token, product);
     if (!r.ok) return json({ error: "invalid_license", reason: r.reason, guide: GUIDE }, 401);
+    if (!TENANT_ID_RE.test(r.id ?? "")) {
+      return json({
+        error: "invalid_license",
+        reason: "the id in this key is not a usable storage key on the hosted endpoint (allowed: 1-64 characters of letters, digits, underscore or dash)",
+        guide: GUIDE,
+      }, 401);
+    }
     return { tenant: `lic:${r.id}`, isPro: true, kind: "license", limit: RATE_LIMIT_PRO };
   }
   if (/^anon_[0-9a-f]{32}$/.test(token)) {
+    const id = token.slice(5);
+    if (!TENANT_ID_RE.test(id)) return json({ error: "invalid_token", guide: GUIDE }, 401);
     const seen = await env.REMOTE_DATA.get(`tok:${token}`);
     if (seen === null) return json({ error: "unknown_token", message: "Mint a new one at GET https://mcp.zovo.one/mcp/token", guide: GUIDE }, 401);
-    return { tenant: `anon:${token.slice(5)}`, isPro: false, kind: "anon", limit: RATE_LIMIT_FREE };
+    return { tenant: `anon:${id}`, isPro: false, kind: "anon", limit: RATE_LIMIT_FREE };
   }
   return json({ error: "invalid_token", message: "Token is neither an MCPL1 licence key nor an anonymous token.", guide: GUIDE }, 401);
 }
@@ -141,6 +158,28 @@ async function rateLimit(env: Env, auth: Auth): Promise<Response | null> {
   }
   await env.REMOTE_DATA.put(key, String(n), { expirationTtl: 7200 });
   return null;
+}
+
+/**
+ * Constant-time secret comparison: both sides are HMAC-SHA-256'd under a key generated
+ * fresh in this isolate, and the 32-byte digests are compared with no early exit, so
+ * neither the length nor any prefix of the real secret is observable from timing.
+ */
+let cmpKeyPromise: Promise<CryptoKey> | null = null;
+async function secretEquals(a: string, b: string): Promise<boolean> {
+  // Generated on first use, not at module scope: Workers forbids random values there.
+  cmpKeyPromise ??= crypto.subtle.importKey(
+    "raw", crypto.getRandomValues(new Uint8Array(32)), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const key = await cmpKeyPromise;
+  const enc = new TextEncoder();
+  const [x, y] = await Promise.all([
+    crypto.subtle.sign("HMAC", key, enc.encode(a)),
+    crypto.subtle.sign("HMAC", key, enc.encode(b)),
+  ]);
+  const xa = new Uint8Array(x), ya = new Uint8Array(y);
+  let diff = xa.length ^ ya.length;
+  for (let i = 0; i < xa.length; i++) diff |= xa[i] ^ ya[i % ya.length];
+  return diff === 0;
 }
 
 /* --------------------------------------------------------------- storage */
@@ -266,6 +305,38 @@ async function sweep(env: Env): Promise<{ scanned: number; expired: number; dele
 
 /* ---------------------------------------------------------------- worker */
 
+/**
+ * Read the request body with the cap enforced on the stream, so a chunked body with no
+ * content-length is abandoned the moment it crosses the ceiling instead of being
+ * buffered whole. Returns null when the cap is exceeded.
+ */
+async function readBodyCapped(req: Request, limit: number): Promise<string | null> {
+  const body = req.body;
+  if (!body) {
+    const text = await req.text();
+    return new TextEncoder().encode(text).length > limit ? null : text;
+  }
+  const reader = body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      total += value.byteLength;
+      if (total > limit) { try { await reader.cancel(); } catch { /* client already gone */ } return null; }
+      chunks.push(value);
+    }
+  } finally {
+    try { reader.releaseLock(); } catch { /* already released */ }
+  }
+  const buf = new Uint8Array(total);
+  let at = 0;
+  for (const c of chunks) { buf.set(c, at); at += c.byteLength; }
+  return new TextDecoder().decode(buf);
+}
+
 /** Reject a JSON-RPC batch before the SDK sees it: one POST is one operation here. */
 function isBatch(body: string): boolean {
   for (const ch of body) {
@@ -288,8 +359,13 @@ export default {
     if (path === "/mcp") return json(indexDoc(base));
 
     if (path === "/mcp/admin/sweep") {
+      // Method first: the sweep deletes data, so it is never reachable by a link,
+      // a prefetch or a GET with the secret in a header.
+      if (req.method !== "POST") {
+        return json({ error: "method_not_allowed", message: "The sweep is a POST." }, 405, { allow: "POST" });
+      }
       const secret = env.SWEEP_SECRET;
-      if (!secret || req.headers.get("x-sweep-secret") !== secret) {
+      if (!secret || !(await secretEquals(secret, req.headers.get("x-sweep-secret") ?? ""))) {
         return json({ error: "not_found", index: `${base}/mcp` }, 404);
       }
       return json({ ok: true, ...(await sweep(env)), older_than_days: SWEEP_AFTER_DAYS });
@@ -357,9 +433,9 @@ export default {
       if (declared > MAX_BODY_BYTES) {
         return json({ error: "payload_too_large", limit_bytes: MAX_BODY_BYTES, message: `The request body is ${declared} bytes; this endpoint accepts ${MAX_BODY_BYTES}. Send less data per call - for spreadsheet, load a smaller sheet or run the server locally over stdio.` }, 413);
       }
-      const body = await req.text();
-      if (new TextEncoder().encode(body).length > MAX_BODY_BYTES) {
-        return json({ error: "payload_too_large", limit_bytes: MAX_BODY_BYTES }, 413);
+      const body = await readBodyCapped(req, MAX_BODY_BYTES);
+      if (body === null) {
+        return json({ error: "payload_too_large", limit_bytes: MAX_BODY_BYTES, message: `This endpoint accepts ${MAX_BODY_BYTES} bytes per request and stopped reading at that point. Send less data per call - for spreadsheet, load a smaller sheet or run the server locally over stdio.` }, 413);
       }
       if (isBatch(body)) {
         return json({
@@ -372,11 +448,14 @@ export default {
 
     const files = await hydrate(env, auth.tenant, product);
     const maxBytes = cfg.maxBytes ?? DEFAULT_MAX_BYTES;
+    const counted = recount(files);
 
     const rctx: RequestCtx = {
       tenant: auth.tenant, server: product, isPro: auth.isPro,
       files, dirs: new Set<string>(), downloads: [], baseUrl: base,
       publish: cfg.publish, published: new Map<string, string>(), maxBytes,
+      bytes: counted.bytes, nfiles: counted.nfiles,
+      fds: new Map(), nextFd: 100,
     };
     const before = JSON.stringify(persistable(files, cfg, rctx.published));
 

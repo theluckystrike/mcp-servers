@@ -82,7 +82,10 @@ export function readJsonFile<T>(file: string, empty: T): T {
   const marker = markerPath(file);
   if (existsSync(marker)) {
     let moved = `${file}.corrupt-*`;
-    try { moved = readFileSync(marker, "utf8").trim() || moved; } catch { /* marker unreadable */ }
+    try {
+      const t = readFileSync(marker, "utf8").trim();
+      if (t) { try { const j = JSON.parse(t) as { quarantined?: unknown }; moved = typeof j.quarantined === "string" && j.quarantined ? j.quarantined : t; } catch { moved = t; } }
+    } catch { /* marker unreadable */ }
     throw blocked(file, moved);
   }
   let raw: string;
@@ -98,7 +101,7 @@ export function readJsonFile<T>(file: string, empty: T): T {
     return JSON.parse(raw) as T;
   } catch (e) {
     const moved = `${file}.corrupt-${corruptStamp()}`;
-    try { renameSync(file, moved); writeFileSync(marker, moved); } catch { /* keep the parse error */ }
+    try { renameSync(file, moved); writeFileSync(marker, JSON.stringify({ quarantined: moved, at: new Date().toISOString(), hint: "the original data file failed to parse; it was moved, nothing was overwritten; restore it manually or delete this marker to start fresh" }) + "\n"); } catch { /* keep the parse error */ }
     process.stderr.write(`${file} is not valid JSON (${(e as Error).message}); moved to ${moved}\n`);
     throw blocked(file, moved);
   }

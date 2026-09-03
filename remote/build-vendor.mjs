@@ -114,21 +114,29 @@ function patchSpreadsheetSheet(src) {
   // sheet_load, which lives under /sheets/ in the per-request virtual filesystem.
   src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
     `export function expandPath(p: string): string {
-  if (typeof p !== "string" || p.trim() === "") throw new UserError("path is required");
-  let s = p.trim();
-  s = s.replace(/^~\\/?/, "").replace(/^\\.\\//, "");
-  const base = (s.split(/[\\\\/]/).pop() ?? "").replace(/[^A-Za-z0-9._ -]+/g, "_").replace(/^\\.+/, "").trim();
-  if (!base) throw new UserError("path is required; it names a sheet loaded with sheet_load");
+  if (typeof p !== "string" || p.trim() === "") throw new UserError("path is required; it names a sheet loaded with sheet_load");
+  let s = p.trim().replace(/^~\\/?/, "").replace(/^\\.\\//, "");
   const root = "/sheets/";
+  if (s.startsWith(root)) s = s.slice(root.length);
+  const named = (why: string) =>
+    new UserError(
+      \`\${JSON.stringify(p)} is not a usable sheet name: \${why}. On this hosted endpoint a path is just the \` +
+      \`name you loaded the data under with sheet_load - 1-64 characters of letters, digits, underscore or dash, \` +
+      \`optionally with a .csv, .tsv, .txt, .xlsx, .xlsm or .json extension. sheet_files lists what is loaded.\`);
+  if (/[\\\\/]/.test(s)) throw named("it contains a directory separator");
+  if (s.includes("..")) throw named('it contains ".."');
+  if (s.startsWith(".")) throw named("it starts with a dot");
+  if (/\\.(tmp|lock|corrupt)$/i.test(s)) throw named(".tmp, .lock and .corrupt are reserved");
+  const m = /^([A-Za-z0-9_-]{1,64})(\\.[A-Za-z0-9]{1,8})?$/.exec(s);
+  if (!m) throw named("it has characters outside A-Z, a-z, 0-9, underscore and dash, or is over 64 characters");
+  const base = m[1];
+  const ext = (m[2] ?? "").toLowerCase();
+  if (ext) return root + base + ext;
   const files = ctx().files;
-  if (files.has(root + base)) return root + base;
-  if (!/\\.[A-Za-z0-9]+$/.test(base)) {
-    for (const ext of [".csv", ".tsv", ".txt", ".xlsx", ".xlsm", ".json"]) {
-      if (files.has(root + base + ext)) return root + base + ext;
-    }
-    return root + base + ".csv";
+  for (const e of [".csv", ".tsv", ".txt", ".xlsx", ".xlsm", ".json"]) {
+    if (files.has(root + base + e)) return root + base + e;
   }
-  return root + base;
+  return root + base + ".csv";
 }
 `, "spreadsheet expandPath");
   src = must(src, 'if (!existsSync(full)) throw new UserError(`file not found: ${full}`);',
@@ -239,33 +247,101 @@ const SSRF_GUARD = `/**
  * SSRF guard for the hosted endpoint (added by remote/build-vendor.mjs).
  * The worker sits inside a network the caller cannot otherwise reach, so a watch URL
  * must not be able to point at loopback, private, link-local or metadata addresses.
+ * Every IPv4 literal form inet_aton accepts is parsed here - dotted quad, bare decimal
+ * (http://2130706433/), hex (http://0x7f000001/), octal (http://0177.0.0.1/) and the
+ * short 1-3 part forms - and IPv6 is parsed to bytes, so a v4-mapped literal
+ * ([::ffff:127.0.0.1], which the URL parser rewrites to [::ffff:7f00:1]) is caught too.
  * Only literal addresses and obvious internal names are caught here; a hostname that
  * resolves to a private address through DNS is not, and is an accepted residual risk.
  */
 const MAX_REDIRECTS = 5;
 
-function isPrivateIPv4(h: string): boolean {
-  const m = /^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$/.exec(h);
-  if (!m) return false;
-  const [a, b] = [Number(m[1]), Number(m[2])];
-  if ([a, b, Number(m[3]), Number(m[4])].some((n) => n > 255)) return true;
+/** inet_aton: 1-4 parts, each decimal, 0x-hex or 0-prefixed octal. Returns 4 bytes. */
+function ipv4Bytes(h: string): number[] | null {
+  const parts = h.split(".");
+  if (parts.length < 1 || parts.length > 4) return null;
+  const nums: number[] = [];
+  for (const part of parts) {
+    let n: number;
+    if (/^0[xX][0-9a-fA-F]{1,8}$/.test(part)) n = parseInt(part.slice(2), 16);
+    else if (/^0[0-7]{1,11}$/.test(part)) n = parseInt(part.slice(1), 8);
+    else if (/^(0|[1-9][0-9]{0,9})$/.test(part)) n = Number(part);
+    else return null;
+    if (!Number.isSafeInteger(n) || n < 0) return null;
+    nums.push(n);
+  }
+  for (let i = 0; i < nums.length - 1; i++) if (nums[i] > 255) return null;
+  const last = nums[nums.length - 1];
+  if (last >= Math.pow(256, 4 - (nums.length - 1))) return null;
+  let v = last;
+  for (let i = 0; i < nums.length - 1; i++) v += nums[i] * Math.pow(256, 3 - i);
+  return [Math.floor(v / 16777216) % 256, Math.floor(v / 65536) % 256, Math.floor(v / 256) % 256, v % 256];
+}
+
+/** True when the host is written only out of the characters an IPv4 literal uses. */
+function looksNumeric(h: string): boolean { return /^[0-9a-fA-FxX.]+$/.test(h) && /[0-9]/.test(h); }
+
+function isPrivateV4Bytes(b: number[]): boolean {
+  const [a, c] = [b[0], b[1]];
   if (a === 10 || a === 127 || a === 0) return true;
-  if (a === 172 && b >= 16 && b <= 31) return true;
-  if (a === 192 && b === 168) return true;
-  if (a === 169 && b === 254) return true;          // link-local, includes 169.254.169.254
-  if (a === 100 && b >= 64 && b <= 127) return true; // carrier-grade NAT
-  if (a >= 224) return true;                         // multicast and reserved
+  if (a === 172 && c >= 16 && c <= 31) return true;
+  if (a === 192 && c === 168) return true;
+  if (a === 192 && c === 0 && b[2] === 0) return true;   // IETF protocol assignments
+  if (a === 169 && c === 254) return true;               // link-local, includes 169.254.169.254
+  if (a === 100 && c >= 64 && c <= 127) return true;     // carrier-grade NAT
+  if (a >= 224) return true;                             // multicast and reserved
   return false;
 }
 
+function isPrivateIPv4(h: string): boolean {
+  const b = ipv4Bytes(h);
+  if (!b) return looksNumeric(h) && !h.includes(":");   // numeric but unparseable: refuse it
+  return isPrivateV4Bytes(b);
+}
+
+/** Parse an IPv6 literal (with or without brackets, with or without a v4 tail) to 16 bytes. */
+function ipv6Bytes(raw: string): number[] | null {
+  let s = raw.replace(/^\\[/, "").replace(/\\]$/, "").toLowerCase().replace(/%.*$/, "");
+  if (!s.includes(":")) return null;
+  const dotted = /^(.*:)([0-9a-fx.]+\\.[0-9a-fx.]+)$/.exec(s);
+  if (dotted) {
+    const v4 = ipv4Bytes(dotted[2]);
+    if (!v4) return null;
+    s = dotted[1] + ((v4[0] << 8) | v4[1]).toString(16) + ":" + ((v4[2] << 8) | v4[3]).toString(16);
+  }
+  const halves = s.split("::");
+  if (halves.length > 2) return null;
+  const head = halves[0] === "" ? [] : halves[0].split(":");
+  const tail = halves.length === 2 ? (halves[1] === "" ? [] : halves[1].split(":")) : [];
+  let groups: string[];
+  if (halves.length === 1) { if (head.length !== 8) return null; groups = head; }
+  else {
+    const fill = 8 - head.length - tail.length;
+    if (fill < 1) return null;
+    groups = [...head, ...Array(fill).fill("0"), ...tail];
+  }
+  const out: number[] = [];
+  for (const g of groups) {
+    if (!/^[0-9a-f]{1,4}$/.test(g)) return null;
+    const n = parseInt(g, 16);
+    out.push(n >> 8, n & 255);
+  }
+  return out;
+}
+
 function isPrivateIPv6(h: string): boolean {
-  const s = h.replace(/^\\[|\\]$/g, "").toLowerCase();
-  if (!s.includes(":")) return false;
-  if (s === "::" || s === "::1") return true;
-  if (/^f[cd][0-9a-f]{2}:/.test(s)) return true;     // fc00::/7 unique local
-  if (/^fe[89ab][0-9a-f]:/.test(s)) return true;     // fe80::/10 link-local
-  const v4 = /::ffff:(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})$/.exec(s);
-  if (v4) return isPrivateIPv4(v4[1]);
+  const b = ipv6Bytes(h);
+  if (!b) return h.includes(":");            // an unparseable colon-host is not public either
+  if (b.every((x) => x === 0)) return true;                                   // ::
+  if (b.slice(0, 15).every((x) => x === 0) && b[15] === 1) return true;       // ::1
+  if ((b[0] & 0xfe) === 0xfc) return true;                                    // fc00::/7 unique local
+  if (b[0] === 0xfe && (b[1] & 0xc0) === 0x80) return true;                   // fe80::/10 link-local
+  if (b[0] === 0xff) return true;                                             // ff00::/8 multicast
+  const zeros10 = b.slice(0, 10).every((x) => x === 0);
+  if (zeros10 && b[10] === 0xff && b[11] === 0xff) return isPrivateV4Bytes(b.slice(12));   // ::ffff:a.b.c.d
+  if (zeros10 && b[10] === 0 && b[11] === 0) return true;                     // ::a.b.c.d and friends
+  if (b[0] === 0x00 && b[1] === 0x64 && b[2] === 0xff && b[3] === 0x9b) return isPrivateV4Bytes(b.slice(12));  // NAT64
+  if (b[0] === 0x20 && b[1] === 0x02) return isPrivateV4Bytes(b.slice(2, 6)); // 6to4
   return false;
 }
 
@@ -273,13 +349,14 @@ export function guardTarget(u: URL): void {
   if (u.protocol !== "http:" && u.protocol !== "https:") {
     throw new FetchError(\`only http and https URLs can be fetched (got \${u.protocol})\`);
   }
-  const host = u.hostname.toLowerCase().replace(/\\.$/, "");
-  const bad =
+  const raw = u.hostname.toLowerCase();
+  const host = raw.replace(/\\.$/, "");
+  const blocked =
     host === "localhost" || host.endsWith(".localhost") ||
     host === "metadata.google.internal" || host.endsWith(".internal") ||
     host.endsWith(".local") || host === "" ||
-    isPrivateIPv4(host) || isPrivateIPv6(u.hostname.toLowerCase());
-  if (bad) {
+    (raw.includes(":") ? isPrivateIPv6(raw) : isPrivateIPv4(host));
+  if (blocked) {
     throw new FetchError(
       \`\${u.hostname} is not a public address, so this hosted endpoint will not fetch it. \` +
       \`Track a public product page instead, or run the price tracker locally over stdio \` +

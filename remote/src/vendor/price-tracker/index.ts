@@ -151,11 +151,7 @@ registerTool(
   "price_check",
   {
     title: "Check a price now",
-    description:
-      "Use this instead of fetching the page yourself: returns the structured price, currency, product title, extraction confidence, " +
-      "and the change since the last check; handles EU/US number formats and JSON-LD/Open Graph/microdata. " +
-      "It also verifies the shop did not redirect off the product page, so a dead item reports a clear failure rather than the cheapest thing on a category listing. " +
-      "Reading the raw HTML gives you none of that. Does not create a watch - use watch_add for that.",
+    description: "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price. Returns price, currency, title, confidence and the change since the last check.",
     inputSchema: { url: z.string().describe("Product page URL, including https://") },
   },
   async ({ url }): Promise<ToolResult> => {
@@ -195,10 +191,7 @@ registerTool(
   "watch_add",
   {
     title: "Watch a price",
-    description:
-      "Start tracking a product page: fetches it once, stores the first observation with its extraction confidence, and optionally records a target price. " +
-      "There is no background job - prices are only re-read when watch_refresh runs, and alerts_pending then reports drops and target hits. " +
-      "Ask \"refresh my watches\" at the start of a session.",
+    description: "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price. Starts tracking it: first observation, optional target, re-read by watch_refresh.",
     inputSchema: {
       url: z.string().describe("Product page URL"),
       label: z.string().optional().describe("Short name for this item"),

@@ -20,11 +20,34 @@ function blocked(file: string, moved: string): CorruptDataError {
   );
 }
 
+/**
+ * D-R23: the marker is read by a model as often as by a human, so its contents are a
+ * one-line JSON object that explains itself rather than a bare path. Older markers hold
+ * just the quarantine path, so reading falls back to the raw text.
+ */
+export function markerBody(quarantined: string): string {
+  return JSON.stringify({
+    quarantined,
+    at: new Date().toISOString(),
+    hint: "the original data file failed to parse; it was moved, nothing was overwritten; restore it manually or delete this marker to start fresh",
+  }) + "\n";
+}
+
+function markerQuarantinePath(raw: string): string | undefined {
+  const t = raw.trim();
+  if (!t) return undefined;
+  try {
+    const parsed = JSON.parse(t) as { quarantined?: unknown };
+    if (typeof parsed.quarantined === "string" && parsed.quarantined) return parsed.quarantined;
+    return undefined;
+  } catch { return t; }   // pre-D-R23 marker: the file held the path alone
+}
+
 export function readJsonFile<T>(file: string, empty: T): T {
   const marker = markerPath(file);
   if (existsSync(marker)) {
     let moved = `${file}.corrupt-*`;
-    try { moved = readFileSync(marker, "utf8").trim() || moved; } catch { /* marker unreadable */ }
+    try { moved = markerQuarantinePath(readFileSync(marker, "utf8")) ?? moved; } catch { /* marker unreadable */ }
     throw blocked(file, moved);
   }
   let raw: string;
@@ -40,7 +63,7 @@ export function readJsonFile<T>(file: string, empty: T): T {
     return JSON.parse(raw) as T;
   } catch (e) {
     const moved = `${file}.corrupt-${stamp()}`;
-    try { renameSync(file, moved); writeFileSync(marker, moved); } catch { /* keep the parse error */ }
+    try { renameSync(file, moved); writeFileSync(marker, markerBody(moved)); } catch { /* keep the parse error */ }
     process.stderr.write(`time-tracker: ${file} is not valid JSON (${(e as Error).message}); moved to ${moved}\n`);
     throw blocked(file, moved);
   }

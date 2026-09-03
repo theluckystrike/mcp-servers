@@ -641,3 +641,112 @@ contains "PDF" only inside "print to PDF", and `curl -I` on the download URL
 returns `content-type: text/html; charset=utf-8` and
 `content-disposition: inline; filename="INV-2026-0001.html"`. `remote` stayed
 14/14 in `node scripts/validate.mjs`.
+
+## Hardening v2
+
+Twelve findings from `docs/CODEX_REVIEW_REMOTE_V2.md`. Nine were fixed in `remote/`;
+three are accepted risks, documented at the end. Deployed as version
+`d525a3ee` (and one follow-up), verified with curl against
+`https://mcp.zovo.one`; `node scripts/validate.mjs` stayed at `remote: 14/14`
+(run 42, 127/127 overall).
+
+**1. Sheet names are confined (`remote/src/shims/sheet-load.ts`, `safeName`).** A name is
+now rejected, not sanitised: a rejected name never silently becomes a different file. No
+`/` or `\`, no `..`, no leading dot, no `.tmp` / `.lock` / `.corrupt` suffix, and 1-64
+characters of `[A-Za-z0-9_-]` once an optional `.csv/.tsv/.txt/.xlsx/.xlsm/.json`
+extension is off. The stored path is always `/sheets/<name>.<ext>`. The vendored
+`expandPath` (rewritten in `remote/build-vendor.mjs`) applies the same rule to every other
+tool's `path` argument and to `out_path`, so no argument can address a key outside
+`/sheets/`. Verified: `../data`, `a/b` -> "it cannot contain / or \\"; `x.tmp`, `n.lock` ->
+"reserved"; `.hidden` -> "cannot start with a dot"; `my sheet!` and a 70-character name ->
+the charset/length error; `ok_name-1.csv` still loads.
+
+**2. Tenant ids are delimiter-free (`remote/src/index.ts`, `TENANT_ID_RE`).** KV keys are
+`${tenant}:${server}` and the sweep deletes by the `${tenant}:` prefix, so an id
+containing `:` made one tenant's prefix a prefix of another's. Licence ids and anonymous
+token bodies must now match `/^[A-Za-z0-9_-]{1,64}$/` before any key is built; a key with
+an unusable id is refused with 401 `invalid_license`. Verified with keys signed for the
+ids `abc:spreadsheet`, `meta:x` and `a/b` (all 401 with the reason above) and `ok_id-1`
+(initialises normally).
+
+**3. `appendFileSync` enforces the aggregate cap (`remote/src/shims/fs.ts`).** An append is
+now a write of the concatenation and goes through the same `checkCaps` as
+`writeFileSync`; on refusal nothing is written and the previous content is untouched.
+Verified in a bundled unit run against the real shim: 200 appends of 10 bytes under a
+1 KB cap stop at 1010 bytes of file with the "over the 1 KB cap" message.
+
+**5. 64 files per tenant, and an incremental byte counter (`remote/src/shims/fs.ts`).**
+`recount()` runs once per request at hydration; every later mutation adjusts `ctx().bytes`
+and `ctx().nfiles`, so a write no longer rescans and re-encodes the whole map. `MAX_FILES`
+is 64 persisted files per tenant per endpoint (plus a hard 128-entry ceiling that also
+counts scratch files). `sheet_load` and `sheet_unload` now go through `writeFileSync` /
+`unlinkSync` instead of touching the map directly, so loaded sheets are counted too.
+`totalBytes()` is kept as the reference definition and the unit run asserts the
+incremental counter equals it. Verified live: sheets `s1..s64` load, `s65` returns "your
+token already keeps 64 files", and `sheet_files` reports 64.
+
+**6. The body cap is enforced on the stream (`remote/src/index.ts`, `readBodyCapped`).**
+The declared `content-length` is still rejected first; a body with no usable length is now
+read chunk by chunk and abandoned with 413 the moment it passes 256 KB, before anything is
+parsed. Cloudflare's edge supplies a `content-length` even for a chunked upload, so the
+streaming branch was verified under `wrangler dev` (local workerd): a 400 KB chunked
+`POST` with no `content-length` returns 413 "stopped reading at that point", while a
+normal small request still returns 200. Against production both the declared-length and
+chunked forms return 413.
+
+**9. The admin sweep is POST-only (`remote/src/index.ts`).** The method is checked before
+the secret, so the route is never reachable by a link or a prefetch. Verified: `GET` and
+`HEAD /mcp/admin/sweep` return 405 with `allow: POST`, with or without a secret header;
+`POST` with a wrong secret returns the usual 404.
+
+**10. The sweep secret is compared in constant time (`remote/src/index.ts`,
+`secretEquals`).** Both sides are HMAC-SHA-256'd under a 32-byte key generated on first
+use inside the request (Workers forbids random values at module scope) and the 32-byte
+digests are compared with no early exit, so neither the length nor any prefix of the real
+secret is observable. Verified: a wrong secret still returns 404.
+
+**11. The SSRF guard parses every literal address form
+(`remote/build-vendor.mjs`, vendored to `remote/src/vendor/price-tracker/fetch.ts`).**
+`ipv4Bytes()` implements inet_aton - dotted quad, bare decimal, hex, octal and the short
+1-3 part forms - and a numeric-looking host that fails to parse is refused rather than
+passed. `ipv6Bytes()` parses an IPv6 literal to 16 bytes (brackets, `::` compression and a
+dotted v4 tail), so `::`, `::1`, `fc00::/7`, `fe80::/10`, `ff00::/8`, `::ffff:a.b.c.d`,
+`::a.b.c.d`, NAT64 and 6to4 are all classified from the bytes; the old
+`::ffff:(\d+\.\d+\.\d+\.\d+)` regex could not match `[::ffff:127.0.0.1]` because the URL
+parser rewrites it to `[::ffff:7f00:1]`. The guard runs before the first hop and again
+after every redirect. Verified live via `price_check`: `http://2130706433/`,
+`http://0x7f000001/`, `http://0177.0.0.1/`, `http://017700000001/`, `http://2852039166/`
+(169.254.169.254), `http://[::ffff:127.0.0.1]/`, `http://[0:0:0:0:0:ffff:169.254.169.254]/`,
+`http://[::1]/`, `http://[fd00::1]/`, `http://127.0.0.1/`, `http://192.168.0.1/`,
+`http://169.254.169.254/latest/meta-data/` and `http://localhost/` are all refused;
+`https://example.com/` still fetches and reports "no price found".
+
+**12. File descriptors are request-local and carry their own offset
+(`remote/src/shims/fs.ts`, `remote/src/shims/ctx.ts`).** `fds` and `nextFd` moved from
+module scope into `RequestCtx`, so two concurrent requests cannot see each other's open
+files and every descriptor disappears with the request. `readSync(fd, buf, off, len, null)`
+(or with the position omitted) now reads from that descriptor's own offset and advances
+it; an explicit position is still absolute and does not move the offset. Verified in the
+unit run (`ABCD|EFGH|IJ` from repeated null-position reads, `CDE` from position 2) and
+live end to end: `sheet_load` of a 5,001-line CSV (89,097 bytes) followed by `sheet_info`
+(reports 5000 data rows x 3 cols) and `sheet_read {limit: 5}` (returns rows 1-5), which is
+the chunked `readCsvHead` path.
+
+### Accepted risks
+
+**4. The quota counts decoded bytes.** An xlsx is charged its decoded size while KV stores
+base64 inside a JSON document, roughly a third more, and an outstanding one-hour download
+copy is not charged at all. The cap is therefore a lower bound on real KV usage, by a
+bounded and known factor. Accepted: charging serialised bytes would make the caller-facing
+number ("87.1 KB of 2 MB") stop matching the data they sent.
+
+**7. Counters are eventually consistent.** The rate-limit and token-mint counters are KV
+read-modify-write, so concurrent requests can observe the same count and a burst can
+briefly exceed the limit. They are ceilings on sustained use, not admission control.
+Accepted: a Durable Object per token would make every request pay a coordination hop.
+
+**8. Last write wins per tenant.** The tenant document is read at the start of a request
+and written at the end, so two concurrent requests for one token both write a whole
+document and the later one wins; the sweep is likewise not fenced against an active
+tenant. Accepted for the same reason as 7 - one token is one client, and the failure mode
+is a lost update, not cross-tenant leakage.

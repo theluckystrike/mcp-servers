@@ -8,18 +8,39 @@
 import { Buffer } from "node:buffer";
 import { z } from "zod";
 import { ctx } from "./ctx.js";
-import { byteLen, BIN } from "./fs.js";
+import { byteLen, BIN, writeFileSync, unlinkSync } from "./fs.js";
 
 export const SHEET_ROOT = "/sheets/";
 /** Hard ceiling on everything one tenant keeps in KV for this endpoint. */
 export const TENANT_MAX_BYTES = 2 * 1024 * 1024;
 
-/** A sheet name is a filename, never a path: no directories, no traversal. */
+/** Extensions sheet_load understands; anything else is not a sheet name. */
+export const SHEET_EXT = /\.(csv|tsv|txt|xlsx|xlsm|json)$/i;
+/** Suffixes the fs shim and the persistence layer reserve for their own use. */
+export const RESERVED_SUFFIX = /\.(tmp|lock|corrupt)$/i;
+/** What a sheet name may be once the extension is off: a short, flat identifier. */
+export const NAME_RE = /^[A-Za-z0-9_-]{1,64}$/;
+
+/**
+ * A sheet name is a bare identifier, never a path. Rejected rather than sanitised, so a
+ * caller is never silently given a different file than the one it asked for: no slashes,
+ * no "..", no leading dot, no reserved suffix, at most 64 chars of [A-Za-z0-9_-]. The
+ * stored path is always `/sheets/<name>.<ext>` and cannot escape that prefix.
+ */
 export function safeName(raw: string): string {
-  const base = String(raw).trim().split(/[\\/]/).pop() ?? "";
-  const s = base.replace(/[^A-Za-z0-9._ -]+/g, "_").replace(/^\.+/, "").trim();
-  if (!s) throw new Error("name must contain at least one letter, digit, dot, dash or space");
-  return s.slice(0, 120);
+  const s = String(raw ?? "").trim();
+  if (!s) throw new Error("name is required");
+  if (/[\\/]/.test(s)) throw new Error("name is a sheet name, not a path: it cannot contain / or \\");
+  if (s === "." || s === ".." || s.includes("..")) throw new Error('name cannot contain ".."');
+  if (s.startsWith(".")) throw new Error("name cannot start with a dot");
+  if (RESERVED_SUFFIX.test(s)) throw new Error("names ending .tmp, .lock or .corrupt are reserved");
+  const base = s.replace(SHEET_EXT, "");
+  if (!NAME_RE.test(base)) {
+    throw new Error(
+      "name must be 1-64 characters of letters, digits, underscore or dash, " +
+      'optionally with a .csv, .tsv, .txt, .xlsx, .xlsm or .json extension (for example "sales" or "sales.csv")');
+  }
+  return base;
 }
 
 export function tenantBytes(): number {
@@ -39,7 +60,7 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
       "Give either csv (raw text, comma or tab separated) or xlsx_base64 (a base64-encoded .xlsx workbook). Loaded sheets are kept for your token and survive between calls; the total is capped at 2 MB per token. " +
       "Files the other tools write come back as a download link that is valid for one hour.",
     inputSchema: {
-      name: z.string().min(1).max(120).describe('Name to refer to this data by, e.g. "sales" or "sales.csv"'),
+      name: z.string().min(1).max(70).describe('Name to refer to this data by: 1-64 characters of letters, digits, underscore or dash, e.g. "sales" or "sales.csv"'),
       csv: z.string().optional().describe("Raw CSV or TSV text, including the header row"),
       xlsx_base64: z.string().optional().describe("Base64-encoded .xlsx workbook"),
     },
@@ -47,7 +68,7 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
     try {
       if (!a.csv && !a.xlsx_base64) return fail("give either csv or xlsx_base64");
       if (a.csv && a.xlsx_base64) return fail("give csv or xlsx_base64, not both");
-      const base = safeName(a.name).replace(/\.(csv|tsv|txt|xlsx|xlsm|json)$/i, "");
+      const base = safeName(a.name);
       const ext = a.xlsx_base64 ? "xlsx" : /\t/.test((a.csv ?? "").split("\n")[0] ?? "") ? "tsv" : "csv";
       const path = `${SHEET_ROOT}${base}.${ext}`;
       const c = ctx();
@@ -77,9 +98,11 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
 
       const replaced = c.files.has(path);
       for (const other of [...c.files.keys()]) {
-        if (other !== path && other.startsWith(`${SHEET_ROOT}${base}.`)) c.files.delete(other);
+        if (other !== path && other.startsWith(`${SHEET_ROOT}${base}.`)) unlinkSync(other);
       }
-      c.files.set(path, value);
+      // Through the fs shim, so the byte and file-count counters stay exact and the
+      // per-tenant file cap applies to loaded sheets as well as to written ones.
+      writeFileSync(path, value);
       c.dirs.add("/sheets");
 
       const lines = a.csv ? a.csv.split(/\r?\n/).filter((l) => l.trim() !== "").length : 0;
@@ -110,14 +133,14 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
   server.registerTool("sheet_unload", {
     title: "Delete a loaded sheet",
     description: "Delete one sheet loaded for this token, freeing its space under the 2 MB cap.",
-    inputSchema: { name: z.string().min(1).max(120) },
+    inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {
     try {
       const c = ctx();
-      const base = safeName(a.name).replace(/\.(csv|tsv|txt|xlsx|xlsm|json)$/i, "");
+      const base = safeName(a.name);
       let n = 0;
       for (const k of [...c.files.keys()]) {
-        if (k === `${SHEET_ROOT}${base}` || k.startsWith(`${SHEET_ROOT}${base}.`)) { c.files.delete(k); n++; }
+        if (k === `${SHEET_ROOT}${base}` || k.startsWith(`${SHEET_ROOT}${base}.`)) { unlinkSync(k); n++; }
       }
       if (n === 0) return fail(`nothing loaded under the name ${JSON.stringify(base)}. Use sheet_files to see what is loaded.`);
       return ok(`Deleted ${JSON.stringify(base)}. Loaded for this token: ${(tenantBytes() / 1024).toFixed(1)} KB of ${TENANT_MAX_BYTES / 1048576} MB.`);

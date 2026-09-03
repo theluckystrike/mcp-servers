@@ -15,21 +15,29 @@ export const FREE_WRITE_ROWS = 500;
 export class UserError extends Error {}
 
 export function expandPath(p: string): string {
-  if (typeof p !== "string" || p.trim() === "") throw new UserError("path is required");
-  let s = p.trim();
-  s = s.replace(/^~\/?/, "").replace(/^\.\//, "");
-  const base = (s.split(/[\\/]/).pop() ?? "").replace(/[^A-Za-z0-9._ -]+/g, "_").replace(/^\.+/, "").trim();
-  if (!base) throw new UserError("path is required; it names a sheet loaded with sheet_load");
+  if (typeof p !== "string" || p.trim() === "") throw new UserError("path is required; it names a sheet loaded with sheet_load");
+  let s = p.trim().replace(/^~\/?/, "").replace(/^\.\//, "");
   const root = "/sheets/";
+  if (s.startsWith(root)) s = s.slice(root.length);
+  const named = (why: string) =>
+    new UserError(
+      `${JSON.stringify(p)} is not a usable sheet name: ${why}. On this hosted endpoint a path is just the ` +
+      `name you loaded the data under with sheet_load - 1-64 characters of letters, digits, underscore or dash, ` +
+      `optionally with a .csv, .tsv, .txt, .xlsx, .xlsm or .json extension. sheet_files lists what is loaded.`);
+  if (/[\\/]/.test(s)) throw named("it contains a directory separator");
+  if (s.includes("..")) throw named('it contains ".."');
+  if (s.startsWith(".")) throw named("it starts with a dot");
+  if (/\.(tmp|lock|corrupt)$/i.test(s)) throw named(".tmp, .lock and .corrupt are reserved");
+  const m = /^([A-Za-z0-9_-]{1,64})(\.[A-Za-z0-9]{1,8})?$/.exec(s);
+  if (!m) throw named("it has characters outside A-Z, a-z, 0-9, underscore and dash, or is over 64 characters");
+  const base = m[1];
+  const ext = (m[2] ?? "").toLowerCase();
+  if (ext) return root + base + ext;
   const files = ctx().files;
-  if (files.has(root + base)) return root + base;
-  if (!/\.[A-Za-z0-9]+$/.test(base)) {
-    for (const ext of [".csv", ".tsv", ".txt", ".xlsx", ".xlsm", ".json"]) {
-      if (files.has(root + base + ext)) return root + base + ext;
-    }
-    return root + base + ".csv";
+  for (const e of [".csv", ".tsv", ".txt", ".xlsx", ".xlsm", ".json"]) {
+    if (files.has(root + base + e)) return root + base + e;
   }
-  return root + base;
+  return root + base + ".csv";
 }
 
 export function requireExisting(p: string): string {

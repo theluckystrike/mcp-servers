@@ -1,4 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import type { Buffer } from "node:buffer";
 
 export interface Download {
   token: string;
@@ -24,6 +25,13 @@ export interface RequestCtx {
   published: Map<string, string>;
   /** Ceiling on the tenant's stored bytes for this endpoint; a write over it throws. */
   maxBytes?: number;
+  /** Persisted bytes (key + value, scratch files excluded), kept incrementally by the fs shim. */
+  bytes: number;
+  /** Persisted file count (scratch files excluded), kept incrementally by the fs shim. */
+  nfiles: number;
+  /** Open file descriptors, request-local: fd -> buffer plus its own read offset. */
+  fds: Map<number, { buf: Buffer; pos: number }>;
+  nextFd: number;
 }
 
 export const STORE = new AsyncLocalStorage<RequestCtx>();

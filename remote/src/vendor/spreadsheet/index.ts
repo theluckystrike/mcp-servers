@@ -242,14 +242,14 @@ async function infoText(path: string): Promise<string> {
 
 server.registerTool("sheet_info", {
   title: "Spreadsheet overview",
-  description: "Use for ANY .xlsx/.csv path, including paths outside the current directory; do not read the file yourself. Open an excel (xlsx/xlsm/xlsb/ods) or csv/tsv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading, querying or summing anything in a spreadsheet.",
+  description: "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Start here: sheet names, size, header row, column types and samples.",
   inputSchema: { path: z.string().describe("Path to the .xlsx/.xlsm/.xlsb/.ods/.csv/.tsv file (~ is expanded)") },
 }, guard(async ({ path }: { path: string }) => text(await infoText(path))));
 
 // ---------------------------------------------------------------- sheet_read
 server.registerTool("sheet_read", {
   title: "Read rows",
-  description: "Use for ANY .xlsx/.csv path, including paths outside the current directory; do not read the file yourself. Read rows from an excel or csv sheet as a text table, JSON records or CSV text. Use limit/offset to page through big files, or range for an A1 block like B2:F40. For totals or per-group sums use sheet_query with group_by instead.",
+  description: "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Reads rows as a table, JSON or CSV; page with limit/offset or an A1 range.",
   inputSchema: {
     path: z.string(),
     sheet: z.string().optional().describe("Sheet name; defaults to the first sheet"),
@@ -379,13 +379,7 @@ function describeQuery(q: {
 
 server.registerTool("sheet_query", {
   title: "Filter, group and sort rows",
-  description:
-    "Use for ANY .xlsx/.csv path, including paths outside the current directory; do not read the file yourself. Query an excel (xlsx) or csv file without writing any code: filter rows, group by a column, sum/count/average, sort and limit. " +
-    "where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. " +
-    'Column names with spaces go in brackets: [Unit Price] > 10 AND [Region] contains "north". Strings use single or double quotes. ' +
-    'Use group_by + aggregate for questions like "which rep sold the most units in the North region": ' +
-    'where \'[Region] = "North"\', group_by ["Rep"], aggregate [{"col":"Units","fn":"sum","as":"total_units"}], sort {"col":"total_units","dir":"desc"}, limit 5. ' +
-    'Aggregate functions: sum, count, avg, min, max. Numbers written as text ("1,250.00", "$1,250.00") are counted as numbers. sort may name an aggregate alias.',
+  description: "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filters, groups, aggregates and sorts in one call, e.g. where '[Qty] > 10'.",
   inputSchema: {
     path: z.string().describe("Path to the .xlsx or .csv file"),
     sheet: z.string().optional(),
@@ -456,7 +450,7 @@ server.registerTool("sheet_query", {
 // --------------------------------------------------------------- sheet_stats
 server.registerTool("sheet_stats", {
   title: "Column statistics",
-  description: "Whole-column statistics for an excel or csv sheet: count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too. For a sum per group (per rep, per region, per month) use sheet_query with group_by and aggregate.",
+  description: "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Whole-column statistics: count, empty, distinct, min, max, sum, mean, median.",
   inputSchema: { path: z.string(), sheet: z.string().optional(), columns: z.array(z.string()).optional().describe("Limit to these columns; default all") },
 }, guard(async ({ path, sheet, columns }: any) => {
   const o = open(path, sheet);

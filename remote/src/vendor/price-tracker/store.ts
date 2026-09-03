@@ -58,7 +58,19 @@ export function resetStoreFault(): void { fault = null; }
 
 function quarantine(p: string): string | null {
   const dest = `${p}.corrupt-${new Date().toISOString().replace(/[:.]/g, "-")}`;
-  try { renameSync(p, dest); return dest; } catch { return null; }
+  try {
+    renameSync(p, dest);
+    try { writeFileSync(`${p}.corrupt`, JSON.stringify({ quarantined: dest, at: new Date().toISOString(), hint: "the original data file failed to parse; it was moved, nothing was overwritten; restore it manually or delete this marker to start fresh" }) + "\n"); } catch { /* marker is best effort */ }
+    return dest;
+  } catch { return null; }
+}
+
+function markerQuarantined(p: string): string | null {
+  try {
+    const t = readFileSync(`${p}.corrupt`, "utf8").trim();
+    if (!t) return `${p}.corrupt-*`;
+    try { const j = JSON.parse(t) as { quarantined?: unknown }; return typeof j.quarantined === "string" && j.quarantined ? j.quarantined : t; } catch { return t; }
+  } catch { return null; }
 }
 
 function raise(message: string): never {
@@ -70,6 +82,8 @@ function raise(message: string): never {
 export function load(): DB {
   if (fault) throw new StoreError(fault);
   const p = dbPath();
+  const q = markerQuarantined(p);
+  if (q) raise(`the price database was quarantined earlier at ${q}; nothing was written. Restore it manually or delete ${p}.corrupt to start fresh.`);
   let raw: string;
   try {
     raw = readFileSync(p, "utf8");
