@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
@@ -67,11 +67,11 @@
     },
     {
       "name": "project_set_rate",
-      "description": "Set the hourly rate and currency used to turn tracked hours into money for a project or client."
+      "description": "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Pass apply_to_existing to re-rate time already logged for that project (add only_missing to touch only entries that carry no rate)."
     },
     {
       "name": "report",
-      "description": "Timesheet report: total tracked hours and billable money for a period, grouped by (group by) project, day, task or tag - hours per project, how much to bill. Money is grouped by currency and never mixes EUR with USD. Free tier covers the last 7 days."
+      "description": "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency. Money is grouped by currency and never mixes EUR with USD. Free tier covers the last 7 days."
     },
     {
       "name": "export_csv",
@@ -90,52 +90,20 @@
       "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
     },
     {
-      "name": "price_check",
-      "description": "Use this instead of fetching the page yourself: returns the structured price, currency, product title, extraction confidence, and the change since the last check; handles EU/US number formats and JSON-LD/Open Graph/microdata. It also verifies the shop did not redirect off the product page, so a dead item reports a clear failure rather than the cheapest thing on a category listing. Reading the raw HTML gives you none of that. Does not create a watch - use watch_add for that."
-    },
-    {
-      "name": "watch_add",
-      "description": "Start tracking a product page: fetches it once, stores the first observation with its extraction confidence, and optionally records a target price. There is no background job - prices are only re-read when watch_refresh runs, and alerts_pending then reports drops and target hits. Ask \"refresh my watches\" at the start of a session."
-    },
-    {
-      "name": "watch_list",
-      "description": "Show every tracked item with its current price, previous price, min, max, change %, target, extraction confidence and last check time. Prices are as of the last watch_refresh, not live."
-    },
-    {
-      "name": "watch_remove",
-      "description": "Stop tracking an item, by watch id or by URL. Its history is deleted."
-    },
-    {
-      "name": "watch_refresh",
-      "description": "This is what actually checks prices: re-fetches one watch or every watch, appends the new observations and returns current, previous, min, max, change %, extraction confidence and target hits. Nothing runs in the background, so run this whenever the user asks about prices, drops or alerts - typically once at the start of a session, then read alerts_pending."
-    },
-    {
-      "name": "price_history",
-      "description": "List the stored observations for one watch, newest last, each with its price, currency, source and extraction confidence. Free shows the last 30."
-    },
-    {
-      "name": "price_add_manual",
-      "description": "Store a price you read yourself, for shops that block automated requests. Creates the watch if it does not exist yet."
-    },
-    {
-      "name": "alerts_pending",
-      "description": "Answer \"did anything I watch get cheaper?\": lists every watch whose latest price is at or below its target, or which dropped 5% or more against the previous observation, with the change % and the confidence of the reading. Free and unlimited. It reads stored observations, so run watch_refresh first if the prices are stale."
-    },
-    {
       "name": "sheet_info",
-      "description": "Open an excel (xlsx/xlsm/xlsb/ods) or csv/tsv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading, querying or summing anything in a spreadsheet."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Start here: sheet names, size, header row, column types and samples."
     },
     {
       "name": "sheet_read",
-      "description": "Read rows from an excel or csv sheet as a text table, JSON records or CSV text. Use limit/offset to page through big files, or range for an A1 block like B2:F40. For totals or per-group sums use sheet_query with group_by instead."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Reads rows as a table, JSON or CSV; page with limit/offset or an A1 range."
     },
     {
       "name": "sheet_query",
-      "description": "Query an excel (xlsx) or csv file without writing any code: filter rows, group by a column, sum/count/average, sort and limit. where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. Column names with spaces go in brackets: [Unit Price] > 10 AND [Region] contains \"north\". Strings use single or double quotes. Use group_by + aggregate for questions like \"which rep sold the most units in the North region\": where '[Region] = \"North\"', group_by [\"Rep\"], aggregate [{\"col\":\"Units\",\"fn\":\"sum\",\"as\":\"total_units\"}], sort {\"col\":\"total_units\",\"dir\":\"desc\"}, limit 5. Aggregate functions: sum, count, avg, min, max. Numbers written as text (\"1,250.00\", \"$1,250.00\") are counted as numbers. sort may name an aggregate alias."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filters, groups, aggregates and sorts in one call, e.g. where '[Qty] > 10'."
     },
     {
       "name": "sheet_stats",
-      "description": "Whole-column statistics for an excel or csv sheet: count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too. For a sum per group (per rep, per region, per month) use sheet_query with group_by and aggregate."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Whole-column statistics: count, empty, distinct, min, max, sum, mean, median."
     },
     {
       "name": "sheet_find",
@@ -147,7 +115,7 @@
     },
     {
       "name": "sheet_add_column",
-      "description": "Add a computed column and save the result to a NEW file (the source is never modified unless out_path points at it). formula uses the same expression language as sheet_query over the columns of each row, e.g. \"[Qty] * [Unit Price]\" or '[Country] = \"PL\"'. Alternatively pass values, one per data row."
+      "description": "Add a computed column and save the result to a NEW file (the source is never modified unless out_path points at it). formula uses the same expression language as sheet_query over the columns of each row, e.g. \"[Qty] * [Unit Price]\" or '[Country] = \"PL\"'. Numeric results are rounded like the inputs: when every column the formula reads holds at most 2 decimals, the result is rounded to 2 decimals, so a VAT column comes out in cents rather than as 40.7868. Pass decimals to override. Alternatively pass values, one per data row."
     },
     {
       "name": "sheet_convert",
@@ -167,7 +135,7 @@
     },
     {
       "name": "invoice_create",
-      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed."
+      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed. Items may carry a per-line currency; every line on one invoice must agree with the invoice currency, and a mix is refused with the exact conversion argument to pass rather than billed as if it were one currency."
     },
     {
       "name": "invoice_from_hours",
@@ -195,7 +163,7 @@
     },
     {
       "name": "expense_add",
-      "description": "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. Amounts are integer minor units in the expense's own currency."
+      "description": "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when a project is given and false otherwise, and the response always states the value used. Amounts are integer minor units in the expense's own currency."
     },
     {
       "name": "expense_list",
@@ -227,7 +195,7 @@
     },
     {
       "name": "mileage_add",
-      "description": "Record a business trip as an expense. Money is distance x rate, using the built-in rate table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) unless you pass your own rate. Give either km or miles."
+      "description": "Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, no vehicle or engine class and no first-10000-mile band, so it is not a tax calculation. Pass rate_per_km for your exact scheme. currency is only accepted together with rate_per_km; a table rate always keeps its own currency. Give either km or miles."
     },
     {
       "name": "expense_export",
@@ -235,11 +203,107 @@
     },
     {
       "name": "expense_to_invoice",
-      "description": "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate, so the invoice recomputes the same tax. An expense with no VAT rate is split at the expense_settings default_vat_rate if one is set, and otherwise rebilled gross with tax_rate 0 and a warning in its description, so a downstream default rate cannot tax it twice. Line items are grouped per currency because one invoice carries one currency. This is a read-only preview: nothing is marked rebilled unless mark_rebilled is true, or expense_mark_rebilled is called once the invoice exists."
+      "description": "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate recorded on the expense, so the invoice recomputes the same tax and the line total comes back to the receipt gross. A stored rate of 0 is a rate, not a gap. An expense with NO rate recorded is rebilled gross with tax_rate 0 and a warning in its description; the expense_settings default is never applied retroactively, because it would rewrite the tax meaning of receipts entered before it existed. Pass assume_vat_rate explicitly to split those lines instead. Line items are grouped per currency because one invoice carries one currency. When the range holds MORE THAN ONE currency, pass target_currency plus fx_rates and every line is converted into one single group, each converted line carrying [converted from EUR 12.40 at 1.08] in its description; without fx_rates the response names the exact argument to pass. This is a read-only preview: marking happens only in expense_mark_rebilled, once the invoice exists."
     },
     {
       "name": "expense_mark_rebilled",
-      "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the ids from expense_to_invoice, or the same project and date range. Optionally record the invoice number on each expense. This is the step expense_to_invoice no longer does for you."
+      "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range marks only billable, not-yet-rebilled expenses in that one currency, so invoicing the EUR group cannot mark the PLN one. invoice_number is required: the marker records which invoice carries the expense."
+    },
+    {
+      "name": "rates_latest",
+      "description": "The most recent European Central Bank daily reference rates, re-expressed against any base. The answer always states the rate date, because ECB rates are published once a day around 16:00 CET on TARGET business days and a Sunday carries Friday's rate. Rates are cached locally and refreshed only when the copy is more than 6 hours old, so repeated calls and offline machines cost nothing."
+    },
+    {
+      "name": "convert",
+      "description": "Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounded to the target currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places. Every answer states the rate date it used. A weekend or holiday date falls back to the last published rate on or before it, and says so."
+    },
+    {
+      "name": "convert_many",
+      "description": "One amount, one source currency, many targets, all off the same ECB rate date. Each result is rounded to that target's own minor units."
+    },
+    {
+      "name": "fx_rates_for",
+      "description": "Return exactly the object that the expense tracker's expense_to_invoice takes as fx_rates: {\"EUR\": 1.08, \"GBP\": 1.27} meaning 1 unit of that currency = X units of the target. Call this when a rebill or an invoice spans more than one currency, then pass the fx_rates object straight through with target_currency, instead of asking the user for rates. The rate date is returned alongside so it can be written on the invoice."
+    },
+    {
+      "name": "rate_history",
+      "description": "The ECB rate for one currency pair over a window, with min, max, average and the change across the window. Give days for a trailing window, or from_date and to_date for an explicit one. Only TARGET business days have rates, so a 30-day window holds about 21 rows. Free reads up to 90 days; Pro reads the whole series back to 1999-01-04."
+    },
+    {
+      "name": "rate_on",
+      "description": "The ECB rate for a pair on one date. The ECB quotes every currency per 1 euro, so \"the ECB rate for USD\" is from EUR to USD, not the other way round; ask for the inverse only if the user did. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the answer says which date that was and why. Free covers the last 90 days; Pro covers every date back to 1999-01-04."
+    },
+    {
+      "name": "currencies_list",
+      "description": "Every currency in the ECB daily reference set, with its rate against the euro and the number of decimal places it is rounded to. Anything not on this list cannot be converted here."
+    },
+    {
+      "name": "cache_status",
+      "description": "What is cached on this machine, how old it is, and when it will next be refreshed. Answer this before trusting a rate on a machine that has been offline."
+    },
+    {
+      "name": "now",
+      "description": "The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC."
+    },
+    {
+      "name": "convert_time",
+      "description": "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'."
+    },
+    {
+      "name": "overlap",
+      "description": "The window each day when every listed place is inside working hours. Computed on a real date, so a DST week that widens or narrows the overlap is reflected."
+    },
+    {
+      "name": "find_meeting_slots",
+      "description": "Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody. Weekends in the first participant's zone are skipped."
+    },
+    {
+      "name": "dst_changes",
+      "description": "The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October."
+    },
+    {
+      "name": "business_days",
+      "description": "Business days between two dates in a place, excluding weekends and any holidays you pass. This tool has no national holiday calendar: unless you pass holidays, only weekends are excluded, so do not report the answer as a public-holiday-adjusted count. Use it for delivery dates and payment terms across a client's calendar."
+    },
+    {
+      "name": "contacts_set",
+      "description": "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later."
+    },
+    {
+      "name": "contacts_list",
+      "description": "Everyone you have saved, with their current local time and whether they are inside working hours right now."
+    },
+    {
+      "name": "ics_create",
+      "description": "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale."
+    },
+    {
+      "name": "doc_create",
+      "description": "Write a real .docx file from structured sections: headings, paragraphs, bullet or numbered lists and tables. Choose plain, letter (sender block top right, date, addressee) or proposal (letterhead band and cover title) layout. Returns the file path. Free and unlimited."
+    },
+    {
+      "name": "doc_from_markdown",
+      "description": "Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and **bold** / *italic* / `code` inline. Returns the file path. Free and unlimited."
+    },
+    {
+      "name": "doc_read",
+      "description": "Extract the text of an existing .docx: headings with their levels, paragraphs, list items and tables, in document order. Works on files Word, Google Docs or this server produced. Free and unlimited."
+    },
+    {
+      "name": "doc_to_html",
+      "description": "Convert a .docx to semantic HTML you can open in a browser and print to PDF. Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native dependency or a headless browser, and this server stays install-free, so printing the HTML is the supported route. Free and unlimited."
+    },
+    {
+      "name": "doc_fill_template",
+      "description": "Replace {{placeholders}} in an existing .docx and write a new file, keeping every style, table, header, footer and image of the original. Placeholders split across runs by Word's editor are handled, because the substitution runs on the joined text of each paragraph. Call with no values to list the placeholders a template contains."
+    },
+    {
+      "name": "proposal_create",
+      "description": "Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number that is never reused. Free tier: 3 proposals or contracts per calendar month."
+    },
+    {
+      "name": "contract_create",
+      "description": "Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. This is a template skeleton with labelled placeholders for a lawyer to review, not legal advice. Free tier: 3 proposals or contracts per calendar month."
     }
   ],
   "keywords": [
