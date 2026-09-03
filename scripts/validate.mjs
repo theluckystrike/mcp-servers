@@ -57,7 +57,7 @@ const PROBES = {
     const a = await c.tool("profile_set", prof); ok(`${tier}: profile_set`, !a.isError, a.text.slice(0, 80));
     const out = join(tmp, "cv.docx");
     const r = await c.tool("resume_create", { style: "modern", keywords: ["Go", "Kubernetes"], out_path: out }); ok(`${tier}: resume_create writes docx and reports keywords`, !r.isError && existsSync(out) && /Kubernetes/.test(r.text), r.text.slice(0, 100));
-    const t = await c.tool("tailor_to_job", { job_description: "Senior Go engineer with Kubernetes and Postgres experience." }); ok(`${tier}: tailor_to_job matched and missing`, !t.isError && /kubernetes/i.test(t.text) && /\bgo\b/i.test(t.text), t.text.slice(0, 100));
+    const t = await c.tool("tailor_to_job", { job_description: "Senior Go engineer with Kubernetes and Postgres experience." }); ok(`${tier}: tailor_to_job matched and missing`, !t.isError && /kubernetes/i.test(t.text) && /postgres/i.test(t.text), t.text.slice(0, 100));
     let last;
     for (let i = 1; i <= 4; i++) last = await c.tool("cover_letter_create", { company: `Co${i}`, role: "Engineer", tone: "direct", out_path: join(tmp, `cl${i}.docx`) });
     ok(`${tier}: 4th cover letter ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(last.text) : /mcp\.zovo\.one\/buy\/resume/.test(last.text), last.text.slice(0, 100));
