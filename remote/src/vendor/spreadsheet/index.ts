@@ -10,8 +10,8 @@ import { toCsv } from "./csv.js";
 import { compile, compilePredicate, columnsUsed, parse, truthy, ExprError } from "./expr.js";
 import {
   Cell, FREE_MAX_BYTES, FREE_MAX_ROWS, FREE_WRITE_ROWS, LoadedSheet, Table, UserError,
-  colLetter, expandPath, guessHeaderRow, headerNames, inferType, loadWorkbook, outputPath,
-  parseRange, renderTable, toNumber, toTable,
+  cellText, colLetter, expandPath, guessHeaderRow, headerNames, inferType, jsonCell,
+  loadWorkbook, minMax, outputPath, parseRange, renderTable, toNumber, toTable,
 } from "./sheet.js";
 
 export function createServer() {
@@ -71,7 +71,7 @@ function formulaColumns(formula: string, headers: string[]): string[] {
 function decimalsOf(v: Cell): number | null {
   if (v === null || v === undefined || v === "") return null;
   if (toNumber(v) === null) return null;
-  const s = String(v).trim().replace(/[^0-9.eE+-]/g, "");
+  const s = cellText(v).trim().replace(/[^0-9.eE+-]/g, "");
   if (/[eE]/.test(s)) return null;
   const dot = s.indexOf(".");
   return dot < 0 ? 0 : s.length - dot - 1;
@@ -99,9 +99,19 @@ function maxDecimals(recs: Record<string, Cell>[], cols: string[]): number | nul
 
 interface Opened { wb: ReturnType<typeof loadWorkbook>; ls: LoadedSheet; table: Table; notes: string[] }
 
-function open(path: string, sheet?: string): Opened {
+/**
+ * v3 #6: the most data rows this call can possibly need. Only safe when the whole sheet
+ * is not consulted, i.e. no filter, grouping, aggregate, sort or A1 range.
+ */
+function rowBudget(q: { where?: string; group_by?: unknown[]; aggregate?: unknown[]; sort?: unknown; range?: string; limit?: number; offset?: number }): number | undefined {
+  if (q.where || q.sort || q.range) return undefined;
+  if ((q.group_by && q.group_by.length) || (q.aggregate && q.aggregate.length)) return undefined;
+  return (q.offset ?? 0) + (q.limit ?? 100);
+}
+
+function open(path: string, sheet?: string, budget?: number): Opened {
   const pro = gate.isPro();
-  const wb = loadWorkbook(path, { maxRows: pro ? Infinity : FREE_MAX_ROWS });
+  const wb = loadWorkbook(path, { maxRows: pro ? Infinity : FREE_MAX_ROWS, rowBudget: budget });
   const ls = wb.get(sheet);
   const notes: string[] = [];
   if (!pro && wb.bytes > FREE_MAX_BYTES) {
@@ -137,17 +147,33 @@ function writeAtomic(file: string, data: Buffer | string) {
   renameSync(tmp, file);
 }
 
-function writeMatrix(file: string, headers: string[], rows: Cell[][], sheetName = "Sheet1") {
+/**
+ * Write headers + rows to `file`.
+ *
+ * v3 #16: when `base` is given (the workbook the rows came from) only the named sheet is
+ * replaced; every other sheet in that workbook is written back untouched. Without it an
+ * append to Sheet1 used to emit a one-sheet workbook and delete Sheet2.
+ * v3 #17: Date cells are written as real date cells, not as text.
+ */
+function writeMatrix(file: string, headers: string[], rows: Cell[][], sheetName = "Sheet1", base?: XLSX.WorkBook) {
   const ext = extname(file).toLowerCase();
   const aoa = [headers as unknown as Cell[], ...rows];
   if (ext === ".csv" || ext === ".txt") writeAtomic(file, toCsv(aoa, ","));
   else if (ext === ".tsv") writeAtomic(file, toCsv(aoa, "\t"));
-  else if (ext === ".json") writeAtomic(file, JSON.stringify(rows.map((r) => Object.fromEntries(headers.map((h, i) => [h, r[i] ?? null]))), null, 2));
+  else if (ext === ".json") writeAtomic(file, JSON.stringify(rows.map((r) => Object.fromEntries(headers.map((h, i) => [h, jsonCell(r[i] ?? null)]))), null, 2));
   else {
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const ws = XLSX.utils.aoa_to_sheet(aoa, { cellDates: true });
+    const name = sheetName.slice(0, 31) || "Sheet1";
+    if (base && base.SheetNames.length) {
+      const wb: XLSX.WorkBook = { ...base, SheetNames: base.SheetNames.slice(), Sheets: { ...base.Sheets } };
+      wb.Sheets[name] = ws;
+      if (!wb.SheetNames.includes(name)) wb.SheetNames.push(name);
+      writeAtomic(file, XLSX.write(wb, { type: "buffer", bookType: "xlsx", cellDates: true }) as Buffer);
+      return;
+    }
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, sheetName.slice(0, 31) || "Sheet1");
-    writeAtomic(file, XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer);
+    XLSX.utils.book_append_sheet(wb, ws, name);
+    writeAtomic(file, XLSX.write(wb, { type: "buffer", bookType: "xlsx", cellDates: true }) as Buffer);
   }
 }
 
@@ -157,7 +183,17 @@ function normaliseRows(rows: any[], existingHeaders?: string[]): { headers: stri
   const first = rows[0];
   if (Array.isArray(first)) {
     const matrix = rows.map((r: any[]) => r.map((c) => (c === undefined ? null : c))) as Cell[][];
-    if (existingHeaders) return { headers: existingHeaders, matrix };
+    if (existingHeaders) {
+      // v3 #15: the first array is documented as the header row, so appending
+      // [["Name","Qty"],["B",2]] used to write "Name","Qty" as a data record.
+      const head = matrix[0].map((c) => String(c ?? "").trim().toLowerCase());
+      const want = existingHeaders.map((h) => h.trim().toLowerCase());
+      const looksLikeHeader = head.length > 0 && head.every((c, i) => c === (want[i] ?? ""));
+      if (!looksLikeHeader) {
+        throw new UserError(`the first array is the header row and must match the file's columns. Got ${JSON.stringify(matrix[0])}, file has ${JSON.stringify(existingHeaders)}. Pass objects instead, or repeat the file's header row first.`);
+      }
+      return { headers: existingHeaders, matrix: matrix.slice(1) };
+    }
     const headers = matrix[0].map((c, i) => (typeof c === "string" && c.trim() !== "" ? String(c) : colLetter(i)));
     return { headers, matrix: matrix.slice(1) };
   }
@@ -196,8 +232,8 @@ async function infoText(path: string): Promise<string> {
         name: h,
         letter: colLetter(i),
         type: inferType(sample.map((r) => r[i] ?? null)),
-        empty: body.filter((r) => r[i] === null || String(r[i] ?? "").trim() === "").length,
-        sample: sample.map((r) => r[i]).filter((v) => v !== null && String(v).trim() !== "").slice(0, 3),
+        empty: body.filter((r) => r[i] === null || cellText(r[i] ?? null).trim() === "").length,
+        sample: sample.map((r) => jsonCell(r[i] ?? null)).filter((v) => v !== null && String(v).trim() !== "").slice(0, 3),
       })),
     });
   }
@@ -223,7 +259,7 @@ server.registerTool("sheet_read", {
     as: z.enum(["table", "json", "csv"]).optional().describe("Output format, default table"),
   },
 }, guard(async ({ path, sheet, range, limit, offset, as }: any) => {
-  const o = open(path, sheet);
+  const o = open(path, sheet, rowBudget({ range, limit, offset }));
   let headers = o.table.headers;
   let rows = o.table.rows;
   if (range) {
@@ -236,8 +272,10 @@ server.registerTool("sheet_read", {
     rows = rows.slice(off, off + (limit ?? 100));
   }
   const fmt = as ?? "table";
-  const head = `${o.wb.path} [${o.ls.name}] ${o.table.rows.length} data rows, showing ${rows.length}`;
-  if (fmt === "json") return withNotes(o.notes, JSON.stringify(rows.map((r) => Object.fromEntries(headers.map((h, i) => [h, r[i] ?? null]))), null, 2));
+  const head = o.ls.partial
+    ? `${o.wb.path} [${o.ls.name}] showing ${rows.length} rows from offset ${offset ?? 0} (only the rows asked for were read)`
+    : `${o.wb.path} [${o.ls.name}] ${o.table.rows.length} data rows, showing ${rows.length}`;
+  if (fmt === "json") return withNotes(o.notes, JSON.stringify(rows.map((r) => Object.fromEntries(headers.map((h, i) => [h, jsonCell(r[i] ?? null)]))), null, 2));
   if (fmt === "csv") return withNotes(o.notes, toCsv([headers as unknown as Cell[], ...rows]));
   return withNotes(o.notes, `${head}\n\n${renderTable(headers, rows)}`);
 }));
@@ -267,8 +305,9 @@ function aggValue(fn: AggFn, vals: Cell[]): Cell {
   const round = (n: number) => Number(n.toFixed(10));
   if (fn === "sum") return round(nums.reduce((a, b) => a + b, 0));
   if (fn === "avg") return round(nums.reduce((a, b) => a + b, 0) / nums.length);
-  if (fn === "min") return round(Math.min(...nums));
-  return round(Math.max(...nums));
+  // v3 #14: Math.min(...nums) blows the argument limit on a big column.
+  const mm = minMax(nums)!;
+  return round(fn === "min" ? mm.min : mm.max);
 }
 
 /** Group records by the given columns and compute the aggregates; returns records keyed by group cols + aliases. */
@@ -276,17 +315,35 @@ function groupRecords(headers: string[], recs: Record<string, Cell>[], groupBy: 
   const gcols = groupBy.map((g) => resolveCol(headers, g));
   const specs = (aggs.length ? aggs : [{ col: "*", fn: "count" as AggFn, as: "count" }]).map((a) => {
     const isStar = String(a.col).trim() === "*";
+    // v3 #12: every fn over "*" used to return the row count, so sum(*) silently answered
+    // a different question than the one asked.
+    if (isStar && a.fn !== "count") throw new UserError(`aggregate ${JSON.stringify(a.fn)} needs a column; "*" only works with count. Name the column to ${a.fn}.`);
     const col = isStar ? "*" : resolveCol(headers, a.col);
     return { col, fn: a.fn, as: a.as && a.as.trim() ? a.as.trim() : (isStar ? "count" : `${a.fn}_${col}`) };
   });
+  // v3 #13: an alias that collides with a group column or another alias silently
+  // overwrote it, so the Region label was replaced by the sum of Sales.
+  const taken = new Map<string, string>();
+  for (const c of gcols) taken.set(c.toLowerCase().trim(), `group column ${JSON.stringify(c)}`);
+  for (const sp of specs) {
+    const k = sp.as.toLowerCase().trim();
+    const clash = taken.get(k);
+    if (clash) {
+      throw new UserError(`aggregate alias ${JSON.stringify(sp.as)} collides with ${clash}. Give this aggregate a different "as" name.`);
+    }
+    taken.set(k, `aggregate ${JSON.stringify(sp.as)}`);
+  }
   const groups = new Map<string, { key: Cell[]; rows: Record<string, Cell>[] }>();
   for (const r of recs) {
     const key = gcols.map((c) => r[c] ?? null);
-    const k = key.map((v) => (v === null ? "\u0000" : String(v))).join("\u0001");
+    const k = key.map((v) => (v === null ? "\u0000" : `${typeof v}:${cellText(v)}`)).join("\u0001");
     const g = groups.get(k) ?? { key, rows: [] };
     g.rows.push(r);
     groups.set(k, g);
   }
+  // v3 #11: a global aggregate (no group columns) always has exactly one group, even when
+  // nothing matched, so count(*) over zero rows answers 0 instead of returning no row.
+  if (!gcols.length && groups.size === 0) groups.set("", { key: [], rows: [] });
   const out = [...groups.values()].map((g) => {
     const rec: Record<string, Cell> = {};
     gcols.forEach((c, i) => { rec[c] = g.key[i]; });
@@ -345,7 +402,7 @@ server.registerTool("sheet_query", {
     as: z.enum(["table", "json", "csv"]).optional(),
   },
 }, guard(async ({ path, sheet, where, select, group_by, aggregate, sort, limit, as }: any) => {
-  const o = open(path, sheet);
+  const o = open(path, sheet, rowBudget({ where, group_by, aggregate, sort, limit }));
   let recs = o.table.records();
   const total = recs.length;
   if (where) {
@@ -384,12 +441,14 @@ server.registerTool("sheet_query", {
   const rows = shown.map((r) => headers.map((h) => r[h] ?? null));
   const counts = grouped
     ? `${matched} groups from ${filtered} of ${total} rows, showing ${rows.length}`
-    : `${matched} of ${total} rows match, showing ${rows.length}`;
+    : o.ls.partial
+      ? `showing ${rows.length} rows (only the rows asked for were read)`
+      : `${matched} of ${total} rows match, showing ${rows.length}`;
   // Echo the query that was actually run, so a filter or grouping the user never asked
   // for is visible in the answer instead of silently narrowing the question (D-10).
   const head = [describeQuery({ where, group_by, aggregate, sort, limit }), counts].filter(Boolean).join("\n");
   const fmt = as ?? "table";
-  if (fmt === "json") return withNotes(o.notes, JSON.stringify(shown.map((r) => Object.fromEntries(headers.map((h) => [h, r[h] ?? null]))), null, 2));
+  if (fmt === "json") return withNotes(o.notes, JSON.stringify(shown.map((r) => Object.fromEntries(headers.map((h) => [h, jsonCell(r[h] ?? null)]))), null, 2));
   if (fmt === "csv") return withNotes(o.notes, toCsv([headers as unknown as Cell[], ...rows]));
   return withNotes(o.notes, `${head}\n\n${rows.length ? renderTable(headers, rows) : "(no rows matched)"}`);
 }));
@@ -412,15 +471,11 @@ server.registerTool("sheet_stats", {
     const i = o.table.headers.indexOf(h);
     const vals = o.table.rows.map((r) => r[i] ?? null);
     const nonEmpty = vals.filter((v) => v !== null && String(v).trim() !== "");
-    const nums = nonEmpty.map((v) => {
-      if (typeof v === "number") return v;
-      const s = String(v).trim().replace(/[$€£,\s]/g, "");
-      const n = Number(s.endsWith("%") ? s.slice(0, -1) : s);
-      return Number.isFinite(n) ? (s.endsWith("%") ? n / 100 : n) : NaN;
-    }).filter((n) => Number.isFinite(n)) as number[];
+    // v3 #4: same locale-aware parser as aggregation, not a second private one.
+    const nums = nonEmpty.map((v) => toNumber(v)).filter((n): n is number => n !== null);
     const res: any = {
       column: h, type: inferType(vals), count: nonEmpty.length, empty: vals.length - nonEmpty.length,
-      distinct: new Set(nonEmpty.map((v) => String(v))).size,
+      distinct: new Set(nonEmpty.map((v) => cellText(v))).size,
     };
     if (nums.length && nums.length >= nonEmpty.length * 0.6) {
       const sorted = nums.slice().sort((a, b) => a - b);
@@ -434,10 +489,11 @@ server.registerTool("sheet_stats", {
       res.numericValues = nums.length;
     } else {
       const freq = new Map<string, number>();
-      for (const v of nonEmpty) freq.set(String(v), (freq.get(String(v)) ?? 0) + 1);
+      for (const v of nonEmpty) freq.set(cellText(v), (freq.get(cellText(v)) ?? 0) + 1);
       res.top = [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([value, n]) => ({ value, n }));
       const lens = nonEmpty.map((v) => String(v).length);
-      if (lens.length) { res.min = String(nonEmpty[lens.indexOf(Math.min(...lens))]); res.max = String(nonEmpty[lens.indexOf(Math.max(...lens))]); }
+      const lm = minMax(lens);
+      if (lm) { res.min = cellText(nonEmpty[lens.indexOf(lm.min)]); res.max = cellText(nonEmpty[lens.indexOf(lm.max)]); }
     }
     return res;
   });
@@ -463,8 +519,8 @@ server.registerTool("sheet_find", {
       for (let c = 0; c < ls.matrix[r].length; c++) {
         const v = ls.matrix[r][c];
         if (v === null) continue;
-        if (String(v).toLowerCase().includes(q)) {
-          hits.push({ sheet: n, cell: `${colLetter(c)}${r + 1}`, value: v, row: ls.matrix[r].slice(0, 12).map((x) => (x === null ? "" : x)) });
+        if (cellText(v).toLowerCase().includes(q)) {
+          hits.push({ sheet: n, cell: `${colLetter(c)}${r + 1}`, value: jsonCell(v), row: ls.matrix[r].slice(0, 12).map((x) => jsonCell(x) ?? "") });
           if (hits.length >= 200) break;
         }
       }
@@ -495,6 +551,7 @@ server.registerTool("sheet_write", {
   let matrix: Cell[][];
   let target: string;
   let sheetName = sheet ?? "Sheet1";
+  let base: XLSX.WorkBook | undefined;
 
   if (mode === "new_file") {
     const n = normaliseRows(rows);
@@ -508,12 +565,16 @@ server.registerTool("sheet_write", {
     const n = normaliseRows(rows, headers);
     matrix = mode === "append" ? [...o.table.rows, ...n.matrix] : n.matrix;
     target = out_path ? expandPath(out_path) : o.wb.path;
+    base = o.wb.raw;
+    if (base && base.SheetNames.length > 1) {
+      notes.push(`Sheets kept unchanged: ${base.SheetNames.filter((s2) => s2 !== sheetName).map((s2) => JSON.stringify(s2)).join(", ")}. Formulas and formatting on ${JSON.stringify(sheetName)} itself are replaced by values.`);
+    }
     notes.push(...o.notes);
   }
   if (extname(target) === "") throw new UserError(`out_path ${target} has no file extension; use .xlsx, .csv, .tsv or .json`);
   const refusal = writeCapRefusal(matrix.length, "This write", `write the rows in batches of ${FREE_WRITE_ROWS} or fewer to separate files, or filter the data down first (sheet_query with a where filter) and write only the rows you need.`);
   if (refusal) return withNotes(notes, refusal);
-  writeMatrix(target, headers, matrix, sheetName);
+  writeMatrix(target, headers, matrix, sheetName, base);
   const size = statSync(target).size;
   return withNotes(notes, `Wrote ${matrix.length} rows x ${headers.length} columns to ${target} (${size} bytes, mode ${mode}).\nColumns: ${headers.join(", ")}`);
 }));

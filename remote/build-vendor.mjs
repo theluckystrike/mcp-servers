@@ -18,11 +18,11 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "remote", "src", "vendor");
 
 const SERVERS = {
-  "time-tracker": ["index.ts", "day.ts"],
+  "time-tracker": ["index.ts", "day.ts", "jsonstore.ts"],
   "price-tracker": ["index.ts", "extract.ts", "fetch.ts", "redirect.ts", "store.ts"],
   "invoice": ["index.ts", "money.ts", "store.ts"],
   "expense-tracker": ["index.ts", "money.ts", "store.ts"],
-  "spreadsheet": ["index.ts", "csv.ts", "expr.ts", "sheet.ts"],
+  "spreadsheet": ["index.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;

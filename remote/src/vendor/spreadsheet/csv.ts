@@ -1,5 +1,9 @@
 /** RFC 4180 CSV parser with delimiter sniffing. No dependencies. */
 
+import { parseNumberStrict } from "./num.js";
+
+export class CsvError extends Error {}
+
 export const DELIMITERS = [",", ";", "\t", "|"] as const;
 
 /** Sniff the delimiter by counting occurrences outside quotes across the first lines. */
@@ -38,16 +42,35 @@ export function sniffDelimiter(text: string, sample = 64): string {
   return best;
 }
 
+export interface ParseCsvOpts {
+  /** stop after this many rows have been completed (v3 #6: limit/offset must not parse the whole file) */
+  maxRows?: number;
+  /** the text is a prefix of a larger file, so an open quote at the end is not an error */
+  partial?: boolean;
+}
+
+export interface ParsedCsv {
+  rows: string[][];
+  delimiter: string;
+  /** characters of `text` actually consumed (index just past the last completed row) */
+  consumed: number;
+  /** false when parsing stopped early because maxRows was reached */
+  complete: boolean;
+}
+
 /** Parse CSV text into a matrix of strings. Handles CRLF, quoted delimiters and embedded newlines. */
-export function parseCsv(text: string, delimiter?: string): { rows: string[][]; delimiter: string } {
+export function parseCsv(text: string, delimiter?: string, opts: ParseCsvOpts = {}): ParsedCsv {
   let src = text;
-  if (src.charCodeAt(0) === 0xfeff) src = src.slice(1);
+  let base = 0;
+  if (src.charCodeAt(0) === 0xfeff) { src = src.slice(1); base = 1; }
   const d = delimiter ?? sniffDelimiter(src);
+  const maxRows = opts.maxRows ?? Infinity;
   const rows: string[][] = [];
   let row: string[] = [];
   let field = "";
   let inQ = false;
   let started = false;
+  let consumed = 0;
   for (let i = 0; i < src.length; i++) {
     const c = src[i];
     if (inQ) {
@@ -59,51 +82,35 @@ export function parseCsv(text: string, delimiter?: string): { rows: string[][]; 
     }
     if (c === '"' && field === "") { inQ = true; started = true; continue; }
     if (c === d) { row.push(field); field = ""; started = true; continue; }
-    if (c === "\r") { if (src[i + 1] === "\n") i++; row.push(field); rows.push(row); row = []; field = ""; started = false; continue; }
-    if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; started = false; continue; }
+    if (c === "\r" || c === "\n") {
+      if (c === "\r" && src[i + 1] === "\n") i++;
+      row.push(field); rows.push(row); row = []; field = ""; started = false;
+      consumed = i + 1;
+      if (rows.length >= maxRows) return { rows, delimiter: d, consumed: consumed + base, complete: false };
+      continue;
+    }
     field += c;
     started = true;
   }
-  if (started || field !== "" || row.length) { row.push(field); rows.push(row); }
-  return { rows, delimiter: d };
+  // v3 #3: EOF inside a quoted field swallowed the rest of the file into one cell.
+  if (inQ && !opts.partial) throw new CsvError('unterminated quoted field: a \'"\' was opened and never closed. Check for a stray double quote in the file.');
+  if (started || field !== "" || row.length) { row.push(field); rows.push(row); consumed = src.length; }
+  return { rows, delimiter: d, consumed: consumed + base, complete: true };
 }
-
-/**
- * Plain ASCII decimal: optional sign, no thousands separators, no leading zeros on a
- * multi-digit integer part (so an identifier like "007" or "0123" stays text), optional
- * fraction, optional exponent. ".5" and "0.5" are numbers; "00.5" is not.
- */
-const PLAIN_DECIMAL = /^[+-]?(?:0|[1-9]\d*)?(?:\.\d+)?(?:[eE][+-]?\d+)?$/;
-
-/**
- * Comma thousands separators, only in the one unambiguous shape: 1-3 leading digits then
- * one or more groups of exactly three, then an optional dot fraction. "1,250.00" matches;
- * "1.250,00" (European) and "1,250,00" do not, and stay text.
- */
-const GROUPED_DECIMAL = /^[+-]?[1-9]\d{0,2}(?:,\d{3})+(?:\.\d+)?$/;
 
 /**
  * Coerce a CSV string cell to number/boolean when unambiguous.
  *
- * D-R12: this used to accept a number only when `String(n).length >= s.length - 1`, a
- * string-LENGTH test. Any money value ending in ".00" lost more than one character when
- * rendered back ("403.00" -> "403"), so it was written out as TEXT and Excel's own
- * SUM skipped it silently. The decision is now by PATTERN only; trailing zeros and
- * thousands separators are both fine, and length never enters into it.
+ * D-R12: the decision is by PATTERN, never by string length, so "403.00" stays a number
+ * and Excel's own SUM does not skip it. v3 #4/#5: the pattern rules now live in
+ * src/num.ts and are shared with aggregation and expression comparison, so locale
+ * numbers and unsafe integers are judged the same way everywhere.
  */
 export function coerce(v: string): string | number | boolean {
   const s = v.trim();
   if (s === "") return "";
-  // A bare sign, a bare dot, or "" after the sign must not become 0.
-  if (/\d/.test(s)) {
-    if (PLAIN_DECIMAL.test(s)) {
-      const n = Number(s);
-      if (Number.isFinite(n)) return n;
-    } else if (GROUPED_DECIMAL.test(s)) {
-      const n = Number(s.replace(/,/g, ""));
-      if (Number.isFinite(n)) return n;
-    }
-  }
+  const n = parseNumberStrict(s);
+  if (n !== null) return n;
   if (s === "true" || s === "TRUE") return true;
   if (s === "false" || s === "FALSE") return false;
   return v;

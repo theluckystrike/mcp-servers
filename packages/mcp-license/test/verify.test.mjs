@@ -7,7 +7,7 @@ test("valid product key verifies", () => { assert.equal(verifyLicense(sign("time
 test("bundle key verifies for any product", () => { assert.equal(verifyLicense(sign("*"), "spreadsheet").ok, true); });
 test("wrong product rejected", () => { assert.equal(verifyLicense(sign("invoice"), "spreadsheet").ok, false); });
 test("expired rejected", () => { assert.equal(verifyLicense(sign("*", "", "1000"), "invoice").reason, "expired"); });
-test("tampered rejected", () => { const k = sign("*"); assert.equal(verifyLicense(k.slice(0, -2) + "AA", "invoice").ok, false); });
+test("tampered rejected", () => { const k = sign("*"); const parts = k.split("."); const sig = parts[2]; const mid = Math.floor(sig.length / 2); const flipped = sig[mid] === "A" ? "B" : "A"; parts[2] = sig.slice(0, mid) + flipped + sig.slice(mid + 1); assert.equal(verifyLicense(parts.join("."), "invoice").ok, false); });
 test("garbage rejected", () => { assert.equal(verifyLicense("hello", "x").ok, false); });
 
 // --- hardening 2026-09-02 -------------------------------------------------

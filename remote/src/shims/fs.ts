@@ -158,3 +158,24 @@ export default {
   existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync,
   renameSync, unlinkSync, rmdirSync, chmodSync, statSync,
 };
+
+// Minimal fd emulation for chunked readers (spreadsheet readCsvHead): fd -> {path, bytes}.
+const fds = new Map<number, Buffer>();
+let nextFd = 100;
+export function openSync(p: string, _flags?: unknown): number {
+  const v = ctx().files.get(p);
+  if (v === undefined) throw enoent(p);
+  const buf = isBin(v) ? Buffer.from(v.slice(BIN.length), "base64") : Buffer.from(v, "utf8");
+  const fd = nextFd++;
+  fds.set(fd, buf);
+  return fd;
+}
+export function readSync(fd: number, out: Uint8Array, offset: number, length: number, position: number | null): number {
+  const buf = fds.get(fd);
+  if (!buf) throw new Error("EBADF: bad file descriptor");
+  const pos = position == null ? 0 : position;
+  const n = Math.max(0, Math.min(length, buf.length - pos));
+  if (n > 0) out.set(buf.subarray(pos, pos + n), offset);
+  return n;
+}
+export function closeSync(fd: number): void { fds.delete(fd); }

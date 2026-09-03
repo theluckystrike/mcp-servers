@@ -215,39 +215,95 @@ function typeOf(o: Record<string, unknown>): string[] {
   return [];
 }
 
+interface PriceCand { price: string; currency: string | null; rank: number }
+
+/** price / lowPrice / highPrice carried by a single node. */
+function ownPrice(o: Record<string, unknown>, url: string): PriceCand[] {
+  const priceRaw = o.price ?? (o as any).lowPrice ?? (o as any).highPrice;
+  if (priceRaw === undefined || priceRaw === null) return [];
+  const price = normalizeNumber(String(priceRaw));
+  if (!price) return [];
+  const currency = currencyFrom(
+    (typeof o.priceCurrency === "string" ? o.priceCurrency : null) ??
+    (typeof (o as any).currency === "string" ? (o as any).currency : null),
+    url
+  );
+  return [{ price, currency, rank: "price" in o ? 0 : 1 }];
+}
+
+/** Every price under one offers subtree (Offer, AggregateOffer, arrays of them). */
+function offerPrices(node: unknown, url: string): PriceCand[] {
+  const out: PriceCand[] = [];
+  walk(node, (o) => { out.push(...ownPrice(o, url)); });
+  return out;
+}
+
+/** Words of a name, lowercased, for title matching. */
+function words(s: string): string[] {
+  return s.toLowerCase().split(/[^a-z0-9]+/i).filter((w) => w.length > 1);
+}
+
+/**
+ * Share of the product name's words that appear in the page title. Used to pick
+ * WHICH product node on the page is the one being sold: a page routinely
+ * carries several Products (recommendations, "customers also bought"), and
+ * pooling their offers hands back the cheapest unrelated item (Codex v3 item 30).
+ */
+function titleScore(name: string | null, title: string | null): number {
+  if (!name || !title) return 0;
+  const t = new Set(words(title));
+  const n = words(name);
+  if (!n.length || !t.size) return 0;
+  let hit = 0;
+  for (const w of n) if (t.has(w)) hit++;
+  return hit / n.length;
+}
+
 function fromJsonLd(html: string, url: string): Extracted | null {
   const blocks = jsonLdBlocks(html);
   if (!blocks.length) return null;
-  let productName: string | null = null;
-  const candidates: { price: string; currency: string | null; name?: string; rank: number }[] = [];
+  const pageTitle = extractTitle(html);
+
+  const products: { name: string | null; cands: PriceCand[] }[] = [];
+  const loose: PriceCand[] = [];
 
   for (const block of blocks) {
     walk(block, (o) => {
       const types = typeOf(o).map((t) => t.replace(/^https?:\/\/schema\.org\//i, ""));
-      const isProduct = types.some((t) => /^Product|Vehicle|Book|SoftwareApplication|IndividualProduct|ProductGroup$/i.test(t));
+      const isProduct = types.some((t) => /^(Product|Vehicle|Book|SoftwareApplication|IndividualProduct|ProductGroup)$/i.test(t));
+      if (isProduct) {
+        const name = typeof o.name === "string" ? o.name.trim() : null;
+        // Offers belong to THIS product only; never pooled across the graph.
+        const cands = o.offers !== undefined ? offerPrices(o.offers, url) : ownPrice(o, url);
+        products.push({ name, cands });
+        return;
+      }
       const isOffer = types.some((t) => /Offer/i.test(t));
-      if (isProduct && typeof o.name === "string" && !productName) productName = o.name.trim();
-      if (!isOffer && !isProduct && !("price" in o) && !("lowPrice" in o)) return;
-      const currency = currencyFrom(
-        (typeof o.priceCurrency === "string" ? o.priceCurrency : null) ??
-        (typeof (o as any).currency === "string" ? (o as any).currency : null),
-        url
-      );
-      const priceRaw = o.price ?? (o as any).lowPrice ?? (o as any).highPrice;
-      if (priceRaw === undefined || priceRaw === null) return;
-      const price = normalizeNumber(String(priceRaw));
-      if (!price) return;
-      const rank = "price" in o ? 0 : 1; // exact price beats lowPrice
-      candidates.push({ price, currency, rank });
+      if (isOffer || "price" in o || "lowPrice" in o) loose.push(...ownPrice(o, url));
     });
   }
-  if (!candidates.length) return null;
-  candidates.sort((a, b) => a.rank - b.rank || Number(a.price) - Number(b.price));
-  const best = candidates[0];
+
+  const withPrice = products.filter((p) => p.cands.length > 0);
+  let chosen: { name: string | null; cands: PriceCand[] } | null = null;
+  if (withPrice.length) {
+    let bestScore = 0;
+    for (const p of withPrice) {
+      const sc = titleScore(p.name, pageTitle);
+      if (sc > bestScore) { bestScore = sc; chosen = p; }
+    }
+    // No name matched the page title: the first product with offers is the page's own.
+    if (!chosen) chosen = withPrice[0];
+  } else if (loose.length) {
+    chosen = { name: null, cands: loose };
+  }
+  if (!chosen || !chosen.cands.length) return null;
+
+  const cands = chosen.cands.slice().sort((a, b) => a.rank - b.rank || Number(a.price) - Number(b.price));
+  const best = cands[0];
   return {
     price: best.price,
     currency: best.currency ?? currencyFromText(html, url),
-    title: productName ?? extractTitle(html),
+    title: chosen.name ?? pageTitle,
     source: "json-ld",
     confidence: "high",
   };
@@ -290,7 +346,9 @@ function attrNear(html: string, index: number, itemprop: string): string | null 
 }
 
 function fromOpenGraph(html: string, url: string): Extracted | null {
-  const keys = ["og:price:amount", "product:price:amount", "og:product:price:amount", "twitter:data1"];
+  // twitter:data1 is free text ("Free shipping over $50", "In stock") and was
+  // returning shipping thresholds as the product price (Codex v3 item 31).
+  const keys = ["og:price:amount", "product:price:amount", "og:product:price:amount"];
   for (const key of keys) {
     const amount = metaContent(html, "property", key) ?? metaContent(html, "name", key);
     if (!amount) continue;
@@ -332,7 +390,31 @@ function fromDataAttrs(html: string, url: string): Extracted | null {
   return null;
 }
 
-function fromClassHints(html: string, url: string): Extracted | null {
+/** class / id words that mark a crossed-out, previous or compare-at price. */
+const OLD_PRICE_WORD = "(?:old|was|strike|regular|compare|list-price|rrp)";
+
+/**
+ * Remove crossed-out and previous prices before reading a price off class
+ * hints: <s>/<del>/<strike>, and any element whose class marks it as the old,
+ * was, regular, compare-at or list price. Without this, "<s>$199</s> $99"
+ * reports 199 - the price the shop is NOT charging (Codex v3 item 32).
+ */
+export function stripStruckPrices(html: string): string {
+  let out = html.replace(/<(s|del|strike)\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
+  const marked = new RegExp(
+    `<([a-zA-Z][\\w-]*)\\b[^>]*\\b(?:class|id)\\s*=\\s*["'][^"']*\\b${OLD_PRICE_WORD}\\b[^"']*["'][^>]*>[\\s\\S]*?<\\/\\1>`,
+    "gi"
+  );
+  for (let i = 0; i < 4; i++) {
+    const next = out.replace(marked, " ");
+    if (next === out) break;
+    out = next;
+  }
+  return out;
+}
+
+function fromClassHints(rawHtml: string, url: string): Extracted | null {
+  const html = stripStruckPrices(rawHtml);
   for (const hint of HINTS) {
     const re = new RegExp(`<([a-zA-Z][\\w-]*)\\b[^>]*\\b(?:class|id)\\s*=\\s*["'][^"']*\\b${hint}\\b[^"']*["'][^>]*>`, "gi");
     let m: RegExpExecArray | null;
@@ -356,13 +438,24 @@ function tokenRe(flags: string): RegExp {
   );
 }
 
+/** The first explicit ISO 4217 code in a string, or null. */
+export function explicitCode(s: string): string | null {
+  const m = s.match(new RegExp(`\\b(?:${CODES.join("|")})\\b`, "i"));
+  return m ? m[0].toUpperCase() : null;
+}
+
 function firstPriceInText(text: string, url: string): { price: string; currency: string | null } | null {
   const m = tokenRe("i").exec(text);
   if (m) {
     const sym = m[1] ?? m[4];
     const num = m[2] ?? m[3];
     const price = normalizeNumber(num);
-    if (price) return { price, currency: currencyFrom(sym, url) };
+    if (price) {
+      // "$10 USD" on a .ca shop is USD: an explicit code written next to the
+      // number beats the ccTLD guess behind the bare symbol (Codex v3 item 34).
+      const near = text.slice(m.index, m.index + m[0].length + 8);
+      return { price, currency: explicitCode(near) ?? currencyFrom(sym, url) };
+    }
   }
   const bare = text.match(new RegExp(NUMBER_RE));
   if (bare) {
@@ -395,7 +488,9 @@ function fromRegexFallback(html: string, url: string): Extracted | null {
     if (!price) continue;
     const value = Number(price);
     if (!Number.isFinite(value) || value <= 0 || value > 5_000_000) continue;
-    if (!best || value > best.value) best = { price, currency: currencyFrom(sym, url), value };
+    const near = text.slice(m.index, m.index + m[0].length + 8);
+    const currency = explicitCode(near) ?? currencyFrom(sym, url);
+    if (!best || value > best.value) best = { price, currency, value };
   }
   if (!best) return null;
   return { price: best.price, currency: best.currency, title: extractTitle(html), source: "regex-fallback", confidence: "low" };

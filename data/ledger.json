@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T00:00:41.047Z",
+  "generated_at": "2026-09-03T00:22:05.177Z",
   "session": {
-    "count": 18,
+    "count": 19,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -74,6 +74,10 @@
       {
         "at": "2026-09-03T00:00:41.020Z",
         "note": "v0.2.3: round-5 fixes, 162 tests, 43 setup pages, mirrors resynced"
+      },
+      {
+        "at": "2026-09-03T00:22:05.148Z",
+        "note": "v0.2.4: Codex v3 fixes (P0 store guard, windows, locale numbers, extraction), 186 tests; compare pages; backlinks pushed"
       }
     ]
   },
@@ -81,7 +85,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -103,7 +107,7 @@
       "build_ok": true,
       "test_summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818",
       "result_status": "DONE",
-      "loc": 1194,
+      "loc": 1239,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -122,7 +126,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -142,7 +146,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 1054,
+      "loc": 1101,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -161,7 +165,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -189,7 +193,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -207,7 +211,7 @@
       "build_ok": true,
       "test_summary": "# pass 18 / # fail 0",
       "result_status": "DONE",
-      "loc": 1295,
+      "loc": 1473,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -226,7 +230,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -244,7 +248,7 @@
       "build_ok": true,
       "test_summary": "# pass 31 / # fail 0",
       "result_status": "DONE",
-      "loc": 1229,
+      "loc": 1484,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -263,7 +267,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -284,7 +288,7 @@
       "build_ok": true,
       "test_summary": "# pass 2 / # fail 0",
       "result_status": "DONE",
-      "loc": 821,
+      "loc": 1017,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -358,6 +362,10 @@
       "first_line": "Adversarial pre-publish audit"
     },
     {
+      "file": "docs/BACKLINKS_RESULT.md",
+      "first_line": "Estate backlinks run - 2026-09-03"
+    },
+    {
       "file": "docs/CODEX_REVIEW.md",
       "first_line": "1. `packages/mcp-license/src/index.ts:94-96` — P0 — Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."
     },
@@ -368,6 +376,14 @@
     {
       "file": "docs/CODEX_REVIEW_V2.md",
       "first_line": "1. [servers/expense-tracker/src/money.ts:61](/Users/mike/mcp-servers/servers/expense-tracker/src/money.ts:61) — P1 — Rounding net instead of the VAT component loses VAT on half-cent cases. Fix: calculate `vat = roundHalfUp(gross * rate / (100 + rate))`, then `net = gross - vat`. Trigger: `expense_add {amount:0.03,currency:\"EUR\",vat_rate:20}` reports VAT `EUR 0.00` instead of `EUR 0.01`."
+    },
+    {
+      "file": "docs/CODEX_REVIEW_V3.md",
+      "first_line": "1. `servers/time-tracker/src/index.ts:65` — P0 — Any read or JSON parse failure is treated as an empty database; the next mutation overwrites the existing history. Minimal input: malformed `data.json` followed by `timer_start`. Fix: treat only `ENOENT` as empty and fail without saving on corruption or permission errors."
+    },
+    {
+      "file": "docs/COMPARE_RESULT.md",
+      "first_line": "COMPARE - head-to-head pages for \"X vs Y\" and \"alternatives\" queries"
     },
     {
       "file": "docs/CONTENT_RESULT.md",

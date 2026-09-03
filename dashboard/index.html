@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-03T00:00:41.047Z — session count 18</div>
+    <div class="meta">generated 2026-09-03T00:22:05.177Z — session count 19</div>
   </header>
 
   <div class="kpi-row">
@@ -128,7 +128,7 @@
       <tbody>
         <tr>
     <td class="mono">expense-tracker</td>
-    <td class="mono">0.2.3</td>
+    <td class="mono">0.2.4</td>
     <td class="num">12</td>
     <td class="tools" title="expense_add, expense_list, expense_update, expense_delete, receipt_attach, category_rules, expense_settings, expense_summary, mileage_add, expense_export, expense_to_invoice, expense_mark_rebilled">expense_add, expense_list, expense_update, expense_delete, receipt_attach, category_rules, expense_settings, expense_summary, mileage_add, expense_export, expense_to_invoice, expense_mark_rebilled</td>
     <td>pending</td>
@@ -142,7 +142,7 @@
   </tr>
 <tr>
     <td class="mono">invoice</td>
-    <td class="mono">0.2.3</td>
+    <td class="mono">0.2.4</td>
     <td class="num">10</td>
     <td class="tools" title="business_set, client_add, client_list, invoice_create, invoice_from_hours, invoice_list, invoice_get, invoice_mark_paid, invoice_pdf, overdue_report">business_set, client_add, client_list, invoice_create, invoice_from_hours, invoice_list, invoice_get, invoice_mark_paid, invoice_pdf, overdue_report</td>
     <td>pending</td>
@@ -156,7 +156,7 @@
   </tr>
 <tr>
     <td class="mono">office-suite</td>
-    <td class="mono">0.2.3</td>
+    <td class="mono">0.2.4</td>
     <td class="num">0</td>
     <td class="tools" title="pending">pending</td>
     <td>pending</td>
@@ -170,7 +170,7 @@
   </tr>
 <tr>
     <td class="mono">price-tracker</td>
-    <td class="mono">0.2.3</td>
+    <td class="mono">0.2.4</td>
     <td class="num">8</td>
     <td class="tools" title="price_check, watch_add, watch_list, watch_remove, watch_refresh, price_history, price_add_manual, alerts_pending">price_check, watch_add, watch_list, watch_remove, watch_refresh, price_history, price_add_manual, alerts_pending</td>
     <td>pending</td>
@@ -184,7 +184,7 @@
   </tr>
 <tr>
     <td class="mono">spreadsheet</td>
-    <td class="mono">0.2.3</td>
+    <td class="mono">0.2.4</td>
     <td class="num">8</td>
     <td class="tools" title="sheet_info, sheet_read, sheet_query, sheet_stats, sheet_find, sheet_write, sheet_add_column, sheet_convert">sheet_info, sheet_read, sheet_query, sheet_stats, sheet_find, sheet_write, sheet_add_column, sheet_convert</td>
     <td>pending</td>
@@ -198,7 +198,7 @@
   </tr>
 <tr>
     <td class="mono">time-tracker</td>
-    <td class="mono">0.2.3</td>
+    <td class="mono">0.2.4</td>
     <td class="num">11</td>
     <td class="tools" title="timer_start, timer_stop, timer_status, entry_add, entry_list, entry_delete, entry_edit, project_set_rate, report, export_csv, invoice_summary">timer_start, timer_stop, timer_status, entry_add, entry_list, entry_delete, entry_edit, project_set_rate, report, export_csv, invoice_summary</td>
     <td>pending</td>
@@ -258,9 +258,12 @@
       <thead><tr><th>file</th><th>first line</th></tr></thead>
       <tbody>
         <tr><td class="mono">docs/AUDIT.md</td><td>Adversarial pre-publish audit</td></tr>
+<tr><td class="mono">docs/BACKLINKS_RESULT.md</td><td>Estate backlinks run - 2026-09-03</td></tr>
 <tr><td class="mono">docs/CODEX_REVIEW.md</td><td>1. `packages/mcp-license/src/index.ts:94-96` — P0 — Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable.</td></tr>
 <tr><td class="mono">docs/CODEX_REVIEW_REMOTE.md</td><td>1. `remote/src/index.ts:173` — P1 — `/mcp/token` is unauthenticated and unlimited, so callers can mint new tenants to reset hourly limits and free-tier quotas while generating unlimited KV records. Fix: rate-limit token issuance by IP/device and require a durable abuse-control identity or challenge.</td></tr>
 <tr><td class="mono">docs/CODEX_REVIEW_V2.md</td><td>1. [servers/expense-tracker/src/money.ts:61](/Users/mike/mcp-servers/servers/expense-tracker/src/money.ts:61) — P1 — Rounding net instead of the VAT component loses VAT on half-cent cases. Fix: calculate `vat = roundHalfUp(gross * rate / (100 + rate))`, then `net = gross - vat`. Trigger: `expense_add {amount:0.03,currency:&quot;EUR&quot;,vat_rate:20}` reports VAT `EUR 0.00` instead of `EUR 0.01`.</td></tr>
+<tr><td class="mono">docs/CODEX_REVIEW_V3.md</td><td>1. `servers/time-tracker/src/index.ts:65` — P0 — Any read or JSON parse failure is treated as an empty database; the next mutation overwrites the existing history. Minimal input: malformed `data.json` followed by `timer_start`. Fix: treat only `ENOENT` as empty and fail without saving on corruption or permission errors.</td></tr>
+<tr><td class="mono">docs/COMPARE_RESULT.md</td><td>COMPARE - head-to-head pages for &quot;X vs Y&quot; and &quot;alternatives&quot; queries</td></tr>
 <tr><td class="mono">docs/CONTENT_RESULT.md</td><td>Guides content run - 2026-09-02</td></tr>
 <tr><td class="mono">docs/DEMO_RESULT.md</td><td>status: DONE</td></tr>
 <tr><td class="mono">docs/DIRECTORIES_RESULT.md</td><td>Directories submission — RESULT</td></tr>
@@ -296,7 +299,8 @@
     <table>
       <thead><tr><th>at</th><th>note</th></tr></thead>
       <tbody>
-        <tr><td class="mono">2026-09-03T00:00:41.020Z</td><td>v0.2.3: round-5 fixes, 162 tests, 43 setup pages, mirrors resynced</td></tr>
+        <tr><td class="mono">2026-09-03T00:22:05.148Z</td><td>v0.2.4: Codex v3 fixes (P0 store guard, windows, locale numbers, extraction), 186 tests; compare pages; backlinks pushed</td></tr>
+<tr><td class="mono">2026-09-03T00:00:41.020Z</td><td>v0.2.3: round-5 fixes, 162 tests, 43 setup pages, mirrors resynced</td></tr>
 <tr><td class="mono">2026-09-02T23:45:35.725Z</td><td>loop 2 wave A: 6 mirror repos, demo GIFs, intel R2 (downloads 79), round 5 26/30</td></tr>
 <tr><td class="mono">2026-09-02T15:18:02.368Z</td><td>v0.2.2: Codex correctness fixes; 4h loop closing: 6 products, 6 registry entries, 5 hosted, 121/121 validation, user value R4 20/24</td></tr>
 <tr><td class="mono">2026-09-02T14:52:07.198Z</td><td>v0.2.1: 6 registry entries, 5 hosted, office-suite bundle 51 tools</td></tr>
