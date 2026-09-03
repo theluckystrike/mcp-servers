@@ -94,6 +94,24 @@
         19
       ],
       [
+        "currency",
+        "prod_VBnXWCZw5JkXo3",
+        "price_1UBPwqJKCamubEm1dTtEN9PY",
+        19
+      ],
+      [
+        "docx",
+        "prod_VBnXUOfncmuGRj",
+        "price_1UBPwtJKCamubEm1PPpj1fPE",
+        19
+      ],
+      [
+        "timezone",
+        "prod_VBnY3j4hjqbaAw",
+        "price_1UBPwwJKCamubEm13LZyFsDw",
+        19
+      ],
+      [
         "bundle",
         "prod_VBafU5C9o9d0f3",
         "price_1UBDU9JKCamubEm1dWgRjtoW",
@@ -203,6 +221,36 @@
       "free": "Each child's free tier.",
       "pro": "The $39 bundle key unlocks every child.",
       "storage": "Each child's own data folder."
+    },
+    "currency": {
+      "title": "MCP Currency Converter",
+      "tagline": "ECB reference rates: convert, history, and fx_rates for rebilling.",
+      "does": "Fetches and caches the European Central Bank daily and historical reference rates (keyless, free), converts any amount between currencies via EUR cross rates with the rate date stated, returns history tables with min, max and average, and emits the exact fx_rates object the expense tracker needs to rebill a project in one currency, so a model can chain the two without the user supplying rates.",
+      "for": "Freelancers billing across currencies and anyone who wants an honest, dated exchange rate without an API key.",
+      "example": "\"What is 4,500 EUR in USD today?\" ... \"Rebill Nova in USD using today's rates.\"",
+      "free": "Latest rates, convert, convert_many, fx_rates_for, history up to 90 days.",
+      "pro": "Full history back to 1999, any-date rates, unlimited history windows.",
+      "storage": "~/.local/share/mcp-servers/currency/ (rate cache)"
+    },
+    "docx": {
+      "title": "MCP Docx",
+      "tagline": "Real Word documents from chat: proposals, contracts, quotes.",
+      "does": "Creates .docx files from structured sections or markdown (headings, lists, tables, bold and italic), reads text back from existing Word files, fills {{placeholders}} in templates while keeping formatting, and generates structured proposals and freelance service agreements from the business profile, with an HTML export for printing.",
+      "for": "Freelancers who send proposals and contracts and want them as editable Word files, not PDFs.",
+      "example": "\"Write a proposal for Acme: redesign, 3 phases, 4,500 EUR, valid two weeks.\" ... \"Fill my NDA template with these names.\"",
+      "free": "Create, convert and read documents without limit; 3 proposals or contracts per calendar month; templates up to 10 placeholders.",
+      "pro": "Unlimited proposals and contracts, letterhead with logo and colours, unlimited template fills.",
+      "storage": "~/.local/share/mcp-servers/docx/"
+    },
+    "timezone": {
+      "title": "MCP Timezone Planner",
+      "tagline": "Find meeting slots inside everyone's working hours.",
+      "does": "Converts times between IANA zones with correct DST via Intl, resolves cities and countries to zones, finds ranked meeting slots where every participant is inside working hours with a fairness score, computes daily overlap windows, DST change dates and business days, stores contacts with their zones, and writes valid .ics calendar files.",
+      "for": "Freelancers and small teams with clients in other time zones.",
+      "example": "\"When can I meet Sara in Sydney and Tom in Austin next week, one hour?\" ... \"Send me an ics for Tuesday 15:00 Warsaw.\"",
+      "free": "Conversions, overlap, DST, business days, slots for up to 3 participants over 5 days, 5 contacts, 3 ics per month.",
+      "pro": "Unlimited participants, days, contacts and ics files, recurring slot search.",
+      "storage": "~/.local/share/mcp-servers/timezone/ (contacts)"
     }
   },
   "version": "0.1.1"
