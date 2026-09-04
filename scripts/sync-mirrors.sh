@@ -53,6 +53,11 @@ topics_for() {
     quotes) echo "quote estimate proposal" ;;
     barcode) echo "qr-code barcode ean13" ;;
     zip) echo "zip archive compression unzip" ;;
+    pdf) echo "pdf merge split stamp" ;;
+    calendar) echo "calendar ics free-busy" ;;
+    kanban) echo "kanban tasks project-board" ;;
+    image) echo "image resize thumbnail" ;;
+    bank-statement) echo "bank-statement transactions reconcile" ;;
     office-suite)    echo "office productivity bundle" ;;
   esac
 }
