@@ -115,12 +115,62 @@ footer{margin-top:48px;font-size:14px;opacity:.7}
 </body></html>`;
 }
 
+const HOME_DESCRIPTION =
+  "Seventeen local-first MCP servers for Claude: invoicing, time tracking, expenses, spreadsheets and more for freelancers and small businesses. Free tier needs no key. Connect by URL in under a minute, or install the .mcpb. Bundle $39 lifetime, or $19 per server.";
+
+const SERVER_IDS = Object.keys(PRODUCTS).filter((id) => id !== "bundle");
+
 function home() {
+  const compactRows = SERVER_IDS.map((id) => {
+    const p = PRODUCTS[id];
+    return `<tr><td><a href="/s/${esc(id)}">${esc(p.name.replace(/ Pro$/, ""))}</a></td><td>${esc(p.desc)}</td><td>$${p.usd}</td></tr>`;
+  }).join("\n");
   const rows = Object.entries(PRODUCTS).map(([id, p]) =>
     `<tr><td><strong>${p.pkg ? `<a href="/s/${esc(id)}">${esc(p.name)}</a>` : esc(p.name)}</strong><br>${esc(p.desc)}<br><span class="muted">${esc(p.free)} ${esc(p.pro)}</span>${p.pkg ? `<br><span class="muted">Install: <code>npx -y ${esc(p.pkg)}</code> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}#readme">docs</a></span>` : ""}</td>
 <td>$${p.usd}</td><td><a class="buy" href="/buy/${id}">Buy</a></td></tr>`).join("\n");
-  return page("MCP Servers Pro licenses", `<h1>MCP Servers Pro licenses</h1>
-<p><strong>Connect in one step:</strong> open <a href="/mcp/connect">/mcp/connect</a> for a URL that works in Claude.ai, Claude Desktop, Cursor and VS Code with no install and no headers. Or install a server locally below: practical MCP servers for Claude, Cursor and any MCP client, each with a genuinely useful free tier; Pro is a one-time payment for a lifetime key. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
+  const ld = [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "MCP Servers Bundle",
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "macOS, Windows, Linux",
+      description: HOME_DESCRIPTION,
+      url: "https://mcp.zovo.one/",
+      author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" },
+      offers: [
+        { "@type": "Offer", price: "0", priceCurrency: "USD", name: "Free tier, any server" },
+        { "@type": "Offer", price: "19", priceCurrency: "USD", name: "Pro, one server, lifetime" },
+        { "@type": "Offer", price: "39", priceCurrency: "USD", name: "Pro bundle, all servers, lifetime" },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "MCP servers for Claude",
+      itemListElement: SERVER_IDS.map((id, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `https://mcp.zovo.one/s/${id}`,
+        name: PRODUCTS[id].name,
+      })),
+    },
+  ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
+  const meta = `<meta name="description" content="${esc(HOME_DESCRIPTION).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/">${ld}`;
+  const html = page("MCP servers for Claude: invoices, time tracking and freelance tools", `<h1>Seventeen local-first MCP servers for Claude, for freelancers and small businesses</h1>
+<p>Invoicing, time tracking, expenses, spreadsheets, quotes, contracts and more, each running as its own MCP server. The free tier works with no key and no account. Connect by URL in under a minute, or install a server locally. The full set is $39 once, for life; one server alone is $19 once, for life.</p>
+<h2>Three ways to start</h2>
+<ol>
+<li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server. Paste that URL into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor, or VS Code. No header, no config file.</li>
+<li><strong>Install the .mcpb:</strong> download the Claude Desktop bundle from the <a href="${REPO}/releases/tag/v0.1.1">releases page</a> and open it; Claude Desktop installs the server.</li>
+<li><strong>Install locally with npx:</strong> run <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> and point your client's config at it; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
+</ol>
+<p>A Pro key removes the free-tier limits on any of these three paths: run <code>license_activate</code> with the key in Claude, set <code>MCP_LICENSE_KEY</code>, or paste the key where the connect-by-URL token goes. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
+<h2>Measured, not claimed</h2>
+<p>As of 2026-09-04: 399 of 399 automated checks passing across all servers and billing, 25 unit tests green on the billing service, and a hosted <code>tools/list</code> call answers at a 375&nbsp;ms median (p50). Full detail: <a href="${REPO}/blob/main/data/validation.json">validation.json</a>.</p>
+<h2>The seventeen servers</h2>
+<table><tr><th>Server</th><th>What it does</th><th>Pro price</th></tr>${compactRows}</table>
+<h2>All servers, free and Pro limits</h2>
 <table><tr><th>Product</th><th>Price</th><th></th></tr>${rows}</table>
 <h2>Hosted endpoints</h2><p>No install: <a href="/mcp/connect">/mcp/connect</a> mints an anonymous token and prints a URL per server, <code>mcp.zovo.one/mcp/&lt;server&gt;/t/&lt;token&gt;</code>, that needs no headers. A Pro key can replace the token to remove free-tier limits.</p><h2>How activation works</h2>
 <p>After payment you get a key like <code>MCPL1.xxx.yyy</code>. In Claude, run <code>license_activate</code> with the key, or set the environment variable <code>MCP_LICENSE_KEY</code>.</p>
@@ -129,6 +179,7 @@ function home() {
 <h2>Guides</h2>
 <p>Setup and worked examples: ${GUIDE_LINKS}</p>
 <p>Source and docs: <a href="${REPO}">${REPO}</a></p>`);
+  return html.replace("</title>", "</title>" + meta);
 }
 
 async function stripe(env, path, params, method = "POST") {
