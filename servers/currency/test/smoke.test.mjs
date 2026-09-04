@@ -339,3 +339,49 @@ test("D-C4: rate_on carries both directions and names the ECB's published direct
   assert.match(cross.published_direction, /Neither side is EUR/);
   assert.match(cross.published_direction, /cross rate/);
 });
+
+// Profile-first sweep (docs/PROFILE_FIRST_RESULT.md), the D-R64 species: the currency you
+// invoice in is business identity, held once behind the token. convert.to and
+// fx_rates_for.target were required, so "convert 100 USD into my currency" had to ask.
+test("convert and fx_rates_for fall back to the shared profile's default_currency", async (t) => {
+  const { srv, url } = await ecbServer();
+  t.after(() => srv.close());
+  const c = client({ ECB_BASE_URL: url });
+  t.after(() => c.close());
+
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  const dir = join(c.home, "data", "mcp-servers", "profile");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "business.json"), JSON.stringify({ name: "Nova Studio", default_currency: "PLN" }));
+
+  await init(c);
+
+  const r = JSON.parse((await c.call("convert", { amount: 100, from: "USD" })).text);
+  assert.equal(r.to, "PLN");
+  assert.equal(r.to_source, "the shared business profile's default_currency");
+
+  const f = JSON.parse((await c.call("fx_rates_for", { currencies: ["EUR", "GBP"] })).text);
+  assert.equal(f.target_currency, "PLN");
+  assert.equal(f.target_source, "the shared business profile's default_currency");
+
+  const b = JSON.parse((await c.call("rates_latest", { quotes: ["EUR"] })).text);
+  assert.equal(b.base, "PLN");
+  assert.equal(b.base_source, "the shared business profile's default_currency");
+
+  // An explicit target still wins and is not annotated as profile-sourced.
+  const r2 = JSON.parse((await c.call("convert", { amount: 100, from: "USD", to: "JPY" })).text);
+  assert.equal(r2.to, "JPY");
+  assert.equal(r2.to_source, undefined);
+});
+
+test("convert with no target anywhere names business_set rather than asking", async (t) => {
+  const { srv, url } = await ecbServer();
+  t.after(() => srv.close());
+  const c = client({ ECB_BASE_URL: url });
+  t.after(() => c.close());
+  await init(c);
+  const r = await c.call("convert", { amount: 100, from: "USD" });
+  assert.equal(r.isError, true, r.text);
+  assert.match(r.text, /business_set/);
+  assert.match(r.text, /default_currency/);
+});
