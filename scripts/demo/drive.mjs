@@ -441,6 +441,66 @@ async function run(name) {
     resultLine(await c.call("event_to_time_entry", { event_id: eventId, project: "acme" }));
   }
 
+  if (name === "kanban") {
+    say("$ Add tasks to a project board, check the board, hand off a timer, and review the week.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("task_add", { title: "Write the launch email", project: "nova", due: "Friday", estimate_minutes: 90 });
+    resultLine(await c.call("task_add", { title: "Write the launch email", project: "nova", due: "Friday", estimate_minutes: 90 }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("task_add", { title: "Fix checkout bug", project: "nova", priority: "high" });
+    resultLine(await c.call("task_add", { title: "Fix checkout bug", project: "nova", priority: "high" }));
+    await sleep(STEP_DELAY_MS);
+    const thirdArgs = { title: "Review pull request", project: "nova", column: "doing" };
+    toolLine("task_add", thirdArgs);
+    const thirdResult = await c.call("task_add", thirdArgs);
+    resultLine(thirdResult);
+    await sleep(STEP_DELAY_MS);
+    toolLine("board", { project: "nova" });
+    resultLine(await c.call("board", { project: "nova" }));
+    await sleep(STEP_DELAY_MS);
+    const taskId = thirdResult.split(/\s+/)[0];
+    toolLine("task_start_timer", { id: taskId });
+    resultLine(await c.call("task_start_timer", { id: taskId }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("weekly_review", {});
+    resultLine(await c.call("weekly_review", {}));
+  }
+
+  if (name === "image") {
+    const { Jimp } = await import("jimp");
+    const { writeFileSync } = await import("node:fs");
+    function noisy(width, height, seed) {
+      const img = new Jimp({ width, height, color: 0x000000ff });
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const r = (x * 37 + y * 91 + seed * 13) % 256;
+          const g = (x * 13 + y * 7 + seed * 29) % 256;
+          const b = (x * 5 + y * 53 + seed * 61) % 256;
+          img.setPixelColor((((r << 24) | (g << 16) | (b << 8) | 0xff) >>> 0), x, y);
+        }
+      }
+      return img;
+    }
+    const photoPath = join(c.sandbox, "photo.jpg");
+    writeFileSync(photoPath, await noisy(640, 480, 1).getBuffer("image/jpeg", { quality: 90 }));
+    say("$ Inspect a photo, resize it, compress it with a byte report, and make thumbnails.\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("image_info", { path: photoPath });
+    resultLine(await c.call("image_info", { path: photoPath }));
+    await sleep(STEP_DELAY_MS);
+    const resizedPath = join(c.sandbox, "photo-1200.jpg");
+    toolLine("image_resize", { path: photoPath, width: 320, out_path: resizedPath });
+    resultLine(await c.call("image_resize", { path: photoPath, width: 320, out_path: resizedPath }));
+    await sleep(STEP_DELAY_MS);
+    const compressedPath = join(c.sandbox, "photo-small.jpg");
+    toolLine("image_compress", { path: photoPath, quality: 60, out_path: compressedPath });
+    resultLine(await c.call("image_compress", { path: photoPath, quality: 60, out_path: compressedPath }));
+    await sleep(STEP_DELAY_MS);
+    const thumbDir = join(c.sandbox, "thumbs");
+    toolLine("image_thumbnails", { paths: [photoPath], size: 128, out_dir: thumbDir });
+    resultLine(await c.call("image_thumbnails", { paths: [photoPath], size: 128, out_dir: thumbDir }));
+  }
+
   if (name === "clauses") {
     say("$ Search the clause library, assemble a contract, and check what it still needs.\n");
     await sleep(STEP_DELAY_MS);

@@ -345,3 +345,65 @@ artifacts (this update):
 - assets/demo-pdf.gif, assets/demo-calendar.gif
 - servers/pdf/README.md, servers/calendar/README.md
 - README.md
+
+---
+
+## Update 2026-09-04: kanban and image demos
+
+Added demos for the two newest servers (kanban, image), following the same driver/tape pattern.
+
+1. Driver changes (`scripts/demo/drive.mjs`):
+   - New `kanban` sequence: three `task_add` calls on a `nova` board (a due-Friday task with an estimate, a
+     high-priority task, and a task added straight into the `doing` column), then `board` (column-by-column
+     counts and estimate totals), `task_start_timer` on the third task's id (parsed out of its `task_add`
+     result) -- shows the exact `timer_start` arguments to hand to mcp-time-tracker -- then `weekly_review` for
+     the current week.
+   - New `image` sequence: builds a deterministic 640x480 JPEG fixture in the sandbox using the same seeded
+     noise generator mcp-image's own tests use (`noisy()` from `servers/image/test/_client.mjs`, inlined here so
+     the driver has no cross-package import), then `image_info` (format/dimensions/size), `image_resize` (640x480
+     -> 320x240), `image_compress` (quality 60, reports the real before/after byte count), and `image_thumbnails`
+     (one 128px thumbnail). No network calls, no committed binary fixture.
+
+2. Tapes: `scripts/demo/kanban.tape`, `scripts/demo/image.tape` -- identical settings to the existing eleven
+   (900x480, Dracula, 40ms typing, `Sleep 10s`).
+
+   Command run for each: `vhs scripts/demo/<name>.tape` from repo root.
+
+   Output sizes (limit 400 KB):
+   - assets/demo-kanban.gif  196,966 bytes (192.3 KB) (task_add x3, board, task_start_timer handoff, weekly_review)
+   - assets/demo-image.gif   347,505 bytes (339.4 KB) (image_info, image_resize, image_compress with the bytes report, image_thumbnails)
+   Both under 400 KB. The image tape's first `vhs` run failed with "use of closed network connection, EOF / no
+   frames" from the underlying ttyd recorder (a transient recorder issue, not a driver or content problem); a
+   plain re-run of the same tape succeeded.
+
+3. Verification (`file` + `ffprobe`):
+   ```
+   $ file assets/demo-kanban.gif assets/demo-image.gif
+   assets/demo-kanban.gif: GIF image data, version 89a, 900 x 480
+   assets/demo-image.gif:  GIF image data, version 89a, 900 x 480
+
+   $ ffprobe -v error -select_streams v -show_entries stream=width,height,nb_frames,avg_frame_rate \
+       -of default=noprint_wrappers=1 assets/demo-<name>.gif
+   kanban: width=900 height=480 avg_frame_rate=25/1 nb_frames=265
+   image:  width=900 height=480 avg_frame_rate=25/1 nb_frames=263
+   ```
+   Both are valid 900x480 GIFs at 25 fps, roughly 10-11s, matching the existing eleven demos.
+
+4. README updates:
+   - `servers/kanban/README.md`: replaced `![mcp-kanban](../../assets/kanban-logo.png)` with
+     `![kanban demo](../../assets/demo-kanban.gif)` (only that line changed; re-read immediately before editing
+     since audit agents may be touching this file concurrently).
+   - `servers/image/README.md`: had no image line, so a `![image demo](../../assets/demo-image.gif)` line was
+     inserted right after the intro paragraph, before the bold value-statement line -- same position used for
+     `servers/docx/README.md`, `servers/recurring/README.md` and `servers/clauses/README.md` (re-read immediately
+     before editing for the same concurrency reason).
+   - `README.md` (root): added two rows (mcp-kanban, mcp-image) to the demo-thumbnail table, right before the
+     mcp-office-suite bundle row, matching the existing row format exactly (link, thumbnail, one-line
+     description, npx install line with the `*` footnote marker). No other rows or prose changed.
+
+artifacts (this update):
+- scripts/demo/drive.mjs (extended)
+- scripts/demo/kanban.tape, scripts/demo/image.tape
+- assets/demo-kanban.gif, assets/demo-image.gif
+- servers/kanban/README.md, servers/image/README.md
+- README.md

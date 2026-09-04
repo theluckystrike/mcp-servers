@@ -9,7 +9,7 @@ JSON on your own machine.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
-![mcp-kanban](../../assets/kanban-logo.png)
+![kanban demo](../../assets/demo-kanban.gif)
 
 **A local kanban board per project -- columns, due dates, estimates, weekly review -- zero setup, all local.**
 
