@@ -5,11 +5,11 @@ form field with exact text to paste, the command to run after the human step, an
 it landed. No paid submissions anywhere in this pack. Support email everywhere: support@zovo.one.
 License everywhere: MIT. Repo everywhere: https://github.com/theluckystrike/mcp-servers.
 
-Package/server count: 20 (19 standalone servers + the office-suite bundle). All at version 0.9.0.
-Icons live at `assets/<name>-logo.png` in the repo root, except **office-suite has no dedicated
-logo file** (not in `assets/`) — use `assets/office-suite-logo.png` only after creating it, or
-reuse `assets/invoice-logo.png` as a placeholder the way earlier rounds reused logos for missing
-servers (noted in memory, e.g. quotes reused invoice's logo before its own existed).
+Package/server count: 20 servers (19 standalone + the office-suite bundle), plus the
+`packages/mcp-license` runtime dependency all 20 of them import — 21 npm packages total.
+All at version 0.9.0. Icons live at `assets/<name>-logo.png` in the repo root; `assets/
+office-suite-logo.png` now exists (400x400, two-color house style, mark "OS"), so office-suite no
+longer needs the `invoice-logo.png` placeholder earlier rounds used.
 
 ---
 
@@ -52,7 +52,7 @@ requires an icon upload.
 
 ---
 
-## 1. npm — publish the 20 packages
+## 1. npm — publish the 21 packages
 
 **URL:** https://www.npmjs.com/~theluckystrike (profile) — login itself happens at whatever URL
 `npm login --auth-type=web` prints (a one-time npmjs.com device-auth page, not a fixed URL you can
@@ -75,54 +75,62 @@ npm whoami
 should print `theluckystrike`.
 
 **Step 2 (command to run after login):**
-`scripts/publish-all.sh --go` exists but **only covers 4 of the 20 packages**
-(`SERVERS=(time-tracker price-tracker spreadsheet invoice)` is hardcoded in the script). It builds,
-tests, npm-publishes those four, tags them in git, and runs `mcp-publisher publish` on each
-`server.json`. Run it first:
-```
-cd /Users/mike/mcp-servers
-scripts/publish-all.sh --go
-```
-
-Then publish the remaining 16 packages by hand. **Publish order matters**: some servers depend on
-sibling `@theluckystrike/*` packages at runtime (npm range, not just at build time), so publish
-base servers before anything that depends on them, and office-suite last:
+`scripts/publish-all.sh` now derives its package list from the workspace itself (every
+`package.json` under `packages/*` and `servers/*`) instead of a hardcoded 4-package array, and
+computes the publish order by topologically sorting each package's `@theluckystrike/*`
+`dependencies` — a package publishes only after every `@theluckystrike/*` package it depends on.
+It defaults to a dry run (`npm publish --access public --dry-run` on each package, printing the
+pack contents and a summary table); pass `--go` to publish for real. It also skips any package
+whose exact current version is already on the npm registry, so it is safe to re-run after a
+partial publish.
 
 ```
 cd /Users/mike/mcp-servers
 export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
-npm run build
-
-# base servers with no @theluckystrike/* runtime dependency
-for n in currency timezone docx pdf calendar expense-tracker image bank-statement \
-         kanban barcode zip quotes; do
-  (cd "servers/$n" && npm publish --access public)
-done
-
-# depend on docx and/or invoice (already published in step 1 above)
-for n in resume recurring clauses; do
-  (cd "servers/$n" && npm publish --access public)
-done
-
-# depends on 12 siblings above — publish last
-(cd servers/office-suite && npm publish --access public)
+scripts/publish-all.sh          # dry run first — confirm the table below
+scripts/publish-all.sh --go     # after npm whoami succeeds
 ```
 
-**Open question worth checking before this step:** `packages/mcp-license` is itself named
-`@theluckystrike/mcp-license` in its own `package.json` and is **not** published to npm today,
-yet several servers (`resume`, `recurring`, `clauses`, `office-suite`, and likely all of them)
-list it as a runtime `dependencies` entry at `^0.9.0`. If the build does not bundle
-`mcp-license`'s compiled output into each server's `dist/index.js`, a fresh `npm install` of any
-of these packages will 404 on `@theluckystrike/mcp-license`. Check one server's `dist/index.js`
-for the license-verification code before trusting a public `npx` install; if it is not bundled,
-publish `packages/mcp-license` first, ahead of everything else in this section.
+**Dependency cycle found and resolved in the script:** `packages/mcp-license`
+(`@theluckystrike/mcp-license`) is **not published to npm today**, yet every one of the 20 servers
+lists it as a runtime `dependencies` entry at `^0.9.0` — confirmed a real `import` (not bundled) in
+`servers/time-tracker/dist/index.js:9`: `import { createLicenseGate, ... } from
+"@theluckystrike/mcp-license"`. A fresh `npm install`/`npx` of any server 404s on
+`@theluckystrike/mcp-license` until it is published, so it must go out ahead of every server.
+`packages/mcp-license` in turn declares a runtime dependency on `@theluckystrike/mcp-timezone`
+(`^0.9.0`), **and** `servers/timezone/package.json` declares a runtime dependency back on
+`@theluckystrike/mcp-license` (`^0.9.0`) — a genuine two-package cycle, so no strict topological
+order exists for this pair. This does not block a real publish: `npm publish` never resolves a
+package's own dependencies against the registry, so mcp-license and mcp-timezone can go out in
+either order and an installer resolves both once they both exist on npm. `scripts/publish-all.sh`
+breaks the cycle by publishing `mcp-license` first (it is depended on by every other package here,
+so it wins the tie-break) and prints a `# CYCLE:` line when it does so.
 
-**Verify it landed:**
+**Final order the script computes (21 packages):** `mcp-license` → `mcp-barcode`, `mcp-currency`,
+`mcp-docx`, `mcp-expense-tracker`, `mcp-image`, `mcp-invoice`, `mcp-kanban`, `mcp-pdf`,
+`mcp-price-tracker`, `mcp-spreadsheet`, `mcp-time-tracker`, `mcp-timezone`, `mcp-zip` (these 13 only
+depend on `mcp-license`, already placed) → `mcp-bank-statement`, `mcp-calendar` (depend on
+`mcp-spreadsheet`/`mcp-timezone`) → `mcp-clauses`, `mcp-resume` (depend on `mcp-docx`) →
+`mcp-quotes`, `mcp-recurring` (depend on `mcp-invoice`) → `mcp-office-suite` last (depends on 12
+siblings). `packages/mcp-license` does resolve for an npm installer under this order: it is in the
+publish list (unlike before), and its one `@theluckystrike/*` dependency, `mcp-timezone`, is
+covered by the cycle rule above rather than blocking it.
+
+**Dry-run result (this session, before any real publish):** all 21 packages produced a clean
+`npm publish --access public --dry-run` — every tarball includes `dist/`, and every package that
+declares a `bin` entry has that file present under `dist/` (e.g. `mcp-license` packs
+`dist/index.js`, `dist/lock.js`, `dist/profile.js` plus `.d.ts`; `mcp-barcode` packs
+`dist/index.js`, `dist/lib.js`, `dist/render.js`, `dist/symbology.js`, `dist/store.js`,
+`dist/payloads.js` plus `.d.ts`). None of the 21 names were already on the npm registry (no `SKIP:
+already on npm` rows), consistent with the dead npm login — nothing has been published yet.
+
+**Verify after `--go`:**
 ```
+npm view @theluckystrike/mcp-license version
 npm view @theluckystrike/mcp-time-tracker version
 npm view @theluckystrike/mcp-office-suite version
 ```
-should print `0.9.0` for each of the 20 packages. Then a clean-machine smoke test:
+should print `0.9.0` for each of the 21 packages. Then a clean-machine smoke test:
 ```
 npx -y @theluckystrike/mcp-time-tracker --help 2>&1 | head -5
 ```
