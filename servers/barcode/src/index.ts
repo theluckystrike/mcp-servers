@@ -252,20 +252,41 @@ server.registerTool("qr_wifi", {
 
 server.registerTool("qr_vcard", {
   title: "Contact QR code",
-  description: "Call this tool to make a QR code that adds a contact when scanned (vCard 3.0: name, org, phone, email, URL, address), written to out_path or returned as SVG.",
+  description: "Call this tool to make a QR code that adds a contact when scanned (vCard 3.0). For your own card pass nothing: name, phone, email and address default to the shared business profile, never asked for.",
   inputSchema: {
-    name: z.string().describe("Full name, for example Anna Kowalska"),
+    name: z.string().optional().describe("Full name, for example Anna Kowalska. Defaults to the shared business profile's name; pass it only for someone else's card"),
     org: z.string().optional().describe("Company or organisation"),
     title: z.string().optional().describe("Job title"),
-    phone: z.string().optional().describe("Phone number, in the form it should be dialled"),
-    email: z.string().optional().describe("Email address"),
+    phone: z.string().optional().describe("Phone number, in the form it should be dialled. Defaults to the shared business profile"),
+    email: z.string().optional().describe("Email address. Defaults to the shared business profile"),
     url: z.string().optional().describe("Website"),
-    address: z.string().optional().describe("Postal address, one line"),
+    address: z.string().optional().describe("Postal address, one line. Defaults to the shared business profile"),
     note: z.string().optional().describe("Free note stored on the contact"),
     ...qrShape,
   },
-}, async (a: QrShape & Parameters<typeof vcardPayload>[0]) =>
-  wrap(() => qrTool(vcardPayload(a), a, "vcard", "qr_vcard PNG output", "qr_vcard", ` Contact "${a.name}".`)));
+}, async (a: QrShape & Partial<Parameters<typeof vcardPayload>[0]>) => wrap(async () => {
+  // D-R64 species: your own contact card is business identity, not per-call input. A caller
+  // who has run business_set once should never be asked for their own name, phone, email or
+  // address again; an explicit argument still wins and is not annotated.
+  const profile = readSharedProfile();
+  const name = a.name ?? profile.name;
+  if (!name) {
+    return fail(
+      `no name: pass name, or set one once in the shared business profile (the invoice server's business_set, field name) and every server in this suite uses it. Nothing was written.`,
+    );
+  }
+  const phone = a.phone ?? profile.phone;
+  const email = a.email ?? profile.email;
+  const address = a.address ?? profile.address;
+  const used = [
+    a.name ? null : profile.name ? "name" : null,
+    a.phone ? null : profile.phone ? "phone" : null,
+    a.email ? null : profile.email ? "email" : null,
+    a.address ? null : profile.address ? "address" : null,
+  ].filter((x): x is string => x !== null);
+  const from = used.length ? ` ${used.join(", ")} taken from the shared business profile.` : "";
+  return qrTool(vcardPayload({ ...a, name, phone, email, address }), a, "vcard", "qr_vcard PNG output", "qr_vcard", ` Contact "${name}".${from}`);
+}));
 
 server.registerTool("qr_payment_sepa", {
   title: "SEPA payment QR code",

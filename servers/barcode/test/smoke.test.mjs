@@ -142,3 +142,43 @@ test("qr_payment_sepa with no beneficiary anywhere names business_set rather tha
   assert.match(r.text, /business_set/);
   assert.match(r.text, /Nothing was written/);
 });
+
+// Profile-first sweep (docs/PROFILE_FIRST_RESULT.md), the D-R64 species in qr_vcard: your
+// own contact card is business identity, and name was required, so "QR code with my
+// contact details" made a model ask for a name, phone and email the profile already held.
+test("qr_vcard falls back to the shared business profile for name, phone, email and address", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  const profileDir = join(box.dataHome, "mcp-servers", "profile");
+  mkdirSync(profileDir, { recursive: true });
+  writeFileSync(join(profileDir, "business.json"), JSON.stringify({
+    name: "Nova Studio", phone: "+48 22 000 0000", email: "hi@nova.example", address: "Krucza 1, Warsaw",
+  }));
+
+  await c.init();
+  const r = await c.call("qr_vcard", {});
+  assert.equal(r.isError, false, r.text);
+  assert.match(r.text, /Contact "Nova Studio"/);
+  assert.match(r.text, /shared business profile/);
+  assert.match(r.text, /name, phone, email, address/);
+
+  // An explicit name still wins and is not annotated as coming from the profile.
+  const r2 = await c.call("qr_vcard", { name: "Anna Kowalska", phone: "+1 555 0100", email: "a@k.example", address: "1 Main St" });
+  assert.equal(r2.isError, false, r2.text);
+  assert.match(r2.text, /Contact "Anna Kowalska"/);
+  assert.doesNotMatch(r2.text, /shared business profile/);
+});
+
+test("qr_vcard with no name anywhere names business_set rather than asking", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  const r = await c.call("qr_vcard", {});
+  assert.equal(r.isError, true, r.text);
+  assert.match(r.text, /business_set/);
+  assert.match(r.text, /Nothing was written/);
+});
