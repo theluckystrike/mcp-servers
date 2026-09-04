@@ -100,14 +100,14 @@ function outFormat(outPath: string, input: Fmt): { fmt: Fmt; fromExt: boolean } 
  * so a 12 MP source resized to 1600 px wide is a free operation and only writing 12 MP back
  * out is not.
  */
-function proSizeCheck(src: LoadedImage, feature: string, outW?: number, outH?: number): string | null {
+function proSizeCheck(src: LoadedImage, feature: string, toolName: string, outW?: number, outH?: number): string | null {
   if (gate.isPro()) return null;
   const w = outW ?? src.width, h = outH ?? src.height;
   if (w * h <= FREE_MAX_PIXELS) return null;
   return `The output would be ${w}x${h} (${megapixels(w, h)} MP), from a ${src.width}x${src.height} source. ` +
     `The free tier writes images up to ${FREE_MAX_PIXELS / 1_000_000} MP; Pro has no size limit. ` +
     `Resize it smaller in the same call (width, height or max_width) and this is free. Nothing was written.` +
-    `\n\n${gate.upgradeText(feature)}`;
+    `\n\n${gate.upgradeText(feature, toolName)}`;
 }
 
 /** The size an "inside" fit produces, without touching the image. */
@@ -136,10 +136,10 @@ function upscaleNote(fromW: number, fromH: number, toW: number, toH: number): st
     `so the result is softer than a photo taken at ${toW}x${toH}.\n`;
 }
 
-function proBatchCheck(n: number, feature: string): string | null {
+function proBatchCheck(n: number, feature: string, toolName: string): string | null {
   if (gate.isPro() || n <= FREE_MAX_BATCH) return null;
   return `${n} files were given. The free tier processes up to ${FREE_MAX_BATCH} files per call; ` +
-    `Pro has no batch limit. Nothing was written.\n\n${gate.upgradeText(feature)}`;
+    `Pro has no batch limit. Nothing was written.\n\n${gate.upgradeText(feature, toolName)}`;
 }
 
 /* -------------------------------------------------------------------- tools */
@@ -207,7 +207,7 @@ server.registerTool("image_resize", {
     }
     const src = await loadImage(path);
     const target = fit === "inside" ? fitInside(src.width, src.height, width, height) : { w: width!, h: height! };
-    const limit = proSizeCheck(src, "writing an image over 4 MP", target.w, target.h);
+    const limit = proSizeCheck(src, "writing an image over 4 MP", "image_resize", target.w, target.h);
     if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
@@ -244,7 +244,7 @@ server.registerTool("image_convert", {
   const reservations: Reservation[] = [];
   try {
     const src = await loadImage(path);
-    const limit = proSizeCheck(src, "writing an image over 4 MP");
+    const limit = proSizeCheck(src, "writing an image over 4 MP", "image_convert");
     if (limit) return freeLimit(limit);
     const fmt = format as Fmt;
     // An out_path that already names this format keeps its own spelling: ".tiff" must not
@@ -298,7 +298,7 @@ server.registerTool("image_compress", {
     const outSize = max_width && src.width > max_width
       ? fitInside(src.width, src.height, max_width, undefined)
       : { w: src.width, h: src.height };
-    const limit = proSizeCheck(src, "writing an image over 4 MP", outSize.w, outSize.h);
+    const limit = proSizeCheck(src, "writing an image over 4 MP", "image_compress", outSize.w, outSize.h);
     if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
@@ -383,7 +383,7 @@ server.registerTool("image_crop", {
         `smaller rectangle is worse than an answer.`,
       );
     }
-    const limit = proSizeCheck(src, "writing an image over 4 MP", width, height);
+    const limit = proSizeCheck(src, "writing an image over 4 MP", "image_crop", width, height);
     if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
@@ -413,13 +413,13 @@ server.registerTool("image_thumbnails", {
 }, async ({ paths, size, out_dir, overwrite }) => {
   const reservations: Reservation[] = [];
   try {
-    const batch = proBatchCheck(paths.length, "thumbnails of more than 5 files");
+    const batch = proBatchCheck(paths.length, "thumbnails of more than 5 files", "image_thumbnails");
     if (batch) return freeLimit(batch);
     const srcs: LoadedImage[] = [];
     for (const p of paths) srcs.push(await loadImage(p));
     for (const s of srcs) {
       const t = fitInside(s.width, s.height, size, size);
-      const limit = proSizeCheck(s, "writing an image over 4 MP", t.w, t.h);
+      const limit = proSizeCheck(s, "writing an image over 4 MP", "image_thumbnails", t.w, t.h);
       if (limit) return freeLimit(limit);
     }
     const inputs = srcs.map((s) => s.path);
@@ -509,7 +509,7 @@ server.registerTool("image_watermark", {
     if (custom && !gate.isPro()) {
       return freeLimit(
         "Custom watermark text is a Pro feature. On the free tier this tool draws the business name from the " +
-        `shared profile: call it without "text". Nothing was written.\n\n${gate.upgradeText("a custom watermark text")}`,
+        `shared profile: call it without "text". Nothing was written.\n\n${gate.upgradeText("a custom watermark text", "image_watermark")}`,
       );
     }
     let line = custom ? text!.trim() : (readSharedProfile().name ?? "").trim();
@@ -522,7 +522,7 @@ server.registerTool("image_watermark", {
       );
     }
     const src = await loadImage(path);
-    const limit = proSizeCheck(src, "writing an image over 4 MP");
+    const limit = proSizeCheck(src, "writing an image over 4 MP", "image_watermark");
     if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
@@ -646,13 +646,13 @@ server.registerTool("image_batch_resize", {
   const reservations: Reservation[] = [];
   try {
     if (!width && !height) return fail("give width, height, or both. Nothing was written.");
-    const batch = proBatchCheck(paths.length, "resizing more than 5 files at once");
+    const batch = proBatchCheck(paths.length, "resizing more than 5 files at once", "image_batch_resize");
     if (batch) return freeLimit(batch);
     const srcs: LoadedImage[] = [];
     for (const p of paths) srcs.push(await loadImage(p));
     for (const s of srcs) {
       const t = fitInside(s.width, s.height, width, height);
-      const limit = proSizeCheck(s, "writing an image over 4 MP", t.w, t.h);
+      const limit = proSizeCheck(s, "writing an image over 4 MP", "image_batch_resize", t.w, t.h);
       if (limit) return freeLimit(limit);
     }
     const inputs = srcs.map((s) => s.path);
@@ -734,7 +734,7 @@ server.registerTool("image_dominant_colors", {
       ...(capped
         ? {
           free_tier_color_cap: FREE_MAX_COLORS,
-          upgrade: gate.upgradeText(`${count} dominant colours instead of ${FREE_MAX_COLORS}`),
+          upgrade: gate.upgradeText(`${count} dominant colours instead of ${FREE_MAX_COLORS}`, "image_dominant_colors"),
         }
         : {}),
       ...(topShare < 1

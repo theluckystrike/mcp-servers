@@ -217,6 +217,13 @@ test("cap: an output over the free megapixel limit writes no file at all", async
   assert.match(r.text, /free/i, r.text.slice(0, 300));
   assert.equal(existsSync(out), false, "a refused resize must leave no file behind");
   assert.equal(readdirSync(b.dir).filter((f) => f.includes(".tmp")).length, 0, "no tmp file may survive a refusal");
+
+  // Conversion instrument (docs/CONVERSION_INSTRUMENT.md): the /buy link on a cap message
+  // must name the tool that produced it, not the prose of the feature. Asserted on the
+  // cheapest gate this suite already trips, so it costs no extra server run.
+  const wantSrc = `https://mcp.zovo.one/buy/${PRODUCT}?src=${PRODUCT}.image_resize`;
+  assert.ok(r.text.includes(wantSrc),
+    `the image_resize cap message must carry ${wantSrc}, got: ` + r.text.slice(0, 400));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {
