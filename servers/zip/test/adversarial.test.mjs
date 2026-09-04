@@ -2,6 +2,7 @@
 // claim ("nothing was written") is checked on disk, not read off the answer.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, client, proKey, sandbox } from "./_client.mjs";
@@ -470,4 +471,124 @@ test("stdout carries JSON-RPC only, across a success, a refusal and a protocol e
     try { m = JSON.parse(line); } catch { assert.fail(`non-JSON on stdout: ${JSON.stringify(line.slice(0, 200))}`); }
     assert.equal(m.jsonrpc, "2.0");
   }
+});
+
+test("the free entry cap sits exactly at 200: 200 files pack, 201 are refused", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+
+  const okFiles = {};
+  for (let i = 0; i < 200; i++) okFiles[`f${i}.txt`] = `row ${i}`;
+  const src200 = seed(join(box.dir, "src200"), okFiles);
+  const out200 = join(box.dir, "exactly200.zip");
+  const r200 = await c.call("zip_create", { dir: src200, out_path: out200 });
+  assert.equal(r200.isError, false, r200.text.slice(0, 300));
+  assert.match(r200.text, /200 entries/);
+  assert.ok(statSync(out200).size > 0);
+
+  const overFiles = { ...okFiles, f200: "one more" };
+  const src201 = seed(join(box.dir, "src201"), overFiles);
+  const out201 = join(box.dir, "exactly201.zip");
+  const r201 = await c.call("zip_create", { dir: src201, out_path: out201 });
+  assert.equal(r201.isError, false, "a tier limit is an answer, not a protocol error");
+  assert.match(r201.text, /That is 201 files. The free tier writes archives of up to 200 entries/);
+  assert.equal(existsSync(out201), false, "one file over the cap writes nothing");
+});
+
+test("a 26 MB archive is refused on the free tier by its written size, not its input size", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  // Random bytes barely compress, so the zipped output lands close to the input size,
+  // over the 25 MB free ceiling measured on the archive fflate actually produced.
+  const big = randomBytes(26 * 1024 * 1024);
+  const src = join(box.dir, "srcbig");
+  mkdirSync(src, { recursive: true });
+  writeFileSync(join(src, "random.bin"), big);
+  const out = join(box.dir, "big.zip");
+  const r = await c.call("zip_create", { dir: src, out_path: out });
+  assert.equal(r.isError, false, "a tier limit is an answer, not a protocol error");
+  assert.match(r.text, /The free tier writes archives up to 25\.0 MB/, r.text.slice(0, 300));
+  assert.equal(existsSync(out), false, "nothing on disk from a size-capped write");
+
+  const pro = client({ dataHome: join(box.dir, "pro"), key: proKey() });
+  t.after(() => pro.close());
+  await pro.init();
+  const p = await pro.call("zip_create", { dir: src, out_path: out });
+  assert.equal(p.isError, false, p.text.slice(0, 300));
+  assert.ok(statSync(out).size > 25 * 1024 * 1024, "a Pro key writes the same archive past the free ceiling");
+});
+
+test("an archive-level comment does not confuse the end-of-central-directory reader", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  const zip = join(box.dir, "commented.zip");
+  writeFileSync(zip, makeZip(
+    [{ name: "a.txt", data: "hello" }, { name: "b.txt", data: "world" }],
+    { comment: "Packed by Nova Studio, do not redistribute." },
+  ));
+  const listed = await c.call("zip_list", { path: zip });
+  assert.equal(listed.isError, false, listed.text.slice(0, 300));
+  assert.match(listed.text, /a\.txt/);
+  assert.match(listed.text, /b\.txt/);
+
+  const out = join(box.dir, "out");
+  const ex = await c.call("zip_extract", { path: zip, out_dir: out });
+  assert.equal(ex.isError, false, ex.text.slice(0, 300));
+  assert.equal(readFileSync(join(out, "a.txt"), "utf8"), "hello");
+  assert.equal(readFileSync(join(out, "b.txt"), "utf8"), "world");
+});
+
+test("an entry declaring a 4 GB uncompressed size for a 100-byte body cannot be extracted, even though its 100-byte compressed size sits under the ratio floor", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  const zip = join(box.dir, "huge-header.zip");
+  writeFileSync(zip, makeZip([
+    { name: "huge.bin", data: Buffer.from("x".repeat(100)), declaredSize: 4_000_000_000 },
+  ]));
+  // RATIO_FLOOR_BYTES (1024) exists so a tiny well-compressed file is not flagged as a
+  // bomb; a 100-byte compressed entry sits under that floor, so zip_list's per-entry
+  // ratio check does not fire even at a 40,000,000x ratio. That floor is a zip_list
+  // display decision, not the safety boundary: zip_extract's total-declared-size cap is
+  // a second, independent guard that is not floored, and it still catches this entry.
+  const listed = await c.call("zip_list", { path: zip });
+  assert.equal(listed.isError, false, listed.text.slice(0, 300));
+  assert.match(listed.text, /3\.73 GB uncompressed/, listed.text.slice(0, 400));
+
+  const out = join(box.dir, "out");
+  const r = await c.call("zip_extract", { path: zip, out_dir: out });
+  assert.equal(r.isError, true, r.text.slice(0, 300));
+  assert.match(r.text, /declare .* uncompressed, over the .* ceiling/, r.text.slice(0, 400));
+  assert.equal(existsSync(out), false, "the 4 GB declared entry is never inflated, its body never even opened");
+
+  // A tight max_total_mb still refuses it outright; a generous one still cannot make the
+  // entry pass its CRC, because the actual body is 100 bytes of "x", not 4 GB of anything.
+  const out2 = join(box.dir, "out2");
+  const r2 = await c.call("zip_extract", { path: zip, out_dir: out2, max_total_mb: 8000 });
+  assert.equal(r2.isError, true, r2.text.slice(0, 300));
+  assert.match(r2.text, /declared 4000000000 bytes and produced 100/, r2.text.slice(0, 400));
+  assert.equal(existsSync(join(out2, "huge.bin")), false, "the lying entry is never written, CRC catches it before writeFileSync");
+});
+
+test("out_dir that is a file is refused with a sentence, not a raw EEXIST from mkdirSync", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  const zip = join(box.dir, "plain.zip");
+  writeFileSync(zip, makeZip([{ name: "a.txt", data: "hello" }]));
+  const outAsFile = join(box.dir, "out_dir_is_a_file");
+  writeFileSync(outAsFile, "I am a file, not a directory");
+
+  const r = await c.call("zip_extract", { path: zip, out_dir: outAsFile });
+  assert.equal(r.isError, true, r.text.slice(0, 300));
+  assert.match(r.text, /out_dir .* is a file, not a directory/);
+  assert.equal(readFileSync(outAsFile, "utf8"), "I am a file, not a directory", "the original file is untouched");
 });

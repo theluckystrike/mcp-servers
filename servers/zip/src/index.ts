@@ -354,6 +354,9 @@ server.registerTool("zip_extract", {
   const maxRatio = a.max_ratio ?? DEFAULT_MAX_RATIO;
   const maxTotal = a.max_total_mb ? a.max_total_mb * 1024 * 1024 : DEFAULT_MAX_TOTAL_BYTES;
   const outDir = expandPath(a.out_dir);
+  if (existsSync(outDir) && !statSync(outDir).isDirectory()) {
+    return fail(`out_dir ${outDir} is a file, not a directory. Give a directory to unpack into, for example ${outDir}-extracted. Nothing was extracted.`);
+  }
 
   const selected = dir.entries.filter((e) => !a.patterns?.length || matchesAny(e.name, a.patterns));
   if (selected.length === 0) {
