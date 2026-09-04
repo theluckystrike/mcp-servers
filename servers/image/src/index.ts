@@ -14,10 +14,38 @@ import {
 } from "./imageio.js";
 import { addOp, dataDir, getOps } from "./store.js";
 
-/** The free tier writes files up to this many pixels. Reporting is never capped. */
+/**
+ * The free tier writes files up to this many pixels. The cap is on the OUTPUT, not on the
+ * source: every photo a phone takes is 12 MP, so a cap on the input refuses the one job
+ * this server exists for - taking a camera-sized file down to a page-sized one. Reporting
+ * is never capped.
+ */
 const FREE_MAX_PIXELS = 4_000_000;
 /** The free tier processes this many files in one batch call. */
 const FREE_MAX_BATCH = 5;
+/** The free tier names this many dominant colours. Pro goes to 16. */
+const FREE_MAX_COLORS = 3;
+
+/**
+ * stdout carries the JSON-RPC stream and nothing else. Third-party decoders disagree:
+ * omggif prints "Warning, gif stream shorter than expected." with console.log on a
+ * truncated GIF, and jpeg-js prints its own warnings the same way, which lands a bare
+ * line of English in the middle of the protocol and kills the connection for any client
+ * that parses strictly. Anything that is not a serialised message is diverted to stderr.
+ */
+const stdoutWrite = process.stdout.write.bind(process.stdout);
+process.stdout.write = ((chunk: unknown, enc?: unknown, cb?: unknown): boolean => {
+  const s = typeof chunk === "string" ? chunk : Buffer.from(chunk as Uint8Array).toString();
+  if (s.startsWith("{") || s.startsWith("[")) {
+    return stdoutWrite(chunk as string, enc as BufferEncoding, cb as () => void);
+  }
+  process.stderr.write(s);
+  if (typeof enc === "function") (enc as () => void)();
+  else if (typeof cb === "function") (cb as () => void)();
+  return true;
+}) as typeof process.stdout.write;
+const toStderr = (...a: unknown[]) => { process.stderr.write(a.map((x) => String(x)).join(" ") + "\n"); };
+console.log = toStderr; console.info = toStderr; console.warn = toStderr; console.debug = toStderr;
 
 const gate = createLicenseGate({ product: "image" });
 
@@ -66,13 +94,45 @@ function outFormat(outPath: string, input: Fmt): { fmt: Fmt; fromExt: boolean } 
   return byExt ? { fmt: byExt, fromExt: true } : { fmt: input, fromExt: false };
 }
 
-function proSizeCheck(src: LoadedImage, feature: string): string | null {
+/**
+ * Checked against the pixels that will be WRITTEN. Call it after the target size is known,
+ * so a 12 MP source resized to 1600 px wide is a free operation and only writing 12 MP back
+ * out is not.
+ */
+function proSizeCheck(src: LoadedImage, feature: string, outW?: number, outH?: number): string | null {
   if (gate.isPro()) return null;
-  const px = src.width * src.height;
-  if (px <= FREE_MAX_PIXELS) return null;
-  return `${basename(src.path)} is ${src.width}x${src.height} (${megapixels(src.width, src.height)} MP). ` +
+  const w = outW ?? src.width, h = outH ?? src.height;
+  if (w * h <= FREE_MAX_PIXELS) return null;
+  return `The output would be ${w}x${h} (${megapixels(w, h)} MP), from a ${src.width}x${src.height} source. ` +
     `The free tier writes images up to ${FREE_MAX_PIXELS / 1_000_000} MP; Pro has no size limit. ` +
-    `Nothing was written.\n\n${gate.upgradeText(feature)}`;
+    `Resize it smaller in the same call (width, height or max_width) and this is free. Nothing was written.` +
+    `\n\n${gate.upgradeText(feature)}`;
+}
+
+/** The size an "inside" fit produces, without touching the image. */
+function fitInside(w: number, h: number, tw?: number, th?: number): { w: number; h: number } {
+  if (tw && th) { const s = Math.min(tw / w, th / h); return { w: Math.max(1, Math.round(w * s)), h: Math.max(1, Math.round(h * s)) }; }
+  if (tw) return { w: tw, h: Math.max(1, Math.round((h * tw) / w)) };
+  if (th) return { w: Math.max(1, Math.round((w * th) / h)), h: th };
+  return { w, h };
+}
+
+/**
+ * An animated GIF decodes to its first frame here and nothing else. Silently returning a
+ * one-frame file from a 24-frame source is the kind of loss a user finds later, so every
+ * tool that writes says it.
+ */
+function framesNote(src: LoadedImage): string {
+  if (!src.frames || src.frames < 2) return "";
+  return `${basename(src.path)} is an animated GIF with ${src.frames} frames. Only the first frame was read; ` +
+    `the output is a still. This server does not write animation.\n`;
+}
+
+/** Said out loud when a resize makes an image bigger than it was: pixels are invented, not gained. */
+function upscaleNote(fromW: number, fromH: number, toW: number, toH: number): string {
+  if (toW <= fromW && toH <= fromH) return "";
+  return `This enlarged the image from ${fromW}x${fromH}: the extra pixels are interpolated, not new detail, ` +
+    `so the result is softer than a photo taken at ${toW}x${toH}.\n`;
 }
 
 function proBatchCheck(n: number, feature: string): string | null {
@@ -110,6 +170,18 @@ server.registerTool("image_info", {
       size_bytes: src.size,
       has_alpha: src.hasAlpha,
       bytes_per_pixel_stored: Math.round((src.size / (src.width * src.height)) * 100) / 100,
+      ...(src.frames && src.frames > 1
+        ? { frames: src.frames, animation_note: "An animated GIF. Every tool here reads the first frame only and writes a still." }
+        : {}),
+      ...(src.declared && (src.declared.width !== src.width || src.declared.height !== src.height)
+        ? {
+          declared_in_header: `${src.declared.width}x${src.declared.height}`,
+          orientation_note:
+            "The container header declares those dimensions and an EXIF Orientation tag turns the image, which is " +
+            "applied on read - the width and height above are what you actually see. Any copy written here has no " +
+            "EXIF block, so it is upright on its own and will not be turned a second time.",
+        }
+        : {}),
     }, null, 2));
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -133,7 +205,8 @@ server.registerTool("image_resize", {
       return fail(`fit: "${fit}" needs both width and height; "inside" is the mode that takes one of them. Nothing was written.`);
     }
     const src = await loadImage(path);
-    const limit = proSizeCheck(src, "resizing an image over 4 MP");
+    const target = fit === "inside" ? fitInside(src.width, src.height, width, height) : { w: width!, h: height! };
+    const limit = proSizeCheck(src, "writing an image over 4 MP", target.w, target.h);
     if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
@@ -149,6 +222,8 @@ server.registerTool("image_resize", {
     return ok(
       `Resized ${src.width}x${src.height} to ${img.width}x${img.height} (fit: ${fit})\n` +
       `-> ${res.path}, ${humanBytes(bytes.length)}, ${fmt.toUpperCase()}${fromExt && fmt !== src.format ? " (from the out_path extension)" : ""}\n` +
+      upscaleNote(src.width, src.height, img.width, img.height) +
+      framesNote(src) +
       `The source ${src.path} is unchanged.${note}`,
     );
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
@@ -168,7 +243,7 @@ server.registerTool("image_convert", {
   const reservations: Reservation[] = [];
   try {
     const src = await loadImage(path);
-    const limit = proSizeCheck(src, "converting an image over 4 MP");
+    const limit = proSizeCheck(src, "writing an image over 4 MP");
     if (limit) return freeLimit(limit);
     const fmt = format as Fmt;
     // An out_path that already names this format keeps its own spelling: ".tiff" must not
@@ -196,6 +271,7 @@ server.registerTool("image_convert", {
     return ok(
       `Converted ${src.format.toUpperCase()} to ${fmt.toUpperCase()}\n` +
       `-> ${res.path}, ${humanBytes(src.size)} -> ${humanBytes(bytes.length)}, ${src.width}x${src.height}\n` +
+      framesNote(src) +
       (flattened ? "The source had transparency and JPEG has no alpha channel, so it was flattened onto white.\n" : "") +
       (qLine ? `${qLine}\n` : "") +
       `The source ${src.path} is unchanged.${note}`,
@@ -210,27 +286,65 @@ server.registerTool("image_compress", {
     path: pathArg,
     quality: z.number().int().min(1).max(100).default(80).describe("JPEG quality 1-100, default 80"),
     max_width: z.number().int().min(1).max(MAX_DIM).optional().describe("Scale down so the width is at most this, keeping the aspect ratio. Never scales up"),
+    max_bytes: z.number().int().min(1024).optional().describe("Largest the output may be, in bytes. The server searches JPEG quality down from `quality` until it fits and reports the quality it used. JPEG output only"),
     out_path: outArg,
     overwrite: overwriteArg,
   },
-}, async ({ path, quality, max_width, out_path, overwrite }) => {
+}, async ({ path, quality, max_width, max_bytes, out_path, overwrite }) => {
   const reservations: Reservation[] = [];
   try {
     const src = await loadImage(path);
-    const limit = proSizeCheck(src, "compressing an image over 4 MP");
+    const outSize = max_width && src.width > max_width
+      ? fitInside(src.width, src.height, max_width, undefined)
+      : { w: src.width, h: src.height };
+    const limit = proSizeCheck(src, "writing an image over 4 MP", outSize.w, outSize.h);
     if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
     const { fmt } = outFormat(res.path, src.format);
     let scaled = false;
     if (max_width && src.image.width > max_width) { src.image.resize({ w: max_width }); scaled = true; }
-    const bytes = await encode(src.image, fmt, quality);
+    let bytes = await encode(src.image, fmt, quality);
+    // A byte target, searched here rather than by the caller. Measured in docs/IMAGE_AUDIT.md:
+    // without it the model re-encoded the same photo five times at five qualities to land
+    // under 250 KB, which is five files on disk and fifteen turns for one answer.
+    let usedQuality = quality;
+    let tried = 1;
+    if (max_bytes && fmt === "jpeg" && bytes.length > max_bytes) {
+      let lo = 1, hi = quality;
+      let best: Buffer | null = null, bestQ = 0;
+      while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        const b = await encode(src.image, fmt, mid);
+        tried++;
+        if (b.length <= max_bytes) { best = b; bestQ = mid; lo = mid + 1; } else hi = mid - 1;
+      }
+      if (best) { bytes = best; usedQuality = bestQ; }
+      else {
+        releaseReservations(reservations);
+        return fail(
+          `${basename(src.path)} does not fit in ${humanBytes(max_bytes)} as a JPEG at any quality: ` +
+          `even quality 1 is ${humanBytes((await encode(src.image, fmt, 1)).length)} at ` +
+          `${src.image.width}x${src.image.height}. Nothing was written. Pass max_width as well - fewer pixels is ` +
+          `the knob that still works when quality has run out.`,
+        );
+      }
+    }
+    if (max_bytes && fmt !== "jpeg") {
+      releaseReservations(reservations);
+      return fail(
+        `max_bytes needs a JPEG output, because quality is the only knob that trades bytes for detail here and ` +
+        `a ${fmt.toUpperCase()} output is lossless. Nothing was written. Write to a .jpg out_path, or drop ` +
+        `max_bytes and use max_width.`,
+      );
+    }
     writeFileSync(res.path, bytes);
     const delta = src.size - bytes.length;
     const pct = Math.round((delta / src.size) * 1000) / 10;
     const note = await record("image_compress", [src.path], [res.path], `${src.size} -> ${bytes.length} bytes`);
     const how = fmt === "jpeg"
-      ? `JPEG quality ${quality}${scaled ? ` and a resize to ${src.image.width} px wide` : ""}`
+      ? `JPEG quality ${usedQuality}${usedQuality !== quality ? ` (searched down from ${quality} in ${tried} encodes to fit ${humanBytes(max_bytes!)})` : ""}` +
+        `${scaled ? ` and a resize to ${src.image.width} px wide` : ""}`
       : scaled
         ? `a resize to ${src.image.width} px wide. Quality ${quality} does not apply: a ${fmt.toUpperCase()} output here is lossless`
         : `a re-encode only. Quality ${quality} does not apply to a ${fmt.toUpperCase()} output, and without max_width there is nothing else to remove - write to a .jpg out_path, or pass max_width, to make this smaller`;
@@ -268,7 +382,7 @@ server.registerTool("image_crop", {
         `smaller rectangle is worse than an answer.`,
       );
     }
-    const limit = proSizeCheck(src, "cropping an image over 4 MP");
+    const limit = proSizeCheck(src, "writing an image over 4 MP", width, height);
     if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
@@ -279,6 +393,7 @@ server.registerTool("image_crop", {
     const note = await record("image_crop", [src.path], [res.path], `${width}x${height} at ${x},${y}`);
     return ok(
       `Cropped ${width}x${height} from (${x}, ${y}) of a ${src.width}x${src.height} image\n` +
+      framesNote(src) +
       `-> ${res.path}, ${humanBytes(bytes.length)}, ${fmt.toUpperCase()}\n` +
       `The source ${src.path} is unchanged.${note}`,
     );
@@ -302,7 +417,8 @@ server.registerTool("image_thumbnails", {
     const srcs: LoadedImage[] = [];
     for (const p of paths) srcs.push(await loadImage(p));
     for (const s of srcs) {
-      const limit = proSizeCheck(s, "thumbnails of an image over 4 MP");
+      const t = fitInside(s.width, s.height, size, size);
+      const limit = proSizeCheck(s, "writing an image over 4 MP", t.w, t.h);
       if (limit) return freeLimit(limit);
     }
     const inputs = srcs.map((s) => s.path);
@@ -327,6 +443,46 @@ server.registerTool("image_thumbnails", {
     );
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
 });
+
+/**
+ * The bundled bitmap fonts carry Latin-1 glyphs and nothing else, and jimp draws a missing
+ * glyph as nothing at all: "OPLACONE" with a Polish stroke loses the stroke, and CJK text
+ * measures 0 px wide and is drawn as an empty plate while the answer says it was drawn.
+ * Anything outside the font is transliterated where a Latin equivalent exists and counted
+ * where it does not, and the answer prints the text that was actually put on the pixels.
+ */
+const TRANSLIT: Record<string, string> = {
+  "\u0141": "L", "\u0142": "l", "\u0110": "D", "\u0111": "d", "\u0126": "H", "\u0127": "h",
+  "\u0152": "OE", "\u0153": "oe", "\u014a": "N", "\u014b": "n", "\u00d8": "O", "\u00f8": "o",
+  "\u00c6": "AE", "\u00e6": "ae", "\u00df": "ss", "\u00de": "Th", "\u00fe": "th",
+  "\u0130": "I", "\u0131": "i", "\u2019": "'", "\u2018": "'", "\u201c": "\"", "\u201d": "\"",
+  "\u2013": "-", "\u2014": "-", "\u2026": "...", "\u00a0": " ",
+};
+
+/** Character codes the bundled fonts actually have a glyph for. */
+function drawable(font: { chars: Record<string, unknown> }, ch: string): boolean {
+  return Object.prototype.hasOwnProperty.call(font.chars, ch);
+}
+
+export interface SanitizedText { text: string; replaced: number; removed: string[]; truncated: number }
+
+function sanitizeWatermarkText(raw: string, font: { chars: Record<string, unknown> }, max = 200): SanitizedText {
+  // Every whitespace control is a word separator, never a deletion: "PAID\nIN FULL" must
+  // not become "PAIDIN FULL".
+  const flat = raw.replace(/\s+/g, " ").trim();
+  let replaced = 0;
+  const removed: string[] = [];
+  let out = "";
+  for (const ch of flat) {
+    if (drawable(font, ch)) { out += ch; continue; }
+    const t = TRANSLIT[ch] ?? ch.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const usable = [...t].filter((c) => drawable(font, c)).join("");
+    if (usable) { out += usable; replaced++; }
+    else if (!removed.includes(ch)) removed.push(ch);
+  }
+  const truncated = out.length > max ? out.length - max : 0;
+  return { text: out.slice(0, max).trim(), replaced, removed, truncated };
+}
 
 const POSITIONS = ["bottom-right", "bottom-left", "bottom-center", "top-right", "top-left", "top-center", "center"] as const;
 
@@ -364,9 +520,8 @@ server.registerTool("image_watermark", {
         "or pass text, which is a Pro feature.",
       );
     }
-    line = line.replace(/\s+/g, " ").slice(0, 200);
     const src = await loadImage(path);
-    const limit = proSizeCheck(src, "watermarking an image over 4 MP");
+    const limit = proSizeCheck(src, "writing an image over 4 MP");
     if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
@@ -376,13 +531,35 @@ server.registerTool("image_watermark", {
     // rather than no text at all.
     let font = await loadFont(FONTS[FONTS.length - 1][1]);
     let size = 8;
+    let clean = sanitizeWatermarkText(line, font as unknown as { chars: Record<string, unknown> });
     for (const [px, file] of FONTS) {
       const f = await loadFont(file);
-      const w = measureText(f, line);
-      const h = measureTextHeight(f, line, src.width);
+      const c = sanitizeWatermarkText(line, f as unknown as { chars: Record<string, unknown> });
+      const w = measureText(f, c.text);
+      const h = measureTextHeight(f, c.text, src.width);
       font = f;
       size = px;
-      if (w <= src.width * 0.8 && h <= src.height * 0.25) break;
+      clean = c;
+      if (c.text && w <= src.width * 0.8 && h <= src.height * 0.25) break;
+    }
+    if (!clean.text) {
+      releaseReservations(reservations);
+      return fail(
+        `the watermark text is empty after removing the characters the bundled bitmap fonts have no glyph for ` +
+        `(${clean.removed.join(" ")}). These fonts carry Latin-1 only, so there is nothing to draw and nothing ` +
+        `was written. Give the text in Latin characters.`,
+      );
+    }
+    line = clean.text;
+    const measured = measureText(font, line);
+    const room = Math.round(src.width * 0.94);
+    if (measured > room) {
+      releaseReservations(reservations);
+      return fail(
+        `"${line}" measures ${measured} pt at ${size} px type, the smallest face this server has, in ${room} px ` +
+        `of room on a ${src.width}x${src.height} image, so it would be drawn off the right edge. Nothing was ` +
+        `written. Use shorter text, or watermark a larger image.`,
+      );
     }
     const tw = Math.min(measureText(font, line), src.width);
     const th = measureTextHeight(font, line, src.width);
@@ -412,6 +589,12 @@ server.registerTool("image_watermark", {
     return ok(
       `Watermarked "${line}" at ${position}, opacity ${opacity}, ${size} px type\n` +
       `-> ${res.path}, ${humanBytes(bytes.length)}, ${src.width}x${src.height}, ${fmt.toUpperCase()}\n` +
+      (clean.replaced ? `${clean.replaced} character${clean.replaced === 1 ? " was" : "s were"} outside the font and ` +
+        `${clean.replaced === 1 ? "was" : "were"} transliterated; the text drawn is exactly the one quoted above.\n` : "") +
+      (clean.removed.length ? `${clean.removed.length} character${clean.removed.length === 1 ? "" : "s"} had no glyph ` +
+        `in the bundled Latin-1 fonts and ${clean.removed.length === 1 ? "was" : "were"} dropped: ${clean.removed.join(" ")}\n` : "") +
+      (clean.truncated ? `The text was cut to 200 characters; ${clean.truncated} more were dropped.\n` : "") +
+      framesNote(src) +
       `${custom ? "Custom text (Pro)." : "Text taken from the shared business profile."} ` +
       `The source ${src.path} is unchanged.${note}`,
     );
@@ -425,9 +608,10 @@ server.registerTool("image_strip_metadata", {
 }, async ({ path, out_path, overwrite }) => {
   const reservations: Reservation[] = [];
   try {
+    // No size cap here. Stripping metadata writes exactly the pixels it read, so a cap on
+    // the output is a cap on the input, and a privacy tool that refuses every camera photo
+    // because a camera photo is 12 MP protects nobody.
     const src = await loadImage(path);
-    const limit = proSizeCheck(src, "stripping metadata from an image over 4 MP");
-    if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path]);
     reservations.push(res);
     const { fmt } = outFormat(res.path, src.format);
@@ -466,7 +650,8 @@ server.registerTool("image_batch_resize", {
     const srcs: LoadedImage[] = [];
     for (const p of paths) srcs.push(await loadImage(p));
     for (const s of srcs) {
-      const limit = proSizeCheck(s, "resizing an image over 4 MP");
+      const t = fitInside(s.width, s.height, width, height);
+      const limit = proSizeCheck(s, "writing an image over 4 MP", t.w, t.h);
       if (limit) return freeLimit(limit);
     }
     const inputs = srcs.map((s) => s.path);
@@ -486,7 +671,9 @@ server.registerTool("image_batch_resize", {
       const { fmt } = outFormat(reservations[i].path, src.format);
       const bytes = await encode(src.image, fmt, 85);
       writeFileSync(reservations[i].path, bytes);
-      rows.push(`- ${basename(reservations[i].path)}: ${src.width}x${src.height} -> ${src.image.width}x${src.image.height}, ${humanBytes(bytes.length)}`);
+      const grew = src.image.width > src.width || src.image.height > src.height;
+      rows.push(`- ${basename(reservations[i].path)}: ${src.width}x${src.height} -> ${src.image.width}x${src.image.height}, ` +
+        `${humanBytes(bytes.length)}${grew ? " (ENLARGED past the source resolution: interpolated, not new detail)" : ""}`);
     }
     const note = await record("image_batch_resize", inputs, reservations.map((r) => r.path));
     return ok(
@@ -498,16 +685,19 @@ server.registerTool("image_batch_resize", {
 
 server.registerTool("image_dominant_colors", {
   title: "Read the dominant colours of an image",
-  description: "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Pro only.",
+  description: "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Free tier: the top 3 colours; Pro: up to 16.",
   inputSchema: {
     path: pathArg,
     count: z.number().int().min(1).max(16).default(5).describe("How many colours to report, default 5"),
   },
 }, async ({ path, count }) => {
   try {
-    if (!gate.isPro()) {
-      return freeLimit(`Dominant colours are a Pro feature.\n\n${gate.upgradeText("dominant colours")}`);
-    }
+    // The free tier answers with the top three rather than refusing. A refusal here does not
+    // stop the caller wanting an answer: measured in docs/IMAGE_AUDIT.md, the model relayed
+    // the upgrade line and then invented hex codes "from viewing the image". Three measured
+    // colours are worth more than a gate that is answered with a guess.
+    const capped = !gate.isPro() && count > FREE_MAX_COLORS;
+    const want = capped ? FREE_MAX_COLORS : count;
     const src = await loadImage(path);
     // Sampled on a copy scaled to at most 200 px on the longest side: the colour histogram
     // of an image does not change with resolution, and this keeps a 10,000 px input to a
@@ -529,13 +719,30 @@ server.registerTool("image_dominant_colors", {
     }
     if (!opaque) return ok(JSON.stringify({ file: src.path, colors: [], note: "every pixel is transparent" }, null, 2));
     const hex = (n: number) => n.toString(16).padStart(2, "0");
-    const top = [...counts.values()].sort((a, b) => b.n - a.n).slice(0, count).map((e) => {
+    const top = [...counts.values()].sort((a, b) => b.n - a.n).slice(0, want).map((e) => {
       const r = Math.round(e.r / e.n), g = Math.round(e.g / e.n), b = Math.round(e.b / e.n);
-      return { hex: `#${hex(r)}${hex(g)}${hex(b)}`, rgb: [r, g, b], share_percent: Math.round((e.n / opaque) * 1000) / 10 };
+      return {
+        hex: `#${hex(r)}${hex(g)}${hex(b)}`, rgb: [r, g, b], pixels: e.n,
+        share_percent: Math.round((e.n / opaque) * 1000) / 10,
+      };
     });
+    const topShare = top.length ? top[0].share_percent : 0;
     return ok(JSON.stringify({
       file: src.path, sampled: `${small.width}x${small.height}`, opaque_pixels_sampled: opaque,
       distinct_buckets: counts.size, colors: top,
+      ...(capped
+        ? {
+          free_tier_color_cap: FREE_MAX_COLORS,
+          upgrade: gate.upgradeText(`${count} dominant colours instead of ${FREE_MAX_COLORS}`),
+        }
+        : {}),
+      ...(topShare < 1
+        ? {
+          note: `No colour covers even 1% of the image: ${counts.size} distinct colour buckets in ` +
+            `${opaque} sampled pixels. This is a photograph or a gradient, not a palette - the hex codes above ` +
+            `are the most common shades, not brand colours.`,
+        }
+        : {}),
     }, null, 2));
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });

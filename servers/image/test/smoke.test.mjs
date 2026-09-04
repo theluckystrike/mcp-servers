@@ -97,7 +97,7 @@ test("free tier: a six-file batch is refused with the checkout URL, Pro runs it"
   } finally { pro.close(); }
 });
 
-test("free tier: over 4 MP is refused, Pro writes it", async () => {
+test("free tier caps the OUTPUT, not the source: a 4.4 MP photo resized small is free", async () => {
   const { dir, dataHome } = sandbox("mcp-image-mp-");
   const big = await makePng(join(dir, "big.png"), 2200, 2000);
   const free = client({ dataHome });
@@ -106,18 +106,24 @@ test("free tier: over 4 MP is refused, Pro writes it", async () => {
     // Reporting is never capped: image_info answers at any size.
     const info = JSON.parse(await free.text("image_info", { path: big }));
     assert.equal(info.megapixels, 4.4);
-    const r = await free.call("image_resize", { path: big, width: 100, out_path: join(dir, "small.png") });
+    // Taking a camera-sized file down to a page-sized one is the job, so it is free.
+    const t = await free.text("image_resize", { path: big, width: 100, out_path: join(dir, "small.png") });
+    assert.match(t, /Resized 2200x2000 to 100x91/);
+    assert.ok(existsSync(join(dir, "small.png")));
+    // Writing 4.4 MP back out is not.
+    const r = await free.call("image_convert", { path: big, format: "jpeg", out_path: join(dir, "big.jpg") });
     assert.notEqual(r.result.isError, true);
+    assert.match(r.result.content[0].text, /output would be 2200x2000 \(4.4 MP\)/);
     assert.match(r.result.content[0].text, /free tier writes images up to 4 MP/);
-    assert.equal(existsSync(join(dir, "small.png")), false);
+    assert.equal(existsSync(join(dir, "big.jpg")), false);
   } finally { free.close(); }
 
   const pro = client({ dataHome, key: proKey() });
   try {
     await pro.init();
-    const t = await pro.text("image_resize", { path: big, width: 100, out_path: join(dir, "small.png") });
-    assert.match(t, /Resized 2200x2000 to 100x91/);
-    assert.ok(existsSync(join(dir, "small.png")));
+    const t = await pro.text("image_convert", { path: big, format: "jpeg", out_path: join(dir, "big.jpg") });
+    assert.match(t, /Converted PNG to JPEG/);
+    assert.ok(existsSync(join(dir, "big.jpg")));
   } finally { pro.close(); }
 });
 

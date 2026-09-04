@@ -66,13 +66,13 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `image_info` | Format, pixel dimensions, megapixels, aspect ratio, file size in bytes, whether the image carries an alpha channel, and the bytes it spends per pixel |
 | `image_resize` | A resized copy. `inside` fits within the box and keeps the ratio, `cover` fills the box and crops the overflow, `exact` stretches. Give one of width or height and the other follows |
 | `image_convert` | Re-encode as PNG, JPEG, BMP, GIF or TIFF. Transparency going to JPEG is flattened onto white, and the answer says so |
-| `image_compress` | Smaller bytes, with the count before and after and the percentage saved. `quality` (default 80) and `max_width` |
+| `image_compress` | Smaller bytes, with the count before and after and the percentage saved. `quality` (default 80), `max_width`, and `max_bytes` to hit a size target in one call |
 | `image_crop` | Cut a rectangle: `x`, `y` from the top-left, `width`, `height`. A rectangle past an edge is refused with the real size, never clamped |
 | `image_thumbnails` | One thumbnail per file into `out_dir`, each fitting inside `size` by `size` and keeping its aspect ratio |
 | `image_watermark` | Text over the image at a corner and an opacity, white on a translucent plate. With no text, your business name from the shared profile [mcp-invoice](../invoice) and [mcp-docx](../docx) write |
 | `image_strip_metadata` | A copy with pixels and nothing else: EXIF, GPS, camera, capture time, XMP and colour profiles are not carried across |
 | `image_batch_resize` | Resize a whole list into `out_dir`, each keeping its own aspect ratio, named `<name>-<W>x<H>.<ext>` |
-| `image_dominant_colors` | The colours that cover most of an image, as hex codes with the share of pixels each covers |
+| `image_dominant_colors` | The colours that cover most of an image, as hex codes with the share of pixels each covers. Free: 3; Pro: up to 16 |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |
 
@@ -107,10 +107,12 @@ You: This photo is too big for the site. Get it to 1600 wide and drop the metada
     path: "~/photos/DSC_0491.jpg",
     max_width: 1600,
     quality: 80,
+    max_bytes: 256000,
     out_path: "~/photos/DSC_0491-web.jpg"
   }
-  -> 8.4 MB -> 412.6 KB (8809124 -> 422500 bytes, -95.2%)
-  -> Method: JPEG quality 80 and a resize to 1600 px wide
+  -> 8.4 MB -> 243.7 KB (8809124 -> 249556 bytes, -97.2%)
+  -> Method: JPEG quality 62 (searched down from 80 in 5 encodes to fit 250.0 KB)
+     and a resize to 1600 px wide
   -> ~/photos/DSC_0491-web.jpg, 1600x1067, JPEG
 ```
 
@@ -122,10 +124,14 @@ byte-for-byte unchanged.
 | | Free | Pro |
 | --- | --- | --- |
 | `image_info` | Unlimited, at any size | Unlimited |
-| `image_resize`, `image_convert`, `image_compress`, `image_crop`, `image_strip_metadata` | Sources up to 4 MP (2000x2000 and a bit) | Any size, up to the 50 MB / 10,000 px input caps |
-| `image_thumbnails`, `image_batch_resize` | Up to 5 files per call, sources up to 4 MP | Any number of files, any size |
+| `image_resize`, `image_convert`, `image_compress`, `image_crop` | Any source, writing **outputs** up to 4 MP (2000x2000 and a bit) | Any size, up to the 50 MB / 10,000 px input caps |
+| `image_strip_metadata` | Any size | Any size |
+| `image_thumbnails`, `image_batch_resize` | Up to 5 files per call, outputs up to 4 MP each | Any number of files, any size |
 | `image_watermark` | Your business name from the shared profile | Any text you pass |
-| `image_dominant_colors` | - | Yes |
+| `image_dominant_colors` | The top 3 colours | Up to 16 |
+
+The free limit is on what gets **written**, not on what gets read: a 12 MP phone photo taken down to 1600 px
+wide is a free call, because that is the job. Writing 12 MP back out again is the Pro one.
 
 A tier limit is an answer, not an error, and nothing is written when one refuses a call.
 

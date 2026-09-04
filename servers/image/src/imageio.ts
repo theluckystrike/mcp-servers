@@ -130,7 +130,41 @@ export interface LoadedImage {
   width: number;
   height: number;
   hasAlpha: boolean;
+  /** Dimensions declared in the container header, before any EXIF orientation was applied. */
+  declared: { width: number; height: number } | null;
+  /** Frames in the container. 1 for a still; more for an animated GIF; null when unknown. */
+  frames: number | null;
   image: Img;
+}
+
+/**
+ * Frames in a GIF, counted by walking the block stream. An animated GIF decodes to its
+ * first frame here, and a caller who is told "1 frame" when there are 24 has lost 23 of
+ * them without being told.
+ */
+export function gifFrameCount(b: Uint8Array): number | null {
+  try {
+    let i = 13;
+    if (b[10] & 0x80) i += 3 * (1 << ((b[10] & 0x07) + 1));
+    let frames = 0;
+    const skipSub = () => { while (i < b.length && b[i] !== 0) i += 1 + b[i]; i++; };
+    while (i < b.length) {
+      const block = b[i];
+      if (block === 0x3b) break;
+      if (block === 0x21) { i += 2; skipSub(); continue; }
+      if (block === 0x2c) {
+        frames++;
+        const flags = b[i + 9];
+        i += 10;
+        if (flags & 0x80) i += 3 * (1 << ((flags & 0x07) + 1));
+        i++;
+        skipSub();
+        continue;
+      }
+      return frames || null;
+    }
+    return frames || null;
+  } catch { return null; }
 }
 
 /** Read guards that run before the decoder, in the order that makes each one free. */
@@ -186,7 +220,9 @@ export async function loadImage(input: string): Promise<LoadedImage> {
   }
   return {
     path: g.path, size: g.size, format: g.format,
-    width: image.width, height: image.height, hasAlpha: image.hasAlpha(), image,
+    width: image.width, height: image.height, hasAlpha: image.hasAlpha(),
+    declared: g.declared, frames: g.format === "gif" ? gifFrameCount(g.bytes) : 1,
+    image,
   };
 }
 
