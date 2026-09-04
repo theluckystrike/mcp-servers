@@ -228,7 +228,7 @@ server.registerTool("profile_set", {
       ? `\n\nThe accent colour is stored but the free tier prints the default colour. ${gate.upgradeText("letterhead colours")}` : "";
     return ok(`Profile "${normalizeVariant(a.variant)}" stored: ${p.experience.length} roles, ${bullets} bullets, ` +
       `${p.skills?.length ?? 0} skills, ${p.education.length} education entries. ` +
-      `Stored under ${dataDir()}; nothing leaves this machine.${note}${changes}${p.email ? "" : emailNote()}`);
+      `Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, and kept for 30 days, refreshed for another 30 on every write. Run the resume server locally over stdio (npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${note}${changes}${p.email ? "" : emailNote()}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -345,7 +345,7 @@ server.registerTool("resume_read", {
   try {
     if (!a.path && !a.docx_base64) return fail("give either path (a document uploaded with doc_upload) or docx_base64 (the file itself, base64-encoded).");
     const file = a.docx_base64 ? stageUpload(a.path ?? "inline", a.docx_base64) : expandPath(a.path as string);
-    if (!existsSync(file)) return fail(`nothing is uploaded under the name ${JSON.stringify(file.split("/").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded.`);
+    if (!existsSync(file)) return fail(`nothing is uploaded under the name ${JSON.stringify(file.split("/").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded. A document this endpoint GENERATED is not one of these: generated files are served as a one-hour download link and are never kept under your token, so there is nothing here to read back. Download it and send it back with docx_base64, or ask for the content you want in the same call that writes the file.`);
     if (!/\.docx$/i.test(file)) return fail(`${file} is not a .docx file. Legacy .doc and .rtf are not readable here.`);
     const blocks = readDocx(readFileSync(file));
     const r = blocksToProfile(blocks);

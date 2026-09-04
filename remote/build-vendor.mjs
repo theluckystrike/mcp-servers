@@ -246,6 +246,13 @@ function patchTimeIndex(src) {
 }
 
 function patchPriceIndex(src) {
+  // D-R69: the hosted watch_add ended with "Stored in /home/mcp/.local/share/mcp-servers/
+  // price-tracker/watches.json", a path on a disk no caller has and no caller can reach.
+  // Hosted, the truth is the token.
+  src = must(src, "          `Stored in ${dbPath()}`,",
+    "          `Kept for your token on this endpoint, not on a disk you can open: watch_list shows it again, " +
+    "and the data is held for 30 days and refreshed for another 30 on every write.`,",
+    "price-tracker watch_add storage line");
   src = must(src,
     '          "Give each price with its currency, and flag any reading whose confidence is not high.",',
     '          "Give each price with its currency, and flag any reading whose confidence is not high.\\n" +\n' +
@@ -515,6 +522,12 @@ function patchDocxStore(src) {
 }
 
 function patchDocxIndex(src) {
+  // D-R69: business_set answered "Business profile saved to /home/mcp/.local/share/..." -
+  // a directory this caller has no way to open. The same species as the price-tracker and
+  // resume lines; caught by remote/test/vendor-paths.test.mjs, not by a reader.
+  src = must(src, "return ok(`Business profile saved to ${dataDir()} and to the shared profile every server in the suite reads ` +",
+    "return ok(`Business profile saved for your token on this endpoint and to the shared profile every server in the suite reads ` +",
+    "docx business_set storage line");
   // No disk: an existing .docx is uploaded (doc_upload, or a one-off docx_base64) and
   // lives under /uploads/; everything this server writes lands under /docs/ and comes
   // back as a one-hour download link.
@@ -574,7 +587,7 @@ function patchDocxIndex(src) {
     "    const p = expandPath(a.path);\n    if (!existsSync(p)) return fail(`no file at ${p}.`);\n    if (!/\\.docx$/i.test(p)) return fail(`${p} is not a .docx file. Legacy .doc and .rtf are not readable here.`);",
     '    if (!a.path && !a.docx_base64) return fail("give either path (a document uploaded with doc_upload) or docx_base64 (the file itself, base64-encoded).");\n' +
     "    const p = a.docx_base64 ? stageUpload(a.path ?? \"inline\", a.docx_base64) : expandPath(a.path as string);\n" +
-    "    if (!existsSync(p)) return fail(`nothing is uploaded under the name ${JSON.stringify(p.split(\"/\").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded.`);\n" +
+    "    if (!existsSync(p)) return fail(`nothing is uploaded under the name ${JSON.stringify(p.split(\"/\").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded. A document this endpoint GENERATED is not one of these: generated files are served as a one-hour download link and are never kept under your token, so there is nothing here to read back. Download it and send it back with docx_base64, or ask for the content you want in the same call that writes the file.`);\n" +
     "    if (!/\\.docx$/i.test(p)) return fail(`${p} is not a .docx file. Legacy .doc and .rtf are not readable here.`);",
     "docx doc_read handler");
   src = must(src,
@@ -682,10 +695,20 @@ function patchResumeIndex(src) {
     "    const blocks = readDocx(readFileSync(file));",
     '    if (!a.path && !a.docx_base64) return fail("give either path (a document uploaded with doc_upload) or docx_base64 (the file itself, base64-encoded).");\n' +
     "    const file = a.docx_base64 ? stageUpload(a.path ?? \"inline\", a.docx_base64) : expandPath(a.path as string);\n" +
-    "    if (!existsSync(file)) return fail(`nothing is uploaded under the name ${JSON.stringify(file.split(\"/\").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded.`);\n" +
+    "    if (!existsSync(file)) return fail(`nothing is uploaded under the name ${JSON.stringify(file.split(\"/\").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded. A document this endpoint GENERATED is not one of these: generated files are served as a one-hour download link and are never kept under your token, so there is nothing here to read back. Download it and send it back with docx_base64, or ask for the content you want in the same call that writes the file.`);\n" +
     "    if (!/\\.docx$/i.test(file)) return fail(`${file} is not a .docx file. Legacy .doc and .rtf are not readable here.`);\n" +
     "    const blocks = readDocx(readFileSync(file));",
     "resume resume_read handler");
+
+  // D-R69: profile_set said "Stored under /home/mcp/.local/share/mcp-servers/resume;
+  // nothing leaves this machine." Hosted, both halves are wrong: there is no such disk, and
+  // the profile is on this server, not on the caller's machine. Saying so is the point -
+  // a resume profile is the most personal thing this estate stores.
+  src = must(src, "`Stored under ${dataDir()}; nothing leaves this machine.${note}${changes}",
+    "`Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, " +
+    "and kept for 30 days, refreshed for another 30 on every write. Run the resume server locally over stdio " +
+    "(npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${note}${changes}",
+    "resume profile_set storage line");
 
   src = must(src, "gate.registerTools(server);",
     "gate.registerTools(server);\nregisterDocxUpload(server as unknown as { registerTool: Function });",

@@ -30,22 +30,55 @@ type ToolResult = { content: { type: "text"; text: string }[]; isError?: boolean
 const text = (t: string): ToolResult => ({ content: [{ type: "text", text: t }] });
 const fail = (t: string): ToolResult => ({ content: [{ type: "text", text: `Error: ${t}` }], isError: true });
 
+/**
+ * ISO 4217 currencies with no minor unit. A price in one of these is whole by definition,
+ * so padding it to two decimals would invent a subdivision that does not exist.
+ */
+const ZERO_DECIMAL = new Set(["JPY", "KRW", "VND", "CLP", "ISK", "XAF", "XOF", "XPF", "PYG", "RWF", "UGX", "VUV", "KMF", "DJF", "GNF", "BIF"]);
+
+/**
+ * D-R70: prices are stored as decimal strings exactly as they were read, so one watch can
+ * hold "49.00" scraped from a page, "38.5" typed into price_add_manual and a target of
+ * "40". Printed raw, one answer carried three scales of the same currency ("min 38.50 /
+ * max 49", "current": "38.5 EUR", "target": "40 EUR"). Every printed price goes through
+ * here: in a currency with minor units it is padded (never rounded) to two decimals; in a
+ * zero-decimal currency it stays whole; with no currency known the scale it arrived with
+ * is kept, because there is no unit to pad it to. The stored string is untouched - this is
+ * display only, so no comparison anywhere changes.
+ */
+function displayPrice(price: string, currency: string | null = null): string {
+  const m = /^(\d+)(?:\.(\d+))?$/.exec(String(price).trim());
+  if (!m) return String(price);
+  const dec = m[2] ?? "";
+  const cur = currency ? currency.trim().toUpperCase() : "";
+  if (cur && ZERO_DECIMAL.has(cur)) return m[1];
+  if (!cur) return dec ? `${m[1]}.${dec.padEnd(2, "0")}` : m[1];
+  return `${m[1]}.${dec.padEnd(2, "0")}`;
+}
+
 function money(price: string, currency: string | null): string {
-  return currency ? `${price} ${currency}` : price;
+  const p = displayPrice(price, currency);
+  return currency ? `${p} ${currency}` : p;
 }
 
 function visibleHistory(w: Watch): Observation[] {
   return gate.isPro() ? w.observations : w.observations.slice(-FREE_HISTORY_LIMIT);
 }
 
+/**
+ * min and max are returned as the STORED strings of the cheapest and dearest observation,
+ * not as numbers: fmt() on a number turned "49.00" into "49" and put two scales in one
+ * line (D-R70). Comparison is still numeric.
+ */
 function stats(obs: Observation[]) {
-  const nums = obs.map((o) => Number(o.price)).filter((n) => Number.isFinite(n));
-  if (!nums.length) return null;
-  return { min: Math.min(...nums), max: Math.max(...nums) };
-}
-
-function fmt(n: number): string {
-  return Number.isInteger(n) ? String(n) : n.toFixed(2);
+  const rows = obs.filter((o) => Number.isFinite(Number(o.price)));
+  if (!rows.length) return null;
+  let lo = rows[0], hi = rows[0];
+  for (const o of rows) {
+    if (Number(o.price) < Number(lo.price)) lo = o;
+    if (Number(o.price) > Number(hi.price)) hi = o;
+  }
+  return { min: lo.price, max: hi.price };
 }
 
 type Sighting = Observation & { title: string | null; finalUrl: string; redirected: boolean };
@@ -116,8 +149,8 @@ function watchRow(w: Watch): Record<string, unknown> {
     url: w.url,
     current: last ? money(last.price, last.currency ?? w.currency) : null,
     previous: prev ? money(prev.price, prev.currency ?? w.currency) : null,
-    min: s ? fmt(s.min) : null,
-    max: s ? fmt(s.max) : null,
+    min: s ? displayPrice(s.min, w.currency) : null,
+    max: s ? displayPrice(s.max, w.currency) : null,
     change_pct: change === null ? null : `${change >= 0 ? "+" : ""}${change.toFixed(2)}%`,
     target: w.target_price ? money(w.target_price, w.currency) : null,
     target_hit: targetHit,
@@ -255,7 +288,7 @@ registerTool(
           target ? `Target: ${money(target, w.currency)}${hit ? " - already at or below target." : ""}` : "No target price set.",
           `Checks run when you ask: there is no background job and nothing polls this page. ` +
           `Say "refresh my watches" (watch_refresh) at the start of a session, then alerts_pending lists the drops and target hits.`,
-          `Stored in ${dbPath()}`,
+          `Kept for your token on this endpoint, not on a disk you can open: watch_list shows it again, and the data is held for 30 days and refreshed for another 30 on every write.`,
         ].join("\n")
       );
       });
@@ -392,7 +425,7 @@ registerTool(
     const s = stats(obs);
     const lines = [
       `${w.label ?? w.url} (${w.id}) - ${obs.length} of ${w.observations.length} observation(s)`,
-      s ? `min ${fmt(s.min)} / max ${fmt(s.max)}${w.currency ? ` ${w.currency}` : ""}` : "",
+      s ? `min ${displayPrice(s.min, w.currency)} / max ${displayPrice(s.max, w.currency)}${w.currency ? ` ${w.currency}` : ""}` : "",
       JSON.stringify(obs, null, 2),
       truncated ? `\nFree shows the last ${FREE_HISTORY_LIMIT} observations; ${w.observations.length - FREE_HISTORY_LIMIT} older one(s) are stored but hidden.\n\n${gate.upgradeText("full price history")}` : "",
     ].filter(Boolean);

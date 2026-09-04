@@ -92,24 +92,40 @@ server.registerTool("rates_latest", {
 
 /* ------------------------------------------------------------------------ convert */
 
-async function ratesForDate(dateArg: string | undefined): Promise<
-  | { rates: Record<string, number>; date: string; asked?: string; exact: boolean; note: string }
+async function ratesForDate(dateArgIn: string | undefined): Promise<
+  | { rates: Record<string, number>; date: string; asked?: string; exact: boolean; shortened_from?: string; note: string }
   | { gatedText: string }
   | { error: string }
 > {
+  let dateArg = dateArgIn;
   if (!dateArg) {
     const d = await getDaily();
     return { rates: d.data.rates, date: d.data.date, exact: true, note: `${dateNote({ ...d.data, ...d })} ${PUBLISH_NOTE}` };
   }
   if (!isIsoDate(dateArg)) return { error: `date must be YYYY-MM-DD, got "${dateArg}".` };
   if (dateArg > isoToday()) return { error: `${dateArg} is in the future; the ECB has not published it yet.` };
+  // D-R71: rate_history SHORTENS a window wider than the free tier and says which window it
+  // really covered; asking for ONE date beyond it used to look nothing up and answer with a
+  // price. A caller then has an upgrade pitch where a rate should be. A date older than the
+  // free window is now CLAMPED to the oldest day the free tier reads, the answer is real,
+  // and every field that names a date says plainly it is not the date that was asked for.
+  let clampedFrom = "";
   if (!gate.isPro() && dateArg < freeCutoff()) {
-    return {
-      gatedText: `${dateArg} is older than the ${FREE_HISTORY_DAYS} days the free tier reads (it goes back to ${freeCutoff()}). Nothing was looked up. ` +
-        gate.upgradeText("historical rates back to 1999"),
-    };
+    clampedFrom = dateArg;
+    dateArg = freeCutoff();
   }
   const h = await getHistory();
+  if (clampedFrom) {
+    // The clamp has to move FORWARD. resolveDate falls back to the nearest previous
+    // published day, so clamping to the cutoff and resolving landed back before it - on
+    // the very date the free tier is not allowed to read, while the answer claimed it had
+    // been shortened. The clamped date is the first day the ECB published on or after the
+    // cutoff, and it is exact by construction.
+    const cutoff = dateArg as string;
+    const first = Object.keys(h.data.days).sort().find((d) => d >= cutoff);
+    if (!first) return { error: `the rate history cache holds nothing on or after ${cutoff}.` };
+    dateArg = first;
+  }
   const r = resolveDate(h.data.days, dateArg);
   if ("error" in r) return { error: r.error };
   // A date the cache does not reach is not the same fact as a date the ECB did not publish.
@@ -127,7 +143,16 @@ async function ratesForDate(dateArg: string | undefined): Promise<
     : latest !== undefined && dateArg > latest
       ? `No rate published yet in the cache for ${dateArg} (latest ${latest}). ${refreshNote} The last published rate on or before ${dateArg} was used: ${r.date}. ${PUBLISH_NOTE}`
       : `No ECB rate was published on ${dateArg} (weekend or TARGET holiday), so the last published rate on or before it was used: ${r.date}. ${PUBLISH_NOTE}`;
-  return { rates: r.rates, date: r.date, asked: dateArg, exact: r.exact, note: h.offline_note ? `${note} ${h.offline_note}` : note };
+  const clampNote = clampedFrom
+    ? `Free tier reads ${FREE_HISTORY_DAYS} days back, so this is the rate on ${r.date}, NOT ${clampedFrom}: that date was not read and is not what any number here describes. ` +
+      gate.upgradeText("historical rates back to 1999") + " "
+    : "";
+  const full = `${clampNote}${note}`;
+  return {
+    rates: r.rates, date: r.date, asked: clampedFrom || dateArg, exact: r.exact,
+    shortened_from: clampedFrom || undefined,
+    note: h.offline_note ? `${full} ${h.offline_note}` : full,
+  };
 }
 
 server.registerTool("convert", {
@@ -137,7 +162,7 @@ server.registerTool("convert", {
     amount: AMOUNT.describe("Amount in major units of the from currency, e.g. 100 or 12.34"),
     from: code("from").describe("Currency the amount is in. Cross rates go through the euro, the only pair the ECB publishes"),
     to: code("to").describe("Currency to convert into. The result is rounded once, at the end, to this currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places"),
-    date: z.string().max(10).optional().describe("ISO date YYYY-MM-DD. Omit for the latest published rate. A weekend or TARGET holiday falls back to the last rate published on or before it, and the answer says so. Past dates beyond 90 days are Pro"),
+    date: z.string().max(10).optional().describe("ISO date YYYY-MM-DD. Omit for the latest published rate. A weekend or TARGET holiday falls back to the last rate published on or before it, and the answer says so. A date older than the free 90-day window is shortened to the oldest free day, not refused, and the answer names the date it really used"),
   },
 }, async (a) => {
   try {
@@ -153,6 +178,8 @@ server.registerTool("convert", {
       rate_note: `rate is the cross rate rounded to 6 decimals for display; the conversion multiplied by the full-precision rate_exact and rounded once, at the end, to ${currencyDecimals(c.to)} decimal places. Recomputing from the 6-decimal rate can differ by a minor unit or two.`,
       rate_date: r.date,
       requested_date: r.asked,
+      shortened_from: r.shortened_from,
+      rate_date_is_not_requested_date: r.shortened_from ? `you asked for ${r.shortened_from}; the free window starts at ${r.date}` : undefined,
       result: c.result,
       result_number: c.result_number,
       rounding: `rounded to ${currencyDecimals(c.to)} decimal places, the ISO 4217 minor units of ${c.to}`,
@@ -300,11 +327,11 @@ server.registerTool("rate_history", {
 
 server.registerTool("rate_on", {
   title: "Rate on a given date",
-  description: "Call this tool for the ECB rate of one pair on one date. Returns both directions, the date the rate came from, and which way round the ECB publishes the pair, so a reciprocal is never reported as the published figure.",
+  description: "Call this tool for the ECB rate of one pair on one date. Returns both directions and the rate date, so a reciprocal is never reported as the published figure. A date beyond the free window is shortened, never refused.",
   inputSchema: {
     from: code("from").describe("Base currency. The ECB quotes every currency per 1 euro, so \"the ECB rate for USD\" is from EUR to USD, not the other way round; invert only if the user asked for the inverse"),
     to: code("to").describe("Quote currency. The rate returned is 1 from = X to"),
-    date: z.string().max(10).describe("ISO date YYYY-MM-DD. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last rate published on or before it is returned and the answer names that date. Free covers the last 90 days; Pro covers every date back to 1999-01-04"),
+    date: z.string().max(10).describe("ISO date YYYY-MM-DD. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last rate published on or before it is returned and the answer names that date. Free covers the last 90 days: an older date is shortened to the oldest free day rather than refused, and rate_date says which day the numbers are really from. Pro covers every date back to 1999-01-04"),
   },
 }, async (a) => {
   try {
@@ -328,6 +355,8 @@ server.registerTool("rate_on", {
       pair: `${c.from}/${c.to}`,
       requested_date: a.date,
       rate_date: r.date,
+      shortened_from: r.shortened_from,
+      rate_date_is_not_requested_date: r.shortened_from ? `you asked for ${r.shortened_from}; the free window starts at ${r.date}` : undefined,
       exact: r.exact,
       rate: c.rate,
       rate_exact: c.rate_exact,

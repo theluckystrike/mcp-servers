@@ -200,7 +200,7 @@ server.registerTool("business_set", {
       setBusiness(biz);
       if (a.phone || a.timezone) writeSharedProfile({ phone: a.phone, timezone: a.timezone });
       const shared = readSharedProfile();
-      return ok(`Business profile saved to ${dataDir()} and to the shared profile every server in the suite reads ` +
+      return ok(`Business profile saved for your token on this endpoint and to the shared profile every server in the suite reads ` +
         `(invoice issuer, expense-tracker default VAT, time-tracker and timezone home zone).\n\n` +
         `${JSON.stringify({ ...biz, phone: shared.phone, timezone: shared.timezone }, null, 2)}${note}${warn}`);
     });
@@ -371,7 +371,7 @@ server.registerTool("doc_read", {
   try {
     if (!a.path && !a.docx_base64) return fail("give either path (a document uploaded with doc_upload) or docx_base64 (the file itself, base64-encoded).");
     const p = a.docx_base64 ? stageUpload(a.path ?? "inline", a.docx_base64) : expandPath(a.path as string);
-    if (!existsSync(p)) return fail(`nothing is uploaded under the name ${JSON.stringify(p.split("/").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded.`);
+    if (!existsSync(p)) return fail(`nothing is uploaded under the name ${JSON.stringify(p.split("/").pop())}. Upload it with doc_upload {name, docx_base64}, or pass docx_base64 to this call; doc_files lists what is uploaded. A document this endpoint GENERATED is not one of these: generated files are served as a one-hour download link and are never kept under your token, so there is nothing here to read back. Download it and send it back with docx_base64, or ask for the content you want in the same call that writes the file.`);
     if (!/\.docx$/i.test(p)) return fail(`${p} is not a .docx file. Legacy .doc and .rtf are not readable here.`);
     const blocks = readDocx(readFileSync(p));
     if (a.format === "json") return json({ path: p, blocks });

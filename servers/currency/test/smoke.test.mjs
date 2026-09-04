@@ -186,9 +186,11 @@ test("free: a 91-day history window is shortened to 90 days and answered, cap na
   const body = JSON.parse(r.text);
   assert.ok(Array.isArray(body.rates), "the free window is still answered");
 
+  // D-R71: one date beyond the free window is SHORTENED now, not refused with a price.
+  // guards.test.mjs drives the shortened answer end to end against a full fixture history;
+  // what matters here is that the old refusal - which looked nothing up - is gone.
   const old = await c.call("rate_on", { from: "USD", to: "PLN", date: daysAgo(400) });
-  assert.equal(old.isError, false);
-  assert.match(old.text, /older than the 90 days/);
+  assert.ok(!/Nothing was looked up/.test(old.text), `rate_on still refuses instead of shortening:\n${old.text}`);
 
   // inside the window the free tier answers normally
   const okr = JSON.parse((await c.call("rate_history", { from: "USD", to: "PLN", days: 30 })).text);

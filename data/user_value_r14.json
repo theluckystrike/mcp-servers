@@ -1,0 +1,446 @@
+{
+  "at": "2026-09-04T09:05:00Z",
+  "round": 14,
+  "compares_to": "data/user_value_r13.json",
+  "scope": "HOSTED round for the five servers whose value is a file crossing the wire: price-tracker (a page it fetches), spreadsheet (a CSV in, an xlsx out via the sheet-load shim), currency (numbers only, and the free window), docx (a template in, a filled document out via the docx-upload shim) and resume (pasted resume and job text in, Word files out). Twenty prompts, four per server, through https://mcp.zovo.one/mcp/<server>/t/<token> as a claude.ai user arrives. Free tier, one fresh anonymous token, no seed.",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_47af12da7aa03aa9f5c5e5cd60f118fd, 8025-byte page) and reused for every lane. Registered PER LANE only, one http entry each, because the free tier is 600 calls per hour per token and a CLI session re-handshakes every registered endpoint on every turn (D-R53). Client: claude CLI 2.1.260, --model sonnet, --mcp-config with type http and the /t/<token> URL, --strict-mcp-config, no headers anywhere, per-tool allowlist of 59 mcp__<server>__<tool> entries from a live tools/list (price-tracker 10, spreadsheet 13, currency 10, docx 14, resume 13), --output-format stream-json --verbose --max-turns 12, one --session-id then three --resume per lane. Per r11 D-R57 every lane ran in an EMPTY working directory with the CLI own filesystem tools disallowed (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task); dx4 proves it held, since the model could not open its own download link. All five lanes ran in parallel: they write different stores. Fixtures: a 357-byte CSV, a 1036-byte .docx with five {{placeholders}} (1384 characters of base64), a pasted resume and job posting, and remote/fixtures/sample-product.html, a product page this project owns with the price in JSON-LD. Tool-call counts exclude the client ToolSearch schema lookups. Machine day 2026-09-04 on a UTC+07 host.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, 8025 bytes, minted anon_47af12da7aa03aa9f5c5e5cd60f118fd",
+    "registration": "five lanes, five http entries, each https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; every lane connected first try",
+    "tools_list": {
+      "price-tracker": 10,
+      "spreadsheet": 13,
+      "currency": 10,
+      "docx": 14,
+      "resume": 13
+    },
+    "seed": "none; the price-tracker fixture page was added to this repo and to the worker (GET /mcp/sample/product) before the run"
+  },
+  "scenarios": [
+    {
+      "server": "price-tracker",
+      "surface": "hosted/price-tracker",
+      "id": "pt1",
+      "prompt": "Check the price on https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/sample-product.html",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 15.0,
+      "tools": [
+        "price_check"
+      ],
+      "note": "One price_check. Title 'Zovo Sample Desk Lamp', 49.00 EUR, confidence high (source json-ld), and it said there is no earlier observation rather than inventing a change."
+    },
+    {
+      "server": "price-tracker",
+      "surface": "hosted/price-tracker",
+      "id": "pt2",
+      "prompt": "Watch that page for me and alert me when it drops below EUR 40.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.6,
+      "tools": [
+        "watch_add"
+      ],
+      "note": "One watch_add {target_price: 40}. Says plainly that nothing polls the page and checks run when you ask. Ended with 'Stored in /home/mcp/.local/share/mcp-servers/price-tracker/watches.json', a path in a Worker with no disk: D-R69, fixed."
+    },
+    {
+      "server": "price-tracker",
+      "surface": "hosted/price-tracker",
+      "id": "pt3",
+      "prompt": "I just saw it on sale at 38.50 - record that price and then show me the price history for that watch.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 13.1,
+      "tools": [
+        "price_add_manual",
+        "price_history"
+      ],
+      "note": "Both observations stored and min/max right, but printed as 'min 38.50 / max 49 EUR' next to a stored '38.5': three scales of one currency in one watch. D-R70, fixed."
+    },
+    {
+      "server": "price-tracker",
+      "surface": "hosted/price-tracker",
+      "id": "pt4",
+      "prompt": "Any price alerts waiting for me?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.4,
+      "tools": [
+        "alerts_pending"
+      ],
+      "note": "One alerts_pending: -21.43%, 'target hit and dropped 21.43%', confidence and source carried, and the note that this reads stored observations only."
+    },
+    {
+      "server": "spreadsheet",
+      "surface": "hosted/spreadsheet",
+      "id": "ss1",
+      "prompt": "Here is a CSV of my August sales. Load it as sales. [357-byte CSV pasted]",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 16.0,
+      "tools": [
+        "sheet_load"
+      ],
+      "note": "One sheet_load {name, csv} through the sheet-load shim. 'Loaded \"sales\" (csv, 356 bytes, 8 lines including the header)', the name to pass back, 0.4 KB of 2 MB used, no path anywhere."
+    },
+    {
+      "server": "spreadsheet",
+      "surface": "hosted/spreadsheet",
+      "id": "ss2",
+      "prompt": "Describe that sheet: columns, row count, and what type each column is.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.0,
+      "tools": [
+        "sheet_info"
+      ],
+      "note": "One sheet_info: 8 rows x 6 cols, 7 data rows, six typed columns (date/text/number) with samples and an empty-cell count each."
+    },
+    {
+      "server": "spreadsheet",
+      "surface": "hosted/spreadsheet",
+      "id": "ss3",
+      "prompt": "Show me only the rows where the amount is over 500, highest first.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.2,
+      "tools": [
+        "sheet_query"
+      ],
+      "note": "One sheet_query {where: '[amount] > 500', sort desc}. 3 of 7 rows match, the right three in the right order."
+    },
+    {
+      "server": "spreadsheet",
+      "surface": "hosted/spreadsheet",
+      "id": "ss4",
+      "prompt": "Convert the sheet to xlsx and give me a download link.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 13.8,
+      "tools": [
+        "sheet_convert"
+      ],
+      "note": "One sheet_convert {to: xlsx}. GET the link: 200, spreadsheetml content type, filename sales.xlsx, 17496 bytes opening 50 4b 03 04, a 10-entry zip whose xl/worksheets/sheet1.xml holds 8 <row> elements."
+    },
+    {
+      "server": "currency",
+      "surface": "hosted/currency",
+      "id": "cu1",
+      "prompt": "Convert 2,450 USD to PLN.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 12.5,
+      "tools": [
+        "convert"
+      ],
+      "note": "One convert. PLN 9126.07, rate 3.724925 with the unrounded rate_exact beside it, the rounding rule named, rate_date 2026-09-03 and why that is not today."
+    },
+    {
+      "server": "currency",
+      "surface": "hosted/currency",
+      "id": "cu2",
+      "prompt": "What was the EUR to USD rate 91 days ago?",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 18.5,
+      "tools": [
+        "rate_on"
+      ],
+      "note": "rate_on {2026-06-05} answered 'Nothing was looked up' plus an upgrade pitch, while rate_history shortens the same window. The model relayed it and offered to ask again for the boundary date: a second turn the user should not have needed. D-R71, fixed."
+    },
+    {
+      "server": "currency",
+      "surface": "hosted/currency",
+      "id": "cu3",
+      "prompt": "Show me the GBP to EUR rate over the last 91 days.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 20.4,
+      "tools": [
+        "rate_history"
+      ],
+      "note": "One rate_history {days: 91}, shortened to the free 90 and said so in the payload: 'Free tier reads 90 days back, so this covers 2026-06-07 to 2026-09-04 instead of 2026-06-05'. 64 business days, min 1.154028 on 06-19, max 1.178231 on 07-16, change +0.35%."
+    },
+    {
+      "server": "currency",
+      "surface": "hosted/currency",
+      "id": "cu4",
+      "prompt": "My invoice has three lines: 1,200 USD, 850 GBP and 430 CHF. Convert each to EUR and give me the EUR total.",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 11.8,
+      "tools": [
+        "convert",
+        "convert",
+        "convert"
+      ],
+      "note": "Three convert calls on the 2026-09-03 rate: 1033.15 + 987.74 + 457.93 = 2478.82 EUR, each line printed with the rate used. convert_many would have done it in one call and was in the allowlist (D-R75)."
+    },
+    {
+      "server": "docx",
+      "surface": "hosted/docx",
+      "id": "dx1",
+      "prompt": "Here is a .docx contract template, base64. Upload it as agreement-template. [1384 chars of base64]",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 46.9,
+      "tools": [
+        "doc_upload"
+      ],
+      "note": "One doc_upload {name, docx_base64} through the docx-upload shim. 'Uploaded \"agreement-template.docx\" (1036 bytes)', exactly the fixture size, and the name to pass back. 46.9 s for 1384 characters (D-R74)."
+    },
+    {
+      "server": "docx",
+      "surface": "hosted/docx",
+      "id": "dx2",
+      "prompt": "What placeholders does that template have?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.2,
+      "tools": [
+        "doc_read"
+      ],
+      "note": "One doc_read {format: text}: 6 blocks, 164 characters, all five {{...}} visible in the body, and the model listed them. No tool reports a placeholder set of its own."
+    },
+    {
+      "server": "docx",
+      "surface": "hosted/docx",
+      "id": "dx3",
+      "prompt": "Fill it in: client_name Nova Ltd, project Website rebuild, fee EUR 12,000, start_date 2026-09-15, signer Mike L. Give me the finished file.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.6,
+      "tools": [
+        "doc_fill_template"
+      ],
+      "note": "One doc_fill_template. 'Replaced 5', each named. GET: 200, Word content type, filename agreement-template-filled.docx, 1053 bytes, 50 4b 03 04; unzipped, word/document.xml carries each of the five values exactly once and zero '{{'."
+    },
+    {
+      "server": "docx",
+      "surface": "hosted/docx",
+      "id": "dx4",
+      "prompt": "Read the filled document back to me so I can check nothing was left unreplaced.",
+      "score": 2,
+      "tool_calls": 2,
+      "seconds": 34.5,
+      "tools": [
+        "doc_files",
+        "doc_read"
+      ],
+      "note": "doc_read on the output name failed with 'nothing is uploaded ... upload it with doc_upload', advice a caller holding a URL cannot take. The model said it could not read the file and then printed the document from its own transcript. Right content, never read. D-R72, fixed."
+    },
+    {
+      "server": "resume",
+      "surface": "hosted/resume",
+      "id": "rs1",
+      "prompt": "Here is my resume, paste it into my profile so you can work with it. [resume pasted]",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 20.9,
+      "tools": [
+        "profile_get",
+        "profile_set"
+      ],
+      "note": "profile_get (empty, and the error named the tool to run) then one profile_set mapping free prose into 3 roles, 5 bullets, 8 skills, 1 education entry. The reply then said 'Stored under /home/mcp/.local/share/mcp-servers/resume; nothing leaves this machine', false twice over on a hosted endpoint. D-R69, fixed."
+    },
+    {
+      "server": "resume",
+      "surface": "hosted/resume",
+      "id": "rs2",
+      "prompt": "Tailor my resume to this job posting. [job posting pasted]",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 20.5,
+      "tools": [
+        "tailor_to_job"
+      ],
+      "note": "One tailor_to_job. Coverage 37%, matched and missing keywords split by where they were found, and the note 'Missing keywords were not added anywhere. Add them with profile_set only if they are true.' GET: 10219 bytes, PK, filename mike-lipinski-resume.docx, decoded text carries only real profile facts."
+    },
+    {
+      "server": "resume",
+      "surface": "hosted/resume",
+      "id": "rs3",
+      "prompt": "Write me a cover letter for that job.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 13.9,
+      "tools": [
+        "cover_letter_create"
+      ],
+      "note": "One cover_letter_create. 122 words, highlights_not_in_profile [], fills_required [], 'every figure in the letter traces to your profile; no figure from the posting was restated as yours', 1 of 3 free letters used in 2026-09. GET: 10194 bytes, PK."
+    },
+    {
+      "server": "resume",
+      "surface": "hosted/resume",
+      "id": "rs4",
+      "prompt": "Give me the tailored resume as a Word file I can download.",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 7.3,
+      "tools": [],
+      "note": "No tool ran: the model restated rs2's link and warned it may have expired. Correct and traceable, but the file was written two turns earlier under a one-hour clock and one resume_create costs one call. Client-side, the shape of r12 D-R63."
+    }
+  ],
+  "totals": {
+    "score": 57,
+    "max": 60,
+    "tool_calls": 25,
+    "seconds": 329.1,
+    "per_server": {
+      "price-tracker": {
+        "score": 12,
+        "max": 12
+      },
+      "spreadsheet": {
+        "score": 12,
+        "max": 12
+      },
+      "currency": {
+        "score": 11,
+        "max": 12
+      },
+      "docx": {
+        "score": 11,
+        "max": 12
+      },
+      "resume": {
+        "score": 11,
+        "max": 12
+      }
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "five lanes, five /t/<token> entries, every lane connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The watch store",
+      "evidence": "price_history by curl on a second token: two observations, 49.00 json-ld and 38.5 manual, -21.43%, target hit",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The xlsx is a real xlsx",
+      "evidence": "GET -> 200 spreadsheetml, sales.xlsx, 17496 B, magic 50 4b 03 04, 10 zip entries, 8 <row> in sheet1.xml",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The filled .docx really carries the values",
+      "evidence": "1053 B, PK, word/document.xml holds Nova Ltd, Website rebuild, EUR 12,000, 2026-09-15 and Mike L. once each and zero '{{'",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The resume and cover letter are real .docx",
+      "evidence": "10219 B and 10194 B, both PK, both the Word content type, filenames derived from the profile name and the posting",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The cover letter invents nothing",
+      "evidence": "highlights_not_in_profile [], fills_required [], every figure in the decoded text present in the pasted resume",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A hosted response never names a disk",
+      "evidence": "watch_add -> Stored in ${dbPath()}; profile_set -> Stored under ${dataDir()}; nothing leaves this machine",
+      "verdict": "FAIL, D-R69, fixed"
+    },
+    {
+      "claim": "One currency, one scale",
+      "evidence": "min 38.50 / max 49 EUR, current 38.5 EUR, target 40 EUR in one watch",
+      "verdict": "FAIL, D-R70, fixed"
+    },
+    {
+      "claim": "The free window shortens rather than refuses",
+      "evidence": "rate_history {days: 91} shortened and said so; rate_on one day past the window looked nothing up",
+      "verdict": "FAIL, D-R71, fixed"
+    },
+    {
+      "claim": "A generated document can be read back",
+      "evidence": "doc_read on the filled file: nothing is uploaded under the name ..., upload it with doc_upload",
+      "verdict": "FAIL, D-R72, fixed"
+    },
+    {
+      "claim": "The hosted tracker can watch our own page",
+      "evidence": "price_check https://mcp.zovo.one/mcp/sample/product -> HTTP 522; https://zovo.one/ -> 526; Cloudflare refuses a worker's loopback to its own zone",
+      "verdict": "FAIL, D-R73, documented"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R69",
+      "severity": "medium",
+      "servers": [
+        "price-tracker",
+        "resume",
+        "docx"
+      ],
+      "status": "fixed",
+      "title": "Hosted responses named a data directory on a disk that does not exist, and resume promised that nothing leaves the caller's machine",
+      "fix": "remote/build-vendor.mjs rewrites the storage sentence per server; remote/test/vendor-paths.test.mjs scans the generated vendor tree for a path function interpolated into prose and found a third instance in docx business_set"
+    },
+    {
+      "id": "D-R70",
+      "severity": "medium",
+      "servers": [
+        "price-tracker"
+      ],
+      "status": "fixed",
+      "title": "One watch printed three scales of one currency: 49.00 from a page, 38.5 typed by hand, 40 as a target",
+      "fix": "displayPrice(price, currency) is the single display path (pad to the currency's minor units, never round, zero-decimal currencies stay whole); stats() returns the min and max observations' own strings. servers/price-tracker/test/round14.test.mjs, plus one smoke assertion that had asserted the defect"
+    },
+    {
+      "id": "D-R71",
+      "severity": "medium",
+      "servers": [
+        "currency"
+      ],
+      "status": "fixed",
+      "title": "rate_on and convert refused a date beyond the free 90-day window while rate_history shortens it",
+      "fix": "ratesForDate() clamps forward to the first day published on or after the cutoff (clamping to the cutoff alone fell BACK before it, which the live check caught) and every date field says it is not the date asked for. servers/currency/test/guards.test.mjs against a 120-day fixture history"
+    },
+    {
+      "id": "D-R72",
+      "severity": "medium",
+      "servers": [
+        "docx",
+        "resume"
+      ],
+      "status": "fixed",
+      "title": "A generated document cannot be read back, and the error told the caller to upload a file they never had",
+      "fix": "both read paths now say a generated document is served as a one-hour download link and never kept under the token, and name the two ways to get its content"
+    },
+    {
+      "id": "D-R73",
+      "severity": "medium",
+      "servers": [
+        "price-tracker"
+      ],
+      "status": "documented",
+      "title": "A worker cannot fetch its own zone: price_check on https://mcp.zovo.one/mcp/sample/product returns 522, zovo.one returns 526",
+      "fix": "the fixture ships twice - the worker route for stdio callers and browsers, remote/fixtures/sample-product.html on raw.githubusercontent.com for the hosted endpoint"
+    },
+    {
+      "id": "D-R74",
+      "severity": "low",
+      "servers": [
+        "docx"
+      ],
+      "status": "logged",
+      "title": "The base64 ceiling is a time ceiling: 13000 characters (a 9749-byte .docx) emitted no tool call in 16 minutes and was killed; 1384 characters took 46.9 s",
+      "fix": "none yet; the practical hosted upload limit is about 2 KB of base64, and no description says so"
+    },
+    {
+      "id": "D-R75",
+      "severity": "low",
+      "servers": [
+        "currency",
+        "resume"
+      ],
+      "status": "logged",
+      "title": "convert_many is not found for the invoice-lines job it exists for, and tailor_to_job counts non-keywords (similar, record, helio) in the coverage figure it reports",
+      "fix": "none yet"
+    }
+  ]
+}

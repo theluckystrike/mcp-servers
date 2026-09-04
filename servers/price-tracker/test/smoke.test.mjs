@@ -142,8 +142,9 @@ test("stdio server: initialize, tools/list, manual price, watch, refresh, histor
   const rt = textOf(refresh);
   assert.match(rt, /"current": "149\.00 USD"/);
   assert.match(rt, /"previous": "199\.00 USD"/);
-  assert.match(rt, /"min": "149"/);
-  assert.match(rt, /"max": "199"/);
+  // D-R70: min and max print at the currency's own scale, like every other price here
+  assert.match(rt, /"min": "149\.00"/);
+  assert.match(rt, /"max": "199\.00"/);
   assert.match(rt, /"change_pct": "-25\.13%"/);
   assert.match(rt, /"target_hit": true/);
   assert.match(rt, /Target hit: /);

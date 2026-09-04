@@ -160,3 +160,58 @@ test("a date past the end of the cache is not called a weekend", async (t) => {
   const again = await c.call("rate_on", { from: "EUR", to: "PLN", date: D0 });
   assert.match(JSON.parse(again.text).note, /No refresh was attempted: the cached history is less than 24 hours old/);
 });
+
+
+/* ------------------------------- D-R71: one date beyond the free window is shortened */
+
+test("a date older than the free window is shortened, not refused (D-R71)", async (t) => {
+  // rate_history has shortened a too-wide window since D-R55 and says which window it
+  // really covered. rate_on refused: it looked nothing up and answered a question about a
+  // rate with a price. Round 14 measured it hosted - "What was the EUR/USD rate 91 days
+  // ago?" came back as an upgrade pitch and cost the user a second turn.
+  const D91 = daysAgo(91), D89 = daysAgo(89), D95 = daysAgo(95);
+  const days = [];
+  for (let i = 0; i <= 120; i++) days.push(day(daysAgo(i), (1.08 + i / 10000).toFixed(4), (4.25 + i / 10000).toFixed(4)));
+  const HIST = HEAD + days.join("") + TAIL;
+  const DAILY = HEAD + day(daysAgo(0), "1.0800", "4.2500") + TAIL;
+  const { srv, url } = await listen((req, res) => {
+    res.writeHead(200, { "content-type": "text/xml" });
+    res.end(req.url.includes("hist") ? HIST : DAILY);
+  });
+  const home = mkdtempSync(join(tmpdir(), "mcp-currency-clamp-"));
+  const c = client({ XDG_DATA_HOME: join(home, "data"), XDG_CONFIG_HOME: join(home, "cfg"), ECB_BASE_URL: url });
+  t.after(() => { c.close(); srv.close(); });
+  await c.init();
+
+  const r = await c.call("rate_on", { from: "EUR", to: "USD", date: D95 });
+  assert.equal(r.isError, false, r.text);
+  const j = JSON.parse(r.text);
+  // A real rate came back, for a date inside the free window, and every field that could
+  // be mistaken for the requested date says otherwise.
+  assert.ok(Number(j.rate) > 0, `no rate in ${r.text}`);
+  assert.equal(j.requested_date, D95);
+  assert.equal(j.shortened_from, D95);
+  assert.ok(j.rate_date > D95, `${j.rate_date} must be newer than the date asked for`);
+  assert.match(j.note, new RegExp(`NOT ${D95}`), `the note must name the date that was NOT read:\n${j.note}`);
+  assert.match(j.rate_date_is_not_requested_date, new RegExp(D95));
+
+  // Inside the window nothing changes: no clamp note, no shortened_from.
+  const inside = await c.call("rate_on", { from: "EUR", to: "USD", date: D89 });
+  const i = JSON.parse(inside.text);
+  assert.equal(i.shortened_from, undefined, `a date inside the window must not be clamped: ${inside.text}`);
+  assert.ok(!/NOT /.test(i.note), i.note);
+
+  // convert shares ratesForDate, so it shortens the same way instead of refusing.
+  const conv = await c.call("convert", { amount: 100, from: "EUR", to: "USD", date: D95 });
+  assert.equal(conv.isError, false, conv.text);
+  const cj = JSON.parse(conv.text);
+  assert.equal(cj.shortened_from, D95);
+  assert.ok(Number(cj.result_number) > 0, conv.text);
+
+  // Non-vacuity: the boundary itself is not clamped, so the test cannot pass by clamping
+  // everything.
+  const edge = await c.call("rate_on", { from: "EUR", to: "USD", date: D91 });
+  const e = JSON.parse(edge.text);
+  assert.ok(e.rate_date <= D91 || e.shortened_from === undefined || e.shortened_from === D91,
+    `unexpected clamp at the boundary: ${edge.text}`);
+});
