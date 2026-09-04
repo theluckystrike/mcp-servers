@@ -1,12 +1,19 @@
 # mcp-bank-statement
 
-<img src="../../assets/bank-statement-logo.png" alt="bank-statement" width="120" />
+![bank-statement demo](../../assets/demo-bank-statement.gif)
 
 Export the CSV from your bank, say "import this", and the month is readable. This MCP server turns a bank export into a local ledger: it finds the header row under whatever preamble the bank prints above it, works out which column is the date, which is the money and which way the money went, and reads amounts in the file's own locale, so `1 234,56` from mBank and `1,234.56` from a US bank both become the same number. A debit is stored negative and a credit positive, once, at import, so nothing downstream has to guess. Re-importing the same export adds nothing: every line carries a hash of its date, amount, currency and description, with an occurrence index, so two identical coffees on one day stay two transactions while a second import of the same file stays zero. Your rules categorise transactions as they arrive, summaries report money in, money out and the net per currency and never mix currencies, `recurring_detect` finds the subscriptions and what each costs per year, and `reconcile_expenses` matches bank debits against the receipts in `mcp-expense-tracker` so you can see which debits have no receipt and which receipts never reached the bank. Everything is a plain JSON file on your own machine; nothing is uploaded anywhere.
 
 **Turn a bank CSV into a categorised, reconciled month in chat -- no accounting SaaS required.**
 
 Bank profiles: Revolut, Wise, mBank, PKO BP, ING, N26, and a generic reader that works from the headers alone.
+
+File shapes it reads without being asked: UTF-8 and UTF-16 (either byte order, as Excel on Windows saves it),
+CRLF, LF and CR-only line endings, quoted fields holding commas, quotes and newlines, `1.234,56` and `1,234.56`,
+accounting parentheses `(12.50)` and a trailing minus `12.50-` (both negative), and a mixture of currencies inside
+one file. A cell holding `-` or nothing is skipped and named in `skipped_lines` rather than read as zero. When the
+date column is ambiguous (`03/04/2026` with no value above 12 anywhere), the assumed order is stated in the
+response instead of silently picking one.
 
 ## 60-second install
 
@@ -68,12 +75,12 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `statement_import` | Read a bank CSV into the ledger. Detects the header row under any preamble, the date, description, amount (or debit and credit) and currency columns, the date order and the number locale. Reports what it detected, what it stored, how many lines were duplicates of what is already there, and every line it skipped with the reason |
 | `transactions_list` | List transactions in a date range, filtered by account, category or `uncategorized`, with totals per currency |
 | `transactions_search` | Find transactions whose description, counterparty, category or account contains the query. Substring only, never a regex |
-| `category_rules` | Set or list the rules that categorise transactions. A plain match is a case-insensitive substring; `regex: true` compiles the pattern only if it cannot backtrack exponentially, and `(a+)+` is refused and used as a substring. Setting rules re-applies them to stored transactions |
+| `category_rules` | Set or list the rules that categorise transactions. An empty match is refused, because it would stamp one category on the whole ledger. A plain match is a case-insensitive substring; `regex: true` compiles the pattern only if it cannot backtrack exponentially, and `(a+)+` is refused and used as a substring. Setting rules re-applies them to stored transactions |
 | `transaction_categorize` | Set the category on transactions by id. Nothing changes unless every id exists |
 | `statement_summary` | Money in, money out and the net for a range, grouped by category, month, account or counterparty, always per currency |
 | `reconcile_expenses` | Match bank debits against the receipts in `mcp-expense-tracker`: same currency, same amount, within a date window. Reports matches, bank lines with no receipt, and receipts that never reached the bank. The expense ledger is only ever read |
-| `recurring_detect` | Find subscriptions and recurring charges: the same counterparty, an amount that barely moves, a steady cadence. Reports the cadence, the typical amount, the next expected date and the annualised cost |
-| `statement_export` | Write a range to csv or json and return the path. Written atomically, so a failure never leaves a half file |
+| `recurring_detect` | Find subscriptions and recurring charges: the same counterparty, an amount that barely moves, a steady cadence. Reports the cadence, the typical amount, the next expected date and the annualised cost. Two charges are one interval, so the yearly cost is withheld (`cadence_confirmed: false`) until a third charge confirms it |
+| `statement_export` | Write a range to csv or json and return the path. Written atomically, so a failure never leaves a half file. Replacing an existing file is allowed and reported (`overwrote_existing_file`) |
 | `accounts_list` | The imported accounts, with bank, currencies, transaction count, date range and last balance |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |

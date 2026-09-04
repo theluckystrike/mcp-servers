@@ -261,6 +261,22 @@ export interface ReadOpts {
   fallbackCurrency?: string;
 }
 
+/**
+ * A trailing minus ("12,50-", "1 234.56 EUR-") is how several German, Polish and SAP-derived
+ * exports write a debit. parseNumberLoose strips a trailing non-digit run before parsing, so
+ * that sign was silently dropped and the debit was stored as income. The sign is taken off the
+ * cell here, before the number is parsed, and applied to the result.
+ */
+function parseMoneyCell(cell: unknown): number | null {
+  const s = String(cell ?? "").trim();
+  const trailing = /^(?=.*\d)(.*\S)\s*-$/.exec(s);
+  if (trailing && !/^\s*-/.test(s)) {
+    const n = parseNumberLoose(trailing[1]);
+    return n === null ? null : -Math.abs(n);
+  }
+  return parseNumberLoose(s);
+}
+
 export function readStatement(text: string, opts: ReadOpts = {}): ParsedStatement {
   const parsed = parseCsv(text);
   // Blank rows are kept in place, never filtered out: header_line and every skipped-line
@@ -351,15 +367,15 @@ export function readStatement(text: string, opts: ReadOpts = {}): ParsedStatemen
     let signed = false;
     let moneyCell = "";
     if (useDebitCredit) {
-      const d = parseNumberLoose(cells[iDebit] ?? "");
-      const c = parseNumberLoose(cells[iCredit] ?? "");
+      const d = parseMoneyCell(cells[iDebit] ?? "");
+      const c = parseMoneyCell(cells[iCredit] ?? "");
       if (d === null && c === null) { skipped.push({ line, reason: "no amount in the debit or credit column" }); continue; }
       major = (c === null ? 0 : Math.abs(c)) - (d === null ? 0 : Math.abs(d));
       signed = true;
       moneyCell = `${cells[iDebit] ?? ""} ${cells[iCredit] ?? ""}`;
     } else {
       moneyCell = cells[iAmount] ?? "";
-      major = parseNumberLoose(moneyCell);
+      major = parseMoneyCell(moneyCell);
       if (major === null) { skipped.push({ line, reason: `"${String(moneyCell).slice(0, 40)}" is not an amount` }); continue; }
     }
     if (!Number.isFinite(major)) { skipped.push({ line, reason: "amount is not a finite number" }); continue; }
@@ -381,7 +397,7 @@ export function readStatement(text: string, opts: ReadOpts = {}): ParsedStatemen
 
     let balance_minor: number | undefined;
     if (iBal >= 0) {
-      const b = parseNumberLoose(cells[iBal] ?? "");
+      const b = parseMoneyCell(cells[iBal] ?? "");
       if (b !== null && Number.isFinite(b)) {
         const bm = roundHalfUp(b * Math.pow(10, currencyDecimals(currency)));
         if (Number.isSafeInteger(bm)) balance_minor = bm;

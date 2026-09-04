@@ -53,6 +53,19 @@ function expandPath(p: string): string {
   return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
 }
 
+/**
+ * Read the file as text. A statement exported from Excel on Windows is often UTF-16, and
+ * decoding those bytes as UTF-8 turns "Date" into "D\u0000a\u0000t\u0000e", so the header
+ * search failed with "no header row was found" on a file that is perfectly well formed.
+ * The byte-order mark decides the encoding; without one the file is UTF-8 as before.
+ */
+function readStatementText(p: string): string {
+  const buf = readFileSync(p);
+  if (buf.length >= 2 && buf[0] === 0xff && buf[1] === 0xfe) return buf.subarray(2).toString("utf16le");
+  if (buf.length >= 2 && buf[0] === 0xfe && buf[1] === 0xff) return buf.subarray(2).swap16().toString("utf16le");
+  return buf.toString("utf8");
+}
+
 /* ------------------------------------------------------------------- windowing */
 
 /**
@@ -200,7 +213,7 @@ server.registerTool("statement_import", {
     if (size > MAX_FILE_BYTES) return fail(`that file is ${(size / 1048576).toFixed(1)} MB; the limit is ${MAX_FILE_BYTES / 1048576} MB. Split the export by month.`);
     if (a.currency && !isKnownCurrency(a.currency)) return fail(`"${a.currency.toUpperCase()}" is not an ISO 4217 currency code.`);
 
-    const raw = readFileSync(p, "utf8");
+    const raw = readStatementText(p);
     const account = (a.account ?? p.split("/").pop()!.replace(/\.[^.]+$/, "")).trim().slice(0, 120) || "default";
 
     let parsed;
@@ -365,6 +378,11 @@ server.registerTool("category_rules", {
     if (!gate.isPro() && a.rules.length > FREE_RULES) {
       return gated(`That is ${a.rules.length} rules; the free tier stores ${FREE_RULES}. Nothing was changed.\n\n` + gate.upgradeText("unlimited category rules"));
     }
+    // An empty (or whitespace-only) match is a substring test that every description passes,
+    // so one such rule silently stamps its category onto the entire ledger.
+    if (a.rules.some((r) => r.match.trim() === "")) {
+      return fail("a rule with an empty match would categorise every transaction. Give each rule the text to look for. Nothing was changed.");
+    }
     const refused: string[] = [];
     for (const r of a.rules) if (r.regex && !isSafeRegexSource(r.match)) refused.push(r.match);
     const rules = a.rules;
@@ -417,8 +435,8 @@ server.registerTool("transaction_categorize", {
 /* ----------------------------------------------------------- statement_summary */
 
 server.registerTool("statement_summary", {
-  title: "Summarise a date range",
-  description: "Money in, money out and the net for a date range, grouped by category, month, account or counterparty. Every total is reported per currency; amounts in different currencies are never added together and never converted.",
+  title: "What I spent, from the bank account",
+  description: "What was spent and received in a date range according to the BANK ACCOUNT itself, grouped by category, month, account or counterparty. This is the tool for \"what did I spend in August by category\" whenever a bank statement has been imported: it covers every line the bank shows, not only the receipts that were logged by hand. Every total is reported per currency; amounts in different currencies are never added together and never converted.",
   inputSchema: {
     from: text(10).optional().describe("ISO date, inclusive. Default: the start of the current month"),
     to: text(10).optional().describe("ISO date, inclusive. Default: today"),
@@ -528,6 +546,7 @@ interface Recurring {
   counterparty: string; currency: string; occurrences: number; cadence: string;
   typical_amount: string; last_seen: string; next_expected: string | null;
   median_days: number; total_in_window: string; annualised: string | null;
+  cadence_confirmed: boolean; cadence_note?: string;
   dates: string[];
 }
 
@@ -546,7 +565,7 @@ function median(ns: number[]): number {
 }
 
 server.registerTool("recurring_detect", {
-  title: "Find subscriptions and recurring charges",
+  title: "Subscriptions and recurring charges in the bank data",
   description: "Find the charges that come back: the same counterparty, an amount that barely moves and a steady cadence. Reports the cadence, the typical amount, when it was last taken, when it is next due and what it costs per year, per currency.",
   inputSchema: {
     months: z.number().int().min(1).max(60).optional().describe("How far back to look, default 3. Two occurrences are enough to see a cadence, three make it certain"),
@@ -592,13 +611,20 @@ server.registerTool("recurring_detect", {
       if (!cadence) continue;
       if (gaps.some((g) => g < cadence.lo - 4 || g > cadence.hi + 4)) continue;
       const last = dates[dates.length - 1];
+      // Two charges are one gap: they fix a cadence only by assumption. Annualising them
+      // turns a single 14-day coincidence into a "EUR 1,599 a year" subscription, so the
+      // yearly figure is withheld until a third charge confirms the interval.
+      const confirmed = dates.length >= 3;
       found.push({
         counterparty: list[list.length - 1].counterparty ?? list[list.length - 1].description,
         currency, occurrences: list.length, cadence: cadence.name,
         typical_amount: formatMoney(med, currency),
         last_seen: last, next_expected: isoPlusDays(last, medGap), median_days: medGap,
         total_in_window: formatMoney(amounts.reduce((s, v) => s + v, 0), currency),
-        annualised: formatMoney(med * cadence.perYear, currency),
+        annualised: confirmed ? formatMoney(med * cadence.perYear, currency) : null,
+        cadence_confirmed: confirmed,
+        cadence_note: confirmed ? undefined
+          : `only ${dates.length} charges, one interval of ${medGap} days: the cadence is a guess and no yearly cost is reported until a third charge confirms it.`,
         dates,
       });
     }
@@ -623,8 +649,8 @@ function csvEscapeCell(v: unknown): string {
 }
 
 server.registerTool("statement_export", {
-  title: "Export a date range",
-  description: "Write the transactions of a date range to a .csv or .json file and return the path. The file is written atomically, so a failed export never leaves a half-written file behind.",
+  title: "Export bank transactions to a file",
+  description: "Write the BANK transactions of a date range (a month, a quarter, a year) to a .csv or .json file and return the path. This is the tool for \"export September to <path>\" once a statement has been imported. The file is written atomically, so a failed export never leaves a half-written file behind.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
@@ -641,6 +667,9 @@ server.registerTool("statement_export", {
     const out = expandPath(a.path);
     const dir = dirname(out);
     if (!existsSync(dir)) return fail(`the directory ${dir} does not exist. Create it, or choose another path.`);
+    // Overwriting is allowed (a monthly export is re-run), but it is never silent.
+    const existed = existsSync(out);
+    if (existed && statSync(out).isDirectory()) return fail(`${out} is a directory, not a file.`);
     const rows = select(load(), { from: a.from, to: a.to, account: a.account, category: a.category });
 
     let body: string;
@@ -672,7 +701,12 @@ server.registerTool("statement_export", {
       try { if (existsSync(tmp)) unlinkSync(tmp); } catch { /* nothing else to do */ }
       return fail(`could not write ${out}: ${(e as Error).message}`);
     }
-    return json({ path: out, format: a.format, rows: rows.length, from: a.from, to: a.to, bytes: Buffer.byteLength(body) });
+    return json({
+      path: out, format: a.format, rows: rows.length, from: a.from, to: a.to,
+      bytes: Buffer.byteLength(body),
+      overwrote_existing_file: existed || undefined,
+      note: existed ? `${out} already existed and was replaced.` : undefined,
+    });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
