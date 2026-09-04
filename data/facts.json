@@ -154,6 +154,12 @@
         19
       ],
       [
+        "kanban",
+        "prod_VC9lLKtbyJ68tW",
+        "price_1UBlSJJKCamubEm1U7CP7tmo",
+        19
+      ],
+      [
         "bundle",
         "prod_VBafU5C9o9d0f3",
         "price_1UBDU9JKCamubEm1dWgRjtoW",
@@ -363,6 +369,16 @@
       "free": "2 accounts, 12 months of transactions, 5 rules, summary and search.",
       "pro": "Unlimited accounts, history and rules, reconcile with expenses, recurring detection, export.",
       "storage": "~/.local/share/mcp-servers/bank-statement/"
+    },
+    "kanban": {
+      "title": "MCP Kanban",
+      "tagline": "A task board per project that hands off to the time tracker.",
+      "does": "Keeps tasks per project in columns (backlog, todo, doing, review, done) with due dates, estimates, priorities and tags; shows the board, overdue items and a weekly review of planned versus done and estimates versus actuals; starts a time-tracker timer from a task and records the link. Local dates in your home time zone.",
+      "for": "Freelancers who plan the week in a board and bill the hours from the same tasks.",
+      "example": "\"Add: Nova API design, due Friday, 3 hours.\" ... \"What is overdue, and start the timer on the API task.\"",
+      "free": "3 projects, 200 open tasks, default columns.",
+      "pro": "Unlimited projects and tasks, custom columns, weekly review history, estimates versus actuals.",
+      "storage": "~/.local/share/mcp-servers/kanban/"
     }
   },
   "version": "0.1.1"
