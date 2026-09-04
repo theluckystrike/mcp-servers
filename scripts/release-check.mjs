@@ -93,11 +93,6 @@ const WEB_EXCLUDED = JSON.parse(
 
 /** The value of key `id` in an object-literal source blob, as raw text, or null. */
 function entryText(blob, id) {
-  const key = new RegExp(`(^|[\\n{,])\\s*(?:"${id}"|'${id}'|${id.replace(/-/g, "\\-")})\\s*:`, "m");
-  const m = key.exec(blob);
-  if (!m || /-/.test(id) === false) {
-    // fall through to the generic scan below
-  }
   const idx = blob.search(new RegExp(`(?:"${id}"|${id})\\s*:`));
   if (idx < 0) return null;
   const after = blob.slice(blob.indexOf(":", idx) + 1);
