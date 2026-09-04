@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, sixteen endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, seventeen endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -26,6 +26,7 @@ import { createServer as createCalendar } from "./vendor/calendar/index.js";
 import { createServer as createKanban } from "./vendor/kanban/index.js";
 import { createServer as createImage } from "./vendor/image/index.js";
 import { createServer as createBankStatement } from "./vendor/bank-statement/index.js";
+import { createServer as createQuotes } from "./vendor/quotes/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -191,6 +192,21 @@ const SERVERS: Record<string, ServerCfg> = {
     strip: ["/uploads/", "/out/"],
     sharedDoc: { server: "expense-tracker", owns: (p) => p.startsWith(EXPENSE_DIR) },
   },
+  "quotes": {
+    // Quotes are this endpoint's own document (quotes.json and its per-year counter, under
+    // the homedir shim, tmp + rename). The invoices quote_accept issues are NOT: they are
+    // written through the shared invoice engine into the same store /mcp/invoice serves for
+    // the same token, so the invoice data directory is hydrated on top of this request and
+    // flushed back to the document that owns it - read AND write, unlike bank-statement's
+    // read-only hydration of the expense ledger, and exactly what /mcp/recurring does.
+    //
+    // quote_pdf renders through remote/src/shims/pdf.ts and pushes its own download, so the
+    // only thing publish() has to catch is quote_send_text's .txt under /out/.
+    factory: createQuotes as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+    sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -347,12 +363,30 @@ async function authenticate(req: Request, env: Env, product: string, urlToken = 
  * same value and both write n+1 - so deferring the write loses nothing that was ever
  * guaranteed, and takes a KV write out of every single call.
  */
-async function rateLimit(env: Env, auth: Auth, ctx: ExecutionContext): Promise<Response | null> {
+async function rateLimit(env: Env, auth: Auth, ctx: ExecutionContext, product?: string): Promise<Response | null> {
   const bucket = Math.floor(Date.now() / 3_600_000);
   const key = `rl:${auth.tenant}:${bucket}`;
   const n = Number((await env.REMOTE_DATA.get(key)) ?? "0") + 1;
   if (n > auth.limit) {
-    return json({ error: "rate_limited", limit: auth.limit, window: "1 hour", guide: GUIDE }, 429, { "retry-after": "3600" });
+    // D-R53: every other cap on this worker names what it costs to lift and links to
+    // checkout with the tenant attached. This one used to name only the number, and the
+    // retry-after was a flat hour when the counter is bucketed to the top of the UTC hour.
+    const resetsAt = new Date((bucket + 1) * 3_600_000).toISOString();
+    const retryAfter = Math.max(1, Math.ceil(((bucket + 1) * 3_600_000 - Date.now()) / 1000));
+    const tenantQ = auth.anonToken ? `?tenant=${auth.anonToken}` : "";
+    return json({
+      error: "rate_limited",
+      limit: auth.limit,
+      window: "1 hour",
+      resets_at: resetsAt,
+      retry_after_seconds: retryAfter,
+      note: auth.isPro
+        ? `This token has made ${auth.limit} calls in the current hour. The counter resets at ${resetsAt}.`
+        : `This token has made ${auth.limit} calls in the current hour, which is the free-tier ceiling. The counter resets at ${resetsAt}; a Pro token gets ${RATE_LIMIT_PRO} calls an hour. Note that a client which re-handshakes every registered endpoint on every turn spends several calls per turn before any tool runs.`,
+      upgradeUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/${product ?? "bundle"}${tenantQ}`,
+      bundleUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/bundle${tenantQ}`,
+      guide: GUIDE,
+    }, 429, { "retry-after": String(retryAfter) });
   }
   ctx.waitUntil(env.REMOTE_DATA.put(key, String(n), { expirationTtl: 7200 }));
   return null;
@@ -543,6 +577,7 @@ const TOOLS: Record<string, string[]> = {
   "kanban": ["task_add", "task_list", "task_move", "task_update", "task_done", "task_delete", "task_search", "board", "task_start_timer", "task_log_time", "project_list", "overdue", "weekly_review", "columns_set", "license_status", "license_activate"],
   "image": ["image_upload", "image_files", "image_delete_upload", "image_info", "image_resize", "image_convert", "image_compress", "image_crop", "image_thumbnails", "image_watermark", "image_strip_metadata", "image_batch_resize", "image_dominant_colors", "license_status", "license_activate"],
   "bank-statement": ["bank_upload", "bank_files", "bank_delete_upload", "statement_import", "transactions_list", "transactions_search", "category_rules", "transaction_categorize", "statement_summary", "reconcile_expenses", "recurring_detect", "statement_export", "accounts_list", "license_status", "license_activate"],
+  "quotes": ["quote_create", "quote_list", "quote_get", "quote_update", "quote_send_text", "quote_accept", "quote_decline", "quote_pdf", "quote_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -680,6 +715,14 @@ function indexDoc(base: string) {
         free_limits: "2 accounts, reads the last 12 months, 5 category rules; reconcile_expenses, recurring_detect and statement_export are Pro",
         storage: `${BANK_MAX_BYTES / 1048576} MB of uploaded statements and stored transactions per token, and at most 1 MB in one upload (the ${MAX_BODY_BYTES / 1024} KB request-body cap binds first)`,
         notes: "reconcile_expenses reads the expense ledger stored for the SAME token on /mcp/expense-tracker, hydrated read-only and never written. The parser reads delimited exports (comma, semicolon, tab), exactly as it does over stdio",
+      },
+      {
+        name: "quotes", url: `${base}/mcp/quotes`, tools: TOOLS["quotes"],
+        mode: "shares the invoice store",
+        how: "Quote a client with quote_create (prices in MINOR units: 9000 is 90.00 EUR), send it with quote_send_text, and quote_accept turns it into a real invoice in the same per-token invoice data the /mcp/invoice endpoint serves, under the same number series and the same client list. Set the issuer once with business_set on /mcp/invoice; the shared business profile is the same for both.",
+        outputs: "quote_pdf returns a print-ready HTML quote behind a one-hour download link (there is no PDF renderer on Workers, so it is the same document invoice_pdf produces, in the quote layout). quote_send_text returns the pasteable text in the answer and the same text as a .txt download link.",
+        free_limits: "5 open quotes at a time (accepted, declined and lapsed ones never count); quote_pdf and quote_report are Pro",
+        notes: "an accepted quote's stored lines are copied into the invoice, never recomputed, so a VAT default changed between quoting and accepting cannot move the total the client agreed to. The invoice is written through the shared engine, so the /mcp/invoice free cap of 3 invoices a month does not apply to it; the quotes free cap does. Today's date comes from the timezone on the shared profile when one is set, which is what a validity window is counted in",
       },
     ],
     limits: {
@@ -1081,7 +1124,7 @@ export default {
 
     const auth = await authenticate(req, env, product, urlToken, urlTokenForm);
     if (auth instanceof Response) return auth;
-    const limited = await rateLimit(env, auth, ctx);
+    const limited = await rateLimit(env, auth, ctx, product);
     if (limited) return limited;
 
     // Body cap and batch rejection happen before anything is parsed as JSON-RPC.

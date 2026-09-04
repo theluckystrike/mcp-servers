@@ -34,6 +34,11 @@ const SERVERS = {
   "kanban": ["index.ts", "version.ts", "board.ts", "day.ts", "jsonstore.ts"],
   "image": ["index.ts", "version.ts", "imageio.ts", "store.ts"],
   "bank-statement": ["index.ts", "version.ts", "detect.ts", "money.ts", "store.ts"],
+  // pdf.ts is deliberately NOT vendored: it is pdfkit, exactly as servers/invoice/src/pdf.ts
+  // is, and both are replaced by remote/src/shims/pdf.ts. lib.ts is patched to re-export the
+  // shim's renderQuotePdf so a later server reading @theluckystrike/mcp-quotes/lib gets the
+  // hosted renderer rather than a module that cannot load here.
+  "quotes": ["index.ts", "version.ts", "day.ts", "store.ts", "lib.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
@@ -577,6 +582,15 @@ function patchInvoiceLib(src) {
   src = must(src, 'export type { RenderOptions } from "./pdf.js";\nexport { renderInvoicePdf } from "./pdf.js";',
     'export type { RenderOptions } from "../../shims/pdf.js";\nexport { renderInvoicePdf } from "../../shims/pdf.js";',
     "invoice lib pdf re-export");
+  return src;
+}
+
+function patchQuotesLib(src) {
+  // Same case as patchInvoiceLib: servers/quotes/src/lib.ts re-exports the pdfkit renderer,
+  // which the remote build does not vendor. ../../shims/pdf.js exports both names.
+  src = must(src, 'export type { RenderQuoteOptions } from "./pdf.js";\nexport { renderQuotePdf } from "./pdf.js";',
+    'export type { RenderQuoteOptions } from "../../shims/pdf.js";\nexport { renderQuotePdf } from "../../shims/pdf.js";',
+    "quotes lib pdf re-export");
   return src;
 }
 
@@ -1251,6 +1265,95 @@ function outputPath(p: string, ext: string): string {
   return src;
 }
 
+/* ------------------------------------------------------------------ quotes */
+
+/**
+ * The hosted quotes endpoint has no disk. Three things move:
+ *   1. renderQuotePdf comes from ../../shims/pdf.js, the same HTML renderer /mcp/invoice
+ *      uses, and returns a one-hour download URL instead of writing a file.
+ *   2. out_path is a NAME, not a path: the only thing it decides is what the downloaded
+ *      file is called.
+ *   3. quote_send_text keeps returning the pasteable text inline and also writes it under
+ *      /out/ so the same call hands back a .txt download link.
+ * The store needs no patch: quotes.json and counter.json are one document per token under
+ * the homedir shim, and the invoice files quote_accept writes are hydrated from - and
+ * flushed back to - the tenant's invoice document (SERVERS.quotes.sharedDoc).
+ */
+function patchQuotesIndex(src) {
+  src = must(src, 'import { renderQuotePdf } from "./pdf.js";',
+    'import { renderQuotePdf } from "../../shims/pdf.js";', "quotes pdf import");
+
+  // A path argument is a name here, and the only path this server ever took was out_path.
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.[A-Za-z0-9]{1,8}$/, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the name the downloaded file carries, 1-64 characters of letters, digits, \` +
+      \`underscore or dash.\`);
+  }
+  return m[1];
+}
+`, "quotes expandPath");
+
+  // quote_pdf: render through the shim, answer with the link rather than a file path.
+  src = must(src,
+    'out_path: z.string().optional().describe("Where to write the file. Defaults to the quotes data directory under pdf/"),',
+    'out_path: z.string().optional().describe("Name for the downloaded file, e.g. acme-quote. Defaults to the quote id; the document comes back as a download link valid for one hour"),',
+    "quotes quote_pdf out_path description");
+  src = must(src,
+    "    const out = a.out_path ? expandPath(a.out_path) : join(dataDir(), \"pdf\", `${q.id}.pdf`);\n" +
+    "    const biz = issuer();\n" +
+    "    await renderQuotePdf(q, biz, out, { branded: !gate.isPro(), logo: gate.isPro(), expired: isExpired(q, day) });",
+    "    const biz = issuer();\n" +
+    "    const out = await renderQuotePdf(q, biz, `${expandPath(a.out_path ?? q.id)}.html`,\n" +
+    "      { branded: !gate.isPro(), logo: gate.isPro(), expired: isExpired(q, day) });",
+    "quotes quote_pdf render call");
+  src = must(src,
+    'return json({ quote: q.id, path: out, document: /\\.html?$/i.test(out) ? "HTML quote (print to PDF)" : "PDF quote", total: formatMoney(q.total_minor, q.currency), notes: notes.length ? notes : undefined });',
+    'return json({ quote: q.id, download: out, document: "HTML quote, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour", total: formatMoney(q.total_minor, q.currency), notes: notes.length ? notes : undefined });',
+    "quotes quote_pdf result");
+  src = must(src,
+    'description: "Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro.",',
+    'description: "Call this tool to render one quote as an A4 print-ready document and return a download link valid for one hour. Same layout as the invoice document, with the validity date and an acceptance block. Pro.",',
+    "quotes quote_pdf description");
+
+  // quote_send_text: the text stays inline (it is meant to be pasted) AND is published.
+  src = must(src,
+    '    const text = out.join("\\n");\n' +
+    '    return ok(businessMissing() ? `${text}\\n\\n---\\n${NO_BUSINESS_NOTE}` : text);',
+    '    const text = out.join("\\n");\n' +
+    '    const file = `/out/${q.id}.txt`;\n' +
+    '    writeFileSync(file, text, "utf8");\n' +
+    '    const link = publishFile(file);\n' +
+    '    const tail =\n' +
+    '      (link ? `\\n\\n---\\nDownload (.txt, valid 1 hour): ${link}` : "") +\n' +
+    '      (businessMissing() ? `\\n\\n---\\n${NO_BUSINESS_NOTE}` : "");\n' +
+    '    return ok(`${text}${tail}`);',
+    "quotes quote_send_text download");
+  src = must(src,
+    'description: "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier.",',
+    'description: "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    "quotes quote_send_text description");
+
+  // The invoice store is a sibling tenant document, not a directory anyone can open.
+  src = must(src,
+    "          `Invoice ${inv.number} was created in the invoice server's own store (${dataDir().replace(/quotes$/, \"invoice\")}), ` +\n" +
+    "          `under its number series. Render it there with invoice_pdf {number: \"${inv.number}\"}.`,",
+    "          `Invoice ${inv.number} was written into the same invoice data your https://mcp.zovo.one/mcp/invoice endpoint serves ` +\n" +
+    "          `for this token, under its number series: invoice_list and overdue_report there show it. ` +\n" +
+    "          `Render it with invoice_pdf {number: \"${inv.number}\"} on that endpoint.`,",
+    "quotes accept invoice-store note");
+  src = must(src,
+    '          : "The invoice server has no store on this machine yet, so nothing was invoiced. Pass the items below to invoice_create, or call quote_accept {create_invoice: \\"always\\"}.");',
+    '          : "Nothing is stored yet for your token on https://mcp.zovo.one/mcp/invoice - no issuer, no clients, no invoices - so nothing was invoiced. Run business_set there, pass the items below to invoice_create, or call quote_accept {create_invoice: \\"always\\"}.");',
+    "quotes accept no-store note");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -1278,6 +1381,7 @@ const EXTRA_IMPORTS = {
     'import { outDir, outputPath } from "./imageio.js";',
   ],
   "bank-statement": ['import { registerBankUpload } from "../../shims/bank-upload.js";'],
+  quotes: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -1297,6 +1401,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "currency" && f === "ecb.ts") src = patchCurrencyEcb(src);
       if (name === "docx" && f === "store.ts") src = patchDocxStore(src);
       if (name === "invoice" && f === "lib.ts") src = patchInvoiceLib(src);
+      if (name === "quotes" && f === "lib.ts") src = patchQuotesLib(src);
       if (name === "pdf" && f === "pdfio.ts") src = patchPdfIo(src);
       if (name === "pdf" && f === "store.ts") src = patchPdfStore(src);
       if (name === "pdf" && f === "text.ts") src = patchPdfText(src);
@@ -1322,6 +1427,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "calendar") src = patchCalendarIndex(src);
     if (name === "image") src = patchImageIndex(src);
     if (name === "bank-statement") src = patchBankIndex(src);
+    if (name === "quotes") src = patchQuotesIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {

@@ -1706,3 +1706,161 @@ statement_export download signature and content type):
    is the most sensitive file this worker has ever published, and the 128-bit token in the
    URL is the only thing protecting it. The link is not logged anywhere the caller cannot
    see, and it expires, but it should be treated like the statement itself.
+
+# Extension 7 2026-09-04 - quotes
+
+status: DONE
+
+A seventeenth endpoint, `POST /mcp/quotes`. Worker `mcp-remote`, version ID
+`f18becf9-e286-4d6b-9bb2-a8bd745803fb`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list seventeen.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/quotes | 11 | shares the invoice store read-write: `quote_accept` writes a real invoice that `/mcp/invoice` then lists for the same token. `quote_pdf` and `quote_send_text` come back as one-hour download links |
+
+### Vendoring: five files, not six
+
+`SERVERS.quotes` is `index.ts, version.ts, day.ts, store.ts, lib.ts`. `src/pdf.ts` is
+deliberately **not** vendored: it is pdfkit, for exactly the reason
+`servers/invoice/src/pdf.ts` is, and pdfkit needs a real filesystem for its AFM metrics.
+Both are replaced by `remote/src/shims/pdf.ts`, which gained a second renderer,
+`renderQuotePdf` (plus `RenderQuoteOptions`), beside `renderInvoicePdf`. It is a second
+function rather than a flag because the three blocks a client reads first differ: the
+title, the validity line in place of a due date, and the acceptance block in place of
+payment details - the same reason the stdio renderer is separate.
+
+`patchQuotesLib` is `patchInvoiceLib`'s twin: `servers/quotes/src/lib.ts` re-exports
+`RenderQuoteOptions` and `renderQuotePdf` from `./pdf.js`, and the vendored copy re-exports
+them from `../../shims/pdf.js` instead, so a later server importing
+`@theluckystrike/mcp-quotes/lib` here gets the hosted renderer rather than a module that
+cannot load. The `@theluckystrike/mcp-<x>/lib` rule in `rewriteSpec` needed no change:
+`servers/quotes/src/store.ts` imports `@theluckystrike/mcp-invoice/lib` and it resolved to
+the already-vendored `../invoice/lib.js` on the first build. Nothing else consumes
+`@theluckystrike/mcp-quotes/lib` yet, so no second mapping was added for it.
+
+### The store needs no patch; the invoice store is hydrated read-WRITE
+
+`servers/quotes/src/store.ts` reaches the disk through
+`$XDG_DATA_HOME || homedir()/.local/share` + `mcp-servers/quotes`, tmp + rename, exactly
+kanban's shape, so `quotes.json` and the per-year `counter.json` are one document per token
+with no substitution at all.
+
+The invoices are a different matter and are the whole point of the server:
+`issueInvoiceFromQuote` writes `clients.json`, `invoices.json` and the invoice number
+counter through `@theluckystrike/mcp-invoice/lib`, into the invoice server's own data
+directory. That is a separate tenant document here, so
+`SERVERS.quotes.sharedDoc = { server: "invoice", owns: p => p.startsWith(INVOICE_DIR) }` -
+the same mechanism `/mcp/recurring` uses, and unlike `/mcp/bank-statement`'s read-only
+hydration of the expense ledger this one really is read **and** write: the flush finds the
+invoice document changed and writes it back. Verified below by reading the invoice on the
+OTHER endpoint with the same token.
+
+### quote_pdf and quote_send_text become downloads
+
+- `quote_pdf` renders through the shim and returns the link directly, so it never touches
+  the virtual filesystem. `out_path` is not a path: `expandPath` is rewritten to accept a
+  bare 1-64 character name and it decides only what the downloaded file is called
+  (default: the quote id). The response field is `download`, not `path`, and `document`
+  states plainly that this is an HTML quote in the A4 print-to-PDF layout - the stdio
+  server's own `/\.html?$/` test on the output path would have called it "PDF quote" once
+  the path became a URL.
+- `quote_send_text` still returns the pasteable text in the answer, because that is what
+  the tool is for, and additionally writes it to `/out/<id>.txt` and publishes it. So the
+  only thing `SERVERS.quotes.publish` has to catch is that one file
+  (`p.startsWith("/out/")`), with `strip: ["/out/"]` keeping the virtual root out of the
+  answer. `persistPublished` is left off: an export is a fresh download every time.
+- Two response strings named a directory no caller can see. `quote_accept`'s success note
+  printed `dataDir().replace(/quotes$/, "invoice")`; it now names the endpoint. Its
+  no-store branch said "the invoice server has no store on this machine yet"; it now says
+  nothing is stored for your token on `/mcp/invoice` and names the three fixes.
+
+Every substitution goes through `must()`, so a drift in `servers/quotes/src` fails the
+build instead of silently vendoring un-patched code.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP).
+One POST per call.
+
+```
+$ GET /mcp
+  17 endpoints: time-tracker, price-tracker, invoice, expense-tracker, spreadsheet,
+  currency, timezone, docx, resume, recurring, clauses, pdf, calendar, kanban, image,
+  bank-statement, quotes
+
+$ quotes tools/list
+  11 tools: quote_create, quote_list, quote_get, quote_update, quote_send_text,
+  quote_accept, quote_decline, quote_pdf, quote_report, license_status, license_activate
+
+$ invoice business_set {name: "Probe Studio", ..., default_tax_rate: 23, timezone: "Europe/Warsaw"}
+  saved to the shared profile
+
+$ quotes quote_create {client: "Acme Ltd", items: [{description: "Design sprint",
+                       quantity: 12, unit_price_minor: 9000}], notes: "Scope: two weeks."}
+  Q-2026-0001, valid_until 2026-10-04 (30 days left), EUR 90.00 x 12 = EUR 1080.00,
+  23% on EUR 1080.00 = EUR 248.40, total EUR 1328.40
+
+$ quotes quote_send_text {id: "Q-2026-0001"}
+  the pasteable email, totals column aligned, "valid until 2026-10-04", signed Probe Studio
+  ---
+  Download (.txt, valid 1 hour): https://mcp.zovo.one/mcp/download/49de8541ba6c...
+  GET that URL -> 200, content-type text/plain; charset=utf-8,
+  content-disposition inline; filename="Q-2026-0001.txt", body starts "Hello Acme Ltd,"
+
+$ quotes quote_pdf {id: "Q-2026-0001", out_path: "acme-quote"}
+  {"quote": "Q-2026-0001",
+   "download": "https://mcp.zovo.one/mcp/download/4860587b69b0...",
+   "document": "HTML quote, A4 print-to-PDF layout (there is no PDF renderer on Workers),
+                link valid 1 hour",
+   "total": "EUR 1328.40"}
+  GET that URL -> 200, content-type text/html; charset=utf-8,
+  filename="acme-quote.html", 2,000 bytes, first bytes "<!doc", <title>Quote Q-2026-0001
+
+$ quotes quote_accept {id: "Q-2026-0001"}
+  accepted, invoice_number INV-2026-0001, due 2026-09-18,
+  totals_check {quote_total: "EUR 1328.40", invoice_total: "EUR 1328.40"}
+  note: written into the same invoice data /mcp/invoice serves for this token
+
+$ invoice invoice_list {}      (the OTHER endpoint, same token)
+  count 1, INV-2026-0001 Acme Ltd 2026-09-04, due 2026-09-18,
+  subtotal EUR 1080.00, 23% on EUR 1080.00 = EUR 248.40, total EUR 1328.40, unpaid
+                                            <- the shared invoice store works read-write
+
+$ quotes quote_report {}
+  as_of 2026-09-04, 1 quote, counts {open 0, accepted 1, declined 0, expired 0},
+  by_currency EUR, win_rate_percent 100
+```
+
+`scripts/validate.mjs` gained `quotes` to the tools/list sweep plus three real calls
+(`quote_create` and its 1328.40 arithmetic, `quote_pdf`'s download content type and body,
+`quote_accept` -> `invoice_list` on `/mcp/invoice`), and the index assertion moved from 16
+endpoints to 17: **remote 50/50, whole run 399/399.**
+
+### Limitations
+
+- **The download is HTML, not a PDF.** `quote_pdf` returns `text/html; charset=utf-8` and
+  the body starts `<!doctype html`, not `%PDF-`. There is no PDF renderer on Workers -
+  pdfkit needs a filesystem for its font metrics - so this is the same trade `invoice_pdf`
+  and `/mcp/recurring` already make, and the tool says so in its own answer rather than
+  leaving a caller to discover it. The browser prints the same A4 layout. A caller who
+  needs real PDF bytes runs the server over stdio.
+- The HTML quote is a faithful but not pixel-identical rendering of the pdfkit layout:
+  same content, same order, same "every money value carries its currency code" rule, but
+  no logo (`opts.logo` is accepted and ignored: `biz.logo_path` is a path on a disk this
+  endpoint does not have) and no per-page running footer, because HTML pagination is the
+  browser's decision.
+- quotes is charged the default 512 KB tenant cap, and the invoice files it hydrates count
+  against it - the same limitation `/mcp/recurring` carries. A tenant with hundreds of
+  invoices will hit that before the quotes free cap.
+- The `/out/` root is transient: `quote_send_text`'s .txt is published and not persisted,
+  so two calls in different requests cannot collide, and the link dies after an hour.
+- `invoice business_set`'s own success message lists the servers that read the shared
+  profile and does not yet name quotes. That string lives in `servers/invoice/src/index.ts`,
+  which is outside this unit's write scope; the profile itself is shared correctly, as the
+  transcript's `default_tax_rate: 23` reaching the quote shows.
+- `quote_accept` with the default `create_invoice: "auto"` decides on `invoiceStorePresent()`,
+  which on a fresh token is false until something exists on `/mcp/invoice` (a `business_set`
+  is enough, and the shared profile makes that one call). The refusal names that; the
+  validate probe passes `"always"` so it never depends on ordering.
