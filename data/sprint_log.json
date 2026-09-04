@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-04T09:38:15.374Z",
-  "total_commits": 310,
-  "sessions": 39,
+  "generated_at": "2026-09-04T15:28:59.263Z",
+  "total_commits": 322,
+  "sessions": 40,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -61,7 +61,12 @@
     {
       "name": "Loop 12: release checker, round 14, specs, descriptions, v0.9.1",
       "sessions": 1,
-      "commits": 110
+      "commits": 34
+    },
+    {
+      "name": "Loop 13: upload by URL, click instrument, round 15, v0.9.2",
+      "sessions": 1,
+      "commits": 88
     }
   ],
   "rows": [
@@ -450,7 +455,7 @@
       "at": "2026-09-04T09:38:15.117Z",
       "note": "loop 12 closed: v0.9.1, 19 servers + bundle, 907 tests, validation 463/463, 47 registry entries at 0.9.1, hosted round 14 57/60 on the five servers never tested hosted (uv index 95), release checker found 9 over-length and 5 truncated manifest descriptions plus a missing barcode second name, five servers got SPEC.md and contract tests (45 descriptions rewritten), publish-all covers 21 packages in dependency order, human-gated pack written, three oldest guides refreshed; GSC API unreachable this loop; downloads see metrics; sales 0",
       "loop": "Loop 12: release checker, round 14, specs, descriptions, v0.9.1",
-      "commits": 90,
+      "commits": 65,
       "subjects": [
         "v0.6.1: bump 17 servers and mcp-license, regenerate vendored worker sources",
         "v0.6.1 bundle manifests",
@@ -464,6 +469,27 @@
         "Content round 9: quotes guide, 6 setup pages, 1 compare page",
         "setup: quotes claude-web page now that /mcp/quotes is live",
         "Round 11: hosted user-value audit of kanban, image and bank-statement"
+      ]
+    },
+    {
+      "n": 40,
+      "at": "2026-09-04T15:28:59.007Z",
+      "note": "loop 13 closed: v0.9.2, 19 servers + bundle, validation 471/471, 47 registry entries, findable share measured 51 percent, upload by URL on all six hosted shims (SSRF guard, magic checks), upgrade links tagged with src and clicks counted in KV (2 human clicks in 7d), hosted round 15 39/48 on expense-tracker recurring clauses timezone (six defects, five fixed; bank ledger now hydrated into hosted expense summaries), release checker green with zero waivers, Docker PR status comment posted; GSC unmeasurable (key file iCloud-dataless); downloads 1491; sales 0",
+      "loop": "Loop 13: upload by URL, click instrument, round 15, v0.9.2",
+      "commits": 37,
+      "subjects": [
+        "Plan v9: enforce the wiring, test what was never tested",
+        "remote: a price-tracker fixture product page, served at /mcp/sample/product and from remote/fixtures",
+        "Refresh three oldest guides: fix time-tracker free/pro claim, add connect-by-URL and sibling-server links",
+        "Registry manifests: bring every description under the 100-character limit and undo four machine truncations",
+        "Add human-gated distribution pack (npm, Smithery, cursor.directory, Claude directory, Vercel, Glama)",
+        "sync-mirrors: give pdf, calendar, kanban, image and bank-statement the repo topics every other mirror has",
+        "release-check: fail the release when a server is only half wired; hook into build-mcpb and npm run release:check",
+        "release-check: drop a dead branch in the object-literal reader",
+        "publish-all.sh: derive package list and dependency order from the workspace instead of a hardcoded 4-package array",
+        "bank-statement: SPEC.md, shared test client and contract suite; gen-spec CURATED entries for the five remaining servers",
+        "calendar: SPEC.md and contract suite",
+        "image: SPEC.md and contract suite"
       ]
     }
   ]
