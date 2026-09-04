@@ -136,6 +136,13 @@ test("cap: statement_export is Pro and writes no file at all on free", async (t)
   assert.match(r.text, /Pro/, r.text.slice(0, 300));
   assert.equal(existsSync(out), false, "a refused export must leave no file behind");
   assert.equal(readdirSync(box.dir).filter((f) => f.includes(".tmp")).length, 0, "no tmp file may survive a refusal");
+
+  // Conversion instrument (docs/CONVERSION_INSTRUMENT.md): the /buy link on a cap message
+  // must name the tool that produced it, not the prose of the feature. Asserted on the
+  // cheapest gate this suite already trips, so it costs no extra server run.
+  const wantSrc = `https://mcp.zovo.one/buy/${PRODUCT}?src=${PRODUCT}.statement_export`;
+  assert.ok(r.text.includes(wantSrc),
+    `the statement_export cap message must carry ${wantSrc}, got: ` + r.text.slice(0, 400));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {

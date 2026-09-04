@@ -238,7 +238,7 @@ server.registerTool("statement_import", {
         return gated(
           `This would be account number ${known.length + 1} (${known.join(", ")} already exist). ` +
           `The free tier tracks ${FREE_ACCOUNTS} accounts. Nothing was imported; import into one of those, or upgrade.\n\n` +
-          gate.upgradeText("unlimited accounts"),
+          gate.upgradeText("unlimited accounts", "statement_import"),
         );
       }
 
@@ -385,7 +385,7 @@ server.registerTool("category_rules", {
       return json({ count: db.rules.length, rules: db.rules, free_limit: gate.isPro() ? null : FREE_RULES });
     }
     if (!gate.isPro() && a.rules.length > FREE_RULES) {
-      return gated(`That is ${a.rules.length} rules; the free tier stores ${FREE_RULES}. Nothing was changed.\n\n` + gate.upgradeText("unlimited category rules"));
+      return gated(`That is ${a.rules.length} rules; the free tier stores ${FREE_RULES}. Nothing was changed.\n\n` + gate.upgradeText("unlimited category rules", "category_rules"));
     }
     // An empty (or whitespace-only) match is a substring test that every description passes,
     // so one such rule silently stamps its category onto the entire ledger.
@@ -502,7 +502,7 @@ server.registerTool("reconcile_expenses", {
     let capNote: string | undefined;
     if (!pro && dayDiff(a.to, a.from) + 1 > FREE_RECONCILE_DAYS) {
       from = isoPlusDays(a.to, -(FREE_RECONCILE_DAYS - 1));
-      capNote = `Free tier reconciles ${FREE_RECONCILE_DAYS} days at a time, so this covers ${from} to ${a.to} of the ${asked.from} to ${asked.to} you asked for; ${gate.upgradeText("reconciling any date range")}`;
+      capNote = `Free tier reconciles ${FREE_RECONCILE_DAYS} days at a time, so this covers ${from} to ${a.to} of the ${asked.from} to ${asked.to} you asked for; ${gate.upgradeText("reconciling any date range", "reconcile_expenses")}`;
     }
     const bank = select(load(), { from, to: a.to, account: a.account }).filter((t) => t.amount_minor < 0);
     const led = readExpenses();
@@ -665,7 +665,7 @@ server.registerTool("recurring_detect", {
       : `Free tier: the last ${FREE_RECURRING_MONTHS} months and up to ${FREE_RECURRING_CHARGES} recurring charges` +
         `${askedMonths > FREE_RECURRING_MONTHS ? ` (you asked for ${askedMonths} months)` : ""}` +
         `${found.length > FREE_RECURRING_CHARGES ? `, showing ${FREE_RECURRING_CHARGES} of ${found.length} found` : ""}; ` +
-        gate.upgradeText("the full history and every recurring charge");
+        gate.upgradeText("the full history and every recurring charge", "recurring_detect");
 
     return json({
       from, to, months, min_occurrences: minOcc,
@@ -701,7 +701,7 @@ server.registerTool("statement_export", {
   },
 }, async (a) => {
   try {
-    if (!gate.isPro()) return gated(`Export is a Pro feature.\n\n${gate.upgradeText("statement_export")}`);
+    if (!gate.isPro()) return gated(`Export is a Pro feature.\n\n${gate.upgradeText("statement_export", "statement_export")}`);
     if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
     const out = expandPath(a.path);
