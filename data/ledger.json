@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-04T01:55:44.832Z",
+  "generated_at": "2026-09-04T03:37:20.504Z",
   "session": {
-    "count": 35,
+    "count": 36,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -142,6 +142,10 @@
       {
         "at": "2026-09-04T01:55:44.772Z",
         "note": "loop 8 closed: v0.6.0, 16 servers + bundle, 686 tests, validation 370/370, audits kanban 18/18 image 16/18 bank 13/18 (52 defects fixed), 16 hosted endpoints, 30 registry entries at 0.6.0, sitemap 179, Docker PR 16 entries, Cline 2424, zovo.one footer link, GSC sitemap resubmitted (0 indexed, never crawled), downloads 703"
+      },
+      {
+        "at": "2026-09-04T03:37:20.419Z",
+        "note": "loop 9 closed: v0.7.0, 17 servers + bundle (+quotes on the invoice engine, audit 18/18), 771 tests, validation 399/399, 17 hosted endpoints, 33 registry entries at 0.7.0 (templates + estimates variants), hosted round 11 49/54 (uv index 91%), handshake version from package.json (14 of 17 were stale), KPI readers fixed, sitemap 189, zovo.one footer link live, GSC 189 submitted 0 indexed, Docker PR 17 entries, Cline 2426, downloads 843, sales 0"
       }
     ]
   },
@@ -149,7 +153,7 @@
     {
       "id": "bank-statement",
       "npm_name": "@theluckystrike/mcp-bank-statement",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/bank-statement",
       "tools": [
         "statement_import",
@@ -169,7 +173,7 @@
       "build_ok": true,
       "test_summary": "# pass 60 / # fail 0 / # pass 28 / # fail 0 / # pass 14   # fail 0 / # pass 6    # fail 0   duration_ms 1391 / # pass 8    # fail 0",
       "result_status": "DONE",
-      "loc": 1572,
+      "loc": 1580,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -188,7 +192,7 @@
     {
       "id": "calendar",
       "npm_name": "@theluckystrike/mcp-calendar",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/calendar",
       "tools": [
         "ics_import",
@@ -208,7 +212,7 @@
       "build_ok": true,
       "test_summary": "# pass 36 / # fail 0 / # pass 51 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1963,
+      "loc": 1966,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -227,7 +231,7 @@
     {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/clauses",
       "tools": [
         "clause_add",
@@ -247,7 +251,7 @@
       "build_ok": true,
       "test_summary": "# pass 15 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1301,
+      "loc": 1304,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -266,7 +270,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -284,7 +288,7 @@
       "build_ok": true,
       "test_summary": "# pass 21 / # fail 0",
       "result_status": "DONE",
-      "loc": 1080,
+      "loc": 1084,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -303,7 +307,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -322,7 +326,7 @@
       "build_ok": true,
       "test_summary": "# pass 8 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1914,
+      "loc": 1918,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -341,7 +345,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -363,7 +367,7 @@
       "build_ok": true,
       "test_summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818",
       "result_status": "DONE",
-      "loc": 1373,
+      "loc": 1377,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -382,7 +386,7 @@
     {
       "id": "image",
       "npm_name": "@theluckystrike/mcp-image",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/image",
       "tools": [
         "image_info",
@@ -402,7 +406,7 @@
       "build_ok": true,
       "test_summary": "# pass 20 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1173,
+      "loc": 1177,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -421,7 +425,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -441,7 +445,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 1383,
+      "loc": 1387,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -460,7 +464,7 @@
     {
       "id": "kanban",
       "npm_name": "@theluckystrike/mcp-kanban",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/kanban",
       "tools": [
         "task_add",
@@ -484,7 +488,7 @@
       "build_ok": true,
       "test_summary": "- `npm test -w servers/kanban`: `# tests 11 / # pass 11 / # fail 0 / # duration_ms 504.8`, wall `npm test 0.699 total`",
       "result_status": "DONE",
-      "loc": 1083,
+      "loc": 1087,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -503,7 +507,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -512,7 +516,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 416,
+      "loc": 421,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -531,7 +535,7 @@
     {
       "id": "pdf",
       "npm_name": "@theluckystrike/mcp-pdf",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/pdf",
       "tools": [
         "pdf_info",
@@ -551,7 +555,7 @@
       "build_ok": true,
       "test_summary": "# pass 24 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1312,
+      "loc": 1316,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -570,7 +574,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -588,7 +592,45 @@
       "build_ok": true,
       "test_summary": "# pass 18 / # fail 0",
       "result_status": "DONE",
-      "loc": 1485,
+      "loc": 1489,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "quotes",
+      "npm_name": "@theluckystrike/mcp-quotes",
+      "version": "0.7.0",
+      "dir": "servers/quotes",
+      "tools": [
+        "quote_create",
+        "quote_list",
+        "quote_get",
+        "quote_update",
+        "quote_send_text",
+        "quote_accept",
+        "quote_decline",
+        "quote_pdf",
+        "quote_report"
+      ],
+      "tool_count": 9,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "- `npm test -w servers/quotes`: `# tests 25 / # pass 24 / # fail 0 / # skipped 1 / # duration_ms 2542.5`,",
+      "result_status": "DONE",
+      "loc": 1207,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -607,7 +649,7 @@
     {
       "id": "recurring",
       "npm_name": "@theluckystrike/mcp-recurring",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/recurring",
       "tools": [
         "schedule_create",
@@ -629,7 +671,7 @@
       "build_ok": true,
       "test_summary": "# pass 28 / # fail 0 / # pass 13 / # fail 0",
       "result_status": "DONE",
-      "loc": 1125,
+      "loc": 1129,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -648,7 +690,7 @@
     {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/resume",
       "tools": [
         "profile_set",
@@ -666,7 +708,7 @@
       "build_ok": true,
       "test_summary": "# tests 22   # pass 22   # fail 0 / # tests 12   # pass 12   # fail 0",
       "result_status": "DONE",
-      "loc": 1524,
+      "loc": 1527,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -685,7 +727,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -703,7 +745,7 @@
       "build_ok": true,
       "test_summary": "# pass 31 / # fail 0",
       "result_status": "DONE",
-      "loc": 1573,
+      "loc": 1576,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -722,7 +764,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -744,7 +786,7 @@
       "build_ok": true,
       "test_summary": "# pass 2 / # fail 0",
       "result_status": "DONE",
-      "loc": 1255,
+      "loc": 1259,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -763,7 +805,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -782,7 +824,7 @@
       "build_ok": true,
       "test_summary": "# pass 23 / # fail 0",
       "result_status": "DONE",
-      "loc": 1858,
+      "loc": 1862,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -877,6 +919,11 @@
         "id": "price-tracker",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/price-tracker"
+      },
+      {
+        "id": "quotes",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/quotes"
       },
       {
         "id": "recurring",
@@ -983,6 +1030,10 @@
       "first_line": "Content round 8: bank-statement guide, 6 setup pages, 1 compare page - 2026-09-04"
     },
     {
+      "file": "docs/CONTENT_R9_RESULT.md",
+      "first_line": "Content round 9: quotes guide, 6 setup pages, 1 compare page - 2026-09-04"
+    },
+    {
       "file": "docs/CONTENT_RESULT.md",
       "first_line": "Guides content run - 2026-09-02"
     },
@@ -1025,6 +1076,10 @@
     {
       "file": "docs/DIST_R7_RESULT.md",
       "first_line": "Round 7: bank-statement demo GIF, Docker MCP catalog + Cline marketplace"
+    },
+    {
+      "file": "docs/DIST_R8_RESULT.md",
+      "first_line": "Round 8: wire mcp-quotes into the estate, demo GIF, Docker MCP catalog + Cline marketplace"
     },
     {
       "file": "docs/DOCX_AUDIT.md",
@@ -1073,6 +1128,10 @@
     {
       "file": "docs/INTEL_R6.md",
       "first_line": "INTEL_R6 -- registry re-probe, Search Console, next-server ranking, PR/issue status"
+    },
+    {
+      "file": "docs/INTEL_R7.md",
+      "first_line": "INTEL_R7 -- templates variant publish, GSC URL inspection + IndexNow, registry re-probe"
     },
     {
       "file": "docs/KANBAN_AUDIT.md",
@@ -1139,6 +1198,18 @@
       "first_line": "Plan v5 (2026-09-04, loop 8): visibility and more servers"
     },
     {
+      "file": "docs/PLAN_V6.md",
+      "first_line": "Plan v6 (2026-09-04, loop 9): correctness of the handshake, one more server, hosted round 11"
+    },
+    {
+      "file": "docs/QUOTES_AUDIT.md",
+      "first_line": "mcp-quotes: Part 2 CLI run and the remaining Part 1 probes"
+    },
+    {
+      "file": "docs/QUOTES_RESULT.md",
+      "first_line": "mcp-quotes: build and adversarial audit"
+    },
+    {
       "file": "docs/README_DEPTH_RESULT.md",
       "first_line": "README depth pass — 2026-09-02"
     },
@@ -1149,6 +1220,14 @@
     {
       "file": "docs/RELEASE_V060.md",
       "first_line": "Release v0.6.0"
+    },
+    {
+      "file": "docs/RELEASE_V061.md",
+      "first_line": "Release v0.6.1"
+    },
+    {
+      "file": "docs/RELEASE_V070.md",
+      "first_line": "Release v0.7.0"
     },
     {
       "file": "docs/REMOTE_RESULT.md",
@@ -1185,6 +1264,10 @@
     {
       "file": "docs/USER_VALUE_R10.md",
       "first_line": "User value audit, round 10 — 2026-09-03"
+    },
+    {
+      "file": "docs/USER_VALUE_R11.md",
+      "first_line": "User value audit, round 11 - 2026-09-04"
     },
     {
       "file": "docs/USER_VALUE_R2.md",

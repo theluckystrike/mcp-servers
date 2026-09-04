@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-04T01:55:44.738Z",
-  "total_commits": 214,
-  "sessions": 34,
+  "generated_at": "2026-09-04T03:37:20.348Z",
+  "total_commits": 234,
+  "sessions": 35,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -40,8 +40,13 @@
     },
     {
       "name": "Loop 8: kanban, image, bank-statement, v0.6.0",
-      "sessions": 2,
-      "commits": 49
+      "sessions": 3,
+      "commits": 19
+    },
+    {
+      "name": "Loop 9: handshake version, quotes, hosted round 11, v0.7.0",
+      "sessions": 0,
+      "commits": 50
     }
   ],
   "rows": [
@@ -377,7 +382,15 @@
       "at": "2026-09-04T01:17:47.792Z",
       "note": "loop 8: kanban, image, bank-statement built (11/20/28 tests), validation 361/361, 13 registry variants, Docker PR 15 entries, Cline 2422/2423; audits, hosting, content in flight",
       "loop": "Loop 8: kanban, image, bank-statement, v0.6.0",
-      "commits": 30,
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 35,
+      "at": "2026-09-04T01:55:44.772Z",
+      "note": "loop 8 closed: v0.6.0, 16 servers + bundle, 686 tests, validation 370/370, audits kanban 18/18 image 16/18 bank 13/18 (52 defects fixed), 16 hosted endpoints, 30 registry entries at 0.6.0, sitemap 179, Docker PR 16 entries, Cline 2424, zovo.one footer link, GSC sitemap resubmitted (0 indexed, never crawled), downloads 703",
+      "loop": "Loop 8: kanban, image, bank-statement, v0.6.0",
+      "commits": 50,
       "subjects": [
         "Plan v5; image and bank-statement products",
         "INTEL_R5: image/bank-statement naming slots, next three candidates",
