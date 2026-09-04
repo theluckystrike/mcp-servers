@@ -129,11 +129,12 @@ test("D-R82: with no profile, contacts_list says how to set the home zone once",
   assert.match(r.text, /business_set \{timezone/);
 });
 
+// days: 7 so the window always holds weekdays; days: 3 from a Friday night is a weekend and found no slot on 2026-09-05
 test("a saved contact's own working hours are used when none are passed", async (t) => {
   const c = await init(client(PROFILE)); t.after(() => c.close());
   await c.call("contacts_set", { name: "Ann", zone: "America/New_York", work_start: "11:00", work_end: "15:00" });
-  const wide = await c.call("find_meeting_slots", { participants: [{ name: "Ann", zone: "America/New_York" }], duration_minutes: 60, days: 3 });
-  const narrow = await c.call("find_meeting_slots", { participants: [{ name: "Ann" }], duration_minutes: 60, days: 3 });
+  const wide = await c.call("find_meeting_slots", { participants: [{ name: "Ann", zone: "America/New_York" }], duration_minutes: 60, days: 7 });
+  const narrow = await c.call("find_meeting_slots", { participants: [{ name: "Ann" }], duration_minutes: 60, days: 7 });
   const count = (s) => Number((s.match(/^(\d+) slot/) || [])[1] ?? 0);
   assert.ok(count(narrow.text) > 0, narrow.text);
   assert.ok(count(narrow.text) < count(wide.text), `saved 11:00-15:00 must be narrower than the 09:00-17:00 default: ${count(narrow.text)} vs ${count(wide.text)}`);
