@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/timer-tracking",
   "description": "Timer and time-tracking add-on: start/stop timers, log entries, CSV export. Data stays local.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.0/time-tracker.mcpb",
-      "version": "0.6.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.1/time-tracker.mcpb",
+      "version": "0.6.1",
       "fileSha256": "f145dbe10ea5551b128f5ee3131b35d6f66aea80d9c950927655a1d82fd1205d",
       "transport": {
         "type": "stdio"

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/pdf-merge-split-stamp-extract-pages",
   "description": "Merge, split, extract, rotate, reorder and stamp PDF pages from your AI chat: mark an invoice.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.0/pdf.mcpb",
-      "version": "0.6.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.1/pdf.mcpb",
+      "version": "0.6.1",
       "fileSha256": "ec0a1eea17dc8a1b72868e06dfc43823fc65ca2d4cbb745426e3bd73c8b792ee",
       "transport": {
         "type": "stdio"

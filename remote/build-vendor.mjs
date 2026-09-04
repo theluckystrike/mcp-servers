@@ -125,9 +125,13 @@ function patchExpenseIndex(src) {
     '        writeFileSync(tmp, XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as unknown as Uint8Array);',
     "expense xlsx writer");
   // 3. The export lands in KV as a one-hour download, not on the caller's disk.
+  // Matched through the registration rather than the wording: the stdio description is
+  // owned by the server and gets reworded, and an exact-string patch turns that into a
+  // hosted build failure. The hosted rewording is what actually differs (KV download,
+  // no filesystem), so anchor on the tool name and replace whatever description is there.
   src = must(src,
-    /description: "Call this tool to write the expenses in a date range[^\n]*",/,
-    'description: "Export the expenses in a date range as csv, xlsx or json and return a download link that is valid for one hour. Nothing partial is ever written: if a limit is hit no file is produced at all.",',
+    /(registerTool\("expense_export",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"[^"]*"/,
+    '$1"Export the expenses in a date range as csv, xlsx or json and return a download link that is valid for one hour. Nothing partial is ever written: if a limit is hit no file is produced at all."',
     "expense export description");
   src = must(src,
     /path: text\(4096\)\.optional\(\)\.describe\("(?:Where to write it|Absolute path to write to)[^"]*"\),/,
