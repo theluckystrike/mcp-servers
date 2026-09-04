@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-04T05:12:19Z",
+  "updated_at": "2026-09-04T06:09:06Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -140,6 +140,31 @@
       "status": "published",
       "url": "https://github.com/theluckystrike/mcp-servers/blob/main/docs/BACKLINKS_RESULT.md",
       "note": "Sitewide footer links to /s/invoice, /s/time-tracker and /s/expense-tracker live on 2 owned Astro sites: ukmoneycalc.com (commit 1cab454, 15 pages, GH Actions -> wrangler pages) and statewage.com (commit 362f2d8, 63 pages, wrangler deploy version 503012c3, NOT git-connected despite its workflow comment). Live pages verified byte-identical to the locally built artifacts, diff vs baseline is the added block only, 0 assets deleted."
+    },
+    "awesome-mcpb": {
+      "status": "submitted",
+      "url": "https://github.com/mgoldsborough/awesome-mcpb/pull/11",
+      "note": "PR adds 19 entries (18 servers + office-suite bundle) alphabetized into existing Productivity and Utilities sections, plain [Name](url) - description format, no emoji tags; links to github.com/theluckystrike/mcp-servers/tree/main/servers/<name> and mentions mcp.zovo.one; no changes outside readme.md"
+    },
+    "lobehub-mcp-marketplace": {
+      "status": "not applicable",
+      "url": "https://github.com/lobehub/lobe-chat-agents",
+      "note": "this repo indexes LobeChat *agent* system prompts (agent-template.json), not MCP servers; no lobehub MCP-server marketplace repo found via gh search repos \"lobehub mcp\" (empty result). Skipped, no matching surface"
+    },
+    "tensorblock-awesome-mcp-servers": {
+      "status": "researched: plain format, not yet submitted",
+      "url": "https://github.com/TensorBlock/awesome-mcp-servers",
+      "note": "838 stars; docs/*.md category files, entries are plain \"- [Name](url): description\" bullets with no per-entry emoji (only decorative category-heading emoji); PR or issue-form submission (docs/CONTRIBUTING or Add MCP server issue form). Format cleared as free of the awesome-mcp-servers Glama/emoji-check blockers but round capped at 40 min before the PR was opened"
+    },
+    "yuzehao2023-awesome-mcp-servers": {
+      "status": "researched: plain format, not yet submitted",
+      "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers",
+      "note": "1061 stars; README category sections (## Category: Marketing, Finance, E-Commerce, Development Tools, etc.) use \"- Name \u2014 url (description)\" plain bullets, no per-entry emoji required. Cleared as free of the punkpeye-style emoji/Glama gate but round capped at 40 min before the PR was opened"
+    },
+    "mcpstar-awesome-dxt-mcp": {
+      "status": "skipped: no populated list to append to",
+      "url": "https://github.com/MCPStar/awesome-dxt-mcp",
+      "note": "20 stars; Community Extensions section is a placeholder (\"Looking for contributions!\"), no existing per-entry format to match, only category descriptions with example bullet-point ideas, not real entries"
     }
   },
   "per_server": {
