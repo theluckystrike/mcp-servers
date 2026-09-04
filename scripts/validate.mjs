@@ -53,6 +53,25 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  quotes: async (c, tmp, tier, ok) => {
+    const items = [{ description: "Design hours", quantity: 12, unit_price_minor: 9000, tax_rate: 23 }, { description: "Setup", quantity: 1, unit_price_minor: 30000, tax_rate: 23 }];
+    const cr = await c.tool("quote_create", { client: "Acme Ltd", currency: "EUR", tax_rate: 23, validity_days: 14, items });
+    const qid = (cr.text.match(/Q-\d{4}-\d{4}/) || [])[0];
+    ok(`${tier}: quote_create allocates an id and totals 1697.40`, !cr.isError && !!qid && /1\s?697\.40|1697\.40/.test(cr.text), `${qid} ${cr.text.replace(/\s+/g, " ").slice(0, 90)}`);
+    const ls = await c.tool("quote_list", {});
+    ok(`${tier}: quote_list shows it open`, !ls.isError && ls.text.includes(qid) && /open/.test(ls.text), ls.text.replace(/\s+/g, " ").slice(0, 100));
+    const txt = await c.tool("quote_send_text", { id: qid });
+    ok(`${tier}: quote_send_text is free on both tiers`, !txt.isError && /Acme Ltd/.test(txt.text) && !/mcp\.zovo\.one/.test(txt.text), txt.text.replace(/\s+/g, " ").slice(0, 90));
+    let last;
+    for (let i = 2; i <= 6; i++) last = await c.tool("quote_create", { client: `Client ${i}`, currency: "EUR", tax_rate: 23, items: [{ description: `Work ${i}`, quantity: 1, unit_price_minor: 10000 }] });
+    ok(`${tier}: 6th open quote ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !last.isError && /Q-\d{4}-0006/.test(last.text) : /mcp\.zovo\.one\/buy\/quotes/.test(last.text), last.text.replace(/\s+/g, " ").slice(0, 100));
+    const acc = await c.tool("quote_accept", { id: qid });
+    ok(`${tier}: quote_accept invoices the agreed total`, !acc.isError && /INV-\d{4}-\d{4}|invoice_create_args/.test(acc.text) && /1\s?697\.40|1697\.40/.test(acc.text), acc.text.replace(/\s+/g, " ").slice(0, 120));
+    const twice = await c.tool("quote_accept", { id: qid });
+    ok(`${tier}: accepting the same quote twice is refused`, twice.isError && /already accepted/i.test(twice.text), twice.text.replace(/\s+/g, " ").slice(0, 110));
+    const rep = await c.tool("quote_report", {});
+    ok(`${tier}: quote_report ${tier === "pro" ? "gives the win rate" : "gated"}`, tier === "pro" ? !rep.isError && /win/i.test(rep.text) : /mcp\.zovo\.one\/buy\/quotes/.test(rep.text), rep.text.replace(/\s+/g, " ").slice(0, 100));
+  },
   "bank-statement": async (c, tmp, tier, ok) => {
     const csv = "Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance\n" + [["2026-08-02","Spotify","-9.99"],["2026-08-05","Adobe","-61.50"],["2026-08-09","Coffee Bar","-3.50"],["2026-08-12","Nova Labs","4500.00"],["2026-09-02","Spotify","-9.99"],["2026-09-04","Adobe","-61.50"]].map(([d, desc, a]) => `CARD_PAYMENT,Current,${d} 10:00:00,${d} 10:00:01,${desc},${a},0.00,EUR,COMPLETED,1000.00`).join("\n") + "\n";
     const f = join(tmp, "revolut.csv"); writeFileSync(f, csv);
@@ -338,7 +357,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);

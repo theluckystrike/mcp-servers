@@ -153,6 +153,13 @@ async function run(name) {
       [join(ROOT, "scripts", "sign-license.mjs"), "bank-statement"],
     ).toString().trim();
   }
+  if (name === "quotes") {
+    const { execFileSync } = await import("node:child_process");
+    env.MCP_LICENSE_KEY = execFileSync(
+      process.execPath,
+      [join(ROOT, "scripts", "sign-license.mjs"), "quotes"],
+    ).toString().trim();
+  }
   const c = client(entry, env, { showStderr });
   await c.init();
 
@@ -560,6 +567,46 @@ async function run(name) {
     const recurringArgs = { months: 12 };
     toolLine("recurring_detect", recurringArgs);
     resultLine(await c.call("recurring_detect", recurringArgs));
+  }
+
+  if (name === "quotes") {
+    // The quotes server reads the shared business profile and the invoice server's own
+    // client list rather than exposing business_set/client_add itself, so the fixture
+    // writes those two files directly into this run's sandboxed invoice data directory,
+    // the same place the invoice server itself would have written them.
+    const { writeFileSync, mkdirSync } = await import("node:fs");
+    const invoiceDir = join(c.sandbox, "data", "mcp-servers", "invoice");
+    mkdirSync(invoiceDir, { recursive: true });
+    writeFileSync(join(invoiceDir, "business.json"), JSON.stringify({
+      name: "Lucky Strike Software", default_currency: "EUR", default_tax_rate: 23,
+      payment_terms_days: 14, invoice_prefix: "INV",
+    }, null, 2));
+    writeFileSync(join(invoiceDir, "clients.json"), JSON.stringify([{
+      id: "acme-gmbh", name: "Acme GmbH", address: "Hauptstr. 5\nBerlin", email: "ap@acme.example", created: today,
+    }], null, 2));
+    say("$ Quote a client with VAT, send it as email text, and turn the yes into an invoice (Pro).\n");
+    await sleep(STEP_DELAY_MS);
+    const quoteArgs = {
+      client: "Acme GmbH", currency: "EUR", validity_days: 14,
+      items: [
+        { description: "API work", quantity: 12, unit_price_minor: 9000, tax_rate: 23 },
+        { description: "Setup fee", quantity: 1, unit_price_minor: 30000, tax_rate: 23 },
+      ],
+    };
+    toolLine("quote_create", quoteArgs);
+    const created = await c.call("quote_create", quoteArgs);
+    resultLine(created);
+    const idMatch = created.match(/Q-\d{4}-\d{4}/);
+    const quoteId = idMatch ? idMatch[0] : "Q-2026-0001";
+    await sleep(STEP_DELAY_MS);
+    toolLine("quote_send_text", { id: quoteId });
+    resultLine(await c.call("quote_send_text", { id: quoteId }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("quote_accept", { id: quoteId });
+    resultLine(await c.call("quote_accept", { id: quoteId }));
+    await sleep(STEP_DELAY_MS);
+    toolLine("quote_report", {});
+    resultLine(await c.call("quote_report", {}));
   }
 
   await sleep(STEP_DELAY_MS);

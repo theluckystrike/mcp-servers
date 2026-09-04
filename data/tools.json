@@ -650,5 +650,43 @@
       "name": "accounts_list",
       "description": "List the imported accounts with their bank, currency, transaction count and date range."
     }
+  ],
+  "quotes": [
+    {
+      "name": "quote_create",
+      "description": "Quote a client: line items with quantity and unit price in minor units, VAT per line or the business default, an optional discount and a validity window. Returns the quote id and the totals."
+    },
+    {
+      "name": "quote_list",
+      "description": "Every quote with its client, total, validity and state (open, expired, accepted or declined). Filter by state, by client or by quote date range."
+    },
+    {
+      "name": "quote_get",
+      "description": "The full stored record for one quote: every line with its unit price and VAT, the totals, the validity date, the notes and, when it was accepted, the invoice it became."
+    },
+    {
+      "name": "quote_update",
+      "description": "Revise a quote that is still open: line items, currency, discount, VAT default, validity or notes. Totals are recomputed. An accepted or declined quote is never edited."
+    },
+    {
+      "name": "quote_send_text",
+      "description": "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier."
+    },
+    {
+      "name": "quote_accept",
+      "description": "Mark a quote accepted and turn it into an invoice: created directly in the invoice server when its store is present, otherwise returned as invoice_create-ready line items. The numbers are copied, never recomputed."
+    },
+    {
+      "name": "quote_decline",
+      "description": "Mark a quote as lost, with an optional reason, so it stops counting against the open quotes and shows up in the win rate. An accepted quote is never turned back."
+    },
+    {
+      "name": "quote_pdf",
+      "description": "Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro."
+    },
+    {
+      "name": "quote_report",
+      "description": "Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Pro."
+    }
   ]
 }
