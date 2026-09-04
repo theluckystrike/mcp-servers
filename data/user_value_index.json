@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T17:22:11.364Z",
+  "generated_at": "2026-09-04T01:53:11.473Z",
   "rounds": [
     {
       "round": 1,
@@ -560,9 +560,9 @@
     },
     {
       "id": "D-7",
-      "first_seen": "USER_VALUE.md",
-      "severity": "low",
-      "title": "D-7 (low, time-tracker) — no project name reconciliation.**",
+      "first_seen": "KANBAN_AUDIT.md",
+      "severity": "",
+      "title": "D-7 rule this server also uses).",
       "status": "fixed",
       "scraped_status": "open",
       "note": "time-tracker project reconciliation. Verified in round 2: 'Acme' resolved to 'Acme website' and announced.",
@@ -597,6 +597,48 @@
       "first_seen": "USER_VALUE_R2.md",
       "severity": "",
       "title": "D-11). |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-B1",
+      "first_seen": "BANK_AUDIT.md",
+      "severity": "",
+      "title": "D-B1) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-B2",
+      "first_seen": "BANK_AUDIT.md",
+      "severity": "",
+      "title": "D-B2) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-B3",
+      "first_seen": "BANK_AUDIT.md",
+      "severity": "",
+      "title": "D-B3) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-B4",
+      "first_seen": "BANK_AUDIT.md",
+      "severity": "",
+      "title": "D-B4) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-B5",
+      "first_seen": "BANK_AUDIT.md",
+      "severity": "",
+      "title": "D-B5) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-B6",
+      "first_seen": "BANK_AUDIT.md",
+      "severity": "",
+      "title": "D-B6) |",
       "status": "fixed"
     },
     {
@@ -680,7 +722,7 @@
     },
     {
       "id": "D-E4",
-      "first_seen": "CALENDAR_AUDIT.md",
+      "first_seen": "BANK_AUDIT.md",
       "severity": "",
       "title": "D-E4).",
       "status": "harness",
@@ -694,6 +736,125 @@
       "severity": "low",
       "title": "D-E5 (low, not fixed) — `expense_summary` cannot be asked for \"this month\".**",
       "status": "fixed"
+    },
+    {
+      "id": "D-I1",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I1** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I2",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I2 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I3",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I3 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I4",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I4 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I5",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I5 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I6",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I6 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I7",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I7 (from part 2, critical for the product): the free tier capped the wrong number.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I8",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I8: `image_strip_metadata` was size-capped, which made the privacy tool refuse every camera",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I9",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I9 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I10",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I10: `image_dominant_colors` reported `share_percent: 0` five times on a photograph.** With",
+      "status": "fixed"
+    },
+    {
+      "id": "D-I11",
+      "first_seen": "IMAGE_AUDIT.md",
+      "severity": "",
+      "title": "D-I11 (from part 2): `image_compress` had no size target, so the caller brute-forced one.**",
+      "status": "fixed"
+    },
+    {
+      "id": "D-K2",
+      "first_seen": "KANBAN_AUDIT.md",
+      "severity": "",
+      "title": "D-K2 below |",
+      "status": "open"
+    },
+    {
+      "id": "D-K4",
+      "first_seen": "KANBAN_AUDIT.md",
+      "severity": "",
+      "title": "D-K4. `columns_set` collapsed a board to one column and every task on it silently read as done.**",
+      "status": "open"
+    },
+    {
+      "id": "D-K6",
+      "first_seen": "KANBAN_AUDIT.md",
+      "severity": "",
+      "title": "D-K6) |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-K7",
+      "first_seen": "KANBAN_AUDIT.md",
+      "severity": "",
+      "title": "D-K7) |",
+      "status": "open"
+    },
+    {
+      "id": "D-K9",
+      "first_seen": "KANBAN_AUDIT.md",
+      "severity": "",
+      "title": "D-K9. One `task_list` on a 5,000-task board returned 430 KB.**",
+      "status": "open"
+    },
+    {
+      "id": "D-K10",
+      "first_seen": "KANBAN_AUDIT.md",
+      "severity": "",
+      "title": "D-K10 below |",
+      "status": "open"
     },
     {
       "id": "D-P1",
@@ -1210,15 +1371,15 @@
     }
   ],
   "counts": {
-    "defects": 86,
-    "fixed": 74,
-    "open": 5,
+    "defects": 109,
+    "fixed": 92,
+    "open": 10,
     "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 74,
+      "fixed": 92,
       "client": 3,
-      "open": 5,
+      "open": 10,
       "superseded": 1
     },
     "unknown_overrides": []
