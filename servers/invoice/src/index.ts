@@ -186,7 +186,7 @@ server.registerTool("business_set", {
     let note = "";
     if (a.invoice_prefix && a.invoice_prefix !== "INV" && !gate.isPro()) {
       prefix = "INV";
-      note = `\n\nNote: custom invoice prefix is a Pro feature, kept "INV". ${gate.upgradeText("custom invoice prefix")}`;
+      note = `\n\nNote: custom invoice prefix is a Pro feature, kept "INV". ${gate.upgradeText("custom invoice prefix", "business_set")}`;
     }
     const biz: Business = {
       name: a.name,
@@ -629,7 +629,7 @@ server.registerTool("invoice_pdf", {
     if (businessMissing()) extra += `\n\n${NO_BUSINESS_NOTE}`;
     if (!pro) {
       note = `\n\nFree tier: the PDF carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +
-        gate.upgradeText("unbranded PDFs with your logo");
+        gate.upgradeText("unbranded PDFs with your logo", "invoice_pdf");
     } else if (biz.logo_path && !existsSync(biz.logo_path)) {
       note = `\n\nNote: logo_path ${biz.logo_path} does not exist, rendered without it.`;
     }
