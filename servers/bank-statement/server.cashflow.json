@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/cashflow",
+  "description": "Bank CSV cashflow: categorise, summarise per currency, reconcile against expenses.",
+  "version": "0.7.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/bank-statement"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/bank-statement",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/bank-statement.mcpb",
+      "version": "0.7.0",
+      "fileSha256": "83bb500ebb513c3234de888ba5bb3372badbb6cdddd92e4c5c90c50dc52fd4f0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

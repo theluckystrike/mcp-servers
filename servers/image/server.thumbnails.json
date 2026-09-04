@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/thumbnails",
+  "description": "Generate image thumbnails, resize, convert and compress photos from your AI chat. Local files.",
+  "version": "0.7.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/image"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/image",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/image.mcpb",
+      "version": "0.7.0",
+      "fileSha256": "5b2e83431c9c17c1b236e36fbcdbd738a92ba66c19771ae0e4a1ab589b9f3d58",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

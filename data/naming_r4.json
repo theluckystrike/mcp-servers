@@ -1,0 +1,116 @@
+{
+  "generated_at": "2026-09-04",
+  "cap_minutes": 35,
+  "method": {
+    "registry_probe": "Single bounded GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, 20s timeout, first page only, sequential, no background loops. count = servers.length on page 1. our_rank = 1-based index of the first row whose name matches /theluckystrike/i (null if none).",
+    "token_set": "Union of the tracked query_set arrays in data/organic.json servers[] (66 distinct tokens, includes 2 multi-word queries known to always return 0) plus the 38 new tokens named in this round's brief, de-duplicated: 97 distinct tokens total.",
+    "selection_rule": "For each token with count < 20 on page 1 and no theluckystrike match, checked whether one server's actual tools honestly cover it. Excluded the two known-broken multi-word queries (\"time tracker\", \"price tracker\", always 0 results, not a viable single-word registry name). Excluded sepa (currency server does FX conversion via ECB rates, not SEPA bank transfers -- would be a misleading name). Enforced max one new variant per server this round.",
+    "publish": "server.<token>.json per server, name io.github.theluckystrike/<token>, version 0.7.0, stdio-only mcpb package with the SAME GitHub release asset URL and fileSha256 as that server's server.mcpb.json at v0.7.0 (no remotes[], a reused remote URL is rejected by the registry). Login via `mcp-publisher login github -token \"$(gh auth token)\"` (yes y | for prompts), then per server: copy server.<token>.json over server.json, `yes y | mcp-publisher publish` from inside servers/<name>/, restore the original server.json.",
+    "findable_share_formula": "Same as data/organic.json / INTEL_R6 / INTEL_R7: p = min(1, 10/our_rank) if we appear on page 1 for that token, else 0; mean over the full 97-token tracked-plus-new set. Applied identically before and after."
+  },
+  "new_variants_published": [
+    {
+      "server": "spreadsheet",
+      "token": "pivot",
+      "registry_name": "io.github.theluckystrike/pivot",
+      "description": "Group, aggregate and pivot spreadsheet or CSV data from your AI chat: filters, sums, sorts.",
+      "honest_fit": "sheet_query tool description: 'Filters, groups, aggregates and sorts in one call'",
+      "count_before": 0, "rank_before": null,
+      "count_after": 1, "rank_after": 1
+    },
+    {
+      "server": "image",
+      "token": "thumbnails",
+      "registry_name": "io.github.theluckystrike/thumbnails",
+      "description": "Generate image thumbnails, resize, convert and compress photos from your AI chat. Local files.",
+      "honest_fit": "server description explicitly lists 'thumbnail'",
+      "count_before": 0, "rank_before": null,
+      "count_after": 1, "rank_after": 1
+    },
+    {
+      "server": "clauses",
+      "token": "terms",
+      "registry_name": "io.github.theluckystrike/terms",
+      "description": "Reusable contract terms and clauses assembled into a Word docx with variables filled.",
+      "honest_fit": "server is a contract/proposal clause library",
+      "count_before": 1, "rank_before": null,
+      "count_after": 2, "rank_after": 2
+    },
+    {
+      "server": "bank-statement",
+      "token": "cashflow",
+      "registry_name": "io.github.theluckystrike/cashflow",
+      "description": "Bank CSV cashflow: categorise, summarise per currency, reconcile against expenses.",
+      "honest_fit": "server imports/categorises/summarises/reconciles a bank CSV, i.e. cashflow view",
+      "count_before": 3, "rank_before": null,
+      "count_after": 4, "rank_after": 3
+    },
+    {
+      "server": "docx",
+      "token": "sow",
+      "registry_name": "io.github.theluckystrike/sow",
+      "description": "Generate a statement of work (SOW) as a real Word docx from your AI chat: proposals, contracts.",
+      "honest_fit": "server description explicitly lists 'statements of work'",
+      "count_before": 4, "rank_before": null,
+      "count_after": 5, "rank_after": 5
+    },
+    {
+      "server": "timezone",
+      "token": "scheduling",
+      "registry_name": "io.github.theluckystrike/scheduling",
+      "description": "Meeting scheduling across time zones: slot finding, DST checks, .ics invites.",
+      "honest_fit": "server does meeting-slot finding across countries plus DST checks and .ics invites",
+      "count_before": 5, "rank_before": null,
+      "count_after": 6, "rank_after": 5
+    },
+    {
+      "server": "recurring",
+      "token": "subscriptions",
+      "registry_name": "io.github.theluckystrike/subscriptions",
+      "description": "Recurring subscriptions billing: schedule once, auto-generate due invoice PDFs.",
+      "honest_fit": "server IS recurring/subscription invoice billing (already the 'retainer' variant, this is a second variant this round for a different token)",
+      "count_before": 5, "rank_before": null,
+      "count_after": 6, "rank_after": 6
+    },
+    {
+      "server": "quotes",
+      "token": "freelance",
+      "registry_name": "io.github.theluckystrike/freelance",
+      "description": "Freelance quotes and estimates: VAT line items, validity date, A4 PDF, win rate.",
+      "honest_fit": "server description explicitly says 'for freelancers'",
+      "count_before": 6, "rank_before": null,
+      "count_after": 7, "rank_after": 7
+    },
+    {
+      "server": "resume",
+      "token": "career",
+      "registry_name": "io.github.theluckystrike/career",
+      "description": "Tailor a career resume and cover letter as real Word docx files from stored facts.",
+      "honest_fit": "server tailors a resume and cover letter for a job application",
+      "count_before": 10, "rank_before": null,
+      "count_after": 11, "rank_after": 11
+    },
+    {
+      "server": "kanban",
+      "token": "standup",
+      "registry_name": "io.github.theluckystrike/standup",
+      "description": "A task board for daily standups: columns, due dates, priorities, weekly review.",
+      "honest_fit": "server is a local task board with columns/due dates/priorities/weekly review, a natural standup board",
+      "count_before": 11, "rank_before": null,
+      "count_after": 12, "rank_after": 12
+    }
+  ],
+  "candidates_seen_but_not_used": [
+    {"token": "sepa", "count": 14, "reason": "currency server does FX conversion via ECB, not SEPA bank transfers; would be a misleading name"},
+    {"token": "time tracker", "count": 0, "reason": "multi-word query, always 0 results registry-wide, not a viable single-word registry name; already tracked"},
+    {"token": "price tracker", "count": 0, "reason": "same as above"},
+    {"token": "exif", "count": 4, "reason": "image server already used its one new name this round (thumbnails)"}
+  ],
+  "findable_share": {
+    "n_tokens": 97,
+    "matched_before": 60,
+    "matched_after": 70,
+    "share_before_pct": 39.73,
+    "share_after_pct": 49.77
+  }
+}

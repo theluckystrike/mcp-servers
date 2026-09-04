@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/sow",
+  "description": "Generate a statement of work (SOW) as a real Word docx from your AI chat: proposals, contracts.",
+  "version": "0.7.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/docx"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/docx",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/docx.mcpb",
+      "version": "0.7.0",
+      "fileSha256": "34321deaedeb92368e76302ea82ef9ccb6a72d33ca35d0c98ee7421c2caaad05",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
