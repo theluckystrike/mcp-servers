@@ -67,7 +67,7 @@ function save(db: DB): void {
 
 const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
 const err = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true });
-const gated = (feature: string) => ok(gate.upgradeText(feature));
+const gated = (feature: string, toolName?: string) => ok(gate.upgradeText(feature, toolName));
 
 /**
  * D-K1. Bounded free text at the schema, the way expense-tracker does it, so an oversized
@@ -286,13 +286,13 @@ server.registerTool("task_add", {
     if (!board) {
       if (!gate.isPro() && Object.keys(db.boards).length >= FREE_PROJECTS) {
         return ok(`The free tier keeps ${FREE_PROJECTS} project boards (${knownProjects(db).sort().join(", ")}). ` +
-          `"${r.project}" would be the ${Object.keys(db.boards).length + 1}th.\n` + gate.upgradeText("unlimited projects"));
+          `"${r.project}" would be the ${Object.keys(db.boards).length + 1}th.\n` + gate.upgradeText("unlimited projects", "task_add"));
       }
       board = { name: r.project, slug: slugFor(r.project, Object.values(db.boards).map(b => b.slug)), columns: [...DEFAULT_COLUMNS], counter: 0 };
       db.boards[key] = board;
     }
     if (!gate.isPro() && openTaskCount(db) >= FREE_OPEN_TASKS) {
-      return ok(`The free tier holds ${FREE_OPEN_TASKS} open tasks and you have ${openTaskCount(db)}. Finish or delete some, or go Pro.\n` + gate.upgradeText("unlimited tasks"));
+      return ok(`The free tier holds ${FREE_OPEN_TASKS} open tasks and you have ${openTaskCount(db)}. Finish or delete some, or go Pro.\n` + gate.upgradeText("unlimited tasks", "task_add"));
     }
     const column = a.column ? normColumn(a.column) : board.columns[0];
     if (!board.columns.includes(column)) return err(`"${column}" is not a column on ${board.name}. Columns: ${board.columns.join(", ")}.`);
@@ -624,7 +624,7 @@ server.registerTool("weekly_review", {
   const db = load();
   const thisWeek = weekKey(localToday());
   const key = week ? weekKey(weekRange(week).from) : thisWeek;
-  if (key !== thisWeek && !gate.isPro()) return gated("weekly review history");
+  if (key !== thisWeek && !gate.isPro()) return gated("weekly review history", "weekly_review");
   const { from, to } = weekRange(key);
   const doneThisWeek = db.tasks.filter(t => t.done_at && dayKey(t.done_at) >= from && dayKey(t.done_at) <= to);
   const plannedThisWeek = db.tasks.filter(t => t.due && t.due >= from && t.due <= to);
@@ -656,7 +656,7 @@ server.registerTool("columns_set", {
       .describe(`The new column names in order, at most ${MAX_COLUMNS}, e.g. ['inbox','next','doing','done']`),
   },
 }, guard(async ({ project, columns }: { project: string; columns: string[] }) => {
-  if (!gate.isPro()) return gated("custom columns");
+  if (!gate.isPro()) return gated("custom columns", "columns_set");
   return withFileLock(LOCK, async () => {
     const db = load();
     const f = resolveFilter(db, project);

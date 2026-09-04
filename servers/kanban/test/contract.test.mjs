@@ -143,6 +143,13 @@ test("cap: the fourth project is refused and nothing is added to the store", asy
   assert.equal(names.length, 3, `the refused add must store no fourth board: ${JSON.stringify(names)}`);
   assert.equal(JSON.stringify(db).includes("first on delta"), false, "the refused task must not be stored either");
   assert.equal(readdirSync(dir).filter((f) => f.includes(".tmp")).length, 0, "no tmp file may survive a refusal");
+
+  // Conversion instrument (docs/CONVERSION_INSTRUMENT.md): the /buy link on a cap message
+  // must name the tool that produced it, not the prose of the feature. Asserted on the
+  // cheapest gate this suite already trips, so it costs no extra server run.
+  const wantSrc = `https://mcp.zovo.one/buy/${PRODUCT}?src=${PRODUCT}.task_add`;
+  assert.ok(fourth.text.includes(wantSrc),
+    `the task_add cap message must carry ${wantSrc}, got: ` + fourth.text.slice(0, 400));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {
