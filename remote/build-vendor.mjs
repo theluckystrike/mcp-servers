@@ -717,10 +717,12 @@ function patchResumeIndex(src) {
   // nothing leaves this machine." Hosted, both halves are wrong: there is no such disk, and
   // the profile is on this server, not on the caller's machine. Saying so is the point -
   // a resume profile is the most personal thing this estate stores.
-  src = must(src, "`Stored under ${dataDir()}; nothing leaves this machine.${note}${changes}",
+  // Re-anchored by the profile-first sweep: profile_set now appends ${sourced}, naming any
+  // field it took from the shared business profile, between the stored line and ${note}.
+  src = must(src, "`Stored under ${dataDir()}; nothing leaves this machine.${sourced}${note}${changes}",
     "`Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, " +
     "and kept for 30 days, refreshed for another 30 on every write. Run the resume server locally over stdio " +
-    "(npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${note}${changes}",
+    "(npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${sourced}${note}${changes}",
     "resume profile_set storage line");
 
   src = must(src, "gate.registerTools(server);",

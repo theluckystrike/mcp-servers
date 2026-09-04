@@ -241,3 +241,42 @@ test("free tier: modern only, 3 letters a month, 2000-character postings; Pro li
 
   assert.deepEqual(pro.bad, [], `non-JSON on stdout: ${pro.bad.join(" | ")}`);
 });
+
+// Profile-first sweep (docs/PROFILE_FIRST_RESULT.md), the D-R64 species: your own name and
+// phone are business identity held once behind the token, and profile_set made name required.
+test("profile_set falls back to the shared business profile for name and phone", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  const dir = join(c.home, "data", "mcp-servers", "profile");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "business.json"), JSON.stringify({
+    name: "Ada Rowe", phone: "+48 500 100 200", email: "ada@example.com",
+  }));
+  await init(c);
+
+  const r = await c.call("profile_set", { experience: PROFILE.experience, education: PROFILE.education });
+  assert.equal(r.isError, false, r.text);
+  assert.match(r.text, /shared business profile/);
+  const g = await c.call("profile_get", {});
+  assert.equal(g.isError, false, g.text);
+  assert.match(g.text, /Ada Rowe/);
+  assert.match(g.text, /\+48 500 100 200/);
+
+  // An explicit name wins over the profile and is not annotated as profile-sourced.
+  const r2 = await c.call("profile_set", { name: "Kenji Ito", phone: "+81 3 0000 0000", merge: true, experience: [], education: [] });
+  assert.equal(r2.isError, false, r2.text);
+  assert.doesNotMatch(r2.text, /Taken from the shared business profile: name/);
+  const g2 = await c.call("profile_get", {});
+  assert.match(g2.text, /Kenji Ito/);
+});
+
+test("profile_set with no name anywhere names business_set rather than asking", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  const r = await c.call("profile_set", { experience: PROFILE.experience, education: PROFILE.education });
+  assert.equal(r.isError, true, r.text);
+  assert.match(r.text, /business_set/);
+  assert.match(r.text, /Nothing was stored/);
+});

@@ -171,9 +171,9 @@ server.registerTool("profile_set", {
   title: "Store your CV facts",
   description: "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. Returns a count of what was stored.",
   inputSchema: {
-    name: z.string().min(1),
+    name: z.string().min(1).optional().describe("Your own name. Leave it out and the shared business profile's name is used, so you are never asked for a name the suite already holds"),
     email: z.string().optional().describe("Your own email address. Leave it out and the shared business profile's email is used; with neither, letters and letterheads show \"[add: email]\" and say so. Never invent one"),
-    phone: z.string().optional(),
+    phone: z.string().optional().describe("Your own phone number. Defaults to the shared business profile's phone"),
     location: z.string().optional(),
     links: z.array(z.string()).optional().describe("Portfolio, LinkedIn, GitHub"),
     summary: z.string().optional().describe("Two or three lines. Used verbatim as the fit paragraph of a cover letter."),
@@ -207,10 +207,22 @@ server.registerTool("profile_set", {
       );
     }
     const base = a.merge && existing ? existing : undefined;
+    // Profile-first sweep: your own name and phone are business identity, held once behind
+    // the token. name was required here, so a first-ever profile_set could stop and ask for
+    // a name business_set already carries. An explicit argument still wins.
+    const shared = readSharedProfile();
+    const name = (a.name ?? base?.name ?? shared.name ?? "").trim();
+    if (!name) {
+      return fail(
+        `no name: pass name, or set one once in the shared business profile (the invoice server's business_set, field name) and every server in this suite uses it. Nothing was stored.`,
+      );
+    }
+    const fromProfile: string[] = [];
+    if (!a.name && !base?.name && shared.name) fromProfile.push("name");
     const p: Profile = {
-      name: a.name.trim(),
-      email: (a.email ?? base?.email ?? readSharedProfile().email ?? "").trim(),
-      phone: a.phone ?? base?.phone, location: a.location ?? base?.location,
+      name,
+      email: (a.email ?? base?.email ?? shared.email ?? "").trim(),
+      phone: a.phone ?? base?.phone ?? shared.phone, location: a.location ?? base?.location,
       links: a.links ?? base?.links, summary: a.summary ?? base?.summary, skills: a.skills ?? base?.skills,
       // Enforced ordering (Review V5 P1): whatever order the caller entered roles in,
       // the stored array is always newest-first, so trimming and letter-bullet ranking
@@ -221,6 +233,9 @@ server.registerTool("profile_set", {
       languages: a.languages ?? base?.languages,
       accent_color: a.accent_color ?? base?.accent_color,
     };
+    if (!a.phone && !base?.phone && shared.phone) fromProfile.push("phone");
+    if (!a.email && !base?.email && shared.email) fromProfile.push("email");
+    const sourced = fromProfile.length ? `\n\nTaken from the shared business profile: ${fromProfile.join(", ")}.` : "";
     const changes = bulletChanges(existing, p);
     await locked(() => setProfile(a.variant, p));
     const bullets = p.experience.reduce((n, e) => n + e.bullets.length, 0);
@@ -228,7 +243,7 @@ server.registerTool("profile_set", {
       ? `\n\nThe accent colour is stored but the free tier prints the default colour. ${gate.upgradeText("letterhead colours", "profile_set")}` : "";
     return ok(`Profile "${normalizeVariant(a.variant)}" stored: ${p.experience.length} roles, ${bullets} bullets, ` +
       `${p.skills?.length ?? 0} skills, ${p.education.length} education entries. ` +
-      `Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, and kept for 30 days, refreshed for another 30 on every write. Run the resume server locally over stdio (npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${note}${changes}${p.email ? "" : emailNote()}`);
+      `Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, and kept for 30 days, refreshed for another 30 on every write. Run the resume server locally over stdio (npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${sourced}${note}${changes}${p.email ? "" : emailNote()}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
