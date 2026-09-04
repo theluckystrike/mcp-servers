@@ -7,6 +7,8 @@ duplicate names, and the entry that claims to be 200 MB inside a 199 KB file. Bu
 quotes and exports into one file to send to an accountant. Everything runs on your machine: no upload, no
 account, no API key, and no network call of any kind.
 
+![zip demo](../../assets/demo-zip.gif)
+
 ## Install
 
 Claude Desktop, `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or

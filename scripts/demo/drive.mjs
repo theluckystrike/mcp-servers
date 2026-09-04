@@ -6,7 +6,8 @@
 //
 // Usage: node scripts/demo/drive.mjs <server-name>
 import { spawn } from "node:child_process";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, existsSync } from "node:fs";
+import { deflateRawSync } from "node:zlib";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,6 +23,7 @@ function client(entry, env, opts = {}) {
   const sandbox = mkdtempSync(join(tmpdir(), "mcp-demo-"));
   const child = spawn(process.execPath, [entry], {
     stdio: ["pipe", "pipe", "pipe"],
+    ...(opts.cwd ? { cwd: opts.cwd } : {}),
     env: {
       ...process.env,
       XDG_DATA_HOME: join(sandbox, "data"),
@@ -128,6 +130,38 @@ function startEcbFixture() {
   });
 }
 
+// A raw zip writer for the demo: the archive "somebody sent you" has to hold a traversal
+// entry and a bomb entry, and no honest packer will produce either.
+const CRCT = (() => { const t = new Int32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c; } return t; })();
+function crc32(b) { let c = -1; for (let i = 0; i < b.length; i++) c = CRCT[(c ^ b[i]) & 0xff] ^ (c >>> 8); return (c ^ -1) >>> 0; }
+function rawZip(entries) {
+  const locals = [], centrals = []; let off = 0;
+  for (const e of entries) {
+    const name = Buffer.from(e.name, "utf8");
+    const raw = Buffer.isBuffer(e.data) ? e.data : Buffer.from(e.data, "utf8");
+    const body = e.deflate ? deflateRawSync(raw, { level: 9 }) : raw;
+    const method = e.deflate ? 8 : 0, crc = crc32(raw);
+    const lh = Buffer.alloc(30);
+    lh.writeUInt32LE(0x04034b50, 0); lh.writeUInt16LE(20, 4); lh.writeUInt16LE(0x0800, 6);
+    lh.writeUInt16LE(method, 8); lh.writeUInt16LE(0x6000, 10); lh.writeUInt16LE(0x590e, 12);
+    lh.writeUInt32LE(crc, 14); lh.writeUInt32LE(body.length, 18); lh.writeUInt32LE(raw.length, 22);
+    lh.writeUInt16LE(name.length, 26);
+    locals.push(lh, name, body);
+    const ch = Buffer.alloc(46);
+    ch.writeUInt32LE(0x02014b50, 0); ch.writeUInt16LE((3 << 8) | 20, 4); ch.writeUInt16LE(20, 6);
+    ch.writeUInt16LE(0x0800, 8); ch.writeUInt16LE(method, 10); ch.writeUInt16LE(0x6000, 12);
+    ch.writeUInt16LE(0x590e, 14); ch.writeUInt32LE(crc, 16); ch.writeUInt32LE(body.length, 20);
+    ch.writeUInt32LE(raw.length, 24); ch.writeUInt16LE(name.length, 28);
+    ch.writeUInt32LE((0o100644 << 16) >>> 0, 38); ch.writeUInt32LE(off, 42);
+    centrals.push(ch, name); off += 30 + name.length + body.length;
+  }
+  const lo = Buffer.concat(locals), cd = Buffer.concat(centrals);
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0); eocd.writeUInt16LE(entries.length, 8); eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(cd.length, 12); eocd.writeUInt32LE(lo.length, 16);
+  return Buffer.concat([lo, cd, eocd]);
+}
+
 function say(line) { console.log(line); }
 function toolLine(name, args) {
   const a = args && Object.keys(args).length ? " " + JSON.stringify(args) : "";
@@ -167,7 +201,12 @@ async function run(name) {
       [join(ROOT, "scripts", "sign-license.mjs"), "barcode"],
     ).toString().trim();
   }
-  const c = client(entry, env, { showStderr });
+  // zip works on paths the caller gives, so its demo runs from a short working directory:
+  // the recorded terminal is 900 px wide and a per-run path under $TMPDIR is 62 characters
+  // before the file name, which would wrap every line of the transcript.
+  const cwd = name === "zip" ? mkdtempSync("/tmp/zip-demo-") : undefined;
+  const c = client(entry, env, { showStderr, cwd });
+  if (cwd) process.chdir(cwd);
   await c.init();
 
   const today = new Date().toISOString().slice(0, 10);
@@ -639,6 +678,28 @@ async function run(name) {
     resultLine(await c.call("barcode_create", badArgs));
   }
 
+  if (name === "zip") {
+    say("$ Pack a folder, and be told what is wrong with the archive somebody sent you.\n");
+    mkdirSync(join("august", "node_modules"), { recursive: true });
+    writeFileSync(join("august", "expenses.csv"), "client,amount\n" + "Acme Ltd,120.50\n".repeat(4000));
+    writeFileSync(join("august", "notes.txt"), "August close. Send to the accountant.\n");
+    writeFileSync(join("august", "node_modules", "junk.js"), "module.exports = 1;\n");
+    const createArgs = { dir: "august", patterns: ["**/*.csv", "**/*.txt"], exclude: ["**/node_modules/**"], out_path: "august.zip" };
+    toolLine("zip_create", createArgs);
+    resultLine(await c.call("zip_create", createArgs));
+    await sleep(STEP_DELAY_MS);
+    writeFileSync("from-a-stranger.zip", rawZip([
+      { name: "invoice.pdf", data: "%PDF-1.4 not really\n" },
+      { name: "../../.ssh/authorized_keys", data: "ssh-rsa AAAA...\n" },
+      { name: "data.bin", data: Buffer.alloc(200 * 1024 * 1024, 0), deflate: true },
+    ]));
+    toolLine("zip_extract", { path: "from-a-stranger.zip", out_dir: "unpacked" });
+    resultLine(await c.call("zip_extract", { path: "from-a-stranger.zip", out_dir: "unpacked" }));
+    say(`  ${existsSync("unpacked") ? "out_dir was created" : "out_dir was never created; nothing was inflated"}`);
+    await sleep(STEP_DELAY_MS);
+    toolLine("zip_extract_text", { path: "august.zip", entry: "notes.txt" });
+    resultLine(await c.call("zip_extract_text", { path: "august.zip", entry: "notes.txt" }));
+  }
   await sleep(STEP_DELAY_MS);
   c.close();
   if (ecb) ecb.close();
