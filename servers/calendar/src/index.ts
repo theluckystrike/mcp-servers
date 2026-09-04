@@ -60,7 +60,7 @@ const LOCK = lockPath();
 const ok = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
 const err = (t: string) => ({ content: [{ type: "text" as const, text: `Error: ${t}` }], isError: true });
 /** A gated feature is not an error: the user must see the upgrade path. */
-const gated = (feature: string) => ok(gate.upgradeText(feature));
+const gated = (feature: string, toolName?: string) => ok(gate.upgradeText(feature, toolName));
 
 function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }>) {
   return async (a: A) => {
@@ -327,7 +327,7 @@ server.registerTool("ics_import", {
     // events for nothing (D-R58).
     if (!gate.isPro())
       return ok(
-        gate.upgradeText("importing a calendar from a URL") +
+        gate.upgradeText("importing a calendar from a URL", "ics_import") +
           `\n\nFree alternative, same result: open the feed in a browser or download the .ics, then paste the ` +
           `file contents - ics_import {name: "${name}", text: "<the .ics contents>"}. url only adds fetching the ` +
           `feed for you; the events, the parser and the free-tier calendar allowance are identical.`,
@@ -353,7 +353,7 @@ server.registerTool("ics_import", {
     const db = load();
     const replacing = Boolean(db.calendars[slug]);
     if (!replacing && !gate.isPro() && Object.keys(db.calendars).length >= FREE_MAX_CALENDARS) {
-      return gated(`a ${FREE_MAX_CALENDARS + 1}th calendar (the free tier keeps ${FREE_MAX_CALENDARS})`);
+      return gated(`a ${FREE_MAX_CALENDARS + 1}th calendar (the free tier keeps ${FREE_MAX_CALENDARS})`, "ics_import");
     }
     const file = writeIcsText(slug, raw);
     db.calendars[slug] = {
@@ -424,7 +424,7 @@ server.registerTool("events_list", {
   const zone = zoneArg(a.zone, notes);
   const w = windowOf(a.from, a.to, zone);
   const g = windowGate(w);
-  if (g) return gated(g);
+  if (g) return gated(g, "events_list");
   const db = load();
   const recs = pickCalendars(db, a.calendar);
   if (!recs.length) return ok("No calendars imported yet. Run ics_import first.");
@@ -461,7 +461,7 @@ server.registerTool("events_search", {
   const to = a.to?.trim() || addDaysIso(today, span);
   const w = windowOf(from, to, zone);
   const g = windowGate(w);
-  if (g) return gated(g);
+  if (g) return gated(g, "events_search");
   const db = load();
   const recs = pickCalendars(db);
   if (!recs.length) return ok("No calendars imported yet. Run ics_import first.");
@@ -500,7 +500,7 @@ server.registerTool("free_busy", {
   const zone = zoneArg(a.zone, notes);
   const w = windowOf(a.from, a.to, zone);
   const g = windowGate(w);
-  if (g) return gated(g);
+  if (g) return gated(g, "free_busy");
   const startMin = hhmmToMinutes(a.work_start ?? "09:00", "work_start");
   const endMin = hhmmToMinutes(a.work_end ?? "17:00", "work_end");
   if (endMin <= startMin) throw new Error(`work_end (${a.work_end ?? "17:00"}) must be after work_start (${a.work_start ?? "09:00"}).`);
@@ -759,7 +759,7 @@ server.registerTool("event_export", {
   } else if (a.from && a.to) {
     const w = windowOf(a.from, a.to, zone);
     const g = windowGate(w);
-    if (g) return gated(g);
+    if (g) return gated(g, "event_export");
     const recs = pickCalendars(db, a.calendar);
     if (!recs.length) return ok("No calendars imported yet. Run ics_import first.");
     const { rows, warnings } = rowsFor(loadEvents(recs), w, MAX_IDS);
@@ -771,7 +771,7 @@ server.registerTool("event_export", {
 
   if (!chosen.length) return ok(withNotes("Nothing matched, so no file was written.", notes));
   if (!gate.isPro() && chosen.length > FREE_MAX_EXPORT_EVENTS) {
-    return gated(`exporting ${chosen.length} events at once (the free tier exports up to ${FREE_MAX_EXPORT_EVENTS})`);
+    return gated(`exporting ${chosen.length} events at once (the free tier exports up to ${FREE_MAX_EXPORT_EVENTS})`, "event_export");
   }
 
   const exportedAt = new Date();

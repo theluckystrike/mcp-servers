@@ -149,6 +149,13 @@ test("cap: the third calendar is refused and nothing is added to the store", asy
   assert.deepEqual(Object.keys(db.calendars ?? {}).sort(), ["one", "two"],
     "the refused import must add nothing: no third calendar, no partial record");
   assert.equal(readdirSync(dir).filter((f) => f.includes(".tmp")).length, 0, "no tmp file may survive a refusal");
+
+  // Conversion instrument (docs/CONVERSION_INSTRUMENT.md): the /buy link on a cap message
+  // must name the tool that produced it, not the prose of the feature. Asserted on the
+  // cheapest gate this suite already trips, so it costs no extra server run.
+  const wantSrc = `https://mcp.zovo.one/buy/${PRODUCT}?src=${PRODUCT}.ics_import`;
+  assert.ok(third.text.includes(wantSrc),
+    `the ics_import cap message must carry ${wantSrc}, got: ` + third.text.slice(0, 400));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {
