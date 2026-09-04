@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger",
   "description": "Import a bank CSV, categorise it, summarise it per currency and reconcile it against your expenses.",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.1/bank-statement.mcpb",
-      "version": "0.6.1",
-      "fileSha256": "7c9f633cd32769bb3a01eda162f85f77804580011a3a16cc55faf15ebb90a105",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/bank-statement.mcpb",
+      "version": "0.7.0",
+      "fileSha256": "83bb500ebb513c3234de888ba5bb3372badbb6cdddd92e4c5c90c50dc52fd4f0",
       "transport": {
         "type": "stdio"
       },

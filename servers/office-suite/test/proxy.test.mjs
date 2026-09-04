@@ -8,7 +8,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -82,7 +82,7 @@ function suite({ loudChild = "time-tracker", rejectLicenseChild = null } = {}) {
   const root = mkdtempSync(join(tmpdir(), "mcp-office-proxy-"));
   const suiteDist = join(root, "servers", "office-suite", "dist");
   mkdirSync(suiteDist, { recursive: true });
-  copyFileSync(ENTRY, join(suiteDist, "index.js"));
+  cpSync(dirname(ENTRY), suiteDist, { recursive: true });
   // The copied suite must still resolve @modelcontextprotocol/sdk.
   writeFileSync(join(root, "package.json"), JSON.stringify({ name: "proxy-fixture", type: "module" }));
   mkdirSync(join(root, "node_modules"), { recursive: true });

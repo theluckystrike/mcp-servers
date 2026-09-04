@@ -5,7 +5,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -70,7 +70,7 @@ function suite() {
   const root = mkdtempSync(join(tmpdir(), "mcp-office-r7-"));
   const suiteDist = join(root, "servers", "office-suite", "dist");
   mkdirSync(suiteDist, { recursive: true });
-  copyFileSync(ENTRY, join(suiteDist, "index.js"));
+  cpSync(dirname(ENTRY), suiteDist, { recursive: true });
   writeFileSync(join(root, "package.json"), JSON.stringify({ name: "r7-fixture", type: "module" }));
   mkdirSync(join(root, "node_modules"), { recursive: true });
   try {

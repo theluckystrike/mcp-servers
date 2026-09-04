@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders",
   "description": "Recurring invoices on a schedule: define once, generate the due PDFs into your invoice server,.",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.1/recurring.mcpb",
-      "version": "0.6.1",
-      "fileSha256": "432f444c7bf9905c41099335e959461af60563615e4f092f353215e0961f6bdb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/recurring.mcpb",
+      "version": "0.7.0",
+      "fileSha256": "8b378d6b7b0f05dead7d8b8af80157e69f0e66e8f1d26fd84afdc5051e064d21",
       "transport": {
         "type": "stdio"
       },

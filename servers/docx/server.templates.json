@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/templates",
   "description": "Reusable docx templates: placeholders for proposals, contracts, quotes, SOWs.",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.1/docx.mcpb",
-      "version": "0.6.1",
-      "fileSha256": "9a70cfc3c2e429917d24daa0b2794042013b563b4359891a4003d8e86007d941",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/docx.mcpb",
+      "version": "0.7.0",
+      "fileSha256": "34321deaedeb92368e76302ea82ef9ccb6a72d33ca35d0c98ee7421c2caaad05",
       "transport": {
         "type": "stdio"
       },

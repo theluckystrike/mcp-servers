@@ -1,20 +1,20 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/prices-deal",
-  "description": "Track prices and deals: watch a shop page, get target alerts, see price history. Data stays local.",
+  "name": "io.github.theluckystrike/estimates",
+  "description": "Estimates for freelancers: priced line items, VAT, a validity date, an A4 PDF, win rate.",
   "version": "0.7.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
-    "subfolder": "servers/price-tracker"
+    "subfolder": "servers/quotes"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/price-tracker",
+  "websiteUrl": "https://mcp.zovo.one/buy/quotes",
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/price-tracker.mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/quotes.mcpb",
       "version": "0.7.0",
-      "fileSha256": "6ff3917f397dcca7f92c009f21c66334756e78f88e6359b173240d050f6a6f10",
+      "fileSha256": "35267fa498773abae278308137a0fe0120d46f8890622f6597db3479228f49ab",
       "transport": {
         "type": "stdio"
       },

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-timezone",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Time zones, meeting slots and calendar invites for people who work with clients abroad. Convert times, find hours that suit everyone, check DST, write .ics. All local.",
   "type": "module",
   "bin": {
@@ -51,7 +51,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/timezone",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.6.1",
+    "@theluckystrike/mcp-license": "^0.7.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

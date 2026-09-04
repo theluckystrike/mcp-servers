@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-office-suite",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "type": "module",
   "bin": {
@@ -41,18 +41,18 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/office-suite",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-time-tracker": "^0.6.1",
-    "@theluckystrike/mcp-price-tracker": "^0.6.1",
-    "@theluckystrike/mcp-spreadsheet": "^0.6.1",
-    "@theluckystrike/mcp-invoice": "^0.6.1",
-    "@theluckystrike/mcp-currency": "^0.6.1",
-    "@theluckystrike/mcp-timezone": "^0.6.1",
-    "@theluckystrike/mcp-docx": "^0.6.1",
-    "@theluckystrike/mcp-resume": "^0.6.1",
-    "@theluckystrike/mcp-recurring": "^0.6.1",
-    "@theluckystrike/mcp-clauses": "^0.6.1",
-    "@theluckystrike/mcp-pdf": "^0.6.1",
-    "@theluckystrike/mcp-calendar": "^0.6.1"
+    "@theluckystrike/mcp-time-tracker": "^0.7.0",
+    "@theluckystrike/mcp-price-tracker": "^0.7.0",
+    "@theluckystrike/mcp-spreadsheet": "^0.7.0",
+    "@theluckystrike/mcp-invoice": "^0.7.0",
+    "@theluckystrike/mcp-currency": "^0.7.0",
+    "@theluckystrike/mcp-timezone": "^0.7.0",
+    "@theluckystrike/mcp-docx": "^0.7.0",
+    "@theluckystrike/mcp-resume": "^0.7.0",
+    "@theluckystrike/mcp-recurring": "^0.7.0",
+    "@theluckystrike/mcp-clauses": "^0.7.0",
+    "@theluckystrike/mcp-pdf": "^0.7.0",
+    "@theluckystrike/mcp-calendar": "^0.7.0"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

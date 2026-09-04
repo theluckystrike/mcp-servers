@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
   "description": "A personal library of reusable contract and proposal clauses, assembled into a real Word .docx.",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,9 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.1/clauses.mcpb",
-      "version": "0.6.1",
-      "fileSha256": "da5fec82fa21f047f0b1ce49b78ef16660b93d0ec0bfcc5ec348ef755ef3b6ba",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/clauses.mcpb",
+      "version": "0.7.0",
+      "fileSha256": "dc81a925aa04f811ab7af921eb77c3519f07e2a03b6dea275248ff6d1f2d138b",
       "transport": {
         "type": "stdio"
       },
