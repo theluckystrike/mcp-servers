@@ -303,9 +303,7 @@ gate.registerTools(server as unknown as { registerTool: Function });
 server.registerTool("ics_import", {
   title: "Import a calendar (.ics)",
   description:
-    "Read a calendar export and keep it locally under a name. Give exactly one of path (a .ics file on this machine), " +
-    "text (the file contents pasted in), or url (a public .ics or webcal feed; Pro). Google Calendar, Apple Calendar and " +
-    "Outlook exports are all read. Importing the same name again replaces that calendar.",
+    "Call this tool to read a calendar export and keep it under a name. Give path (.ics file), text (contents), or url (public .ics/webcal feed; Pro). Google, Apple, Outlook exports read. Re-importing a name replaces it.",
   inputSchema: {
     path: text(MAX_PATH, "path").optional().describe("Path to a .ics file on this machine"),
     url: text(MAX_PATH, "url").optional().describe("Public https:// or webcal:// .ics feed. Fetched once, only because you asked; Pro feature"),
@@ -414,9 +412,7 @@ server.registerTool("calendars_list", {
 server.registerTool("events_list", {
   title: "List events in a window",
   description:
-    "Every event between two dates, with recurring events expanded to their real occurrences and sorted by start. " +
-    "Times are shown in your own zone (the shared business profile's timezone, else this machine's) unless you pass zone. " +
-    "Each row carries an id you can pass to event_export or event_to_time_entry.",
+    "Every event between two dates, recurring expanded to occurrences, sorted by start. Times shown in your zone (profile's, else this machine's) unless zone passed. Each id works for event_export or event_to_time_entry.",
   inputSchema: {
     calendar: text(MAX_NAME, "calendar").optional().describe("One calendar name; default every imported calendar"),
     from: text(20, "from").describe("First day, YYYY-MM-DD"),
@@ -490,8 +486,7 @@ server.registerTool("events_search", {
 server.registerTool("free_busy", {
   title: "Busy blocks and free windows",
   description:
-    "Where the time actually went and what is left: merged busy blocks from the calendars you name, and the gaps inside " +
-    "your working hours where nothing is booked. Events marked free/transparent do not count as busy; whole-day events block the day.",
+    "Where the time actually went: merged busy blocks from the calendars named, and the gaps in your working hours where nothing is booked. Free/transparent events do not count as busy; whole-day events block the day.",
   inputSchema: {
     calendars: z.array(text(MAX_NAME, "calendar")).max(20).optional().describe("Calendar names; default all of them"),
     from: text(20, "from").describe("First day, YYYY-MM-DD"),
@@ -574,9 +569,7 @@ server.registerTool("free_busy", {
 server.registerTool("conflicts", {
   title: "Find double bookings",
   description:
-    "Every pair of events that overlap in time, with how many minutes they collide. Across all imported calendars unless you " +
-    "name one, so a work meeting clashing with a family event is caught. Whole-day events are reported separately from timed clashes. " +
-    "Free checks 31 days at a time and says so; Pro checks any window.",
+    "Every pair of events overlapping in time, with minutes they collide. Across all calendars unless one named, so a clashing work/family event is caught. Whole-day events reported separately. Free: 31 days; Pro: any window.",
   inputSchema: {
     calendar: text(MAX_NAME, "calendar").optional().describe("One calendar name; default every imported calendar"),
     from: text(20, "from").describe("First day, YYYY-MM-DD"),
@@ -734,8 +727,7 @@ function mergeVevents(parts: string[], count: number): string {
 server.registerTool("event_export", {
   title: "Export events to a .ics file",
   description:
-    "Write chosen events to a new .ics file you can send or import elsewhere. Either pass ids (from events_list) or a " +
-    "from/to window to export everything in it. Times are written in UTC so the file lands correctly in any client.",
+    "Call this tool to write chosen events to a new .ics file you can send or import elsewhere. Pass either ids (from events_list) or a from/to window. Times are written in UTC so the file lands correctly in any client.",
   inputSchema: {
     ids: z.array(text(200, "id")).max(MAX_IDS).optional().describe("Event ids from events_list, events_search or next_event"),
     from: text(20, "from").optional().describe("First day, YYYY-MM-DD (alternative to ids)"),
@@ -818,8 +810,7 @@ server.registerTool("event_export", {
 server.registerTool("event_to_time_entry", {
   title: "Turn a meeting into a time entry",
   description:
-    "Take one event and return the exact arguments for the time-tracker's entry_add, so a meeting that already happened " +
-    "becomes billable time without retyping it. It does not write anything: pass the JSON straight to entry_add.",
+    "Take one event and return the exact arguments for the time-tracker's entry_add, so a meeting that already happened becomes billable time without retyping it. Writes nothing: pass the JSON straight to entry_add.",
   inputSchema: {
     event_id: text(200, "event_id").describe("Event id from events_list, events_search or next_event"),
     project: text(MAX_NAME, "project").describe("Project or client the meeting is billed to"),
