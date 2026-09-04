@@ -28,12 +28,25 @@ const MAX_ITEMS = 200;
 const MAX_MINOR = 1e12;
 const DEFAULT_VALIDITY_DAYS = 30;
 const MAX_VALIDITY_DAYS = 3650;
+/** A quote is a document a human reads and a client is billed from, not a text dump. */
+const MAX_CLIENT_NAME = 200;
+const MAX_DESCRIPTION = 500;
+const MAX_NOTES = 10000;
+const MAX_ADDRESS = 2000;
+const MAX_EMAIL = 320;
+const MAX_VAT_ID = 64;
 
 const gate = createLicenseGate({ product: "quotes" });
 
 const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
 const fail = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true as const });
 const json = (v: unknown) => ok(JSON.stringify(v, null, 2));
+
+/** A bounded free-text field: refused by name rather than silently truncated or stored whole. */
+const text = (field: string, max: number, min = 0) =>
+  min > 0
+    ? z.string().min(min, `${field} is required`).max(max, `${field} must be ${max} characters or fewer`)
+    : z.string().max(max, `${field} must be ${max} characters or fewer`);
 
 /**
  * Locks. Quote mutations take this server's lock. Anything that writes an INVOICE also
@@ -78,7 +91,9 @@ const amount = (what: string) =>
   z.number().finite().min(-MAX_MINOR, `${what} is out of range`).max(MAX_MINOR, `${what} is out of range`);
 
 const itemSchema = z.object({
-  description: z.string().min(1, "every line needs a description"),
+  description: z.string().min(1, "every line needs a description")
+    .max(MAX_DESCRIPTION, `a line description must be ${MAX_DESCRIPTION} characters or fewer`)
+    .describe(`every line needs a description, ${MAX_DESCRIPTION} characters or fewer`),
   quantity: amount("quantity").gt(0, "quantity must be greater than zero").describe("Hours or units, must be greater than zero"),
   unit_price_minor: z.number().int("unit_price_minor must be a whole number of minor units (cents), e.g. 9000 for 90.00 EUR")
     .min(0, "unit_price_minor cannot be negative").max(MAX_MINOR, "unit_price_minor is out of range")
@@ -282,7 +297,8 @@ server.registerTool("quote_create", {
   title: "Create a quote",
   description: "Quote a client: line items with quantity and unit price in minor units, VAT per line or the business default, an optional discount and a validity window. Returns the quote id and the totals.",
   inputSchema: {
-    client: z.string().min(1).describe("Client name or id. A name the invoice server already knows brings its address, email and VAT id onto the quote"),
+    client: z.string().min(1, "client is required").max(MAX_CLIENT_NAME, `client must be ${MAX_CLIENT_NAME} characters or fewer`)
+      .describe("Client name or id. A name the invoice server already knows brings its address, email and VAT id onto the quote"),
     items: z.array(itemSchema).min(1, "a quote needs at least one line item").max(MAX_ITEMS, `a quote can carry at most ${MAX_ITEMS} line items`).describe("The line items being quoted"),
     currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Defaults to your business default currency"),
     validity_days: z.number().int().min(1).max(MAX_VALIDITY_DAYS).optional().describe(`Days the quote stays valid, counted from the quote date and inclusive. Default ${DEFAULT_VALIDITY_DAYS}`),
@@ -290,10 +306,10 @@ server.registerTool("quote_create", {
     issue_date: z.string().optional().describe("YYYY-MM-DD, defaults to today in your business profile's timezone"),
     discount_percent: z.number().finite().min(0).max(100).optional().describe("Discount applied to every line, in percent"),
     tax_rate: z.number().finite().min(0).max(1000).optional().describe("VAT percent for lines with no rate of their own. Defaults to the business default"),
-    notes: z.string().optional().describe("Free text printed under the totals, e.g. scope or exclusions"),
-    client_email: z.string().optional().describe("Only if the user gave it; otherwise the stored client's email is used"),
-    client_address: z.string().optional().describe("Postal address for the QUOTE FOR block, newlines allowed"),
-    client_vat_id: z.string().optional().describe("Client VAT / tax registration id"),
+    notes: text("notes", MAX_NOTES).optional().describe(`Free text printed under the totals, e.g. scope or exclusions. ${MAX_NOTES} characters or fewer`),
+    client_email: text("client_email", MAX_EMAIL).optional().describe("Only if the user gave it; otherwise the stored client's email is used"),
+    client_address: text("client_address", MAX_ADDRESS).optional().describe("Postal address for the QUOTE FOR block, newlines allowed"),
+    client_vat_id: text("client_vat_id", MAX_VAT_ID).optional().describe("Client VAT / tax registration id"),
   },
 }, async (a) => {
   try {
@@ -416,10 +432,10 @@ server.registerTool("quote_update", {
     tax_rate: z.number().finite().min(0).max(1000).optional().describe("VAT percent for lines with no rate of their own"),
     validity_days: z.number().int().min(1).max(MAX_VALIDITY_DAYS).optional().describe("Recomputes valid_until from the quote date"),
     valid_until: z.string().optional().describe("YYYY-MM-DD. Wins over validity_days, and is how an expired quote is extended"),
-    notes: z.string().optional(),
-    client_email: z.string().optional(),
-    client_address: z.string().optional(),
-    client_vat_id: z.string().optional(),
+    notes: text("notes", MAX_NOTES).optional(),
+    client_email: text("client_email", MAX_EMAIL).optional(),
+    client_address: text("client_address", MAX_ADDRESS).optional(),
+    client_vat_id: text("client_vat_id", MAX_VAT_ID).optional(),
   },
 }, async (a) => {
   try {
@@ -615,7 +631,7 @@ server.registerTool("quote_decline", {
   description: "Mark a quote as lost, with an optional reason, so it stops counting against the open quotes and shows up in the win rate. An accepted quote is never turned back.",
   inputSchema: {
     id: z.string().describe("Quote id such as Q-2026-0001"),
-    reason: z.string().optional().describe("Why it was lost, e.g. \"price\" or \"went in-house\". Kept on the record"),
+    reason: text("reason", MAX_NOTES).optional().describe("Why it was lost, e.g. \"price\" or \"went in-house\". Kept on the record"),
     date: z.string().optional().describe("YYYY-MM-DD, defaults to today"),
   },
 }, async (a) => {

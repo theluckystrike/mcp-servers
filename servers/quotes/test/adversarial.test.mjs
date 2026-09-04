@@ -208,3 +208,97 @@ test("quote_pdf to a directory is a refusal the caller can read, and the session
   const after = await c.json("quote_list", {});
   assert.equal(after.count, 1);
 });
+
+test("validity_days at its boundaries: 0 refused, 3650 accepted, 3651 refused", async (t) => {
+  const c = client({ MCP_LICENSE_KEY: PRO });
+  t.after(() => c.close());
+  await c.init();
+
+  const zero = await c.call("quote_create", { client: "A", items: [ITEM], validity_days: 0 });
+  assert.equal(zero.isError, true);
+  assert.match(zero.text, /greater than or equal|at least/i);
+
+  const max = await c.json("quote_create", { client: "A", items: [ITEM], validity_days: 3650 });
+  assert.equal(max.created.days_left, 3650);
+
+  const over = await c.call("quote_create", { client: "A", items: [ITEM], validity_days: 3651 });
+  assert.equal(over.isError, true);
+  assert.match(over.text, /less than or equal to 3650/);
+});
+
+test("a 1 MB notes field is refused by name, not stored", async (t) => {
+  const c = client({ MCP_LICENSE_KEY: PRO });
+  t.after(() => c.close());
+  await c.init();
+  const big = "x".repeat(1024 * 1024);
+  const r = await c.call("quote_create", { client: "A", items: [ITEM], notes: big });
+  assert.equal(r.isError, true);
+  assert.match(r.text, /notes must be 10000 characters or fewer/);
+  assert.equal((await c.json("quote_list", {})).count, 0, "a refused quote must not be stored");
+
+  // A notes field right at the cap is accepted; one character over is refused.
+  const atCap = await c.json("quote_create", { client: "A", items: [ITEM], notes: "y".repeat(10000) });
+  assert.equal(atCap.created.notes.length, 10000);
+  const overCap = await c.call("quote_create", { client: "A", items: [ITEM], notes: "y".repeat(10001) });
+  assert.equal(overCap.isError, true);
+});
+
+test("a 500-line line-item description and an oversized one", async (t) => {
+  const c = client({ MCP_LICENSE_KEY: PRO });
+  t.after(() => c.close());
+  await c.init();
+  const lines500 = Array.from({ length: 500 }, (_, i) => `line ${i}`).join("\n"); // well over 500 characters
+  const r = await c.call("quote_create", { client: "A", items: [{ ...ITEM, description: lines500 }] });
+  assert.equal(r.isError, true);
+  assert.match(r.text, /description must be 500 characters or fewer/);
+  assert.equal((await c.json("quote_list", {})).count, 0);
+
+  const ok = await c.json("quote_create", { client: "A", items: [{ ...ITEM, description: "x".repeat(500) }] });
+  assert.match(ok.created.id, /^Q-\d{4}-\d{4}$/);
+});
+
+test("oversized client name, email, address, VAT id and decline reason are all refused by name", async (t) => {
+  const c = client({ MCP_LICENSE_KEY: PRO });
+  t.after(() => c.close());
+  await c.init();
+  const cases = [
+    [{ client: "n".repeat(201), items: [ITEM] }, /client must be 200 characters or fewer/],
+    [{ client: "A", items: [ITEM], client_email: "e".repeat(321) }, /client_email must be 320 characters or fewer/],
+    [{ client: "A", items: [ITEM], client_address: "a".repeat(2001) }, /client_address must be 2000 characters or fewer/],
+    [{ client: "A", items: [ITEM], client_vat_id: "v".repeat(65) }, /client_vat_id must be 64 characters or fewer/],
+  ];
+  for (const [args, re] of cases) {
+    const r = await c.call("quote_create", args);
+    assert.equal(r.isError, true, JSON.stringify(args).slice(0, 60));
+    assert.match(r.text, re, r.text);
+  }
+  assert.equal((await c.json("quote_list", {})).count, 0);
+
+  const q = (await c.json("quote_create", { client: "A", items: [ITEM] })).created;
+  const declineTooLong = await c.call("quote_decline", { id: q.id, reason: "r".repeat(10001) });
+  assert.equal(declineTooLong.isError, true);
+  assert.match(declineTooLong.text, /reason must be 10000 characters or fewer/);
+});
+
+test("accepting a quote continues the invoice server's own number series, not a fresh one", async (t) => {
+  const c = client({ MCP_LICENSE_KEY: PRO });
+  t.after(() => c.close());
+  await c.init();
+  // Pre-seed the invoice store as if 3 invoices were already issued directly, with no
+  // quote behind any of them, the way invoice_create in servers/invoice would leave it.
+  const invoiceDir = join(c.home, "data", "mcp-servers", "invoice");
+  mkdirSync(invoiceDir, { recursive: true });
+  writeFileSync(join(invoiceDir, "invoices.json"), JSON.stringify([
+    { number: "INV-2026-0001", total_minor: 6150, currency: "EUR" },
+    { number: "INV-2026-0002", total_minor: 6150, currency: "EUR" },
+    { number: "INV-2026-0003", total_minor: 6150, currency: "EUR" },
+  ]));
+  writeFileSync(join(invoiceDir, "counter.json"), JSON.stringify({ "INV-2026": 3 }));
+
+  const q = (await c.json("quote_create", { client: "Nova Ltd", items: [ITEM], currency: "EUR" })).created;
+  const acc = await c.json("quote_accept", { id: q.id, create_invoice: "always" });
+  assert.equal(acc.invoice_number, "INV-2026-0004", "the quote's invoice must continue the existing series, not restart at 0001");
+  const invoices = JSON.parse(readFileSync(join(invoiceDir, "invoices.json"), "utf8"));
+  assert.equal(invoices.length, 4);
+  assert.equal(invoices.at(-1).number, "INV-2026-0004");
+});
