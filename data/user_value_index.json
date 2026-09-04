@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T04:24:01.694Z",
+  "generated_at": "2026-09-04T05:23:24.912Z",
   "rounds": [
     {
       "round": 1,
@@ -1608,7 +1608,7 @@
       "first_seen": "USER_VALUE_R12.md",
       "severity": "",
       "title": "D-R60, logged** |",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "D-R61",
@@ -1661,14 +1661,14 @@
   ],
   "counts": {
     "defects": 122,
-    "fixed": 98,
-    "open": 17,
+    "fixed": 99,
+    "open": 16,
     "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 98,
+      "fixed": 99,
       "client": 3,
-      "open": 14,
+      "open": 13,
       "open (client or accepted)": 3,
       "superseded": 1
     },

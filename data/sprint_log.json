@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-04T03:38:01.546Z",
-  "total_commits": 235,
-  "sessions": 36,
+  "generated_at": "2026-09-04T05:26:23.938Z",
+  "total_commits": 263,
+  "sessions": 37,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -46,7 +46,12 @@
     {
       "name": "Loop 9: handshake version, quotes, hosted round 11, v0.7.0",
       "sessions": 1,
-      "commits": 51
+      "commits": 0
+    },
+    {
+      "name": "Loop 10: guardrails free, barcode, ten names, round 12, v0.8.0",
+      "sessions": 1,
+      "commits": 79
     }
   ],
   "rows": [
@@ -398,7 +403,15 @@
       "at": "2026-09-04T03:37:20.419Z",
       "note": "loop 9 closed: v0.7.0, 17 servers + bundle (+quotes on the invoice engine, audit 18/18), 771 tests, validation 399/399, 17 hosted endpoints, 33 registry entries at 0.7.0 (templates + estimates variants), hosted round 11 49/54 (uv index 91%), handshake version from package.json (14 of 17 were stale), KPI readers fixed, sitemap 189, zovo.one footer link live, GSC 189 submitted 0 indexed, Docker PR 17 entries, Cline 2426, downloads 843, sales 0",
       "loop": "Loop 9: handshake version, quotes, hosted round 11, v0.7.0",
-      "commits": 51,
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 37,
+      "at": "2026-09-04T05:26:23.769Z",
+      "note": "loop 10 closed: v0.8.0, 18 servers + bundle (+barcode: SEPA payment QR, audit 16/18), 818 tests, validation 431/431, 18 hosted endpoints, 44 registry entries at 0.8.0 (ten new names, findable 40 to 50 percent), guardrail tools free with caps (6 bare refusals to 0), hosted round 12 51/54 (uv index 94), home page rewritten for search with JSON-LD, sitemap 199, Docker PR 18 entries, Cline 2428, downloads 1039, sales 0, GSC 0 indexed",
+      "loop": "Loop 10: guardrails free, barcode, ten names, round 12, v0.8.0",
+      "commits": 79,
       "subjects": [
         "Plan v5; image and bank-statement products",
         "INTEL_R5: image/bank-statement naming slots, next three candidates",
