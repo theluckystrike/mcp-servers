@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, fifteen endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, sixteen endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -25,6 +25,7 @@ import { createServer as createPdf } from "./vendor/pdf/index.js";
 import { createServer as createCalendar } from "./vendor/calendar/index.js";
 import { createServer as createKanban } from "./vendor/kanban/index.js";
 import { createServer as createImage } from "./vendor/image/index.js";
+import { createServer as createBankStatement } from "./vendor/bank-statement/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -40,6 +41,7 @@ const DOCX_MAX_BYTES = 2 * 1024 * 1024;          // uploaded .docx templates, pe
 const PDF_MAX_BYTES = 2 * 1024 * 1024;           // uploaded and generated PDFs, per token
 const CALENDAR_MAX_BYTES = 2 * 1024 * 1024;      // imported .ics calendars, per token
 const IMAGE_MAX_BYTES = 2 * 1024 * 1024;         // uploaded and generated images, per token
+const BANK_MAX_BYTES = 2 * 1024 * 1024;           // uploaded statements and the ledger, per token
 const DEFAULT_MAX_BYTES = 512 * 1024;            // stored document per token per endpoint
 const MAX_BODY_BYTES = 256 * 1024;               // request body ceiling
 const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour per client IP
@@ -50,7 +52,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-04.1";
+const BUILD_VERSION = "2026-09-04.2";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -78,6 +80,8 @@ interface ServerCfg {
 
 /** The invoice server's data directory inside the virtual filesystem (homedir shim). */
 const INVOICE_DIR = "/home/mcp/.local/share/mcp-servers/invoice/";
+/** The expense ledger /mcp/expense-tracker owns; /mcp/bank-statement reconciles against it. */
+const EXPENSE_DIR = "/home/mcp/.local/share/mcp-servers/expense-tracker/";
 
 const SERVERS: Record<string, ServerCfg> = {
   "time-tracker": {
@@ -170,6 +174,22 @@ const SERVERS: Record<string, ServerCfg> = {
     persistPublished: true,
     maxBytes: IMAGE_MAX_BYTES,
     strip: ["/uploads/", "/out/"],
+  },
+  "bank-statement": {
+    // Uploaded statements (/uploads/) and the ledger - transactions, rules and accounts,
+    // one JSON document under the homedir shim, written tmp + rename exactly as kanban's
+    // board is - are the tenant's state; statement_export writes under /out/ and is a
+    // transient one-hour download.
+    //
+    // reconcile_expenses reads servers/expense-tracker's ledger directly, and that is a
+    // SEPARATE tenant document here, so it is hydrated on top of this one. Read-only in
+    // practice: this server never writes a path under EXPENSE_DIR, so the flush finds the
+    // expense document byte-identical to what it hydrated and writes nothing.
+    factory: createBankStatement as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    maxBytes: BANK_MAX_BYTES,
+    strip: ["/uploads/", "/out/"],
+    sharedDoc: { server: "expense-tracker", owns: (p) => p.startsWith(EXPENSE_DIR) },
   },
 };
 
@@ -522,6 +542,7 @@ const TOOLS: Record<string, string[]> = {
   "calendar": ["ics_import", "calendars_list", "events_list", "events_search", "free_busy", "conflicts", "next_event", "event_export", "event_to_time_entry", "ics_forget", "license_status", "license_activate"],
   "kanban": ["task_add", "task_list", "task_move", "task_update", "task_done", "task_delete", "task_search", "board", "task_start_timer", "task_log_time", "project_list", "overdue", "weekly_review", "columns_set", "license_status", "license_activate"],
   "image": ["image_upload", "image_files", "image_delete_upload", "image_info", "image_resize", "image_convert", "image_compress", "image_crop", "image_thumbnails", "image_watermark", "image_strip_metadata", "image_batch_resize", "image_dominant_colors", "license_status", "license_activate"],
+  "bank-statement": ["bank_upload", "bank_files", "bank_delete_upload", "statement_import", "transactions_list", "transactions_search", "category_rules", "transaction_categorize", "statement_summary", "reconcile_expenses", "recurring_detect", "statement_export", "accounts_list", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -651,11 +672,20 @@ function indexDoc(base: string) {
         storage: `${IMAGE_MAX_BYTES / 1048576} MB of stored images per token, and at most ${IMAGE_MAX_BYTES / 1048576} MB in one upload - the ${MAX_BODY_BYTES / 1024} KB request-body cap binds long first, which is roughly 190 KB of image once base64-encoded`,
         notes: "decoding runs on jimp under nodejs_compat. image_watermark is not available: it draws with bitmap font files loaded from a filesystem, which this endpoint does not have",
       },
+      {
+        name: "bank-statement", url: `${base}/mcp/bank-statement`, tools: TOOLS["bank-statement"],
+        mode: "upload and download",
+        how: "There is no disk here: bank_upload {name, content} sends the bank export as text (content_base64 sends the bytes instead, which keeps a UTF-16 export from Excel readable) and statement_import takes that name as its `path`. bank_files lists what is stored, bank_delete_upload removes one. Columns, delimiter, date order and number locale are detected from the file, and a line already stored is skipped rather than doubled, so re-importing an overlapping export is safe.",
+        outputs: "statement_export returns a download link valid for one hour, served as text/csv or application/json",
+        free_limits: "2 accounts, reads the last 12 months, 5 category rules; reconcile_expenses, recurring_detect and statement_export are Pro",
+        storage: `${BANK_MAX_BYTES / 1048576} MB of uploaded statements and stored transactions per token, and at most 1 MB in one upload (the ${MAX_BODY_BYTES / 1024} KB request-body cap binds first)`,
+        notes: "reconcile_expenses reads the expense ledger stored for the SAME token on /mcp/expense-tracker, hydrated read-only and never written. The parser reads delimited exports (comma, semicolon, tab), exactly as it does over stdio",
+      },
     ],
     limits: {
       request_body_bytes: MAX_BODY_BYTES,
       jsonrpc_batching: "not accepted - send one request object per POST",
-      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, image: IMAGE_MAX_BYTES, currency: "no per-token storage" },
+      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, image: IMAGE_MAX_BYTES, "bank-statement": BANK_MAX_BYTES, currency: "no per-token storage" },
       download_ttl_seconds: DOWNLOAD_TTL,
       idle_data_retention_days: SWEEP_AFTER_DAYS,
     },

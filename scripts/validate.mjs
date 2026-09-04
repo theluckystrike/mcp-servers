@@ -234,12 +234,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 15 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 15 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 16 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 16 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -307,6 +307,19 @@ async function remote() {
     ok("hosted image upload + image_info(64x64 png) + image_resize download is a PNG served image/png", !iup.error && /"width": 64/.test(JSON.stringify(iinfo).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && ihead === "89504e470d0a1a0a" && (ires?.headers.get("content-type") || "") === "image/png", `${idl ? "link" : "no link"} ${ihead} ${ires?.headers.get("content-type")}`);
     const icv = await rpc("image", { jsonrpc: "2.0", id: 26, method: "tools/call", params: { name: "image_convert", arguments: { path: "probe", format: "jpeg", out_path: "probe-j", overwrite: true } } });
     ok("hosted image jimp decode + encode round trip under nodejs_compat (png -> jpeg)", /Converted PNG to JPEG/.test(JSON.stringify(icv)), JSON.stringify(icv).slice(0, 90));
+    const bankCsv = ["Date,Description,Amount,Currency", "2026-07-03,NETFLIX.COM AMSTERDAM,-12.99,EUR", "2026-08-03,NETFLIX.COM AMSTERDAM,-12.99,EUR", "2026-09-03,NETFLIX.COM AMSTERDAM,-12.99,EUR", "2026-09-01,Hetzner Online GmbH,-61.50,EUR", "2026-09-05,ACME GMBH INVOICE 12,1200.00,EUR", ""].join("\n");
+    const bnm = `probe${Date.now().toString(36)}`;
+    const bup = await rpc("bank-statement", { jsonrpc: "2.0", id: 27, method: "tools/call", params: { name: "bank_upload", arguments: { name: bnm, content: bankCsv } } });
+    const bi1 = await rpc("bank-statement", { jsonrpc: "2.0", id: 28, method: "tools/call", params: { name: "statement_import", arguments: { path: bnm, account: bnm } } });
+    const bi2 = await rpc("bank-statement", { jsonrpc: "2.0", id: 29, method: "tools/call", params: { name: "statement_import", arguments: { path: bnm, account: bnm } } });
+    ok("hosted bank_upload + statement_import(5 rows) + re-import skips 5 duplicates", !bup.error && /"imported": 5/.test(JSON.stringify(bi1).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && /"duplicates_skipped": 5/.test(JSON.stringify(bi2).replace(/\\n/g, "\n").replace(/\\"/g, '"')), JSON.stringify(bi2).slice(0, 120));
+    const brec = await rpc("bank-statement", { jsonrpc: "2.0", id: 30, method: "tools/call", params: { name: "recurring_detect", arguments: { months: 6, account: bnm } } });
+    ok("hosted bank recurring_detect finds the monthly NETFLIX charge", /NETFLIX/.test(JSON.stringify(brec)) && /monthly/.test(JSON.stringify(brec)), JSON.stringify(brec).slice(0, 120));
+    const bex = await rpc("bank-statement", { jsonrpc: "2.0", id: 31, method: "tools/call", params: { name: "statement_export", arguments: { from: "2026-07-01", to: "2026-09-30", format: "csv", path: bnm, account: bnm } } });
+    const bdl = (JSON.stringify(bex).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const bres = bdl ? await fetch(bdl) : null;
+    const bbody = bres ? await bres.text() : "";
+    ok("hosted bank statement_export download is text/csv and carries the rows", bbody.startsWith("id,date,account,") && /NETFLIX/.test(bbody) && (bres?.headers.get("content-type") || "").startsWith("text/csv"), `${bdl ? "link" : "no link"} ${bres?.headers.get("content-type")}`);
     const bound = await fetch("https://mcp.zovo.one/bound?tenant=anon_00000000000000000000000000000000").then((r) => r.json()); ok("bound endpoint answers for an unknown tenant", bound.bound === false, JSON.stringify(bound).slice(0, 80));
     const buyT = await fetch("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok("buy with tenant still 303 to Stripe", buyT.status === 303, buyT.status);
     const batch = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: "[{}]" }); ok("JSON-RPC batch rejected 400", batch.status === 400, batch.status);

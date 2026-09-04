@@ -22,7 +22,7 @@ const SERVERS = {
   "price-tracker": ["index.ts", "extract.ts", "fetch.ts", "redirect.ts", "store.ts"],
   "invoice": ["index.ts", "money.ts", "store.ts", "lib.ts"],
   "expense-tracker": ["index.ts", "money.ts", "store.ts"],
-  "spreadsheet": ["index.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts"],
+  "spreadsheet": ["index.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts", "lib.ts"],
   "currency": ["index.ts", "ecb.ts", "money.ts", "rates.ts", "store.ts"],
   "timezone": ["index.ts", "jsonstore.ts", "tz.ts", "zones.ts", "lib.ts"],
   "docx": ["index.ts", "blocks.ts", "build.ts", "md.ts", "store.ts", "wordxml.ts", "zip.ts", "lib.ts"],
@@ -33,6 +33,7 @@ const SERVERS = {
   "calendar": ["index.ts", "ics.ts", "fetch.ts", "store.ts"],
   "kanban": ["index.ts", "board.ts", "day.ts", "jsonstore.ts"],
   "image": ["index.ts", "imageio.ts", "store.ts"],
+  "bank-statement": ["index.ts", "detect.ts", "money.ts", "store.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
@@ -1142,6 +1143,110 @@ function patchImageIndex(src) {
   return src;
 }
 
+/* ------------------------------------------------------- bank-statement */
+
+/**
+ * The hosted bank-statement endpoint has no disk. `path` on statement_import is the name
+ * of a file uploaded with bank_upload (/uploads/<name>.<ext>), and statement_export writes
+ * under /out/, which the worker turns into a one-hour download link. The store itself
+ * (transactions, rules, accounts) needs no patch: it is one JSON document under the homedir
+ * shim, written tmp + rename, exactly as kanban's board is.
+ */
+function patchBankIndex(src) {
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`const UPLOAD_ROOT = "/uploads/";
+const OUT_ROOT = "/out/";
+const STATEMENT_EXTS = [".csv", ".tsv", ".txt", ".ofx", ".qif"];
+
+/** The bare name a hosted path argument has to be, or a caller-facing refusal. */
+function statementName(p: string, what: string): { base: string; ext: string } {
+  const raw = String(p ?? "").trim();
+  if (!raw) throw new Error(\`\${what} is required: it names a statement uploaded with bank_upload\`);
+  const b = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "");
+  const m = /^([A-Za-z0-9_-]{1,64})(\\.[A-Za-z0-9]{1,8})?$/.exec(b);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable statement name. On this hosted endpoint a path is just a name - \` +
+      \`the one you uploaded a file under with bank_upload, or the one to give the export: 1-64 characters \` +
+      \`of letters, digits, underscore or dash, optionally with an extension. bank_files lists what is stored.\`);
+  }
+  return { base: m[1], ext: (m[2] ?? "").toLowerCase() };
+}
+
+/** Resolve an input name against the uploads, then against what this server just wrote. */
+function expandPath(p: string): string {
+  const { base, ext } = statementName(p, "path");
+  const roots = [UPLOAD_ROOT, OUT_ROOT];
+  if (ext) {
+    for (const r of roots) if (existsSync(\`\${r}\${base}\${ext}\`)) return \`\${r}\${base}\${ext}\`;
+    return \`\${UPLOAD_ROOT}\${base}\${ext}\`;
+  }
+  for (const r of roots) for (const e of STATEMENT_EXTS) if (existsSync(\`\${r}\${base}\${e}\`)) return \`\${r}\${base}\${e}\`;
+  return \`\${UPLOAD_ROOT}\${base}.csv\`;
+}
+
+/** Every export is written under /out/, so the fs shim publishes it on the rename. */
+function outputPath(p: string, ext: string): string {
+  const n = statementName(p, "path");
+  return \`\${OUT_ROOT}\${n.base}\${ext}\`;
+}
+`, "bank expandPath");
+
+  // statement_import: a name, not a path, and a refusal that says how to fix it.
+  src = must(src,
+    'path: text(4096).describe("Path to the .csv file exported from the bank. ~ is expanded"),',
+    'path: text(4096).describe("Name of a statement uploaded with bank_upload"),',
+    "bank statement_import path description");
+  src = must(src,
+    '    if (!existsSync(p) || !statSync(p).isFile()) return fail(`no file at ${p}.`);',
+    '    if (!existsSync(p) || !statSync(p).isFile()) {\n' +
+    '      return fail(`nothing is uploaded under the name ${JSON.stringify(p.split("/").pop()?.replace(/\\.[^.]+$/, ""))}. ` +\n' +
+    '        "Upload the export first with bank_upload {name, content}; bank_files lists what is stored.");\n' +
+    '    }',
+    "bank statement_import not-found message");
+
+  // statement_export: there is no directory to check and no disk to write to; the file
+  // lands under /out/ and the tmp + rename publishes it as a one-hour download.
+  src = must(src,
+    '    path: text(4096).describe("Where to write the file. ~ is expanded; the parent directory must exist"),',
+    '    path: text(4096).describe("Name for the downloaded file, e.g. september. It comes back as a download link valid for one hour"),',
+    "bank statement_export path description");
+  src = must(src,
+    "    const out = expandPath(a.path);\n" +
+    "    const dir = dirname(out);\n" +
+    "    if (!existsSync(dir)) return fail(`the directory ${dir} does not exist. Create it, or choose another path.`);\n" +
+    "    // Overwriting is allowed (a monthly export is re-run), but it is never silent.\n" +
+    "    const existed = existsSync(out);\n" +
+    "    if (existed && statSync(out).isDirectory()) return fail(`${out} is a directory, not a file.`);",
+    '    const out = outputPath(a.path, a.format === "json" ? ".json" : ".csv");\n' +
+    "    const existed = false;   // /out/ is transient here: an export is a fresh download every time",
+    "bank statement_export target");
+  src = must(src,
+    'description: "Write the BANK transactions of a date range (a month, a quarter, a year) to a .csv or .json file and return the path. This is the tool for \\"export September to <path>\\" once a statement has been imported. The file is written atomically, so a failed export never leaves a half-written file behind.",',
+    'description: "Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \\"export September\\" once a statement has been imported. Nothing partial is ever written.",',
+    "bank statement_export description");
+
+  // The data directory is a per-token document here, not a path anyone can open.
+  src = must(src, "      data_dir: dataDir(),",
+    '      data_dir: "hosted: the ledger is one document stored for your token, not a directory on a disk",',
+    "bank accounts_list data_dir");
+
+  // The expense ledger is the sibling tenant document /mcp/expense-tracker serves for the
+  // same token, hydrated read-only; naming its virtual path would mean nothing to a caller.
+  src = mustAll(src, /expense_ledger: expenseDbPath\(\),/g,
+    'expense_ledger: "the expense ledger stored for your token on https://mcp.zovo.one/mcp/expense-tracker",',
+    "bank reconcile expense_ledger path");
+  src = must(src,
+    'note: "no expense ledger was found on this machine, so there was nothing to reconcile against. Install mcp-expense-tracker and log the receipts first.",',
+    'note: "no expenses are stored for your token on https://mcp.zovo.one/mcp/expense-tracker, so there was nothing to reconcile against. Log the receipts there first, with the same token, and run this again.",',
+    "bank reconcile no-ledger note");
+
+  src = must(src, "gate.registerTools(server as unknown as { registerTool: Function });",
+    "gate.registerTools(server as unknown as { registerTool: Function });\nregisterBankUpload(server as unknown as { registerTool: Function });",
+    "bank bank_upload registration");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -1168,6 +1273,7 @@ const EXTRA_IMPORTS = {
     'import { publishFile } from "../../shims/fs.js";',
     'import { outDir, outputPath } from "./imageio.js";',
   ],
+  "bank-statement": ['import { registerBankUpload } from "../../shims/bank-upload.js";'],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -1211,6 +1317,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "pdf") src = patchPdfIndex(src);
     if (name === "calendar") src = patchCalendarIndex(src);
     if (name === "image") src = patchImageIndex(src);
+    if (name === "bank-statement") src = patchBankIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {

@@ -12,7 +12,7 @@ import {
   isoDaysAgo, isoToday, isSafeRegexSource, MAX_MATCH_INPUT, MILEAGE_RATES, mileageAmount,
   roundHalfUp, toMajor, toMinor, vatSplit,
 } from "./money.js";
-import { dataDir, load, lockPath, save, type DB, type Expense, type Rule } from "./store.js";
+import { dataDir, load, lockPath, readBankTransactions, save, type DB, type Expense, type Rule } from "./store.js";
 
 export function createServer() {
 const PRODUCT = "expense-tracker";
@@ -72,6 +72,21 @@ function windowNote(from: string | undefined): { from?: string; note?: string } 
     note: `Free tier reads the last ${FREE_WINDOW_DAYS} days only, so this covers ${cutoff} onwards${from ? ` instead of ${from}` : ""}. ` +
       gate.upgradeText("full expense history"),
   };
+}
+
+/**
+ * D-B4. This server only ever sees hand-logged receipts. When bank-statement has already
+ * imported transactions for the same period, a summary or export built from receipts alone
+ * looks complete and is not: it names the count and the exact bank tool to call, and stays
+ * silent when the sibling store is missing, unreadable or empty for the period, so a normal
+ * run without bank-statement installed is unchanged.
+ */
+function bankLedgerLine(from: string | undefined, to: string, tool: "statement_summary" | "statement_export"): string | undefined {
+  const bank = readBankTransactions();
+  if (!bank.present || bank.note) return undefined;
+  const count = bank.transactions.filter((t) => (!from || t.date >= from) && t.date <= to).length;
+  if (count === 0) return undefined;
+  return `The bank ledger (mcp-bank-statement) holds ${count} transaction${count === 1 ? "" : "s"} in this period that are not counted here; call that server's ${tool} for them.`;
 }
 
 function select(db: DB, f: Filter): Expense[] {
@@ -486,7 +501,7 @@ function summarise(rows: Expense[], by: GroupBy) {
 
 server.registerTool("expense_summary", {
   title: "Summarise expenses",
-  description: "Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together.",
+  description: "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; imported bank transactions live in bank-statement.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
@@ -500,7 +515,8 @@ server.registerTool("expense_summary", {
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
     const w = windowNote(a.from);
     const rows = select(load(), { from: w.from, to: a.to, project: a.project, billable: a.billable });
-    return json({ from: w.from, to: a.to, group_by: a.group_by, by_currency: summarise(rows, a.group_by), note: w.note });
+    const bankLine = bankLedgerLine(w.from, a.to, "statement_summary");
+    return json({ from: w.from, to: a.to, group_by: a.group_by, by_currency: summarise(rows, a.group_by), note: w.note, bank_ledger: bankLine });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -662,7 +678,8 @@ server.registerTool("expense_export", {
       try { if (existsSync(tmp)) unlinkSync(tmp); } catch {}
       throw err;
     }
-    return ok(`Exported ${data.length} expenses (${a.format}). Download: ${target}` + (w.note ? `\n\n${w.note}` : ""));
+    const bankLine = bankLedgerLine(w.from, a.to, "statement_export");
+    return ok(`Exported ${data.length} expenses (${a.format}). Download: ${target}` + (w.note ? `\n\n${w.note}` : "") + (bankLine ? `\n\n${bankLine}` : ""));
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 

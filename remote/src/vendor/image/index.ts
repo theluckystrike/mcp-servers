@@ -26,6 +26,8 @@ export function createServer() {
 const FREE_MAX_PIXELS = 4_000_000;
 /** The free tier processes this many files in one batch call. */
 const FREE_MAX_BATCH = 5;
+/** The free tier names this many dominant colours. Pro goes to 16. */
+const FREE_MAX_COLORS = 3;
 
 /**
  * stdout carries the JSON-RPC stream and nothing else. Third-party decoders disagree:
@@ -289,10 +291,11 @@ server.registerTool("image_compress", {
     path: pathArg,
     quality: z.number().int().min(1).max(100).default(80).describe("JPEG quality 1-100, default 80"),
     max_width: z.number().int().min(1).max(MAX_DIM).optional().describe("Scale down so the width is at most this, keeping the aspect ratio. Never scales up"),
+    max_bytes: z.number().int().min(1024).optional().describe("Largest the output may be, in bytes. The server searches JPEG quality down from `quality` until it fits and reports the quality it used. JPEG output only"),
     out_path: outArg,
     overwrite: overwriteArg,
   },
-}, async ({ path, quality, max_width, out_path, overwrite }) => {
+}, async ({ path, quality, max_width, max_bytes, out_path, overwrite }) => {
   const reservations: Reservation[] = [];
   try {
     const src = await loadImage(path);
@@ -306,14 +309,48 @@ server.registerTool("image_compress", {
     const { fmt } = outFormat(res.path, src.format);
     let scaled = false;
     if (max_width && src.image.width > max_width) { src.image.resize({ w: max_width }); scaled = true; }
-    const bytes = await encode(src.image, fmt, quality);
+    let bytes = await encode(src.image, fmt, quality);
+    // A byte target, searched here rather than by the caller. Measured in docs/IMAGE_AUDIT.md:
+    // without it the model re-encoded the same photo five times at five qualities to land
+    // under 250 KB, which is five files on disk and fifteen turns for one answer.
+    let usedQuality = quality;
+    let tried = 1;
+    if (max_bytes && fmt === "jpeg" && bytes.length > max_bytes) {
+      let lo = 1, hi = quality;
+      let best: Buffer | null = null, bestQ = 0;
+      while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        const b = await encode(src.image, fmt, mid);
+        tried++;
+        if (b.length <= max_bytes) { best = b; bestQ = mid; lo = mid + 1; } else hi = mid - 1;
+      }
+      if (best) { bytes = best; usedQuality = bestQ; }
+      else {
+        releaseReservations(reservations);
+        return fail(
+          `${basename(src.path)} does not fit in ${humanBytes(max_bytes)} as a JPEG at any quality: ` +
+          `even quality 1 is ${humanBytes((await encode(src.image, fmt, 1)).length)} at ` +
+          `${src.image.width}x${src.image.height}. Nothing was written. Pass max_width as well - fewer pixels is ` +
+          `the knob that still works when quality has run out.`,
+        );
+      }
+    }
+    if (max_bytes && fmt !== "jpeg") {
+      releaseReservations(reservations);
+      return fail(
+        `max_bytes needs a JPEG output, because quality is the only knob that trades bytes for detail here and ` +
+        `a ${fmt.toUpperCase()} output is lossless. Nothing was written. Write to a .jpg out_path, or drop ` +
+        `max_bytes and use max_width.`,
+      );
+    }
     writeFileSync(res.path, bytes);
       publishFile(res.path);
     const delta = src.size - bytes.length;
     const pct = Math.round((delta / src.size) * 1000) / 10;
     const note = await record("image_compress", [src.path], [res.path], `${src.size} -> ${bytes.length} bytes`);
     const how = fmt === "jpeg"
-      ? `JPEG quality ${quality}${scaled ? ` and a resize to ${src.image.width} px wide` : ""}`
+      ? `JPEG quality ${usedQuality}${usedQuality !== quality ? ` (searched down from ${quality} in ${tried} encodes to fit ${humanBytes(max_bytes!)})` : ""}` +
+        `${scaled ? ` and a resize to ${src.image.width} px wide` : ""}`
       : scaled
         ? `a resize to ${src.image.width} px wide. Quality ${quality} does not apply: a ${fmt.toUpperCase()} output here is lossless`
         : `a re-encode only. Quality ${quality} does not apply to a ${fmt.toUpperCase()} output, and without max_width there is nothing else to remove - write to a .jpg out_path, or pass max_width, to make this smaller`;
@@ -584,9 +621,10 @@ server.registerTool("image_strip_metadata", {
 }, async ({ path, out_path, overwrite }) => {
   const reservations: Reservation[] = [];
   try {
+    // No size cap here. Stripping metadata writes exactly the pixels it read, so a cap on
+    // the output is a cap on the input, and a privacy tool that refuses every camera photo
+    // because a camera photo is 12 MP protects nobody.
     const src = await loadImage(path);
-    const limit = proSizeCheck(src, "writing an image over 4 MP");
-    if (limit) return freeLimit(limit);
     const res = reserveOutput(out_path, overwrite === true, [src.path], "", extname(src.path) || EXT[src.format]);
     reservations.push(res);
     const { fmt } = outFormat(res.path, src.format);
@@ -648,7 +686,9 @@ server.registerTool("image_batch_resize", {
       const bytes = await encode(src.image, fmt, 85);
       writeFileSync(reservations[i].path, bytes);
       publishFile(reservations[i].path);
-      rows.push(`- ${reservations[i].path}: ${src.width}x${src.height} -> ${src.image.width}x${src.image.height}, ${humanBytes(bytes.length)}`);
+      const grew = src.image.width > src.width || src.image.height > src.height;
+      rows.push(`- ${reservations[i].path}: ${src.width}x${src.height} -> ${src.image.width}x${src.image.height}, ` +
+        `${humanBytes(bytes.length)}${grew ? " (ENLARGED past the source resolution: interpolated, not new detail)" : ""}`);
     }
     const note = await record("image_batch_resize", inputs, reservations.map((r) => r.path));
     return ok(
@@ -660,16 +700,19 @@ server.registerTool("image_batch_resize", {
 
 server.registerTool("image_dominant_colors", {
   title: "Read the dominant colours of an image",
-  description: "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Pro only.",
+  description: "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Free tier: the top 3 colours; Pro: up to 16.",
   inputSchema: {
     path: pathArg,
     count: z.number().int().min(1).max(16).default(5).describe("How many colours to report, default 5"),
   },
 }, async ({ path, count }) => {
   try {
-    if (!gate.isPro()) {
-      return freeLimit(`Dominant colours are a Pro feature.\n\n${gate.upgradeText("dominant colours")}`);
-    }
+    // The free tier answers with the top three rather than refusing. A refusal here does not
+    // stop the caller wanting an answer: measured in docs/IMAGE_AUDIT.md, the model relayed
+    // the upgrade line and then invented hex codes "from viewing the image". Three measured
+    // colours are worth more than a gate that is answered with a guess.
+    const capped = !gate.isPro() && count > FREE_MAX_COLORS;
+    const want = capped ? FREE_MAX_COLORS : count;
     const src = await loadImage(path);
     // Sampled on a copy scaled to at most 200 px on the longest side: the colour histogram
     // of an image does not change with resolution, and this keeps a 10,000 px input to a
@@ -691,7 +734,7 @@ server.registerTool("image_dominant_colors", {
     }
     if (!opaque) return ok(JSON.stringify({ file: src.path, colors: [], note: "every pixel is transparent" }, null, 2));
     const hex = (n: number) => n.toString(16).padStart(2, "0");
-    const top = [...counts.values()].sort((a, b) => b.n - a.n).slice(0, count).map((e) => {
+    const top = [...counts.values()].sort((a, b) => b.n - a.n).slice(0, want).map((e) => {
       const r = Math.round(e.r / e.n), g = Math.round(e.g / e.n), b = Math.round(e.b / e.n);
       return {
         hex: `#${hex(r)}${hex(g)}${hex(b)}`, rgb: [r, g, b], pixels: e.n,
@@ -702,6 +745,12 @@ server.registerTool("image_dominant_colors", {
     return ok(JSON.stringify({
       file: src.path, sampled: `${small.width}x${small.height}`, opaque_pixels_sampled: opaque,
       distinct_buckets: counts.size, colors: top,
+      ...(capped
+        ? {
+          free_tier_color_cap: FREE_MAX_COLORS,
+          upgrade: gate.upgradeText(`${count} dominant colours instead of ${FREE_MAX_COLORS}`),
+        }
+        : {}),
       ...(topShare < 1
         ? {
           note: `No colour covers even 1% of the image: ${counts.size} distinct colour buckets in ` +

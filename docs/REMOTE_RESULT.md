@@ -1462,3 +1462,247 @@ resize + download signature and content type, image_convert for the decode/encod
 - `PNG.sync.read` is re-implemented on `zlib.inflateSync` rather than pngjs's own tolerant
   partial-inflate path, so a truncated PNG that pngjs would have decoded as far as it could
   is refused outright here. A valid PNG is unaffected.
+
+---
+
+# Extension 6 2026-09-04 - bank-statement
+
+status: DONE
+
+A sixteenth endpoint, `POST /mcp/bank-statement`. Worker `mcp-remote`, version ID
+`077a616c-0f90-4d4d-9695-e2cb5c6728a6`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`).
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/bank-statement | 15 | upload-and-download: `bank_upload` replaces the file path, `statement_export` returns a one-hour download link, `reconcile_expenses` reads the expense ledger of the SAME token, read-only |
+
+### The lib mapping
+
+`servers/bank-statement/src/detect.ts` imports `@theluckystrike/mcp-spreadsheet/lib` - the
+RFC 4180 reader and the locale-aware number parser, so a bank CSV is parsed by exactly the
+code that parses a spreadsheet CSV. `rewriteSpec` in `remote/build-vendor.mjs` already
+mapped `@theluckystrike/mcp-<x>/lib` to `../<x>/lib.js` (the docx and invoice case), but
+the spreadsheet vendoring listed `index.ts, csv.ts, expr.ts, sheet.ts, num.ts` and no
+`lib.ts`, so that target did not exist. One entry was added to `SERVERS.spreadsheet` and
+the mapping resolved with no other change: `remote/src/vendor/spreadsheet/lib.ts` re-exports
+`./csv.js` and `./num.js`, both already vendored, and it imports no filesystem, no network
+and no licence gate. `patchSpreadsheetSheet` does not touch it.
+
+### Statements become uploads
+
+`remote/src/shims/bank-upload.ts`, in the style of `sheet-load.ts` and `pdf-upload.ts`:
+
+- `bank_upload {name, content}` stores the export as text under `/uploads/<name>.<ext>`;
+  `bank_upload {name, content_base64}` stores the bytes instead, which is what keeps a
+  UTF-16 export from Excel readable - `readStatementText` in the vendored server reads the
+  byte-order mark off a real `Buffer`, and text stored as text has none.
+- `bank_files` lists what is stored, `bank_delete_upload` removes one. Deleting the file
+  does not delete the transactions imported from it.
+- Names are rejected, never sanitised: no `/` or `\`, no `..`, no leading dot, no
+  `.tmp/.lock/.corrupt`, 1-64 characters of `[A-Za-z0-9_-]`, and an extension may only be
+  one of `.csv .tsv .txt .ofx .qif`. One name is one file: uploading `sept.tsv` over
+  `sept.csv` replaces it.
+- One upload is capped at 1 MB; the 256 KB request-body cap binds long first (~250 KB of
+  text, ~190 KB base64). Uploads go through the fs shim, so they are charged to the
+  endpoint's byte and 64-file caps like anything else.
+
+`expandPath` in the vendored `index.ts` is rewritten to the same name-not-path rule the pdf
+and image endpoints use: an uploaded file wins, otherwise a file this server just wrote,
+otherwise `/uploads/<name>.csv`. So `statement_import {path: "september"}` works unchanged
+and `path: "/etc/passwd"` or `"../../etc/passwd"` both reduce to the name `passwd` and
+return "nothing is uploaded under the name ...".
+
+`statement_export` writes under `/out/` (a new `outputPath` helper) instead of checking a
+parent directory that does not exist; the server's own tmp + rename then publishes it,
+because `SERVERS["bank-statement"].publish` is `p.startsWith("/out/")`. The response's
+`path` field is substituted with the download URL by the existing mechanism, and `strip`
+removes `/uploads/` and `/out/` from anything left over.
+
+### The store needs no patch
+
+`servers/bank-statement/src/store.ts` reaches the disk through `dataDir()` =
+`$XDG_DATA_HOME || homedir()/.local/share` + `mcp-servers/bank-statement`, which the os
+shim resolves to `/home/mcp/.local/share/mcp-servers/bank-statement/`, and `save()` is
+tmp + rename. That is exactly kanban's shape, so transactions, rules and accounts are one
+JSON document per token with no substitution at all. `maxBytes` is 2 MB for this endpoint
+(uploads plus the ledger).
+
+### Reconciliation reads the sibling tenant document
+
+`reconcile_expenses` reads `servers/expense-tracker`'s ledger directly, at
+`/home/mcp/.local/share/mcp-servers/expense-tracker/data.json` - byte-for-byte the path the
+`/mcp/expense-tracker` endpoint already persists for the same token. So the hydration was
+cheap and it was taken rather than documented away: `SERVERS["bank-statement"].sharedDoc`
+is `{ server: "expense-tracker", owns: p => p.startsWith(EXPENSE_DIR) }`, the same mechanism
+`/mcp/recurring` uses for the invoice store. It costs one extra KV read. It is read-only in
+practice rather than by construction: this server never writes a path under that prefix, so
+the flush finds the expense document byte-identical to what it hydrated and writes nothing.
+Measured below: `expense_list` on `/mcp/expense-tracker` returns the identical bytes before
+and after a `reconcile_expenses` call.
+
+Two response fields named the ledger's absolute virtual path, which means nothing to a
+caller; both now name the endpoint (`"the expense ledger stored for your token on
+https://mcp.zovo.one/mcp/expense-tracker"`), and the not-found note says to log the
+receipts there with the same token instead of "install mcp-expense-tracker".
+`accounts_list`'s `data_dir` says the ledger is a document, not a directory.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'`
+(reconcile, recurring detection and export are Pro on this server), two POSTs each.
+
+### tools/list and the index
+
+```
+$ curl -s -X POST https://mcp.zovo.one/mcp/bank-statement -H "authorization: Bearer $T" ... tools/list
+15 tools: statement_import, transactions_list, transactions_search, category_rules,
+transaction_categorize, statement_summary, reconcile_expenses, recurring_detect,
+statement_export, accounts_list, license_status, license_activate,
+bank_upload, bank_files, bank_delete_upload
+
+$ curl -s https://mcp.zovo.one/mcp | jq '.endpoints|length'
+16      # ... "image", "bank-statement"
+```
+
+### upload, import, re-import
+
+```
+POST 1  bank_upload {name: "september", content: "<8-line csv, Date,Description,Amount,Currency>"}
+Uploaded "september.csv" (379 bytes, 9 lines including the header).
+Pass path: "september" to statement_import.
+
+POST 2  statement_import {path: "september", account: "business EUR"}
+{"account":"business EUR","bank":"generic","delimiter":",","header_line":1,
+ "columns":{"date":"Date","description":"Description","amount":"Amount","currency":"Currency",...},
+ "date_order":"dmy","rows_read":8,"imported":8,"duplicates_skipped":0,
+ "date_range":{"from":"2026-07-03","to":"2026-09-03"},"currencies":["EUR"],
+ "skipped_total":0,"notes":[]}
+
+POST 3  statement_import {path: "september", account: "business EUR"}   # the same file again
+{..., "rows_read":8, "imported":0, "duplicates_skipped":8, "date_range":null, "currencies":[]}
+```
+
+The dedupe key is the occurrence-counted `dedupe` field the stdio server computes; it
+survives the KV round trip because it is stored in the ledger document.
+
+### rules, summary, subscriptions
+
+```
+POST 4  category_rules {rules:[{match:"netflix",category:"subscriptions"},
+                               {match:"hetzner",category:"hosting"}]}
+{"rules": 2, "categorised": 6}
+
+POST 5  statement_summary {from:"2026-07-01", to:"2026-09-30", group_by:"category"}
+EUR count 8  money_in EUR 2400.00  money_out EUR 223.47  net EUR 2176.53
+  (uncategorised)  2   in 2400.00  out    0.00
+  hosting          3   in    0.00  out  184.50
+  subscriptions    3   in    0.00  out   38.97
+
+POST 6  recurring_detect {months: 6}
+{"debits_examined":6,"recurring":2,"charges":[
+ {"counterparty":"NETFLIX.COM AMSTERDAM","currency":"EUR","occurrences":3,"cadence":"monthly",
+  "typical_amount":"EUR 12.99","last_seen":"2026-09-03","next_expected":"2026-10-04",
+  "median_days":31,"annualised":"EUR 155.88","cadence_confirmed":true,
+  "dates":["2026-07-03","2026-08-03","2026-09-03"]},
+ {"counterparty":"Hetzner Online GmbH",...,"typical_amount":"EUR 61.50","median_days":29,
+  "annualised":"EUR 738.00","cadence_confirmed":true}]}
+```
+
+### reconciliation against /mcp/expense-tracker
+
+```
+POST 7  /mcp/expense-tracker  expense_add {amount:61.50, currency:"EUR", merchant:"Hetzner",
+                                           category:"hosting", date:"2026-09-01"}
+Saved 71f4f994: EUR 61.50 on 2026-09-01 at Hetzner [hosting]. ...
+
+POST 8  /mcp/bank-statement  reconcile_expenses {from:"2026-07-01", to:"2026-09-30"}
+{"window_days":3,
+ "expense_ledger":"the expense ledger stored for your token on https://mcp.zovo.one/mcp/expense-tracker",
+ "expense_ledger_found":true,"bank_debits":6,"expenses_in_range":1,"matched":1,
+ "matches":[{"amount":"EUR -61.50",
+   "bank":{"id":"06a12f29","date":"2026-09-01","account":"business EUR","counterparty":"Hetzner Online GmbH"},
+   "expense":{"id":"71f4f994","date":"2026-09-01","merchant":"Hetzner","category":"hosting"}}],
+ "unmatched_bank":[5 rows],"expenses_without_a_bank_line":[]}
+```
+
+Read-only, measured on a second run:
+
+```
+expense_list {from:"2026-08-01", to:"2026-09-30"} on /mcp/expense-tracker   -> A
+reconcile_expenses {from:"2026-09-01", to:"2026-09-30"} on /mcp/bank-statement
+expense_list {from:"2026-08-01", to:"2026-09-30"} on /mcp/expense-tracker   -> B
+A === B   ->   true
+```
+
+### export as a download
+
+```
+POST 9  statement_export {from:"2026-07-01", to:"2026-09-30", format:"csv", path:"september-export"}
+{"path":"https://mcp.zovo.one/mcp/download/1a1f8e88ff72f1ebb59178e95e996036 (valid 1 hour)",
+ "format":"csv","rows":8,"from":"2026-07-01","to":"2026-09-30","bytes":831}
+
+$ curl -sD- https://mcp.zovo.one/mcp/download/1a1f8e88ff72f1ebb59178e95e996036
+HTTP/2 200
+content-type: text/csv; charset=utf-8
+content-disposition: inline; filename="september-export.csv"
+
+id,date,account,description,counterparty,amount,currency,category,balance
+e8246188,2026-07-03,business EUR,NETFLIX.COM AMSTERDAM,NETFLIX.COM AMSTERDAM,-12.99,EUR,subscriptions,
+4fa344a6,2026-07-05,business EUR,Hetzner Online GmbH,Hetzner Online GmbH,-61.5,EUR,hosting,
+344f2977,2026-07-20,business EUR,ACME GMBH INVOICE 12,ACME GMBH INVOICE 12,1200,EUR,,
+... (8 rows)
+```
+
+### hardening
+
+```
+statement_import {path:"/etc/passwd"}
+  Error: nothing is uploaded under the name "passwd". Upload the export first with
+  bank_upload {name, content}; bank_files lists what is stored.
+statement_import {path:"../../etc/passwd"}   -> the same refusal
+bank_files        -> {"uploaded":[{"name":"s.csv","bytes":75}]}
+accounts_list     -> "data_dir": "hosted: the ledger is one document stored for your token,
+                                  not a directory on a disk"
+bank_delete_upload {name:"s"} -> Deleted "s".
+transactions_list -> the transaction imported from it is still there
+```
+
+`GET /mcp` lists sixteen endpoints and `/mcp/connect` prints sixteen ready URLs.
+`servers/bank-statement/remotes.json` was added in the shape the sibling servers already
+had, and `scripts/validate.mjs` covers the endpoint in the `tools/list` sweep plus three
+real calls (bank_upload + statement_import + re-import duplicate count, recurring_detect,
+statement_export download signature and content type):
+**remote 46/46, whole run 370/370.**
+
+### Limitations
+
+1. **The parser reads delimited text, not OFX or QIF.** That is the stdio server's own
+   scope, unchanged here: `readStatement` detects the delimiter, the header row, the date
+   order and the number locale of a CSV/TSV export. `.ofx` and `.qif` are accepted as
+   upload extensions so a file can be stored under its own name, but importing one fails
+   with the parser's own "no header row was found". Nothing about that is remote-specific.
+2. **250 KB of statement per POST is the real ceiling**, not the 1 MB per-file cap: the
+   256 KB request-body cap binds first (~190 KB once base64-encoded). A year of a busy
+   account has to be split by month, or run over stdio, where there is no cap.
+3. **The expense ledger counts against this endpoint's 2 MB.** `recount()` runs after the
+   shared document is hydrated, so a large expense ledger reduces the room left for
+   statements and transactions on the bank endpoint. Both are the same token's data, so
+   the ceiling is the honest one, but it is not 2 MB of bank data.
+4. **Reconciliation is one-directional and same-token only.** The expense document is
+   hydrated read-only and is never written; an expense logged on a different token, or on
+   a local stdio install, is invisible here. `expense_to_invoice` and the rebill flow stay
+   on `/mcp/expense-tracker`.
+5. **`/out/` is transient.** An export is published and not persisted, so `existed` is
+   always false and the "already existed and was replaced" note can never fire on the
+   hosted endpoint. Re-exporting the same name simply mints a new link.
+6. **Free-tier gating is the unmodified stdio gating** (2 accounts, a 12-month read window,
+   5 rules; reconcile, recurring detection and export are Pro) and was not exercised live
+   in this run: the per-IP anonymous mint limit was already spent, and a Pro key for one
+   product is refused on another endpoint by design. No gating code was touched.
+7. **Last write wins per tenant**, unchanged: `withFileLock` is a no-op remotely, so two
+   concurrent clients on one token can lose a write to the ledger.
+8. **Download links are unauthenticated capabilities** for their one hour - a bank export
+   is the most sensitive file this worker has ever published, and the 128-bit token in the
+   URL is the only thing protecting it. The link is not logged anywhere the caller cannot
+   see, and it expires, but it should be treated like the statement itself.
