@@ -88,7 +88,7 @@ Then: `ics_import {path: "~/Downloads/mike@example.com.ics", name: "work"}`
 | `events_list` | Every event between two dates with recurring series expanded to real occurrences, sorted, in your own time zone. Each row carries an id. |
 | `events_search` | Events whose title, description, location, organizer or attendees contain a phrase. |
 | `free_busy` | Merged busy blocks and the free gaps inside your working hours, day by day. Events marked free/transparent do not count as busy. |
-| `conflicts` | Every pair of events that overlap, with the overlap in minutes -- across all calendars, so a client call clashing with a school run is caught. |
+| `conflicts` | Every pair of events that overlap, with the overlap in minutes -- across all calendars, so a client call clashing with a school run is caught. A longer window is shortened to the free 31 days and answered, never refused. |
 | `next_event` | The next thing that has not started, and how long until it does. |
 | `event_export` | Write chosen events (by id, or a whole window) to a new `.ics` you can send. Times in UTC, so it lands correctly in any client. |
 | `event_to_time_entry` | Turn one meeting into the exact arguments for the time-tracker's `entry_add`, so a call becomes billable time without retyping it. |
@@ -126,6 +126,7 @@ Warsaw 10:00 meeting at 10:00 local across the March clock change.
 | --- | --- | --- |
 | Calendars kept | 2 | unlimited |
 | Window per question | up to 31 days | any window |
+| `conflicts` over a longer window | answered for the first 31 days, cap named | any window |
 | Events per export | 50 | unlimited |
 | Import from a URL or webcal feed | -- | yes |
 | Everything else | full | full |

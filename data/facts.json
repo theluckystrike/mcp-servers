@@ -336,7 +336,7 @@
       "does": "Parses .ics files and feeds from Google, Apple and Outlook (recurrence rules, exceptions, time zones, all-day events), lists events in a window in your home zone, computes busy blocks and free windows, flags overlapping events, exports selections as valid .ics, and turns a meeting into the arguments for a billable time entry.",
       "for": "Freelancers who live in a calendar and bill by the hour.",
       "example": "\"What is on my calendar next week and where am I free for a two-hour block?\" ... \"Log yesterday's Nova call as billable time.\"",
-      "free": "2 calendars, windows up to 31 days, exports up to 50 events.",
+      "free": "2 calendars, windows up to 31 days, exports up to 50 events, conflict checks answered over the first 31 days of any window.",
       "pro": "Unlimited calendars, any window, unlimited exports, URL refresh.",
       "storage": "~/.local/share/mcp-servers/calendar/"
     },
