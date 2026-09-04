@@ -138,8 +138,8 @@
     },
     "estate-backlinks": {
       "status": "published",
-      "url": "https://github.com/theluckystrike/mcp-servers/blob/main/docs/BACKLINKS_RESULT.md",
-      "note": "Sitewide footer links to /s/invoice, /s/time-tracker and /s/expense-tracker live on 2 owned Astro sites: ukmoneycalc.com (commit 1cab454, 15 pages, GH Actions -> wrangler pages) and statewage.com (commit 362f2d8, 63 pages, wrangler deploy version 503012c3, NOT git-connected despite its workflow comment). Live pages verified byte-identical to the locally built artifacts, diff vs baseline is the added block only, 0 assets deleted."
+      "url": "https://github.com/theluckystrike/mcp-servers/blob/main/docs/BACKLINKS_R2_RESULT.md",
+      "note": "Sitewide footer links to /s/invoice, /s/time-tracker and /s/expense-tracker live on 2 owned Astro sites: ukmoneycalc.com (commit 1cab454, 15 pages, GH Actions -> wrangler pages) and statewage.com (commit 362f2d8, 63 pages, wrangler deploy version 503012c3, NOT git-connected despite its workflow comment). Live pages verified byte-identical to the locally built artifacts, diff vs baseline is the added block only, 0 assets deleted. ROUND 2 (2026-09-04, docs/BACKLINKS_R2_RESULT.md): anchor 'MCP servers for Claude' -> https://mcp.zovo.one added to the shared footer of 7 more owned sites, all verified live: ml0x.com (65 pages), heytensor.com (121), kickllm.com (65), toolsthatrank.com (7), aiwebsitepipeline.com (6), deepvalueradar.com (46, wrangler pages deploy), lakelevelnow.com (56, GH Pages CI). The first five are GitHub Pages from main root, so push deploys. Skipped: worthmyclaim.com and dscrradar.com (repo behind live, deploying would delete live pages), ingredientcalculator.com (no git repo and no deploy path), boldtake.io (domain expired, parked for sale at Porkbun). Home page byte deltas all under 0.25 percent, HTTP 200 everywhere, no rollback needed."
     },
     "awesome-mcpb": {
       "status": "submitted",
@@ -159,7 +159,7 @@
     "yuzehao2023-awesome-mcp-servers": {
       "status": "submitted",
       "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
-      "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name \u2014 url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
+      "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name — url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
     },
     "mcpstar-awesome-dxt-mcp": {
       "status": "skipped: no populated list to append to",
