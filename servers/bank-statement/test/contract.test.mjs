@@ -18,11 +18,8 @@ const IMPERATIVE = /^(Call this tool|Use this)\b/;
  * The suite is a ratchet: an existing entry is reported, a NEW one fails. The fix is in
  * src, never here.
  */
-const OVER_LENGTH_BASELINE = [
-  "category_rules", "reconcile_expenses", "recurring_detect",
-  "statement_export", "statement_import", "statement_summary",
-];
-const NON_IMPERATIVE_BASELINE = ["statement_export", "statement_import"];
+const OVER_LENGTH_BASELINE = [];
+const NON_IMPERATIVE_BASELINE = [];
 
 const GARBAGE = '{"version":1, <<< truncated by a crash';
 
@@ -86,6 +83,7 @@ test("every tool description is non-empty, single-paragraph, and within the hard
   const over = tools.filter((x) => (x.description ?? "").length > MAX_DESCRIPTION).map((x) => x.name).sort();
   const regressions = over.filter((n) => !OVER_LENGTH_BASELINE.includes(n));
   assert.deepEqual(regressions, [], `new tool descriptions over ${MAX_DESCRIPTION} chars`);
+  assert.equal(over.length, 0, `${over.length} tool descriptions over ${MAX_DESCRIPTION} chars: ${over.join(", ")}`);
   const fixed = OVER_LENGTH_BASELINE.filter((n) => !over.includes(n));
   if (fixed.length) t.diagnostic(`now within ${MAX_DESCRIPTION} chars, drop from the baseline: ${fixed.join(", ")}`);
 });
@@ -102,6 +100,7 @@ test("a tool that takes a file path or a URL opens with an imperative sentence",
   const offenders = fileTools.filter((x) => !IMPERATIVE.test(x.description ?? "")).map((x) => x.name).sort();
   const regressions = offenders.filter((n) => !NON_IMPERATIVE_BASELINE.includes(n));
   assert.deepEqual(regressions, [], 'new file/URL tools whose description does not start with "Call this tool" or "Use this"');
+  assert.equal(offenders.length, 0, `${offenders.length} file/URL tool descriptions do not open with an imperative: ${offenders.join(", ")}`);
   const fixed = NON_IMPERATIVE_BASELINE.filter((n) => !offenders.includes(n));
   if (fixed.length) t.diagnostic(`now imperative, drop from the baseline: ${fixed.join(", ")}`);
 });
