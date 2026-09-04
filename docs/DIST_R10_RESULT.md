@@ -106,3 +106,23 @@ in the awesome-mcpb PR #11 despite that PR's own note saying "19 entries" -- the
 individual servers, not 18). No emojis added to any entry, no paid submissions, no login flows attempted.
 
 cost: ~20 wall minutes
+
+## Round 10c
+
+PR #2154 was closed by the maintainer (wilsonccccc): the contribution path is one MCP entry per PR
+in the best-fit docs/*.md category, and the bundle-plus-19-per-server PR broke that. Reopened as a
+single Office Suite bundle entry, as suggested. Cap: 20 minutes.
+
+- **TensorBlock/awesome-mcp-servers**: reused the existing fork `theluckystrike/awesome-mcp-servers-4`.
+  Fork's `main` was behind upstream, so the new branch `add-office-suite-bundle` was cut from
+  `upstream/main` directly rather than the stale fork main. Added one entry to
+  `docs/developer-productivity--utilities.md`, inserted next to the nearest alphabetical neighbor
+  (`OctoMind-dev/octomind-mcp`) since the file is not globally sorted. Entry text: plain sentence naming
+  that the server proxies nineteen local MCP servers for freelance work (time tracking, invoicing, price
+  tracking, spreadsheets, expenses), link `https://github.com/theluckystrike/mcp-servers`, storefront
+  `https://mcp.zovo.one`. One commit. PR body thanks the maintainer and references #2154.
+  PR: https://github.com/TensorBlock/awesome-mcp-servers/pull/2164 (open).
+
+No emojis, no em dashes, no paid submissions.
+
+cost: ~15 wall minutes

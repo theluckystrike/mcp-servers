@@ -153,8 +153,8 @@
   },
   "tensorblock-awesome-mcp-servers": {
    "status": "submitted",
-   "url": "https://github.com/TensorBlock/awesome-mcp-servers/pull/2154",
-   "note": "Round 10b: forked to theluckystrike/awesome-mcp-servers-4, branch add-zovo-office-servers, 20 plain bullets (19 servers + office-suite bundle) added across finance--crypto.md, project--task-management.md, utilities--helpers.md, content-management-systems-cms.md, data-analysis--business-intelligence.md, developer-productivity--utilities.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
+   "url": "https://github.com/TensorBlock/awesome-mcp-servers/pull/2164",
+   "note": "Round 10c: PR #2154 (Round 10b, 20 entries across six category files) was closed by the maintainer, who requires one MCP entry per PR in the best-fit docs/*.md category. Reopened on the same fork theluckystrike/awesome-mcp-servers-4, new branch add-office-suite-bundle cut from upstream/main, as a single Office Suite bundle entry in docs/developer-productivity--utilities.md naming that it proxies nineteen local servers for freelance work, linking github.com/theluckystrike/mcp-servers and mcp.zovo.one. One commit. PR body thanks the maintainer and references #2154. PR open, awaiting review."
   },
   "yuzehao2023-awesome-mcp-servers": {
    "status": "submitted",
