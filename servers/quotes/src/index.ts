@@ -332,7 +332,7 @@ server.registerTool("quote_create", {
       if (!gate.isPro() && openCount(list, day) >= FREE_OPEN_QUOTES) {
         return fail(
           `the free tier keeps ${FREE_OPEN_QUOTES} quotes open at a time and you have ${openCount(list, day)}. ` +
-          `Accept or decline one, or upgrade. ${gate.upgradeText("unlimited open quotes")}`,
+          `Accept or decline one, or upgrade. ${gate.upgradeText("unlimited open quotes", "quote_create")}`,
         );
       }
 
@@ -674,7 +674,7 @@ server.registerTool("quote_pdf", {
   },
 }, async (a) => {
   try {
-    if (!gate.isPro()) return fail(gate.upgradeText("quote PDF"));
+    if (!gate.isPro()) return fail(gate.upgradeText("quote PDF", "quote_pdf"));
     const day = today();
     const q = findQuote(getQuotes(), a.id);
     if (!q) return fail(`no quote matches "${a.id}". Run quote_list to see the ids.`);
@@ -708,7 +708,7 @@ server.registerTool("quote_report", {
     if (!pro && (!from || from < yearStart)) {
       from = yearStart;
       capNote = `Free tier reports the current calendar year to date (${yearStart} onwards)${a.from ? ` instead of ${a.from}` : ""}; ` +
-        gate.upgradeText("the pipeline report over any date range");
+        gate.upgradeText("the pipeline report over any date range", "quote_report");
     }
     let list = getQuotes();
     if (from) list = list.filter((q) => q.issue_date >= from!);
