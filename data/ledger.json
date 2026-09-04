@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-03T17:23:40.003Z",
+  "generated_at": "2026-09-04T00:58:45.911Z",
   "session": {
-    "count": 32,
+    "count": 33,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -130,10 +130,42 @@
       {
         "at": "2026-09-03T17:23:39.958Z",
         "note": "loop 7 closed: v0.5.0, 13 servers + bundle, pdf and calendar audited, all hosted, round 10 19/24, 18 pages, Docker PR 13 entries"
+      },
+      {
+        "at": "2026-09-04T00:58:45.851Z",
+        "note": "loop 8: image, bank-statement, kanban in build; variants for 7 servers in progress; Stripe products live; intel R5 next picks kanban, quote, notes"
       }
     ]
   },
   "servers": [
+    {
+      "id": "bank-statement",
+      "npm_name": "@theluckystrike/mcp-bank-statement",
+      "version": "0.6.0",
+      "dir": "servers/bank-statement",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 325,
+      "files_present": {
+        "readme": false,
+        "server_json": false,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
     {
       "id": "calendar",
       "npm_name": "@theluckystrike/mcp-calendar",
@@ -319,6 +351,34 @@
         "smithery_yaml": true,
         "dockerfile": true,
         "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "image",
+      "npm_name": "pending",
+      "version": "pending",
+      "dir": "servers/image",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 331,
+      "files_present": {
+        "readme": false,
+        "server_json": false,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": false
       },
       "distribution": {
         "npm": "unknown",
@@ -570,7 +630,7 @@
       "build_ok": true,
       "test_summary": "# pass 31 / # fail 0",
       "result_status": "DONE",
-      "loc": 1552,
+      "loc": 1573,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -686,6 +746,11 @@
     ],
     "products": [
       {
+        "id": "bank-statement",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/bank-statement"
+      },
+      {
         "id": "calendar",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/calendar"
@@ -709,6 +774,11 @@
         "id": "expense-tracker",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/expense-tracker"
+      },
+      {
+        "id": "image",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/image"
       },
       {
         "id": "invoice",
@@ -895,6 +965,10 @@
       "first_line": "INTEL_R4 — next two servers after resume/cover-letter"
     },
     {
+      "file": "docs/INTEL_R5.md",
+      "first_line": "INTEL_R5 -- naming slots for image / bank-statement, plus next three candidates"
+    },
+    {
       "file": "docs/LAUNCH_POSTS.md",
       "first_line": "Launch posts"
     },
@@ -945,6 +1019,10 @@
     {
       "file": "docs/PLAN_V4.md",
       "first_line": "Plan v4 (2026-09-03, loop 7): expand and improve"
+    },
+    {
+      "file": "docs/PLAN_V5.md",
+      "first_line": "Plan v5 (2026-09-04, loop 8): visibility and more servers"
     },
     {
       "file": "docs/README_DEPTH_RESULT.md",
