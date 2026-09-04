@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 // Renders servers/*/README.md into billing/src/pages.js so mcp.zovo.one serves a product page per server.
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { marked } from "marked";
 const ids = ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement"];
 const facts = JSON.parse(readFileSync("data/facts.json", "utf8"));
 const out = {};
 for (const id of ids) {
+  if (!existsSync(`servers/${id}/README.md`)) { console.error(`skip ${id}: no README yet`); continue; }
   const md = readFileSync(`servers/${id}/README.md`, "utf8");
   const body = marked.parse(md.replace(/<!--[\s\S]*?-->/g, ""));
   const f = facts.servers[id];

@@ -566,5 +566,47 @@
       "name": "columns_set",
       "description": "Replace the columns of one board (Pro). Tasks sitting in a removed column move to the first column."
     }
+  ],
+  "image": [
+    {
+      "name": "image_info",
+      "description": "Format, pixel dimensions, megapixels, file size in bytes and whether the image carries an alpha channel. Read-only: the file is never modified. Free tier: unlimited, at any size."
+    },
+    {
+      "name": "image_resize",
+      "description": "Write a resized copy. fit: \\\"inside\\\" scales to fit the box and keeps the aspect ratio; \\\"cover\\\" fills the box and crops the overflow; \\\"exact\\\" stretches to the given width and height. With only one of width or height,"
+    },
+    {
+      "name": "image_convert",
+      "description": "Re-encode an image as PNG, JPEG, BMP, GIF or TIFF. quality is a JPEG parameter only and is reported as ignored for the lossless formats. Converting an image with transparency to JPEG flattens it onto white, and the answe"
+    },
+    {
+      "name": "image_compress",
+      "description": "Re-encode an image smaller and report the byte count before and after. quality (default 80) applies when the output is a JPEG; for a PNG output only max_width reduces bytes, and the answer says which of the two did the w"
+    },
+    {
+      "name": "image_crop",
+      "description": "Cut a rectangle out of an image. x and y are the top-left corner in pixels, counted from the top-left of the image. A rectangle that runs past an edge is refused with the image's real size, never silently clamped. Free t"
+    },
+    {
+      "name": "image_thumbnails",
+      "description": "One thumbnail per input, written into out_dir as <name>-thumb.<ext>. Each thumbnail fits inside size by size and keeps its aspect ratio, so a wide photo stays wide. Every output path is reserved before any file is writte"
+    },
+    {
+      "name": "image_watermark",
+      "description": "Draw text over an image at a chosen corner and opacity. With no text the shared business profile name is used, the same profile mcp-invoice and mcp-docx write. The text is drawn white on a translucent dark plate so it st"
+    },
+    {
+      "name": "image_strip_metadata",
+      "description": "Write a copy carrying pixels and nothing else. It works by decoding the image and re-encoding it from the raw pixels: EXIF, GPS coordinates, the camera and lens, the capture time, XMP and colour-profile blocks are not ca"
+    },
+    {
+      "name": "image_batch_resize",
+      "description": "Resize every image into out_dir, keeping each one's aspect ratio, named <name>-<W>x<H>.<ext>. With one of width or height the other follows; with both, each image is scaled to fit inside that box. Free tier: up to 5 file"
+    },
+    {
+      "name": "image_dominant_colors",
+      "description": "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Pro only."
+    }
   ]
 }

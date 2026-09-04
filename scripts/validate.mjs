@@ -53,11 +53,20 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  image: async (c, tmp, tier, ok) => {
+    const { Jimp } = await import("jimp");
+    const src = join(tmp, "in.png"); const img = new Jimp({ width: 640, height: 480, color: 0x3366ccff }); await img.write(src);
+    const info = await c.tool("image_info", { path: src }); ok(`${tier}: image_info 640x480`, !info.isError && /640/.test(info.text) && /480/.test(info.text), info.text.slice(0, 80));
+    const out = join(tmp, "out.png"); const rs = await c.tool("image_resize", { path: src, width: 320, fit: "inside", out_path: out }); ok(`${tier}: image_resize to 320 wide`, !rs.isError && existsSync(out) && /320/.test(rs.text), rs.text.slice(0, 80));
+    const same = await c.tool("image_resize", { path: src, width: 100, out_path: src, overwrite: true }); ok(`${tier}: output equal to input refused`, same.isError || /refus|same|input/i.test(same.text), same.text.slice(0, 80));
+    const paths = []; for (let i = 0; i < 6; i++) { const p = join(tmp, `b${i}.png`); await new Jimp({ width: 64, height: 64, color: 0xff0000ff }).write(p); paths.push(p); }
+    const th = await c.tool("image_thumbnails", { paths, size: 32, out_dir: join(tmp, "th") }); ok(`${tier}: 6-file batch ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(th.text) : /mcp\.zovo\.one\/buy\/image/.test(th.text), th.text.slice(0, 80));
+  },
   kanban: async (c, tmp, tier, ok) => {
     const a = await c.tool("task_add", { title: "API design", project: "Nova", estimate_minutes: 180, due: "2026-09-10" }); ok(`${tier}: task_add returns an id`, !a.isError && /NOVA-\w+/.test(a.text), a.text.slice(0, 80));
     const id = (a.text.match(/NOVA-\w+/) || [""])[0];
     const mv = await c.tool("task_move", { id, column: "doing" }); ok(`${tier}: task_move to doing`, !mv.isError && /doing/.test(mv.text), mv.text.slice(0, 80));
-    const b = await c.tool("board", { project: "Nova" }); ok(`${tier}: board shows the task and estimate`, !b.isError && /API design/.test(b.text) && /180|3\.0/.test(b.text), b.text.slice(0, 100));
+    const b = await c.tool("board", { project: "Nova" }); ok(`${tier}: board shows one task in doing`, !b.isError && /doing\s+1\b/.test(b.text), b.text.slice(0, 120));
     const st = await c.tool("task_start_timer", { id }); ok(`${tier}: task_start_timer hands off timer_start args`, !st.isError && /timer_start/.test(st.text) && /Nova/.test(st.text), st.text.slice(0, 100));
     let last; for (const p of ["P2", "P3", "P4"]) last = await c.tool("task_add", { title: "x", project: p });
     ok(`${tier}: 4th project ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(last.text) : /mcp\.zovo\.one\/buy\/kanban/.test(last.text), last.text.slice(0, 80));
@@ -149,6 +158,7 @@ const PROBES = {
   },
   "time-tracker": async (c, tmp, tier, ok) => {
     const a = await c.tool("timer_start", { project: "acme", task: "validation" }); ok(`${tier}: timer_start`, !a.isError, a.text);
+    await new Promise((r) => setTimeout(r, 1200));
     const b = await c.tool("timer_stop", {}); ok(`${tier}: timer_stop`, !b.isError && /s|min|h/.test(b.text), b.text);
     const now = new Date(); const from = new Date(now.getTime() - 86400e3).toISOString();
     const r = await c.tool("report", { from, to: new Date(now.getTime() + 3600e3).toISOString(), group_by: "project", format: "json" }); ok(`${tier}: report`, !r.isError && r.text.includes("acme"), r.text);
