@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-04T01:24:09Z",
+  "updated_at": "2026-09-04T02:30:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -59,7 +59,7 @@
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "15 guides, 89 setup pages incl. claude-web, 13 compare pages; sitemap 149 URLs | Round 7 (2026-09-04): added kanban and image guides, 14 setup pages (2 servers x 7 clients) and 2 compare pages; 17 guides, 119 setup+hub pages incl. claude-web, 15 compare pages; sitemap.xml 170 <loc> entries, live-verified"
+      "note": "15 guides, 89 setup pages incl. claude-web, 13 compare pages; sitemap 149 URLs | Round 7 (2026-09-04): added kanban and image guides, 14 setup pages (2 servers x 7 clients) and 2 compare pages; 17 guides, 119 setup+hub pages incl. claude-web, 15 compare pages; sitemap.xml 170 <loc> entries, live-verified | Round 8 (2026-09-04): added bank-statement guide, 6 setup pages (claude-desktop, claude-code, cursor, vscode, windsurf, cline; claude-web deliberately excluded, no /mcp/bank-statement route in remote/src/index.ts) and 1 compare page (bank-statement vs MainBook Bank Statement Converter and bankstatementparser-mcp); 18 guides, 125 setup+hub pages incl. claude-web, 16 compare pages; sitemap.xml 178 <loc> entries, live-verified"
     },
     "mcpservers.org": {
       "status": "submitted",

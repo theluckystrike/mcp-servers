@@ -1582,9 +1582,137 @@ ${FOOT}`,
       { q: "How big an image can it handle?", a: "Up to 50 MB on disk and 10,000 pixels per side on Pro; free tier tools cap sources at 4 megapixels. The pixel limit is checked from the file header before anything is decoded, specifically to refuse a decompression bomb." },
     ],
   },
+
+  "bank-statement-csv-categorize-reconcile": {
+    title: "Categorize and reconcile a bank CSV export from chat",
+    description: "Import Revolut, Wise, mBank, PKO BP, ING or N26 exports, categorize with rules, and check which bank debits have no receipt behind them. The occurrence-index dedupe insight.",
+    html: `<h1>Categorize and reconcile a bank CSV export from chat</h1>
+<p>A bank export is a CSV with a preamble the bank added for humans, a header row somewhere under it, and
+amounts written the way that bank's country writes numbers. "Import this Revolut export and categorize
+it" is one sentence into the MCP Bank Statement server, and what comes back is a stored ledger: one row
+per transaction, a sign that means the same thing on every row, and a category on the ones your rules
+already cover. Nothing is uploaded. The file is read once, on your machine, into
+<code>~/.local/share/mcp-servers/bank-statement/</code>.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add bank-statement -- npx -y @theluckystrike/mcp-bank-statement</code></pre>
+<p>Cursor, in <code>~/.cursor/mcp.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "bank-statement": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-bank-statement"]
+    }
+  }
+}</code></pre>
+<p>Claude Desktop and the other clients take the same block under their own config file; see the
+<a href="/setup">setup pages</a> for the exact file and key per client.</p>
+
+<h2>Seven shapes of the same CSV</h2>
+<p><code>statement_import</code> ships a profile for Revolut, Wise, mBank, PKO BP, ING and N26, plus a
+generic reader that works from the headers alone when a bank matches none of the six. Each one is a real,
+measured quirk read off that bank's own export, not a guess:</p>
+<ul>
+<li><strong>Revolut</strong> signs the amount itself, positive or negative, and a row with
+<code>State: REVERTED</code> is dropped rather than counted twice.</li>
+<li><strong>Wise</strong> writes the date day first and carries a separate merchant column the generic
+reader would otherwise fold into the description.</li>
+<li><strong>mBank</strong> puts three lines of preamble above the header, uses <code>;</code> as the
+delimiter, and writes an amount like <code>-19,99 PLN</code> with the currency code inside the same
+cell as the number.</li>
+<li><strong>PKO BP</strong> writes every amount positive and puts the direction in a separate
+<code>Typ transakcji</code> column instead of the sign.</li>
+<li><strong>ING</strong> names its amount column <code>Kwota transakcji (waluta rachunku)</code>, which
+the generic reader would not recognize as an amount at all.</li>
+<li><strong>N26</strong> states the currency only once, inside the header itself,
+<code>Amount (EUR)</code>, not in a column of its own.</li>
+<li>Anything else falls back to the <strong>generic reader</strong>: a header row found under any
+preamble, and either one signed amount column or a debit and a credit column read separately.</li>
+</ul>
+<p><code>statement_import</code> reports back what it detected (the bank, the header line, the date order,
+the number locale), what it stored, how many lines were duplicates of what is already there, and every
+line it skipped with the reason, rather than silently dropping a row it could not parse.</p>
+
+<h2>Locale amounts, read correctly once</h2>
+<p>A number is only unambiguous if you know which country wrote it. <code>1 234,56</code> from an mBank
+export and <code>1,234.56</code> from a US bank both mean one thousand two hundred and thirty four units
+and a bit, but a parser that assumes one style over the other turns a Polish grocery bill into a number a
+thousand times too small or too large. The importer sniffs the locale from the file's own delimiter and
+decimal mark rather than assuming a locale from the bank name, and every amount is stored the same way
+regardless of source: a debit negative and a credit positive, once, at import, so nothing downstream has
+to re-derive the sign from a column that might not exist for a different bank.</p>
+
+<h2>The dedupe insight: an occurrence index, not a row index</h2>
+<p>Re-importing the same file should add nothing, and two identical purchases on the same day should still
+be two transactions, not one. Those two requirements pull in opposite directions, and the naive fix for
+each breaks the other. A key built from date, amount and description alone collapses two identical EUR
+3.50 coffees bought on the same day into a single stored transaction, silently understating the month by
+one coffee. Adding a plain row index instead breaks re-import, because a bank that reorders its export, or
+inserts one late-settling line, shifts every index after it, so the same transaction gets a different key
+the second time the file is imported and is stored twice.</p>
+<p>The key that works is date, amount, currency, account and description, plus the count of identical rows
+seen so far in this file, compared against the count of identical rows already stored: the Nth identical
+line in the new file matches the Nth identical line already on record. Measured on a 60-row fixture: 60
+transactions stored on the first import, 60 duplicates reported and 0 stored on re-importing the exact
+same file. Two identical coffees on one day still come out as two rows. Eight concurrent imports of one
+file across two server processes on the same data directory still leave exactly the transactions that file
+actually contains, because the occurrence count is read inside the same file lock as the write, not
+computed and then written separately.</p>
+
+<h2>Rules that categorize as transactions arrive</h2>
+<p><code>category_rules</code> sets or lists the rules that assign a category. A plain rule is a
+case-insensitive substring match against the description or counterparty. Setting <code>regex: true</code>
+compiles the pattern, but only if it cannot backtrack exponentially against a crafted description; a
+pattern shaped like <code>(a+)+</code> is refused and the rule falls back to matching as a literal
+substring instead of hanging the server on one bad rule. Setting rules re-applies them to every stored
+transaction immediately, so a rule added after import still categorizes the month you already brought in.
+<code>transaction_categorize</code> sets the category directly by transaction id when a rule is not worth
+writing for a one-off.</p>
+
+<h2>Summaries that never mix currencies</h2>
+<p><code>statement_summary</code> reports money in, money out and the net for a date range, grouped by
+category, month, account or counterparty. Every total is kept per currency rather than added together,
+because 100 EUR plus 100 USD is not 200 of anything real. Import a Revolut account holding EUR and USD
+alongside a PKO BP account in PLN and the summary comes back as three separate totals, not one wrong one.</p>
+
+<h2>Reconciling against the expense tracker</h2>
+<p>The point of a receipt is that it should show up on the bank statement, and the point of a bank line is
+that some receipt should explain it. <code>reconcile_expenses</code> matches bank debits against the
+receipts logged in <a href="/s/expense-tracker">the expense tracker</a> by the same currency, the same
+amount, inside a date window, and reports three things: matches, bank lines with no receipt behind them,
+and receipts that never reached the bank at all, which usually means a card payment that has not settled
+yet or an expense logged against the wrong account. The expense ledger is only ever read; reconciling never
+writes anything into it. On a seeded test store this found one match one day apart and one expense with no
+matching bank line, which is exactly the shape of a receipt logged on the day of purchase against a card
+payment that settled the next day.</p>
+
+<h2>Finding the subscriptions</h2>
+<p><code>recurring_detect</code> looks for the same counterparty charging an amount that barely moves on a
+steady cadence, and reports the cadence, the typical amount, the next expected date and the cost
+annualised. On the 60-row test fixture it found a monthly Spotify charge, three occurrences, EUR 9.99,
+annualised to EUR 119.88. That annualised figure is the number worth asking for once a quarter: a monthly
+charge nobody looks at again is the easiest line item to forget you are still paying.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Import always stores every row regardless of tier; silently dropping lines on the way in would make the
+stored ledger disagree with the actual bank statement. Free covers 2 accounts, the last 12 months read
+back, 5 category rules, and unlimited import, list, search and summary. Pro ($19 once, lifetime) removes
+the account and history limits, opens unlimited rules, <code>reconcile_expenses</code>,
+<code>recurring_detect</code> and <code>statement_export</code> to csv or json. Full detail on
+<a href="/s/bank-statement">the MCP Bank Statement page</a>, and the general
+<a href="/guides/mcp-server-free-vs-pro">free versus Pro</a> comparison.</p>
+${FOOT}`,
+    faq: [
+      { q: "Which banks does it read directly?", a: "Revolut, Wise, mBank, PKO BP, ING and N26 each have a dedicated profile tuned to that bank's own column names, sign convention and preamble. Any other bank falls back to a generic reader that finds the header row and either a signed amount column or separate debit and credit columns." },
+      { q: "Will importing the same file twice double my numbers?", a: "No. Every row is keyed on its date, amount, currency, account, description and the count of identical rows seen so far, so a second import of an unchanged file stores 0 new transactions and reports the rest as duplicates. Two genuinely identical purchases on the same day still both count." },
+      { q: "How are amounts in a different locale handled, like 1 234,56 from mBank?", a: "The importer detects the file's own delimiter and decimal mark rather than assuming one locale for every bank, so 1 234,56 and 1,234.56 both resolve to the same underlying amount. A debit is stored negative and a credit positive at import, once, so nothing downstream has to guess the sign again." },
+      { q: "Can it tell me which receipts never showed up on the bank statement?", a: "Yes, with reconcile_expenses, a Pro feature. It matches bank debits against the receipts logged in the expense tracker by currency, amount and a date window, and reports matches, unmatched bank lines and unmatched receipts separately. The expense ledger is only ever read." },
+      { q: "Is any of this uploaded anywhere?", a: "No. The server makes no network calls at all, not for import, not for licensing. Statements are parsed locally and stored in plain JSON under ~/.local/share/mcp-servers/bank-statement/; deleting that directory resets it." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize and compress.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation.",
 };

@@ -6,7 +6,7 @@
 
 export const COMPARE_INDEX = {
   title: "MCP server comparisons: ours against the closest alternatives",
-  description: "Fifteen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
+  description: "Sixteen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
 };
 
 const t = (rows) =>
@@ -1191,6 +1191,88 @@ watermarking images from chat</a>.</p>`,
       { q: "What does each cost per image?", a: "Pictomancer is free for the first 50 requests, then from $0.001 per operation, billed per call. Image Resize API is $0.008 per call in USDC via x402, no free tier beyond its 402 payment challenge. Ours has a free tier with a 4 MP size cap and batches of 5, and a one-time $19 Pro key with no subscription and no per-call charge." },
       { q: "Do either competitors watermark an image or strip its metadata?", a: "No. Neither Pictomancer nor Image Resize API documents a watermark or a dedicated metadata-stripping operation. Ours offers both: image_watermark reads the shared business profile, and image_strip_metadata re-encodes from raw pixels so EXIF, GPS and XMP are never carried across." },
       { q: "Where can I read the competitor facts myself?", a: "Pictomancer's operations and pricing come from its own site at pictomancer.ai and its official MCP registry entry for ai.pictomancer/image-processing. Image Resize API's tool, price and scope come from its README at github.com/Br0ski777/image-resize-x402 and its registry entry for io.github.Br0ski777/image-resize. All read on 2026-09-04." },
+    ],
+  },
+
+  "bank-statement": {
+    title: "MCP Bank Statement vs MainBook and bankstatementparser-mcp: which MCP server to pick",
+    description: "A stored, categorized ledger against a paid PDF-to-Excel converter and a stateless multi-format parser. Tool counts, accounts required, and what happens on a second import.",
+    html: `<h1>MCP Bank Statement vs MainBook and bankstatementparser-mcp: which MCP server to pick</h1>
+<p>All three turn a bank statement into structured data from a chat. <a href="https://github.com/human-beyond/mainbook-mcp">MainBook Bank Statement Converter</a>
+(<code>ai.mainbook/bank-statement-converter</code> on the official registry) converts a PDF statement to a
+checked Excel, CSV or JSON file through a paid, account-gated cloud job.
+<a href="https://github.com/sebastienrousseau/bankstatementparser-mcp">bankstatementparser-mcp</a> parses
+CSV, OFX/QFX, SWIFT MT940 and ISO 20022 CAMT.053 content passed inline, one call at a time, with nothing
+kept between calls. Ours reads a bank's own CSV export, keeps everything as a local ledger, categorizes it
+with your rules, and reconciles it against your expense records.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["MainBook", "bankstatementparser-mcp"], body: [
+  ["Tools", "11 (statement_import through license_activate)", "5 (convert_bank_statement, get_conversion, list_conversions, get_balance, output_folder)", "5 (list_supported_formats, detect_format, parse_statement, validate_statement, summarize_statement) plus 1 resource and 1 prompt"],
+  ["Input format", "CSV export from Revolut, Wise, mBank, PKO BP, ING, N26, or a generic debit/credit layout", "PDF statement only", "Inline content: CSV, OFX/QFX, SWIFT MT940, ISO 20022 CAMT.053/pain.001"],
+  ["Account or key needed", "No. No account, no key", "Yes, a MainBook account and either OAuth sign-in or an mb_live_ API key", "No. No account, no key"],
+  ["State between calls", "A persistent local ledger; re-importing the same file stores 0 duplicates", "None: each conversion is a paid job against that one file", "None: every tool call parses the inline content it was given and keeps nothing"],
+  ["Categorize by rule", "Yes, category_rules, substring or backtrack-safe regex", "No", "No"],
+  ["Reconcile against expense records", "Yes, reconcile_expenses against mcp-expense-tracker", "No", "No"],
+  ["Detect subscriptions", "Yes, recurring_detect with an annualised cost", "No", "No"],
+  ["Where the data lives", "Local JSON in ~/.local/share/mcp-servers/bank-statement/", "MainBook's cloud service; results also written locally by stdio clients", "Nowhere; a private temp file per call, deleted on exit"],
+  ["Licence", "MIT", "MIT", "Apache-2.0"],
+  ["Cost of the server", "Free tier, Pro $19 once", "Free account tier, then paid page credits (price not stated in its README)", "Free, open source"],
+  ["Works with no network", "Yes", "No, every conversion is a network job against MainBook's API", "Yes"],
+] })}
+
+<h2>When to pick MainBook</h2>
+<p>Pick it when the statement you have is a PDF and nothing else: no CSV export option, just a scanned or
+generated PDF from a bank that does not offer one. Its own worked example converts a 4-page, 63-transaction
+PDF and checks that opening balance plus credits minus debits equals the closing balance, flagging any row
+that does not fit rather than passing it through silently. That reconciliation-on-import step is real
+engineering we do not attempt, because we start from a CSV that already carries clean rows. The cost is an
+account, a browser sign-in or an API key, and a page-credit job for every conversion.</p>
+
+<h2>When to pick bankstatementparser-mcp</h2>
+<p>Pick it when the job is a one-off parse of a statement in a less common wire format: SWIFT MT940 or
+ISO 20022 CAMT.053, the formats banks exchange with each other rather than hand to a customer. It is part
+of an eight-server ISO 20022 suite from the same author, so <code>camt053-mcp</code> and
+<code>reconcile-mcp</code> in that suite go considerably deeper on those formats than anything here does.
+Nothing is stored between calls: every tool takes the statement content inline and returns structured rows
+in that one response, which is the right shape for a script but means there is no ledger to categorize,
+no re-import to dedupe, and no month-over-month summary without keeping the output yourself.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the statement is an ordinary CSV export from a retail bank and the job repeats every
+month. There is no account and no per-conversion charge: import once, and every later import of the same
+file adds nothing, because each row is keyed on its date, amount, currency, account and description plus
+an occurrence index, not just the row's position in the file. Money in, money out and the net are reported
+per currency, never mixed. And it is the only one of the three that talks to another server on purpose:
+<code>reconcile_expenses</code> reads the <a href="/s/expense-tracker">expense tracker</a>'s receipts and
+reports which bank debits have nothing behind them and which receipts never reached the bank.</p>
+
+<h2>What we measured</h2>
+<p>The bank-statement package carries 28 automated tests, all passing, covering all seven bank shapes, the
+occurrence-index dedupe, concurrent imports and reconciliation against a seeded expense store. A 60-row
+fixture: 60 transactions stored, then 0 stored and 60 duplicates reported on re-importing the identical
+file. Eight concurrent imports of one file across two processes on one data directory still leave exactly
+the transactions that file contains. Neither MainBook's nor bankstatementparser-mcp's README states a test
+count.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add bank-statement -- npx -y @theluckystrike/mcp-bank-statement</code></pre>
+<p>MainBook:</p>
+<pre><code>uvx mainbook-mcp auth login
+claude mcp add-json mainbook '{"command":"uvx","args":["mainbook-mcp","~/Downloads"]}'</code></pre>
+<p>bankstatementparser-mcp:</p>
+<pre><code>pip install bankstatementparser-mcp
+claude mcp add-json bankstatementparser '{"command":"bankstatementparser-mcp"}'</code></pre>
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer
+walkthrough is in <a href="/guides/bank-statement-csv-categorize-reconcile">categorizing and reconciling a
+bank CSV export</a>.</p>`,
+    faq: [
+      { q: "Can I run the bank statement server and MainBook at the same time?", a: "Yes. Tool names do not collide: ours are statement_import, transactions_list and so on; MainBook's are convert_bank_statement, get_conversion. Nothing is shared between them, and they read different input formats, CSV against PDF." },
+      { q: "Does MainBook or bankstatementparser-mcp categorize transactions or detect subscriptions?", a: "No. Neither documents a category-rule tool or a recurring-charge detector. MainBook converts a PDF to a checked spreadsheet; bankstatementparser-mcp parses one statement per call into structured rows. Rules, reconciliation and recurring detection are specific to ours." },
+      { q: "Which one reads a PDF statement?", a: "MainBook, and only MainBook. Ours and bankstatementparser-mcp both read structured formats a bank already exports, CSV for ours, CSV/OFX/QFX/MT940/CAMT.053 for bankstatementparser-mcp; neither extracts a table from a PDF." },
+      { q: "What does each cost?", a: "MainBook needs a MainBook account and spends page credits per conversion at a price its README does not state. bankstatementparser-mcp is free and open source (Apache-2.0), with no account. Ours has a free tier (2 accounts, 12 months, 5 rules) and a one-time $19 Pro key, or $39 for every server in this collection." },
+      { q: "Where can I read the competitor facts myself?", a: "MainBook's tools, account requirement and PDF-only input come from its README at github.com/human-beyond/mainbook-mcp and its official registry entry for ai.mainbook/bank-statement-converter. bankstatementparser-mcp's tools, formats and licence come from its README at github.com/sebastienrousseau/bankstatementparser-mcp and its registry entry search results for 'statement'. All read on 2026-09-04." },
     ],
   },
 };

@@ -145,9 +145,10 @@ export const CLIENTS = {
 export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
- * five child processes and has no single connector URL. */
+ * five child processes and has no single connector URL. It also skips bank-statement:
+ * remote/src/index.ts has no /mcp/bank-statement route yet, so there is nothing to connect. */
 export function serversFor(clientId) {
-  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => id !== "office-suite") : SERVER_ORDER;
+  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => id !== "office-suite" && id !== "bank-statement") : SERVER_ORDER;
 }
 
 /** Servers. Prompts are lines from each README's "What you can say" table. */
@@ -440,6 +441,24 @@ export const SETUP_SERVERS = {
     pro: "Any size and any batch, custom watermark text, dominant colours.",
     measured: "Quantizing a 300x220 noisy PNG to 16 colours was measured against the original: 115,451 bytes against 39,262, 2.9 times larger, because quantizing destroys the row similarity PNG's own compression depends on. That is why quality only applies to a JPEG output and the extension of out_path picks the codec.",
   },
+  "bank-statement": {
+    title: "MCP Bank Statement",
+    slug: "bank-statement",
+    toolCount: "11 tools",
+    pkg: "@theluckystrike/mcp-bank-statement",
+    sPage: "/s/bank-statement",
+    hosted: null,
+    tagline: "Bank CSV exports categorised, summarised and reconciled with expenses.",
+    does: "It reads a bank CSV export from Revolut, Wise, mBank, PKO BP, ING, N26 or a generic debit/credit layout, finds the header row under any preamble, parses amounts in the file's own locale, and dedupes on re-import so a second import of the same file adds nothing.",
+    prompts: [
+      ["Import this Revolut export and categorise it.", "statement_import"],
+      ["What did I spend this month, by category?", "statement_summary"],
+      ["Which expenses have no bank line, and what subscriptions am I paying?", "reconcile_expenses then recurring_detect"],
+    ],
+    free: "2 accounts, 12 months of history, 5 category rules, summary and search.",
+    pro: "Unlimited accounts, history and rules, reconcile_expenses, recurring_detect, statement_export.",
+    measured: "The 60-row test fixture: 60 transactions stored, then 0 stored and 60 duplicates reported on re-import of the same file. recurring_detect on it found a monthly Spotify charge, 3 occurrences, EUR 9.99, annualised EUR 119.88.",
+  },
 };
 
 export const SERVER_ORDER = Object.keys(SETUP_SERVERS);
@@ -577,6 +596,14 @@ const ANGLE = {
     windsurf: "Twelve tools against Cascade's ceiling of 100, and no network call of any kind, so a server touching client photos costs nothing to leave enabled and sends nothing anywhere.",
     cline: "image_info and image_dominant_colors are reads and safe to auto-approve; leave image_resize, image_compress, image_convert and the rest behind a click, since each one writes a new file to disk.",
   },
+  "bank-statement": {
+    "claude-desktop": "The CSV your bank emails or you export from its web app is already sitting in Downloads, so point statement_import at the absolute path and the categorised month is the very next message, no terminal in between.",
+    "claude-code": "Month-end reconciliation for a project's own account is repo-shaped work, so `claude mcp add bank-statement -- npx -y @theluckystrike/mcp-bank-statement --scope project` keeps the ledger scoped to the project it is reconciling.",
+    cursor: "The chain worth building here is import, then reconcile: bring in the export, then ask which of this month's expense-tracker receipts never showed up as a bank line, in the same chat you were already using for the client's invoice.",
+    vscode: "In agent mode statement_import and statement_summary are tools the agent can call mid-task, so \"pull in this export and tell me if anything looks uncategorised\" runs as one instruction rather than a separate spreadsheet pass.",
+    windsurf: "Eleven tools against Cascade's ceiling of 100, and a bank export is read in one sitting a few times a month rather than polled continuously, so it costs little to leave enabled between statements.",
+    cline: "transactions_list, transactions_search and statement_summary are reads and safe to auto-approve; leave statement_import, category_rules and transaction_categorize behind a click, since each one changes what the ledger says happened.",
+  },
 };
 
 /** One sentence per server for the claude-web (claude.ai / Claude Desktop connector) client.
@@ -597,6 +624,8 @@ const WEB_ANGLE = {
   calendar: "There is no local .ics file to import from over a browser connector, so the practical route here is ics_import with a url or webcal feed, which is a Pro feature: the free tier's local-file import has nothing to point at from claude.ai.",
   kanban: "The board is a JSON file behind the connector's token rather than on your disk, so it is the same board whether you connect from claude.ai in a browser or from Claude Desktop, and task_start_timer still only hands back arguments for the time tracker connector to use.",
   image: "The resized or watermarked file comes back as a one-hour download link rather than a path, the same trade every writing tool makes on the hosted route, so the practical habit is downloading it in the same session you ask for it.",
+  // bank-statement has no entry: it is excluded from claude-web by serversFor(), since
+  // remote/src/index.ts has no /mcp/bank-statement route to connect to yet.
 };
 
 const FAQ = {
@@ -806,7 +835,7 @@ export function setupPage(clientId, serverId) {
   const c = CLIENTS[clientId];
   const s = SETUP_SERVERS[serverId];
   if (!c || !s) return null;
-  if (clientId === "claude-web" && serverId === "office-suite") return null;
+  if (clientId === "claude-web" && (serverId === "office-suite" || serverId === "bank-statement")) return null;
   const canonical = `${BASE}/setup/${clientId}/${serverId}`;
   const title = `${s.title} in ${c.name}`;
 
