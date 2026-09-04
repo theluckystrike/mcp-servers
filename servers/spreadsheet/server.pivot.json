@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/pivot",
   "description": "Group, aggregate and pivot spreadsheet or CSV data from your AI chat: filters, sums, sorts.",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/spreadsheet.mcpb",
-      "version": "0.7.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.8.0/spreadsheet.mcpb",
+      "version": "0.8.0",
       "fileSha256": "a47547eeb3eec2e3becb58b2c97ba9b9d8306754ccbd8007ed1d425b229f7e51",
       "transport": {
         "type": "stdio"

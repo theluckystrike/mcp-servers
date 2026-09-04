@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/calendar",
   "description": "Time zone and calendar helper: meeting slots across countries, DST checks, .ics invites.",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.7.0/timezone.mcpb",
-      "version": "0.7.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.8.0/timezone.mcpb",
+      "version": "0.8.0",
       "fileSha256": "10edb437e86926fb761029196cba41421c82f26aac7c2a49b03268a848b5f333",
       "transport": {
         "type": "stdio"
