@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13",
   "description": "QR codes and barcodes offline: WiFi, vCards, SEPA payment codes, Code 128, EAN-13, SVG or PNG.",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.0/barcode.mcpb",
-      "version": "0.9.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.1/barcode.mcpb",
+      "version": "0.9.1",
       "fileSha256": "10e5395df1d34458287636920aa6a3c222f486336fb52057ac907292d3db6889",
       "transport": {
         "type": "stdio"
