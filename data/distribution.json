@@ -59,7 +59,7 @@
     "guides": {
       "status": "published",
       "url": "https://mcp.zovo.one/guides",
-      "note": "13 guides, 89 setup pages incl. claude-web, 13 compare pages; sitemap 149 URLs"
+      "note": "15 guides, 89 setup pages incl. claude-web, 13 compare pages; sitemap 149 URLs | Round 7 (2026-09-04): added kanban and image guides, 14 setup pages (2 servers x 7 clients) and 2 compare pages; 17 guides, 119 setup+hub pages incl. claude-web, 15 compare pages; sitemap.xml 170 <loc> entries, live-verified"
     },
     "mcpservers.org": {
       "status": "submitted",

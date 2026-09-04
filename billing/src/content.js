@@ -1412,9 +1412,179 @@ ${FOOT}`,
       { q: "How big a file can it read?", a: "Up to 5 MB, which is a few thousand events. Export a narrower date range if a full history export is bigger than that." },
     ],
   },
+
+  "kanban-board-in-claude-with-time-tracking": {
+    title: "Run a kanban board in Claude, with time tracking on the same task",
+    description: "Boards per project, due dates and estimates, and a timer that starts on the exact task. Covers the id counter under concurrent writers and the handoff to the time tracker.",
+    html: `<h1>Run a kanban board in Claude, with time tracking on the same task</h1>
+<p>A board and a timer are usually two apps, so the task you are billing and the task you are looking at
+drift apart within a week. Say "add a task to the nova site board: write the launch email, due Friday, 90
+minutes" and the MCP Kanban server creates the board if it does not exist yet, files the task in backlog,
+and gives it a short id such as <code>NOVA-1</code>. Ask "what's on the nova board?" or "what's overdue?"
+and it answers from the same file. The part that matters for billing is <code>task_start_timer</code>: it
+does not start a timer itself, it hands back the exact project and task name for the time tracker's
+<code>timer_start</code>, so the hours you log are never a re-typed guess at what the task was called.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add kanban -- npx -y @theluckystrike/mcp-kanban</code></pre>
+<p>Cursor reads the same shape of config from <code>.cursor/mcp.json</code> (or the project-level file),
+then restart Cursor:</p>
+<pre><code>{
+  "mcpServers": {
+    "kanban": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-kanban"]
+    }
+  }
+}</code></pre>
+<p>Claude Desktop takes the identical block in <code>claude_desktop_config.json</code>. No account, no
+API key: the server runs locally over stdio and writes to
+<code>~/.local/share/mcp-servers/kanban/</code>.</p>
+
+<h2>What a task actually carries</h2>
+<p>A title, an optional project (a new name creates its board, and a partial name that matches exactly one
+existing project is used as that project so "the nova board" and "nova" do not fork into two boards), a
+column (backlog, todo, doing, review, done by default), a due date, an estimate, a priority and tags. Each
+task's id is a short code like <code>NOVA-1</code> or <code>NOVA-A</code>, base36 of a counter that never
+goes backward, so it stays stable once handed out even after the task is done or deleted.</p>
+
+<h2>The id counter under two writers</h2>
+<p>The counter that produces <code>NOVA-1</code>, <code>NOVA-2</code> and so on lives inside the same JSON
+file as the board it numbers, not in a separate sequence file. That is fine for one client talking to one
+server process. It stops being fine the moment a second client, a second Claude window, a second machine
+on a synced folder, opens the same data directory: a load the counter, add one, save cycle with no lock lets
+two processes both read counter 7, both increment it to 8, and both write a task numbered <code>NOVA-8</code>,
+so one of the two tasks is silently gone under the same id the other one now owns. The fix already shipped
+here is a lock file next to the data file: a writer takes an advisory lock before it reads the counter and
+releases it after the save, so a competing writer waits its turn instead of reading a stale number. This is
+tested directly, not assumed: two server processes pointed at one data directory fire 40 concurrent
+<code>task_add</code> calls at the same board, and the suite asserts that all 40 tasks persist, that every
+id is unique, and that the board's counter ends at exactly 41 (one seed task plus 40), not some smaller
+number a lost write would have produced.</p>
+<p>The practical reason this matters: it is the same failure mode a shared spreadsheet has when two people
+edit a cell at once, except here the two writers are usually a background agent and you typing in the same
+chat, both reaching for the board within the same second. Without the lock, the number stamped on your
+invoice line could be numbering a task nobody remembers adding.</p>
+
+<h2>Starting the timer from the task, not from memory</h2>
+<p>"Start a timer on NOVA-3" calls <code>task_start_timer</code>, which returns the project and task name
+to pass straight to the time tracker's <code>timer_start</code> and records the link on the task itself, so
+a later "what's still running" or a report knows which board item earned those minutes. There is no shared
+process between the two servers and no direct call from one into the other: the kanban server hands back
+arguments, and it is the model (or you, reading the response) that makes the second call. That handoff is
+the whole point of keeping the two servers separate rather than building a timer into the board: the same
+task can also feed <code>task_log_time</code> directly, for minutes you tracked some other way, so
+estimate and actual can be compared in the weekly review without ever starting a live timer.</p>
+
+<h2>Planning and looking back</h2>
+<p><code>board</code> gives a column-by-column summary with estimate and actual totals and an overdue
+count. <code>overdue</code> lists everything past its due date across every board, and takes an
+<code>as_of</code> date to check against a day other than today. <code>weekly_review</code> compares what
+was planned against what actually got done, and estimate against actual, for a week; the current week is
+free, past weeks are Pro. The prompt <code>plan_week</code> turns an open board into a day-by-day plan that
+fits the hours you actually have, rather than listing everything at once.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free covers 3 project boards, 200 open tasks and the default five columns. Pro ($19 once, lifetime)
+removes both limits, adds custom columns per board, full weekly review history, and estimate-versus-actual
+reports for every week instead of only the current one. Product page:
+<a href="/s/kanban">MCP Kanban</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can two people or two agents use the same board at once?", a: "Yes, and that is the case the id counter is built for. A file lock around the read-increment-save cycle means two server processes writing to one data directory in parallel still hand out unique ids and lose no tasks, which is verified by a test that fires 40 concurrent task_add calls from two processes and checks every id and the final counter." },
+      { q: "Does starting a timer from a task require the time tracker to be running?", a: "It requires the time-tracker server to be configured in the same client. task_start_timer only returns the arguments; it does not start anything itself, so without the time tracker installed you get the project and task name back and nothing else happens." },
+      { q: "What happens to a task's id if I delete it?", a: "Nothing reuses it. The counter only moves forward, so a deleted NOVA-4 leaves a gap rather than handing NOVA-4 to the next task you add." },
+      { q: "Can I rename the columns?", a: "On Pro, yes, per board, with columns_set. Tasks sitting in a column you remove move to the first column automatically rather than being dropped." },
+      { q: "Where is the board data stored?", a: "Plain JSON under ~/.local/share/mcp-servers/kanban/ (or $XDG_DATA_HOME). Nothing is uploaded and there is no account." },
+    ],
+  },
+
+  "image-resize-compress-watermark-from-chat": {
+    title: "Resize, compress and watermark images from a chat message",
+    description: "Resize, convert, crop, thumbnail, watermark and strip metadata with no upload. Covers why quantizing a PNG made a test file 2.9x larger, and how the server avoids it.",
+    html: `<h1>Resize, compress and watermark images from a chat message</h1>
+<p>"Make this 1200 pixels wide" or "get this under a megabyte" is normally a trip to a web uploader,
+which is also the moment a client's product photo or a screenshot with something on screen leaves your
+machine. The MCP Image server does the same small jobs locally: resize, convert between PNG, JPEG, BMP,
+GIF and TIFF, compress with a real before-and-after byte count, crop, batch-thumbnail a folder, watermark
+with your business name, and strip the EXIF and GPS block a phone camera writes into every photo. No
+network call of any kind, not even for licensing.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add image -- npx -y @theluckystrike/mcp-image</code></pre>
+<p>Cursor reads the same block from <code>.cursor/mcp.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "image": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-image"]
+    }
+  }
+}</code></pre>
+<p>Claude Desktop takes the identical block in <code>claude_desktop_config.json</code>. Data lives under
+<code>~/.local/share/mcp-servers/image/</code>: a register of the last 500 operations, not your images,
+which stay where you put them.</p>
+
+<h2>Why "compress" means something different for a PNG</h2>
+<p>The tool most people reach for first is <code>image_compress</code>, and the surprising part is that
+its one real knob, <code>quality</code>, only does anything on a JPEG output. A JPEG throws away detail to
+get smaller, and quality controls how much. A PNG is lossless: there is no such dial, and a server that
+silently accepted <code>quality: 40</code> for a PNG and returned the same file would look like it worked
+while doing nothing.</p>
+<p>Before shipping that behaviour, the alternative was actually tried: pass a PNG through palette
+quantization, the standard way to shrink a PNG by cutting it down to a small fixed set of colours. Run
+against a 300x220 noisy test PNG, quantizing to 16 colours did not shrink the file. It produced a 115,451
+byte file against a 39,262 byte original, 2.9 times larger, because the encoder here still writes RGBA
+either way, and quantizing colours destroys the row-to-row pixel similarity that PNG's own deflate step
+was exploiting to compress in the first place. A tool that claims to compress and hands back a bigger file
+is worse than one that is honest about which knob exists at all, so the server does not quantize. Instead
+it reports the byte count before and after, the percentage saved, and the method that did the work, and if
+compressing a PNG would only reduce it by resizing, it says so plainly: for a PNG the lever is
+<code>max_width</code>, not <code>quality</code>. The output format follows the extension of
+<code>out_path</code>, so the practical move for a PNG screenshot you actually want smaller is to write it
+out as a <code>.jpg</code> instead, where quality applies and a photo typically drops 80 to 95 percent.</p>
+
+<h2>The rest of the toolbox</h2>
+<p><code>image_resize</code> fits inside a box, fills and crops the overflow, or stretches exactly, with
+one of width or height following the other. <code>image_crop</code> refuses a rectangle that runs past an
+edge rather than silently clamping it. <code>image_thumbnails</code> and <code>image_batch_resize</code>
+reserve every output path before writing any of them, so a collision on file three does not leave files one
+and two behind as a half-finished batch. <code>image_watermark</code> reads the shared business name from
+the same profile the invoice and docx servers write, or takes custom text on Pro.
+<code>image_dominant_colors</code> reports the hex codes that cover most of an image and the share each one
+holds.</p>
+
+<h2>What "strip metadata" actually removes</h2>
+<p><code>image_strip_metadata</code> decodes the image to raw pixels and re-encodes from those pixels
+alone, so EXIF, GPS coordinates, the camera and lens, the capture time, XMP packets and colour profiles are
+not deleted one field at a time, they are simply never handed to the encoder. Every other writing tool here
+has the same side effect: resizing a photo also drops its EXIF, since it goes through the same
+decode-then-encode path.</p>
+
+<h2>Refusing a decompression bomb before it decodes</h2>
+<p>A 4 KB PNG can declare a 20,000 by 20,000 pixel canvas in its header. Decoding that allocates roughly
+1.6 GB of raw RGBA and can take the process down before any size check written after the decode would ever
+run, so the declared width and height are read out of the file's own header, PNG IHDR, the JPEG SOF
+segment, the GIF logical screen descriptor, the BMP info header, the first TIFF IFD, and a file over
+10,000 pixels on a side is refused there, with the memory it would have taken named in the error.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free covers <code>image_info</code> unlimited, and resize, convert, compress, crop and strip-metadata on
+sources up to 4 megapixels, batches of 5 files. Pro ($19 once, lifetime) removes the size and batch limits,
+opens custom watermark text instead of only the business name, and adds dominant-colour reports. Product
+page: <a href="/s/image">MCP Image Tools</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why did compressing my PNG not make it smaller?", a: "quality is a JPEG-only parameter; a PNG is lossless and has no such dial. A measured test of the obvious alternative, palette quantization, produced a file 2.9 times larger (115,451 bytes against 39,262) because quantizing destroys the pixel similarity PNG's own compression depends on. Use max_width for a PNG, or write the output as .jpg where quality genuinely shrinks the file." },
+      { q: "Does this upload my photos anywhere?", a: "No. There is no network call of any kind, including for licence checks, which are verified offline. A client photo never leaves the machine it was resized on." },
+      { q: "What image formats does it read and write?", a: "PNG, JPEG, BMP, GIF and TIFF, detected by magic bytes rather than file extension. No WebP, AVIF, HEIC or SVG: there is no pure JavaScript decoder for those worth shipping without a native dependency." },
+      { q: "Can it edit the original file in place?", a: "No, on purpose. Every tool writes a new file and refuses to overwrite an existing out_path unless you pass overwrite: true, and an out_path that resolves to one of the inputs is refused outright so a result can never be written back over the source that produced it." },
+      { q: "How big an image can it handle?", a: "Up to 50 MB on disk and 10,000 pixels per side on Pro; free tier tools cap sources at 4 megapixels. The pixel limit is checked from the file header before anything is decoded, specifically to refuse a decompression bomb." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize and compress.",
 };

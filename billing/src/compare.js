@@ -6,7 +6,7 @@
 
 export const COMPARE_INDEX = {
   title: "MCP server comparisons: ours against the closest alternatives",
-  description: "Thirteen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
+  description: "Fifteen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
 };
 
 const t = (rows) =>
@@ -1041,6 +1041,156 @@ walkthrough is in <a href="/guides/calendar-ics-free-busy-in-claude">reading a .
       { q: "Does any of these need an account?", a: "google-calendar-mcp does, with a full OAuth 2.0 setup and a browser consent flow before first use. Ours and mcp-ical need no account: ours reads a file you exported or, on Pro, a public feed URL; mcp-ical subscribes to a public .ics URL directly." },
       { q: "What does each cost?", a: "mcp-ical and google-calendar-mcp are free per their npm listings; the Google account and API access behind google-calendar-mcp are free within Google's own quota. Ours has a free tier and a one-time $19 Pro key, or $39 for the whole server collection." },
       { q: "Where can I read the competitor facts myself?", a: "mcp-ical's tool list comes from its README at github.com/voxxit/mcp-ical and its npm record for @voxxit/mcp-ical. google-calendar-mcp's tool list and OAuth requirement come from its README at github.com/nspady/google-calendar-mcp and its npm record for @cocal/google-calendar-mcp. All read on 2026-09-03." },
+    ],
+  },
+
+  kanban: {
+    title: "MCP Kanban vs KanbanThing and SwiftKanban CLI: which MCP server to pick",
+    description: "A local board with due dates, estimates and a time-tracker handoff against a hosted no-account board and a CLI for an enterprise SaaS. Tool counts, accounts, and where the board lives.",
+    html: `<h1>MCP Kanban vs KanbanThing and SwiftKanban CLI: which MCP server to pick</h1>
+<p>All three let an agent move a card. <a href="https://github.com/tronschell/kanban-thing">KanbanThing</a>
+hosts the board itself at a shareable link with no account at all, closest to ours in spirit but not in
+where the data lives or how long it stays there. <a href="https://github.com/digiteinfotech/sk-cli">SwiftKanban
+CLI</a> (npm <code>@nimblework/sk-cli</code>) is a different kind of tool: a client for Nimblework's
+SwiftKanban, an existing enterprise product, so it needs an account and a login before its MCP server does
+anything. Ours writes JSON files under your home directory, keeps boards until you delete them, and is the
+only one of the three that hands a task straight to a time tracker.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["KanbanThing", "SwiftKanban CLI"], body: [
+  ["Tools", "16 (14 board tools plus 2 license tools)", "8: create_board, get_board, list_columns, list_cards, create_card, move_card, update_card, delete_card", "Boards, cards list/get/create/update/delete via its CLI/MCP; exact MCP tool count not listed, commands mirror the CLI surface"],
+  ["Account or key needed", "No. No account, no key", "No. Streamable HTTP, no login; a tool call needs the board id or URL and its password", "Yes. A SwiftKanban account with the Integration User role, authenticated once with sk login to get a JWT"],
+  ["Where the board lives", "Local JSON in ~/.local/share/mcp-servers/kanban/", "KanbanThing's own hosted Supabase storage, reached over the network on every call", "Your organisation's SwiftKanban instance"],
+  ["Board lifetime", "Kept until you delete it", "Deleted up to 60 days after creation, stated in its own README", "Whatever your SwiftKanban admin's retention is"],
+  ["Due dates, estimates, priority, tags", "All four, plus columns per board", "Due date and colour only; no estimate, priority or tags", "SwiftKanban's own card fields (story points, priority) via update, not documented per MCP tool"],
+  ["Hands a task to a time tracker", "task_start_timer returns the exact timer-tracker arguments and records the link", "Not offered", "Not offered"],
+  ["Weekly review, overdue, estimate vs actual", "board, overdue and weekly_review, current week free, history on Pro", "Not offered", "Not offered"],
+  ["Licence", "MIT", "MIT", "MIT"],
+  ["Cost", "Free tier, Pro $19 once", "Free, no paid tier at all per its README", "Free CLI; SwiftKanban itself is a licensed product"],
+] })}
+
+<h2>When to pick KanbanThing</h2>
+<p>Pick it for a board that needs to be open in a browser too, shared by a link with a password rather than
+an account, for something with an end in sight: a retrospective, a short project, a personal board you
+restart every few weeks. Its own README says boards are deleted up to 60 days after creation and states
+plainly that this is the wrong tool if you need long-lived project history. There is deliberately no way
+to list or search boards from its MCP server either, since every tool takes a board id or URL rather than
+a name, so the agent (or you) has to hold on to the link.</p>
+
+<h2>When to pick SwiftKanban CLI</h2>
+<p>Pick it only if your organisation already runs SwiftKanban. It is a thin client for that product, not a
+standalone board: <code>sk login</code> against your account is required before any MCP tool works, and
+your account needs the Integration User role, which an admin grants. If SwiftKanban is where your team's
+work already lives, this is the correct way to reach it from Claude; if it is not, there is no board to
+connect to.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when you want the board to still be there next year with no account, no browser tab and no
+retention clock, and when the reason you have a board at all is billing the hours behind it. Due date,
+estimate, priority and tags on every task, a weekly review comparing planned against done, and
+<code>task_start_timer</code> handing the exact project and task name to
+<a href="/s/time-tracker">MCP Time Tracker</a> are the parts neither competitor has: KanbanThing has no
+time tracking and a 60 day board lifetime, SwiftKanban CLI has no time tracking and no board of its own to
+begin with.</p>
+
+<h2>What we measured</h2>
+<p>The kanban package carries automated tests covering the protocol handshake, board and task CRUD, corrupt
+data recovery, and concurrent writers. Two server processes on one data directory firing 40 concurrent
+<code>task_add</code> calls at the same board all persisted with unique ids and the id counter landed on
+exactly 41, which is what the advisory lock around the file-backed counter is there to guarantee. Neither
+competitor's README states a test count or a concurrency guarantee for its own storage.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add kanban -- npx -y @theluckystrike/mcp-kanban</code></pre>
+<p>KanbanThing:</p>
+<pre><code>claude mcp add --transport http kanbanthing https://www.kanbanthing.com/mcp</code></pre>
+<p>SwiftKanban CLI:</p>
+<pre><code>npm install -g @nimblework/sk-cli
+sk login --user you@example.com --password yourpassword
+claude mcp add swiftkanban -- sk-mcp</code></pre>
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer
+walkthrough is in <a href="/guides/kanban-board-in-claude-with-time-tracking">running a kanban board in
+Claude with time tracking</a>.</p>`,
+    faq: [
+      { q: "Can I run MCP Kanban and KanbanThing at the same time?", a: "Yes. Tool names do not collide: ours are task_add, task_move and so on; KanbanThing uses create_card, move_card and its own names. Nothing is shared between them, so a task added in one board is invisible to the other." },
+      { q: "Which one keeps a board the longest?", a: "Ours: local JSON is kept until you delete it. KanbanThing's own README states boards are deleted up to 60 days after creation, and calls out that this is on purpose. SwiftKanban's retention is whatever your organisation's admin sets." },
+      { q: "Does either competitor start a timer from a task?", a: "No. task_start_timer, which returns the exact arguments for the time tracker's timer_start and records the link on the task, is not offered by KanbanThing or SwiftKanban CLI." },
+      { q: "What does each cost?", a: "KanbanThing states in its own README that there are no accounts, no teams and no paid tier at all. SwiftKanban CLI is a free, MIT-licensed client; SwiftKanban itself is a licensed enterprise product you would already be paying for. Ours has a free tier and a one-time $19 Pro key, or $39 for the whole server collection." },
+      { q: "Where can I read the competitor facts myself?", a: "KanbanThing's tool list and 60-day retention come from its README at github.com/tronschell/kanban-thing and its CLI documentation page at kanbanthing.com/cli. SwiftKanban CLI's login requirement and commands come from its README at github.com/digiteinfotech/sk-cli and its npm record for @nimblework/sk-cli. All read on 2026-09-04." },
+    ],
+  },
+
+  image: {
+    title: "MCP Image Tools vs Pictomancer and Image Resize API: which MCP server to pick",
+    description: "Local resize, compress, crop, watermark and metadata strip against two metered per-call APIs that need a URL. Tool counts, pricing per operation, and what happens to a PNG.",
+    html: `<h1>MCP Image Tools vs Pictomancer and Image Resize API: which MCP server to pick</h1>
+<p>All three resize an image from a chat. <a href="https://pictomancer.ai">Pictomancer</a>
+(<code>ai.pictomancer/image-processing</code> on the official registry, hosted at
+<code>api.pictomancer.ai/mcp</code>) is a metered API: six operations, billed per call, and every input is
+a URL it fetches, not a file on your disk. <a href="https://github.com/Br0ski777/image-resize-x402">Image
+Resize API</a> (<code>io.github.Br0ski777/image-resize</code>) is narrower still: one tool, resize only,
+paid per call in USDC through the x402 protocol, also from a URL. Ours reads and writes local files, does
+more of the small jobs a freelancer actually needs, and charges nothing per call.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["Pictomancer", "Image Resize API"], body: [
+  ["Tools", "12 (10 image tools plus 2 license tools)", "6 operations: analyze, resize, compress, crop, convert, ai-generated (plus a provenance feature)", "1: media_resize_image"],
+  ["Input", "A local file path on your machine", "A URL Pictomancer fetches; there is no local file upload path documented", "A URL the server fetches; same constraint"],
+  ["Pricing", "Free tier and $19 one-time Pro, or $39 for every server", "Free: analyze. Paid: from $0.001 per operation after 50 free requests, billed per call, no subscription", "$0.008 per call, x402 micropayment in USDC on Base, no free tier stated beyond a 402 challenge per call"],
+  ["Account or key needed", "No. No account, no key", "No for the first 50 requests; an API key and card after that, per its own pricing page", "No signup, but a funded x402-capable wallet is required for every call"],
+  ["Watermark, thumbnails, dominant colours", "All three offered", "Not offered", "Not offered"],
+  ["Strip EXIF and GPS metadata", "image_strip_metadata, a dedicated tool", "Not documented as a distinct operation", "Not offered"],
+  ["Decompression bomb guard", "Declared header dimensions checked before decode, refused over 10,000 px per side", "Not documented", "Not documented"],
+  ["Licence", "MIT", "Not stated on its site or registry entry", "MIT"],
+  ["Works with no network", "Yes, no network call of any kind", "No, every call is a network request to api.pictomancer.ai", "No, every call is a network request plus an on-chain payment"],
+] })}
+
+<h2>When to pick Pictomancer</h2>
+<p>Pick it when the image already lives at a URL, such as something already uploaded to a CDN or a public
+bucket, and you want resize, compress, crop, convert or an AI-generated image pipeline billed by the call
+with sub-30ms processing. Its own pricing page states the first 50 requests are free with no card and no
+account, and <code>analyze</code>, a free metadata read, lets you know the cost before committing to a
+paid operation. It has no watermarking, no metadata stripping as its own operation, and no path for a file
+sitting on your machine: everything is fetched from a URL first.</p>
+
+<h2>When to pick Image Resize API</h2>
+<p>Pick it if you already pay per call through x402 for other tools in the same marketplace and want one
+more: resize from a URL, output PNG, JPEG or WebP, no signup at all beyond a funded wallet. It does one
+job. There is no compress, crop, watermark, batch or metadata tool, and its own README says explicitly what
+it is not for: OCR, QR codes or screenshots, each pointed at a different tool in the same marketplace.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the photo is already on your machine and should stay there: no URL to fetch, no per-call
+charge, no wallet, no upload of a client's product photo to prepare it for a proposal. The measured reason
+<code>image_compress</code> only takes a <code>quality</code> parameter seriously for a JPEG output is
+that palette quantization was tried against a PNG and made the file 2.9 times larger (115,451 bytes
+against a 39,262 byte original) rather than smaller, so the server reports the real byte count instead of
+pretending a knob works where it does not. Watermarking, batch thumbnails, dominant colours and metadata
+stripping are also not offered by either competitor.</p>
+
+<h2>What we measured</h2>
+<p>The image package carries automated tests covering format detection by magic bytes, the resize and crop
+math, decompression-bomb refusal from declared header dimensions, and the exclusive-create path reservation
+that stops a batch from clobbering itself under concurrent writers. Neither competitor's site or registry
+entry states a test count.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add image -- npx -y @theluckystrike/mcp-image</code></pre>
+<p>Pictomancer:</p>
+<pre><code>claude mcp add --transport http pictomancer https://api.pictomancer.ai/mcp</code></pre>
+<p>Image Resize API:</p>
+<pre><code>claude mcp add --transport http image-resize https://image-resize.api.klymax402.com/mcp</code></pre>
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer
+walkthrough is in <a href="/guides/image-resize-compress-watermark-from-chat">resizing, compressing and
+watermarking images from chat</a>.</p>`,
+    faq: [
+      { q: "Can I run MCP Image Tools and Pictomancer at the same time?", a: "Yes. Tool names do not collide: ours are image_resize, image_compress and so on; Pictomancer's operations are named resize, compress, crop, convert. Nothing is shared between them." },
+      { q: "Which one works on a file that is only on my computer?", a: "Ours. Pictomancer and Image Resize API both take a URL they fetch over the network; neither documents a local file upload path. Ours reads and writes files on disk directly and makes no network call at all." },
+      { q: "What does each cost per image?", a: "Pictomancer is free for the first 50 requests, then from $0.001 per operation, billed per call. Image Resize API is $0.008 per call in USDC via x402, no free tier beyond its 402 payment challenge. Ours has a free tier with a 4 MP size cap and batches of 5, and a one-time $19 Pro key with no subscription and no per-call charge." },
+      { q: "Do either competitors watermark an image or strip its metadata?", a: "No. Neither Pictomancer nor Image Resize API documents a watermark or a dedicated metadata-stripping operation. Ours offers both: image_watermark reads the shared business profile, and image_strip_metadata re-encodes from raw pixels so EXIF, GPS and XMP are never carried across." },
+      { q: "Where can I read the competitor facts myself?", a: "Pictomancer's operations and pricing come from its own site at pictomancer.ai and its official MCP registry entry for ai.pictomancer/image-processing. Image Resize API's tool, price and scope come from its README at github.com/Br0ski777/image-resize-x402 and its registry entry for io.github.Br0ski777/image-resize. All read on 2026-09-04." },
     ],
   },
 };

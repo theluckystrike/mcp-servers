@@ -404,6 +404,42 @@ export const SETUP_SERVERS = {
     pro: "Unlimited calendars, any window, unlimited exports, URL and webcal feed imports.",
     measured: "VTIMEZONE blocks in the file are ignored on purpose: every offset is computed from the ICU data inside Node from the TZID name, which is what keeps a weekly 10:00 Warsaw meeting at 10:00 local across the March clock change instead of drifting to 11:00.",
   },
+  kanban: {
+    title: "MCP Kanban",
+    slug: "kanban",
+    toolCount: "16 tools",
+    pkg: "@theluckystrike/mcp-kanban",
+    sPage: "/s/kanban",
+    hosted: null,
+    tagline: "A task board per project that hands off to the time tracker.",
+    does: "It keeps tasks per project in columns with due dates, estimates, priorities and tags, shows the board, overdue items and a weekly review of planned versus done, and starts a time-tracker timer from a task with the link recorded on it.",
+    prompts: [
+      ["Add a task to the nova site board: write the launch email, due Friday, 90 minutes.", "task_add"],
+      ["What's overdue, and start the timer on the API task.", "overdue then task_start_timer"],
+      ["Weekly review.", "weekly_review"],
+    ],
+    free: "3 project boards, 200 open tasks, the default five columns.",
+    pro: "Unlimited projects and tasks, custom columns, full weekly review history, estimates versus actuals every week.",
+    measured: "Two server processes on one data directory firing 40 concurrent task_add calls at the same board all persisted with unique ids and the counter landed on exactly 41, which is what the advisory lock around the id counter is there to guarantee.",
+  },
+  image: {
+    title: "MCP Image Tools",
+    slug: "image",
+    toolCount: "12 tools",
+    pkg: "@theluckystrike/mcp-image",
+    sPage: "/s/image",
+    hosted: null,
+    tagline: "Resize, convert, compress and watermark images, pure JavaScript.",
+    does: "It reads PNG, JPEG, BMP, GIF and TIFF, resizes with inside, cover or exact fit, converts formats, compresses with a byte report, crops, batches thumbnails, strips metadata by re-encoding, and watermarks with the shared business name or custom text.",
+    prompts: [
+      ["Make this 1200 px wide and under 300 KB.", "image_compress"],
+      ["Thumbnail these five and watermark them.", "image_thumbnails then image_watermark"],
+      ["Strip the GPS coordinates before I send this.", "image_strip_metadata"],
+    ],
+    free: "info, resize, convert, compress, crop and strip-metadata on images up to 4 MP; batches of 5.",
+    pro: "Any size and any batch, custom watermark text, dominant colours.",
+    measured: "Quantizing a 300x220 noisy PNG to 16 colours was measured against the original: 115,451 bytes against 39,262, 2.9 times larger, because quantizing destroys the row similarity PNG's own compression depends on. That is why quality only applies to a JPEG output and the extension of out_path picks the codec.",
+  },
 };
 
 export const SERVER_ORDER = Object.keys(SETUP_SERVERS);
@@ -525,6 +561,22 @@ const ANGLE = {
     windsurf: "Twelve tools against Cascade's 100-tool ceiling, and this one is read from a file you re-import occasionally rather than a service polled continuously, so it costs little to leave enabled.",
     cline: "events_list, free_busy, conflicts and next_event are read-only and safe to auto-approve; leave ics_import, event_export and ics_forget, which write or remove local data, behind a click.",
   },
+  kanban: {
+    "claude-desktop": "The board sits open in the same window all day, so \"what's overdue\" and \"start the timer on NOVA-3\" are the two questions worth asking here before you touch anything else, since both read the same file this client already has a path to.",
+    "claude-code": "Give the board the repository's own name as its project so `task_add` in that directory files against the right board automatically, and `claude mcp add kanban -- npx -y @theluckystrike/mcp-kanban --scope project` keeps that mapping in the repo rather than only on your machine.",
+    cursor: "The pattern worth building is a chat that starts with \"what's on the nova board\" and ends with \"start the timer on the one I'm about to work on,\" so the task you picked and the task the timer bills are the same string, not two names that drifted apart.",
+    vscode: "In agent mode task_add and task_done are tools the agent can reach mid-task, so \"mark NOVA-3 done and log 40 minutes\" is one instruction instead of opening the board separately to close it out.",
+    windsurf: "Sixteen tools against Cascade's ceiling of 100, and a board is read constantly through a work session, so it earns its seat more than a server you touch once a week.",
+    cline: "board, task_list, overdue and project_list are reads and safe to auto-approve; leave task_add, task_move, task_delete and columns_set behind a click, since each one changes what the board says happened.",
+  },
+  image: {
+    "claude-desktop": "Give it an absolute path to the photo, the same rule every entry in this config follows, and the resized or watermarked copy lands next to the original where Finder can find it without a terminal in between.",
+    "claude-code": "Preparing images for a repository's docs or a release asset is a build step you already run from here, so `claude mcp add image -- npx -y @theluckystrike/mcp-image --scope project` keeps the tool scoped to the project whose images it is touching.",
+    cursor: "The chain worth building is compress, then thumbnail: get a hero image under the size budget the site enforces, then batch the rest of the folder into the same shape in one sentence.",
+    vscode: "In agent mode image_resize and image_convert are reachable mid-task, so \"shrink the screenshots in this PR to 1200 wide before I commit\" runs as one instruction rather than a manual export pass.",
+    windsurf: "Twelve tools against Cascade's ceiling of 100, and no network call of any kind, so a server touching client photos costs nothing to leave enabled and sends nothing anywhere.",
+    cline: "image_info and image_dominant_colors are reads and safe to auto-approve; leave image_resize, image_compress, image_convert and the rest behind a click, since each one writes a new file to disk.",
+  },
 };
 
 /** One sentence per server for the claude-web (claude.ai / Claude Desktop connector) client.
@@ -543,6 +595,8 @@ const WEB_ANGLE = {
   clauses: "The assembled document is a download link, and the library itself lives behind the token, so the same clause set is there whether you connect from claude.ai in a browser or Claude Desktop.",
   pdf: "A merged or stamped PDF comes back as a one-hour download link rather than a path, and pdf_watermark_business needs the shared business profile to already exist behind that same token, since there is no local profile.json to read it from.",
   calendar: "There is no local .ics file to import from over a browser connector, so the practical route here is ics_import with a url or webcal feed, which is a Pro feature: the free tier's local-file import has nothing to point at from claude.ai.",
+  kanban: "The board is a JSON file behind the connector's token rather than on your disk, so it is the same board whether you connect from claude.ai in a browser or from Claude Desktop, and task_start_timer still only hands back arguments for the time tracker connector to use.",
+  image: "The resized or watermarked file comes back as a one-hour download link rather than a path, the same trade every writing tool makes on the hosted route, so the practical habit is downloading it in the same session you ask for it.",
 };
 
 const FAQ = {
