@@ -60,7 +60,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `quote_accept` | Mark it accepted and turn it into an invoice: created directly in the invoice server when its store is present, otherwise handed back as `invoice_create`-ready items |
 | `quote_decline` | Mark it lost, with a reason, so it stops counting against the open quotes and lands in the win rate |
 | `quote_pdf` | Render the A4 PDF and return the path. Pro |
-| `quote_report` | Open, accepted, declined and expired totals per currency, the value still open and the win rate. Pro |
+| `quote_report` | Open, accepted, declined and expired totals per currency, the value still open and the win rate. Free for the current calendar year to date |
 | `license_status` | Show free or Pro mode |
 | `license_activate` | Activate a Pro key (verified offline) |
 
@@ -120,7 +120,7 @@ anywhere on the input side, so a price can never be entered ten times too small.
 | `quote_send_text` (email-ready text) | Yes, unlimited | Yes, unlimited |
 | Accept, decline, revise, VAT, discounts, multi-currency | Yes | Yes |
 | `quote_pdf` | No | Yes |
-| `quote_report` (pipeline and win rate) | No | Yes |
+| `quote_report` (pipeline and win rate) | Current calendar year to date | Any date range |
 | PDF branding | n/a | No footer credit, and your logo |
 
 The cap counts quotes that are still OPEN. Accepting, declining or letting one lapse frees the slot, so a
@@ -187,7 +187,7 @@ included -- fails with `restore a good copy ... then delete the marker` until a 
 ## Limits and honest caveats
 
 - The free tier holds 5 open quotes at a time. The text export, accepting, declining and revising are
-  unrestricted on free; the PDF and the pipeline report are Pro.
+  unrestricted on free, and the pipeline report answers free for the current calendar year to date; the PDF and a wider report range are Pro.
 - Accepting writes the invoice through the shared engine, so the invoice server's own free cap of 3 invoices
   per calendar month is not applied to it. The quotes cap is the one that applies here, and the response
   says so.

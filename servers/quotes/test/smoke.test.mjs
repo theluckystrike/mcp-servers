@@ -150,11 +150,17 @@ test("free tier: 5 open quotes and the text export, no PDF and no report", async
   const now = await c.call("quote_create", { client: "C5", items: ITEMS, currency: "EUR" });
   assert.equal(now.isError, false, now.text);
 
-  for (const tool of ["quote_pdf", "quote_report"]) {
-    const r = await c.call(tool, { id: ids[1] });
-    assert.equal(r.isError, true, `${tool} must be Pro`);
-    assert.match(r.text, /Pro feature/);
-  }
+  const pdf = await c.call("quote_pdf", { id: ids[1] });
+  assert.equal(pdf.isError, true, "quote_pdf must be Pro");
+  assert.match(pdf.text, /Pro feature/);
+
+  // D-R55: the pipeline report answers free for the current year to date, cap named.
+  const rep = await c.json("quote_report", {});
+  assert.equal(rep.from, `${new Date().getFullYear()}-01-01`);
+  assert.match(rep.free_tier_note, /current calendar year to date/);
+  assert.equal(rep.counts.open, 5);
+  assert.equal(rep.counts.declined, 1);
+  assert.equal(rep.win_rate_percent, 0);
 });
 
 test("Pro renders an A4 PDF", async (t) => {

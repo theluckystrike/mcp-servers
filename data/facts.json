@@ -386,8 +386,8 @@
       "does": "Creates numbered quotes (Q-YYYY-NNNN) with line items in integer minor units, VAT per line or from the shared business profile, discounts, multi-currency and a validity date computed in your own timezone; renders a pasteable plain-text quote and an A4 PDF in the invoice layout; accepting a quote writes a real invoice into the mcp-invoice store with the agreed numbers copied, never recomputed; reports pipeline value and win rate.",
       "for": "Freelancers and small studios who quote before they invoice.",
       "example": "\"Quote Acme for 12 hours at 90 EUR plus a 300 EUR setup, 23% VAT, good for 14 days.\" ... \"Acme said yes, turn quote Q-2026-0001 into an invoice.\"",
-      "free": "5 open quotes at a time, unlimited pasteable text quotes, accept, decline, revise, VAT, discounts and multi-currency.",
-      "pro": "Unlimited open quotes, A4 PDF with your logo and no footer credit, pipeline and win-rate report.",
+      "free": "5 open quotes at a time, unlimited pasteable text quotes, accept, decline, revise, VAT, discounts and multi-currency, pipeline and win-rate report for the current calendar year to date.",
+      "pro": "Unlimited open quotes, A4 PDF with your logo and no footer credit, pipeline and win-rate report over any date range.",
       "storage": "~/.local/share/mcp-servers/quotes/"
     }
   },

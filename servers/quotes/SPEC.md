@@ -32,7 +32,7 @@ own number series.
 | `quote_get` | The full stored record for one quote: every line with its unit price and VAT, the totals, the validity date, the notes and, when it was accepted, the invoice it became. |
 | `quote_list` | Every quote with its client, total, validity and state (open, expired, accepted or declined). Filter by state, by client or by quote date range. |
 | `quote_pdf` | Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro. |
-| `quote_report` | Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Pro. |
+| `quote_report` | Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Free covers the current calendar year to date; Pro reports over any date range. |
 | `quote_send_text` | Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier. |
 | `quote_update` | Revise a quote that is still open: line items, currency, discount, VAT default, validity or notes. Totals are recomputed. An accepted or declined quote is never edited. |
 
@@ -139,7 +139,7 @@ Call this tool to write the A4 PDF of one quote and return the file path. Same l
 
 Title: Quote pipeline and win rate
 
-Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Pro.
+Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Free covers the current calendar year to date; Pro reports over any date range.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
@@ -211,7 +211,8 @@ directory (`.../mcp-servers/invoice/invoices.json`, `clients.json`, `counter.jso
 - `MAX_ITEMS` = 200 line items per quote.
 - `MAX_MINOR` = 1e12 per quantity and per unit price; a total that is not a safe integer is refused.
 - `MAX_VALIDITY_DAYS` = 3650.
-- `quote_pdf` and `quote_report` are Pro-only.
+- `quote_pdf` is Pro-only.
+- `quote_report` is free for the current calendar year to date; a wider range is Pro. The response names the cap.
 
 ## Invariants
 

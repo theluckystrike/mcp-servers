@@ -22,6 +22,11 @@ import {
 
 /** Free tier: five quotes that are still open. Accepted, declined and expired ones never count. */
 const FREE_OPEN_QUOTES = 5;
+/**
+ * D-R55: the pipeline report is a check the caller otherwise does by hand (and gets the
+ * win-rate denominator wrong on: an unanswered quote is not a loss the client chose). It
+ * is free for the current calendar year to date; Pro reports over any range.
+ */
 /** A quote a human reads is not a 1,000-line export. */
 const MAX_ITEMS = 200;
 /** Guard against 1e308 arriving as a price and producing an unrepresentable total. */
@@ -685,17 +690,28 @@ server.registerTool("quote_pdf", {
 
 server.registerTool("quote_report", {
   title: "Quote pipeline and win rate",
-  description: "Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Pro.",
+  description: "Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Free covers the current calendar year to date; Pro reports over any date range.",
   inputSchema: {
     from: z.string().optional().describe("YYYY-MM-DD, earliest quote date to count"),
     to: z.string().optional().describe("YYYY-MM-DD, latest quote date to count"),
   },
 }, async (a) => {
   try {
-    if (!gate.isPro()) return fail(gate.upgradeText("quote report"));
+    const pro = gate.isPro();
     const day = today();
+    // The free tier answers over the current calendar year to date rather than refusing:
+    // a report withheld is recomputed by hand, and the win-rate basis is the part that
+    // gets it wrong.
+    const yearStart = `${day.slice(0, 4)}-01-01`;
+    let from = a.from;
+    let capNote: string | undefined;
+    if (!pro && (!from || from < yearStart)) {
+      from = yearStart;
+      capNote = `Free tier reports the current calendar year to date (${yearStart} onwards)${a.from ? ` instead of ${a.from}` : ""}; ` +
+        gate.upgradeText("the pipeline report over any date range");
+    }
     let list = getQuotes();
-    if (a.from) list = list.filter((q) => q.issue_date >= a.from!);
+    if (from) list = list.filter((q) => q.issue_date >= from!);
     if (a.to) list = list.filter((q) => q.issue_date <= a.to!);
 
     const states: QuoteState[] = ["open", "accepted", "declined", "expired"];
@@ -714,6 +730,8 @@ server.registerTool("quote_report", {
 
     return json({
       as_of: day,
+      from, to: a.to,
+      free_tier_note: capNote,
       quotes: list.length,
       counts,
       by_currency: [...byCurrency.entries()].sort((x, y) => x[0].localeCompare(y[0])).map(([currency, b]) => ({
