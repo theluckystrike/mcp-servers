@@ -1,584 +1,584 @@
 {
-  "updated_at": "2026-09-04",
-  "model": "Organic score = 100 x listed x findable x reach. listed: 1 live, 0.5 PR/submission pending, 0.3-0.2 blocked on a human/CI step, 0 skipped/not published. findable for registry-backed surfaces is MEASURED via fully-paginated /v0/servers?search=<token> calls (limit=100, cursor loop -- fixes a prior single-page undercount risk): p(seen|query) = 0 if our current-version row for THAT server does not appear, else min(1, 10/rank), using the row's own best rank restricted to that server's registry name(s) (a token like 'price' that also substring-matches a different server's long slug, e.g. office-suite, is NOT credited to the wrong server). findable = mean of p over 56 natural query slots across all nine servers' query_set (was 41 across six servers before currency/docx/timezone existed). Per-server organic = 100 x mean(p) over that server's own query set. 'Hosted endpoints' findable = share of the 56 query slots whose matched row belongs to a server that now carries a non-empty remotes[] (8 of 9 servers: everything except office-suite). fleet.fleet_score is a noisy-OR over the nine per-server organics (100 x (1 - product(1 - p_i/100))), applied identically before and after for comparability.",
-  "measured": [
-    [
-      "Three new servers since ORGANIC_R2: currency, docx, timezone -- all live and hosted",
-      "all three publish remotes[] at v0.3.2 and are the fleet's best organic scores after expense-tracker: timezone 79.7 (rank 1-of-3 on 'slots', 1-of-3 on 'world-clock', 3-of-5 on 'overlap' -- three near-empty tokens), docx 33.5 (3-of-5 on 'proposal'), currency 25.2 (14-of-19 on 'currency', 34-of-36 on 'ecb')",
-      "measured 2026-09-03, data/registry_rank.json after_v3"
-    ],
-    [
-      "office-suite went from unpublished (organic 0.0) to live and stdio-only (organic 21.6)",
-      "now ranks 33 of 40 on 'office' and 78 of 94 on 'suite' -- both of its only two query-set tokens are matched, but it has no remotes[], so it earns nothing on the Hosted endpoints surface and stays the fleet's second-weakest server after invoice",
-      "measured 2026-09-03"
-    ],
-    [
-      "expense-tracker gained remotes[] since the last pass (was stdio-only at v0.2.0)",
-      "at v0.3.2 expense-tracker-receipts-mileage carries remotes[]=true, same as time-tracker/price-tracker/invoice/currency/docx/timezone; spreadsheet also gained remotes[] since ORGANIC_R2. Only office-suite remains without one, so Hosted-endpoints findable jumped from 0.317 (3 of 6 servers) to 0.607 (8 of 9 servers, 34 of 56 slots)",
-      "measured 2026-09-03, full registry listing for all 9 server names/versions"
-    ],
-    [
-      "A scoring bug from ORGANIC_R2's methodology would have re-appeared here and was fixed before computing this pass",
-      "office-suite's registry name ('office-suite-time-invoice-expense-excel-price') contains the substring 'price', so a naive 'best rank for token X across ANY of our rows' credits price-tracker's 'price' query with office-suite's rank instead. Every per-server score in this pass is computed by restricting matches to that server's own registry name(s) before picking a rank",
-      "found and fixed 2026-09-03 during this measurement"
-    ],
-    [
-      "awesome-mcp-servers PR#13473 is now CI-blocked, not just queued",
-      "as of 2026-09-03 the PR carries labels missing-glama, valid-name, missing-emoji and 2 bot comments: a Glama listing+score-badge requirement and a per-entry emoji requirement. None of the 4 servers in that PR are listed on Glama at all, so this cannot pass CI until the (also-blocked) Glama listing happens first",
-      "measured 2026-09-03, gh api repos/punkpeye/awesome-mcp-servers/{pulls,issues}/13473"
-    ],
-    [
-      "Cline marketplace submission set grew from 5 to 8 issues",
-      "issues 2408 (currency), 2409 (timezone), 2410 (docx) added alongside the original 2397-2401; all 8 OPEN, 0 comments, no labels, no human review yet",
-      "measured 2026-09-03, gh api repos/cline/mcp-marketplace/issues/{2397..2401,2408..2410}"
-    ],
-    [
-      "Docker MCP catalog PR#4892 unchanged in review state but grew in scope",
-      "still OPEN, 0 comments, 0 reviews, no labels; now covers 8 servers (currency, timezone, docx and expense-tracker added to the original 4), all repinned to the same source commit",
-      "measured 2026-09-03, gh api repos/docker/mcp-registry/pulls/4892"
-    ],
-    [
-      "GitHub repo search: the timezone mirror is the first server to actually rank",
-      "'mcp timezone meeting' (7 total results) surfaces theluckystrike/mcp-timezone at rank 4; 'mcp currency converter' (31 results), 'mcp docx' (427 results) and the control query 'mcp resume' (790 results, no server targets it) show nothing of ours in the top 30",
-      "measured 2026-09-03, gh api search/repositories"
-    ],
-    [
-      "Smithery and Glama: still zero presence, re-confirmed",
-      "registry.smithery.ai/servers?q=theluckystrike: 0 hits. glama.ai/mcp/servers?query=theluckystrike: 1 unrelated pre-existing hit only; direct slug probes for currency-converter/docx-document-generator/timezone-world-clock/office-suite all 404",
-      "measured 2026-09-03"
-    ],
-    [
-      "mcpservers.org and mcpmarket.com remain unverifiable via curl",
-      "mcpservers.org: /api/servers?q= returns 404 (no such API), /servers?q= 301-redirects into a client-rendered SPA shell with no server-rendered results. mcpmarket.com: HTTP 403 on every request (search and submit pages alike), edge-blocked. Neither confirms nor denies our 4 prior submissions are listed",
-      "measured 2026-09-03"
-    ],
-    [
-      "Release downloads: +79 in this measurement window",
-      "data/metrics.json snapshot totals: 207 (2026-09-03T03:03Z) -> 286 (2026-09-03T04:52Z), delta +79 across the 9 .mcpb assets on release v0.3.2 in under 2 hours. GitHub traffic (views/uniques/clones, 14d) stayed flat at 0. npm weekly downloads still read 'not published' for all sampled packages",
-      "measured 2026-09-03, node scripts/measure.mjs"
-    ],
-    [
-      "Registry search remains name-substring only, alphabetical, 1-3 min index lag (carried over, unchanged)",
-      "same search_semantics as recorded in prior passes",
-      "carried over from 2026-09-01/02"
-    ],
-    [
-      "R2 2026-09-03: 7 registry-name variants published for near-empty tokens; registry API outage blocked full re-measurement",
-      "Variants: time-tracker->timer-tracking, price-tracker->prices-deal, invoice->invoices-invoicing, expense-tracker->expenses, currency->exchange-fx, timezone->calendar, recurring->retainer (recurring not yet tracked in this file's servers[] list). All published stdio-only (mcpb package) -- the registry rejects a second server row that reuses a parent's remote URL (400 'remote URL ... is already used'), so remotes[] was dropped from every variant. Post-publish re-probe of the 11 targeted tokens timed out on every request for over 10 minutes (registry.modelcontextprotocol.io API outage/degradation), so only invoices and expenses (both 0 prior results, now exactly 1 -- our own new row, rank1/p=1 by construction) could be scored with certainty; timer/tracking/prices/deal/invoicing/exchange/fx/calendar/retainer remain unmeasured post-publish pending a working API call.",
-      "measured 2026-09-03, data/registry_rank.json variants_r2_2026-09-03, docs/NAMING_R2_RESULT.md"
-    ],
-    [
-      "Registry re-probe (task 4, round 7): all 9 outage-blocked tokens plus 8 variant/confirmation tokens now have live ranks (0 timeouts this pass)",
-      "Two servers regressed on organic score because their own new variant tokens are weak matches (docx on 'proposal', now beaten by the clauses server's own row; timezone on 'calendar', rank 70 of 92) -- publishing a variant does not guarantee it helps the average once it is counted as a query-set member",
-      "measured 2026-09-03, data/registry_rank.json variants_r2_reprobe"
-    ],
-    [
-      "recurring is now a tracked server row (organic 74.4) -- was a NAMING_R2 follow-up item",
-      "its retainer variant (published 2026-09-03, 0 prior results) is confirmed live at rank 1 of 1; recurring itself ranks 1 of 3 on its own token; subscription is a weak slot at 11 of 13",
-      "measured 2026-09-03"
-    ]
+ "updated_at": "2026-09-04",
+ "model": "Organic score = 100 x listed x findable x reach. listed: 1 live, 0.5 PR/submission pending, 0.3-0.2 blocked on a human/CI step, 0 skipped/not published. findable for registry-backed surfaces is MEASURED via fully-paginated /v0/servers?search=<token> calls (limit=100, cursor loop -- fixes a prior single-page undercount risk): p(seen|query) = 0 if our current-version row for THAT server does not appear, else min(1, 10/rank), using the row's own best rank restricted to that server's registry name(s) (a token like 'price' that also substring-matches a different server's long slug, e.g. office-suite, is NOT credited to the wrong server). findable = mean of p over 56 natural query slots across all nine servers' query_set (was 41 across six servers before currency/docx/timezone existed). Per-server organic = 100 x mean(p) over that server's own query set. 'Hosted endpoints' findable = share of the 56 query slots whose matched row belongs to a server that now carries a non-empty remotes[] (8 of 9 servers: everything except office-suite). fleet.fleet_score is a noisy-OR over the nine per-server organics (100 x (1 - product(1 - p_i/100))), applied identically before and after for comparability.",
+ "measured": [
+  [
+   "Three new servers since ORGANIC_R2: currency, docx, timezone -- all live and hosted",
+   "all three publish remotes[] at v0.3.2 and are the fleet's best organic scores after expense-tracker: timezone 79.7 (rank 1-of-3 on 'slots', 1-of-3 on 'world-clock', 3-of-5 on 'overlap' -- three near-empty tokens), docx 33.5 (3-of-5 on 'proposal'), currency 25.2 (14-of-19 on 'currency', 34-of-36 on 'ecb')",
+   "measured 2026-09-03, data/registry_rank.json after_v3"
   ],
-  "surfaces": [
-    {
-      "surface": "Official MCP registry (API)",
-      "status": "live",
-      "listed": 1.0,
-      "findable": 0.4107,
-      "reach": 1.0,
-      "evidence": "measured: 36 of 56 natural queries matched across 9 servers (was 22 of 41 across 6 servers before currency/docx/timezone existed); mean p(seen)=0.345 vs 0.276 in the v0.2.0 measurement. Fully paginated this time (limit=100, cursor loop) rather than trusting a single page. | R2 2026-09-03: 7 variant names published (timer-tracking, prices-deal, invoices-invoicing, expenses, exchange-fx, calendar, retainer); only 2 of the 8 newly-targeted near-empty tokens (invoices, expenses) can be scored with certainty (0 prior results -> now exactly 1, our own row, rank1/p=1) without a live requery, because registry.modelcontextprotocol.io timed out on every request during the post-publish re-measurement window (an API outage, not the usual 1-3 min index lag). timer/tracking/prices/deal/invoicing/exchange/fx/calendar had nonzero prior results so their new rank is unknown until a live reprobe succeeds. | R7 2026-09-03: live registry re-probe of all 17 previously-blocked/variant tokens succeeded (0 timeouts, outage cleared). Net: findable moved 0.381 -> 0.3518 (mixed -- invoice/expense-tracker/price-tracker/time-tracker gained on their new variant tokens, but docx regressed on 'proposal' (3/5 -> 6/11, the new clauses server's contract-clause-library-proposal-template-docx now outranks it) and timezone regressed on the new 'calendar' token (70/92, a weak slot averaged into its query_set). Added recurring as a 10th tracked server. See data/registry_rank.json variants_r2_reprobe. | R3 2026-09-04: 6 more variant names published for the previously-variant-less servers (spreadsheet/sheets, docx/documents, clauses/agreement, resume/application, pdf/pdfs, calendar/availability); timezone skipped (already holds a variant from R2). 3-min-later live reprobe confirmed all 6 rows indexed. clauses/resume/pdf/calendar newly tracked in this file for the first time. Registry findable across all tracked servers' query slots moved 0.3518 -> 0.7639 (55 of 72 slots matched). | R3 2026-09-04: 6 more variant names published (spreadsheet/sheets, docx/documents, clauses/agreement, resume/application, pdf/pdfs, calendar/availability); timezone skipped (already holds an R2 variant). 3-min-later live reprobe confirmed all 6 rows indexed and matched (none were previously matched). Findable estimated 0.3518 -> 0.4107 (6 newly-confirmed matched slots added against an approx. 60-slot tracked universe; a precise global recount was out of the 20-minute budget).",
-      "fix": "publish nothing left unpublished (office-suite is now live); rank cannot otherwise be improved -- alphabetical on the full name, io.github.theluckystrike prefix is fixed",
-      "score": 41.1,
-      "score_before_this_measurement": 76.4
-    },
-    {
-      "surface": "VS Code MCP gallery (reads the registry)",
-      "status": "live",
-      "listed": 1.0,
-      "findable": 0.3518,
-      "reach": 0.9,
-      "evidence": "same search index as the registry; findable copied from the measured registry number",
-      "fix": "same as registry",
-      "score": 31.7,
-      "score_before_this_measurement": 34.3
-    },
-    {
-      "surface": "Claude Desktop extensions directory",
-      "status": "not submitted",
-      "listed": 0.2,
-      "findable": 0.5,
-      "reach": 0.9,
-      "evidence": "curated, small; .mcpb bundles ready for all 9 servers (9 assets on release v0.3.2)",
-      "fix": "human submits the form once",
-      "score": 9.0
-    },
-    {
-      "surface": "Cursor and Claude Code pickers (registry-backed)",
-      "status": "live",
-      "listed": 1.0,
-      "findable": 0.292,
-      "reach": 0.7,
-      "evidence": "same index, but picker users type multi-word natural language, which returns 0 registry-wide; discounted 17% from the measured registry findable",
-      "fix": "nothing further from naming: a space in the query returns 0 results for every server in the registry",
-      "score": 20.4,
-      "score_before_this_measurement": 22.1
-    },
-    {
-      "surface": "Hosted endpoints (remotes[] in registry rows)",
-      "status": "live",
-      "listed": 1.0,
-      "findable": 0.607,
-      "reach": 0.5,
-      "evidence": "measured: 34 of 56 query slots resolve to a v0.3.2 row that carries a non-empty remotes[] -- 8 of 9 servers now publish remotes (time-tracker, price-tracker, invoice, spreadsheet, expense-tracker, currency, docx, timezone); only office-suite is stdio-only. expense-tracker and spreadsheet gained remotes[] since the v0.2.0 measurement (both were remotes-less then)",
-      "fix": "add remotes[] to office-suite, the one holdout",
-      "score": 30.3,
-      "score_before_this_measurement": 15.9
-    },
-    {
-      "surface": "Docker MCP catalog",
-      "status": "PR pending",
-      "listed": 0.5,
-      "findable": 0.5,
-      "reach": 0.6,
-      "evidence": "PR docker/mcp-registry#4892 OPEN, 0 reviews, 0 comments, no labels/checks reported; now covers 8 servers (currency, timezone, docx added to the original 4 plus expense-tracker), all pinned to the same repo commit",
-      "fix": "maintainer merge",
-      "score": 15
-    },
-    {
-      "surface": "Cline marketplace",
-      "status": "issue pending",
-      "listed": 0.5,
-      "findable": 0.5,
-      "reach": 0.5,
-      "evidence": "8 issues (2397-2401, 2408-2410) all OPEN, 0 comments, no labels -- currency/timezone/docx issues (2408-2410) added since the last pass",
-      "fix": "maintainer approval",
-      "score": 12
-    },
-    {
-      "surface": "awesome-mcp-servers (punkpeye)",
-      "status": "PR open #13473, CI-blocked",
-      "listed": 0.3,
-      "findable": 0.3,
-      "reach": 0.7,
-      "evidence": "2,237+ entries; PR now carries 3 labels (missing-glama, valid-name, missing-emoji) and 2 bot comments demanding a Glama listing+score badge and a category emoji per entry before merge -- a hard CI blocker, not just a maintainer queue delay. Downgraded listed from 0.5 to 0.3 to reflect this is blocked on our own action (Glama), not just waiting",
-      "fix": "get listed on Glama first (which is itself blocked -- see Glama row), then add badge+emoji and re-push",
-      "score": 6.3,
-      "score_before_this_measurement": 10
-    },
-    {
-      "surface": "Smithery",
-      "status": "blocked: one browser login",
-      "listed": 0.2,
-      "findable": 0.15,
-      "reach": 0.6,
-      "evidence": "re-confirmed 2026-09-03: registry.smithery.ai/servers?q=theluckystrike returns 0 theluckystrike hits (grep count 0 across the raw response)",
-      "fix": "login once, then REST publish of the 9 .mcpb bundles",
-      "score": 2
-    },
-    {
-      "surface": "Glama",
-      "status": "crawler intake",
-      "listed": 0.5,
-      "findable": 0.15,
-      "reach": 0.4,
-      "evidence": "re-confirmed 2026-09-03: glama.ai/mcp/servers?query=theluckystrike shows only 1 real hit (an unrelated pre-existing 'bln-mcp-grammar-server'); direct slug probes for all 4 new/renamed servers (theluckystrike/currency-converter, docx-document-generator, timezone-world-clock, office-suite) all return 404. Still not crawled",
-      "fix": "wait for crawl, or claim it manually (blocks the awesome-mcp-servers PR too)",
-      "score": 3
-    },
-    {
-      "surface": "GitHub search and topics",
-      "status": "live",
-      "listed": 1.0,
-      "findable": 0.25,
-      "reach": 0.5,
-      "evidence": "measured 2026-09-03 with the task's 4 queries: 'mcp currency converter' (31 results, not present), 'mcp docx' (427 results, not present), 'mcp timezone meeting' (7 results, theluckystrike/mcp-timezone at rank 4), 'mcp resume' (790 results, not present -- no server targets this term, control token). 1 of 4 hits vs 0 of 4 in the naming-only baseline",
-      "fix": "stars come from real users; the timezone mirror repo's narrow query surface is the only lever that worked so far",
-      "score": 12.5,
-      "score_before_this_measurement": 4
-    },
-    {
-      "surface": "Google/Bing/DDG: mcp.zovo.one product pages",
-      "status": "live, indexed via IndexNow (Google); Bing/DDG unmeasured this pass",
-      "listed": 1.0,
-      "findable": 0.2,
-      "reach": 0.8,
-      "evidence": "not re-measured this pass (out of this task's scope); carried forward from ORGANIC_R2",
-      "fix": "re-attempt Bing/DDG from a browser session",
-      "score": 16
-    },
-    {
-      "surface": "llms.txt and agent crawlers",
-      "status": "live",
-      "listed": 1.0,
-      "findable": 0.05,
-      "reach": 0.1,
-      "evidence": "no known crawler ranks these yet",
-      "fix": "none",
-      "score": 0
-    },
-    {
-      "surface": "mcp.so",
-      "status": "skipped: paid ($39)",
-      "listed": 0,
-      "findable": 0,
-      "reach": 0.3,
-      "evidence": "paid submission only",
-      "fix": "none, per rule",
-      "score": 0
-    },
-    {
-      "surface": "mcpservers.org",
-      "status": "submitted, unverifiable",
-      "listed": 0.5,
-      "findable": 0.15,
-      "reach": 0.5,
-      "evidence": "re-checked 2026-09-03: /api/servers?q=theluckystrike -> 404 (no such API); /servers?q=theluckystrike -> 301 redirect into a client-rendered Next.js SPA shell with no server-rendered results. Cannot confirm listed or absent via curl; 4 servers were submitted with a 'reviewed within 12 hours' message",
-      "fix": "check from a real browser",
-      "score": 3.75
-    },
-    {
-      "surface": "mcpmarket.com",
-      "status": "submitted, unverifiable",
-      "listed": 0.5,
-      "findable": 0.15,
-      "reach": 0.4,
-      "evidence": "re-checked 2026-09-03: every request (search and submit page) returns HTTP 403, edge-blocked to curl. Cannot confirm listed or absent",
-      "fix": "check from a real browser",
-      "score": 3.0
-    }
+  [
+   "office-suite went from unpublished (organic 0.0) to live and stdio-only (organic 21.6)",
+   "now ranks 33 of 40 on 'office' and 78 of 94 on 'suite' -- both of its only two query-set tokens are matched, but it has no remotes[], so it earns nothing on the Hosted endpoints surface and stays the fleet's second-weakest server after invoice",
+   "measured 2026-09-03"
   ],
-  "servers": [
-    {
-      "id": "time-tracker",
-      "registry_slot": "'time' 223 of 317; 'timer' 12 of 13 (variant timer-tracking); 'timesheet' 1 of 11; 'hours' 2 of 11; 'billable' 1 of 10; 'tracking' 24 of 25 (variant timer-tracking); 'time-tracker' 3 of 14; 'time tracker' no match -- live reprobe 2026-09-03 round 7",
-      "organic": 53.7,
-      "registry_name": "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
-      "has_remotes": true,
-      "query_set": [
-        "time",
-        "timer",
-        "timesheet",
-        "hours",
-        "billable",
-        "tracking",
-        "time-tracker",
-        "time tracker"
-      ],
-      "organic_before": 50.6,
-      "competitors_in_matched_slots": {
-        "time": 317,
-        "timer": 13,
-        "timesheet": 11,
-        "hours": 11,
-        "billable": 10,
-        "tracking": 25,
-        "time-tracker": 14,
-        "time tracker": 0
-      }
-    },
-    {
-      "id": "price-tracker",
-      "registry_slot": "'price' 106 of 131; 'prices' 19 of 22 (variant prices-deal); 'deal' 93 of 100+ (variant prices-deal); 'drop' 159 of 173; 'alert' 36 of 53; 'watch' 130 of 149; 'product' no match; 'shop' no match; 'price-tracker' 5 of 17; 'price tracker' no match -- live reprobe 2026-09-03 round 7",
-      "organic": 17.9,
-      "registry_name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
-      "has_remotes": true,
-      "query_set": [
-        "price",
-        "prices",
-        "deal",
-        "drop",
-        "alert",
-        "watch",
-        "product",
-        "shop",
-        "price-tracker",
-        "price tracker"
-      ],
-      "organic_before": 15.1,
-      "competitors_in_matched_slots": {
-        "price": 131,
-        "prices": 22,
-        "deal": 100,
-        "drop": 173,
-        "alert": 53,
-        "watch": 149,
-        "product": 126,
-        "shop": 115,
-        "price-tracker": 17,
-        "price tracker": 0
-      }
-    },
-    {
-      "id": "spreadsheet",
-      "registry_slot": "'spreadsheet' 13 of 24; 'excel' 160 of 180; 'xlsx' 19 of 28; 'csv' 17 of 26; 'sheet' 109 of 133; 'sheets' 80 of 82 (variant io.github.theluckystrike/sheets, round R3 2026-09-04); 'table' no match; 'data' no match",
-      "organic": 26.0,
-      "registry_name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
-      "has_remotes": true,
-      "query_set": [
-        "spreadsheet",
-        "excel",
-        "xlsx",
-        "csv",
-        "sheet",
-        "sheets",
-        "table",
-        "data"
-      ],
-      "organic_before": 25.5,
-      "competitors_in_matched_slots": {
-        "spreadsheet": 24,
-        "excel": 180,
-        "xlsx": 28,
-        "csv": 26,
-        "sheet": 133,
-        "sheets": 82,
-        "table": 131,
-        "data": 2897
-      },
-      "variant_registry_name": "io.github.theluckystrike/sheets"
-    },
-    {
-      "id": "invoice",
-      "registry_slot": "'invoice' 82 of 110; 'invoices' 1 of 1 (variant invoices-invoicing, live-confirmed round 7); 'invoicing' 68 of 69 (variant invoices-invoicing, live-confirmed round 7); 'billing' 28 of 37; 'pdf' 258 of 290; 'receipt' no match; 'quote' no match; 'freelance' no match",
-      "organic": 21.0,
-      "registry_name": "io.github.theluckystrike/invoice-pdf-billing-generator",
-      "has_remotes": true,
-      "query_set": [
-        "invoice",
-        "invoices",
-        "invoicing",
-        "billing",
-        "pdf",
-        "receipt",
-        "quote",
-        "freelance"
-      ],
-      "organic_before": 19.0,
-      "competitors_in_matched_slots": {
-        "invoice": 110,
-        "invoices": 1,
-        "invoicing": 69,
-        "billing": 37,
-        "pdf": 290,
-        "receipt": 24,
-        "quote": 63,
-        "freelance": 6
-      },
-      "variant_registry_name": "io.github.theluckystrike/invoices-invoicing"
-    },
-    {
-      "id": "expense-tracker",
-      "registry_slot": "'expense' 15 of 31; 'expenses' 1 of 1 (variant expenses, live-confirmed round 7); 'receipt' 15 of 24; 'receipts' 4 of 13; 'mileage' 1 of 12 (own row, still rank1)",
-      "organic": 74.7,
-      "registry_name": "io.github.theluckystrike/expense-tracker-receipts-mileage",
-      "has_remotes": true,
-      "query_set": [
-        "expense",
-        "expenses",
-        "receipt",
-        "receipts",
-        "mileage"
-      ],
-      "organic_before": 86.7,
-      "competitors_in_matched_slots": {
-        "expense": 31,
-        "expenses": 1,
-        "receipt": 24,
-        "receipts": 13,
-        "mileage": 12
-      },
-      "variant_registry_name": "io.github.theluckystrike/expenses"
-    },
-    {
-      "id": "office-suite",
-      "registry_slot": "'office' 33 of 40; 'suite' 78 of 94",
-      "organic": 21.6,
-      "registry_name": "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
-      "has_remotes": false,
-      "query_set": [
-        "office",
-        "suite"
-      ],
-      "organic_before": 0.0,
-      "competitors_in_matched_slots": {
-        "office": 40,
-        "suite": 94
-      }
-    },
-    {
-      "id": "currency",
-      "registry_slot": "'currency' 14 of 19; 'exchange' 76 of 84 (variant exchange-fx, live-confirmed round 7); 'ecb' 34 of 36; 'fx' 81 of 88 (variant exchange-fx, live-confirmed round 7)",
-      "organic": 14.9,
-      "registry_name": "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless",
-      "has_remotes": true,
-      "query_set": [
-        "currency",
-        "exchange",
-        "ecb",
-        "fx"
-      ],
-      "organic_before": 25.2,
-      "competitors_in_matched_slots": {
-        "currency": 19,
-        "exchange": 84,
-        "ecb": 36,
-        "fx": 88
-      }
-    },
-    {
-      "id": "docx",
-      "registry_slot": "'docx' 21 of 23; 'word' no match; 'proposal' 6 of 11 (regressed from 3 of 5 -- the clauses server's contract-clause-library-proposal-template-docx now outranks docx-document-generator on this token, ranks 3-5); 'contract' 90 of 97; 'markdown' 112 of 116 -- live reprobe 2026-09-03 round 7; 'documents' 9 of 16 (variant io.github.theluckystrike/documents, round R3 2026-09-04)",
-      "organic": 21.7,
-      "registry_name": "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
-      "has_remotes": true,
-      "query_set": [
-        "docx",
-        "word",
-        "proposal",
-        "contract",
-        "markdown",
-        "documents"
-      ],
-      "organic_before": 16.0,
-      "competitors_in_matched_slots": {
-        "docx": 23,
-        "word": 285,
-        "proposal": 11,
-        "contract": 97,
-        "markdown": 116,
-        "documents": 16
-      },
-      "variant_registry_name": "io.github.theluckystrike/documents"
-    },
-    {
-      "id": "timezone",
-      "registry_slot": "'timezone' 13 of 15; 'meeting' 10 of 15; 'slots' 1 of 3; 'overlap' 3 of 5; 'ics' 857 of 910; 'world-clock' 1 of 3; 'calendar' 70 of 92 (variant calendar, live-confirmed round 7 -- a weak slot, drags timezone's organic score down)",
-      "organic": 50.1,
-      "registry_name": "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
-      "has_remotes": true,
-      "query_set": [
-        "timezone",
-        "meeting",
-        "slots",
-        "overlap",
-        "ics",
-        "world-clock",
-        "calendar"
-      ],
-      "organic_before": 79.7,
-      "competitors_in_matched_slots": {
-        "timezone": 15,
-        "meeting": 15,
-        "slots": 3,
-        "overlap": 5,
-        "ics": 910,
-        "world-clock": 3,
-        "calendar": 92
-      }
-    },
-    {
-      "id": "recurring",
-      "registry_slot": "'recurring' 1 of 3 (own row); 'subscription' 11 of 13; 'retainer' 1 of 1 (variant retainer, live-confirmed round 7)",
-      "registry_name": "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders",
-      "has_remotes": true,
-      "query_set": [
-        "recurring",
-        "subscription",
-        "retainer"
-      ],
-      "organic_before": null,
-      "organic": 74.4,
-      "competitors_in_matched_slots": {
-        "recurring": 3,
-        "subscription": 13,
-        "retainer": 1
-      },
-      "variant_registry_name": "io.github.theluckystrike/retainer",
-      "note": "First tracked pass for this server (was a NAMING_R2 follow-up item). has_remotes assumed true, matching every non-office-suite server published at v0.4.2; not independently re-verified with a servers.get by name this round."
-    },
-    {
-      "id": "clauses",
-      "registry_slot": "'agreement' 7 of 8 (variant io.github.theluckystrike/agreement, round R3 2026-09-04); 'terms' no match",
-      "organic": 12.5,
-      "registry_name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
-      "has_remotes": true,
-      "query_set": [
-        "agreement",
-        "terms"
-      ],
-      "organic_before": 0.0,
-      "organic_before_note": "not tracked in this file before round R3; server itself was already registry-published under its main name, just not measured here",
-      "competitors_in_matched_slots": {
-        "agreement": 8,
-        "terms": 1
-      },
-      "variant_registry_name": "io.github.theluckystrike/agreement"
-    },
-    {
-      "id": "resume",
-      "registry_slot": "'application' 3 of 3 (variant io.github.theluckystrike/application, round R3 2026-09-04); 'cv' no match (100+); 'career' no match; 'hiring' no match",
-      "organic": 8.3,
-      "registry_name": "io.github.theluckystrike/resume-cover-letter-docx-generator",
-      "has_remotes": true,
-      "query_set": [
-        "cv",
-        "career",
-        "hiring",
-        "application"
-      ],
-      "organic_before": 0.0,
-      "organic_before_note": "not tracked in this file before round R3",
-      "competitors_in_matched_slots": {
-        "cv": 100,
-        "career": 10,
-        "hiring": 25,
-        "application": 3
-      },
-      "variant_registry_name": "io.github.theluckystrike/application"
-    },
-    {
-      "id": "pdf",
-      "registry_slot": "'pdfs' 2 of 3 (variant io.github.theluckystrike/pdfs, round R3 2026-09-04); 'watermark' no match",
-      "organic": 33.3,
-      "registry_name": "io.github.theluckystrike/pdf-merge-split-stamp-extract-pages",
-      "has_remotes": true,
-      "query_set": [
-        "pdfs",
-        "watermark"
-      ],
-      "organic_before": 0.0,
-      "organic_before_note": "not tracked in this file before round R3",
-      "competitors_in_matched_slots": {
-        "pdfs": 3,
-        "watermark": 27
-      },
-      "variant_registry_name": "io.github.theluckystrike/pdfs"
-    },
-    {
-      "id": "calendar",
-      "registry_slot": "'availability' 5 of 6 (variant io.github.theluckystrike/availability, round R3 2026-09-04, one duplicate competitor row in result page); 'agenda' no match; 'ical' no match (100+)",
-      "organic": 11.1,
-      "registry_name": "io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts",
-      "has_remotes": true,
-      "query_set": [
-        "availability",
-        "agenda",
-        "ical"
-      ],
-      "organic_before": 0.0,
-      "organic_before_note": "not tracked in this file before round R3",
-      "competitors_in_matched_slots": {
-        "availability": 6,
-        "agenda": 32,
-        "ical": 100
-      },
-      "variant_registry_name": "io.github.theluckystrike/availability"
-    }
+  [
+   "expense-tracker gained remotes[] since the last pass (was stdio-only at v0.2.0)",
+   "at v0.3.2 expense-tracker-receipts-mileage carries remotes[]=true, same as time-tracker/price-tracker/invoice/currency/docx/timezone; spreadsheet also gained remotes[] since ORGANIC_R2. Only office-suite remains without one, so Hosted-endpoints findable jumped from 0.317 (3 of 6 servers) to 0.607 (8 of 9 servers, 34 of 56 slots)",
+   "measured 2026-09-03, full registry listing for all 9 server names/versions"
   ],
-  "fleet": {
-    "max_surface": 74.7,
-    "mean_live": 31.5,
-    "fleet_score": 99.8,
-    "fleet_score_before_this_measurement": 99.8,
-    "verdict": "R3 2026-09-04: published 6 more registry-name variants for spreadsheet, docx, clauses, resume, pdf, calendar (timezone already had one from R2, skipped). All 6 confirmed live on a 3-minute reprobe. spreadsheet organic 25.5->26.0, docx 16.0->21.7. clauses/resume/pdf/calendar tracked here for the first time: pdf strongest (33.3, pdfs 2 of 3), clauses 12.5 (agreement 7 of 8), calendar 11.1 (availability 5 of 6, one duplicate competitor row), resume weakest (8.3, application 3 of 3 but cv/career/hiring all unmatched). Fleet score barely moves, still dominated by expense-tracker/recurring."
+  [
+   "A scoring bug from ORGANIC_R2's methodology would have re-appeared here and was fixed before computing this pass",
+   "office-suite's registry name ('office-suite-time-invoice-expense-excel-price') contains the substring 'price', so a naive 'best rank for token X across ANY of our rows' credits price-tracker's 'price' query with office-suite's rank instead. Every per-server score in this pass is computed by restricting matches to that server's own registry name(s) before picking a rank",
+   "found and fixed 2026-09-03 during this measurement"
+  ],
+  [
+   "awesome-mcp-servers PR#13473 is now CI-blocked, not just queued",
+   "as of 2026-09-03 the PR carries labels missing-glama, valid-name, missing-emoji and 2 bot comments: a Glama listing+score-badge requirement and a per-entry emoji requirement. None of the 4 servers in that PR are listed on Glama at all, so this cannot pass CI until the (also-blocked) Glama listing happens first",
+   "measured 2026-09-03, gh api repos/punkpeye/awesome-mcp-servers/{pulls,issues}/13473"
+  ],
+  [
+   "Cline marketplace submission set grew from 5 to 8 issues",
+   "issues 2408 (currency), 2409 (timezone), 2410 (docx) added alongside the original 2397-2401; all 8 OPEN, 0 comments, no labels, no human review yet",
+   "measured 2026-09-03, gh api repos/cline/mcp-marketplace/issues/{2397..2401,2408..2410}"
+  ],
+  [
+   "Docker MCP catalog PR#4892 unchanged in review state but grew in scope",
+   "still OPEN, 0 comments, 0 reviews, no labels; now covers 8 servers (currency, timezone, docx and expense-tracker added to the original 4), all repinned to the same source commit",
+   "measured 2026-09-03, gh api repos/docker/mcp-registry/pulls/4892"
+  ],
+  [
+   "GitHub repo search: the timezone mirror is the first server to actually rank",
+   "'mcp timezone meeting' (7 total results) surfaces theluckystrike/mcp-timezone at rank 4; 'mcp currency converter' (31 results), 'mcp docx' (427 results) and the control query 'mcp resume' (790 results, no server targets it) show nothing of ours in the top 30",
+   "measured 2026-09-03, gh api search/repositories"
+  ],
+  [
+   "Smithery and Glama: still zero presence, re-confirmed",
+   "registry.smithery.ai/servers?q=theluckystrike: 0 hits. glama.ai/mcp/servers?query=theluckystrike: 1 unrelated pre-existing hit only; direct slug probes for currency-converter/docx-document-generator/timezone-world-clock/office-suite all 404",
+   "measured 2026-09-03"
+  ],
+  [
+   "mcpservers.org and mcpmarket.com remain unverifiable via curl",
+   "mcpservers.org: /api/servers?q= returns 404 (no such API), /servers?q= 301-redirects into a client-rendered SPA shell with no server-rendered results. mcpmarket.com: HTTP 403 on every request (search and submit pages alike), edge-blocked. Neither confirms nor denies our 4 prior submissions are listed",
+   "measured 2026-09-03"
+  ],
+  [
+   "Release downloads: +79 in this measurement window",
+   "data/metrics.json snapshot totals: 207 (2026-09-03T03:03Z) -> 286 (2026-09-03T04:52Z), delta +79 across the 9 .mcpb assets on release v0.3.2 in under 2 hours. GitHub traffic (views/uniques/clones, 14d) stayed flat at 0. npm weekly downloads still read 'not published' for all sampled packages",
+   "measured 2026-09-03, node scripts/measure.mjs"
+  ],
+  [
+   "Registry search remains name-substring only, alphabetical, 1-3 min index lag (carried over, unchanged)",
+   "same search_semantics as recorded in prior passes",
+   "carried over from 2026-09-01/02"
+  ],
+  [
+   "R2 2026-09-03: 7 registry-name variants published for near-empty tokens; registry API outage blocked full re-measurement",
+   "Variants: time-tracker->timer-tracking, price-tracker->prices-deal, invoice->invoices-invoicing, expense-tracker->expenses, currency->exchange-fx, timezone->calendar, recurring->retainer (recurring not yet tracked in this file's servers[] list). All published stdio-only (mcpb package) -- the registry rejects a second server row that reuses a parent's remote URL (400 'remote URL ... is already used'), so remotes[] was dropped from every variant. Post-publish re-probe of the 11 targeted tokens timed out on every request for over 10 minutes (registry.modelcontextprotocol.io API outage/degradation), so only invoices and expenses (both 0 prior results, now exactly 1 -- our own new row, rank1/p=1 by construction) could be scored with certainty; timer/tracking/prices/deal/invoicing/exchange/fx/calendar/retainer remain unmeasured post-publish pending a working API call.",
+   "measured 2026-09-03, data/registry_rank.json variants_r2_2026-09-03, docs/NAMING_R2_RESULT.md"
+  ],
+  [
+   "Registry re-probe (task 4, round 7): all 9 outage-blocked tokens plus 8 variant/confirmation tokens now have live ranks (0 timeouts this pass)",
+   "Two servers regressed on organic score because their own new variant tokens are weak matches (docx on 'proposal', now beaten by the clauses server's own row; timezone on 'calendar', rank 70 of 92) -- publishing a variant does not guarantee it helps the average once it is counted as a query-set member",
+   "measured 2026-09-03, data/registry_rank.json variants_r2_reprobe"
+  ],
+  [
+   "recurring is now a tracked server row (organic 74.4) -- was a NAMING_R2 follow-up item",
+   "its retainer variant (published 2026-09-03, 0 prior results) is confirmed live at rank 1 of 1; recurring itself ranks 1 of 3 on its own token; subscription is a weak slot at 11 of 13",
+   "measured 2026-09-03"
+  ]
+ ],
+ "surfaces": [
+  {
+   "surface": "Official MCP registry (API)",
+   "status": "live",
+   "listed": 1.0,
+   "findable": 0.5126,
+   "reach": 1.0,
+   "evidence": "measured: 36 of 56 natural queries matched across 9 servers (was 22 of 41 across 6 servers before currency/docx/timezone existed); mean p(seen)=0.345 vs 0.276 in the v0.2.0 measurement. Fully paginated this time (limit=100, cursor loop) rather than trusting a single page. | R2 2026-09-03: 7 variant names published (timer-tracking, prices-deal, invoices-invoicing, expenses, exchange-fx, calendar, retainer); only 2 of the 8 newly-targeted near-empty tokens (invoices, expenses) can be scored with certainty (0 prior results -> now exactly 1, our own row, rank1/p=1) without a live requery, because registry.modelcontextprotocol.io timed out on every request during the post-publish re-measurement window (an API outage, not the usual 1-3 min index lag). timer/tracking/prices/deal/invoicing/exchange/fx/calendar had nonzero prior results so their new rank is unknown until a live reprobe succeeds. | R7 2026-09-03: live registry re-probe of all 17 previously-blocked/variant tokens succeeded (0 timeouts, outage cleared). Net: findable moved 0.381 -> 0.3518 (mixed -- invoice/expense-tracker/price-tracker/time-tracker gained on their new variant tokens, but docx regressed on 'proposal' (3/5 -> 6/11, the new clauses server's contract-clause-library-proposal-template-docx now outranks it) and timezone regressed on the new 'calendar' token (70/92, a weak slot averaged into its query_set). Added recurring as a 10th tracked server. See data/registry_rank.json variants_r2_reprobe. | R3 2026-09-04: 6 more variant names published for the previously-variant-less servers (spreadsheet/sheets, docx/documents, clauses/agreement, resume/application, pdf/pdfs, calendar/availability); timezone skipped (already holds a variant from R2). 3-min-later live reprobe confirmed all 6 rows indexed. clauses/resume/pdf/calendar newly tracked in this file for the first time. Registry findable across all tracked servers' query slots moved 0.3518 -> 0.7639 (55 of 72 slots matched). | R3 2026-09-04: 6 more variant names published (spreadsheet/sheets, docx/documents, clauses/agreement, resume/application, pdf/pdfs, calendar/availability); timezone skipped (already holds an R2 variant). 3-min-later live reprobe confirmed all 6 rows indexed and matched (none were previously matched). Findable estimated 0.3518 -> 0.4107 (6 newly-confirmed matched slots added against an approx. 60-slot tracked universe; a precise global recount was out of the 20-minute budget). | R4 full probe 2026-09-04: NAMING_R4 round (docs/NAMING_R4_RESULT.md) published 10 more variant names; this measurement is a full live reprobe of all 100 tracked tokens (the 97-token NAMING_R4 set: 66 tracked query_set tokens + 38 new brief tokens de-duplicated, plus zip/archive/compress/qr-code), not the approximate recount used for the R3 number. 74 of 100 matched. Findable moved 0.4107 (approx.) -> 0.5126 (measured). See data/registry_rank.json variants_r4_full_probe.",
+   "fix": "publish nothing left unpublished (office-suite is now live); rank cannot otherwise be improved -- alphabetical on the full name, io.github.theluckystrike prefix is fixed",
+   "score": 51.3,
+   "score_before_this_measurement": 41.1
+  },
+  {
+   "surface": "VS Code MCP gallery (reads the registry)",
+   "status": "live",
+   "listed": 1.0,
+   "findable": 0.3518,
+   "reach": 0.9,
+   "evidence": "same search index as the registry; findable copied from the measured registry number",
+   "fix": "same as registry",
+   "score": 31.7,
+   "score_before_this_measurement": 34.3
+  },
+  {
+   "surface": "Claude Desktop extensions directory",
+   "status": "not submitted",
+   "listed": 0.2,
+   "findable": 0.5,
+   "reach": 0.9,
+   "evidence": "curated, small; .mcpb bundles ready for all 9 servers (9 assets on release v0.3.2)",
+   "fix": "human submits the form once",
+   "score": 9.0
+  },
+  {
+   "surface": "Cursor and Claude Code pickers (registry-backed)",
+   "status": "live",
+   "listed": 1.0,
+   "findable": 0.292,
+   "reach": 0.7,
+   "evidence": "same index, but picker users type multi-word natural language, which returns 0 registry-wide; discounted 17% from the measured registry findable",
+   "fix": "nothing further from naming: a space in the query returns 0 results for every server in the registry",
+   "score": 20.4,
+   "score_before_this_measurement": 22.1
+  },
+  {
+   "surface": "Hosted endpoints (remotes[] in registry rows)",
+   "status": "live",
+   "listed": 1.0,
+   "findable": 0.607,
+   "reach": 0.5,
+   "evidence": "measured: 34 of 56 query slots resolve to a v0.3.2 row that carries a non-empty remotes[] -- 8 of 9 servers now publish remotes (time-tracker, price-tracker, invoice, spreadsheet, expense-tracker, currency, docx, timezone); only office-suite is stdio-only. expense-tracker and spreadsheet gained remotes[] since the v0.2.0 measurement (both were remotes-less then)",
+   "fix": "add remotes[] to office-suite, the one holdout",
+   "score": 30.3,
+   "score_before_this_measurement": 15.9
+  },
+  {
+   "surface": "Docker MCP catalog",
+   "status": "PR pending",
+   "listed": 0.5,
+   "findable": 0.5,
+   "reach": 0.6,
+   "evidence": "PR docker/mcp-registry#4892 OPEN, 0 reviews, 0 comments, no labels/checks reported; now covers 8 servers (currency, timezone, docx added to the original 4 plus expense-tracker), all pinned to the same repo commit",
+   "fix": "maintainer merge",
+   "score": 15
+  },
+  {
+   "surface": "Cline marketplace",
+   "status": "issue pending",
+   "listed": 0.5,
+   "findable": 0.5,
+   "reach": 0.5,
+   "evidence": "8 issues (2397-2401, 2408-2410) all OPEN, 0 comments, no labels -- currency/timezone/docx issues (2408-2410) added since the last pass",
+   "fix": "maintainer approval",
+   "score": 12
+  },
+  {
+   "surface": "awesome-mcp-servers (punkpeye)",
+   "status": "PR open #13473, CI-blocked",
+   "listed": 0.3,
+   "findable": 0.3,
+   "reach": 0.7,
+   "evidence": "2,237+ entries; PR now carries 3 labels (missing-glama, valid-name, missing-emoji) and 2 bot comments demanding a Glama listing+score badge and a category emoji per entry before merge -- a hard CI blocker, not just a maintainer queue delay. Downgraded listed from 0.5 to 0.3 to reflect this is blocked on our own action (Glama), not just waiting",
+   "fix": "get listed on Glama first (which is itself blocked -- see Glama row), then add badge+emoji and re-push",
+   "score": 6.3,
+   "score_before_this_measurement": 10
+  },
+  {
+   "surface": "Smithery",
+   "status": "blocked: one browser login",
+   "listed": 0.2,
+   "findable": 0.15,
+   "reach": 0.6,
+   "evidence": "re-confirmed 2026-09-03: registry.smithery.ai/servers?q=theluckystrike returns 0 theluckystrike hits (grep count 0 across the raw response)",
+   "fix": "login once, then REST publish of the 9 .mcpb bundles",
+   "score": 2
+  },
+  {
+   "surface": "Glama",
+   "status": "crawler intake",
+   "listed": 0.5,
+   "findable": 0.15,
+   "reach": 0.4,
+   "evidence": "re-confirmed 2026-09-03: glama.ai/mcp/servers?query=theluckystrike shows only 1 real hit (an unrelated pre-existing 'bln-mcp-grammar-server'); direct slug probes for all 4 new/renamed servers (theluckystrike/currency-converter, docx-document-generator, timezone-world-clock, office-suite) all return 404. Still not crawled",
+   "fix": "wait for crawl, or claim it manually (blocks the awesome-mcp-servers PR too)",
+   "score": 3
+  },
+  {
+   "surface": "GitHub search and topics",
+   "status": "live",
+   "listed": 1.0,
+   "findable": 0.25,
+   "reach": 0.5,
+   "evidence": "measured 2026-09-03 with the task's 4 queries: 'mcp currency converter' (31 results, not present), 'mcp docx' (427 results, not present), 'mcp timezone meeting' (7 results, theluckystrike/mcp-timezone at rank 4), 'mcp resume' (790 results, not present -- no server targets this term, control token). 1 of 4 hits vs 0 of 4 in the naming-only baseline",
+   "fix": "stars come from real users; the timezone mirror repo's narrow query surface is the only lever that worked so far",
+   "score": 12.5,
+   "score_before_this_measurement": 4
+  },
+  {
+   "surface": "Google/Bing/DDG: mcp.zovo.one product pages",
+   "status": "live, indexed via IndexNow (Google); Bing/DDG unmeasured this pass",
+   "listed": 1.0,
+   "findable": 0.2,
+   "reach": 0.8,
+   "evidence": "not re-measured this pass (out of this task's scope); carried forward from ORGANIC_R2",
+   "fix": "re-attempt Bing/DDG from a browser session",
+   "score": 16
+  },
+  {
+   "surface": "llms.txt and agent crawlers",
+   "status": "live",
+   "listed": 1.0,
+   "findable": 0.05,
+   "reach": 0.1,
+   "evidence": "no known crawler ranks these yet",
+   "fix": "none",
+   "score": 0
+  },
+  {
+   "surface": "mcp.so",
+   "status": "skipped: paid ($39)",
+   "listed": 0,
+   "findable": 0,
+   "reach": 0.3,
+   "evidence": "paid submission only",
+   "fix": "none, per rule",
+   "score": 0
+  },
+  {
+   "surface": "mcpservers.org",
+   "status": "submitted, unverifiable",
+   "listed": 0.5,
+   "findable": 0.15,
+   "reach": 0.5,
+   "evidence": "re-checked 2026-09-03: /api/servers?q=theluckystrike -> 404 (no such API); /servers?q=theluckystrike -> 301 redirect into a client-rendered Next.js SPA shell with no server-rendered results. Cannot confirm listed or absent via curl; 4 servers were submitted with a 'reviewed within 12 hours' message",
+   "fix": "check from a real browser",
+   "score": 3.75
+  },
+  {
+   "surface": "mcpmarket.com",
+   "status": "submitted, unverifiable",
+   "listed": 0.5,
+   "findable": 0.15,
+   "reach": 0.4,
+   "evidence": "re-checked 2026-09-03: every request (search and submit page) returns HTTP 403, edge-blocked to curl. Cannot confirm listed or absent",
+   "fix": "check from a real browser",
+   "score": 3.0
   }
+ ],
+ "servers": [
+  {
+   "id": "time-tracker",
+   "registry_slot": "'time' 223 of 317; 'timer' 12 of 13 (variant timer-tracking); 'timesheet' 1 of 11; 'hours' 2 of 11; 'billable' 1 of 10; 'tracking' 24 of 25 (variant timer-tracking); 'time-tracker' 3 of 14; 'time tracker' no match -- live reprobe 2026-09-03 round 7",
+   "organic": 53.7,
+   "registry_name": "io.github.theluckystrike/time-tracker-timesheet-billable-hours",
+   "has_remotes": true,
+   "query_set": [
+    "time",
+    "timer",
+    "timesheet",
+    "hours",
+    "billable",
+    "tracking",
+    "time-tracker",
+    "time tracker"
+   ],
+   "organic_before": 50.6,
+   "competitors_in_matched_slots": {
+    "time": 317,
+    "timer": 13,
+    "timesheet": 11,
+    "hours": 11,
+    "billable": 10,
+    "tracking": 25,
+    "time-tracker": 14,
+    "time tracker": 0
+   }
+  },
+  {
+   "id": "price-tracker",
+   "registry_slot": "'price' 106 of 131; 'prices' 19 of 22 (variant prices-deal); 'deal' 93 of 100+ (variant prices-deal); 'drop' 159 of 173; 'alert' 36 of 53; 'watch' 130 of 149; 'product' no match; 'shop' no match; 'price-tracker' 5 of 17; 'price tracker' no match -- live reprobe 2026-09-03 round 7",
+   "organic": 17.9,
+   "registry_name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
+   "has_remotes": true,
+   "query_set": [
+    "price",
+    "prices",
+    "deal",
+    "drop",
+    "alert",
+    "watch",
+    "product",
+    "shop",
+    "price-tracker",
+    "price tracker"
+   ],
+   "organic_before": 15.1,
+   "competitors_in_matched_slots": {
+    "price": 131,
+    "prices": 22,
+    "deal": 100,
+    "drop": 173,
+    "alert": 53,
+    "watch": 149,
+    "product": 126,
+    "shop": 115,
+    "price-tracker": 17,
+    "price tracker": 0
+   }
+  },
+  {
+   "id": "spreadsheet",
+   "registry_slot": "'spreadsheet' 13 of 24; 'excel' 160 of 180; 'xlsx' 19 of 28; 'csv' 17 of 26; 'sheet' 109 of 133; 'sheets' 80 of 82 (variant io.github.theluckystrike/sheets, round R3 2026-09-04); 'table' no match; 'data' no match",
+   "organic": 26.0,
+   "registry_name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
+   "has_remotes": true,
+   "query_set": [
+    "spreadsheet",
+    "excel",
+    "xlsx",
+    "csv",
+    "sheet",
+    "sheets",
+    "table",
+    "data"
+   ],
+   "organic_before": 25.5,
+   "competitors_in_matched_slots": {
+    "spreadsheet": 24,
+    "excel": 180,
+    "xlsx": 28,
+    "csv": 26,
+    "sheet": 133,
+    "sheets": 82,
+    "table": 131,
+    "data": 2897
+   },
+   "variant_registry_name": "io.github.theluckystrike/sheets"
+  },
+  {
+   "id": "invoice",
+   "registry_slot": "'invoice' 82 of 110; 'invoices' 1 of 1 (variant invoices-invoicing, live-confirmed round 7); 'invoicing' 68 of 69 (variant invoices-invoicing, live-confirmed round 7); 'billing' 28 of 37; 'pdf' 258 of 290; 'receipt' no match; 'quote' no match; 'freelance' no match",
+   "organic": 21.0,
+   "registry_name": "io.github.theluckystrike/invoice-pdf-billing-generator",
+   "has_remotes": true,
+   "query_set": [
+    "invoice",
+    "invoices",
+    "invoicing",
+    "billing",
+    "pdf",
+    "receipt",
+    "quote",
+    "freelance"
+   ],
+   "organic_before": 19.0,
+   "competitors_in_matched_slots": {
+    "invoice": 110,
+    "invoices": 1,
+    "invoicing": 69,
+    "billing": 37,
+    "pdf": 290,
+    "receipt": 24,
+    "quote": 63,
+    "freelance": 6
+   },
+   "variant_registry_name": "io.github.theluckystrike/invoices-invoicing"
+  },
+  {
+   "id": "expense-tracker",
+   "registry_slot": "'expense' 15 of 31; 'expenses' 1 of 1 (variant expenses, live-confirmed round 7); 'receipt' 15 of 24; 'receipts' 4 of 13; 'mileage' 1 of 12 (own row, still rank1)",
+   "organic": 74.7,
+   "registry_name": "io.github.theluckystrike/expense-tracker-receipts-mileage",
+   "has_remotes": true,
+   "query_set": [
+    "expense",
+    "expenses",
+    "receipt",
+    "receipts",
+    "mileage"
+   ],
+   "organic_before": 86.7,
+   "competitors_in_matched_slots": {
+    "expense": 31,
+    "expenses": 1,
+    "receipt": 24,
+    "receipts": 13,
+    "mileage": 12
+   },
+   "variant_registry_name": "io.github.theluckystrike/expenses"
+  },
+  {
+   "id": "office-suite",
+   "registry_slot": "'office' 33 of 40; 'suite' 78 of 94",
+   "organic": 21.6,
+   "registry_name": "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+   "has_remotes": false,
+   "query_set": [
+    "office",
+    "suite"
+   ],
+   "organic_before": 0.0,
+   "competitors_in_matched_slots": {
+    "office": 40,
+    "suite": 94
+   }
+  },
+  {
+   "id": "currency",
+   "registry_slot": "'currency' 14 of 19; 'exchange' 76 of 84 (variant exchange-fx, live-confirmed round 7); 'ecb' 34 of 36; 'fx' 81 of 88 (variant exchange-fx, live-confirmed round 7)",
+   "organic": 14.9,
+   "registry_name": "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless",
+   "has_remotes": true,
+   "query_set": [
+    "currency",
+    "exchange",
+    "ecb",
+    "fx"
+   ],
+   "organic_before": 25.2,
+   "competitors_in_matched_slots": {
+    "currency": 19,
+    "exchange": 84,
+    "ecb": 36,
+    "fx": 88
+   }
+  },
+  {
+   "id": "docx",
+   "registry_slot": "'docx' 21 of 23; 'word' no match; 'proposal' 6 of 11 (regressed from 3 of 5 -- the clauses server's contract-clause-library-proposal-template-docx now outranks docx-document-generator on this token, ranks 3-5); 'contract' 90 of 97; 'markdown' 112 of 116 -- live reprobe 2026-09-03 round 7; 'documents' 9 of 16 (variant io.github.theluckystrike/documents, round R3 2026-09-04)",
+   "organic": 21.7,
+   "registry_name": "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
+   "has_remotes": true,
+   "query_set": [
+    "docx",
+    "word",
+    "proposal",
+    "contract",
+    "markdown",
+    "documents"
+   ],
+   "organic_before": 16.0,
+   "competitors_in_matched_slots": {
+    "docx": 23,
+    "word": 285,
+    "proposal": 11,
+    "contract": 97,
+    "markdown": 116,
+    "documents": 16
+   },
+   "variant_registry_name": "io.github.theluckystrike/documents"
+  },
+  {
+   "id": "timezone",
+   "registry_slot": "'timezone' 13 of 15; 'meeting' 10 of 15; 'slots' 1 of 3; 'overlap' 3 of 5; 'ics' 857 of 910; 'world-clock' 1 of 3; 'calendar' 70 of 92 (variant calendar, live-confirmed round 7 -- a weak slot, drags timezone's organic score down)",
+   "organic": 50.1,
+   "registry_name": "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+   "has_remotes": true,
+   "query_set": [
+    "timezone",
+    "meeting",
+    "slots",
+    "overlap",
+    "ics",
+    "world-clock",
+    "calendar"
+   ],
+   "organic_before": 79.7,
+   "competitors_in_matched_slots": {
+    "timezone": 15,
+    "meeting": 15,
+    "slots": 3,
+    "overlap": 5,
+    "ics": 910,
+    "world-clock": 3,
+    "calendar": 92
+   }
+  },
+  {
+   "id": "recurring",
+   "registry_slot": "'recurring' 1 of 3 (own row); 'subscription' 11 of 13; 'retainer' 1 of 1 (variant retainer, live-confirmed round 7)",
+   "registry_name": "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders",
+   "has_remotes": true,
+   "query_set": [
+    "recurring",
+    "subscription",
+    "retainer"
+   ],
+   "organic_before": null,
+   "organic": 74.4,
+   "competitors_in_matched_slots": {
+    "recurring": 3,
+    "subscription": 13,
+    "retainer": 1
+   },
+   "variant_registry_name": "io.github.theluckystrike/retainer",
+   "note": "First tracked pass for this server (was a NAMING_R2 follow-up item). has_remotes assumed true, matching every non-office-suite server published at v0.4.2; not independently re-verified with a servers.get by name this round."
+  },
+  {
+   "id": "clauses",
+   "registry_slot": "'agreement' 7 of 8 (variant io.github.theluckystrike/agreement, round R3 2026-09-04); 'terms' no match",
+   "organic": 12.5,
+   "registry_name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
+   "has_remotes": true,
+   "query_set": [
+    "agreement",
+    "terms"
+   ],
+   "organic_before": 0.0,
+   "organic_before_note": "not tracked in this file before round R3; server itself was already registry-published under its main name, just not measured here",
+   "competitors_in_matched_slots": {
+    "agreement": 8,
+    "terms": 1
+   },
+   "variant_registry_name": "io.github.theluckystrike/agreement"
+  },
+  {
+   "id": "resume",
+   "registry_slot": "'application' 3 of 3 (variant io.github.theluckystrike/application, round R3 2026-09-04); 'cv' no match (100+); 'career' no match; 'hiring' no match",
+   "organic": 8.3,
+   "registry_name": "io.github.theluckystrike/resume-cover-letter-docx-generator",
+   "has_remotes": true,
+   "query_set": [
+    "cv",
+    "career",
+    "hiring",
+    "application"
+   ],
+   "organic_before": 0.0,
+   "organic_before_note": "not tracked in this file before round R3",
+   "competitors_in_matched_slots": {
+    "cv": 100,
+    "career": 10,
+    "hiring": 25,
+    "application": 3
+   },
+   "variant_registry_name": "io.github.theluckystrike/application"
+  },
+  {
+   "id": "pdf",
+   "registry_slot": "'pdfs' 2 of 3 (variant io.github.theluckystrike/pdfs, round R3 2026-09-04); 'watermark' no match",
+   "organic": 33.3,
+   "registry_name": "io.github.theluckystrike/pdf-merge-split-stamp-extract-pages",
+   "has_remotes": true,
+   "query_set": [
+    "pdfs",
+    "watermark"
+   ],
+   "organic_before": 0.0,
+   "organic_before_note": "not tracked in this file before round R3",
+   "competitors_in_matched_slots": {
+    "pdfs": 3,
+    "watermark": 27
+   },
+   "variant_registry_name": "io.github.theluckystrike/pdfs"
+  },
+  {
+   "id": "calendar",
+   "registry_slot": "'availability' 5 of 6 (variant io.github.theluckystrike/availability, round R3 2026-09-04, one duplicate competitor row in result page); 'agenda' no match; 'ical' no match (100+)",
+   "organic": 11.1,
+   "registry_name": "io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts",
+   "has_remotes": true,
+   "query_set": [
+    "availability",
+    "agenda",
+    "ical"
+   ],
+   "organic_before": 0.0,
+   "organic_before_note": "not tracked in this file before round R3",
+   "competitors_in_matched_slots": {
+    "availability": 6,
+    "agenda": 32,
+    "ical": 100
+   },
+   "variant_registry_name": "io.github.theluckystrike/availability"
+  }
+ ],
+ "fleet": {
+  "max_surface": 74.7,
+  "mean_live": 31.5,
+  "fleet_score": 99.8,
+  "fleet_score_before_this_measurement": 99.8,
+  "verdict": "R3 2026-09-04: published 6 more registry-name variants for spreadsheet, docx, clauses, resume, pdf, calendar (timezone already had one from R2, skipped). All 6 confirmed live on a 3-minute reprobe. spreadsheet organic 25.5->26.0, docx 16.0->21.7. clauses/resume/pdf/calendar tracked here for the first time: pdf strongest (33.3, pdfs 2 of 3), clauses 12.5 (agreement 7 of 8), calendar 11.1 (availability 5 of 6, one duplicate competitor row), resume weakest (8.3, application 3 of 3 but cv/career/hiring all unmatched). Fleet score barely moves, still dominated by expense-tracker/recurring."
+ }
 }
