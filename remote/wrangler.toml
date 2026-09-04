@@ -18,3 +18,10 @@ id = "cf848cc5c07d4e0a9c7c65ad1c70055c"
 # tenant whose meta:<tenant> last_seen is older than 35 days.
 [triggers]
 crons = ["0 4 * * *"]
+
+# pngjs's synchronous inflate subclasses node's internal zlib.Inflate, which is a real
+# ES class on Workers, so every PNG decode threw "Class constructor Inflate cannot be
+# invoked without 'new'". src/shims/pngjs.ts is the real pngjs with only PNG.sync.read
+# re-implemented on zlib.inflateSync; the encoder and everything else are untouched.
+[alias]
+pngjs = "./src/shims/pngjs.ts"

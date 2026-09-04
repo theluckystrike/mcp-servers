@@ -27,6 +27,13 @@ const MIME: Record<string, string> = {
   ics: "text/calendar; charset=utf-8",
   xlsm: "application/vnd.ms-excel.sheet.macroEnabled.12",
   pdf: "application/pdf",
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  bmp: "image/bmp",
+  gif: "image/gif",
+  tif: "image/tiff",
+  tiff: "image/tiff",
 };
 
 function enoent(p: string): NodeJS.ErrnoException {

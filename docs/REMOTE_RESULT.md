@@ -1304,3 +1304,161 @@ SSRF refusal): **remote 37/37, whole run 300/300.**
 - A hostname that resolves to a private address through DNS is still an accepted residual
   risk on the calendar feed guard, exactly as it is on the price-tracker one: only literal
   addresses and obvious internal names are caught before the connection.
+
+## Extension 5: kanban, image
+
+`POST /mcp/kanban` and `POST /mcp/image` on the same worker, same auth, same per-tenant
+caps. Fifteen endpoints now, and `GET /mcp` and `/mcp/connect` list all fifteen.
+
+### kanban: nothing to patch
+
+`servers/kanban` has no dependencies beyond the SDK, zod and the licence package, no
+network, and no file output. Its whole store is one `data.json` under `dataDir()`, which
+resolves through the `node:os` shim to `/home/mcp/.local/share/mcp-servers/kanban/` in the
+per-request virtual filesystem, and the atomic `tmp + rename` it writes is exactly the
+shape the fs shim already publishes or persists. So `SERVERS.kanban` in `build-vendor.mjs`
+lists `index.ts, board.ts, day.ts, jsonstore.ts` and there is **no patch function at all** --
+the first endpoint to be vendored with zero substitutions. `ServerCfg.kanban` is a bare
+`{ factory }`: no `publish`, no `strip`, no `maxBytes`, so the default 512 KB per-token cap
+and the 64-file limit apply.
+
+Two things that would have needed work already worked:
+
+- **The shared profile timezone.** `servers/kanban/src/day.ts` reads `readSharedProfile()
+  .timezone` to decide where a calendar day starts, so `overdue`, `weekly_review` and the
+  `kanban://today` resource are computed in the user's home zone. That profile is the same
+  `/profile/business.json` document the licence shim serves, hydrated from `${tenant}:profile`
+  for every endpoint, so `business_set {timezone}` on `/mcp/invoice` moves kanban's day
+  boundary for the same token with nothing added here. `day.ts` memoises the zone in module
+  scope, which is shared across requests in one isolate -- but the cache is keyed on the raw
+  profile string it was built from, so a second tenant with a different zone recomputes
+  rather than inheriting the first one's.
+- **`withFileLock`**, which the licence shim already makes a no-op: one request owns its
+  virtual filesystem.
+
+`timeTrackerProjects()` reads the sibling time-tracker store to warn when `task_start_timer`
+would hand a task to a project name that server spells differently. That store is a separate
+tenant document here and is not hydrated into this endpoint, so `existsSync` is false and the
+function returns `[]` -- the documented best-effort path it already takes when the sibling
+store is missing. The handoff still works; only the warning is unavailable, and the `GET /mcp`
+entry says so.
+
+### image: every path is an upload name, and jimp on Workers
+
+`remote/src/shims/image-upload.ts` is `pdf-upload.ts`'s shape for images: `image_upload
+{name, image_base64}`, `image_files`, `image_delete_upload`. The format is decided by the
+**magic bytes**, never by the name the caller gave, and the file is stored as
+`/uploads/<name><ext>` with the extension that matches what was actually found -- which is
+what makes the download's content type correct later. Uploading the same name twice deletes
+every other spelling of it first, so `path: "shot"` can never resolve to a stale `shot.png`
+sitting beside a fresh `shot.jpg`.
+
+`patchImageIo` rewrites `expandPath` so every `path` and every entry of `paths[]` is one of
+those names: with an extension it resolves directly, without one it tries `/uploads/` then
+`/out/` across the seven known extensions, so a file this server wrote earlier can be the
+input of the next call. `outputPath()` forces every output under `/out/`. It takes both the
+extension a tool insists on (`image_convert`'s format) and a **fallback** -- the source's own
+extension, threaded in at the five single-image writers -- because an `out_path` of `"small"`
+with no extension would otherwise publish a file whose content type could only be
+`application/octet-stream`. `sameFile` was the same `statSync().dev`/`.ino` trap the pdf
+endpoint hit and is path equality here. `outDir()` returns the published root, because
+`image_thumbnails` and `image_batch_resize` take an `out_dir` and there are no directories:
+each output is its own link, which their schemas now say.
+
+`patchImageIndex` adds `publishFile()` after all seven `writeFileSync` calls -- the image
+server writes encoded bytes straight to the reserved path rather than through `tmp + rename`,
+so the fs shim's rename hook never fires. One defect the live run caught: the two batch tools
+printed their outputs with `basename(...)`, so the path the worker substitutes the download
+URL for never appeared in the answer and **every batch link was silently lost**. They print
+the full path now and `strip: ["/uploads/", "/out/"]` removes the roots from whatever is left
+(an input named in a sentence, say), so a caller sees `probe-32.png` and never a virtual path.
+
+**jimp under `nodejs_compat`: two real blockers, both fixed.**
+
+1. *The `browser` export condition.* Wrangler's bundler resolves it, and in this install
+   `jimp/dist/browser/index.js` is a one-line stub (`export {}`), so every named import
+   failed at build time. `rewriteSpec` maps the `jimp` specifier to its ESM build by file
+   path, which skips the exports map entirely. Only the top-level package has a `browser`
+   condition; the `@jimp/*` packages resolve normally.
+2. *`pngjs`'s synchronous inflate.* `pngjs/lib/sync-inflate.js` does not call zlib -- it
+   subclasses node's internal `zlib.Inflate` with `util.inherits` and then does
+   `zlib.Inflate.call(this, opts)`. On Workers that is a real ES class, so the first PNG
+   decode returned `Class constructor Inflate cannot be invoked without 'new'` while
+   *encoding*, which uses `zlib.deflateSync` directly, worked fine -- a failure mode that
+   only shows up on a real decode. `remote/src/shims/pngjs.ts` is the real pngjs with only
+   `PNG.sync.read` re-implemented on `zlib.inflateSync` (the same parser-sync flow, the
+   package's own modules imported by file path so the alias does not apply to them), wired
+   in with a new `[alias]` block in `wrangler.toml`.
+
+`jimp/fonts` is the one thing that cannot be made to work: it resolves its `.fnt` directory
+with `fileURLToPath(import.meta.url)` **at module load**, which threw during deploy
+validation and failed the whole worker, not just one tool. The import and the font table are
+dropped, and `image_watermark` refuses with the reason and the two things that do work.
+Every other tool is intact.
+
+`Buffer` is not a global on Workers, so `imageio.ts` and the vendored `index.ts` get the
+`node:buffer` import, exactly as `servers/pdf/src/text.ts` did.
+
+### Verified live (bundle key, two POSTs each)
+
+```
+$ kanban task_add {project: "Nova Site", title: "Ship the hosted board", due: "2026-09-10",
+                   estimate_minutes: 90, priority: "high"}
+  NS-1  Ship the hosted board  [Nova Site / backlog]   Due 2026-09-10, estimate 1h 30m.
+$ kanban board {}
+  column   tasks  estimate  actual  overdue
+  backlog  1      1h 30m    -       -
+  todo/doing/review/done  0
+  Nova Site (NS-)  1 task(s), 1 open, estimate 1h 30m remaining.
+$ kanban task_done {id: "NS-1"}   -> Done: NS-1 Ship the hosted board (Nova Site).
+$ kanban weekly_review {}         -> Week 2026-W36, Nova Site: 1 completed, estimate 1h 30m
+
+$ image image_upload {name: "probe", image_base64: <189-byte jimp-generated 64x64 PNG>}
+  Uploaded "probe.png" (PNG, 189 bytes). Pass path: "probe" to any image tool.
+$ image image_info {path: "probe"}
+  {"file": "probe.png", "format": "png", "width": 64, "height": 64, "has_alpha": false}
+$ image image_resize {path: "probe", width: 32, height: 32, out_path: "probe-32"}
+  Resized 64x64 to 32x32 (fit: inside)
+  -> https://mcp.zovo.one/mcp/download/ef9dadbf... (valid 1 hour), 137 B, PNG
+  GET that URL -> 137 bytes starting 89 50 4e 47 0d 0a 1a 0a   (the PNG signature)
+                  content-type: image/png
+                  content-disposition: attachment; filename="probe-32.png"
+$ image image_convert {path: "probe", format: "jpeg", out_path: "probe-j"}
+  Converted PNG to JPEG -> download link, 189 B -> 729 B, 64x64, quality 80
+$ image image_crop {path: "probe-32", x: 0, y: 0, width: 16, height: 16, out_path: "probe-crop"}
+  Cropped 16x16 from (0, 0) of a 32x32 image      <- an earlier OUTPUT used as the input
+$ image image_thumbnails {paths: ["probe"], size: 16, out_dir: "thumbs"}
+  - https://mcp.zovo.one/mcp/download/e5dbd124... (valid 1 hour): 64x64 -> 16x16, 113 B
+  GET that URL -> 113 bytes, image/png, PNG signature
+$ image image_dominant_colors {path: "probe", count: 2}
+  #1b7f3b 49.5%, #d94f2b 49.5%   (Pro)
+$ image image_info {path: "../../etc/passwd"}
+  Error: nothing is stored under the name "passwd". Upload it first with image_upload ...
+$ image image_watermark {path: "probe", out_path: "w"}
+  Error: watermarking is not available on this hosted endpoint ... run it over stdio
+```
+
+`GET /mcp` lists fifteen endpoints and `/mcp/connect` prints fifteen ready URLs.
+`tools/list`: kanban 16, image 15. `servers/kanban/remotes.json` was added in the shape
+`servers/image/remotes.json` already had, and `scripts/validate.mjs` covers both endpoints in
+the `tools/list` sweep plus three real calls (kanban task_add + board, image upload + info +
+resize + download signature and content type, image_convert for the decode/encode proof):
+**remote 42/42, whole run 366/366.**
+
+### Limitations
+
+- 190 KB of image per POST is the real ceiling, not the 2 MB per-file cap -- the same
+  request-body arithmetic the pdf endpoint has. A phone photo has to be shrunk before
+  upload, or the server run over stdio.
+- `image_watermark` is unavailable here and says so. jimp's bitmap fonts are files.
+- `out_dir` is accepted and ignored: there are no directories, and each batch output comes
+  back as its own download link.
+- Generated images are kept, so they count against the 2 MB image cap alongside the uploads;
+  `image_delete_upload` removes either kind by name, and the 64-file limit still applies.
+- The image operation register (`image://recent`) is per token and per endpoint: it lists
+  what this token did on the hosted endpoint, never what a local stdio server did.
+- kanban's `task_start_timer` cannot check the time-tracker's project names from here; the
+  timer still starts, only the spelling warning is missing.
+- `PNG.sync.read` is re-implemented on `zlib.inflateSync` rather than pngjs's own tolerant
+  partial-inflate path, so a truncated PNG that pngjs would have decoded as far as it could
+  is refused outright here. A valid PNG is unaffected.

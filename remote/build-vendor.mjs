@@ -31,6 +31,8 @@ const SERVERS = {
   "clauses": ["index.ts", "assemble.ts", "library.ts", "starter.ts", "store.ts"],
   "pdf": ["index.ts", "pdfio.ts", "store.ts", "text.ts"],
   "calendar": ["index.ts", "ics.ts", "fetch.ts", "store.ts"],
+  "kanban": ["index.ts", "board.ts", "day.ts", "jsonstore.ts"],
+  "image": ["index.ts", "imageio.ts", "store.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
@@ -40,6 +42,13 @@ function rewriteSpec(spec, depth) {
   if (spec === "node:fs") return `${up}shims/fs.js`;
   if (spec === "node:os") return `${up}shims/os.js`;
   if (spec === "@theluckystrike/mcp-license") return `${up}shims/license.js`;
+  // jimp's package exports carry a "browser" condition, and wrangler's bundler resolves
+  // it: in this install that file is a one-line stub ("export {}"), so every named import
+  // fails at build time. Its ESM build is the one that runs here, addressed as a file path
+  // so the exports map is not consulted at all. Only the top-level `jimp` package has a
+  // browser condition; @jimp/* resolve normally.
+  const JIMP = `${up}../../node_modules/jimp/dist/esm`;
+  if (spec === "jimp") return `${JIMP}/index.js`;
   // A sibling engine: "@theluckystrike/mcp-<x>/lib" is that server's own lib.ts, which is
   // vendored next to this one (servers/docx/src/lib.ts, servers/invoice/src/lib.ts).
   const sib = /^@theluckystrike\/mcp-([a-z-]+)\/lib$/.exec(spec);
@@ -947,6 +956,192 @@ function patchCalendarIndex(src) {
   return src;
 }
 
+/* ------------------------------------------------------------------ image */
+
+/**
+ * The hosted image endpoint has no disk. Every `path` and every entry of `paths[]` is
+ * the name of an image uploaded with image_upload (/uploads/<name>.<ext>), and every
+ * output lands under /out/, which the worker turns into a one-hour download link served
+ * with the real image content type. Outputs stay in the tenant document, so a resized
+ * file can be cropped by a later call.
+ */
+function patchImageIo(src) {
+  src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`export const UPLOAD_ROOT = "/uploads/";
+export const OUT_ROOT = "/out/";
+const KNOWN_EXTS = [".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tif", ".tiff"];
+
+/** The bare name a hosted path argument has to be, or a caller-facing refusal. */
+function imageName(p: string, what: string): { base: string; ext: string } {
+  const raw = String(p ?? "").trim();
+  if (!raw) throw new Error(\`\${what} is required: it names an image uploaded with image_upload\`);
+  const b = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "");
+  const m = /^([A-Za-z0-9_-]{1,64})(\\.[A-Za-z0-9]{1,8})?$/.exec(b);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable image name. On this hosted endpoint a path is just a name - \` +
+      \`the one you uploaded a file under with image_upload, or the one to give a new file: 1-64 characters \` +
+      \`of letters, digits, underscore or dash, optionally with an extension. image_files lists what is stored.\`);
+  }
+  return { base: m[1], ext: (m[2] ?? "").toLowerCase() };
+}
+
+/**
+ * Resolve an input name: an uploaded file wins, otherwise a file this server wrote
+ * earlier for the same token. The extension is optional, because image_upload names the
+ * file after the format it actually found in the magic bytes.
+ */
+export function expandPath(p: string): string {
+  const { base, ext } = imageName(p, "path");
+  const roots = [UPLOAD_ROOT, OUT_ROOT];
+  if (ext) {
+    for (const r of roots) if (existsSync(\`\${r}\${base}\${ext}\`)) return \`\${r}\${base}\${ext}\`;
+    return \`\${UPLOAD_ROOT}\${base}\${ext}\`;
+  }
+  for (const r of roots) for (const e of KNOWN_EXTS) if (existsSync(\`\${r}\${base}\${e}\`)) return \`\${r}\${base}\${e}\`;
+  return \`\${UPLOAD_ROOT}\${base}.png\`;
+}
+
+/**
+ * Every output is written under /out/, whatever the caller wrote, so it is published.
+ * \`ext\` is the extension the tool insists on (image_convert's format); \`fallback\` is the
+ * source's own extension, used only when the caller named none, so a published file
+ * always carries the extension its content type is read from.
+ */
+export function outputPath(p: string, ext = "", fallback = ""): string {
+  const n = imageName(p, "out_path");
+  return \`\${OUT_ROOT}\${n.base}\${ext || n.ext || fallback || ".png"}\`;
+}
+
+/** There are no directories here: every batch output lands in the same published root. */
+export function outDir(_p: string): string { return OUT_ROOT; }
+`, "image expandPath");
+
+  src = must(src, `export function reserveOutput(out: string, overwrite: boolean, inputs: string[] = [], ext = ""): Reservation {
+  const p = expandPath(out);
+  const withExt = !ext || p.toLowerCase().endsWith(ext) ? p : \`\${p}\${ext}\`;`,
+    `export function reserveOutput(out: string, overwrite: boolean, inputs: string[] = [], ext = "", fallbackExt = ""): Reservation {
+  const withExt = outputPath(out, ext, fallbackExt);`, "image reserveOutput target");
+
+  // statSync on the virtual filesystem has no dev/ino, so the inode comparison would read
+  // undefined === undefined and call every pair of existing files the same file, which
+  // would refuse legitimate out_paths as "also an input".
+  src = must(src, /\/\*\* Same inode[\s\S]*?export function sameFile\(a: string, b: string\): boolean \{[\s\S]*?\n\}\n/,
+`/** Path equality is identity here: the virtual filesystem has no links and no inodes. */
+export function sameFile(a: string, b: string): boolean { return a === b; }
+`, "image sameFile");
+
+  src = must(src, 'if (!existsSync(path)) throw new Error(`${path} does not exist. Give the full path to an existing image file.`);',
+    'if (!existsSync(path)) throw new Error(\n' +
+    '    `nothing is stored under the name ${JSON.stringify(path.split("/").pop()?.replace(/\\.[a-z]+$/, ""))}. ` +\n' +
+    '    `Upload it first with image_upload {name, image_base64}; image_files lists what is stored.`);',
+    "image guardInput not-found message");
+
+  // node:buffer: Buffer is not a global on Workers.
+  return `import { Buffer } from "node:buffer";\n${src}`;
+}
+
+function patchImageStore(src) {
+  src = must(src, /export function dataDir\(\): string \{[\s\S]*?\n\}\n/,
+    'export function dataDir(): string { mkdirSync("/image", { recursive: true }); return "/image"; }\n',
+    "image dataDir");
+  return src;
+}
+
+function patchImageIndex(src) {
+  // jimp/fonts resolves its .fnt directory with fileURLToPath(import.meta.url) at MODULE
+  // LOAD time, which throws on Workers before a single tool runs (the whole worker fails
+  // validation, not just image_watermark). The import and the font table go; the one tool
+  // that used them refuses with a caller-facing reason below.
+  src = must(src, 'import { SANS_8_WHITE, SANS_16_WHITE, SANS_32_WHITE, SANS_64_WHITE, SANS_128_WHITE } from "jimp/fonts";\n', "",
+    "image drop jimp/fonts import");
+  src = must(src, /const FONTS: \[number, string\]\[\] = \[[\s\S]*?\];/,
+    "const FONTS: [number, string][] = [];   // jimp/fonts cannot be loaded here (see below)",
+    "image FONTS table");
+
+  // Every finished output becomes a one-hour download link. The stdio server writes the
+  // encoded bytes straight to the path (no tmp + rename), so the publish is explicit.
+  src = mustAll(src, /writeFileSync\((res\.path|reservations\[i\]\.path), bytes\);/g,
+    "writeFileSync($1, bytes);\n      publishFile($1);", "image publish written outputs");
+
+  // Names, not paths, everywhere the schema says path / out_path / out_dir.
+  src = must(src,
+    'const pathArg = z.string().describe("Path to the image file. ~ is expanded; a relative path is resolved against the working directory");',
+    'const pathArg = z.string().describe("Name of an image uploaded with image_upload, or one this server wrote earlier");',
+    "image pathArg description");
+  src = must(src,
+    'const outArg = z.string().describe("Path of the file to write. The extension decides the output format; without a known one the input\'s format is kept");',
+    'const outArg = z.string().describe("Name for the file to write; it comes back as a download link valid for one hour. The extension decides the output format; without a known one the input\'s format is kept");',
+    "image outArg description");
+  src = must(src, 'paths: z.array(z.string()).min(1).describe("The image files to make thumbnails of"),',
+    'paths: z.array(z.string()).min(1).describe("Names of images uploaded with image_upload"),',
+    "image_thumbnails paths description");
+  src = must(src, 'paths: z.array(z.string()).min(1).describe("The image files to resize"),',
+    'paths: z.array(z.string()).min(1).describe("Names of images uploaded with image_upload"),',
+    "image_batch_resize paths description");
+  src = mustAll(src, /out_dir: z\.string\(\)\.describe\("Director(?:y to write the thumbnails into|y to write into)\. It is created if missing"\),/g,
+    'out_dir: z.string().describe("Not a directory here: every output comes back as its own download link valid for one hour. Any value is accepted and ignored"),',
+    "image out_dir descriptions");
+
+  // A missing extension on out_path would publish a file with no content type, so the
+  // source's own extension is the fallback for the five single-image writers.
+  src = mustAll(src, /const res = reserveOutput\(out_path, overwrite === true, \[src\.path\]\);/g,
+    'const res = reserveOutput(out_path, overwrite === true, [src.path], "", extname(src.path) || EXT[src.format]);',
+    "image reserveOutput fallback extension");
+
+  // A batch row named the output with basename(), so the path the worker substitutes the
+  // download URL for never appeared and the links were lost. The full path is printed and
+  // becomes the link; ServerCfg.strip removes the root from anything left over.
+  src = mustAll(src, /- \$\{basename\(reservations\[i\]\.path\)\}:/g, "- ${reservations[i].path}:",
+    "image batch row output link");
+
+  // There are no directories: a batch output is a name under the published root.
+  src = mustAll(src, /join\(expandPath\(out_dir\), /g, "join(outDir(out_dir), ", "image batch out_dir");
+  src = must(src, 'at most ${size} px on the longest side, in ${expandPath(out_dir)}\\n',
+    'at most ${size} px on the longest side; each one is a download link valid for one hour\\n',
+    "image_thumbnails result heading");
+  src = must(src, '`Resized ${targets.length} image${targets.length === 1 ? "" : "s"} into ${expandPath(out_dir)}\\n` +',
+    '`Resized ${targets.length} image${targets.length === 1 ? "" : "s"}; each one is a download link valid for one hour\\n` +',
+    "image_batch_resize result heading");
+
+  // The shared profile lives in a per-token document here, not at a path anyone can open.
+  src = must(src,
+    '        "Run business_set {name} in mcp-invoice or mcp-docx once - the profile is shared " +\n' +
+    '        `(${join(process.env.XDG_DATA_HOME || "~/.local/share", "mcp-servers", "profile", "business.json")}) - ` +\n' +
+    '        "or pass text, which is a Pro feature.",',
+    '        "Run business_set {name} on /mcp/invoice or /mcp/docx once - the profile is shared across every " +\n' +
+    '        "endpoint for your token - or pass text, which is a Pro feature.",',
+    "image watermark profile path");
+
+  // jimp's bundled fonts are .fnt files loadFont() reads off a real disk, and there is no
+  // disk here. The tool stays listed so the refusal explains itself rather than 500ing
+  // inside the font loader; everything else in this server works.
+  src = must(src, /\}, async \(\{ path, text, position, opacity, out_path, overwrite \}\) => \{\n  const reservations: Reservation\[\] = \[\];\n  try \{/,
+`}, async ({ path, text, position, opacity, out_path, overwrite }) => {
+  void path; void text; void position; void opacity; void out_path; void overwrite;
+  return fail(
+    "watermarking is not available on this hosted endpoint. The text is drawn with jimp's bundled bitmap fonts, " +
+    "which are .fnt files loaded from a real filesystem, and this endpoint has none - nothing was written. " +
+    "Run the server locally over stdio (npx -y @theluckystrike/mcp-image), where image_watermark works, " +
+    "or draw the text yourself and upload the finished image.");
+  // eslint-disable-next-line no-unreachable
+  const reservations: Reservation[] = [];
+  try {`, "image watermark refusal");
+  src = must(src,
+    'description: "Draw text over an image at a chosen corner and opacity. With no text the shared business profile name is used, the same profile mcp-invoice and mcp-docx write. The text is drawn white on a translucent dark plate so it stays legible on a light photo. Free tier: the profile name; Pro: any text you pass.",',
+    'description: "Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Run the server locally over stdio (npx -y @theluckystrike/mcp-image) to watermark, or upload an image you have already watermarked.",',
+    "image watermark description");
+
+  // The prompt suggested a folder beside the input; there are no folders here.
+  src = must(src, '  const p = expandPath(path);\n', '  const p = String(path ?? "").trim();\n', "image prompt path");
+  src = must(src, 'out_path: "<same folder>/${base}-web.jpg"', 'out_path: "${base}-web.jpg"', "image prompt out name");
+
+  src = must(src, "gate.registerTools(server as unknown as { registerTool: Function });",
+    "gate.registerTools(server as unknown as { registerTool: Function });\nregisterImageUpload(server as unknown as { registerTool: Function });",
+    "image image_upload registration");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -966,6 +1161,12 @@ const EXTRA_IMPORTS = {
   calendar: [
     'import { Buffer } from "node:buffer";',
     'import { publishFile } from "../../shims/fs.js";',
+  ],
+  image: [
+    'import { Buffer } from "node:buffer";',
+    'import { registerImageUpload } from "../../shims/image-upload.js";',
+    'import { publishFile } from "../../shims/fs.js";',
+    'import { outDir, outputPath } from "./imageio.js";',
   ],
 };
 
@@ -991,6 +1192,8 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "pdf" && f === "text.ts") src = patchPdfText(src);
       if (name === "calendar" && f === "store.ts") src = patchCalendarStore(src);
       if (name === "calendar" && f === "fetch.ts") src = patchCalendarFetch(src);
+      if (name === "image" && f === "imageio.ts") src = patchImageIo(src);
+      if (name === "image" && f === "store.ts") src = patchImageStore(src);
       writeFileSync(join(dir, f), rewriteImports(src, 2));
       continue;
     }
@@ -1007,6 +1210,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "clauses") src = patchClausesIndex(src);
     if (name === "pdf") src = patchPdfIndex(src);
     if (name === "calendar") src = patchCalendarIndex(src);
+    if (name === "image") src = patchImageIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {

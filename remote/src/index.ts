@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, thirteen endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, fifteen endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -23,6 +23,8 @@ import { createServer as createRecurring } from "./vendor/recurring/index.js";
 import { createServer as createClauses } from "./vendor/clauses/index.js";
 import { createServer as createPdf } from "./vendor/pdf/index.js";
 import { createServer as createCalendar } from "./vendor/calendar/index.js";
+import { createServer as createKanban } from "./vendor/kanban/index.js";
+import { createServer as createImage } from "./vendor/image/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -37,6 +39,7 @@ const SPREADSHEET_MAX_BYTES = 2 * 1024 * 1024;   // inline-data mode, per token
 const DOCX_MAX_BYTES = 2 * 1024 * 1024;          // uploaded .docx templates, per token
 const PDF_MAX_BYTES = 2 * 1024 * 1024;           // uploaded and generated PDFs, per token
 const CALENDAR_MAX_BYTES = 2 * 1024 * 1024;      // imported .ics calendars, per token
+const IMAGE_MAX_BYTES = 2 * 1024 * 1024;         // uploaded and generated images, per token
 const DEFAULT_MAX_BYTES = 512 * 1024;            // stored document per token per endpoint
 const MAX_BODY_BYTES = 256 * 1024;               // request body ceiling
 const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour per client IP
@@ -47,7 +50,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-03.2";
+const BUILD_VERSION = "2026-09-04.1";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -150,6 +153,23 @@ const SERVERS: Record<string, ServerCfg> = {
     // /exports/ and is a transient download.
     publish: (p) => p.startsWith("/exports/"),
     maxBytes: CALENDAR_MAX_BYTES,
+  },
+  "kanban": {
+    // Zero dependencies and no file outputs: the board is one JSON document per token,
+    // under the homedir shim, and the day boundary comes from the shared profile's
+    // timezone exactly as it does over stdio.
+    factory: createKanban as () => McpServer,
+  },
+  "image": {
+    // Uploads (/uploads/) and the operation register (/image/) are the tenant's state;
+    // everything a tool writes lands under /out/ and becomes a one-hour download link
+    // served with the real image content type. Outputs are kept as well, so a resized
+    // file can be cropped by the next call the way a file on a disk could.
+    factory: createImage as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    persistPublished: true,
+    maxBytes: IMAGE_MAX_BYTES,
+    strip: ["/uploads/", "/out/"],
   },
 };
 
@@ -500,6 +520,8 @@ const TOOLS: Record<string, string[]> = {
   "clauses": ["clause_add", "clause_get", "clause_update", "clause_delete", "clause_list", "clause_search", "clause_import", "clause_export", "contract_assemble", "variables_list", "license_status", "license_activate"],
   "pdf": ["pdf_upload", "pdf_files", "pdf_delete_upload", "pdf_info", "pdf_count", "pdf_merge", "pdf_split", "pdf_pages", "pdf_rotate", "pdf_stamp", "pdf_watermark_business", "pdf_reorder", "pdf_text", "license_status", "license_activate"],
   "calendar": ["ics_import", "calendars_list", "events_list", "events_search", "free_busy", "conflicts", "next_event", "event_export", "event_to_time_entry", "ics_forget", "license_status", "license_activate"],
+  "kanban": ["task_add", "task_list", "task_move", "task_update", "task_done", "task_delete", "task_search", "board", "task_start_timer", "task_log_time", "project_list", "overdue", "weekly_review", "columns_set", "license_status", "license_activate"],
+  "image": ["image_upload", "image_files", "image_delete_upload", "image_info", "image_resize", "image_convert", "image_compress", "image_crop", "image_thumbnails", "image_watermark", "image_strip_metadata", "image_batch_resize", "image_dominant_colors", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -613,11 +635,27 @@ function indexDoc(base: string) {
         storage: `${CALENDAR_MAX_BYTES / 1048576} MB of imported calendars per token; one import is capped at 5 MB, and the ${MAX_BODY_BYTES / 1024} KB request-body cap binds long first`,
         notes: "a feed URL is checked against every literal private, loopback, link-local and metadata address before the first hop and again after every redirect; there is no override",
       },
+      {
+        name: "kanban", url: `${base}/mcp/kanban`, tools: TOOLS["kanban"],
+        how: "Boards, columns and tasks are kept per token; nothing is uploaded and nothing is downloaded. task_add creates the board on first use, board renders it as a table, and columns_set changes the column set.",
+        free_limits: "3 projects, 200 open tasks, the default 5 columns (a custom column set is Pro)",
+        notes: "day boundaries - due today, overdue, weekly_review - are computed in the timezone on the shared business profile for your token when one is set (business_set {timezone} on /mcp/invoice), and in UTC otherwise. task_start_timer hands the task to /mcp/time-tracker, which is a separate document for the same token, so the sibling-project warning the stdio server prints is not available here",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of boards and tasks per token`,
+      },
+      {
+        name: "image", url: `${base}/mcp/image`, tools: TOOLS["image"],
+        mode: "upload and download",
+        how: "There is no disk here: image_upload {name, image_base64} stores a PNG, JPEG, BMP, GIF or TIFF under your token and every `path` argument - and every entry of `paths` - is that name. The format is read from the magic bytes, not from the name. image_files lists what is stored, image_delete_upload removes one.",
+        outputs: "image_resize, image_convert, image_compress, image_crop, image_strip_metadata, image_thumbnails and image_batch_resize return a download link valid for one hour, served with the real image content type (image/png, image/jpeg, image/bmp, image/gif, image/tiff). The file is also kept under your token, so a resized image can be cropped by the next call. out_dir is not a directory here: each output is its own link.",
+        free_limits: "sources up to 4 MP and 5 files per batch call; image_info is unlimited, and image_dominant_colors is Pro",
+        storage: `${IMAGE_MAX_BYTES / 1048576} MB of stored images per token, and at most ${IMAGE_MAX_BYTES / 1048576} MB in one upload - the ${MAX_BODY_BYTES / 1024} KB request-body cap binds long first, which is roughly 190 KB of image once base64-encoded`,
+        notes: "decoding runs on jimp under nodejs_compat. image_watermark is not available: it draws with bitmap font files loaded from a filesystem, which this endpoint does not have",
+      },
     ],
     limits: {
       request_body_bytes: MAX_BODY_BYTES,
       jsonrpc_batching: "not accepted - send one request object per POST",
-      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, currency: "no per-token storage" },
+      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, image: IMAGE_MAX_BYTES, currency: "no per-token storage" },
       download_ttl_seconds: DOWNLOAD_TTL,
       idle_data_retention_days: SWEEP_AFTER_DAYS,
     },

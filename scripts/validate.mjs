@@ -234,12 +234,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 13 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 13 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 15 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 15 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -291,6 +291,22 @@ async function remote() {
     const urlTok = await fetch(`https://mcp.zovo.one/mcp/time-tracker/t/${tok.token}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream" }, body: JSON.stringify({ jsonrpc: "2.0", id: 11, method: "tools/list", params: {} }) }).then((r) => r.json()); ok("url-token path lists tools with no headers", (urlTok.result?.tools || []).length >= 8, `${(urlTok.result?.tools || []).length} tools`);
     const who = await fetch(`https://mcp.zovo.one/mcp/whoami/t/${tok.token}`).then((r) => r.json()); ok("whoami reports tier pro for a signed key", who.tier === "pro", JSON.stringify(who).slice(0, 100));
     const con = await fetch("https://mcp.zovo.one/mcp/connect"); ok("connect page 200 or per-IP 429", con.status === 200 || con.status === 429, con.status);
+    const ka = await rpc("kanban", { jsonrpc: "2.0", id: 21, method: "tools/call", params: { name: "task_add", arguments: { project: "Nova Site", title: "Ship the hosted board", due: "2026-09-10", estimate_minutes: 90, priority: "high" } } });
+    const kb = await rpc("kanban", { jsonrpc: "2.0", id: 22, method: "tools/call", params: { name: "board", arguments: {} } });
+    ok("hosted kanban task_add + board shows the task on the new board", !ka.error && /NS-1/.test(JSON.stringify(ka)) && /Nova Site/.test(JSON.stringify(kb)) && /1h 30m/.test(JSON.stringify(kb)), JSON.stringify(kb).slice(0, 100));
+    const { Jimp: RemoteJimp } = await import("jimp");
+    const probeImg = new RemoteJimp({ width: 64, height: 64, color: 0x1b7f3bff });
+    for (let x = 0; x < 64; x++) for (let y = 0; y < 32; y++) probeImg.setPixelColor(0xd94f2bff, x, y);
+    const probePng = Buffer.from(await probeImg.getBuffer("image/png"));
+    const iup = await rpc("image", { jsonrpc: "2.0", id: 23, method: "tools/call", params: { name: "image_upload", arguments: { name: "probe", image_base64: probePng.toString("base64") } } });
+    const iinfo = await rpc("image", { jsonrpc: "2.0", id: 24, method: "tools/call", params: { name: "image_info", arguments: { path: "probe" } } });
+    const irz = await rpc("image", { jsonrpc: "2.0", id: 25, method: "tools/call", params: { name: "image_resize", arguments: { path: "probe", width: 32, height: 32, out_path: "probe-32", overwrite: true } } });
+    const idl = (JSON.stringify(irz).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const ires = idl ? await fetch(idl) : null;
+    const ihead = ires ? Buffer.from(await ires.arrayBuffer()).subarray(0, 8).toString("hex") : "";
+    ok("hosted image upload + image_info(64x64 png) + image_resize download is a PNG served image/png", !iup.error && /"width": 64/.test(JSON.stringify(iinfo).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && ihead === "89504e470d0a1a0a" && (ires?.headers.get("content-type") || "") === "image/png", `${idl ? "link" : "no link"} ${ihead} ${ires?.headers.get("content-type")}`);
+    const icv = await rpc("image", { jsonrpc: "2.0", id: 26, method: "tools/call", params: { name: "image_convert", arguments: { path: "probe", format: "jpeg", out_path: "probe-j", overwrite: true } } });
+    ok("hosted image jimp decode + encode round trip under nodejs_compat (png -> jpeg)", /Converted PNG to JPEG/.test(JSON.stringify(icv)), JSON.stringify(icv).slice(0, 90));
     const bound = await fetch("https://mcp.zovo.one/bound?tenant=anon_00000000000000000000000000000000").then((r) => r.json()); ok("bound endpoint answers for an unknown tenant", bound.bound === false, JSON.stringify(bound).slice(0, 80));
     const buyT = await fetch("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok("buy with tenant still 303 to Stripe", buyT.status === 303, buyT.status);
     const batch = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: "[{}]" }); ok("JSON-RPC batch rejected 400", batch.status === 400, batch.status);
