@@ -2,7 +2,7 @@
 // Live validation of every server + billing, appended to data/validation.json (the validation database).
 // Each run: spawn dist/index.js over stdio, initialize, tools/list, real tool calls, free gate, pro gate, timing.
 import { spawn, execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync, readFileSync, existsSync, statSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { createServer } from "node:http";
 import { join } from "node:path";
@@ -52,7 +52,60 @@ async function runServer(id, probes) {
   return { id, pass, total: checks.length, ms: Date.now() - t0, checks };
 }
 
+const CRCT = (() => { const t = new Int32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c; } return t; })();
+const crc32 = (b) => { let c = -1; for (let i = 0; i < b.length; i++) c = CRCT[(c ^ b[i]) & 0xff] ^ (c >>> 8); return (c ^ -1) >>> 0; };
+function storedZip(entries) {
+  const locals = [], centrals = []; let off = 0;
+  for (const e of entries) {
+    const name = Buffer.from(e.name, "utf8"), body = Buffer.from(e.data, "utf8"), crc = crc32(body);
+    const lh = Buffer.alloc(30); lh.writeUInt32LE(0x04034b50, 0); lh.writeUInt16LE(20, 4); lh.writeUInt16LE(0x0800, 6);
+    lh.writeUInt16LE(0x6000, 10); lh.writeUInt16LE(0x590e, 12); lh.writeUInt32LE(crc, 14);
+    lh.writeUInt32LE(body.length, 18); lh.writeUInt32LE(body.length, 22); lh.writeUInt16LE(name.length, 26);
+    locals.push(lh, name, body);
+    const ch = Buffer.alloc(46); ch.writeUInt32LE(0x02014b50, 0); ch.writeUInt16LE((3 << 8) | 20, 4); ch.writeUInt16LE(20, 6);
+    ch.writeUInt16LE(0x0800, 8); ch.writeUInt16LE(0x6000, 12); ch.writeUInt16LE(0x590e, 14); ch.writeUInt32LE(crc, 16);
+    ch.writeUInt32LE(body.length, 20); ch.writeUInt32LE(body.length, 24); ch.writeUInt16LE(name.length, 28);
+    ch.writeUInt32LE((0o100644 << 16) >>> 0, 38); ch.writeUInt32LE(off, 42);
+    centrals.push(ch, name); off += 30 + name.length + body.length;
+  }
+  const cd = Buffer.concat(centrals), lo = Buffer.concat(locals);
+  const eocd = Buffer.alloc(22); eocd.writeUInt32LE(0x06054b50, 0); eocd.writeUInt16LE(entries.length, 8);
+  eocd.writeUInt16LE(entries.length, 10); eocd.writeUInt32LE(cd.length, 12); eocd.writeUInt32LE(lo.length, 16);
+  return Buffer.concat([lo, cd, eocd]);
+}
+
 const PROBES = {
+  zip: async (c, tmp, tier, ok) => {
+
+    const src = join(tmp, "src"); mkdirSync(src, { recursive: true });
+    const csv = join(src, "rows.csv"), txt = join(src, "note.txt");
+    writeFileSync(csv, "client,amount\n" + "Acme Ltd,120.50\n".repeat(4000));
+    writeFileSync(txt, "August close. Send to the accountant.\n");
+    const arc = join(tmp, "bundle.zip");
+    const cr = await c.tool("zip_create", { paths: [csv, txt], out_path: arc });
+    ok(`${tier}: zip_create packs two files`, !cr.isError && existsSync(arc) && /rows\.csv/.test(cr.text) && /note\.txt/.test(cr.text), cr.text.replace(/\s+/g, " ").slice(0, 120));
+    const ls = await c.tool("zip_list", { path: arc });
+    ok(`${tier}: zip_list gives every entry a ratio`, !ls.isError && /rows\.csv/.test(ls.text) && /note\.txt/.test(ls.text) && /\d+(\.\d+)?x/.test(ls.text), ls.text.replace(/\s+/g, " ").slice(0, 140));
+    const outDir = join(tmp, "unpacked");
+    const dry = await c.tool("zip_extract", { path: arc, out_dir: outDir, dry_run: true });
+    ok(`${tier}: zip_extract dry_run reports the plan and creates no out_dir`, !dry.isError && /dry run/i.test(dry.text) && !existsSync(outDir), dry.text.replace(/\s+/g, " ").slice(0, 120));
+    const ex = await c.tool("zip_extract", { path: arc, out_dir: outDir });
+    ok(`${tier}: zip_extract writes exactly that plan, bytes identical`, !ex.isError && existsSync(join(outDir, "note.txt")) && readFileSync(join(outDir, "note.txt"), "utf8") === readFileSync(txt, "utf8"), ex.text.replace(/\s+/g, " ").slice(0, 120));
+    const eva = join(tmp, "evil.zip");
+    writeFileSync(eva, storedZip([{ name: "safe.txt", data: "harmless" }, { name: "../escaped.txt", data: "owned" }]));
+    const evd = join(tmp, "evilout");
+    const ev = await c.tool("zip_extract", { path: eva, out_dir: evd });
+    ok(`${tier}: a crafted ../ entry is refused and nothing lands beside out_dir`, ev.isError && /unsafe|\.\./.test(ev.text) && !existsSync(join(tmp, "escaped.txt")) && !existsSync(join(evd, "safe.txt")), ev.text.replace(/\s+/g, " ").slice(0, 140));
+    const rd = await c.tool("zip_extract_text", { path: arc, entry: "note.txt" });
+    ok(`${tier}: zip_extract_text reads one entry inline`, !rd.isError && /Send to the accountant/.test(rd.text), rd.text.replace(/\s+/g, " ").slice(0, 100));
+    const many = join(tmp, "many"); mkdirSync(many, { recursive: true });
+    for (let i = 0; i < 201; i++) writeFileSync(join(many, `f${i}.txt`), `row ${i}\n`);
+    const big = join(tmp, "many.zip");
+    const bg = await c.tool("zip_create", { dir: many, out_path: big });
+    ok(`${tier}: 201 entries ${tier === "pro" ? "packed" : "refused with the free cap and the buy link"}`, tier === "pro" ? !bg.isError && existsSync(big) && /201/.test(bg.text) : !bg.isError && /mcp\.zovo\.one\/buy\/zip/.test(bg.text) && /201/.test(bg.text) && !existsSync(big), bg.text.replace(/\s+/g, " ").slice(0, 140));
+    const h = await c.tool("zip_history", {});
+    ok(`${tier}: zip_history lists what was created${tier === "pro" ? " with no allowance line" : " and the free allowance used"}`, !h.isError && /bundle\.zip/.test(h.text) && (tier === "pro" ? !/free archive/.test(h.text) : /\d+ of 20 free archives used in \d{4}-\d{2}/.test(h.text)), h.text.replace(/\s+/g, " ").slice(0, 140));
+  },
   barcode: async (c, tmp, tier, ok) => {
     const qr = await c.tool("qr_create", { text: "https://mcp.zovo.one/s/barcode" });
     ok(`${tier}: qr_create returns an inline SVG`, !qr.isError && /<svg/.test(qr.text) && /<\/svg>/.test(qr.text), qr.text.replace(/\s+/g, " ").slice(0, 80));
@@ -405,7 +458,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);

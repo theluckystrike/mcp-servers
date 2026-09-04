@@ -27,7 +27,7 @@ mkdir -p "$BUNDLES"
 MCPB="npx -y @anthropic-ai/mcpb"
 LIC_SRC="$ROOT/packages/mcp-license"
 
-SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode"
+SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip"
 
 declare -A DISPLAY_NAME=(
   [time-tracker]="Time Tracker"
@@ -48,6 +48,7 @@ declare -A DISPLAY_NAME=(
   [bank-statement]="Bank Statement"
   [quotes]="Quotes"
   [barcode]="Barcode"
+  [zip]="Zip"
 )
 
 declare -A KEYWORDS=(
@@ -69,6 +70,7 @@ declare -A KEYWORDS=(
   [bank-statement]='["mcp","model-context-protocol","bank","statement","transactions","reconcile"]'
   [quotes]='["mcp","model-context-protocol","quote","estimate","proposal","invoice","vat","freelance"]'
   [barcode]='["mcp","model-context-protocol","qr","qr-code","barcode","ean13","code128","sepa"]'
+  [zip]='["mcp","model-context-protocol","zip","archive","compression","unzip","extract"]'
 )
 
 # ------------------------------------------------------------------ helpers

@@ -29,7 +29,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OWNER="theluckystrike"
 MONOREPO="https://github.com/${OWNER}/mcp-servers"
 RAW="https://raw.githubusercontent.com/${OWNER}/mcp-servers/main"
-ALL_SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode office-suite"
+ALL_SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip office-suite"
 DRY_RUN="${DRY_RUN:-0}"
 export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
 
@@ -52,6 +52,7 @@ topics_for() {
     clauses) echo "contract clause proposal" ;;
     quotes) echo "quote estimate proposal" ;;
     barcode) echo "qr-code barcode ean13" ;;
+    zip) echo "zip archive compression unzip" ;;
     office-suite)    echo "office productivity bundle" ;;
   esac
 }

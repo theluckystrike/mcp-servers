@@ -399,6 +399,16 @@
       "free": "20 codes per calendar month, SVG output at any size, every symbology, EPC SEPA payment codes, WiFi and vCard codes, and the local register.",
       "pro": "Unlimited codes, PNG output from 32 to 4000 px, and barcode_batch for up to 500 codes in one call.",
       "storage": "~/.local/share/mcp-servers/barcode/"
+    },
+    "zip": {
+      "title": "MCP Zip",
+      "tagline": "Make a zip, look inside one, and unpack one, entirely on your machine.",
+      "does": "Packs a file list or a whole directory tree with glob patterns into a .zip, lists an archive's entries with sizes, compressed sizes and ratios, reads one text entry inline without unpacking anything, adds files to an archive that already exists, and bundles a month of invoices, quotes and exports from the sibling servers into one file; the central directory is read here, so absolute paths, .., symlinks, encrypted entries, duplicate names and compression bombs are all refused from the headers before anything is inflated, and every entry written out is proved against its CRC-32.",
+      "for": "Anyone who has to send a folder, or was sent an archive and wants to know what is in it before opening it.",
+      "example": "\"Zip every CSV in this folder except node_modules.\" ... \"What is inside this archive somebody sent me?\" ... \"Read the README out of it without unpacking.\" ... \"Bundle August's invoices and quotes for my accountant.\"",
+      "free": "20 archives per calendar month, up to 25 MB and 200 entries each, and unlimited reading: zip_list, zip_extract and zip_extract_text are never metered, along with every bomb, traversal and symlink guard.",
+      "pro": "Unlimited archives, no size cap and no entry cap.",
+      "storage": "~/.local/share/mcp-servers/zip/"
     }
   },
   "version": "0.1.1"
