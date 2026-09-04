@@ -158,7 +158,7 @@ const overwriteArg = z.boolean().optional().describe("Replace out_path if it alr
 
 server.registerTool("image_info", {
   title: "Inspect an image",
-  description: "Format, pixel dimensions, megapixels, file size in bytes and whether the image carries an alpha channel. Read-only: the file is never modified. Free tier: unlimited, at any size.",
+  description: "Call this tool to inspect an image: format, pixel dimensions, megapixels, file size in bytes, and whether it carries an alpha channel. Read-only, never modifies the file. Free tier: unlimited, any size.",
   inputSchema: { path: pathArg },
 }, async ({ path }) => {
   try {
@@ -192,7 +192,7 @@ server.registerTool("image_info", {
 
 server.registerTool("image_resize", {
   title: "Resize an image",
-  description: "Write a resized copy. fit: \"inside\" scales to fit the box and keeps the aspect ratio; \"cover\" fills the box and crops the overflow; \"exact\" stretches to the given width and height. With only one of width or height, the other follows the aspect ratio. The input is never modified. Free tier: sources up to 4 MP.",
+  description: "Call this tool to write a resized copy. fit inside keeps aspect; cover fills and crops; exact stretches. One of width/height alone keeps aspect. Input untouched. Free: sources up to 4 MP.",
   inputSchema: {
     path: pathArg,
     width: z.number().int().min(1).max(MAX_DIM).optional().describe("Target width in pixels"),
@@ -236,7 +236,7 @@ server.registerTool("image_resize", {
 
 server.registerTool("image_convert", {
   title: "Convert an image to another format",
-  description: "Re-encode an image as PNG, JPEG, BMP, GIF or TIFF. quality is a JPEG parameter only and is reported as ignored for the lossless formats. Converting an image with transparency to JPEG flattens it onto white, and the answer says so. Free tier: sources up to 4 MP.",
+  description: "Call this tool to re-encode an image as PNG, JPEG, BMP, GIF or TIFF. quality is JPEG-only. Transparency converted to JPEG flattens onto white; the answer says so. Free tier: sources up to 4 MP.",
   inputSchema: {
     path: pathArg,
     format: z.enum(["png", "jpeg", "bmp", "gif", "tiff"]).describe("The output format"),
@@ -287,7 +287,7 @@ server.registerTool("image_convert", {
 
 server.registerTool("image_compress", {
   title: "Compress an image",
-  description: "Re-encode an image smaller and report the byte count before and after. quality (default 80) applies when the output is a JPEG; for a PNG output only max_width reduces bytes, and the answer says which of the two did the work. Free tier: sources up to 4 MP.",
+  description: "Call this tool to re-encode an image smaller and report byte counts before/after. quality (default 80) applies to JPEG; for PNG only max_width shrinks it, and the answer names which one worked. Free: sources up to 4 MP.",
   inputSchema: {
     path: pathArg,
     quality: z.number().int().min(1).max(100).default(80).describe("JPEG quality 1-100, default 80"),
@@ -368,7 +368,7 @@ server.registerTool("image_compress", {
 
 server.registerTool("image_crop", {
   title: "Crop an image",
-  description: "Cut a rectangle out of an image. x and y are the top-left corner in pixels, counted from the top-left of the image. A rectangle that runs past an edge is refused with the image's real size, never silently clamped. Free tier: sources up to 4 MP.",
+  description: "Call this tool to cut a rectangle out of an image. x, y are the top-left corner in pixels from the image's top-left. A rectangle past an edge is refused with the image's real size, not clamped. Free: sources up to 4 MP.",
   inputSchema: {
     path: pathArg,
     x: z.number().int().min(0).describe("Left edge of the crop, in pixels from the left of the image"),
@@ -410,7 +410,7 @@ server.registerTool("image_crop", {
 
 server.registerTool("image_thumbnails", {
   title: "Make thumbnails",
-  description: "One thumbnail per input, written into out_dir as <name>-thumb.<ext>. Each thumbnail fits inside size by size and keeps its aspect ratio, so a wide photo stays wide. Every output path is reserved before any file is written, so a collision does not leave a half-done batch. Free tier: up to 5 files per call and sources up to 4 MP.",
+  description: "Call this tool to write one thumbnail per input into out_dir as <name>-thumb.<ext>, fit inside size by size, aspect kept. Paths are reserved before writing, so a collision leaves nothing half-done. Free: 5/call, 4 MP.",
   inputSchema: {
     paths: z.array(z.string()).min(1).describe("Names of images uploaded with image_upload"),
     size: z.number().int().min(8).max(MAX_DIM).default(256).describe("Longest side of the thumbnail in pixels, default 256"),
@@ -617,7 +617,7 @@ server.registerTool("image_watermark", {
 
 server.registerTool("image_strip_metadata", {
   title: "Strip metadata from an image",
-  description: "Write a copy carrying pixels and nothing else. It works by decoding the image and re-encoding it from the raw pixels: EXIF, GPS coordinates, the camera and lens, the capture time, XMP and colour-profile blocks are not carried across, because the encoder writes only what it is given. The pixels are the same; the bytes are not. Free tier: sources up to 4 MP.",
+  description: "Call this tool to write a copy carrying pixels and nothing else: it decodes and re-encodes from raw pixels, so EXIF, GPS, camera, capture time, XMP and colour-profile data are dropped. Free tier: sources up to 4 MP.",
   inputSchema: { path: pathArg, out_path: outArg, overwrite: overwriteArg },
 }, async ({ path, out_path, overwrite }) => {
   const reservations: Reservation[] = [];
@@ -648,7 +648,7 @@ server.registerTool("image_strip_metadata", {
 
 server.registerTool("image_batch_resize", {
   title: "Resize several images at once",
-  description: "Resize every image into out_dir, keeping each one's aspect ratio, named <name>-<W>x<H>.<ext>. With one of width or height the other follows; with both, each image is scaled to fit inside that box. Free tier: up to 5 files per call and sources up to 4 MP.",
+  description: "Call this tool to resize every image into out_dir, keeping aspect ratio, named <name>-<W>x<H>.<ext>. One of width/height lets the other follow; with both, each fits inside the box. Free: 5 files/call, up to 4 MP.",
   inputSchema: {
     paths: z.array(z.string()).min(1).describe("Names of images uploaded with image_upload"),
     width: z.number().int().min(1).max(MAX_DIM).optional().describe("Target width in pixels"),
@@ -701,7 +701,7 @@ server.registerTool("image_batch_resize", {
 
 server.registerTool("image_dominant_colors", {
   title: "Read the dominant colours of an image",
-  description: "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Free tier: the top 3 colours; Pro: up to 16.",
+  description: "Call this tool to read the colours covering most of an image, as hex codes with each one's pixel share, for picking a background or brand palette. Read-only. Free tier: top 3 colours; Pro: up to 16.",
   inputSchema: {
     path: pathArg,
     count: z.number().int().min(1).max(16).default(5).describe("How many colours to report, default 5"),

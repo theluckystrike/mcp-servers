@@ -1195,8 +1195,8 @@ function patchImageIndex(src) {
   const reservations: Reservation[] = [];
   try {`, "image watermark refusal");
   src = must(src,
-    'description: "Draw text over an image at a chosen corner and opacity. With no text the shared business profile name is used, the same profile mcp-invoice and mcp-docx write. The text is drawn white on a translucent dark plate so it stays legible on a light photo. Free tier: the profile name; Pro: any text you pass.",',
-    'description: "Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Run the server locally over stdio (npx -y @theluckystrike/mcp-image) to watermark, or upload an image you have already watermarked.",',
+    /(registerTool\("image_watermark",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"[^"]*"/,
+    '$1"Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Run the server locally over stdio (npx -y @theluckystrike/mcp-image) to watermark, or upload an image you have already watermarked."',
     "image watermark description");
 
   // The prompt suggested a folder beside the input; there are no folders here.
@@ -1288,8 +1288,8 @@ function outputPath(p: string, ext: string): string {
     "    const existed = false;   // /out/ is transient here: an export is a fresh download every time",
     "bank statement_export target");
   src = must(src,
-    'description: "Write the BANK transactions of a date range (a month, a quarter, a year) to a .csv or .json file and return the path. This is the tool for \\"export September to <path>\\" once a statement has been imported. The file is written atomically, so a failed export never leaves a half-written file behind.",',
-    'description: "Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \\"export September\\" once a statement has been imported. Nothing partial is ever written.",',
+    /(registerTool\("statement_export",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"[^"]*"/,
+    '$1"Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \\"export September\\" once a statement has been imported. Nothing partial is ever written."',
     "bank statement_export description");
 
   // The data directory is a per-token document here, not a path anyone can open.

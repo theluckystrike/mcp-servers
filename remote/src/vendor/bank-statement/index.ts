@@ -239,7 +239,7 @@ const server = new McpServer(
 
 server.registerTool("statement_import", {
   title: "Import a bank CSV",
-  description: "Read a bank CSV export into the local ledger. Columns are detected from the headers (date, description, one signed amount or a debit and a credit column, currency, balance), amounts are read in the file's own locale, and every line already stored is skipped rather than doubled. Returns what was detected, what was stored, and what was skipped and why.",
+  description: "Call this tool to read a bank CSV into the local ledger. Columns detected from headers (date, description, amount, currency, balance); amounts use the file's locale; stored lines skipped. Returns detected/stored/skipped.",
   inputSchema: {
     path: text(4096).describe("Name of a statement uploaded with bank_upload"),
     account: text(120).optional().describe("Name for this account, e.g. \"business EUR\". Default: the file name without its extension. Later imports of the same account are deduplicated against it"),
@@ -405,7 +405,7 @@ server.registerTool("transactions_search", {
 
 server.registerTool("category_rules", {
   title: "Set or list category rules",
-  description: "Set the rules that categorise transactions, or call with no arguments to list them. Each rule is matched against the counterparty and the description: a plain match is a case-insensitive substring, and regex: true compiles it only when the pattern cannot backtrack exponentially. Setting rules re-applies them to every stored transaction that has no category yet.",
+  description: "Set the rules that categorise transactions, or call with none to list them. Each rule matches counterparty/description: plain is a substring; regex: true compiles only if not exponential. Reapplies to uncategorised rows.",
   inputSchema: {
     rules: z.array(z.object({
       match: text(200).describe("Text to look for in the counterparty or description, e.g. \"spotify\""),
@@ -485,7 +485,7 @@ server.registerTool("transaction_categorize", {
 
 server.registerTool("statement_summary", {
   title: "What I spent, from the bank account",
-  description: "What was spent and received in a date range according to the BANK ACCOUNT itself, grouped by category, month, account or counterparty. This is the tool for \"what did I spend in August by category\" whenever a bank statement has been imported: it covers every line the bank shows, not only the receipts that were logged by hand. Every total is reported per currency; amounts in different currencies are never added together and never converted.",
+  description: "What was spent/received in a date range per the BANK ACCOUNT, grouped by category, month, account or counterparty. For \"what did I spend in August\" once imported. Totals are per currency, never summed or converted.",
   inputSchema: {
     from: text(10).optional().describe("ISO date, inclusive. Default: the start of the current month"),
     to: text(10).optional().describe("ISO date, inclusive. Default: today"),
@@ -518,7 +518,7 @@ const DEFAULT_RECONCILE_WINDOW = 3;
 
 server.registerTool("reconcile_expenses", {
   title: "Reconcile against the expense ledger",
-  description: "Match bank debits against the expenses recorded by mcp-expense-tracker: same currency, same amount, and a date within a few days. Reports what matched, which bank lines have no expense behind them and which expenses never reached the bank. The expense ledger is only ever read, never written. Free covers 31 days at a time; Pro reconciles any range.",
+  description: "Match bank debits against mcp-expense-tracker entries: same currency and amount, date within a few days. Reports matches, unmatched bank lines, expenses never hitting the bank. Read-only. Free: 31 days; Pro: any range.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
@@ -629,7 +629,7 @@ function median(ns: number[]): number {
 
 server.registerTool("recurring_detect", {
   title: "Subscriptions and recurring charges in the bank data",
-  description: "Find the charges that come back: the same counterparty, an amount that barely moves and a steady cadence. Reports the cadence, the typical amount, when it was last taken, when it is next due and what it costs per year, per currency. Free covers the last 3 months and 5 recurring charges; Pro covers the full history and every charge.",
+  description: "Find charges that come back: same counterparty, steady amount and cadence. Reports cadence, typical amount, last/next due date, yearly cost per currency. Free: last 3 months, 5 charges; Pro: full history, every charge.",
   inputSchema: {
     months: z.number().int().min(1).max(60).optional().describe("How far back to look, default 3. Two occurrences are enough to see a cadence, three make it certain"),
     account: text(120).optional().describe("Limit to one account"),
@@ -726,7 +726,7 @@ function csvEscapeCell(v: unknown): string {
 
 server.registerTool("statement_export", {
   title: "Export bank transactions to a file",
-  description: "Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \"export September\" once a statement has been imported. Nothing partial is ever written.",
+  description: "Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \"export September\" once a statement has been imported. Nothing partial is ever written."export September to <path>\" once imported. Written atomically: a failed export never leaves a half file.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
