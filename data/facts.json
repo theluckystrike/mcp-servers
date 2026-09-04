@@ -366,8 +366,8 @@
       "does": "Imports CSV exports from Revolut, Wise, mBank, PKO, ING, N26 and generic banks with locale-aware amounts and duplicate detection, categorises by your rules, summarises by category, month, account or counterparty per currency, reconciles bank lines against the expense tracker, detects subscriptions and recurring charges, and exports.",
       "for": "Freelancers who reconcile bank statements against receipts at month end.",
       "example": "\"Import my September Revolut export and categorise it.\" ... \"Which expenses have no bank line and which subscriptions am I paying?\"",
-      "free": "2 accounts, 12 months of transactions, 5 rules, summary and search.",
-      "pro": "Unlimited accounts, history and rules, reconcile with expenses, recurring detection, export.",
+      "free": "2 accounts, 12 months of transactions, 5 rules, summary and search, reconciliation 31 days at a time, recurring detection over the last 3 months (5 charges).",
+      "pro": "Unlimited accounts, history and rules, reconciliation over any range, every recurring charge, export.",
       "storage": "~/.local/share/mcp-servers/bank-statement/"
     },
     "kanban": {

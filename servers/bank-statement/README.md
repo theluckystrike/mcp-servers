@@ -96,8 +96,8 @@ Prompt `monthly_review` drives the whole month-end pass: totals, uncategorised l
 | History read back | last 12 months | all of it |
 | Category rules | 5 | unlimited |
 | Import, list, search, summarise | yes | yes |
-| `reconcile_expenses` | no | yes |
-| `recurring_detect` | no | yes |
+| `reconcile_expenses` | yes, 31 days at a time | any date range |
+| `recurring_detect` | yes, last 3 months, 5 charges | full history, every charge |
 | `statement_export` | no | yes |
 
 Import always stores every row, whatever the tier: silently dropping lines on the way in would make the ledger

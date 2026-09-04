@@ -214,16 +214,23 @@ test("initialize, tools/list and the whole free-tier flow", async () => {
     assert.equal(accs.accounts[0].transactions, FIXTURE_ROWS);
     assert.equal(accs.free_limit, 2);
 
-    // the Pro-only tools say so rather than half-working
-    for (const [tool, args] of [
-      ["reconcile_expenses", { from: "2026-01-01", to: "2026-03-31" }],
-      ["recurring_detect", { months: 12 }],
-      ["statement_export", { from: "2026-01-01", to: "2026-03-31", format: "csv", path: join(s.dir, "out.csv") }],
-    ]) {
-      const r = await c.call(tool, args);
-      assert.equal(r.isError, false, "a limit is information, not a transport error");
-      assert.match(r.text, /Pro feature/);
-    }
+    // Export stays Pro and says so rather than half-working.
+    const exp = await c.call("statement_export", { from: "2026-01-01", to: "2026-03-31", format: "csv", path: join(s.dir, "out.csv") });
+    assert.equal(exp.isError, false, "a limit is information, not a transport error");
+    assert.match(exp.text, /Pro feature/);
+
+    // D-R55: the guardrail tools answer on the free tier inside a named cap.
+    const rec = await c.json("reconcile_expenses", { from: "2026-01-01", to: "2026-03-31" });
+    assert.equal(rec.free_tier_range_days, 31);
+    assert.match(rec.free_tier_note, /31 days at a time/);
+    assert.equal(rec.from, "2026-03-01");
+
+    const det = await c.json("recurring_detect", { months: 12 });
+    assert.equal(det.months, 3, "free tier clamps to 3 months and still answers");
+    assert.equal(det.months_asked, 12);
+    assert.match(det.free_tier_note, /last 3 months and up to 5 recurring charges/);
+    assert.ok(Array.isArray(det.charges));
+    assert.ok(det.charges.length <= 5);
 
     // the resource reads without a tool call
     const res = await c.send("resources/read", { uri: "bank://month" });
