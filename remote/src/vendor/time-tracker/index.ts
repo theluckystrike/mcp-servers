@@ -310,7 +310,7 @@ function csvCell(v: string): string {
 const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
 const err = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true });
 /** Gated feature: not an error, the user must see the upgrade path. */
-const gated = (feature: string) => ok(gate.upgradeText(feature));
+const gated = (feature: string, toolName?: string) => ok(gate.upgradeText(feature, toolName));
 
 function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }>) {
   return async (a: A) => {
@@ -658,7 +658,7 @@ server.registerTool("project_set_rate", {
   const project = r.project;
   const isNew = !(project in db.projects);
   if (isNew && !gate.isPro() && Object.keys(db.projects).length >= FREE_RATED_PROJECTS) {
-    return gated(`more than ${FREE_RATED_PROJECTS} projects with rates`);
+    return gated(`more than ${FREE_RATED_PROJECTS} projects with rates`, "project_set_rate");
   }
   const parsed = parseRate(a.hourly_rate);
   if (typeof parsed.rate !== "number") throw new Error("hourly_rate must contain a number");

@@ -267,14 +267,14 @@ server.registerTool("schedule_create", {
       const today = isoDate();
       const pro = gate.isPro();
       if (!pro && activeCount(list, today) >= FREE_ACTIVE_SCHEDULES) {
-        return ok(`You already have ${FREE_ACTIVE_SCHEDULES} active schedules. The free tier allows ${FREE_ACTIVE_SCHEDULES}; pause one with schedule_pause, or upgrade.\n\n${gate.upgradeText("unlimited schedules")}`);
+        return ok(`You already have ${FREE_ACTIVE_SCHEDULES} active schedules. The free tier allows ${FREE_ACTIVE_SCHEDULES}; pause one with schedule_pause, or upgrade.\n\n${gate.upgradeText("unlimited schedules", "schedule_create")}`);
       }
       let note = "";
       let anchor = a.anchor_day;
       let eom = a.end_of_month;
       if (!pro && (anchor !== undefined || eom)) {
         anchor = undefined; eom = undefined;
-        note = `\n\nNote: anchor_day and end_of_month are Pro rules; this schedule bills on the start date's day of month instead. ${gate.upgradeText("end-of-month and anchor-day rules")}`;
+        note = `\n\nNote: anchor_day and end_of_month are Pro rules; this schedule bills on the start date's day of month instead. ${gate.upgradeText("end-of-month and anchor-day rules", "schedule_create")}`;
       }
       const now = new Date().toISOString();
       const s: Schedule = {
@@ -380,7 +380,7 @@ server.registerTool("schedule_update", {
           if (a.anchor_day !== undefined) s.anchor_day = a.anchor_day ?? undefined;
           if (a.end_of_month !== undefined) s.end_of_month = a.end_of_month;
         } else {
-          note = `\n\nNote: anchor_day and end_of_month are Pro rules and were not applied. ${gate.upgradeText("end-of-month and anchor-day rules")}`;
+          note = `\n\nNote: anchor_day and end_of_month are Pro rules and were not applied. ${gate.upgradeText("end-of-month and anchor-day rules", "schedule_update")}`;
         }
       }
       if (s.end_date && s.end_date < s.start_date) return fail(`end_date ${s.end_date} is before start_date ${s.start_date}.`);
@@ -524,7 +524,7 @@ server.registerTool("schedule_upcoming", {
     const shownTotals: Record<string, number> = {};
     if (!gate.isPro() && foundInHorizon > FREE_UPCOMING_PERIODS) {
       shown = rows.slice(0, FREE_UPCOMING_PERIODS);
-      note = `Free tier lists ${FREE_UPCOMING_PERIODS} occurrences per call: showing ${FREE_UPCOMING_PERIODS} of ${foundInHorizon} found in the ${days}-day horizon you asked for. ${gate.upgradeText("every occurrence in the horizon")}`;
+      note = `Free tier lists ${FREE_UPCOMING_PERIODS} occurrences per call: showing ${FREE_UPCOMING_PERIODS} of ${foundInHorizon} found in the ${days}-day horizon you asked for. ${gate.upgradeText("every occurrence in the horizon", "schedule_upcoming")}`;
     }
     // D-R5: "what is due" also means the periods that already fell due and were never
     // invoiced. Looking only forward hid a whole unbilled month from the answer.
@@ -695,7 +695,7 @@ server.registerTool("schedule_history", {
 }, async (a) => {
   try {
     if (!gate.isPro()) {
-      return ok(`schedule_history is a Pro feature.\n\n${gate.upgradeText("the schedule audit log")}`);
+      return ok(`schedule_history is a Pro feature.\n\n${gate.upgradeText("the schedule audit log", "schedule_history")}`);
     }
     const s = findSchedule(getSchedules(), a.id);
     const id = s?.id ?? a.id;
@@ -726,7 +726,7 @@ server.registerTool("forecast", {
     let note = "";
     if (!gate.isPro() && months > FREE_FORECAST_MONTHS) {
       months = FREE_FORECAST_MONTHS;
-      note = `Free tier forecasts ${FREE_FORECAST_MONTHS} months; showing ${FREE_FORECAST_MONTHS}. ${gate.upgradeText("a 12-month forecast")}`;
+      note = `Free tier forecasts ${FREE_FORECAST_MONTHS} months; showing ${FREE_FORECAST_MONTHS}. ${gate.upgradeText("a 12-month forecast", "forecast")}`;
     }
     const last = addMonthsIso(today, months - 1);
     const to = addMonthsIso(last.slice(0, 8) + "01", 1, 1);   // first of the month after `last`

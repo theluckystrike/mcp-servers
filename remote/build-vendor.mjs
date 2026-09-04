@@ -124,10 +124,16 @@ function patchInvoiceIndex(src) {
     '`Add one with client_add {name: "${client.name}", address: "...", email: "...", vat_id: "..."} and render the PDF again, ` +',
     '`Add one with client_add {name: "${client.name}", address: "...", email: "...", vat_id: "..."} and render it again, ` +',
     "invoice client-note wording");
+  // Anchored on the prose only: the src tag (docs/CONVERSION_INSTRUMENT.md) added a second
+  // argument to this upgradeText call, and an anchor that spanned the call broke on it.
   src = must(src,
-    'note = `\\n\\nFree tier: the PDF carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +\n        gate.upgradeText("unbranded PDFs with your logo");',
-    'note = `\\n\\nFree tier: the HTML invoice carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +\n        gate.upgradeText("unbranded HTML invoices with your logo");',
+    'Free tier: the PDF carries the line "Generated with mcp-invoice by theluckystrike" and no logo.',
+    'Free tier: the HTML invoice carries the line "Generated with mcp-invoice by theluckystrike" and no logo.',
     "invoice free-tier note wording");
+  src = must(src,
+    'gate.upgradeText("unbranded PDFs with your logo"',
+    'gate.upgradeText("unbranded HTML invoices with your logo"',
+    "invoice free-tier upgrade feature");
   // D-R60. dataDir() on the remote build is the worker's virtual homedir
   // (/home/mcp/...), meaningless to a hosted caller: say "the shared business
   // profile behind this token" instead of the path.
@@ -1536,12 +1542,12 @@ function patchBarcodeIndex(src) {
   // and the gate that asks for $19 was the one place that never said so. Both the refusal a
   // free caller reads and the PNG a Pro caller pays for now name it.
   src = must(src,
-    '  return `PNG output is a Pro feature; the free tier writes SVG, which scans and prints at any size because it has no resolution. ` +\n    `Ask for format: "svg" and this is free.\\n\\n${gate.upgradeText(feature)}`;',
+    '  return `PNG output is a Pro feature; the free tier writes SVG, which scans and prints at any size because it has no resolution. ` +\n    `Ask for format: "svg" and this is free.\\n\\n${gate.upgradeText(feature, toolName)}`;',
     '  const bars = feature.startsWith("barcode_")\n' +
     '    ? ` On this endpoint SVG is also the only format that prints the human-readable digits under the bars: a PNG barcode here is bars only, Pro or not.`\n' +
     '    : ``;\n' +
     '  return `PNG output is a Pro feature; the free tier returns SVG inline, which scans and prints at any size because it has no resolution.${bars} ` +\n' +
-    '    `Ask for format: "svg" and this is free.\\n\\n${gate.upgradeText(feature)}`;',
+    '    `Ask for format: "svg" and this is free.\\n\\n${gate.upgradeText(feature, toolName)}`;',
     "barcode png gate names the missing digits");
   src = must(src,
     "  const check = enc.value !== String(a.value).replace(/[\\s-]/g, \"\") && a.symbology !== \"code128\"\n    ? ` Check digit ${enc.value.slice(-1)} was computed and added.` : \"\";",

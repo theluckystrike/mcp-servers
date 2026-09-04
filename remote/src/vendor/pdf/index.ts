@@ -261,7 +261,7 @@ server.registerTool("pdf_merge", {
       return freeLimit(
         `You asked to merge ${paths.length} files. The free tier merges up to ${FREE_MAX_MERGE_FILES} files in one call ` +
         `and nothing was written. Merge in batches of ${FREE_MAX_MERGE_FILES}, or unlock unlimited merging.\n\n` +
-        gate.upgradeText("merging more than 5 files at once"),
+        gate.upgradeText("merging more than 5 files at once", "pdf_merge"),
       );
     }
     const loaded = [];
@@ -599,7 +599,7 @@ server.registerTool("pdf_watermark_business", {
     if (!gate.isPro()) {
       return freeLimit(
         `The business footer is a Pro feature and nothing was written. On the free tier, pdf_stamp with the PAID or ` +
-        `DRAFT preset still works on any file.\n\n${gate.upgradeText("stamping your business name and VAT id in the footer")}`,
+        `DRAFT preset still works on any file.\n\n${gate.upgradeText("stamping your business name and VAT id in the footer", "pdf_watermark_business")}`,
       );
     }
     const profile = readSharedProfile();
@@ -643,7 +643,7 @@ server.registerTool("pdf_reorder", {
       return freeLimit(
         `Reordering pages is a Pro feature and nothing was written. On the free tier, pdf_pages extracts pages in any ` +
         `order you name, which covers most of the same work on files up to ${FREE_MAX_PAGES} pages.\n\n` +
-        gate.upgradeText("reordering pages"),
+        gate.upgradeText("reordering pages", "pdf_reorder"),
       );
     }
     const f = await loadPdf(a.path);

@@ -225,7 +225,7 @@ server.registerTool("profile_set", {
     await locked(() => setProfile(a.variant, p));
     const bullets = p.experience.reduce((n, e) => n + e.bullets.length, 0);
     const note = a.accent_color && !gate.isPro()
-      ? `\n\nThe accent colour is stored but the free tier prints the default colour. ${gate.upgradeText("letterhead colours")}` : "";
+      ? `\n\nThe accent colour is stored but the free tier prints the default colour. ${gate.upgradeText("letterhead colours", "profile_set")}` : "";
     return ok(`Profile "${normalizeVariant(a.variant)}" stored: ${p.experience.length} roles, ${bullets} bullets, ` +
       `${p.skills?.length ?? 0} skills, ${p.education.length} education entries. ` +
       `Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, and kept for 30 days, refreshed for another 30 on every write. Run the resume server locally over stdio (npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${note}${changes}${p.email ? "" : emailNote()}`);
@@ -292,7 +292,7 @@ server.registerTool("resume_create", {
         (r.keywords.missing.length
           ? " Missing keywords were not added anywhere. Add them with profile_set only if they are true."
           : ""),
-      free_tier: gate.isPro() ? undefined : "Free tier: the \"modern\" style only, and a footer credit. " + gate.upgradeText("all styles and variants"),
+      free_tier: gate.isPro() ? undefined : "Free tier: the \"modern\" style only, and a footer credit. " + gate.upgradeText("all styles and variants", "resume_create"),
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
@@ -390,7 +390,7 @@ server.registerTool("cover_letter_create", {
       if (used >= FREE_LETTERS_PER_MONTH) {
         return fail(`You have already written ${used} cover letters in ${month}. The free tier allows ` +
           `${FREE_LETTERS_PER_MONTH} per calendar month; resume_create, resume_to_markdown and resume_to_html stay unlimited.\n\n` +
-          gate.upgradeText("unlimited cover letters"));
+          gate.upgradeText("unlimited cover letters", "cover_letter_create"));
       }
     }
     const letter = buildLetter(p, {
@@ -450,7 +450,7 @@ server.registerTool("tailor_to_job", {
     if (typeof p === "string") return fail(p);
     if (!gate.isPro() && a.job_description.length > FREE_JD_CHARS) {
       return fail(`the job description is ${a.job_description.length} characters; the free tier reads up to ${FREE_JD_CHARS}. ` +
-        `Paste the requirements section only, or go Pro for the whole posting.\n\n${gate.upgradeText("unlimited tailoring")}`);
+        `Paste the requirements section only, or go Pro for the whole posting.\n\n${gate.upgradeText("unlimited tailoring", "tailor_to_job")}`);
     }
     const g = analyseGap(p, a.job_description, a.limit);
     return json({

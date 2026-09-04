@@ -80,7 +80,7 @@ function save(db: DB): void {
 const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
 const err = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true });
 /** A gated feature is not an error: the user must see the upgrade path. */
-const gated = (feature: string) => ok(gate.upgradeText(feature));
+const gated = (feature: string, toolName?: string) => ok(gate.upgradeText(feature, toolName));
 
 function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }>) {
   return async (a: A) => {
@@ -319,16 +319,16 @@ server.registerTool("find_meeting_slots", {
   const duration = a.duration_minutes ?? 60;
   const asked = a.days ?? 5;
   if (!pro && a.participants.length > FREE_MAX_PARTICIPANTS) {
-    return gated(`a meeting with ${a.participants.length} participants (the free tier plans up to ${FREE_MAX_PARTICIPANTS})`);
+    return gated(`a meeting with ${a.participants.length} participants (the free tier plans up to ${FREE_MAX_PARTICIPANTS})`, "find_meeting_slots");
   }
   // D-R30: a search longer than the free cap is SHORTENED, not refused. Returning only an
   // upgrade wall to a question that has a usable answer inside the free window is worse
   // for the user than answering and naming the cap.
   const days = !pro && asked > FREE_MAX_DAYS ? FREE_MAX_DAYS : asked;
   const capped = days !== asked
-    ? `\n\nSearched ${days} of the ${asked} days you asked for: the free tier searches up to ${FREE_MAX_DAYS} days ahead. ${gate.upgradeText(`a ${asked}-day search`)}`
+    ? `\n\nSearched ${days} of the ${asked} days you asked for: the free tier searches up to ${FREE_MAX_DAYS} days ahead. ${gate.upgradeText(`a ${asked}-day search`, "find_meeting_slots")}`
     : "";
-  if (!pro && a.recurring) return gated("recurring-slot search");
+  if (!pro && a.recurring) return gated("recurring-slot search", "find_meeting_slots");
 
   const resolved = toParticipants(a.participants);
   const parts = resolved.parts;
@@ -375,7 +375,7 @@ server.registerTool("find_meeting_slots", {
     extra = `\n\nRecurring (works on all ${daysSearched} searched weekdays, ${parts[0].zone} local): ` +
       (every.length ? every.join(", ") : "none");
   }
-  const note = pro ? "" : (capped || `\n\n${gate.upgradeText("more participants, longer searches and recurring slots")}`);
+  const note = pro ? "" : (capped || `\n\n${gate.upgradeText("more participants, longer searches and recurring slots", "find_meeting_slots")}`);
   return ok(
     `${all.length} slot(s) fit all ${parts.length} participants (${duration} min, ${days} day(s)). ` +
     `Best first, ranked by fairness: the score is the worst participant's distance in hours from 13:00 local, ` +
@@ -456,7 +456,7 @@ server.registerTool("contacts_set", {
     const prev = db.contacts[key];
     const isNew = !prev;
     if (isNew && !gate.isPro() && Object.keys(db.contacts).length >= FREE_MAX_CONTACTS) {
-      return gated(`a ${FREE_MAX_CONTACTS + 1}th saved contact (the free tier keeps ${FREE_MAX_CONTACTS})`);
+      return gated(`a ${FREE_MAX_CONTACTS + 1}th saved contact (the free tier keeps ${FREE_MAX_CONTACTS})`, "contacts_set");
     }
     db.contacts[key] = { name: name.trim(), zone: z, workStart: work_start, workEnd: work_end, updated: new Date().toISOString() };
     save(db);
@@ -531,7 +531,7 @@ server.registerTool("ics_create", {
     const mk = monthKey();
     const used = db.ics[mk] ?? 0;
     if (!gate.isPro() && used >= FREE_ICS_PER_MONTH) {
-      return gated(`a ${FREE_ICS_PER_MONTH + 1}th calendar file this month (the free tier writes ${FREE_ICS_PER_MONTH})`);
+      return gated(`a ${FREE_ICS_PER_MONTH + 1}th calendar file this month (the free tier writes ${FREE_ICS_PER_MONTH})`, "ics_create");
     }
     const built = icsCreateDetailed({
       title: a.title, startUtc, durationMinutes: a.duration_minutes,

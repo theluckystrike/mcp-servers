@@ -190,7 +190,7 @@ server.registerTool("clause_add", {
       const own = db.clauses.filter((c) => !c.starter).length;
       if (!gate.isPro() && own >= FREE_OWN_CLAUSES) {
         return ok(`The free tier holds ${FREE_OWN_CLAUSES} of your own clauses on top of the 25 starter clauses, and you have ${own}. ` +
-          gate.upgradeText("an unlimited clause library"));
+          gate.upgradeText("an unlimited clause library", "clause_add"));
       }
       // D-R80. The 25 starter clauses ship with this server and occupy the obvious titles
       // ("Payment Terms", "Limitation of Liability"). The old error said only that the title
@@ -272,7 +272,7 @@ server.registerTool("clause_update", {
       return json({
         updated: summary(c),
         versions_kept: c.history.length,
-        note: pro ? undefined : "the free tier does not keep clause versions; " + gate.upgradeText("clause version history").replace(/^\s+/, ""),
+        note: pro ? undefined : "the free tier does not keep clause versions; " + gate.upgradeText("clause version history", "clause_update").replace(/^\s+/, ""),
       });
     });
   } catch (e) { return fail((e as Error).message); }
@@ -334,7 +334,7 @@ server.registerTool("clause_search", {
       query: a.query, count: hits.length,
       jurisdiction: a.jurisdiction,
       free_tier_note: tagsGated
-        ? `Free tier filters by query, category and jurisdiction; the tag filter (${a.tags!.join(", ")}) was not applied. ${gate.upgradeText("tag filters in search")}`
+        ? `Free tier filters by query, category and jurisdiction; the tag filter (${a.tags!.join(", ")}) was not applied. ${gate.upgradeText("tag filters in search", "clause_search")}`
         : undefined,
       results: hits.slice(0, 25).map((h) => ({ score: h.score, ...summary(h.clause) })),
     });
@@ -357,7 +357,7 @@ server.registerTool("clause_import", {
       "Add clauses one at a time with clause_add, or run the server locally over stdio (npx -y @theluckystrike/mcp-clauses) to import a file.");
     const isJson = file.toLowerCase().endsWith(".json");
     if (isJson && !gate.isPro()) {
-      return ok("JSON import and export are Pro features. Markdown import works in the free tier. " + gate.upgradeText("JSON import and export"));
+      return ok("JSON import and export are Pro features. Markdown import works in the free tier. " + gate.upgradeText("JSON import and export", "clause_import"));
     }
     const raw = readFileSync(file, "utf8");
     const parsed = isJson ? parseClauseJson(raw) : parseMarkdown(raw);
@@ -392,7 +392,7 @@ server.registerTool("clause_import", {
         file, format: isJson ? "json" : "markdown",
         added, replaced, skipped, blocked_by_free_cap: capped,
         total: db.clauses.length,
-        note: capped ? `${capped} clauses were not imported: ` + gate.upgradeText("an unlimited clause library") : undefined,
+        note: capped ? `${capped} clauses were not imported: ` + gate.upgradeText("an unlimited clause library", "clause_import") : undefined,
       });
     });
   } catch (e) { return fail((e as Error).message); }
@@ -409,7 +409,7 @@ server.registerTool("clause_export", {
 }, async (a) => {
   try {
     if (a.format === "json" && !gate.isPro()) {
-      return ok("JSON export is a Pro feature. Markdown export works in the free tier. " + gate.upgradeText("JSON import and export"));
+      return ok("JSON export is a Pro feature. Markdown export works in the free tier. " + gate.upgradeText("JSON import and export", "clause_export"));
     }
     const db = load();
     const list = orderByCategory(db.clauses);
@@ -476,7 +476,7 @@ server.registerTool("contract_assemble", {
     const pro = gate.isPro();
     if (!pro && picked.length > FREE_ASSEMBLE_CLAUSES) {
       return ok(`The free tier assembles up to ${FREE_ASSEMBLE_CLAUSES} clauses per document and this selection has ${picked.length}. ` +
-        gate.upgradeText("unlimited clauses per document"));
+        gate.upgradeText("unlimited clauses per document", "contract_assemble"));
     }
     const format = a.format ?? "docx";
     const result = assemble({ title: a.title, clauses: picked, values: a.values ?? {}, client: a.client });

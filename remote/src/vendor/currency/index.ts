@@ -291,7 +291,7 @@ server.registerTool("rate_history", {
       if (toDate < cutoff) {
         return gated(
           `${toDate} is older than the ${FREE_HISTORY_DAYS} days the free tier reads (it goes back to ${cutoff}), so there is no part of that window the free tier can answer. Nothing was looked up. ` +
-          gate.upgradeText("historical rates back to 1999"),
+          gate.upgradeText("historical rates back to 1999", "rate_history"),
         );
       }
       const earliest = [cutoff, isoDaysBefore(toDate, FREE_HISTORY_DAYS - 1)].sort().pop()!;
@@ -299,7 +299,7 @@ server.registerTool("rate_history", {
         const asked = fromDate;
         fromDate = earliest;
         capNote = `Free tier reads ${FREE_HISTORY_DAYS} days back, so this covers ${fromDate} to ${toDate} instead of ${asked}. ` +
-          gate.upgradeText("the full series back to 1999");
+          gate.upgradeText("the full series back to 1999", "rate_history");
       }
     }
     const h = await getHistory();
