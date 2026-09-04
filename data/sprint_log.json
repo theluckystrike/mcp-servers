@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-04T07:23:09.912Z",
-  "total_commits": 284,
-  "sessions": 38,
+  "generated_at": "2026-09-04T09:38:15.374Z",
+  "total_commits": 310,
+  "sessions": 39,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -56,7 +56,12 @@
     {
       "name": "Loop 11: estate backlinks, list PRs, zip, round 13, v0.9.0",
       "sessions": 1,
-      "commits": 100
+      "commits": 16
+    },
+    {
+      "name": "Loop 12: release checker, round 14, specs, descriptions, v0.9.1",
+      "sessions": 1,
+      "commits": 110
     }
   ],
   "rows": [
@@ -424,7 +429,7 @@
       "at": "2026-09-04T07:23:09.687Z",
       "note": "loop 11 closed: v0.9.0, 19 servers + bundle (+zip: bomb and traversal guards from the central directory, audit 18/18), 868 tests, validation 463/463, 19 hosted endpoints, 46 registry entries at 0.9.0, hosted round 13 50/54 (uv index 93), 7 estate sites now link to mcp.zovo.one (9 total; boldtake.io EXPIRED), 3 awesome-list PRs filed, scripted checkouts tagged as probes, sitemap 208, Docker PR 19 entries, Cline 2430, downloads 1139, sales 0, GSC 0 indexed",
       "loop": "Loop 11: estate backlinks, list PRs, zip, round 13, v0.9.0",
-      "commits": 100,
+      "commits": 36,
       "subjects": [
         "Plan v5; image and bank-statement products",
         "INTEL_R5: image/bank-statement naming slots, next three candidates",
@@ -438,6 +443,27 @@
         "bank-statement server: import, categorise, summarise, reconcile, recurring detect",
         "Distribution round 6: kanban, image onto Docker MCP catalog and Cline marketplace",
         "Add kanban and image demo GIFs"
+      ]
+    },
+    {
+      "n": 39,
+      "at": "2026-09-04T09:38:15.117Z",
+      "note": "loop 12 closed: v0.9.1, 19 servers + bundle, 907 tests, validation 463/463, 47 registry entries at 0.9.1, hosted round 14 57/60 on the five servers never tested hosted (uv index 95), release checker found 9 over-length and 5 truncated manifest descriptions plus a missing barcode second name, five servers got SPEC.md and contract tests (45 descriptions rewritten), publish-all covers 21 packages in dependency order, human-gated pack written, three oldest guides refreshed; GSC API unreachable this loop; downloads see metrics; sales 0",
+      "loop": "Loop 12: release checker, round 14, specs, descriptions, v0.9.1",
+      "commits": 90,
+      "subjects": [
+        "v0.6.1: bump 17 servers and mcp-license, regenerate vendored worker sources",
+        "v0.6.1 bundle manifests",
+        "intel: R7 templates variant publish, GSC inspection/IndexNow, registry re-probe",
+        "v0.6.1 release record, bundle checksums, distribution ledger",
+        "quotes: new server, estimates and quotes on the invoice engine",
+        "quotes: wire into office-suite, mcpb, mirrors, pages, tools, validation; demo GIF",
+        "quotes: docker catalog entry, cline issue, distribution ledger, round 8 result",
+        "quotes: cap five unbounded free-text fields, verify invoice-numbering continuation, Part 2 CLI audit",
+        "remote: seventeenth endpoint POST /mcp/quotes",
+        "Content round 9: quotes guide, 6 setup pages, 1 compare page",
+        "setup: quotes claude-web page now that /mcp/quotes is live",
+        "Round 11: hosted user-value audit of kanban, image and bank-statement"
       ]
     }
   ]
