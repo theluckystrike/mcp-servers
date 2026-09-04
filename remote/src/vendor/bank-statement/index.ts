@@ -726,7 +726,7 @@ function csvEscapeCell(v: unknown): string {
 
 server.registerTool("statement_export", {
   title: "Export bank transactions to a file",
-  description: "Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \"export September\" once a statement has been imported. Nothing partial is ever written."export September to <path>\" once imported. Written atomically: a failed export never leaves a half file.",
+  description: "Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \"export September\" once a statement has been imported. Nothing partial is ever written.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),

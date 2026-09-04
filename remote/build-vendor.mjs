@@ -1195,7 +1195,7 @@ function patchImageIndex(src) {
   const reservations: Reservation[] = [];
   try {`, "image watermark refusal");
   src = must(src,
-    /(registerTool\("image_watermark",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"[^"]*"/,
+    /(registerTool\("image_watermark",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"(?:[^"\\]|\\.)*"/,
     '$1"Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Run the server locally over stdio (npx -y @theluckystrike/mcp-image) to watermark, or upload an image you have already watermarked."',
     "image watermark description");
 
@@ -1288,7 +1288,7 @@ function outputPath(p: string, ext: string): string {
     "    const existed = false;   // /out/ is transient here: an export is a fresh download every time",
     "bank statement_export target");
   src = must(src,
-    /(registerTool\("statement_export",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"[^"]*"/,
+    /(registerTool\("statement_export",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"(?:[^"\\]|\\.)*"/,
     '$1"Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \\"export September\\" once a statement has been imported. Nothing partial is ever written."',
     "bank statement_export description");
 
