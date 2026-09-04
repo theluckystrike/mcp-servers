@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-04T06:09:06Z",
+  "updated_at": "2026-09-04T06:13:42Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -152,14 +152,14 @@
       "note": "this repo indexes LobeChat *agent* system prompts (agent-template.json), not MCP servers; no lobehub MCP-server marketplace repo found via gh search repos \"lobehub mcp\" (empty result). Skipped, no matching surface"
     },
     "tensorblock-awesome-mcp-servers": {
-      "status": "researched: plain format, not yet submitted",
-      "url": "https://github.com/TensorBlock/awesome-mcp-servers",
-      "note": "838 stars; docs/*.md category files, entries are plain \"- [Name](url): description\" bullets with no per-entry emoji (only decorative category-heading emoji); PR or issue-form submission (docs/CONTRIBUTING or Add MCP server issue form). Format cleared as free of the awesome-mcp-servers Glama/emoji-check blockers but round capped at 40 min before the PR was opened"
+      "status": "submitted",
+      "url": "https://github.com/TensorBlock/awesome-mcp-servers/pull/2154",
+      "note": "Round 10b: forked to theluckystrike/awesome-mcp-servers-4, branch add-zovo-office-servers, 20 plain bullets (19 servers + office-suite bundle) added across finance--crypto.md, project--task-management.md, utilities--helpers.md, content-management-systems-cms.md, data-analysis--business-intelligence.md, developer-productivity--utilities.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
     },
     "yuzehao2023-awesome-mcp-servers": {
-      "status": "researched: plain format, not yet submitted",
-      "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers",
-      "note": "1061 stars; README category sections (## Category: Marketing, Finance, E-Commerce, Development Tools, etc.) use \"- Name \u2014 url (description)\" plain bullets, no per-entry emoji required. Cleared as free of the punkpeye-style emoji/Glama gate but round capped at 40 min before the PR was opened"
+      "status": "submitted",
+      "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
+      "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name \u2014 url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
     },
     "mcpstar-awesome-dxt-mcp": {
       "status": "skipped: no populated list to append to",

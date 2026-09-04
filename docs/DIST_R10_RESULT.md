@@ -77,3 +77,32 @@ artifacts:
 - /private/tmp/awesome-mcpb (fork clone, branch main, pushed to theluckystrike/awesome-mcpb)
 
 cost: 40 wall minutes
+
+## Round 10b
+
+Opened the two PRs left ready-but-not-submitted at the end of round 10. Cap: 25 minutes.
+
+- **TensorBlock/awesome-mcp-servers**: forked to `theluckystrike/awesome-mcp-servers-4` (repo-name
+  collision with an existing punkpeye fork bumped the suffix), branch `add-zovo-office-servers`. Added the
+  19 servers plus the office-suite bundle as plain `- [Name](url): description. (mcp.zovo.one)` bullets
+  across six existing `docs/*.md` category files (finance--crypto.md: bank-statement, currency,
+  expense-tracker, invoice, price-tracker, quotes, recurring; project--task-management.md: kanban,
+  time-tracker; utilities--helpers.md: barcode, calendar, image, pdf, timezone, zip;
+  content-management-systems-cms.md: clauses, docx, resume; data-analysis--business-intelligence.md:
+  spreadsheet; developer-productivity--utilities.md: office-suite), one commit, PR body links
+  `https://mcp.zovo.one` and `https://github.com/theluckystrike/mcp-servers`.
+  PR: https://github.com/TensorBlock/awesome-mcp-servers/pull/2154 (open).
+- **YuzeHao2023/Awesome-MCP-Servers**: forked to `theluckystrike/Awesome-MCP-Servers-3` (same naming
+  collision pattern), branch `add-zovo-office-servers`. This list has no per-category doc files, one
+  README.md with `## Category: X (emoji)` sections; added plain `- Name — url (description; mcp.zovo.one)`
+  bullets under the existing Finance and Development Tools categories (finance: bank-statement, currency,
+  expense-tracker, invoice, price-tracker, quotes, recurring; development tools: barcode, calendar,
+  clauses, docx, image, kanban, office-suite, pdf, resume, spreadsheet, time-tracker, timezone, zip), one
+  commit, same PR body format.
+  PR: https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473 (open).
+
+Both PRs list all 19 servers plus the office-suite bundle (20 entries total, matching what actually shipped
+in the awesome-mcpb PR #11 despite that PR's own note saying "19 entries" -- the servers/ directory has 19
+individual servers, not 18). No emojis added to any entry, no paid submissions, no login flows attempted.
+
+cost: ~20 wall minutes
