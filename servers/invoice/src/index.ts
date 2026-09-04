@@ -29,6 +29,17 @@ const BUSINESS_FIELDS = [
 const gate = createLicenseGate({ product: "invoice" });
 
 /**
+ * D-R60. Every server that imports readSharedProfile, other than invoice itself, in the
+ * order `grep -rl readSharedProfile servers/*\/src` returns them. test/profile-readers.test.mjs
+ * re-runs that grep and fails if this list ever drifts from it, so a server that starts (or
+ * stops) reading the shared profile cannot go unnoticed here again.
+ */
+export const PROFILE_READERS = [
+  "barcode", "calendar", "clauses", "docx", "expense-tracker", "image",
+  "kanban", "pdf", "quotes", "resume", "time-tracker", "timezone",
+];
+
+/**
  * Serialise every read-modify-write cycle on the data dir across processes.
  * Two instances sharing one XDG_DATA_HOME otherwise overwrite each other's
  * clients.json / invoices.json / counter.json (see docs/AUDIT.md).
@@ -218,9 +229,11 @@ server.registerTool("business_set", {
       writeSharedProfile({ phone: a.phone, timezone: timezoneToWrite, timezone_source: timezoneSource });
     }
     const shared = readSharedProfile();
-    return ok(`Business profile saved to ${dataDir()} and to the shared profile at ` +
-      `mcp-servers/profile/business.json, which docx, expense-tracker, recurring, time-tracker, ` +
-      `timezone, resume and clauses all read. You do not need to repeat it anywhere else.\n\n` +
+    const readerList = PROFILE_READERS.length > 1
+      ? `${PROFILE_READERS.slice(0, -1).join(", ")} and ${PROFILE_READERS[PROFILE_READERS.length - 1]}`
+      : PROFILE_READERS.join(", ");
+    return ok(`Business profile saved to ${dataDir()}, ` +
+      `which ${readerList} all read. You do not need to repeat it anywhere else.\n\n` +
       `${JSON.stringify({
         ...biz, phone: shared.phone, timezone: shared.timezone, timezone_source: shared.timezone_source,
       }, null, 2)}${tzNote}${note}${warn}`);

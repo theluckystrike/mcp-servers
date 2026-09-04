@@ -110,6 +110,13 @@ function patchInvoiceIndex(src) {
     'note = `\\n\\nFree tier: the PDF carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +\n        gate.upgradeText("unbranded PDFs with your logo");',
     'note = `\\n\\nFree tier: the HTML invoice carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +\n        gate.upgradeText("unbranded HTML invoices with your logo");',
     "invoice free-tier note wording");
+  // D-R60. dataDir() on the remote build is the worker's virtual homedir
+  // (/home/mcp/...), meaningless to a hosted caller: say "the shared business
+  // profile behind this token" instead of the path.
+  src = must(src,
+    "return ok(`Business profile saved to ${dataDir()}, ` +\n      `which ${readerList} all read. You do not need to repeat it anywhere else.\\n\\n` +\n      `${JSON.stringify({",
+    "return ok(`Business profile saved to the shared business profile behind this token, ` +\n      `which ${readerList} all read. You do not need to repeat it anywhere else.\\n\\n` +\n      `${JSON.stringify({",
+    "invoice business_set hosted path wording");
   return src;
 }
 

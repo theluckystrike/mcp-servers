@@ -144,18 +144,32 @@ reach and is not the string any tool accepts.
 and bank-statement endpoints already carry; `pdf_files` was already right because it builds names
 rather than echoing paths. Live after the deploy: `"source": "invoices-merged.pdf"`.
 
-### D-R60 (low, invoice, hosted only) - logged, outside this round's commit scope
+### D-R60 (low, invoice, hosted only) - FIXED, with a test
 
-`business_set` on `/mcp/invoice` answers "Business profile saved to
+`business_set` on `/mcp/invoice` answered "Business profile saved to
 `/home/mcp/.local/share/mcp-servers/invoice` and to the shared profile at
 `mcp-servers/profile/business.json`, which docx, expense-tracker, recurring, time-tracker, timezone,
-resume and clauses all read." Both halves are wrong for a hosted caller: the directory is the
-worker's virtual homedir, and the list of readers omits **quotes**, **pdf** and **calendar**, all
-three of which read that profile - quotes signs its emails with the name, `pdf_watermark_business`
-reads it, calendar takes its display zone from it. Extension 7 already noted the missing `quotes`.
-The string lives in `servers/invoice/src/index.ts`, which another agent holds this session, so it is
-logged rather than edited. Fix direction: name the endpoint, not the path, and derive the reader
-list from the set of servers that import `readSharedProfile` instead of hard-coding it.
+resume and clauses all read." Both halves were wrong for a hosted caller: the directory is the
+worker's virtual homedir, and the hand-written list of readers omitted **quotes**, **pdf** and
+**calendar**, and wrongly included **recurring** and **bank-statement**, neither of which imports
+`readSharedProfile`.
+
+`servers/invoice/src/index.ts` now exports `PROFILE_READERS`, built from
+`grep -rl readSharedProfile servers/*/src` (barcode, calendar, clauses, docx, expense-tracker,
+image, kanban, pdf, quotes, resume, time-tracker, timezone), and a new test,
+`servers/invoice/test/profile-readers.test.mjs`, re-runs that grep on every test run and fails if
+the constant ever drifts from it again. `remote/build-vendor.mjs` patches the hosted build's
+`business_set` response to say "the shared business profile behind this token" instead of
+`dataDir()`, so the worker's virtual homedir is never shown; stdio still prints the real path.
+
+Verified live after the deploy, `business_set {name, address}` on `/mcp/invoice`:
+
+    Business profile saved to the shared business profile behind this token, which barcode,
+    calendar, clauses, docx, expense-tracker, image, kanban, pdf, quotes, resume, time-tracker and
+    timezone all read. You do not need to repeat it anywhere else.
+
+`npm test -w servers/invoice`: 46 pass, 1 skipped, 0 fail. `node remote/build-vendor.mjs`: zero
+DRIFT lines. `node scripts/validate.mjs` after the deploy: remote 50/50, invoice 20/20.
 
 ### D-R61 (low, calendar) - logged
 
