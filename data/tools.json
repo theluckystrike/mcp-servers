@@ -508,5 +508,63 @@
       "name": "ics_forget",
       "description": "Remove one imported calendar and the local copy of its .ics file. Nothing else is touched."
     }
+  ],
+  "kanban": [
+    {
+      "name": "task_add",
+      "description": "Add a task to a project board (todo list / kanban card). Optional column, due date, estimate, priority, tags and notes."
+    },
+    {
+      "name": "task_list",
+      "description": "List tasks as a table, filtered by project, column, tag, due date or overdue."
+    },
+    {
+      "name": "task_move",
+      "description": "Move a task to another column on its board."
+    },
+    {
+      "name": "task_update",
+      "description": "Change any field of a task: title, notes, due date, estimate, priority, tags or project."
+    },
+    {
+      "name": "task_done",
+      "description": "Mark a task done: it moves to the done column and is stamped with the time."
+    },
+    {
+      "name": "task_delete",
+      "description": "Delete a task permanently."
+    },
+    {
+      "name": "task_search",
+      "description": "Find tasks whose title, notes, tags or id match a query."
+    },
+    {
+      "name": "board",
+      "description": "Column-by-column summary of a project board: task counts and estimate totals."
+    },
+    {
+      "name": "task_start_timer",
+      "description": "Return the exact arguments to pass to the time-tracker server's timer_start for this task, and record the link on the task."
+    },
+    {
+      "name": "task_log_time",
+      "description": "Add real minutes worked to a task, so estimate and actual can be compared."
+    },
+    {
+      "name": "project_list",
+      "description": "All project boards with open task counts, remaining estimate and overdue counts."
+    },
+    {
+      "name": "overdue",
+      "description": "Every task past its due date, across all boards."
+    },
+    {
+      "name": "weekly_review",
+      "description": "Done versus planned for a week, with estimate against actual minutes per project."
+    },
+    {
+      "name": "columns_set",
+      "description": "Replace the columns of one board (Pro). Tasks sitting in a removed column move to the first column."
+    }
   ]
 }

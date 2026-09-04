@@ -53,6 +53,15 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  kanban: async (c, tmp, tier, ok) => {
+    const a = await c.tool("task_add", { title: "API design", project: "Nova", estimate_minutes: 180, due: "2026-09-10" }); ok(`${tier}: task_add returns an id`, !a.isError && /NOVA-\w+/.test(a.text), a.text.slice(0, 80));
+    const id = (a.text.match(/NOVA-\w+/) || [""])[0];
+    const mv = await c.tool("task_move", { id, column: "doing" }); ok(`${tier}: task_move to doing`, !mv.isError && /doing/.test(mv.text), mv.text.slice(0, 80));
+    const b = await c.tool("board", { project: "Nova" }); ok(`${tier}: board shows the task and estimate`, !b.isError && /API design/.test(b.text) && /180|3\.0/.test(b.text), b.text.slice(0, 100));
+    const st = await c.tool("task_start_timer", { id }); ok(`${tier}: task_start_timer hands off timer_start args`, !st.isError && /timer_start/.test(st.text) && /Nova/.test(st.text), st.text.slice(0, 100));
+    let last; for (const p of ["P2", "P3", "P4"]) last = await c.tool("task_add", { title: "x", project: p });
+    ok(`${tier}: 4th project ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(last.text) : /mcp\.zovo\.one\/buy\/kanban/.test(last.text), last.text.slice(0, 80));
+  },
   calendar: async (c, tmp, tier, ok) => {
     const ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//probe//EN\r\nBEGIN:VEVENT\r\nUID:a1@probe\r\nDTSTART:20260910T090000Z\r\nDTEND:20260910T100000Z\r\nSUMMARY:Nova call\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:a2@probe\r\nDTSTART:20260910T093000Z\r\nDTEND:20260910T110000Z\r\nSUMMARY:Design review\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:a3@probe\r\nDTSTART;VALUE=DATE:20260912\r\nSUMMARY:Holiday\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
     const imp = await c.tool("ics_import", { text: ics, name: "Work" }); ok(`${tier}: ics_import 3 events`, !imp.isError && /3/.test(imp.text), imp.text.slice(0, 80));
@@ -281,7 +290,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
