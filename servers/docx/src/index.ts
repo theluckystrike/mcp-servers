@@ -191,7 +191,7 @@ server.registerTool("business_set", {
       let color = a.brand_color ?? prev.brand_color;
       if (a.brand_color && !gate.isPro()) {
         note = `\n\nNote: a custom letterhead colour is a Pro feature; it is stored but the free tier renders the default. ` +
-          gate.upgradeText("custom letterhead colours and your logo");
+          gate.upgradeText("custom letterhead colours and your logo", "business_set");
       }
       const biz: Business = {
         name: a.name,
@@ -441,7 +441,7 @@ server.registerTool("doc_fill_template", {
     }
     if (!gate.isPro() && found.length > FREE_TEMPLATE_PLACEHOLDERS) {
       return ok(`This template has ${found.length} placeholders. The free tier fills templates with up to ` +
-        `${FREE_TEMPLATE_PLACEHOLDERS}.\n\n${gate.upgradeText("templates of any size")}`);
+        `${FREE_TEMPLATE_PLACEHOLDERS}.\n\n${gate.upgradeText("templates of any size", "doc_fill_template")}`);
     }
     const values: Record<string, string> = {};
     for (const [k, v] of Object.entries(a.values)) values[k] = String(v);
