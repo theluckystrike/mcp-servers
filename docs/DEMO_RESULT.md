@@ -407,3 +407,61 @@ artifacts (this update):
 - assets/demo-kanban.gif, assets/demo-image.gif
 - servers/kanban/README.md, servers/image/README.md
 - README.md
+
+## Update 2026-09-04: bank-statement demo
+
+Added the demo for mcp-bank-statement, the newest server, following the same driver/tape pattern.
+
+1. Driver changes (`scripts/demo/drive.mjs`):
+   - License: a `bank-statement`-only env block generates a real Pro key at run time via
+     `execFileSync(process.execPath, [scripts/sign-license.mjs, "bank-statement"])` and passes it as
+     `MCP_LICENSE_KEY`, so the recorded session genuinely unlocks `recurring_detect` (a Pro-gated tool)
+     rather than showing the upgrade message.
+   - New `bank-statement` sequence: writes an 8-row Revolut-shaped CSV fixture to the sandbox (the exact
+     header `Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance` the
+     bank-statement test suite uses for its Revolut fixture), three of the eight rows a EUR 9.99 "Spotify"
+     charge 30 days apart (2026-07-04, 2026-08-03, 2026-09-02) so `recurring_detect` has three occurrences
+     of a monthly cadence to find (the source gained a `cadence_confirmed` guard mid-task, live in
+     `servers/bank-statement/src/index.ts`, that withholds the annualised figure until a third charge
+     confirms the interval -- the fixture was written to three occurrences rather than two once that
+     landed, and `npm run build` was re-run before recording), the other five rows a salary top-up,
+     groceries, rent, a restaurant charge and an ATM withdrawal. Then `statement_import` (bank
+     auto-detected as Revolut), `category_rules` (Spotify -> software, Rent -> rent), `statement_summary`
+     (category totals for the window), and `recurring_detect` (months: 12, so the window is stable
+     regardless of the actual run date) -- which comes back with the Spotify charge, 3 occurrences,
+     `cadence_confirmed: true`, annualised EUR 119.88.
+
+2. Tape: `scripts/demo/bank-statement.tape` -- identical settings to the existing thirteen
+   (900x480, Dracula, 40ms typing, `Sleep 10s`).
+
+   Command run: `vhs scripts/demo/bank-statement.tape` from repo root.
+
+   Output size (limit 400 KB): assets/demo-bank-statement.gif 280,430 bytes (273.9 KB).
+
+3. Verification (`file` + `ffprobe`):
+   ```
+   $ file assets/demo-bank-statement.gif
+   assets/demo-bank-statement.gif: GIF image data, version 89a, 900 x 480
+
+   $ ffprobe -v error -select_streams v -show_entries stream=width,height,nb_frames,avg_frame_rate \
+       -of default=noprint_wrappers=1 assets/demo-bank-statement.gif
+   width=900 height=480 avg_frame_rate=25/1 nb_frames=274
+   ```
+   A valid 900x480 GIF at 25 fps, about 11s, matching the existing thirteen demos.
+
+4. README updates:
+   - `servers/bank-statement/README.md`: replaced the logo line
+     `<img src="../../assets/bank-statement-logo.png" alt="bank-statement" width="120" />` with
+     `![bank-statement demo](../../assets/demo-bank-statement.gif)` -- only that line changed; the file
+     was re-read immediately before editing since an audit agent may be touching it concurrently (its
+     `src/index.ts` mtime was in fact newer than `dist/index.js` at the start of this task, so `npm run
+     build` was re-run before recording to pick up any concurrent edit).
+   - `README.md` (root): added one row (mcp-bank-statement) to the demo-thumbnail table, right before the
+     mcp-office-suite bundle row, matching the existing row format exactly (link, thumbnail, one-line
+     description, npx install line with the `*` footnote marker). No other rows or prose changed.
+
+artifacts (this update):
+- scripts/demo/drive.mjs (extended)
+- scripts/demo/bank-statement.tape
+- assets/demo-bank-statement.gif
+- servers/bank-statement/README.md, README.md

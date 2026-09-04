@@ -146,6 +146,13 @@ async function run(name) {
     ecb = await startEcbFixture();
     env.ECB_BASE_URL = ecb.url;
   }
+  if (name === "bank-statement") {
+    const { execFileSync } = await import("node:child_process");
+    env.MCP_LICENSE_KEY = execFileSync(
+      process.execPath,
+      [join(ROOT, "scripts", "sign-license.mjs"), "bank-statement"],
+    ).toString().trim();
+  }
   const c = client(entry, env, { showStderr });
   await c.init();
 
@@ -519,6 +526,40 @@ async function run(name) {
     await sleep(STEP_DELAY_MS);
     toolLine("variables_list", { clause_ids: clauseIds });
     resultLine(await c.call("variables_list", { clause_ids: clauseIds }));
+  }
+
+  if (name === "bank-statement") {
+    const { writeFileSync } = await import("node:fs");
+    const csv = [
+      "Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance",
+      "CARD_PAYMENT,Current,2026-07-04 08:12:00,2026-07-04 09:00:00,Spotify,-9.99,0.00,EUR,COMPLETED,1500.00",
+      "CARD_PAYMENT,Current,2026-08-03 08:12:00,2026-08-03 09:00:00,Spotify,-9.99,0.00,EUR,COMPLETED,1490.01",
+      "TOPUP,Current,2026-08-05 10:00:00,2026-08-05 10:01:00,Payment from Acme,2500.00,0.00,EUR,COMPLETED,3990.01",
+      "CARD_PAYMENT,Current,2026-08-10 12:00:00,2026-08-10 12:05:00,Lidl Warszawa,-64.30,0.00,EUR,COMPLETED,3925.71",
+      "CARD_PAYMENT,Current,2026-08-15 09:00:00,2026-08-15 09:01:00,Rent transfer,-1200.00,0.00,EUR,COMPLETED,2725.71",
+      "CARD_PAYMENT,Current,2026-08-20 19:30:00,2026-08-20 19:31:00,Restaurant Bistro,-45.50,0.00,EUR,COMPLETED,2680.21",
+      "ATM,Current,2026-08-25 14:00:00,2026-08-25 14:01:00,Cash withdrawal,-200.00,0.00,EUR,COMPLETED,2480.21",
+      "CARD_PAYMENT,Current,2026-09-02 08:15:00,2026-09-02 09:00:00,Spotify,-9.99,0.00,EUR,COMPLETED,2470.22",
+      "",
+    ].join("\n");
+    const csvPath = join(c.sandbox, "revolut-export.csv");
+    writeFileSync(csvPath, csv);
+    say("$ Import a Revolut export, set a category rule, summarise the month, and find the subscriptions (Pro).\n");
+    await sleep(STEP_DELAY_MS);
+    toolLine("statement_import", { path: csvPath, account: "business EUR" });
+    resultLine(await c.call("statement_import", { path: csvPath, account: "business EUR" }));
+    await sleep(STEP_DELAY_MS);
+    const rulesArgs = { rules: [{ match: "Spotify", category: "software" }, { match: "Rent", category: "rent" }] };
+    toolLine("category_rules", rulesArgs);
+    resultLine(await c.call("category_rules", rulesArgs));
+    await sleep(STEP_DELAY_MS);
+    const summaryArgs = { from: "2026-07-01", to: "2026-09-03", group_by: "category" };
+    toolLine("statement_summary", summaryArgs);
+    resultLine(await c.call("statement_summary", summaryArgs));
+    await sleep(STEP_DELAY_MS);
+    const recurringArgs = { months: 12 };
+    toolLine("recurring_detect", recurringArgs);
+    resultLine(await c.call("recurring_detect", recurringArgs));
   }
 
   await sleep(STEP_DELAY_MS);
