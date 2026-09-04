@@ -411,5 +411,33 @@
       "storage": "~/.local/share/mcp-servers/zip/"
     }
   },
-  "version": "0.1.1"
+  "version": "0.1.1",
+  "compare_none": {
+    "zip": {
+      "date": "2026-09-04",
+      "tokens": [
+        "zip",
+        "archive",
+        "compress",
+        "unzip",
+        "tar",
+        "gzip",
+        "7z",
+        "decompress",
+        "file compression",
+        "extract",
+        "zip file",
+        "zip archive",
+        "archiver",
+        "unpack",
+        "inflate",
+        "deflate",
+        "file archive",
+        "tarball"
+      ],
+      "note": "Searched the official MCP registry search API for each token; nothing found packs, lists or unpacks a .zip file (zip = postal-code servers; archive = Internet Archive wrappers; compress = image/LLM-prompt/scientific-data compressors). See docs/CONTENT_R12_RESULT.md for the per-token breakdown and the guide it produced.",
+      "guide": "zip-archives-safely-from-chat",
+      "ttl_days": 30
+    }
+  }
 }

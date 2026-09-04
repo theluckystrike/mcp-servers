@@ -109,13 +109,21 @@ Both behaviours were checked against a control before this was committed: removi
 `servers/barcode/server.variant.json` failed the `names` check and exited 1, and writing a
 placeholder `servers/kanban/SPEC.md` made the `spec` waiver report `STALE` and exit 1.
 
-### Open at 2026-09-04 (11 gaps)
+The `compare` check has a second, narrower escape valve that is not a waiver: a server
+whose registry search genuinely turns up no competitor can carry a dated
+`compare_none.<server>` note in `data/facts.json` (`{ date, tokens }`) instead of a
+`COMPARE` page. The check accepts the note for 30 days from its date; past that it fails
+again with an "expired" message so the registry gets re-probed rather than the gap staying
+silently excused forever. A waiver never re-checks itself this way, which is why this is a
+note in a data file the check reads, not another WAIVERS row.
+
+### Open at 2026-09-04 (0 gaps, 0 waivers)
 
 | check | servers | why |
 | --- | --- | --- |
-| `spec` | bank-statement, calendar, image, kanban, pdf | `scripts/gen-spec.mjs` has a `CURATED` table covering 11 servers; these five need their invariants and storage written by hand before the generator can emit a SPEC |
-| `contract` | bank-statement, calendar, image, kanban, pdf | the contract suite asserts SPEC.md invariants, so it cannot precede the SPEC; bank-statement, calendar and kanban also lack a `test/_client.mjs` |
-| `compare` | zip | `COMPARE` rows are quoted from named competitors' own READMEs on a dated read; no zip alternative has been researched, and a comparison page cannot be invented |
+| (none) | -- | `spec` and `contract` landed for bank-statement, calendar, image, kanban and pdf since the table above was last written; `scripts/gen-spec.mjs`'s `CURATED` table now covers all nineteen servers. `compare`/zip is no longer a waiver either: `data/facts.json` `compare_none.zip` records the dated, honest registry search (docs/CONTENT_R12_RESULT.md) that found no genuine competitor, and the `compare` check accepts that note for 30 days from its date before it expires and fails again, so a competitor appearing later gets re-probed rather than staying silently excused. `WAIVERS` in `scripts/release-check.mjs` is now empty. |
+
+`node scripts/release-check.mjs` exits 0 with `release-check: green (0 recorded gap(s))`.
 
 ## What the first run found and fixed
 

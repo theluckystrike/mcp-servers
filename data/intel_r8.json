@@ -1,0 +1,51 @@
+{
+ "generated_at": "2026-09-04",
+ "cap_minutes": 35,
+ "method": {
+  "registry_probe": "Single bounded GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, 20s timeout, first page only, sequential, no background loops, curl -s -m 20 inline inside one bounded shell loop per Bash call (2 calls to cover all 100 tokens after the first hit the 2-minute tool timeout mid-loop and resumed from where it left off). count = servers.length on page 1. our_rank = [1-based index, name] for every row on that page whose name matches /theluckystrike/i.",
+  "token_set": "The 97-token union used by docs/NAMING_R4_RESULT.md (66 tokens from data/organic.json servers[].query_set as tracked at the time + the 38 new tokens named in that round's brief, de-duplicated) plus zip, archive, compress, qr-code (compress already in the 97) -- 100 distinct tokens probed live on 2026-09-04.",
+  "findable_share_formula": "NAMING_R4 formula, unchanged: p = min(1, 10/our_rank) if our current-version row appears on page 1 for that token, else 0; mean over the full 100-token set.",
+  "release_check": "node scripts/release-check.mjs, read-only, no network, no writes.",
+  "compare_none_mechanism": "release-check.mjs's compare check now accepts data/facts.json compare_none.<server> = {date, tokens} in place of a billing/src/compare.js COMPARE[server] entry, valid for 30 days from date; past that it fails again with an explicit expired message so the registry gets re-probed for a competitor rather than the gap staying silently excused."
+ },
+ "part1_registry_findable_share": {
+  "measured_at": "2026-09-04",
+  "tokens_probed": 100,
+  "matched": 74,
+  "findable_share": 0.5126,
+  "findable_share_pct": 51.26,
+  "previous_kpi_value_pct": 41,
+  "kpi_row_after": "Registry findable share: value 51, target 60, unit % of tracked tokens (data/kpi.json, from node scripts/kpi.mjs)",
+  "where_stored": "data/registry_rank.json variants_r4_full_probe",
+  "note": "The prior 41% in data/organic.json / data/kpi.json was an approximate R3 estimate (score_before_this_measurement note: 'a precise global recount was out of the 20-minute budget'). This round is a full live reprobe of all 100 tracked tokens, not an estimate."
+ },
+ "part2_release_check": {
+  "before_this_round": "docs/RELEASE_CHECK.md's open-gap table (dated 2026-09-04 but stale) listed 11 gaps: spec + contract for bank-statement/calendar/image/kanban/pdf (10 rows) plus compare/zip, all waived via WAIVERS in scripts/release-check.mjs.",
+  "measured_now": "node scripts/release-check.mjs: 19 servers x 25 checks, all ok, 0 recorded gaps, exit 0. The spec/contract gaps had already been closed (scripts/gen-spec.mjs's CURATED table now covers all 19 servers) by work done since the table was last written; this round only updated the doc to match and cleared the remaining compare/zip waiver honestly (part 3).",
+  "waivers_now": 0
+ },
+ "part3_compare_zip_waiver_cleared": {
+  "choice": "Taught the checker to accept a data/facts.json compare_none note, not a fabricated compare page: option B from the brief. This one stays true when a competitor appears later because the note expires and the check fails again, forcing a re-probe -- a COMPARE page or a static waiver would not.",
+  "facts_json_addition": "compare_none.zip = {date: 2026-09-04, tokens: [zip, archive, compress, unzip, tar, gzip, 7z, decompress, 'file compression', extract, 'zip file', 'zip archive', archiver, unpack, inflate, deflate, 'file archive', tarball], guide: zip-archives-safely-from-chat, ttl_days: 30}, sourced from docs/CONTENT_R12_RESULT.md's dated registry search that found no genuine .zip-container competitor.",
+  "checker_change": "scripts/release-check.mjs compare check: COMPARE[s] true, else reads facts.compare_none[s], computes age in days from note.date, true if <= 30 days, else fails with an explicit 'expired, re-probe' message. WAIVERS array emptied.",
+  "control_test": "Backdated compare_none.zip.date to 2026-01-01 (246 days old) in a scratch copy: release-check failed with 'zip compare: compare_none note expired (246d old, >30d; re-probe the registry for a competitor)', exit 1. Restored the real 2026-09-04 date: release-check green again, exit 0."
+ },
+ "part4_distribution_registry_name_rows": {
+  "servers_updated": ["time-tracker", "price-tracker", "invoice", "expense-tracker", "currency", "calendar", "pdf"],
+  "source_of_truth": "each server's servers/<x>/server.variant.json name field (the only second registry-name manifest these 7 servers hold; none has a third server.<token>.json).",
+  "rows_added": {
+   "time-tracker": "io.github.theluckystrike/timer-tracking",
+   "price-tracker": "io.github.theluckystrike/prices-deal",
+   "invoice": "io.github.theluckystrike/invoices-invoicing",
+   "expense-tracker": "io.github.theluckystrike/expenses",
+   "currency": "io.github.theluckystrike/exchange-fx",
+   "calendar": "io.github.theluckystrike/availability",
+   "pdf": "io.github.theluckystrike/pdfs"
+  },
+  "value_format": "published 0.9.1 (<registry name>), matching the version already carried by these servers' registry-variant rows and each server.variant.json's own version field (verified 0.9.1 on all 7 before writing).",
+  "already_present_before_this_round": "The 10 NAMING_R4 servers (spreadsheet, image, clauses, bank-statement, docx, timezone, recurring, quotes, resume, kanban) already carried a populated per_server.<x>.registry-name row; only the 7 listed above were missing one."
+ },
+ "cost": "curl requests: 100 (registry probe) + 2 (spot re-fetch of 2 failed parses) = 102, all curl -s -m 20; zero paid APIs; zero paid submissions; no background jobs, no Monitor used for the probe.",
+ "failures": "2 of the first 100 curl responses (meeting, time tracker) failed json.load on first parse (a non-ASCII escape and an empty 0-byte body respectively) and were re-fetched individually before the findable-share computation; both included in the final 100-token/74-matched count.",
+ "insight": "The stale RELEASE_CHECK.md table dated itself 2026-09-04 while describing an 11-gap state that ten of the rows had already outgrown -- the doc was never regenerated from a live run after gen-spec.mjs's CURATED table was extended to all 19 servers. release-check.mjs itself was already correct; only the hand-written prose had drifted."
+}

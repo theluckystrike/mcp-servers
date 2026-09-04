@@ -243,7 +243,22 @@ check("setup", `SETUP_SERVERS + ${ANGLE_CLIENTS.length} ANGLE`, (s) => {
   return miss.length ? `ANGLE missing ${miss.join(", ")}` : true;
 });
 
-check("compare", "COMPARE page", (s) => (COMPARE[s] ? true : "no entry"));
+// A compare page needs a genuine named competitor to quote. When a dated, honest search
+// finds none, `data/facts.json` can carry a `compare_none.<server>` note instead of a
+// waiver: { date, tokens }. The note expires after 30 days so a competitor that shows up
+// later gets re-probed rather than staying silently excused forever.
+const COMPARE_NONE_TTL_DAYS = 30;
+check("compare", "COMPARE page", (s) => {
+  if (COMPARE[s]) return true;
+  const note = facts.compare_none?.[s];
+  if (!note || !note.date || !Array.isArray(note.tokens) || note.tokens.length === 0) return "no entry";
+  const ageDays = (Date.now() - new Date(`${note.date}T00:00:00Z`).getTime()) / 86400000;
+  if (Number.isNaN(ageDays)) return "no entry";
+  if (ageDays > COMPARE_NONE_TTL_DAYS) {
+    return `compare_none note expired (${Math.floor(ageDays)}d old, >${COMPARE_NONE_TTL_DAYS}d; re-probe the registry for a competitor)`;
+  }
+  return true;
+});
 
 check("guide", "a guide mentions it", (s) => {
   const title = SETUP_SERVERS[s]?.title || s;
@@ -281,10 +296,12 @@ check("contract", "contract test", (s) =>
 //   - a waiver whose check now passes is reported stale and blocks, so the entry has to
 //     be deleted when the work lands.
 // Recorded 2026-09-04. Owners are named so the table reads as a queue, not an excuse.
-const WAIVERS = [
-  { check: "compare", servers: ["zip"],
-    why: "billing/src/compare.js rows are quoted from named competitors' own READMEs on a dated read; no zip alternative has been researched yet, and a comparison page cannot be invented" },
-];
+//
+// zip's compare gap (no genuine registry competitor found as of 2026-09-04) is cleared
+// through the self-expiring `data/facts.json` compare_none note, not a waiver here: a
+// waiver never re-checks itself, and a competitor showing up next month would sit
+// unnoticed forever. See the `compare` check above.
+const WAIVERS = [];
 const waived = new Map(); // "server:check" -> why
 for (const w of WAIVERS) for (const s of w.servers) waived.set(`${s}:${w.check}`, w.why);
 
