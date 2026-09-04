@@ -137,3 +137,46 @@ already current) first, then, against the live endpoints:
 5. `GET /stats/clicks` again: KV write propagation took about 10 seconds (confirmed
    unchanged at t+0s, then present at t+10s and every 10s poll through t+60s):
    `{"by_src":{"time-tracker.full_history":{"total":1,"last7d":1}},"total_clicks":1,"clicks_7d":1}`.
+
+## Update 2026-09-04: the slug is the tool, and the storefront is tagged
+
+The first cut let a call site fall back to the slugified feature prose. That was stable
+and traceable, but it could not answer "which tool produced this message", and the
+storefront's own links carried no `src` at all - which is where the `recurring.unknown`
+and `resume.unknown` rows on `/stats/clicks` came from.
+
+**Servers.** `scripts/codemod-upgrade-src.mjs` passes the enclosing `registerTool` name as
+the `toolName` argument to every `gate.upgradeText` / `gated` call inside a handler: 73
+call sites across 19 servers. It masks strings, template literals, comments and regex
+bodies in one pass, then uses paren matching for the handler spans, and is idempotent - a
+call that already names a tool is never touched. Four servers kept their cheapest gate in
+a shared helper (`barcode`'s `reserve`/`tierCheckFormat`, `zip`'s `reserveSlot`,
+`image`'s `proSizeCheck`/`proBatchCheck`, `spreadsheet`'s `writeCapRefusal`); the tool name
+is threaded through those signatures by hand.
+
+38 call sites are deliberately left on the feature-text slug and listed by the codemod:
+they sit in helpers shared by several tools (`pdf`'s `freePageText`, `time-tracker`'s
+free-window note, `bank-statement`'s `windowNote`), where no single tool name is correct
+without threading a parameter through code that has no other reason to change.
+
+**Contract.** Two halves. `test/upgrade-src-contract.test.mjs` runs the codemod in
+`--check` mode over all 20 servers, so a new untagged in-handler gate fails on the day it
+is written. The nine per-server contract suites that already trip a real cap assert the
+returned message carries `https://mcp.zovo.one/buy/<product>?src=<product>.<tool>` for the
+tool that produced it, at no extra server spawn.
+
+**Storefront.** Every `/buy` href the billing worker renders carries `src=store.<page>`:
+`store.home`, `store.s.<id>` (product page CTA, JSON-LD offer url, and the README-derived
+links, which `scripts/build-pages.mjs` tags at build time so the 19 READMEs stay
+untouched), `store.guide.<slug>`, `store.compare.<slug>`, `store.setup.<client>`. Guides,
+comparisons and setup pages had no `/buy` link at all before this, so nothing they earned
+could be attributed; each now carries one tagged CTA. `billing/test/store-src.test.mjs`
+fails on any untagged `/buy` href and checks the emitted tags pass `validSrc`.
+
+**Vendor tree.** Two `remote/build-vendor.mjs` patches were anchored across a call the
+codemod changed and stopped applying. Both are re-anchored on the prose they rewrite;
+`node remote/build-vendor.mjs` prints zero DRIFT.
+
+Verified live after deploying billing and remote: `store.home`, `store.s.pdf`,
+`store.setup.claude-desktop`, `store.guide.invoice-pdf-from-chat` and `store.compare.pdf`
+all render on the live site, and `node scripts/validate.mjs` is 471/471.
