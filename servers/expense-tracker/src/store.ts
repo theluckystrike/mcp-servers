@@ -50,6 +50,38 @@ export function dataDir(): string {
 export function dbPath(): string { return join(dataDir(), "data.json"); }
 export function lockPath(): string { return join(dataDir(), ".lock"); }
 
+/** Where servers/bank-statement keeps its ledger. Read-only, and only if it exists. */
+export function bankDbPath(): string {
+  const base = process.env.XDG_DATA_HOME || join(homedir(), ".local", "share");
+  return join(base, "mcp-servers", "bank-statement", "data.json");
+}
+
+export interface ForeignTxn { date: string; amount_minor: number; currency: string }
+
+/**
+ * D-B4. expense_summary and expense_export answer from the hand-logged receipts alone, and
+ * a caller asking "what did I spend" gets a confident answer built from one seeded receipt
+ * while an imported bank ledger with dozens of rows sits unread in the same session. Mirrors
+ * kanban's timeTrackerProjects and bank-statement's own readExpenses: same XDG data root,
+ * read-only, best effort. A missing or corrupt sibling store is not this server's problem, so
+ * it is reported as absent rather than thrown.
+ */
+export function readBankTransactions(): { present: boolean; transactions: ForeignTxn[]; note?: string } {
+  const file = bankDbPath();
+  if (!existsSync(file)) return { present: false, transactions: [] };
+  let parsed: { transactions?: unknown };
+  try { parsed = JSON.parse(readFileSync(file, "utf8")) as { transactions?: unknown }; }
+  catch (e) { return { present: true, transactions: [], note: `the bank ledger at ${file} could not be read (${(e as Error).message}).` }; }
+  const rows = Array.isArray(parsed.transactions) ? parsed.transactions : [];
+  const out: ForeignTxn[] = [];
+  for (const r of rows as ForeignTxn[]) {
+    if (!r || typeof r !== "object") continue;
+    if (typeof r.date !== "string" || typeof r.amount_minor !== "number" || typeof r.currency !== "string") continue;
+    out.push({ date: r.date, amount_minor: r.amount_minor, currency: r.currency.toUpperCase() });
+  }
+  return { present: true, transactions: out };
+}
+
 
 /**
  * Codex v3 #1 (P0). A read or JSON.parse failure must never be reported as "empty

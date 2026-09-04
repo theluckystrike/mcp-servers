@@ -234,3 +234,66 @@ and categorised two prompts earlier, and reported the 30-day window as the only 
 re-run. A limit that is enforced on the query rather than the import is honest about the rows it dropped, but it
 cannot say anything about the rows that live in a different server.
 ```
+
+---
+
+## D-B4 follow-up (2026-09-04, expense-tracker side)
+
+The retitle-only fix recorded above was measured ineffective. The fix direction it named -
+"expense-tracker's expense_summary should say in its own answer that it covers hand-logged
+receipts only and name the bank tool when a bank ledger exists on the same data dir" - is now
+built inside `servers/expense-tracker`.
+
+`servers/expense-tracker/src/store.ts` adds `readBankTransactions()`, mirroring
+`kanban`'s `timeTrackerProjects()` and `bank-statement`'s own `readExpenses()`: same XDG data
+root, `${XDG_DATA_HOME}/mcp-servers/bank-statement/data.json`, read-only, best effort. Missing
+file, unreadable file, or a row of the wrong shape all fall back silently; only `date`,
+`amount_minor` and `currency` are trusted off a foreign row.
+
+`servers/expense-tracker/src/index.ts` adds `bankLedgerLine(from, to, tool)`, called from both
+`expense_summary` and `expense_export`. It reads the sibling store, counts the bank
+transactions that fall inside the requested period, and stays silent (no field, no line) when
+the store is absent, corrupt, or holds nothing in range. When the count is nonzero it appends
+one line naming the count and the exact bank tool to call:
+
+`expense_summary` gets a new `bank_ledger` field in its JSON response, e.g.
+`"The bank ledger (mcp-bank-statement) holds 34 transactions in this period that are not
+counted here; call that server's statement_summary for them."`. `expense_export` appends the
+same line, naming `statement_export`, to its plain-text result.
+
+The tool descriptions for `expense_summary` and `expense_export` each gained one sentence
+saying they cover manually logged receipts only and that imported bank transactions live in
+the bank-statement server, and both stayed under the 220-char contract-test ceiling (189 and
+199 chars).
+
+Tests: `servers/expense-tracker/test/bank-sibling.test.mjs`, 8 new cases - the line present
+with a populated sibling store in range, and absent with no sibling store, an out-of-range
+sibling store, and a corrupt sibling store, for both tools, plus the description-length and
+description-content check. `npm test -w servers/expense-tracker`: 53 tests, 53 pass (up from
+45). `npm test -w servers/bank-statement`: unchanged, 39 tests, 39 pass (bank-statement was
+not touched).
+
+### Re-run of s3 and s6 against the real claude CLI
+
+Same recipe as Part 2: `/private/tmp/uv80/mcp.json` (bank-statement Pro key + expense-tracker
+free), `--strict-mcp-config`, `--model sonnet`, `--output-format json`, `--max-turns 14`, the
+same 26-tool `--allowedTools` from `allow.txt`, against the same seeded data dir (39 bank
+transactions imported and categorised, one Adobe receipt logged), each prompt under a 180 s
+timeout, one bounded request per prompt.
+
+| # | Prompt | Before (docs above) | After D-B4 fix | Note |
+|---|---|---|---|---|
+| s3 | "What did I spend in August by category?" | 1 | **3** | Answered from `statement_summary`: "34 transactions, EUR... Total spent EUR 1,032.67 (against EUR 4,524.99 in, net +EUR 3,492.32)" - matches the independently-verified CSV totals in Part 2 exactly. It separately noted "the expense-tracker (receipts you've logged by hand) only shows EUR 61.50 in Software for this period... a much smaller, manually-tracked subset" - the two ledgers are now named as two different things rather than one silently standing in for the other |
+| s6 | "Export September to /private/tmp/uv80/sept.csv." | 1 | 1 | Unchanged: "I see two possible data sources with export capability... Which one do you want exported for September?" - `num_turns: 1`, no tool was called at all, so neither server's response text (where the new line lives) was ever read. A per-response line cannot fix a routing failure that happens before any tool is invoked |
+
+s3 moved from float-worthy-of-a-defect to correct because the model called `statement_summary`
+directly this run (its own retitled description already named the question); the fix's
+practical contribution there is the added clarity that the two ledgers disagree, not the
+routing itself. s6 is unchanged and is the residual: D-B4 is fixable inside expense-tracker
+only for the case where expense-tracker's own tool actually gets called and answers from a
+too-small ledger. The case where the caller asks a routing question and calls nothing needs a
+fix outside this unit - single-server packaging (as the original note suggested) or a
+top-level tool that lists both ledgers before either summary/export tool is chosen.
+
+Evidence: `/private/tmp/uv80/s3c.json`, `/private/tmp/uv80/s6c.json`.
+
