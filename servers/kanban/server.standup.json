@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/standup",
   "description": "A task board for daily standups: columns, due dates, priorities, weekly review.",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.2/kanban.mcpb",
-      "version": "0.9.2",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.3/kanban.mcpb",
+      "version": "0.9.3",
       "fileSha256": "e3a527fcde66801d114d07eb2ba8af64b03cf6f9187b762289ee9e3002fae01c",
       "transport": {
         "type": "stdio"

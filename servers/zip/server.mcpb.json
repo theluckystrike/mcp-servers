@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/zip-archive-create-extract-bomb-guard",
   "description": "Create, inspect and extract zip archives offline, with traversal, symlink and zip-bomb guards.",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.2/zip.mcpb",
-      "version": "0.9.2",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.3/zip.mcpb",
+      "version": "0.9.3",
       "fileSha256": "a6aad20c411df1e5a262bb73ea1bac1685fed7487732d3d60cb32c9732ffdafa",
       "transport": {
         "type": "stdio"

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/cashflow",
   "description": "Bank CSV cashflow: categorise, summarise per currency, reconcile against expenses.",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.2/bank-statement.mcpb",
-      "version": "0.9.2",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.3/bank-statement.mcpb",
+      "version": "0.9.3",
       "fileSha256": "fcfe302ef3ad8c0434723227a1a5010cc8a154e76f91be94c9dfd076e79794d8",
       "transport": {
         "type": "stdio"
