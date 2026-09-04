@@ -1848,9 +1848,130 @@ ${FOOT}`,
       { q: "Why does validity use the business profile's timezone instead of the computer's own clock?", a: "Because whether a quote has lapsed is a question about today's date, and a quote issued at 00:30 local time from a machine still set to a different zone would otherwise be dated the wrong calendar day and expire early. Setting timezone on the shared business profile fixes the date to where the business actually is." },
     ],
   },
+
+  "sepa-payment-qr-codes-on-invoices-from-chat": {
+    title: "Put a SEPA payment QR code on an invoice from chat",
+    description: "EPC069-12 fields, IBAN mod-97, why the code is EUR only, invoice_payment_qr from the shared profile, SVG versus PNG bytes, and when to reach for Code 128 instead of EAN-13.",
+    html: `<h1>Put a SEPA payment QR code on an invoice from chat</h1>
+<p>A banking app that scans a code and fills in the transfer form is not doing anything clever with a
+picture: it is reading eleven lines of plain text in a fixed order, a format called EPC069-12, also known
+as the EPC QR code or GiroCode. The MCP Barcode server builds that text itself, checks the IBAN before it
+draws anything, and can pull the beneficiary's IBAN and name straight from the same
+<a href="/guides/invoice-pdf-from-chat">shared business profile</a> the invoice server already has. "Put a
+payment QR code on invoice INV-2026-0007" is one call.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add barcode -- npx -y @theluckystrike/mcp-barcode</code></pre>
+<p>Cursor, Claude Desktop and the rest take the same block, under their own config file. See the
+<a href="/setup">setup pages</a> for the exact path and key per client.</p>
+
+<h2>The eleven EPC069-12 fields, in order</h2>
+<p>The record is not a struct with named keys; it is plain text lines joined by newlines, and a scanner
+reads field N as whatever sits on line N. Getting one field wrong or leaving one out of order corrupts
+every field after it. The server writes exactly this, dropping only the trailing fields that are empty,
+since the specification allows the record to stop early:</p>
+<pre><code>BCD                    Service tag, fixed
+002                    Version. 002, not 001: 001 makes the BIC mandatory, and no
+                       euro-area bank has needed a BIC for SEPA since Feb 2016
+1                      Character set, 1 = UTF-8
+SCT                    Identification: SEPA Credit Transfer, fixed
+&lt;BIC&gt;                 Optional under version 002; blank is valid
+&lt;name&gt;                Beneficiary name, max 70 characters
+&lt;IBAN&gt;                Validated before this line is written
+EUR&lt;amount&gt;           EUR plus the amount with two decimals, e.g. EUR120.50; blank
+                       if no amount, so the payer types one in
+&lt;purpose&gt;             Optional 4-letter ISO 20022 purpose code, e.g. GDDS
+&lt;reference&gt;           Structured creditor reference, max 35 chars
+&lt;remittance&gt;          Free remittance text, max 140 chars</code></pre>
+<p>Reference and remittance are mutually exclusive on purpose: EPC069-12 carries a structured reference or
+free text, never both, and the tool refuses a call that supplies both rather than guessing which one the
+banking app should show. The whole record is capped at 331 bytes; a long name plus a long remittance line
+pushes past it and the tool says by how much, before anything is drawn.</p>
+
+<h2>The IBAN is checked with ISO 7064 mod 97, digit by digit</h2>
+<p>An IBAN carries its own check: move the first four characters to the end, turn every letter into two
+digits (A=10 through Z=35), and the resulting number must leave a remainder of 1 when divided by 97. A
+German IBAN is 22 characters, which after that substitution is roughly a 30-digit number; a Maltese one
+is 31 characters, close to a 47-digit number. <code>Number()</code> in JavaScript cannot hold that many
+digits without rounding, and a rounded IBAN can still look plausible, so the check here runs digit by
+digit with a running remainder instead of ever forming the full number. Country and length are checked
+first against the ISO 13616 registry, since a code that is the wrong length for its country is not an
+IBAN no matter what its digits say. A single transposed digit fails the mod-97 check and the tool names
+the remainder it got instead of the 1 it needed, rather than drawing a code that would send a payment to
+nobody, or to somebody else.</p>
+
+<h2>Why the code is EUR only</h2>
+<p>EPC069-12 encodes a SEPA credit transfer specifically, and a SEPA transfer moves euros between
+accounts in the SEPA scheme. Passing a non-EUR currency is refused by name, and passing an IBAN from a
+country outside the SEPA scheme is refused too, even if the IBAN itself checks out, because the format has
+nowhere to put a currency or an exchange rate: the amount field is euro cents or it is nothing. A dollar or
+zloty invoice is paid the way it always was, by bank transfer with the account details printed as text; the
+guide for that is the <a href="/guides/invoice-pdf-from-chat">invoice PDF</a> itself, which never
+depended on this code to carry a payment.</p>
+
+<h2>invoice_payment_qr: the shared profile does the typing</h2>
+<p>Rather than pass the IBAN and name on every call, <code>invoice_payment_qr</code> reads them from the
+same shared business profile the invoice server's <code>business_set</code> already wrote once, so an
+IBAN typed correctly a single time is the IBAN on every invoice's payment code afterward. Give it an
+invoice number and it reads the total and currency from the invoice server's own store and uses the
+invoice number as the structured reference, so a client's bank statement shows the exact number to match
+against the invoice on file:</p>
+<pre><code>invoice_payment_qr { invoice_id: "INV-2026-0007" }
+-> reads IBAN + name from the shared profile
+-> reads total (say EUR 1,697.40) and currency from INV-2026-0007
+-> reference defaults to "INV-2026-0007"
+-> refuses outright if the invoice is not in EUR</code></pre>
+<p>An amount passed alongside an invoice id that disagrees with that invoice's stored total is not
+silently corrected to match the invoice: the code carries the amount actually given, and the response
+says so, on the theory that a caller who typed a different number on purpose should get that number, not
+a second guess.</p>
+
+<h2>SVG versus PNG: measured bytes</h2>
+<p>The same EPC payment record, drawn at five sizes, both ways:</p>
+<table><tr><th>requested size</th><th>PNG bytes</th><th>SVG bytes</th></tr>
+<tr><td>128 px</td><td>1,481</td><td>2,079</td></tr>
+<tr><td>256 px</td><td>2,186</td><td>2,079</td></tr>
+<tr><td>512 px</td><td>3,589</td><td>2,079</td></tr>
+<tr><td>1024 px</td><td>7,585</td><td>2,081</td></tr>
+<tr><td>2048 px</td><td>21,688</td><td>2,081</td></tr>
+</table>
+<p>An SVG stores the module grid, not pixels, so its size barely moves with the requested size; a PNG
+grows without limit as the pixel count grows. The two file types cross at roughly 200 px: below that a
+PNG is the smaller file, above it the SVG is, and the SVG is also the one that stays sharp when a printer
+scales an invoice template up. That is why SVG is the free-tier format here rather than a small PNG: for
+the thing most people do with a payment code, put it on a printed or PDF invoice, SVG is the better file
+outright, not a limited consolation version of PNG.</p>
+
+<h2>Code 128 or EAN-13: which one to ask for</h2>
+<p><code>barcode_create</code> draws Code 128, EAN-13, EAN-8 or UPC-A, and the four are not
+interchangeable. EAN-13, EAN-8 and UPC-A are retail symbologies with a fixed digit count and a check
+digit defined by the standard: they exist so a barcode scanner at a till can look a number up in a
+product catalogue, and a short input gets its check digit computed while a full-length input with the
+wrong check digit is refused rather than redrawn, since silently correcting it would print a label that
+scans as a different product. Reach for EAN-13 when the thing being labelled already has, or needs, a
+real retail GTIN meant for another system to recognise. Reach for Code 128 for everything else that
+just needs to be read back as the string you gave it: an internal shelf location, a work order number,
+a shipping reference, a serial number, anything alphanumeric or longer than 13 digits, since Code 128
+encodes the full ASCII range with no fixed length and no external registry to satisfy.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free gives 20 codes a calendar month across every tool, SVG output for all of them, and every
+symbology and QR kind: WiFi, vCard, SEPA payment codes and all four barcode types. Pro ($19 once, or $39
+for the whole collection, lifetime) adds PNG output from 32 to 4000 px and <code>barcode_batch</code> for
+up to 500 rows in one call. Full detail on <a href="/s/barcode">the MCP Barcode page</a> and the general
+<a href="/guides/mcp-server-free-vs-pro">free versus Pro</a> comparison.</p>
+${FOOT}`,
+    faq: [
+      { q: "What exactly does a banking app read when it scans the code?", a: "Eleven plain-text lines joined by newlines, in a fixed order: BCD, version 002, character set, SCT, an optional BIC, the beneficiary name, the IBAN, EUR plus the amount, an optional purpose code, and a structured reference or free remittance text, never both. The whole record is capped at 331 bytes." },
+      { q: "Can I put a payment QR code on a USD or PLN invoice?", a: "No. EPC069-12 encodes a SEPA credit transfer, which only moves euros, so a non-EUR currency and an IBAN from outside the SEPA scheme are both refused, even if the IBAN itself is valid. A non-EUR invoice is still paid by bank transfer with the account details printed as plain text." },
+      { q: "How is the IBAN checked?", a: "ISO 7064 mod 97, computed digit by digit rather than as one large number, because a long IBAN becomes too many digits for JavaScript's Number type to hold without rounding into a different, still-plausible value. Country and length are checked against the ISO 13616 registry first." },
+      { q: "Do I have to type my IBAN into every payment code?", a: "No, if you use invoice_payment_qr. It reads the IBAN and name from the shared business profile the invoice server's business_set already wrote, and the amount, currency and reference from the invoice itself when you give it an invoice number." },
+      { q: "Should I use EAN-13 or Code 128 for an internal label?", a: "Code 128, for almost anything that is not a retail product needing a real GTIN. It has no fixed length or check-digit standard tying it to a catalogue, and it encodes the full ASCII range, so a work order number, shelf location or serial number all fit it directly. EAN-13 is for a number meant to be looked up in a retail system." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes and estimates.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates and SEPA payment QR codes.",
 };

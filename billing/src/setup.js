@@ -146,8 +146,9 @@ export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
  * five child processes and has no single connector URL. */
+const WEB_EXCLUDED = ["office-suite"];
 export function serversFor(clientId) {
-  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => id !== "office-suite") : SERVER_ORDER;
+  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => !WEB_EXCLUDED.includes(id)) : SERVER_ORDER;
 }
 
 /** Servers. Prompts are lines from each README's "What you can say" table. */
@@ -476,6 +477,24 @@ export const SETUP_SERVERS = {
     pro: "Unlimited open quotes, quote_pdf, quote_report with the win rate and the value still open.",
     measured: "A quote of EUR 1,000.00 net is issued at the profile's 23% default rate, so the client sees EUR 1,230.00. The default rate is then changed to 8% before the client answers. quote_accept still invoices EUR 1,230.00, tax_lines[0].rate === 23, because it copies the quote's stored lines instead of recomputing them against today's profile.",
   },
+  barcode: {
+    title: "MCP Barcode",
+    slug: "barcode",
+    toolCount: "10 tools",
+    pkg: "@theluckystrike/mcp-barcode",
+    sPage: "/s/barcode",
+    hosted: "barcode",
+    tagline: "QR codes and barcodes drawn locally: SEPA payment codes, WiFi, vCard, Code 128, EAN-13.",
+    does: "It draws a QR code from text or a URL, a WiFi join code, a vCard, an EPC069-12 SEPA payment code checked against the shared business profile's IBAN, and Code 128, EAN-13, EAN-8 or UPC-A with the check digit computed or verified. No network call of any kind.",
+    prompts: [
+      ["Make a QR code for this URL.", "qr_create"],
+      ["Put a payment QR code on invoice INV-2026-0007.", "invoice_payment_qr"],
+      ["Give this SKU a Code 128 barcode.", "barcode_create"],
+    ],
+    free: "20 codes a calendar month, every symbology and QR kind, SVG output.",
+    pro: "PNG output up to 4000 px, and barcode_batch for up to 500 rows a call.",
+    measured: "The first Code 128 table transcription was missing one row, silently shifting 67 of 107 values to their neighbour: a clean-looking barcode that scanned as the wrong string. Comparing against an independent encoder caught it; every table is now pinned against that comparison in the test suite.",
+  },
 };
 
 export const SERVER_ORDER = Object.keys(SETUP_SERVERS);
@@ -629,6 +648,14 @@ const ANGLE = {
     windsurf: "Eleven tools against Cascade's ceiling of 100, and a quote is written a handful of times a week rather than polled continuously, so it costs little to leave enabled alongside the invoice server it hands off to.",
     cline: "quote_list, quote_get, quote_report and quote_send_text are reads or produce text only, and are safe to auto-approve; leave quote_create, quote_update, quote_accept and quote_decline behind a click, since each one changes what the quote says or spends an id.",
   },
+  barcode: {
+    "claude-desktop": "A generated SVG comes back as an inline preview in the reply, which is the exact form you are about to paste into a flyer, a proposal or an invoice template already open in another window, and the 4000 px PNG ceiling on Pro covers a print job without this window ever needing a filesystem picker.",
+    "claude-code": "The register that counts the free tier's 20 codes a month lives under one data directory per machine, so `claude mcp add --scope project` still shares that same monthly allowance across every project on the box; it is per install, not per repo.",
+    cursor: "Ask for the SEPA payment code on an invoice right after asking for the invoice itself, in the same chat: invoice_payment_qr reads the IBAN from the shared business profile and the total from the invoice you just created, so nothing gets retyped between the two calls.",
+    vscode: "In agent mode, `barcode_create` and `qr_create` are tools the agent can reach mid-task the same way it reaches a file write, so \"generate a Code 128 for every SKU in this CSV and save the SVGs next to it\" is a loop the agent can run without a script written for the occasion.",
+    windsurf: "Ten tools against Cascade's ceiling of 100, and a code is generated a handful of times a session rather than polled continuously, so leaving it enabled costs little even alongside every other server in this collection.",
+    cline: "code_list and license_status are reads and safe to auto-approve; leave the eight drawing tools and license_activate behind a click, since each one writes a file to disk or spends one of this month's 20 free codes.",
+  },
 };
 
 /** One sentence per server for the claude-web (claude.ai / Claude Desktop connector) client.
@@ -651,6 +678,7 @@ const WEB_ANGLE = {
   image: "The resized or watermarked file comes back as a one-hour download link rather than a path, the same trade every writing tool makes on the hosted route, so the practical habit is downloading it in the same session you ask for it.",
   quotes: "The quote and the invoice it becomes live in the same hosted store behind the token, so quote_accept writes the invoice the invoice connector then lists; quote_pdf comes back as a print-to-PDF HTML link, since there is no PDF renderer on the hosted route.",
   "bank-statement": "There is no local CSV to point at over a browser connector, so the statement goes in through bank_upload first, by name, and the export comes back as a one-hour download link; the expense ledger it reconciles against is the same one behind the token.",
+  barcode: "SVG still comes back inline, since it is text, but PNG becomes a one-hour download link instead of a path on disk, and invoice_payment_qr reads the IBAN from the same shared business profile behind the token that the invoice connector already wrote.",
 };
 
 const FAQ = {
@@ -860,7 +888,7 @@ export function setupPage(clientId, serverId) {
   const c = CLIENTS[clientId];
   const s = SETUP_SERVERS[serverId];
   if (!c || !s) return null;
-  if (clientId === "claude-web" && serverId === "office-suite") return null;
+  if (clientId === "claude-web" && WEB_EXCLUDED.includes(serverId)) return null;
   const canonical = `${BASE}/setup/${clientId}/${serverId}`;
   const title = `${s.title} in ${c.name}`;
 

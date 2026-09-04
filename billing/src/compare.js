@@ -6,7 +6,7 @@
 
 export const COMPARE_INDEX = {
   title: "MCP server comparisons: ours against the closest alternatives",
-  description: "Seventeen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
+  description: "Eighteen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
 };
 
 const t = (rows) =>
@@ -1353,6 +1353,84 @@ invoice</a>.</p>`,
       { q: "Which one can I try without paying anything?", a: "Ours, unrestricted for 5 open quotes at a time with no account. SendQuoteNow has a free tier too, capped at 5 documents a month shared across quotes, invoices and purchase orders. estimate-invoice's MCP connection is not available on its free plan at all; it requires an existing paid subscription." },
       { q: "What does each cost to keep using?", a: "Ours is $19 once, lifetime, or $39 for the whole collection. SendQuoteNow is $4.99/month for unlimited documents, or per-call x402 payments with no subscription. estimate-invoice bundles the MCP feature into its own paid tiers at a price its feature page does not state." },
       { q: "Where can I read the competitor facts myself?", a: "SendQuoteNow's tools, pricing and account model come from its website at sendquotenow.com and its official registry entry for com.sendquotenow/quote-engine. estimate-invoice's tools, OAuth requirement and plan gating come from its feature page at sodatsu-mitsumori.net/features/external-ai-mcp/ and its registry entry for net.sodatsu-mitsumori/estimate-invoice. All read on 2026-09-04." },
+    ],
+  },
+
+  barcode: {
+    title: "MCP Barcode vs qrcode and Barcode Generator API: which MCP server to pick",
+    description: "A local, no-network code drawer against two hosted MCP servers, one wrapping a free public QR API, the other charging per call in USDC. Tool counts, accounts required, and where the SEPA payment and check-digit logic lives.",
+    html: `<h1>MCP Barcode vs qrcode and Barcode Generator API: which MCP server to pick</h1>
+<p>All three let a chat turn "make me a QR code" or "give this a barcode" into a scannable image.
+<a href="https://github.com/pipeworx-io/mcp-qrcode">qrcode</a>
+(<code>io.github.pipeworx-io/qrcode</code> on the official registry) is one pack of a larger hosted
+gateway, wrapping the free public <code>api.qrserver.com</code> service behind a remote MCP endpoint.
+<a href="https://github.com/Br0ski777/barcode-generator-x402">Barcode Generator API</a>
+(<code>io.github.Br0ski777/barcode-generator</code>) is a single hosted tool that draws EAN-13, UPC-A,
+Code 128 and Code 39, paid per call in USDC over the x402 protocol, with no account or API key at all.
+Ours draws QR codes, WiFi and vCard codes, SEPA payment codes and four barcode symbologies locally, with
+no network call of any kind, and it is the only one of the three that validates an IBAN or a check digit
+before drawing rather than just encoding whatever text or number it is given.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["qrcode (pipeworx)", "Barcode Generator API"], body: [
+  ["Tools", "10 (qr_create through license_activate)", "create_qr, read_qr, plus roughly 30 shared Pipeworx gateway meta-tools listed on the same endpoint", "One tool, utility_generate_barcode"],
+  ["Symbologies", "QR, WiFi, vCard, SEPA payment (EPC069-12), Code 128, EAN-13, EAN-8, UPC-A", "QR only (create and decode)", "Code 128, Code 39, EAN-13, UPC-A; no QR"],
+  ["Account or key needed", "No. No account, no key", "No key for the pack itself, but every call also reaches the shared gateway's meta-tool set", "No signup, no API key; pays per call in USDC on Base via x402"],
+  ["Where the data lives", "Local JSON register in ~/.local/share/mcp-servers/barcode/, nothing sent anywhere", "Text or URL sent to Pipeworx's gateway, which calls api.qrserver.com on your behalf", "Data sent to Br0ski777's hosted endpoint (klymax402.com) for every call"],
+  ["Payment code validation", "IBAN checked with ISO 7064 mod 97 before drawing; check digit computed or verified on every barcode symbology", "Not applicable; the tool only makes and reads plain QR images", "Not applicable; no check-digit verification is documented, only generation from whatever data is given"],
+  ["Cost", "Free tier, 20 codes a month; Pro $19 once, or $39 for the whole collection", "Free (wraps a free public API); shares gateway usage with every other Pipeworx pack", "$0.003 per barcode, pay-per-call via x402 USDC, no free tier"],
+  ["Licence", "MIT", "MIT", "MIT"],
+  ["Works with no network", "Yes", "No, every tool is a hosted API call", "No, every tool is a hosted, paid API call"],
+] })}
+
+<h2>When to pick qrcode</h2>
+<p>Pick it if a QR code is one of many things you want from a single always-on gateway connection: the
+same Pipeworx endpoint that serves <code>create_qr</code> also answers unrelated questions through
+<code>ask_pipeworx</code>, reaching over 1,476 other data sources without adding a second server. The
+README states plainly that connecting to even one pack lists roughly 30 shared meta-tools alongside the
+pack's own two, so the actual tool count on that connection is larger than the QR feature alone. It has
+no SEPA payment code, no barcode symbologies and no read/write validation beyond decoding an existing
+image.</p>
+
+<h2>When to pick Barcode Generator API</h2>
+<p>Pick it if you want to pay per call with no account and no subscription at all: x402 handles the
+402-sign-retry cycle automatically for an x402-aware client, at $0.003 a barcode, and there is genuinely
+nothing to sign up for. It covers the same four linear symbologies split between EAN-13/UPC-A on one side
+and Code 128/Code 39 on the other, drawn server-side and returned as base64 SVG. It has no QR support at
+all, and its own docs name the boundary explicitly: "Not for: QR codes."</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the codes carry money or a real product identity and getting one wrong is expensive: a
+SEPA payment code that goes to the wrong account, or a barcode that scans as a different product because
+a check digit was silently corrected instead of refused. Neither competitor validates an IBAN or verifies
+a check digit; ours refuses a mismatched EAN-13 by name rather than redrawing it, and refuses a payment
+code whose IBAN fails the mod-97 check rather than encoding a typo as if it were an account number. It is
+also the only one of the three with no network call at all, so a client's own invoice details, WiFi
+password or IBAN never leaves the machine generating the code.</p>
+
+<h2>What we measured</h2>
+<p>The barcode package's adversarial suite covers 25 probes: a wrong EAN-13 check digit, a non-EUR
+currency on a SEPA payment code, an IBAN with one digit changed, an out_path that is a directory, and two
+processes racing for the last few free slots in one month. That race caught a real defect before ship: 23
+codes were drawn against a stated allowance of 20, fixed by making the count and the write one atomic
+step. Neither competitor's public material documents an adversarial test count of any kind.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add barcode -- npx -y @theluckystrike/mcp-barcode</code></pre>
+<p>qrcode (remote, no key):</p>
+<pre><code>claude mcp add-json qrcode '{"type":"http","url":"https://gateway.pipeworx.io/qrcode/mcp"}'</code></pre>
+<p>Barcode Generator API (remote, x402 client required to pay the per-call price):</p>
+<pre><code>claude mcp add-json barcode-generator '{"type":"http","url":"https://barcode-generator.api.klymax402.com/mcp"}'</code></pre>
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer
+walkthrough for the payment code specifically is in
+<a href="/guides/sepa-payment-qr-codes-on-invoices-from-chat">SEPA payment QR codes on invoices</a>.</p>`,
+    faq: [
+      { q: "Can I run mcp-barcode alongside qrcode or Barcode Generator API?", a: "Yes. Tool names do not collide: ours are qr_create, barcode_create and so on; the other two expose their own hosted endpoints under their own names. Nothing is shared between them, and none of the three talks to another's data." },
+      { q: "Which one makes a SEPA payment QR code?", a: "Only ours. qrcode makes plain QR images from text or a URL and has no payment format. Barcode Generator API has no QR support of any kind, only linear barcodes." },
+      { q: "Which one is free to use?", a: "Ours has a free tier of 20 codes a month with every symbology available. qrcode's pack itself is free, since it wraps a free public API, though every call also reaches the shared Pipeworx gateway's meta-tool set. Barcode Generator API has no free tier at all: every call costs $0.003 in USDC." },
+      { q: "Do either of the other two check a barcode's check digit before drawing it?", a: "Neither documents doing so. Ours refuses a full-length EAN-13, EAN-8 or UPC-A whose check digit is wrong, naming the correct one, rather than drawing the code the caller asked for and letting it scan as a different product." },
+      { q: "Where can I read the competitor facts myself?", a: "qrcode's tools, gateway behaviour and meta-tool count come from its README at github.com/pipeworx-io/mcp-qrcode and its registry entry for io.github.pipeworx-io/qrcode. Barcode Generator API's tool, pricing and x402 details come from its README at github.com/Br0ski777/barcode-generator-x402 and its registry entry for io.github.Br0ski777/barcode-generator. Both read on 2026-09-04." },
     ],
   },
 };
