@@ -59,7 +59,7 @@ const monthOf = (d = new Date()) => d.toISOString().slice(0, 7);
  * read the count before either wrote. The row is therefore appended by the same critical
  * section that reads the count, and the caller releases it if the file write then fails.
  */
-async function reserve(n: number, feature: string, rec: Omit<CodeRecord, "id" | "created">): Promise<{ error?: string; id?: string }> {
+async function reserve(n: number, feature: string, toolName: string, rec: Omit<CodeRecord, "id" | "created">): Promise<{ error?: string; id?: string }> {
   const id = randomBytes(4).toString("hex");
   return locked(() => {
     const rows = getCodes();
@@ -69,7 +69,7 @@ async function reserve(n: number, feature: string, rec: Omit<CodeRecord, "id" | 
         error:
           `The free tier generates ${FREE_PER_MONTH} codes per calendar month and ${used} have been generated in ${monthOf()}` +
           `${n > 1 ? `, so a batch of ${n} does not fit` : ""}. The count resets on the 1st. Pro has no limit.` +
-          `\n\n${gate.upgradeText(feature)}`,
+          `\n\n${gate.upgradeText(feature, toolName)}`,
       };
     }
     addCode({ ...rec, id, created: new Date().toISOString() });
@@ -112,10 +112,10 @@ async function recordDone(rec: Omit<CodeRecord, "id" | "created">): Promise<stri
 
 const formatArg = z.enum(["svg", "png"]).optional().describe("svg (default, free) or png (Pro)");
 
-function tierCheckFormat(format: Format, feature: string): string | null {
+function tierCheckFormat(format: Format, feature: string, toolName: string): string | null {
   if (format !== "png" || gate.isPro()) return null;
   return `PNG output is a Pro feature; the free tier writes SVG, which scans and prints at any size because it has no resolution. ` +
-    `Ask for format: "svg" and this is free.\n\n${gate.upgradeText(feature)}`;
+    `Ask for format: "svg" and this is free.\n\n${gate.upgradeText(feature, toolName)}`;
 }
 
 interface Written { where: string; bytes: number }
@@ -196,9 +196,9 @@ type QrShape = {
   error_correction?: Ecc; size?: number; margin?: number; format?: Format; out_path?: string; overwrite?: boolean;
 };
 
-async function qrTool(text: string, a: QrShape, kind: string, feature: string, extra = "") {
+async function qrTool(text: string, a: QrShape, kind: string, feature: string, toolName: string, extra = "") {
   const format: Format = a.format ?? "svg";
-  const tier = tierCheckFormat(format, feature);
+  const tier = tierCheckFormat(format, feature, toolName);
   if (tier) return limit(tier);
   const bad = qrGuard(text) ?? sizeGuard(a.size);
   if (bad) return fail(bad);
@@ -209,7 +209,7 @@ async function qrTool(text: string, a: QrShape, kind: string, feature: string, e
   const target = a.out_path ? checkOutPath(a.out_path, format, a.overwrite === true) : undefined;
   const body = await renderQr(text, { ecc, size, margin, format });
 
-  const r = await reserve(1, feature, { kind, symbology: "qr", summary: summarize(text), format, out_path: target });
+  const r = await reserve(1, feature, toolName, { kind, symbology: "qr", summary: summarize(text), format, out_path: target });
   if (r.error) return limit(r.error);
   let w: Written | { inline: string };
   try {
@@ -235,7 +235,7 @@ server.registerTool("qr_create", {
   title: "QR code",
   description: "Call this tool to turn text or a URL into a QR code, as an SVG returned inline or written to out_path, or as a PNG at a chosen pixel size (Pro).",
   inputSchema: { text: z.string().describe("The text or URL the code carries"), ...qrShape },
-}, async (a: QrShape & { text: string }) => wrap(() => qrTool(a.text, a, "text", "qr_create PNG output")));
+}, async (a: QrShape & { text: string }) => wrap(() => qrTool(a.text, a, "text", "qr_create PNG output", "qr_create")));
 
 server.registerTool("qr_wifi", {
   title: "WiFi QR code",
@@ -248,7 +248,7 @@ server.registerTool("qr_wifi", {
     ...qrShape,
   },
 }, async (a: QrShape & { ssid: string; password?: string; auth?: "WPA" | "WEP" | "nopass"; hidden?: boolean }) =>
-  wrap(() => qrTool(wifiPayload(a), a, "wifi", "qr_wifi PNG output", ` Network "${a.ssid}".`)));
+  wrap(() => qrTool(wifiPayload(a), a, "wifi", "qr_wifi PNG output", "qr_wifi", ` Network "${a.ssid}".`)));
 
 server.registerTool("qr_vcard", {
   title: "Contact QR code",
@@ -265,7 +265,7 @@ server.registerTool("qr_vcard", {
     ...qrShape,
   },
 }, async (a: QrShape & Parameters<typeof vcardPayload>[0]) =>
-  wrap(() => qrTool(vcardPayload(a), a, "vcard", "qr_vcard PNG output", ` Contact "${a.name}".`)));
+  wrap(() => qrTool(vcardPayload(a), a, "vcard", "qr_vcard PNG output", "qr_vcard", ` Contact "${a.name}".`)));
 
 server.registerTool("qr_payment_sepa", {
   title: "SEPA payment QR code",
@@ -297,7 +297,7 @@ server.registerTool("qr_payment_sepa", {
   const epc = epcPayload({ ...a, iban, name });
   const amount = epc.amount === undefined ? "no amount (the payer types it)" : `EUR ${epc.amount.toFixed(2)}`;
   const from = a.iban && a.name ? "" : " Beneficiary taken from the shared business profile.";
-  return qrTool(epc.text, a, "sepa", "qr_payment_sepa PNG output", ` Pay ${name} at ${epc.iban}, ${amount}.${from}`);
+  return qrTool(epc.text, a, "sepa", "qr_payment_sepa PNG output", "qr_payment_sepa", ` Pay ${name} at ${epc.iban}, ${amount}.${from}`);
 }));
 
 /**
@@ -375,7 +375,7 @@ server.registerTool("invoice_payment_qr", {
   const reference = a.reference ?? inv?.number ?? a.invoice_id;
   const epc = epcPayload({ iban, name, amount, remittance: reference });
   const who = inv?.client ? ` for ${inv.client}` : "";
-  return qrTool(epc.text, a, "invoice", "invoice_payment_qr PNG output",
+  return qrTool(epc.text, a, "invoice", "invoice_payment_qr PNG output", "invoice_payment_qr",
     ` ${reference ?? "no reference"}${who}: pay ${name} at ${epc.iban}, ` +
     `${amount === undefined ? "no amount (the payer types it)" : `EUR ${amount.toFixed(2)}`}.${note}`);
 }));
@@ -411,14 +411,14 @@ server.registerTool("barcode_create", {
   inputSchema: { symbology: symbologyArg, value: z.string().describe("The data to encode. Digits only for EAN and UPC"), ...linearShape },
 }, async (a: LinearShape & { symbology: Symbology; value: string }) => wrap(async () => {
   const format: Format = a.format ?? "svg";
-  const tier = tierCheckFormat(format, "barcode_create PNG output");
+  const tier = tierCheckFormat(format, "barcode_create PNG output", "barcode_create");
   if (tier) return limit(tier);
   const enc = encodeLinear(a.symbology, a.value);
   const target = a.out_path ? checkOutPath(a.out_path, format, a.overwrite === true) : undefined;
   const o = linearOptions(a);
   const body = format === "svg" ? { svg: linearSvg(enc, o) } : { png: await linearPng(enc, o) };
 
-  const r = await reserve(1, "barcode_create", { kind: "barcode", symbology: enc.symbology, summary: summarize(enc.value), format, out_path: target });
+  const r = await reserve(1, "barcode_create", "barcode_create", { kind: "barcode", symbology: enc.symbology, summary: summarize(enc.value), format, out_path: target });
   if (r.error) return limit(r.error);
   let w: Written | { inline: string };
   try {
@@ -456,7 +456,7 @@ server.registerTool("barcode_batch", {
   if (!gate.isPro()) {
     return limit(
       `barcode_batch is a Pro feature. The free tier draws ${FREE_BATCH} code per call with barcode_create or qr_create, ` +
-      `up to ${FREE_PER_MONTH} a month.\n\n${gate.upgradeText("barcode_batch")}`,
+      `up to ${FREE_PER_MONTH} a month.\n\n${gate.upgradeText("barcode_batch", "barcode_batch")}`,
     );
   }
   const items = a.items ?? [];
