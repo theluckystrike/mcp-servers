@@ -1,0 +1,135 @@
+{
+  "generated_at": "2026-09-04",
+  "cap_minutes": 30,
+  "method": {
+    "registry_probe": "Single bounded GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, 20s timeout, no pagination beyond the first page, sequential (no background loops). count = servers.length on page 1; capped=true when the page was full (100) and metadata.nextCursor was present. our_rank = 1-based index of the first row whose name matches /theluckystrike/i on that page (null if none on page 1). Three tokens (image, bank, kanban) additionally got one full-name confirmation probe (search=theluckystrike/<slug>) plus a two-page full listing of search=theluckystrike to settle whether the server exists in the registry AT ALL, not just off page 1 for a crowded token -- this was necessary because those three came back with zero matches on every token tried.",
+    "gsc": "python3 + google-auth service account /Users/mike/.loop-creds/gsc-sa-key.json (client_email zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com), scope webmasters.readonly, site sc-domain:zovo.one (same property used in docs/GSC_RESULT.md). sitemaps().list for submitted/indexed counts; searchanalytics().query with dimensionFilterGroups page contains 'mcp.zovo.one', dimensions [page] and [query], last 7 full days (2026-08-28..2026-09-03) and a 28-day cross-check (2026-08-07..2026-09-03).",
+    "candidates": "empty_slot_score = 100/(1+count) from a bounded single-page probe per token (same style as registry_probe). fit (0-1) = qualitative pairing with the 16-server suite (time/price/spreadsheet/invoice/kanban/expense/currency/docx/clauses/resume/pdf/calendar/timezone/recurring/image/bank-statement/office-suite). buildability (0-1) = pure-TypeScript-no-network feasibility gate. score = empty_slot_score x fit x buildability."
+  },
+
+  "part1_registry_reprobe": {
+    "primary_tokens": {
+      "bank":        { "count": 100, "capped": true,  "our_rank": null, "note": "capped page1, no match; full-name probe confirms bank-statement server is NOT in the registry at all (0 rows for search=theluckystrike/bank)" },
+      "calendar":    { "count": 94,  "capped": false, "our_rank": 71,   "our_name": "io.github.theluckystrike/calendar" },
+      "clause":      { "count": 6,   "capped": false, "our_rank": 3,    "our_name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx" },
+      "currency":    { "count": 23,  "capped": false, "our_rank": 14,   "our_name": "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless" },
+      "docx":        { "count": 35,  "capped": false, "our_rank": 21,   "our_name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx" },
+      "expense":     { "count": 39,  "capped": false, "our_rank": 15,   "our_name": "io.github.theluckystrike/expense-tracker-receipts-mileage" },
+      "image":       { "count": 100, "capped": true,  "our_rank": null, "note": "capped page1, no match; full-name probe confirms image server is NOT in the registry at all (0 rows for search=theluckystrike/image)" },
+      "invoice":     { "count": 100, "capped": true,  "our_rank": 82,   "our_name": "io.github.theluckystrike/invoice" },
+      "kanban":      { "count": 5,   "capped": false, "our_rank": null, "note": "only 5 total results and none are ours; full-name probe confirms kanban server is NOT in the registry at all (0 rows for search=theluckystrike/kanban), despite servers/kanban/server.json being at v0.6.0 locally" },
+      "pdf":         { "count": 100, "capped": true,  "our_rank": null, "note": "capped page1, no match on this token, but the server IS registered elsewhere in the alphabet (confirmed present in the full theluckystrike listing as pdf-merge-split-stamp-extract-pages) -- crowded-token miss, not a missing registration" },
+      "price":       { "count": 100, "capped": true,  "our_rank": 98,   "our_name": "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price" },
+      "recurring":   { "count": 4,   "capped": false, "our_rank": 1,    "our_name": "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders" },
+      "resume":      { "count": 21,  "capped": false, "our_rank": 16,   "our_name": "io.github.theluckystrike/resume-cover-letter-docx-generator" },
+      "spreadsheet": { "count": 28,  "capped": false, "our_rank": 13,   "our_name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv" },
+      "time":        { "count": 100, "capped": true,  "our_rank": null, "note": "capped page1, no match on this token, but the server IS registered (confirmed present in the full theluckystrike listing as time-tracker-timesheet-billable-hours) -- crowded-token miss, not a missing registration" },
+      "timezone":    { "count": 19,  "capped": false, "our_rank": 13,   "our_name": "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics" }
+    },
+    "new_tokens_kanban_image_bank": {
+      "board":        { "count": 100, "capped": true,  "our_rank": null },
+      "tasks":        { "count": 55,  "capped": false, "our_rank": null },
+      "resize":       { "count": 3,   "capped": false, "our_rank": null },
+      "compress":     { "count": 14,  "capped": false, "our_rank": null },
+      "watermark":    { "count": 27,  "capped": false, "our_rank": null },
+      "thumbnail":    { "count": 2,   "capped": false, "our_rank": null },
+      "statement":    { "count": 23,  "capped": false, "our_rank": null },
+      "csv":          { "count": 31,  "capped": false, "our_rank": 18,  "our_name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv" },
+      "transactions": { "count": 7,   "capped": false, "our_rank": null },
+      "budget":       { "count": 47,  "capped": false, "our_rank": null },
+      "reconcile":    { "count": 4,   "capped": false, "our_rank": null }
+    },
+    "registry_existence_check": {
+      "method": "full-name substring probe (search=theluckystrike/<slug>) plus two-page paginated listing of search=theluckystrike (100+35=135 rows across all versions, 32 unique current names) to enumerate every registered theluckystrike name",
+      "not_registered_at_all": ["bank-statement", "image", "kanban"],
+      "registered_confirmed": ["time-tracker (+ 2 variants)", "price-tracker (+ office-suite alias)", "spreadsheet (+ sheets variant)", "invoice (+ 2 variants)", "expense-tracker (+ expenses variant)", "currency (+ exchange-fx variant)", "docx (+ documents variant)", "clauses (as contract-clause-library... + agreement variant)", "resume (+ application variant)", "pdf (+ pdfs variant)", "calendar (+ availability variant)", "timezone", "recurring (+ retainer variant)", "office-suite"],
+      "interpretation": "3 of the 16 built servers (bank-statement, image, kanban) have zero registry presence under any name or version, not merely a crowded-token miss. All three are new v0.6.0-cycle servers; the other agents' concurrent v0.6.0 release/publish work (visible in git status as in-flight bundle changes) had not reached mcp-publisher for these three at probe time."
+    },
+    "findable_share": {
+      "primary_tokens_page1_match_rate": "11 of 16 (68.75%)",
+      "primary_tokens_weighted_mean_p": 0.393,
+      "weighted_p_method": "p = min(1, 10/our_rank) if matched on page1 else 0, mean over the 16 primary-token slots (same formula as data/organic.json)",
+      "primary_tokens_weighted_detail": {"calendar":0.141,"clause":1.0,"currency":0.714,"docx":0.476,"expense":0.667,"invoice":0.122,"price":0.102,"recurring":1.0,"resume":0.625,"spreadsheet":0.769,"timezone":0.769,"bank":0,"image":0,"kanban":0,"pdf":0,"time":0},
+      "combined_27_slot_match_rate": "12 of 27 (44.4%) across primary + kanban/image/bank new-token probes"
+    }
+  },
+
+  "part2_search_console": {
+    "site": "sc-domain:zovo.one",
+    "sitemap_mcp_zovo_one": {
+      "gsc_last_submitted": "2026-09-03T08:42:41.288Z",
+      "gsc_reported_submitted": 129,
+      "gsc_reported_indexed": 0,
+      "live_sitemap_url_count_now": 179,
+      "gap": "50 URLs added to the live sitemap since the last GSC submission was recorded (129 -> 179); sitemap has not been resubmitted since. Task brief's figure of 178 is 1 off the live count measured now (179), consistent with one more page added since that figure was written.",
+      "note_indexed_0": "every sitemap on the whole sc-domain:zovo.one property reports indexed=0 in this API response (checked across all 9 listed sitemaps, including the 714-URL zovo.one root index), so this is either a site-wide indexing-pipeline lag or a known API-field quirk, not something specific to mcp.zovo.one"
+    },
+    "impressions_clicks_7d": {
+      "window": ["2026-08-28", "2026-09-03"],
+      "pages_with_any_impression": 0,
+      "queries_with_any_impression": 0,
+      "raw": "searchanalytics().query dimensionFilterGroups page contains mcp.zovo.one returned rows:[] for both [page] and [query] dimensions"
+    },
+    "impressions_clicks_28d_cross_check": {
+      "window": ["2026-08-07", "2026-09-03"],
+      "pages_with_any_impression": 0,
+      "note": "confirms the 7-day zero is not a short-window artifact -- mcp.zovo.one has zero measured Google Search impressions across the full available recent history in this property"
+    },
+    "guides_compare_setup_pages_with_impressions": "none -- 0 of the 179 live URLs (20 guides, 16 compare, 143 setup pages) show any impression in the last 7 or 28 days"
+  },
+
+  "part3_next_server_candidates": {
+    "tokens_probed_new": {
+      "markdown": {"count":100,"capped":true}, "notes": {"count":69}, "todo": {"count":33},
+      "contacts": {"count":32}, "crm": {"count":75}, "email": {"count":100,"capped":true},
+      "templates": {"count":1}, "quotes": {"count":21},
+      "receipts": {"count":17,"our_rank":4,"note":"already held by expense-tracker"},
+      "mileage": {"count":13,"our_rank":1,"note":"already held by expense-tracker"},
+      "payroll": {"count":8}, "habit": {"count":21}, "journal": {"count":26},
+      "ocr": {"count":71}, "qr": {"count":77}, "barcode": {"count":9},
+      "epub": {"count":6}, "translate": {"count":12}, "zip": {"count":14},
+      "budget": {"count":47, "note": "reused from part1 new-token probe, same run"}
+    },
+    "scoring": [
+      {"intent":"templates","count":1,"empty_slot_score":50.0,"fit":0.9,"buildability":1.0,"score":45.0},
+      {"intent":"payroll","count":8,"empty_slot_score":11.1,"fit":0.8,"buildability":0.6,"score":5.3},
+      {"intent":"epub","count":6,"empty_slot_score":14.3,"fit":0.4,"buildability":0.9,"score":5.1},
+      {"intent":"barcode","count":9,"empty_slot_score":10.0,"fit":0.5,"buildability":1.0,"score":5.0},
+      {"intent":"zip","count":14,"empty_slot_score":6.7,"fit":0.6,"buildability":1.0,"score":4.0},
+      {"intent":"quotes/estimate","count":21,"empty_slot_score":4.55,"fit":0.9,"buildability":1.0,"score":4.1,"note":"R5 rank 2 candidate, still unbuilt; scores close to zip"},
+      {"intent":"habit","count":21,"empty_slot_score":4.55,"fit":0.5,"buildability":1.0,"score":2.3},
+      {"intent":"journal/notes","count":26,"empty_slot_score":3.7,"fit":0.5,"buildability":1.0,"score":1.85},
+      {"intent":"translate","count":12,"empty_slot_score":7.1,"fit":0.4,"buildability":0.3,"score":0.86,"note":"buildability gated down hard: real translation without network/a model is not achievable in pure TS"}
+    ],
+    "top5": [
+      {"rank":1,"intent":"templates","spec":"Pure-TS library of parameterized email/proposal/contract merge-field templates (no network) that plugs into invoice/docx/resume/clauses output; token 'templates' has 1 registry result, the emptiest slot measured across R1-R6."},
+      {"rank":2,"intent":"payroll","spec":"Simplified US/UK payroll and withholding calculator using bundled static tax-bracket tables (no network), pairing time-tracker hours with expense-tracker/invoice for a small-business finance bundle; token count 8."},
+      {"rank":3,"intent":"epub","spec":"EPUB3 packager: pure-TS zip+XHTML assembly from markdown or docx input, no network dependency; token count 6, thin suite-fit but a very rare slot."},
+      {"rank":4,"intent":"barcode","spec":"Barcode/QR generator (pure-JS raster/SVG, Code128 + EAN + QR, no native deps) that complements the image server's resize/convert/compress pipeline; token count 9."},
+      {"rank":5,"intent":"zip","spec":"Archive/zip/unzip utility (fflate, pure JS, no native deps) for bundling outputs produced by the docx/pdf/image servers; token count 14."}
+    ]
+  },
+
+  "part4_docker_cline_status": {
+    "docker_catalog_pr_4892": {
+      "state": "open",
+      "mergeable": true,
+      "comments": 0,
+      "review_comments": 0,
+      "reviews": 0,
+      "labels": [],
+      "changed_files": 32,
+      "updated_at": "2026-09-04T01:23:16Z",
+      "note": "updated_at is today and changed_files (32) is consistent with roughly 8 servers x 4 files, matching organic.json's 2026-09-03 note that the PR grew from 4 to 8 servers -- but the PR body text still only lists the original four (time-tracker, price-tracker, spreadsheet, invoice), so the description is stale relative to the diff. No comments or reviews from a maintainer yet."
+    },
+    "cline_marketplace_issues": {
+      "all_open": true,
+      "count": 8,
+      "issues": [2397,2398,2399,2400,2401,2408,2409,2410],
+      "comments_per_issue": 0,
+      "labels_per_issue": [],
+      "last_updated_range": ["2026-09-02T13:28:10Z", "2026-09-03T02:39:29Z"],
+      "note": "unchanged since the R3/organic.json check on 2026-09-03: 0 human review activity on any of the 8 submission issues."
+    }
+  }
+}
