@@ -16,11 +16,11 @@ import { blocksToProfile } from "./read.js";
 import { buildLetter, unsourcedNumbers, type Tone } from "./letter.js";
 import { blocksToMarkdown, renderResume, type ResumeStyle } from "./render.js";
 import { analyseGap } from "./tailor.js";
+import { VERSION } from "./version.js";
 
 const FREE_LETTERS_PER_MONTH = 3;
 const FREE_JD_CHARS = 2000;
 const FREE_STYLE: ResumeStyle = "modern";
-const VERSION = "0.4.0";
 
 const gate = createLicenseGate({ product: "resume" });
 

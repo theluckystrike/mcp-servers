@@ -15,6 +15,7 @@ import {
   releaseReservations, reserveOutput, type Fmt, type Img, type LoadedImage, type Reservation,
 } from "./imageio.js";
 import { addOp, dataDir, getOps } from "./store.js";
+import { VERSION } from "./version.js";
 
 export function createServer() {
 /**
@@ -147,7 +148,7 @@ function proBatchCheck(n: number, feature: string): string | null {
 /* -------------------------------------------------------------------- tools */
 
 const server = new McpServer(
-  { name: "mcp-image", version: "0.6.0" },
+  { name: "mcp-image", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

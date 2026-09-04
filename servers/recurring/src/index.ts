@@ -20,6 +20,7 @@ import {
   dataDir, findSchedule, generatedKeys, getHistory, getSchedules, lockPath,
   setHistory, setSchedules, type HistoryEntry, type Schedule, type ScheduleItem,
 } from "./store.js";
+import { VERSION } from "./version.js";
 
 const FREE_ACTIVE_SCHEDULES = 3;
 const FREE_UPCOMING_DAYS = 30;
@@ -212,7 +213,7 @@ function summarize(s: Schedule, asOf: string) {
 /* ------------------------------------------------------------------- server */
 
 const server = new McpServer(
-  { name: "mcp-recurring", version: "0.4.0" },
+  { name: "mcp-recurring", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

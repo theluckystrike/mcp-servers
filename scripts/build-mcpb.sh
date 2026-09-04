@@ -17,6 +17,10 @@ ROOT="/Users/mike/mcp-servers"
 export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
 mkdir -p "$npm_config_cache"
 
+# serverInfo.version is compiled in from src/version.ts; regenerate it from each
+# package.json so a bundle can never announce a version its manifest disagrees with.
+node "$ROOT/scripts/sync-versions.mjs"
+
 BUNDLES="$ROOT/bundles"
 mkdir -p "$BUNDLES"
 

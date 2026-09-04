@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present && node --test test/*.test.mjs",
+    "prebuild": "node scripts/sync-versions.mjs"
   },
   "devDependencies": {
     "marked": "^18.0.11"

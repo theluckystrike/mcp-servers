@@ -8,6 +8,7 @@ import { z } from "zod";
 import { createLicenseGate, readSharedProfile, withFileLock } from "../../shims/license.js";
 import { dayKey, homeZone, localDayStart, wallClockInZone } from "./day.js";
 import { readJsonFile } from "./jsonstore.js";
+import { VERSION } from "./version.js";
 
 export function createServer() {
 const PRODUCT = "time-tracker";
@@ -386,7 +387,7 @@ const FREE_WINDOW_NOTE =
 /* ---------------------------------------------------------------- server */
 
 const server = new McpServer(
-  { name: "mcp-time-tracker", version: "0.1.0" },
+  { name: "mcp-time-tracker", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

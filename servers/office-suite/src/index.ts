@@ -16,6 +16,7 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import { VERSION } from "./version.js";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -278,7 +279,7 @@ async function forwardLicenseActivate(key: string): Promise<{ content: { type: "
 /* ---------------------------------------------------------------- server */
 
 const server = new Server(
-  { name: "office-suite", version: "0.1.0" },
+  { name: "office-suite", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

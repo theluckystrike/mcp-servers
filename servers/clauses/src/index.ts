@@ -22,8 +22,8 @@ import {
   promptFor, search, toClauseJson, toMarkdown, variablesFor,
 } from "./library.js";
 import { assemble, variableReport } from "./assemble.js";
+import { VERSION } from "./version.js";
 
-const VERSION = "0.4.0";
 const FREE_OWN_CLAUSES = 10;
 const FREE_ASSEMBLE_CLAUSES = 8;
 

@@ -15,6 +15,7 @@ import {
   MAX_QUERY, MAX_ROW_LIMIT, MAX_TAG, MAX_TAGS, MAX_TITLE,
   type Board, type DB, type Priority, type Task,
 } from "./board.js";
+import { VERSION } from "./version.js";
 
 const PRODUCT = "kanban";
 const FREE_PROJECTS = 3;
@@ -252,7 +253,7 @@ function weekRange(key: string): { from: string; to: string } {
 /* ---------------------------------------------------------------- server */
 
 const server = new McpServer(
-  { name: "mcp-kanban", version: "0.6.0" },
+  { name: "mcp-kanban", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

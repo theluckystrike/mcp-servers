@@ -17,9 +17,9 @@ import {
   cellText, colLetter, expandPath, guessHeaderRow, headerNames, inferType, jsonCell,
   loadWorkbook, minMax, outputPath, parseRange, recentOpened, renderTable, toNumber, toTable,
 } from "./sheet.js";
+import { VERSION } from "./version.js";
 
 const gate = createLicenseGate({ product: "spreadsheet" });
-const VERSION = "0.1.0";
 
 function text(t: string) { return { content: [{ type: "text" as const, text: t }] }; }
 function fail(t: string) { return { content: [{ type: "text" as const, text: `Error: ${t}` }], isError: true as const }; }

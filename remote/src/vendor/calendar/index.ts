@@ -22,6 +22,7 @@ import {
   removeIcs, save, slugify, writeIcsText,
 } from "./store.js";
 import type { CalendarRecord, DB } from "./store.js";
+import { VERSION } from "./version.js";
 
 export function createServer() {
 /**
@@ -46,7 +47,7 @@ export function createServer() {
 
 
 
-const VERSION = "0.5.0";
+
 
 /* --------------------------------------------------------------- free tier */
 

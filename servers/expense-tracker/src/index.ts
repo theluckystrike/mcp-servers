@@ -14,6 +14,7 @@ import {
   roundHalfUp, toMajor, toMinor, vatSplit,
 } from "./money.js";
 import { dataDir, load, lockPath, readBankTransactions, save, type DB, type Expense, type Rule } from "./store.js";
+import { VERSION } from "./version.js";
 
 const PRODUCT = "expense-tracker";
 const FREE_WINDOW_DAYS = 30;
@@ -147,7 +148,7 @@ function view(e: Expense) {
 }
 
 const server = new McpServer(
-  { name: "mcp-expense-tracker", version: "0.2.0" },
+  { name: "mcp-expense-tracker", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

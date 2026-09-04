@@ -18,6 +18,7 @@ import {
   invoicesInMonth, nextNumber, setBusiness, setClients, setInvoices,
   type Business, type Client, type Invoice,
 } from "./store.js";
+import { VERSION } from "./version.js";
 
 const FREE_INVOICES_PER_MONTH = 3;
 const BUSINESS_FIELDS = [
@@ -128,7 +129,7 @@ function expandPath(p: string): string {
 }
 
 const server = new McpServer(
-  { name: "mcp-invoice", version: "0.1.0" },
+  { name: "mcp-invoice", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

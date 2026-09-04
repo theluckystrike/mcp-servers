@@ -10,6 +10,7 @@ import {
   type Observation, type Watch,
 } from "./store.js";
 import { join } from "node:path";
+import { VERSION } from "./version.js";
 
 export function createServer() {
 /**
@@ -127,7 +128,7 @@ function watchRow(w: Watch): Record<string, unknown> {
   };
 }
 
-const server = new McpServer({ name: "mcp-price-tracker", version: "0.1.0" });
+const server = new McpServer({ name: "mcp-price-tracker", version: VERSION });
 
 /**
  * Every tool goes through here so a StoreError - an unreadable or corrupt

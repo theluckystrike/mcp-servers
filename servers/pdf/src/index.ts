@@ -13,6 +13,7 @@ import {
 } from "./pdfio.js";
 import { extractText } from "./text.js";
 import { addOp, dataDir, getOps } from "./store.js";
+import { VERSION } from "./version.js";
 
 const FREE_MAX_MERGE_FILES = 5;
 const FREE_MAX_PAGES = 30;
@@ -168,7 +169,7 @@ async function savePdf(doc: PDFDocument, path: string): Promise<number> {
 function freeLimit(text: string): ReturnType<typeof ok> { return ok(text); }
 
 const server = new McpServer(
-  { name: "mcp-pdf", version: "0.5.0" },
+  { name: "mcp-pdf", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

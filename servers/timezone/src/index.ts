@@ -14,6 +14,7 @@ import {
   zoneAbbrev, zonedToUtc,
 } from "./tz.js";
 import type { Participant, WallPolicy } from "./tz.js";
+import { VERSION } from "./version.js";
 
 const PRODUCT = "timezone";
 const FREE_MAX_PARTICIPANTS = 3;
@@ -148,7 +149,7 @@ function outPathOf(p: string): string {
 /* ---------------------------------------------------------------- server */
 
 const server = new McpServer(
-  { name: "mcp-timezone", version: "0.3.0" },
+  { name: "mcp-timezone", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 gate.registerTools(server as unknown as { registerTool: Function });

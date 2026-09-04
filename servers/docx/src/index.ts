@@ -15,6 +15,7 @@ import {
   setBusiness, updateDoc, type Business, type DocKind, type DocRecord,
 } from "./store.js";
 import { assertDocx, fillDocx, placeholdersIn, readDocx, stripInvalidXml } from "./wordxml.js";
+import { VERSION } from "./version.js";
 
 const FREE_AGREEMENTS_PER_MONTH = 3;
 const FREE_TEMPLATE_PLACEHOLDERS = 10;
@@ -145,7 +146,7 @@ function brandingNote(): string {
 }
 
 const server = new McpServer(
-  { name: "mcp-docx", version: "0.3.0" },
+  { name: "mcp-docx", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

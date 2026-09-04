@@ -19,6 +19,7 @@ import {
   dataDir, expenseDbPath, load, lockPath, readExpenses, save,
   type Account, type DB, type Rule, type Txn,
 } from "./store.js";
+import { VERSION } from "./version.js";
 
 export function createServer() {
 const PRODUCT = "bank-statement";
@@ -222,7 +223,7 @@ function view(t: Txn) {
 }
 
 const server = new McpServer(
-  { name: "mcp-bank-statement", version: "0.6.0" },
+  { name: "mcp-bank-statement", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

@@ -29,8 +29,8 @@ import {
   removeIcs, save, slugify, writeIcsText,
 } from "./store.js";
 import type { CalendarRecord, DB } from "./store.js";
+import { VERSION } from "./version.js";
 
-const VERSION = "0.5.0";
 
 /* --------------------------------------------------------------- free tier */
 

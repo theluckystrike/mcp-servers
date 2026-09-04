@@ -19,6 +19,7 @@ import {
   dataDir, expenseDbPath, load, lockPath, readExpenses, save,
   type Account, type DB, type Rule, type Txn,
 } from "./store.js";
+import { VERSION } from "./version.js";
 
 const PRODUCT = "bank-statement";
 const FREE_ACCOUNTS = 2;
@@ -189,7 +190,7 @@ function view(t: Txn) {
 }
 
 const server = new McpServer(
-  { name: "mcp-bank-statement", version: "0.6.0" },
+  { name: "mcp-bank-statement", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

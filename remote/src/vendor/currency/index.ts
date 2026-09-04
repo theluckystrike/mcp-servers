@@ -9,6 +9,7 @@ import {
 import { currencyDecimals, daysBetween, isIsoDate, isoDaysAgo, isoToday } from "./money.js";
 import { BASE, codesOf, convertAmount, perEur, resolveDate, series, stats, unknownCode } from "./rates.js";
 import { dailyPath, dataDir, historyPath, loadDaily, loadHistory } from "./store.js";
+import { VERSION } from "./version.js";
 
 export function createServer() {
 const PRODUCT = "currency";
@@ -47,7 +48,7 @@ function dateNote(d: { date: string; refreshed?: boolean; offline_note?: string 
 function freeCutoff(): string { return isoDaysAgo(FREE_HISTORY_DAYS); }
 
 const server = new McpServer(
-  { name: "mcp-currency", version: "0.3.0" },
+  { name: "mcp-currency", version: VERSION },
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 

@@ -18,22 +18,22 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "remote", "src", "vendor");
 
 const SERVERS = {
-  "time-tracker": ["index.ts", "day.ts", "jsonstore.ts"],
-  "price-tracker": ["index.ts", "extract.ts", "fetch.ts", "redirect.ts", "store.ts"],
-  "invoice": ["index.ts", "money.ts", "store.ts", "lib.ts"],
-  "expense-tracker": ["index.ts", "money.ts", "store.ts"],
-  "spreadsheet": ["index.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts", "lib.ts"],
-  "currency": ["index.ts", "ecb.ts", "money.ts", "rates.ts", "store.ts"],
-  "timezone": ["index.ts", "jsonstore.ts", "tz.ts", "zones.ts", "lib.ts"],
-  "docx": ["index.ts", "blocks.ts", "build.ts", "md.ts", "store.ts", "wordxml.ts", "zip.ts", "lib.ts"],
-  "resume": ["index.ts", "letter.ts", "profile.ts", "read.ts", "render.ts", "tailor.ts"],
-  "recurring": ["index.ts", "currency.ts", "period.ts", "store.ts"],
-  "clauses": ["index.ts", "assemble.ts", "library.ts", "starter.ts", "store.ts"],
-  "pdf": ["index.ts", "pdfio.ts", "store.ts", "text.ts"],
-  "calendar": ["index.ts", "ics.ts", "fetch.ts", "store.ts"],
-  "kanban": ["index.ts", "board.ts", "day.ts", "jsonstore.ts"],
-  "image": ["index.ts", "imageio.ts", "store.ts"],
-  "bank-statement": ["index.ts", "detect.ts", "money.ts", "store.ts"],
+  "time-tracker": ["index.ts", "version.ts", "day.ts", "jsonstore.ts"],
+  "price-tracker": ["index.ts", "version.ts", "extract.ts", "fetch.ts", "redirect.ts", "store.ts"],
+  "invoice": ["index.ts", "version.ts", "money.ts", "store.ts", "lib.ts"],
+  "expense-tracker": ["index.ts", "version.ts", "money.ts", "store.ts"],
+  "spreadsheet": ["index.ts", "version.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts", "lib.ts"],
+  "currency": ["index.ts", "version.ts", "ecb.ts", "money.ts", "rates.ts", "store.ts"],
+  "timezone": ["index.ts", "version.ts", "jsonstore.ts", "tz.ts", "zones.ts", "lib.ts"],
+  "docx": ["index.ts", "version.ts", "blocks.ts", "build.ts", "md.ts", "store.ts", "wordxml.ts", "zip.ts", "lib.ts"],
+  "resume": ["index.ts", "version.ts", "letter.ts", "profile.ts", "read.ts", "render.ts", "tailor.ts"],
+  "recurring": ["index.ts", "version.ts", "currency.ts", "period.ts", "store.ts"],
+  "clauses": ["index.ts", "version.ts", "assemble.ts", "library.ts", "starter.ts", "store.ts"],
+  "pdf": ["index.ts", "version.ts", "pdfio.ts", "store.ts", "text.ts"],
+  "calendar": ["index.ts", "version.ts", "ics.ts", "fetch.ts", "store.ts"],
+  "kanban": ["index.ts", "version.ts", "board.ts", "day.ts", "jsonstore.ts"],
+  "image": ["index.ts", "version.ts", "imageio.ts", "store.ts"],
+  "bank-statement": ["index.ts", "version.ts", "detect.ts", "money.ts", "store.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
