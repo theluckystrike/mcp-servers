@@ -1969,9 +1969,103 @@ ${FOOT}`,
       { q: "Should I use EAN-13 or Code 128 for an internal label?", a: "Code 128, for almost anything that is not a retail product needing a real GTIN. It has no fixed length or check-digit standard tying it to a catalogue, and it encodes the full ASCII range, so a work order number, shelf location or serial number all fit it directly. EAN-13 is for a number meant to be looked up in a retail system." },
     ],
   },
+
+  "zip-archives-safely-from-chat": {
+    title: "Zip and unzip archives safely from Claude or Cursor",
+    description: "Pack a folder, look inside an archive somebody sent you, and unpack it, with traversal, symlink and zip-bomb guards decided from the header before anything is inflated. Bundle a month of invoices and exports in one file.",
+    html: `<h1>Zip and unzip archives safely from Claude or Cursor</h1>
+<p>An archive that arrives from outside is exactly the file you least want to just open. It can claim to be a
+199 KB download and unpack into 200 MB on disk, or its file list can walk out of the folder you pointed it at
+with a <code>../../</code> in an entry name. The MCP Zip server packs, lists and unpacks .zip files in the
+conversation you are already in, and every one of those questions is answered by reading the archive's own
+central directory, before a single byte is decompressed.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add zip -- npx -y @theluckystrike/mcp-zip</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "zip": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-zip"] }
+  }
+}</code></pre>
+<p>Nothing to sign up for and no network call of any kind: this server has no <code>fetch</code>, no HTTP
+client and no telemetry anywhere in it.</p>
+
+<h2>Zip bombs, and why the ratio ceiling is the second guard, not the first</h2>
+<p>The instinct is to refuse an archive whose compression ratio looks extreme, and to set that ceiling low. A
+measured comparison says why that is the wrong first guard: 4,000 rows of billing CSV with unique values
+compress 2.40x, and the same 4,000 rows with forty repeated client names compress <strong>82.69x</strong>,
+83% of the way to a 100x ceiling. Nothing about the file being a CSV predicts which one you have; only the
+repetition in the actual bytes does. A ceiling tuned to sit safely under a genuine 1022x zeros-file bomb would
+also refuse that real monthly export, and the person on the other end learns to pass <code>max_ratio</code>
+on every call, which turns the guard off for good.</p>
+<p>So the ratio ceiling (100x by default) is the second guard. The first is the total: the selected entries'
+declared uncompressed sizes are added up and checked against a ceiling before anything is read
+(<code>max_total_mb</code>, 1 GB by default), because 200 MB out of a 199 KB file is a decision you can make
+about the archive as a whole without judging any one entry. Both numbers come out of the central directory, so
+refusing a bomb costs no decompression: a 500 MB bomb that is 497.8 KB on disk is refused in 3 ms, with
+<code>out_dir</code> not even created.</p>
+
+<h2>Traversal and absolute entries</h2>
+<p>A zip entry's name is just a string in the header, and nothing stops it from reading
+<code>../../escaped.txt</code>, <code>/etc/cron.d/pwn</code> or <code>C:\\Windows\\evil.dll</code>. Each of
+those is refused by name before extraction starts, and the resolved target is checked a second time against
+<code>out_dir</code> after the traversal check, so a name that passes the first look still cannot land outside
+the folder you asked for. A symlink entry is refused the same way and is never recreated, not as a link and
+not as a plain file standing in its place. One unsafe entry refuses the whole extraction unless you pass
+<code>skip_unsafe: true</code>, which writes the rest and names exactly what it left out.</p>
+
+<h2>CRC per entry: the check a bounded buffer cannot do</h2>
+<p>Capping the memory an entry can use while it inflates looks like the whole zip-bomb answer: allocate a
+buffer the size the header declares, let the decompressor fill it, and nothing can blow up. Measured on the
+compression library this server uses, that cap is not what it looks like: a 100,000-byte entry inflated into a
+10-byte buffer returns exactly 10 bytes and <strong>throws nothing</strong>. An archive whose header lies and
+declares 10 bytes for a 100 KB entry extracts as a 10-byte file, reported as a success, with the truncation
+invisible anywhere in the output.</p>
+<p>The buffer bounds the memory; it does not prove the bytes. The CRC-32 the central directory already carries
+for every entry does that: this server checks it on every entry before it reaches disk, and a mismatch refuses
+that entry by name rather than writing a truncated file with a plausible name. Two different questions,
+answered by two different instruments, and only one of the two catches a lying header.</p>
+
+<h2>Bundling a month of invoices and exports</h2>
+<p><code>zip_bundle_month</code> collects a calendar month's files out of the sibling servers' own default
+output folders (invoice PDFs, quote PDFs, expense-tracker CSV and JSON exports, generated .docx documents and
+resumes) into one archive, so the file that goes to an accountant is one attachment instead of five separate
+downloads. It is best effort and says so in the reply: every folder it looked in is named, along with how many
+files it found in each, and a folder that is not there is reported rather than treated as an error. Files are
+chosen by modification date against the month you asked for, so a stray file from a different month sitting in
+the same folder does not end up in the bundle.</p>
+
+<h2>Looking before you unpack</h2>
+<p>"What's in this zip someone sent me, before I open it" runs <code>zip_list</code>: every entry with its
+size, compressed size and ratio, and everything dangerous flagged by name, absolute paths, <code>..</code>,
+symlinks, encrypted entries, duplicate names and anything past the ratio ceiling. Reading is never metered on
+either tier, because the archive you most need to inspect before opening is exactly the one somebody else
+built, and a paywall in front of that would be a paywall in front of the safety check itself.
+<code>zip_extract_text</code> goes one step further and reads a single text entry inline, README, changelog,
+one CSV row sample, without unpacking anything to disk at all; a binary entry is refused by name rather than
+printed as noise into the chat.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free gives 20 archives a calendar month, up to 25 MB and 200 entries each, with every guard active.
+Reading, <code>zip_list</code>, <code>zip_extract</code> and <code>zip_extract_text</code>, is unlimited on
+both tiers, because it costs nothing to look and everything to guess wrong about what is safe to open. Pro
+($19 once, or $39 for the whole collection, lifetime) removes the archive count, size and entry ceilings. Full
+detail on <a href="/s/zip">the MCP Zip page</a> and the general
+<a href="/guides/mcp-server-free-vs-pro">free versus Pro</a> comparison.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why is a low compression ratio ceiling the wrong way to catch a zip bomb?", a: "A real 4,000-row billing CSV with forty repeated client names measured 82.69x, 83% of the way to a 100x ceiling; a ceiling set well under a bomb's typical ratio would refuse that legitimate export and teach people to disable the check. The primary guard is the total declared uncompressed size, checked before the ratio." },
+      { q: "Does this stop an archive from writing outside the folder I unpack it into?", a: "Yes. Absolute paths, .. segments and backslash separators in an entry name are refused before extraction, the resolved target is checked again against out_dir, and a symlink entry is never recreated as a link or a file. One unsafe entry refuses the whole extraction unless skip_unsafe is passed." },
+      { q: "Can a bounded output buffer alone catch a bomb or a lying header?", a: "No. A capped buffer bounds memory but a 100,000-byte entry inflated into a 10-byte buffer returns 10 bytes and throws nothing, so a truncated file would look like a success. The CRC-32 already stored for the entry is what proves the bytes, and this server checks it before anything reaches disk." },
+      { q: "What does zip_bundle_month actually collect?", a: "It reads the sibling servers' own default output folders for the month you name: invoice and quote PDFs, expense-tracker CSV and JSON exports, and generated docx documents and resumes. It never writes to those folders, only reads, and it names every folder it looked in and how many files it found, missing folders included." },
+      { q: "Is reading an archive limited on the free tier?", a: "No. zip_list, zip_extract and zip_extract_text are unlimited on both tiers. Only writing, zip_create and zip_add, counts against the free tier's 20 archives a month, 25 MB and 200 entries per archive." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates and SEPA payment QR codes.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes and safe zip archives.",
 };

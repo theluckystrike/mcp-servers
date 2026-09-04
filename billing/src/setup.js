@@ -146,7 +146,7 @@ export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
  * five child processes and has no single connector URL. */
-const WEB_EXCLUDED = ["office-suite"];
+const WEB_EXCLUDED = ["office-suite", "zip"];
 export function serversFor(clientId) {
   return clientId === "claude-web" ? SERVER_ORDER.filter((id) => !WEB_EXCLUDED.includes(id)) : SERVER_ORDER;
 }
@@ -495,6 +495,24 @@ export const SETUP_SERVERS = {
     pro: "PNG output up to 4000 px, and barcode_batch for up to 500 rows a call.",
     measured: "The first Code 128 table transcription was missing one row, silently shifting 67 of 107 values to their neighbour: a clean-looking barcode that scanned as the wrong string. Comparing against an independent encoder caught it; every table is now pinned against that comparison in the test suite.",
   },
+  zip: {
+    title: "MCP Zip",
+    slug: "zip",
+    toolCount: "9 tools",
+    pkg: "@theluckystrike/mcp-zip",
+    sPage: "/s/zip",
+    hosted: null,
+    tagline: "Pack, list and unpack zip archives locally, with traversal, symlink and bomb guards read from the header before anything is inflated.",
+    does: "It packs files or a directory tree with glob patterns into a new .zip, lists an archive's entries with sizes and ratios while flagging absolute paths, .., symlinks, encrypted entries and duplicate names, unpacks with a dry run and a skip_unsafe option, reads one text entry inline without unpacking anything, and bundles a calendar month of invoices, quotes and exports from the sibling servers into one file.",
+    prompts: [
+      ["Zip up this folder, everything except node_modules.", "zip_create"],
+      ["What's in this zip before I open it?", "zip_list"],
+      ["Bundle August's invoices and expense exports into one zip.", "zip_bundle_month"],
+    ],
+    free: "20 archives a calendar month, up to 25 MB and 200 entries each. Reading (zip_list, zip_extract, zip_extract_text) is unlimited on both tiers.",
+    pro: "Unlimited archives, size and entries a month.",
+    measured: "A 100,000-byte entry inflated into a 10-byte bounded buffer returned 10 bytes and threw nothing: a lying header would extract as a silent, plausible-looking truncation. The CRC-32 already stored for the entry is checked before anything reaches disk, and that check is what refuses it instead.",
+  },
 };
 
 export const SERVER_ORDER = Object.keys(SETUP_SERVERS);
@@ -655,6 +673,14 @@ const ANGLE = {
     vscode: "In agent mode, `barcode_create` and `qr_create` are tools the agent can reach mid-task the same way it reaches a file write, so \"generate a Code 128 for every SKU in this CSV and save the SVGs next to it\" is a loop the agent can run without a script written for the occasion.",
     windsurf: "Ten tools against Cascade's ceiling of 100, and a code is generated a handful of times a session rather than polled continuously, so leaving it enabled costs little even alongside every other server in this collection.",
     cline: "code_list and license_status are reads and safe to auto-approve; leave the eight drawing tools and license_activate behind a click, since each one writes a file to disk or spends one of this month's 20 free codes.",
+  },
+  zip: {
+    "claude-desktop": "This is the client where a zip somebody emailed you already sits in Downloads, so \"what's in this zip, is it safe to open\" is a question asked from the same window the file arrived in, and zip_list answers it without ever running the system Archive Utility on an archive you have not looked inside yet.",
+    "claude-code": "The register that counts the free tier's 20 archives a month lives under one data directory per machine, so `claude mcp add --scope project` still shares that same monthly allowance across every project on the box, and zip_bundle_month reaches straight into the sibling servers' output folders on disk without a path being typed for each one.",
+    cursor: "Pack a folder with a glob right after generating the files that belong in it, in the same chat: `**/*.csv` for every export and an exclude for `**/node_modules/**` means the archive never needs a second look before it goes out.",
+    vscode: "In agent mode, zip_create and zip_extract are tools the agent can reach mid-task the same way it reaches a file write, so \"zip the dist folder and unpack it into /tmp to check it\" is a loop the agent can run without a shell script written for the occasion.",
+    windsurf: "Nine tools against Cascade's ceiling of 100, and an archive is built or opened a handful of times a session rather than polled continuously, so leaving it enabled costs little alongside every other server in this collection.",
+    cline: "zip_list, zip_extract_text and zip_history are reads and safe to auto-approve; leave zip_create, zip_add and zip_extract behind a click, since each one writes to disk or spends one of this month's 20 free archives.",
   },
 };
 
