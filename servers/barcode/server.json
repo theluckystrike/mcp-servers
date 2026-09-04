@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13",
+  "description": "QR codes and barcodes offline: URLs, WiFi joins, vCards, EPC SEPA payment codes a banking app can scan, Code 128, EAN-13, EAN-8 and UPC-A, as SVG or PNG.",
+  "version": "0.7.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/barcode"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/barcode",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@theluckystrike/mcp-barcode",
+      "version": "0.7.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
