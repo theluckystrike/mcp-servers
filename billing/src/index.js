@@ -492,7 +492,9 @@ ${faqHtml}
 
     if (path.startsWith("/buy/") && method === "GET") {
       // validation probes tag their sessions so funnel metrics can exclude them
-      const probeTag = request.headers.get("x-mcp-probe") === "1" ? "1" : "";
+      const ua = request.headers.get("user-agent") || "";
+      const scripted = /^(curl|python|node|wget|go-http|undici|axios|httpie)/i.test(ua) || ua === "";
+      const probeTag = request.headers.get("x-mcp-probe") === "1" || scripted ? "1" : "";
       const id = decodeURIComponent(path.slice("/buy/".length));
       if (!PRODUCTS[id]) return new Response(page("Not found", `<h1>Unknown product</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
       const tenantParam = url.searchParams.get("tenant") || "";
