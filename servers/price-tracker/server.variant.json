@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/prices-deal",
   "description": "Track prices and deals: watch a shop page, get target alerts, see price history. Data stays local.",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.1/price-tracker.mcpb",
-      "version": "0.9.1",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.2/price-tracker.mcpb",
+      "version": "0.9.2",
       "fileSha256": "9dd08c2d7de2dfb39b5c2088285a5a805a4b85fbd3467a7d91593784c9b94eba",
       "transport": {
         "type": "stdio"
