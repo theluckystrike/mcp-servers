@@ -131,6 +131,13 @@ test("cap: the free monthly count is the row cap on this server, and it writes n
   assert.match(r.text, /free tier creates 20 archives/);
   assert.equal(readdirSync(box.dir).includes("capped.zip"), false, "a capped call must leave no file");
   assert.equal(JSON.parse(readFileSync(join(dir, "archives.json"), "utf8")).length, 20, "and no register row");
+
+  // Conversion instrument (docs/CONVERSION_INSTRUMENT.md): the /buy link on a cap message
+  // must name the tool that produced it, not the prose of the feature. Asserted on the
+  // cheapest gate this suite already trips, so it costs no extra server run.
+  const wantSrc = "https://mcp.zovo.one/buy/zip?src=zip.zip_create";
+  assert.ok(r.text.includes(wantSrc),
+    `the zip_create cap message must carry ${wantSrc}, got: ` + r.text.slice(0, 400));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {

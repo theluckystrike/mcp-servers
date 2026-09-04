@@ -89,7 +89,7 @@ async function reserveSlot(op: string): Promise<{ id: string } | { refused: stri
         refused:
           `The free tier creates ${FREE_PER_MONTH} archives per calendar month and ${used} have been created in ${month}. ` +
           `Nothing was written. The next free archive is available on the 1st.\n\n` +
-          gate.upgradeText(`more than ${FREE_PER_MONTH} archives a month`),
+          gate.upgradeText(`more than ${FREE_PER_MONTH} archives a month`, op),
       };
     }
     const id = randomBytes(4).toString("hex");
@@ -252,7 +252,7 @@ server.registerTool("zip_create", {
   if (!gate.isPro() && files.length > FREE_MAX_ENTRIES) {
     return freeLimit(
       `That is ${files.length} files. The free tier writes archives of up to ${FREE_MAX_ENTRIES} entries and nothing was written. ` +
-      `Narrow it with patterns or exclude, or pack it in parts.\n\n${gate.upgradeText(`archives over ${FREE_MAX_ENTRIES} entries`)}`,
+      `Narrow it with patterns or exclude, or pack it in parts.\n\n${gate.upgradeText(`archives over ${FREE_MAX_ENTRIES} entries`, "zip_create")}`,
     );
   }
 
@@ -271,7 +271,7 @@ server.registerTool("zip_create", {
       return freeLimit(
         `The archive came to ${humanBytes(built.bytes.length)}. The free tier writes archives up to ${humanBytes(FREE_MAX_ARCHIVE_BYTES)} ` +
         `and nothing was written; the ${files.length} files were read but the file was not created.\n\n` +
-        gate.upgradeText(`archives over ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}`),
+        gate.upgradeText(`archives over ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}`, "zip_create"),
       );
     }
     const bytes = writeAtomic(reservation.path, built.bytes);
@@ -484,7 +484,7 @@ server.registerTool("zip_add", {
   }
   const totalEntries = kept.length + adds.length;
   if (!gate.isPro() && totalEntries > FREE_MAX_ENTRIES) {
-    return freeLimit(`The archive would hold ${totalEntries} entries. The free tier writes archives of up to ${FREE_MAX_ENTRIES} and nothing was changed.\n\n${gate.upgradeText(`archives over ${FREE_MAX_ENTRIES} entries`)}`);
+    return freeLimit(`The archive would hold ${totalEntries} entries. The free tier writes archives of up to ${FREE_MAX_ENTRIES} and nothing was changed.\n\n${gate.upgradeText(`archives over ${FREE_MAX_ENTRIES} entries`, "zip_add")}`);
   }
 
   const taken = await reserveSlot("zip_add");
@@ -499,7 +499,7 @@ server.registerTool("zip_add", {
     const built = zipSync(payload);
     if (!gate.isPro() && built.length > FREE_MAX_ARCHIVE_BYTES) {
       await release(slot);
-      return freeLimit(`The rebuilt archive came to ${humanBytes(built.length)}, over the free ceiling of ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}, and ${path} was not changed.\n\n${gate.upgradeText(`archives over ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}`)}`);
+      return freeLimit(`The rebuilt archive came to ${humanBytes(built.length)}, over the free ceiling of ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}, and ${path} was not changed.\n\n${gate.upgradeText(`archives over ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}`, "zip_add")}`);
     }
     const bytes = writeAtomic(path, built);
     const note = await finish(slot, { out_path: path, entries: totalEntries, bytes, uncompressed_bytes: uncompressed });
@@ -609,7 +609,7 @@ server.registerTool("zip_bundle_month", {
     return ok(`Dry run for ${month}: ${files.length} file${files.length === 1 ? "" : "s"}, ${humanBytes(total)}. Nothing was written.\n\n${where}\n\n` + files.slice(0, 50).map((f) => `  ${f.entry}  ${humanBytes(f.size)}`).join("\n"));
   }
   if (!gate.isPro() && files.length > FREE_MAX_ENTRIES) {
-    return freeLimit(`${month} holds ${files.length} documents. The free tier writes archives of up to ${FREE_MAX_ENTRIES} entries and nothing was written.\n\n${gate.upgradeText(`archives over ${FREE_MAX_ENTRIES} entries`)}`);
+    return freeLimit(`${month} holds ${files.length} documents. The free tier writes archives of up to ${FREE_MAX_ENTRIES} entries and nothing was written.\n\n${gate.upgradeText(`archives over ${FREE_MAX_ENTRIES} entries`, "zip_bundle_month")}`);
   }
 
   const defaultOut = join(dataDir(), "bundles", `${month}.zip`);
@@ -625,7 +625,7 @@ server.registerTool("zip_bundle_month", {
     if (!gate.isPro() && built.bytes.length > FREE_MAX_ARCHIVE_BYTES) {
       await release(slot); slot = null;
       releaseReservation(reservation);
-      return freeLimit(`The bundle came to ${humanBytes(built.bytes.length)}, over the free ceiling of ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}. Nothing was written.\n\n${gate.upgradeText(`archives over ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}`)}`);
+      return freeLimit(`The bundle came to ${humanBytes(built.bytes.length)}, over the free ceiling of ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}. Nothing was written.\n\n${gate.upgradeText(`archives over ${humanBytes(FREE_MAX_ARCHIVE_BYTES)}`, "zip_bundle_month")}`);
     }
     const bytes = writeAtomic(reservation.path, built.bytes);
     const note = await finish(slot, { out_path: reservation.path, entries: files.length, bytes, uncompressed_bytes: built.uncompressed });
