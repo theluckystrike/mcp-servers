@@ -1,20 +1,20 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/zip-archive-create-extract-bomb-guard",
-  "description": "Create, inspect and extract zip archives offline, with traversal, symlink and zip-bomb guards.",
+  "name": "io.github.theluckystrike/qr-code",
+  "description": "QR codes from your AI chat: WiFi joins, vCards, SEPA payment codes, EAN-13. SVG or PNG.",
   "version": "0.9.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
-    "subfolder": "servers/zip"
+    "subfolder": "servers/barcode"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/zip",
+  "websiteUrl": "https://mcp.zovo.one/buy/barcode",
   "packages": [
     {
-      "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "@theluckystrike/mcp-zip",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.0/barcode.mcpb",
       "version": "0.9.0",
+      "fileSha256": "10e5395df1d34458287636920aa6a3c222f486336fb52057ac907292d3db6889",
       "transport": {
         "type": "stdio"
       },
