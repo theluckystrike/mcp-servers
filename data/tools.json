@@ -688,5 +688,39 @@
       "name": "quote_report",
       "description": "Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Pro."
     }
+  ],
+  "barcode": [
+    {
+      "name": "qr_create",
+      "description": "Call this tool to turn text or a URL into a QR code, as an SVG returned inline or written to out_path, or as a PNG at a chosen pixel size (Pro)."
+    },
+    {
+      "name": "qr_wifi",
+      "description": "Call this tool to make a QR code that joins a WiFi network when scanned: network name, password and security type, written to out_path or returned as SVG."
+    },
+    {
+      "name": "qr_vcard",
+      "description": "Call this tool to make a QR code that adds a contact when scanned (vCard 3.0: name, org, phone, email, URL, address), written to out_path or returned as SVG."
+    },
+    {
+      "name": "qr_payment_sepa",
+      "description": "Call this tool to make an EPC069-12 payment QR code a euro banking app can scan: IBAN, beneficiary name, optional amount and reference. The IBAN is checked before drawing."
+    },
+    {
+      "name": "invoice_payment_qr",
+      "description": "Call this tool to make the payment QR code for an invoice: your IBAN and name come from the shared business profile, the amount and reference from invoice_id or from the arguments."
+    },
+    {
+      "name": "barcode_create",
+      "description": "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG or PNG. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn."
+    },
+    {
+      "name": "barcode_batch",
+      "description": "Call this tool to draw many barcodes or QR codes at once from a list of rows, each with its own value and file name, into out_dir. Pro; the free tier does one code per call."
+    },
+    {
+      "name": "code_list",
+      "description": "List the codes this server generated, newest first, with what each one carried and where it was written, plus how many of this month's free allowance are left."
+    }
   ]
 }

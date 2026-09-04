@@ -389,6 +389,16 @@
       "free": "5 open quotes at a time, unlimited pasteable text quotes, accept, decline, revise, VAT, discounts and multi-currency, pipeline and win-rate report for the current calendar year to date.",
       "pro": "Unlimited open quotes, A4 PDF with your logo and no footer credit, pipeline and win-rate report over any date range.",
       "storage": "~/.local/share/mcp-servers/quotes/"
+    },
+    "barcode": {
+      "title": "MCP Barcode",
+      "tagline": "QR codes and barcodes drawn on your machine, with no upload and no network call.",
+      "does": "Turns text or a URL into a QR code, and draws WiFi join codes, vCard contact codes, EPC069-12 SEPA payment codes a euro banking app can scan, and Code 128, EAN-13, EAN-8 and UPC-A linear barcodes; the IBAN is validated with ISO 7064 mod 97 and an EAN or UPC check digit is computed when it is missing and refused when it is wrong, never silently redrawn; output is SVG returned inline or written to a path, or PNG at any size up to 4000 px, with every code recorded in a local register.",
+      "for": "Anyone who needs a code on a label, an invoice, a flyer or a badge without opening a QR-generator website.",
+      "example": "\"Make a QR code for this URL as an SVG.\" ... \"Draw an EAN-13 for 590123412345.\" ... \"Payment QR for invoice INV-2026-0007.\"",
+      "free": "20 codes per calendar month, SVG output at any size, every symbology, EPC SEPA payment codes, WiFi and vCard codes, and the local register.",
+      "pro": "Unlimited codes, PNG output from 32 to 4000 px, and barcode_batch for up to 500 codes in one call.",
+      "storage": "~/.local/share/mcp-servers/barcode/"
     }
   },
   "version": "0.1.1"

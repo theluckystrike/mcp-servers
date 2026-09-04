@@ -53,6 +53,25 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  barcode: async (c, tmp, tier, ok) => {
+    const qr = await c.tool("qr_create", { text: "https://mcp.zovo.one/s/barcode" });
+    ok(`${tier}: qr_create returns an inline SVG`, !qr.isError && /<svg/.test(qr.text) && /<\/svg>/.test(qr.text), qr.text.replace(/\s+/g, " ").slice(0, 80));
+    const sepa = await c.tool("qr_payment_sepa", { name: "Zovo", iban: "DE89370400440532013000", amount: 120.5, reference: "INV-2026-0007", out_path: join(tmp, "sepa.svg") });
+    ok(`${tier}: qr_payment_sepa draws a valid IBAN`, !sepa.isError && existsSync(join(tmp, "sepa.svg")), sepa.text.replace(/\s+/g, " ").slice(0, 90));
+    const badIban = await c.tool("qr_payment_sepa", { name: "Zovo", iban: "DE89370400440532013001", out_path: join(tmp, "bad.svg") });
+    ok(`${tier}: a wrong IBAN check digit is refused and nothing written`, badIban.isError && /check digit/i.test(badIban.text) && !existsSync(join(tmp, "bad.svg")), badIban.text.replace(/\s+/g, " ").slice(0, 110));
+    const short = await c.tool("barcode_create", { symbology: "ean13", value: "590123412345", out_path: join(tmp, "ean.svg") });
+    ok(`${tier}: ean13 check digit computed as 7`, !short.isError && /5901234123457/.test(short.text), short.text.replace(/\s+/g, " ").slice(0, 100));
+    const wrong = await c.tool("barcode_create", { symbology: "ean13", value: "5901234123450", out_path: join(tmp, "wrong.svg") });
+    ok(`${tier}: a wrong ean13 check digit is refused, never redrawn`, wrong.isError && /5901234123457/.test(wrong.text) && !existsSync(join(tmp, "wrong.svg")), wrong.text.replace(/\s+/g, " ").slice(0, 110));
+    const png = join(tmp, "png.png");
+    const p = await c.tool("qr_create", { text: "png gate", format: "png", size: 200, out_path: png });
+    ok(`${tier}: PNG ${tier === "pro" ? "written" : "gated with the buy link"}`, tier === "pro" ? !p.isError && existsSync(png) : /mcp\.zovo\.one\/buy\/barcode/.test(p.text) && !existsSync(png), p.text.replace(/\s+/g, " ").slice(0, 100));
+    const inv = await c.tool("invoice_payment_qr", { iban: "DE89370400440532013000", name: "Zovo", amount: 90, reference: "INV-2026-0009", out_path: join(tmp, "inv.svg") });
+    ok(`${tier}: invoice_payment_qr draws or names the missing business profile`, !inv.isError ? existsSync(join(tmp, "inv.svg")) : /business|profile|invoice/i.test(inv.text), inv.text.replace(/\s+/g, " ").slice(0, 110));
+    const cl = await c.tool("code_list", {});
+    ok(`${tier}: code_list lists the register${tier === "pro" ? "" : " and the free allowance used"}`, !cl.isError && /\d+ code\(s\) in the register/.test(cl.text) && /text\/qr/.test(cl.text) && (tier === "pro" || /\d+ of 20 free codes used in \d{4}-\d{2}/.test(cl.text)), cl.text.replace(/\s+/g, " ").slice(0, 100));
+  },
   quotes: async (c, tmp, tier, ok) => {
     const items = [{ description: "Design hours", quantity: 12, unit_price_minor: 9000, tax_rate: 23 }, { description: "Setup", quantity: 1, unit_price_minor: 30000, tax_rate: 23 }];
     const cr = await c.tool("quote_create", { client: "Acme Ltd", currency: "EUR", tax_rate: 23, validity_days: 14, items });
@@ -371,7 +390,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
