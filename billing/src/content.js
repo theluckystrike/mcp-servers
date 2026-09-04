@@ -1710,9 +1710,147 @@ ${FOOT}`,
       { q: "Is any of this uploaded anywhere?", a: "No. The server makes no network calls at all, not for import, not for licensing. Statements are parsed locally and stored in plain JSON under ~/.local/share/mcp-servers/bank-statement/; deleting that directory resets it." },
     ],
   },
+
+  "quotes-and-estimates-to-invoice-in-claude": {
+    title: "Send a quote from chat, then turn the yes into an invoice",
+    description: "The quote lifecycle: create, send as text, chase, accept or decline. Validity is computed in your business timezone, and an accepted quote is invoiced from its own stored lines, not recomputed.",
+    html: `<h1>Send a quote from chat, then turn the yes into an invoice</h1>
+<p>A quote and an invoice are the same document at two different moments: one is a price you are
+proposing, the other is a price you are owed. Most tooling treats them as unrelated, so the numbers get
+retyped between a quoting tool and a billing tool, and the two can drift apart. The MCP Quotes server
+keeps them as one lifecycle: "quote Acme for 12 hours at 90 EUR plus a 300 EUR setup, 23% VAT, good for
+14 days" gets you a numbered quote with a line table, VAT and a validity date, and "Acme said yes" turns
+that same quote into a real invoice in the <a href="/s/invoice">invoice server</a>'s own store, same
+client list, same number series. Nothing is uploaded; everything lives in plain JSON on your machine.</p>
+
+<h2>Install</h2>
+<pre><code>claude mcp add quotes -- npx -y @theluckystrike/mcp-quotes</code></pre>
+<p>Cursor and Claude Desktop take the same block, under their own config file:</p>
+<pre><code>{
+  "mcpServers": {
+    "quotes": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-quotes"]
+    }
+  }
+}</code></pre>
+<p>Build <code>servers/invoice</code> first if you are running from source: the money, VAT, client and
+numbering engine is imported from it rather than duplicated, which is also why a quote and the invoice it
+becomes round to the same numbers. See the <a href="/setup">setup pages</a> for the exact file and key per
+client.</p>
+
+<h2>The lifecycle: open, sent, accepted or declined, expired</h2>
+<p>A quote is created with <code>quote_create</code>: line items in minor units, a VAT rate per line or the
+business default, an optional discount, and a validity window in days. It is allocated a <code>Q-YYYY-NNNN</code>
+id, the same shape the invoice server uses for <code>INV-YYYY-NNNN</code>, for the same reason: a bare
+<code>Q-0001</code> that resets every January collides with last January's quote the moment history spans
+a year boundary. From there a quote moves through exactly one of three closing states.
+<code>quote_accept</code> marks it accepted and invoices it. <code>quote_decline</code> marks it lost with
+a reason, so it stops counting against the open-quote limit and starts counting toward the win rate.
+Left untouched past its validity date, it becomes expired on its own, with nothing to call: state is
+computed from today's date against <code>valid_until</code>, not stored and left to go stale.</p>
+<p><code>quote_send_text</code> renders the aligned line table, the VAT lines, the total and the validity
+date as plain text ready to paste into an email, and it is free on every tier. The <code>quote_followup</code>
+prompt reviews what is open, what lapses soon and what already lapsed, and drafts the chase, which is the
+part of quoting that a stored JSON file does not do for you on its own: nobody enjoys the second email that
+just asks whether the first one was seen. An expired quote is refused by <code>quote_accept</code> until
+you either extend it with <code>quote_update {valid_until}</code> or pass <code>allow_expired: true</code>,
+which is deliberate friction: a lapsed price should be re-confirmed before it becomes an invoice, not
+honoured automatically as if nothing changed.</p>
+
+<h2>Validity in the profile timezone, not the laptop's</h2>
+<p>Whether a quote has lapsed is a question about "today," and "today" is ambiguous the moment the person
+asking and the machine running the server are in different places. The server answers it by computing the
+current date in the <code>timezone</code> field of the shared business profile, when one is set, rather
+than in the host machine's own zone. A quote issued at 00:30 in Warsaw from a laptop still set to US
+Eastern time would otherwise be stamped the previous calendar day and lapse a day earlier than the client
+was actually told, which is the kind of one-day-early expiry that looks like a bug in front of a client
+and is really a bug in the machine's clock settings.</p>
+
+<h2>The worked example</h2>
+<pre><code>quote_create {
+  client: "Acme", currency: "EUR", validity_days: 14,
+  items: [
+    { description: "API work",  quantity: 12, unit_price_minor: 9000,  tax_rate: 23 },
+    { description: "Setup fee", quantity: 1,  unit_price_minor: 30000, tax_rate: 23 }
+  ]
+}
+-> Q-2026-0001, valid until 2026-09-18
+
+API work    12  x  EUR 90.00   =  EUR 1080.00
+Setup fee    1  x  EUR 300.00  =  EUR 300.00
+Subtotal                          EUR 1380.00
+VAT 23% on EUR 1380.00             EUR 317.40
+TOTAL                              EUR 1697.40
+Valid until 2026-09-18.
+
+quote_accept { id: "Q-2026-0001" }
+-> accepted, invoice INV-2026-0004, due 2026-09-18, total EUR 1697.40</code></pre>
+<p>Prices go in as minor units: <code>9000</code> is EUR 90.00, and there is no decimal anywhere on the
+input side, so a price can never land in the system ten times too small because a "90" was read as 90
+minor units instead of 90 major units.</p>
+
+<h2>Accept writes the invoice through the shared engine</h2>
+<p><code>quote_accept</code> creates the invoice directly in the invoice server's own store when that store
+is present, defined as <code>invoices.json</code> or <code>clients.json</code> already existing, or a
+shared business profile with a name. When none of those exist yet, the response instead hands back
+<code>invoice_create</code>-ready arguments, with unit prices converted back to major units, so the same
+sentence still gets you to an invoice, just through one more explicit call. Either way, the invoice is
+written by the exact <code>computeTotals</code>, <code>currencyDecimals</code> and <code>formatMoney</code>
+code the invoice server itself uses, imported rather than reimplemented, which is what keeps a quote and
+the invoice it becomes agreeing line for line and then in the total. One side effect worth knowing:
+accepting bypasses the invoice server's own free cap of 3 invoices a month, because it writes through the
+shared engine rather than through that server's gated tool handler. The quotes free cap, 5 open quotes at
+a time, is the one that applies here, and the accept response says so.</p>
+
+<h2>The measured reason acceptance copies the quote instead of recomputing it</h2>
+<p>The obvious way to build <code>quote_accept</code> is to take the client, the line items and today's
+tax settings, and run them back through the same pricing logic that made the quote in the first place. That
+was tried, measured, and rejected, because a business profile changes over the life of a quote in ways that
+have nothing to do with the quote itself: a VAT rate correction, a new client class, a bookkeeping fix
+someone made in the meantime.</p>
+<p>The measured case (<code>test/adversarial.test.mjs</code>, "a VAT rate change between quote and
+acceptance never moves the agreed total"): a quote of EUR 1,000.00 net is issued while the profile's
+<code>default_tax_rate</code> is 23%, so the client is given EUR 1,230.00. Before the client answers, the
+profile's default rate is changed to 8%. Recomputing at acceptance time invoices EUR 1,080.00 -- EUR 150.00
+below the number the client actually agreed to, on one document, with nothing on either record explaining
+why they differ. Copying the quote's stored lines instead invoices EUR 1,230.00, and the assertion holds
+<code>tax_lines[0].rate === 23</code>. A later tax-rate change in the shared profile cannot move the
+agreed total on a quote that already went out the door. The same logic is why prices are taken as minor
+units with no decimal on the input side: the integer on the quote and the integer on the invoice are the
+same integer, all the way through, with no rounding step in between that a rate change could quietly ride
+along with.</p>
+
+<h2>The win rate report</h2>
+<p><code>quote_report</code>, a Pro feature, totals open, accepted, declined and expired quotes per
+currency, the value still sitting open, and the win rate: accepted divided by accepted plus declined,
+expired quotes counted as neither a win nor a loss because nobody actually said no. That last choice
+matters for what the number means. Counting an expired quote as a loss would punish a slow client the same
+as a client who chose someone else, and the two are different problems: one wants a better follow-up
+cadence, and the other wants a better price or a better pitch. Keeping expired quotes out of the ratio
+keeps the win rate answering only the question it can actually answer.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free holds 5 open quotes at a time; accepting, declining or letting one lapse frees the slot, so a
+freelancer who actually closes their quotes never hits the cap. <code>quote_send_text</code>, creating,
+revising, accepting, declining, VAT, discounts and multi-currency are all unrestricted on free.
+<code>quote_pdf</code> and <code>quote_report</code> are Pro. Pro is a one-time $19, or $39 for every server
+in the collection, lifetime, no subscription. Full detail on <a href="/s/quotes">the MCP Quotes page</a>
+and the general <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a> comparison. Once a quote is
+accepted, the invoice it produced is the same one the <a href="/guides/invoice-pdf-from-chat">invoice PDF
+guide</a> covers.</p>
+${FOOT}`,
+    faq: [
+      { q: "What happens to an unpaid quote once its validity date passes?", a: "It becomes expired on its own; nothing needs to be called. State is computed from today's date against valid_until, so a quote that nobody accepted or declined simply stops being acceptable, and quote_accept refuses it until you extend valid_until or pass allow_expired: true." },
+      { q: "If the business's VAT rate changes after a quote is sent, which rate does the invoice use?", a: "The rate the client was quoted. quote_accept copies the quote's own stored lines rather than recomputing them against the shared profile's current default_tax_rate, so a rate change made after the quote went out, for any reason, cannot move the total on a quote the client already agreed to." },
+      { q: "Does accepting a quote count against the invoice server's free cap of 3 invoices a month?", a: "No. Accepting writes the invoice through the same engine the recurring-invoice server uses, bypassing the invoice server's own tool-level cap. The quotes server's own cap, 5 open quotes at a time, is the one that applies, and the accept response states this." },
+      { q: "What is a quote's win rate and why don't expired quotes count against it?", a: "quote_report divides accepted quotes by accepted plus declined. Expired quotes are excluded because nobody actually said no; folding a slow client in with a lost one would answer a different question than the one a win rate is meant to answer." },
+      { q: "Why does validity use the business profile's timezone instead of the computer's own clock?", a: "Because whether a quote has lapsed is a question about today's date, and a quote issued at 00:30 local time from a machine still set to a different zone would otherwise be dated the wrong calendar day and expire early. Setting timezone on the shared business profile fixes the date to where the business actually is." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes and estimates.",
 };

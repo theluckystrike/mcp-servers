@@ -6,7 +6,7 @@
 
 export const COMPARE_INDEX = {
   title: "MCP server comparisons: ours against the closest alternatives",
-  description: "Sixteen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
+  description: "Seventeen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
 };
 
 const t = (rows) =>
@@ -1273,6 +1273,86 @@ bank CSV export</a>.</p>`,
       { q: "Which one reads a PDF statement?", a: "MainBook, and only MainBook. Ours and bankstatementparser-mcp both read structured formats a bank already exports, CSV for ours, CSV/OFX/QFX/MT940/CAMT.053 for bankstatementparser-mcp; neither extracts a table from a PDF." },
       { q: "What does each cost?", a: "MainBook needs a MainBook account and spends page credits per conversion at a price its README does not state. bankstatementparser-mcp is free and open source (Apache-2.0), with no account. Ours has a free tier (2 accounts, 12 months, 5 rules) and a one-time $19 Pro key, or $39 for every server in this collection." },
       { q: "Where can I read the competitor facts myself?", a: "MainBook's tools, account requirement and PDF-only input come from its README at github.com/human-beyond/mainbook-mcp and its official registry entry for ai.mainbook/bank-statement-converter. bankstatementparser-mcp's tools, formats and licence come from its README at github.com/sebastienrousseau/bankstatementparser-mcp and its registry entry search results for 'statement'. All read on 2026-09-04." },
+    ],
+  },
+  quotes: {
+    title: "MCP Quotes vs SendQuoteNow and estimate-invoice: which MCP server to pick",
+    description: "A local quote-to-invoice lifecycle against two hosted quote-and-invoice SaaS products behind an API key or OAuth. Tool counts, accounts required, and how each one prices a VAT-rate change.",
+    html: `<h1>MCP Quotes vs SendQuoteNow and estimate-invoice: which MCP server to pick</h1>
+<p>All three let a chat turn "quote this" into a numbered document and, later, "they said yes" into an
+invoice. <a href="https://sendquotenow.com">SendQuoteNow</a> (<code>com.sendquotenow/quote-engine</code>
+on the official registry) is a hosted quote-and-invoice generator for contractors, reached over one
+remote MCP endpoint behind an API key, with PDF, a client approval page, a QR code and a Stripe payment
+link built in. <a href="https://sodatsu-mitsumori.net/features/external-ai-mcp/">estimate-invoice</a>
+(<code>net.sodatsu-mitsumori/estimate-invoice</code>, marketed in Japan under a name that translates as
+"a quote that grows") is a Japanese billing platform's remote MCP feature, reached over OAuth from an
+existing paid account, covering estimates, invoices, delivery notes and purchase orders together. Ours
+reads and writes plain JSON on your own machine, needs no account of any kind, and its whole reason to
+exist is one design decision: an accepted quote is invoiced from its own stored lines, never recomputed
+against whatever the shared tax settings say today.</p>
+
+<h2>The facts, read from each project</h2>
+${t({ head: ["SendQuoteNow", "estimate-invoice"], body: [
+  ["Tools", "11 (quote_create through license_activate)", "One hosted endpoint behind an API key: instant PDF quote generation, quote-to-invoice conversion, client approval links, quote history", "Remote MCP behind OAuth: create, edit, duplicate and convert estimates, invoices, delivery notes and purchase orders, plus PDF and shareable-URL generation"],
+  ["Account or key needed", "No. No account, no key", "Yes, a free SendQuoteNow account and an sqn_live_ API key, or x402 USDC micropayments with no account", "Yes, an existing estimate-invoice account on a paid plan; the free plan cannot use the MCP connection at all"],
+  ["Where the data lives", "Local JSON in ~/.local/share/mcp-servers/quotes/", "SendQuoteNow's own cloud account", "estimate-invoice's own cloud platform, optionally synced to freee accounting"],
+  ["Quote to invoice", "quote_accept copies the quote's own stored lines, so a VAT-rate change made after the quote was sent cannot move the total the client agreed to", "Described as \"quote-to-invoice conversion\"; no published detail on whether prices are copied or recomputed", "Documents are duplicated and converted between estimate and invoice inside the platform; pricing-at-conversion behaviour is not documented"],
+  ["Free tier", "5 open quotes at a time; quote_send_text, revising, accepting and declining are unrestricted", "$0/month, 5 documents a month across quotes, invoices and purchase orders combined, no card required", "None for the MCP feature; it is gated to a paid plan and above"],
+  ["Pricing model", "$19 once, lifetime, or $39 for every server in the collection", "$4.99/month for unlimited documents, or pay-per-call from $0.01 to $0.10 via x402 USDC on Base with no subscription", "Bundled into estimate-invoice's own subscription tiers; no price is stated on the MCP feature page itself"],
+  ["Licence", "MIT", "Proprietary, no public repository", "Proprietary, no public repository"],
+  ["Works with no network", "Yes", "No, every tool is a hosted API call", "No, every tool is a hosted call behind OAuth"],
+] })}
+
+<h2>When to pick SendQuoteNow</h2>
+<p>Pick it when the quote needs to end in a client clicking something: its own approval page, a QR code
+printed on a paper estimate, and a Stripe payment link attached to the same document, none of which a
+local JSON file can offer on its own. It also already speaks multi-currency across USD, CAD, EUR, GBP and
+AUD from one account, and the pay-per-call x402 route means an agent can quote without a subscription at
+all, at $0.10 a generation. The cost is the same one every hosted tool carries here: the quote lives in
+SendQuoteNow's account, not yours, and the free tier's 5-document monthly cap is shared across quotes,
+invoices and purchase orders together, not 5 quotes on top of separate invoice room.</p>
+
+<h2>When to pick estimate-invoice</h2>
+<p>Pick it if the business already runs on estimate-invoice for estimates, invoices, delivery notes and
+purchase orders, and the freee accounting sync matters: the MCP connection lets an AI agent read and write
+into a system of record that is already the business's real bookkeeping, not a second ledger next to it.
+It also states plainly that it does not spend the platform's own AI credit for MCP calls, since the model
+doing the work is the connected agent's, not theirs. The requirement that comes with that is a paid
+account before the connection can be enabled at all; there is no free way to try the MCP feature itself.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the answer to "where does this data live" should be "nowhere but here." There is no
+account to create for either product in this comparison, no monthly document cap shared with an invoice
+server, and no subscription: $19 once opens quote_pdf and quote_report for good. The one thing neither
+competitor's public material documents is what a recompute-at-acceptance would do to a quote once the
+issuing business's own tax settings change before the client answers; ours measured that case directly and
+built <code>quote_accept</code> to copy the quote's stored lines specifically because recomputing moved a
+EUR 1,230.00 agreed total to EUR 1,080.00 in the test that provoked the decision.</p>
+
+<h2>What we measured</h2>
+<p>The quotes package carries adversarial, corruption and concurrency test suites covering 25 probes, all
+passing, plus the specific VAT-rate-change case: a quote issued at a profile's 23% default rate, the
+default then changed to 8% before the client answers, and the accepted invoice still carrying the original
+23% and the original EUR 1,230.00 total. Two processes creating 40 quotes against one data directory left
+40 quotes and 40 unique ids. Neither SendQuoteNow's nor estimate-invoice's public material states a test
+count or an acceptance-time pricing rule to compare against.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add quotes -- npx -y @theluckystrike/mcp-quotes</code></pre>
+<p>SendQuoteNow (remote, once an API key is minted from its dashboard):</p>
+<pre><code>claude mcp add-json sendquotenow '{"type":"http","url":"https://sendquotenow.com/mcp","headers":{"X-API-Key":"sqn_live_..."}}'</code></pre>
+<p>estimate-invoice is enabled from inside its own product, under its "external AI connection" settings
+page, by pasting a setup string it generates there; it is not added by hand as a config block.</p>
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer
+walkthrough is in <a href="/guides/quotes-and-estimates-to-invoice-in-claude">quotes and estimates to
+invoice</a>.</p>`,
+    faq: [
+      { q: "Can I run mcp-quotes and SendQuoteNow at the same time?", a: "Yes. Tool names do not collide: ours are quote_create, quote_accept and so on; SendQuoteNow exposes its own hosted endpoint under its own names. Nothing is shared between them, and they store their documents in different places entirely." },
+      { q: "Do SendQuoteNow or estimate-invoice copy an accepted quote's prices, or recompute them?", a: "Neither publishes that detail. Ours measured the difference directly: recomputing at acceptance moved a EUR 1,230.00 agreed total to EUR 1,080.00 after a VAT-rate change made between quoting and acceptance, which is why quote_accept copies the quote's own stored lines instead." },
+      { q: "Which one can I try without paying anything?", a: "Ours, unrestricted for 5 open quotes at a time with no account. SendQuoteNow has a free tier too, capped at 5 documents a month shared across quotes, invoices and purchase orders. estimate-invoice's MCP connection is not available on its free plan at all; it requires an existing paid subscription." },
+      { q: "What does each cost to keep using?", a: "Ours is $19 once, lifetime, or $39 for the whole collection. SendQuoteNow is $4.99/month for unlimited documents, or per-call x402 payments with no subscription. estimate-invoice bundles the MCP feature into its own paid tiers at a price its feature page does not state." },
+      { q: "Where can I read the competitor facts myself?", a: "SendQuoteNow's tools, pricing and account model come from its website at sendquotenow.com and its official registry entry for com.sendquotenow/quote-engine. estimate-invoice's tools, OAuth requirement and plan gating come from its feature page at sodatsu-mitsumori.net/features/external-ai-mcp/ and its registry entry for net.sodatsu-mitsumori/estimate-invoice. All read on 2026-09-04." },
     ],
   },
 };

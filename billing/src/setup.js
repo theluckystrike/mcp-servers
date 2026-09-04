@@ -145,9 +145,12 @@ export const CLIENTS = {
 export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
- * five child processes and has no single connector URL. */
+ * five child processes and has no single connector URL. It also skips quotes: there is
+ * no /mcp/quotes route in remote/src/index.ts (`curl -X POST https://mcp.zovo.one/mcp/quotes`
+ * answers `{"error":"not_found"}`, the same shape bank-statement returned before its route
+ * shipped), so there is nothing for a claude.ai connector to point at yet. */
 export function serversFor(clientId) {
-  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => id !== "office-suite") : SERVER_ORDER;
+  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => id !== "office-suite" && id !== "quotes") : SERVER_ORDER;
 }
 
 /** Servers. Prompts are lines from each README's "What you can say" table. */
@@ -458,6 +461,24 @@ export const SETUP_SERVERS = {
     pro: "Unlimited accounts, history and rules, reconcile_expenses, recurring_detect, statement_export.",
     measured: "The 60-row test fixture: 60 transactions stored, then 0 stored and 60 duplicates reported on re-import of the same file. recurring_detect on it found a monthly Spotify charge, 3 occurrences, EUR 9.99, annualised EUR 119.88.",
   },
+  quotes: {
+    title: "MCP Quotes",
+    slug: "quotes",
+    toolCount: "11 tools",
+    pkg: "@theluckystrike/mcp-quotes",
+    sPage: "/s/quotes",
+    hosted: null,
+    tagline: "A priced, VAT-correct quote from chat, turned into an invoice with one call.",
+    does: "It quotes a client with line items, VAT and a validity window, sends the quote as pasteable text, tracks it as open, accepted, declined or expired, and turns an accepted quote into a real invoice in the shared invoice store using the quote's own stored lines rather than recomputed prices.",
+    prompts: [
+      ["Quote Acme for 12 hours at 90 EUR plus a 300 EUR setup, 23% VAT, good for 14 days.", "quote_create"],
+      ["Acme said yes. Invoice it.", "quote_accept"],
+      ["What is still open, and what is my win rate?", "quote_report"],
+    ],
+    free: "5 open quotes at a time, unlimited quote_send_text, create/revise/accept/decline, VAT, discounts and multi-currency.",
+    pro: "Unlimited open quotes, quote_pdf, quote_report with the win rate and the value still open.",
+    measured: "A quote of EUR 1,000.00 net is issued at the profile's 23% default rate, so the client sees EUR 1,230.00. The default rate is then changed to 8% before the client answers. quote_accept still invoices EUR 1,230.00, tax_lines[0].rate === 23, because it copies the quote's stored lines instead of recomputing them against today's profile.",
+  },
 };
 
 export const SERVER_ORDER = Object.keys(SETUP_SERVERS);
@@ -602,6 +623,14 @@ const ANGLE = {
     vscode: "In agent mode statement_import and statement_summary are tools the agent can call mid-task, so \"pull in this export and tell me if anything looks uncategorised\" runs as one instruction rather than a separate spreadsheet pass.",
     windsurf: "Eleven tools against Cascade's ceiling of 100, and a bank export is read in one sitting a few times a month rather than polled continuously, so it costs little to leave enabled between statements.",
     cline: "transactions_list, transactions_search and statement_summary are reads and safe to auto-approve; leave statement_import, category_rules and transaction_categorize behind a click, since each one changes what the ledger says happened.",
+  },
+  quotes: {
+    "claude-desktop": "A quote is written in the evening or between calls, in the client people already have open for exactly that kind of task, and quote_send_text hands back plain text ready to paste into whatever mail app is next to it.",
+    "claude-code": "Quoting and invoicing share one data directory across two servers, so `claude mcp add quotes -- npx -y @theluckystrike/mcp-quotes --scope project` next to the invoice server in the same project keeps a client's whole paper trail, quote through paid invoice, in one repo-scoped place.",
+    cursor: "The chain worth building is quote, then accept: price the work in the same chat you are about to start it in, and when the client answers, \"they said yes, invoice it\" is the next message rather than a context switch to a separate billing tool.",
+    vscode: "In agent mode quote_create and quote_accept are tools the agent can reach mid-task, so \"quote this scope change and, if they say yes on the call, invoice it\" is one instruction spanning two calls instead of a manual step in between.",
+    windsurf: "Eleven tools against Cascade's ceiling of 100, and a quote is written a handful of times a week rather than polled continuously, so it costs little to leave enabled alongside the invoice server it hands off to.",
+    cline: "quote_list, quote_get, quote_report and quote_send_text are reads or produce text only, and are safe to auto-approve; leave quote_create, quote_update, quote_accept and quote_decline behind a click, since each one changes what the quote says or spends an id.",
   },
 };
 
@@ -833,7 +862,7 @@ export function setupPage(clientId, serverId) {
   const c = CLIENTS[clientId];
   const s = SETUP_SERVERS[serverId];
   if (!c || !s) return null;
-  if (clientId === "claude-web" && serverId === "office-suite") return null;
+  if (clientId === "claude-web" && (serverId === "office-suite" || serverId === "quotes")) return null;
   const canonical = `${BASE}/setup/${clientId}/${serverId}`;
   const title = `${s.title} in ${c.name}`;
 
