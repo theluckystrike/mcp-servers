@@ -1,0 +1,112 @@
+{
+  "generated_at": "2026-09-04",
+  "method": {
+    "note": "Two sub-tasks. (A) Slot re-measurement for the two servers now in build (image, bank-statement): single GET registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100, 20s timeout, one request per token, no pagination beyond the first page (task-specified bounded probe, same style as NAMING_R2). Count = servers.length on that page; flagged '100+' when the page was full and metadata.nextCursor was present. (B) Score the next three candidates after image/bank-statement from the R4 candidate list (kanban/todo, flashcards, quote/estimate, unit converter, markdown-to-html/pdf, csv cleaner, habit tracker, notes/journal, password generator, qr code), same fit formula as R1/R4 (score = demand/(1+supply); fit = score * pairs * local_value). These 9 candidates already have full registry/Smithery/npm/GitHub instrument readings in docs/INTEL.md (R1) and docs/INTEL_R4.md (R4) and the tokens have not moved since (no naming publish touched these words), so B reuses those measured fit scores rather than re-running the full instrument set a third time on unchanged inputs; this mirrors R4's own stated policy of carrying forward unchanged intents from R1 rather than re-measuring them.",
+    "sources_A": "https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 (single page, 20s timeout)",
+    "sources_B": "carried forward from docs/INTEL.md (R1, unit converter/habit tracker/qr code/markdown-to-pdf) and docs/INTEL_R4.md (R4, kanban/todo, flashcards, quote/estimate, notes/journal, csv cleaner) -- password generator excluded, not buildable (liability, R1)"
+  },
+  "A_slot_remeasure": {
+    "image": {
+      "single_token_hits": {
+        "image": "100+ (nextCursor present: io.github.pvliesdonk/image-generation-mcp)",
+        "resize": 3,
+        "thumbnail": 2,
+        "compress": 14,
+        "photo": 55,
+        "convert": 71
+      },
+      "compound_token_hits": {
+        "image-resize": 3,
+        "photo-resize": 0,
+        "image-compress": 0,
+        "image-convert": 0,
+        "image-watermark": 0,
+        "photo-editor": 0
+      },
+      "rarest_ordering": ["thumbnail(2)", "resize(3)/image-resize(3)", "photo-resize(0)*", "image-compress(0)*", "image-convert(0)*", "image-watermark(0)*", "compress(14)", "photo(55)", "convert(71)", "image(100+)"],
+      "note": "*compound zero-hit tokens are the strongest naming signal but read awkwardly as standalone name segments; chosen name blends the single-word rarity order with a natural, word-rich phrase.",
+      "proposed_registry_name": "io.github.theluckystrike/image-resize-thumbnail-compress-photo-convert",
+      "name_len_chars": 45
+    },
+    "bank_statement": {
+      "single_token_hits": {
+        "bank": "100+ (nextCursor present: io.github.luke-fairbanks/broll)",
+        "statement": 23,
+        "transactions": 7,
+        "categorize": 0,
+        "reconcile": 4,
+        "budget": 47,
+        "ledger": 94,
+        "cash": 32
+      },
+      "compound_token_hits": {
+        "bank-statement": 6,
+        "statement-import": 0,
+        "expense-categorize": 0,
+        "bank-reconcile": 0,
+        "cash-ledger": 0,
+        "transaction-categorize": 0
+      },
+      "rarest_ordering": ["categorize(0)/expense-categorize(0)/bank-reconcile(0)/cash-ledger(0)/transaction-categorize(0)", "reconcile(4)", "transactions(7)", "bank-statement(6)", "statement(23)", "cash(32)", "budget(47)", "ledger(94)", "bank(100+)"],
+      "note": "categorize is the rarest single token measured this round (0 hits) across both servers.",
+      "proposed_registry_name": "io.github.theluckystrike/bank-statement-categorize-reconcile-transactions-ledger",
+      "name_len_chars": 55
+    }
+  },
+  "B_next_three_candidates": [
+    {
+      "intent": "kanban / project todo",
+      "source_round": "R4",
+      "score": 38.5,
+      "worst_case": 11.49,
+      "pairs": 0.5,
+      "local_value": 1.0,
+      "fit": 19.25,
+      "buildable": true,
+      "note": "carried forward unchanged from R4 Part A; github count 433 signals real crowding not captured by the formula"
+    },
+    {
+      "intent": "quote / estimate generator",
+      "source_round": "R4",
+      "score": 15.0,
+      "worst_case": 4.46,
+      "pairs": 0.9,
+      "local_value": 0.9,
+      "fit": 12.1,
+      "buildable": true,
+      "note": "carried forward unchanged from R4 Part A; `quote` token crowded by unrelated crypto/finance quote servers, pairs strongly with invoice"
+    },
+    {
+      "intent": "notes / journal",
+      "source_round": "R4",
+      "score": 22.7,
+      "worst_case": 6.78,
+      "pairs": 0.5,
+      "local_value": 1.0,
+      "fit": 11.3,
+      "buildable": true,
+      "note": "carried forward unchanged from R4 Part A; duplicates R1's note-taking weak-pairing finding, but still 3rd-highest fit among the 9 remaining candidates"
+    }
+  ],
+  "B_remaining_candidates_not_picked": [
+    {"intent": "markdown-to-html/pdf", "source_round": "R1", "fit": 9.57},
+    {"intent": "habit tracker", "source_round": "R1", "fit": 6.97},
+    {"intent": "unit converter", "source_round": "R1", "fit": 6.55},
+    {"intent": "qr code", "source_round": "R1", "fit": 7.62},
+    {"intent": "csv cleaner/dedupe", "source_round": "R4", "fit": 5.3},
+    {"intent": "flashcards", "source_round": "R4", "fit": 4.5},
+    {"intent": "password generator", "source_round": "R1", "fit": 0.0, "buildable": false, "note": "secret custody liability, will not ship"}
+  ],
+  "proposed_names_and_split": {
+    "image": {
+      "registry_name": "io.github.theluckystrike/image-resize-thumbnail-compress-photo-convert",
+      "free": "resize, convert, crop -- single file, up to 5 ops/session",
+      "pro": "unlimited ops, batch (multi-file), watermark, compress presets, format-chain (resize+convert+watermark in one call)"
+    },
+    "bank_statement": {
+      "registry_name": "io.github.theluckystrike/bank-statement-categorize-reconcile-transactions-ledger",
+      "free": "CSV import + monthly summary, up to 1 account, manual categorize",
+      "pro": "rule-based auto-categorize, multi-account, reconcile against expense-tracker/invoice records, unlimited history"
+    }
+  }
+}
