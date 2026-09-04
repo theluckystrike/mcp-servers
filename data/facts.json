@@ -142,6 +142,18 @@
         19
       ],
       [
+        "image",
+        "prod_VC9jq3PiYVOeVh",
+        "price_1UBlQEJKCamubEm1u1SKu720",
+        19
+      ],
+      [
+        "bank-statement",
+        "prod_VC9jfclRZ7sNFK",
+        "price_1UBlQGJKCamubEm11cATuyBV",
+        19
+      ],
+      [
         "bundle",
         "prod_VBafU5C9o9d0f3",
         "price_1UBDU9JKCamubEm1dWgRjtoW",
@@ -331,6 +343,26 @@
       "free": "Info, count, text, merge up to 5 files, edits on files up to 30 pages, PAID and DRAFT stamps.",
       "pro": "Unlimited files and pages, custom stamp text and colours, business watermark, page reorder.",
       "storage": "Works on your own files; a recent list only."
+    },
+    "image": {
+      "title": "MCP Image Tools",
+      "tagline": "Resize, convert, compress and watermark images, pure JavaScript.",
+      "does": "Reads PNG, JPEG, BMP, GIF and TIFF, resizes with inside, cover or exact fit, converts formats, compresses with a byte report, crops, makes thumbnails in batches, strips metadata by re-encoding, watermarks with the shared business name or custom text, and reports dominant colours. Never edits inputs in place; refuses decompression bombs.",
+      "for": "Anyone preparing logos, screenshots and product photos for documents, proposals and the web without a desktop app.",
+      "example": "\"Make a 1200 px wide web version of this photo under 300 KB.\" ... \"Thumbnail these five and watermark them.\"",
+      "free": "Info, resize, convert, compress, crop, strip metadata on images up to 4 MP; batches of 5.",
+      "pro": "Unlimited size and batches, custom watermark text, dominant colours.",
+      "storage": "Works on your own files; a recent list only."
+    },
+    "bank-statement": {
+      "title": "MCP Bank Statement",
+      "tagline": "Bank CSV exports categorised, summarised and reconciled with expenses.",
+      "does": "Imports CSV exports from Revolut, Wise, mBank, PKO, ING, N26 and generic banks with locale-aware amounts and duplicate detection, categorises by your rules, summarises by category, month, account or counterparty per currency, reconciles bank lines against the expense tracker, detects subscriptions and recurring charges, and exports.",
+      "for": "Freelancers who reconcile bank statements against receipts at month end.",
+      "example": "\"Import my September Revolut export and categorise it.\" ... \"Which expenses have no bank line and which subscriptions am I paying?\"",
+      "free": "2 accounts, 12 months of transactions, 5 rules, summary and search.",
+      "pro": "Unlimited accounts, history and rules, reconcile with expenses, recurring detection, export.",
+      "storage": "~/.local/share/mcp-servers/bank-statement/"
     }
   },
   "version": "0.1.1"
