@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-image",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Resize, convert, compress, crop, thumbnail and watermark images from chat: no upload, no account, no native dependency. Every file stays on your machine.",
   "type": "module",
   "bin": {
@@ -47,7 +47,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/image",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.8.0",
+    "@theluckystrike/mcp-license": "^0.9.0",
     "jimp": "^1.6.1",
     "zod": "^3.25.0"
   },

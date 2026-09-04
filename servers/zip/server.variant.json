@@ -1,20 +1,20 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/sheets",
-  "description": "Read, filter and edit spreadsheet data - xlsx and csv - from your AI chat. Local processing.",
+  "name": "io.github.theluckystrike/archive",
+  "description": "Zip and unzip archives from your AI chat: create, list, extract. Offline, with bomb guards.",
   "version": "0.9.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
-    "subfolder": "servers/spreadsheet"
+    "subfolder": "servers/zip"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/spreadsheet",
+  "websiteUrl": "https://mcp.zovo.one/buy/zip",
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.0/spreadsheet.mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.0/zip.mcpb",
       "version": "0.9.0",
-      "fileSha256": "132edab787e3c803c1cc6596f4a2519d1a95dcfbb5d7e7bd966885140a9d0df8",
+      "fileSha256": "TBD",
       "transport": {
         "type": "stdio"
       },

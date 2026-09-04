@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-invoice",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Make real, sendable PDF invoices from a sentence. Clients, numbering that never repeats, VAT lines, discounts and overdue reports, all stored locally.",
   "type": "module",
   "bin": {
@@ -50,7 +50,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/invoice",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.8.0",
+    "@theluckystrike/mcp-license": "^0.9.0",
     "pdfkit": "^0.15.0",
     "zod": "^3.25.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-zip",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Create, inspect and extract zip archives from chat: glob a directory into a zip, list what is inside with a bomb and traversal check, extract safely, read one text entry without unpacking. No network.",
   "type": "module",
   "bin": {
@@ -50,7 +50,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/zip",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.8.0",
+    "@theluckystrike/mcp-license": "^0.9.0",
     "fflate": "^0.8.2",
     "zod": "^3.25.0"
   },
