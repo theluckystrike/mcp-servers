@@ -177,7 +177,7 @@ const server = new McpServer(
 
 server.registerTool("pdf_info", {
   title: "Inspect a PDF",
-  description: "Page count, page sizes in points and millimetres, paper name, metadata (title, author, producer, dates) and whether the file is encrypted. Read-only: the file is never modified. Free tier: unlimited.",
+  description: "Call this tool to inspect a PDF: page count, page sizes in points/mm, paper name, metadata (title, author, producer, dates) and whether it is encrypted. Read-only, never modifies the file. Free tier: unlimited.",
   inputSchema: {
     path: z.string().describe("Path to the PDF file. ~ is expanded; a relative path is resolved against the working directory"),
   },
@@ -245,7 +245,7 @@ server.registerTool("pdf_count", {
 
 server.registerTool("pdf_merge", {
   title: "Merge PDFs into one file",
-  description: "Join several PDFs into one, in the order given. Page sizes are kept as they are - a merged file may have mixed page sizes, and the answer says so. Inputs are never modified. Free tier: up to 5 files per merge.",
+  description: "Call this tool to join several PDFs into one, in the order given. Page sizes are kept as-is, so a merged file may have mixed sizes, and the answer says so. Inputs are never modified. Free tier: up to 5 files per merge.",
   inputSchema: {
     paths: z.array(z.string()).min(2).describe("The PDFs to join, in the order they should appear"),
     out_path: z.string().describe("Where to write the merged PDF"),
@@ -310,7 +310,7 @@ function reserveNameOnly(p: string): string {
 
 server.registerTool("pdf_split", {
   title: "Split a PDF into several files",
-  description: "Write one new PDF per range. Ranges are 1-based and may be open-ended: \"1-3,5,7-\" gives pages 1-3, page 5, and page 7 to the end. The input is never modified. Free tier: files up to 30 pages.",
+  description: "Call this tool to write one new PDF per range. Ranges are 1-based and may be open-ended: \"1-3,5,7-\" gives pages 1-3, page 5, and 7 to the end. The input is never modified. Free tier: files up to 30 pages.",
   inputSchema: {
     path: z.string().describe("The PDF to split"),
     ranges: z.string().describe("Comma-separated 1-based page ranges, e.g. \"1-3,5,7-\". An open-ended range runs to the last page"),
@@ -386,7 +386,7 @@ function freePageText(tool: string, pageCount: number): string {
 
 server.registerTool("pdf_pages", {
   title: "Extract pages into a new PDF",
-  description: "Pull selected pages out into one new PDF, in the order written: \"2,4-6\" gives four pages. Asking for a page twice copies it twice. The input is never modified. Free tier: files up to 30 pages.",
+  description: "Call this tool to pull selected pages into one new PDF, in the order written: \"2,4-6\" gives four pages. Asking for a page twice copies it twice. The input is never modified. Free tier: files up to 30 pages.",
   inputSchema: {
     path: z.string().describe("The source PDF"),
     pages: z.string().describe("1-based pages and ranges to keep, in output order, e.g. \"2,4-6\" or \"5,1,1\""),
@@ -426,7 +426,7 @@ server.registerTool("pdf_pages", {
 
 server.registerTool("pdf_rotate", {
   title: "Rotate pages",
-  description: "Turn pages by a multiple of 90 degrees, clockwise for a positive number. The rotation is added to whatever the page already had, which is what a sideways scan needs. Writes a new file; the input is never modified. Free tier: files up to 30 pages.",
+  description: "Call this tool to turn pages by a multiple of 90 degrees, clockwise for positive. Rotation is added to whatever the page already had, for a sideways scan. Writes a new file. Free tier: files up to 30 pages.",
   inputSchema: {
     path: z.string().describe("The source PDF"),
     degrees: z.number().int().describe("90, 180, 270 or -90. Positive turns clockwise. Added to the page's existing rotation"),
@@ -568,7 +568,7 @@ function autoSize(text: string, pageWidth: number, position: Position, font: PDF
 
 server.registerTool("pdf_stamp", {
   title: "Stamp text on a PDF",
-  description: "Draw a word such as PAID or DRAFT across the pages, in a colour and position you choose. Writes a new file; the input is never modified. Free tier: the PAID and DRAFT presets in their preset colours.",
+  description: "Call this tool to draw a word such as PAID or DRAFT across the pages, in a colour and position you choose. Writes a new file; input untouched. Free tier: the PAID and DRAFT presets in their preset colours.",
   inputSchema: {
     path: z.string().describe("The source PDF"),
     text: z.string().min(1).describe("What to stamp. PAID and DRAFT are presets with their own colour; any other text is Pro"),
@@ -584,7 +584,7 @@ server.registerTool("pdf_stamp", {
 
 server.registerTool("pdf_watermark_business", {
   title: "Stamp your business details in the footer",
-  description: "Put your own business name and VAT id in the footer of every page, from the shared business profile that mcp-invoice and mcp-docx write. Use it before sending a document out. Pro.",
+  description: "Call this tool to put your business name and VAT id in the footer of every page, from the shared profile mcp-invoice and mcp-docx write. Use it before sending a document out. Pro.",
   inputSchema: {
     path: z.string().describe("The source PDF"),
     out_path: z.string().describe("Where to write the footed PDF"),
@@ -626,7 +626,7 @@ server.registerTool("pdf_watermark_business", {
 
 server.registerTool("pdf_reorder", {
   title: "Reorder the pages of a PDF",
-  description: "Write a new PDF with the pages in the order you give. The order must name every page exactly once, so nothing is dropped by accident - use pdf_pages when you do want a subset. Pro.",
+  description: "Call this tool to write a new PDF with pages in the order you give. The order must name every page exactly once, so nothing drops by accident; use pdf_pages for a subset. Pro.",
   inputSchema: {
     path: z.string().describe("The source PDF"),
     order: z.array(z.number().int().positive()).min(1).describe("The 1-based page numbers in their new order, e.g. [3,1,2] for a three-page file. Every page must appear exactly once"),
@@ -683,7 +683,7 @@ server.registerTool("pdf_reorder", {
 
 server.registerTool("pdf_text", {
   title: "Read the text of a PDF",
-  description: "Best-effort text extraction: the page content streams are decompressed and the text-showing operators are read. It works on PDFs written with standard fonts (exports from word processors, invoices, reports). It returns nothing for a scan - there is no OCR - and glyph indices instead of letters when a font ships a custom encoding, and it says which case you are in. Read-only. Free tier: unlimited.",
+  description: "Call this tool for best-effort text extraction from standard-font PDFs. Returns nothing for a scan (no OCR), or glyph indices for a custom-encoded font, and says which case applies. Read-only. Free tier: unlimited.",
   inputSchema: {
     path: z.string().describe("The PDF to read"),
     pages: z.string().optional().describe("Which pages, e.g. \"1\" or \"2,4-6\". Omit for every page"),
