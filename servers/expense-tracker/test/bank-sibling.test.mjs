@@ -72,14 +72,20 @@ async function started(t, env) {
   return c;
 }
 
+// The free tier reads a window of the last FREE_WINDOW_DAYS days measured from TODAY, so
+// hard-coded August dates in this fixture silently fell out of range once the calendar moved
+// past them and the count dropped from 2 to 1. Every date here is relative to today.
+const daysAgo = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+
 test("expense_summary names the bank tool when bank-statement holds transactions in range", async (t) => {
   const c = await started(t);
+  const d3 = daysAgo(3), d5 = daysAgo(5);
   writeBankDb(c.dataHome, [
-    { id: "1", account: "Revolut", date: "2026-08-05", description: "Spotify", amount_minor: -999, currency: "EUR", bank: "revolut", dedupe: "a", imported: "2026-08-05T00:00:00.000Z" },
-    { id: "2", account: "Revolut", date: "2026-08-07", description: "Adobe", amount_minor: -6150, currency: "EUR", bank: "revolut", dedupe: "b", imported: "2026-08-07T00:00:00.000Z" },
+    { id: "1", account: "Revolut", date: d5, description: "Spotify", amount_minor: -999, currency: "EUR", bank: "revolut", dedupe: "a", imported: `${d5}T00:00:00.000Z` },
+    { id: "2", account: "Revolut", date: d3, description: "Adobe", amount_minor: -6150, currency: "EUR", bank: "revolut", dedupe: "b", imported: `${d3}T00:00:00.000Z` },
   ]);
-  await c.call("expense_add", { amount: 61.50, currency: "EUR", category: "software", merchant: "Adobe", date: "2026-08-07" });
-  const r = JSON.parse((await c.call("expense_summary", { from: "2026-08-01", to: "2026-08-31", group_by: "category" })).text);
+  await c.call("expense_add", { amount: 61.50, currency: "EUR", category: "software", merchant: "Adobe", date: d3 });
+  const r = JSON.parse((await c.call("expense_summary", { from: daysAgo(10), to: daysAgo(0), group_by: "category" })).text);
   assert.match(r.bank_ledger, /2 transactions/);
   assert.match(r.bank_ledger, /statement_summary/);
 });
@@ -139,4 +145,34 @@ test("tool descriptions say receipts only and name bank-statement, under 220 cha
     assert.ok(tool.description.length <= 220, `${name} description is ${tool.description.length} chars`);
     assert.match(tool.description, /bank-statement/);
   }
+});
+
+// Profile-first sweep (docs/PROFILE_FIRST_RESULT.md), the D-R64 species: expense_add
+// assumed EUR for a caller whose shared business profile already said PLN. Chain: the call,
+// then expense_settings, then the shared profile, then EUR.
+test("expense_add takes its currency from the shared business profile", async (t) => {
+  const c = await started(t);
+  const { mkdirSync, writeFileSync: wf } = await import("node:fs");
+  const dir = join(c.dataHome, "mcp-servers", "profile");
+  mkdirSync(dir, { recursive: true });
+  wf(join(dir, "business.json"), JSON.stringify({ name: "Nova Studio", default_currency: "PLN" }));
+
+  const r = await c.call("expense_add", { amount: 100, merchant: "Adobe" });
+  assert.equal(r.isError, false, r.text);
+  assert.match(r.text, /PLN/);
+  assert.match(r.text, /shared business profile \(default_currency\)/);
+
+  // An explicit currency still wins and is not annotated as profile-sourced.
+  const r2 = await c.call("expense_add", { amount: 100, currency: "GBP", merchant: "Adobe" });
+  assert.equal(r2.isError, false, r2.text);
+  assert.match(r2.text, /GBP/);
+  assert.doesNotMatch(r2.text, /shared business profile \(default_currency\)/);
+});
+
+test("expense_add with no profile currency still falls back to EUR, unannotated", async (t) => {
+  const c = await started(t);
+  const r = await c.call("expense_add", { amount: 100, merchant: "Adobe" });
+  assert.equal(r.isError, false, r.text);
+  assert.match(r.text, /EUR/);
+  assert.doesNotMatch(r.text, /shared business profile \(default_currency\)/);
 });

@@ -175,7 +175,7 @@ server.registerTool("expense_add", {
   description: "Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess.",
   inputSchema: {
     amount: amount("amount").describe("Gross amount on the receipt, in major units, e.g. 12.34. It is stored as integer minor units in the expense's own currency, so nothing is lost to floating point."),
-    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("ISO code, default EUR"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("ISO code. Defaults to your expense_settings default_currency, else the shared business profile's default_currency, else EUR"),
     category: text().optional().describe("Category, e.g. software, travel, office. Omit and the stored category rules are matched against the merchant to fill it in"),
     merchant: text().optional().describe("Who was paid, e.g. Adobe"),
     date: text(10).optional().describe("ISO date YYYY-MM-DD, default today"),
@@ -192,7 +192,13 @@ server.registerTool("expense_add", {
     const date = a.date ?? isoToday();
     if (!isIsoDate(date)) return fail(`date must be a real calendar date as YYYY-MM-DD, got "${date}".`);
     const settings = load().settings;
-    const currency = normCurrency(a.currency, settings.default_currency ?? "EUR");
+    // Profile-first sweep: the currency you spend and invoice in is business identity. The
+    // chain is the call, then expense_settings, then the shared profile's default_currency,
+    // then EUR. An explicit currency wins and is not annotated.
+    const sharedCurrency = readSharedProfile().default_currency;
+    const profileCurrency = sharedCurrency && /^[A-Za-z]{3}$/.test(sharedCurrency.trim()) ? sharedCurrency.trim() : undefined;
+    const currencyFromProfile = !a.currency && !settings.default_currency && !!profileCurrency;
+    const currency = normCurrency(a.currency, settings.default_currency ?? profileCurrency ?? "EUR");
     if (!isKnownCurrency(currency)) return fail(`"${currency}" is not an ISO 4217 currency code. Use a real code such as EUR, USD, PLN or GBP.`);
     const minor = toMinor(a.amount, currency);
     if (!Number.isSafeInteger(minor)) return fail("that amount is too large to represent exactly.");
@@ -257,6 +263,7 @@ server.registerTool("expense_add", {
         (e.billable
           ? `. Billable: yes${billableDefaulted && a.project ? " (default for an expense with a project; pass billable: false to keep it off the client's invoice)" : ""} - it will appear in expense_to_invoice.`
           : `. Billable: no${billableDefaulted ? " (default with no project)" : ""} - it will NOT appear in expense_to_invoice; pass billable: true to rebill it.`) +
+        (currencyFromProfile ? `. Currency ${currency} came from the shared business profile (default_currency)` : "") +
         (receipt ? `\nReceipt ${receipt.path} sha256 ${receipt.sha256.slice(0, 16)}...` : ""));
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
