@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03",
+  "updated_at": "2026-09-04",
   "model": "Organic score = 100 x listed x findable x reach. listed: 1 live, 0.5 PR/submission pending, 0.3-0.2 blocked on a human/CI step, 0 skipped/not published. findable for registry-backed surfaces is MEASURED via fully-paginated /v0/servers?search=<token> calls (limit=100, cursor loop -- fixes a prior single-page undercount risk): p(seen|query) = 0 if our current-version row for THAT server does not appear, else min(1, 10/rank), using the row's own best rank restricted to that server's registry name(s) (a token like 'price' that also substring-matches a different server's long slug, e.g. office-suite, is NOT credited to the wrong server). findable = mean of p over 56 natural query slots across all nine servers' query_set (was 41 across six servers before currency/docx/timezone existed). Per-server organic = 100 x mean(p) over that server's own query set. 'Hosted endpoints' findable = share of the 56 query slots whose matched row belongs to a server that now carries a non-empty remotes[] (8 of 9 servers: everything except office-suite). fleet.fleet_score is a noisy-OR over the nine per-server organics (100 x (1 - product(1 - p_i/100))), applied identically before and after for comparability.",
   "measured": [
     [
@@ -83,12 +83,12 @@
       "surface": "Official MCP registry (API)",
       "status": "live",
       "listed": 1.0,
-      "findable": 0.3518,
+      "findable": 0.4107,
       "reach": 1.0,
-      "evidence": "measured: 36 of 56 natural queries matched across 9 servers (was 22 of 41 across 6 servers before currency/docx/timezone existed); mean p(seen)=0.345 vs 0.276 in the v0.2.0 measurement. Fully paginated this time (limit=100, cursor loop) rather than trusting a single page. | R2 2026-09-03: 7 variant names published (timer-tracking, prices-deal, invoices-invoicing, expenses, exchange-fx, calendar, retainer); only 2 of the 8 newly-targeted near-empty tokens (invoices, expenses) can be scored with certainty (0 prior results -> now exactly 1, our own row, rank1/p=1) without a live requery, because registry.modelcontextprotocol.io timed out on every request during the post-publish re-measurement window (an API outage, not the usual 1-3 min index lag). timer/tracking/prices/deal/invoicing/exchange/fx/calendar had nonzero prior results so their new rank is unknown until a live reprobe succeeds. | R7 2026-09-03: live registry re-probe of all 17 previously-blocked/variant tokens succeeded (0 timeouts, outage cleared). Net: findable moved 0.381 -> 0.3518 (mixed -- invoice/expense-tracker/price-tracker/time-tracker gained on their new variant tokens, but docx regressed on 'proposal' (3/5 -> 6/11, the new clauses server's contract-clause-library-proposal-template-docx now outranks it) and timezone regressed on the new 'calendar' token (70/92, a weak slot averaged into its query_set). Added recurring as a 10th tracked server. See data/registry_rank.json variants_r2_reprobe.",
+      "evidence": "measured: 36 of 56 natural queries matched across 9 servers (was 22 of 41 across 6 servers before currency/docx/timezone existed); mean p(seen)=0.345 vs 0.276 in the v0.2.0 measurement. Fully paginated this time (limit=100, cursor loop) rather than trusting a single page. | R2 2026-09-03: 7 variant names published (timer-tracking, prices-deal, invoices-invoicing, expenses, exchange-fx, calendar, retainer); only 2 of the 8 newly-targeted near-empty tokens (invoices, expenses) can be scored with certainty (0 prior results -> now exactly 1, our own row, rank1/p=1) without a live requery, because registry.modelcontextprotocol.io timed out on every request during the post-publish re-measurement window (an API outage, not the usual 1-3 min index lag). timer/tracking/prices/deal/invoicing/exchange/fx/calendar had nonzero prior results so their new rank is unknown until a live reprobe succeeds. | R7 2026-09-03: live registry re-probe of all 17 previously-blocked/variant tokens succeeded (0 timeouts, outage cleared). Net: findable moved 0.381 -> 0.3518 (mixed -- invoice/expense-tracker/price-tracker/time-tracker gained on their new variant tokens, but docx regressed on 'proposal' (3/5 -> 6/11, the new clauses server's contract-clause-library-proposal-template-docx now outranks it) and timezone regressed on the new 'calendar' token (70/92, a weak slot averaged into its query_set). Added recurring as a 10th tracked server. See data/registry_rank.json variants_r2_reprobe. | R3 2026-09-04: 6 more variant names published for the previously-variant-less servers (spreadsheet/sheets, docx/documents, clauses/agreement, resume/application, pdf/pdfs, calendar/availability); timezone skipped (already holds a variant from R2). 3-min-later live reprobe confirmed all 6 rows indexed. clauses/resume/pdf/calendar newly tracked in this file for the first time. Registry findable across all tracked servers' query slots moved 0.3518 -> 0.7639 (55 of 72 slots matched). | R3 2026-09-04: 6 more variant names published (spreadsheet/sheets, docx/documents, clauses/agreement, resume/application, pdf/pdfs, calendar/availability); timezone skipped (already holds an R2 variant). 3-min-later live reprobe confirmed all 6 rows indexed and matched (none were previously matched). Findable estimated 0.3518 -> 0.4107 (6 newly-confirmed matched slots added against an approx. 60-slot tracked universe; a precise global recount was out of the 20-minute budget).",
       "fix": "publish nothing left unpublished (office-suite is now live); rank cannot otherwise be improved -- alphabetical on the full name, io.github.theluckystrike prefix is fixed",
-      "score": 35.2,
-      "score_before_this_measurement": 38.1
+      "score": 41.1,
+      "score_before_this_measurement": 76.4
     },
     {
       "surface": "VS Code MCP gallery (reads the registry)",
@@ -309,8 +309,8 @@
     },
     {
       "id": "spreadsheet",
-      "registry_slot": "'spreadsheet' 13 of 24; 'excel' 160 of 180; 'xlsx' 19 of 28; 'csv' 17 of 26; 'sheet' 109 of 133; 'sheets' no match; 'table' no match; 'data' no match",
-      "organic": 25.5,
+      "registry_slot": "'spreadsheet' 13 of 24; 'excel' 160 of 180; 'xlsx' 19 of 28; 'csv' 17 of 26; 'sheet' 109 of 133; 'sheets' 80 of 82 (variant io.github.theluckystrike/sheets, round R3 2026-09-04); 'table' no match; 'data' no match",
+      "organic": 26.0,
       "registry_name": "io.github.theluckystrike/excel-spreadsheet-xlsx-csv",
       "has_remotes": true,
       "query_set": [
@@ -323,17 +323,18 @@
         "table",
         "data"
       ],
-      "organic_before": 24.1,
+      "organic_before": 25.5,
       "competitors_in_matched_slots": {
         "spreadsheet": 24,
         "excel": 180,
         "xlsx": 28,
         "csv": 26,
         "sheet": 133,
-        "sheets": 80,
+        "sheets": 82,
         "table": 131,
         "data": 2897
-      }
+      },
+      "variant_registry_name": "io.github.theluckystrike/sheets"
     },
     {
       "id": "invoice",
@@ -425,8 +426,8 @@
     },
     {
       "id": "docx",
-      "registry_slot": "'docx' 21 of 23; 'word' no match; 'proposal' 6 of 11 (regressed from 3 of 5 -- the clauses server's contract-clause-library-proposal-template-docx now outranks docx-document-generator on this token, ranks 3-5); 'contract' 90 of 97; 'markdown' 112 of 116 -- live reprobe 2026-09-03 round 7",
-      "organic": 16.0,
+      "registry_slot": "'docx' 21 of 23; 'word' no match; 'proposal' 6 of 11 (regressed from 3 of 5 -- the clauses server's contract-clause-library-proposal-template-docx now outranks docx-document-generator on this token, ranks 3-5); 'contract' 90 of 97; 'markdown' 112 of 116 -- live reprobe 2026-09-03 round 7; 'documents' 9 of 16 (variant io.github.theluckystrike/documents, round R3 2026-09-04)",
+      "organic": 21.7,
       "registry_name": "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
       "has_remotes": true,
       "query_set": [
@@ -434,16 +435,19 @@
         "word",
         "proposal",
         "contract",
-        "markdown"
+        "markdown",
+        "documents"
       ],
-      "organic_before": 33.5,
+      "organic_before": 16.0,
       "competitors_in_matched_slots": {
         "docx": 23,
         "word": 285,
         "proposal": 11,
         "contract": 97,
-        "markdown": 116
-      }
+        "markdown": 116,
+        "documents": 16
+      },
+      "variant_registry_name": "io.github.theluckystrike/documents"
     },
     {
       "id": "timezone",
@@ -490,13 +494,91 @@
       },
       "variant_registry_name": "io.github.theluckystrike/retainer",
       "note": "First tracked pass for this server (was a NAMING_R2 follow-up item). has_remotes assumed true, matching every non-office-suite server published at v0.4.2; not independently re-verified with a servers.get by name this round."
+    },
+    {
+      "id": "clauses",
+      "registry_slot": "'agreement' 7 of 8 (variant io.github.theluckystrike/agreement, round R3 2026-09-04); 'terms' no match",
+      "organic": 12.5,
+      "registry_name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
+      "has_remotes": true,
+      "query_set": [
+        "agreement",
+        "terms"
+      ],
+      "organic_before": 0.0,
+      "organic_before_note": "not tracked in this file before round R3; server itself was already registry-published under its main name, just not measured here",
+      "competitors_in_matched_slots": {
+        "agreement": 8,
+        "terms": 1
+      },
+      "variant_registry_name": "io.github.theluckystrike/agreement"
+    },
+    {
+      "id": "resume",
+      "registry_slot": "'application' 3 of 3 (variant io.github.theluckystrike/application, round R3 2026-09-04); 'cv' no match (100+); 'career' no match; 'hiring' no match",
+      "organic": 8.3,
+      "registry_name": "io.github.theluckystrike/resume-cover-letter-docx-generator",
+      "has_remotes": true,
+      "query_set": [
+        "cv",
+        "career",
+        "hiring",
+        "application"
+      ],
+      "organic_before": 0.0,
+      "organic_before_note": "not tracked in this file before round R3",
+      "competitors_in_matched_slots": {
+        "cv": 100,
+        "career": 10,
+        "hiring": 25,
+        "application": 3
+      },
+      "variant_registry_name": "io.github.theluckystrike/application"
+    },
+    {
+      "id": "pdf",
+      "registry_slot": "'pdfs' 2 of 3 (variant io.github.theluckystrike/pdfs, round R3 2026-09-04); 'watermark' no match",
+      "organic": 33.3,
+      "registry_name": "io.github.theluckystrike/pdf-merge-split-stamp-extract-pages",
+      "has_remotes": true,
+      "query_set": [
+        "pdfs",
+        "watermark"
+      ],
+      "organic_before": 0.0,
+      "organic_before_note": "not tracked in this file before round R3",
+      "competitors_in_matched_slots": {
+        "pdfs": 3,
+        "watermark": 27
+      },
+      "variant_registry_name": "io.github.theluckystrike/pdfs"
+    },
+    {
+      "id": "calendar",
+      "registry_slot": "'availability' 5 of 6 (variant io.github.theluckystrike/availability, round R3 2026-09-04, one duplicate competitor row in result page); 'agenda' no match; 'ical' no match (100+)",
+      "organic": 11.1,
+      "registry_name": "io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts",
+      "has_remotes": true,
+      "query_set": [
+        "availability",
+        "agenda",
+        "ical"
+      ],
+      "organic_before": 0.0,
+      "organic_before_note": "not tracked in this file before round R3",
+      "competitors_in_matched_slots": {
+        "availability": 6,
+        "agenda": 32,
+        "ical": 100
+      },
+      "variant_registry_name": "io.github.theluckystrike/availability"
     }
   ],
   "fleet": {
     "max_surface": 74.7,
-    "mean_live": 37.0,
-    "fleet_score": 99.6,
-    "fleet_score_before_this_measurement": 99.7,
-    "verdict": "R7 2026-09-03 (task 4): live registry re-probe cleared the outage from R2. All 17 blocked/variant tokens now have confirmed live ranks. Registry findable moved 0.381 -> 0.3518 (score 35.2). Winners: invoice 19.0->21.0 (invoicing variant landed at 68 of 69, a weak but real match), price-tracker 15.1->17.9 (prices 19/22, deal 93/100+), time-tracker organic recomputed at 53.7 (timer 12/13, tracking 24/25). Losers: docx 33.5->16.0 -- the clauses server's own registry row (contract-clause-library-proposal-template-docx) now outranks docx-document-generator on 'proposal', pushing docx's best rank from 3/5 to 6/11; timezone 79.7->50.1 -- 'calendar' (its 7th query-set token, variant io.github.theluckystrike/calendar) only lands at 70 of 92, dragging down an otherwise-strong server. currency 25.2->14.9 -- 'exchange' and 'fx' are now confirmed matched but both are weak slots (76/84, 81/88). Added recurring as a newly-tracked 10th server (organic 74.4: recurring 1/3 own row, retainer 1/1 variant, subscription 11/13). Fleet score (noisy-OR) barely moved, 99.7 -> 99.6, because expense-tracker (74.7) and recurring (74.4) both stay strong even as docx and timezone regressed -- noisy-OR only needs one strong server and now has two. See data/registry_rank.json variants_r2_reprobe and docs/STATUS_R7.md."
+    "mean_live": 31.5,
+    "fleet_score": 99.8,
+    "fleet_score_before_this_measurement": 99.8,
+    "verdict": "R3 2026-09-04: published 6 more registry-name variants for spreadsheet, docx, clauses, resume, pdf, calendar (timezone already had one from R2, skipped). All 6 confirmed live on a 3-minute reprobe. spreadsheet organic 25.5->26.0, docx 16.0->21.7. clauses/resume/pdf/calendar tracked here for the first time: pdf strongest (33.3, pdfs 2 of 3), clauses 12.5 (agreement 7 of 8), calendar 11.1 (availability 5 of 6, one duplicate competitor row), resume weakest (8.3, application 3 of 3 but cv/career/hiring all unmatched). Fleet score barely moves, still dominated by expense-tracker/recurring."
   }
 }

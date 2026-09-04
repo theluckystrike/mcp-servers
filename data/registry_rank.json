@@ -3221,5 +3221,245 @@
         ]
       }
     }
+  },
+  "variants_r3": {
+    "measured_at": "2026-09-04",
+    "method": "single GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100, 20s timeout, sequential, no background probing",
+    "servers_without_variant_before_this_round": [
+      "spreadsheet",
+      "docx",
+      "clauses",
+      "resume",
+      "pdf",
+      "calendar"
+    ],
+    "note": "timezone was listed as needing a variant by the task brief but already holds servers/timezone/server.variant.json (io.github.theluckystrike/calendar, published round 2 2026-09-03) -- skipped rather than double-publish or overwrite an existing variant.",
+    "candidate_tokens_probed": [
+      "sheets",
+      "sheet",
+      "table",
+      "data",
+      "xls",
+      "ods",
+      "word",
+      "document",
+      "documents",
+      "letter",
+      "template",
+      "agreement",
+      "terms",
+      "nda",
+      "cv",
+      "career",
+      "hiring",
+      "application",
+      "clock",
+      "schedule",
+      "scheduler",
+      "availability",
+      "pdfs",
+      "pages",
+      "merge",
+      "watermark",
+      "agenda",
+      "events",
+      "ical"
+    ],
+    "picks": [
+      {
+        "server": "spreadsheet",
+        "variant_name": "io.github.theluckystrike/sheets",
+        "token": "sheets",
+        "pre_publish": {
+          "count": 81,
+          "held": false
+        },
+        "post_publish_3min": {
+          "count": 82,
+          "held": true,
+          "our_rank": 80,
+          "total": 82
+        }
+      },
+      {
+        "server": "docx",
+        "variant_name": "io.github.theluckystrike/documents",
+        "token": "documents",
+        "pre_publish": {
+          "count": 15,
+          "held": false
+        },
+        "post_publish_3min": {
+          "count": 16,
+          "held": true,
+          "our_rank": 9,
+          "total": 16
+        }
+      },
+      {
+        "server": "clauses",
+        "variant_name": "io.github.theluckystrike/agreement",
+        "token": "agreement",
+        "pre_publish": {
+          "count": 7,
+          "held": false
+        },
+        "post_publish_3min": {
+          "count": 8,
+          "held": true,
+          "our_rank": 7,
+          "total": 8
+        }
+      },
+      {
+        "server": "resume",
+        "variant_name": "io.github.theluckystrike/application",
+        "token": "application",
+        "pre_publish": {
+          "count": 2,
+          "held": false
+        },
+        "post_publish_3min": {
+          "count": 3,
+          "held": true,
+          "our_rank": 3,
+          "total": 3
+        }
+      },
+      {
+        "server": "pdf",
+        "variant_name": "io.github.theluckystrike/pdfs",
+        "token": "pdfs",
+        "pre_publish": {
+          "count": 2,
+          "held": false
+        },
+        "post_publish_3min": {
+          "count": 3,
+          "held": true,
+          "our_rank": 2,
+          "total": 3
+        }
+      },
+      {
+        "server": "calendar",
+        "variant_name": "io.github.theluckystrike/availability",
+        "token": "availability",
+        "pre_publish": {
+          "count": 5,
+          "held": false
+        },
+        "post_publish_3min": {
+          "count": 6,
+          "held": true,
+          "our_rank": 5,
+          "total": 6,
+          "note": "one duplicate competitor row (com.letshum/internet-availability) appears twice in the result page"
+        }
+      }
+    ],
+    "other_probed_tokens_not_picked": {
+      "sheet": {
+        "count": 100,
+        "held": false,
+        "more": true
+      },
+      "table": {
+        "count": 100,
+        "held": false,
+        "more": true
+      },
+      "data": {
+        "count": 100,
+        "held": false,
+        "more": true
+      },
+      "xls": {
+        "count": 32,
+        "held": true
+      },
+      "ods": {
+        "count": 81,
+        "held": false
+      },
+      "word": {
+        "count": 100,
+        "held": false,
+        "more": true
+      },
+      "document": {
+        "count": 100,
+        "held": true,
+        "more": true
+      },
+      "letter": {
+        "count": 55,
+        "held": true
+      },
+      "template": {
+        "count": 100,
+        "held": false,
+        "more": true
+      },
+      "terms": {
+        "count": 1,
+        "held": false
+      },
+      "nda": {
+        "count": 100,
+        "held": false,
+        "more": true
+      },
+      "cv": {
+        "count": 100,
+        "held": false,
+        "more": true
+      },
+      "career": {
+        "count": 10,
+        "held": false
+      },
+      "hiring": {
+        "count": 25,
+        "held": false
+      },
+      "clock": {
+        "count": 21,
+        "held": true
+      },
+      "schedule": {
+        "count": 22,
+        "held": true
+      },
+      "scheduler": {
+        "count": 12,
+        "held": true
+      },
+      "pages": {
+        "count": 37,
+        "held": true
+      },
+      "merge": {
+        "count": 51,
+        "held": true
+      },
+      "watermark": {
+        "count": 27,
+        "held": false
+      },
+      "agenda": {
+        "count": 32,
+        "held": false
+      },
+      "events": {
+        "count": 46,
+        "held": true
+      },
+      "ical": {
+        "count": 100,
+        "held": false,
+        "more": true
+      }
+    }
   }
 }
