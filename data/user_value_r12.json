@@ -1,0 +1,407 @@
+{
+  "at": "2026-09-04T04:30:00Z",
+  "round": 12,
+  "compares_to": "data/user_value_r11.json",
+  "scope": "HOSTED round for the three newest servers - quotes (Extension 7), calendar and pdf (Extension 4) - through the URL-token endpoints https://mcp.zovo.one/mcp/<server>/t/<token> as a claude.ai user arrives. Eighteen prompts, six per server, adapted from Part 2 of docs/QUOTES_AUDIT.md, docs/CALENDAR_AUDIT.md and docs/PDF_AUDIT.md, with the two things only the hosted path forces: two PDFs pasted as base64 through pdf_upload, and an .ics pasted as text because ics_import path is refused by design and ics_import url is Pro, so paste is the whole free path. Free tier, one fresh anonymous token, one seed (invoice business_set by curl) so the quotes lane had a business identity the way the local Part 2 did.",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_9018420e8c11890e1671d0ea5ca1887e) and reused for every lane. Registered PER LANE only, because the free tier is 600 calls per hour per token and a CLI session re-handshakes every registered endpoint on every turn (D-R53): quotes+invoice, calendar+timezone, pdf alone. Client: claude CLI 2.1.260, --model sonnet, --mcp-config with type http and the /t/<token> URL, --strict-mcp-config, no headers anywhere, per-tool allowlist of 61 mcp__<server>__<tool> entries built from a live tools/list (quotes 11, invoice 12, calendar 12, timezone 11, pdf 15), --output-format stream-json --verbose --max-turns 20, one --session-id then five --resume per lane. Per r11 D-R57 every lane ran in an EMPTY working directory with the CLI own filesystem tools disallowed (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit); nothing shelled out. Fixtures sized under the base64 ceiling r11 D-R51 documented: two 1-page pdf-lib PDFs of 1009 and 1011 bytes (1348 characters of base64 each) and a 1272-byte .ics with 8 Europe/Warsaw events for the week of 2026-09-07. Tool-call counts exclude the client ToolSearch schema lookups. Machine day 2026-09-04.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, 7799 bytes, minted anon_9018420e8c11890e1671d0ea5ca1887e",
+    "registration": "three lanes, five http entries total, each https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; every lane connected first try",
+    "tools_list": {
+      "quotes": 11,
+      "invoice": 12,
+      "calendar": 12,
+      "timezone": 11,
+      "pdf": 15
+    }
+  },
+  "scenarios": [
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes + invoice",
+      "id": "q1",
+      "prompt": "Quote Nova Ltd for 12 hours of design at EUR 90 an hour and a EUR 300 logo, valid two weeks.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 14.5,
+      "tools": [
+        "quote_create"
+      ],
+      "note": "One call with validity_days 14. Q-2026-0001, valid_until 2026-09-18, EUR 1080.00 + EUR 300.00, 23% on EUR 1380.00 = EUR 317.40, total_minor 169740. The 23% came from the shared profile and the model said so; it named the missing client address rather than inventing one."
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes + invoice",
+      "id": "q2",
+      "prompt": "What quotes are open and when do they expire?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 5.5,
+      "tools": [
+        "quote_list"
+      ],
+      "note": "One quote_list {state: open}: one row, EUR 1697.40, expires 2026-09-18, 14 days left. Nothing invented."
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes + invoice",
+      "id": "q3",
+      "prompt": "Give me the text I can email to Nova for that quote.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10,
+      "tools": [
+        "quote_send_text"
+      ],
+      "note": "Pasteable email with the totals column aligned, valid-until line and the profile signature. GET the link: 200, text/plain; charset=utf-8, filename Q-2026-0001.txt, 465 bytes, opens Hello Nova Ltd,."
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes + invoice",
+      "id": "q4",
+      "prompt": "Nova accepted. Invoice it, and then show me every invoice I have.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 13.2,
+      "tools": [
+        "quote_accept",
+        "invoice_list"
+      ],
+      "note": "quote_accept -> INV-2026-0001 due 2026-09-18, totals_check EUR 1697.40 on both sides, note naming the endpoint rather than a directory. Then invoice_list on the OTHER hosted endpoint with the same token returned that invoice: the shared invoice store is read-write over the URL path."
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes + invoice",
+      "id": "q5",
+      "prompt": "Acme wanted 3 days of consulting at PLN 1200 a day, so quote them too - and they have just declined it.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 15.6,
+      "tools": [
+        "quote_create",
+        "quote_decline"
+      ],
+      "note": "Currency PLN inferred from the price rather than the profile EUR default; 23% on PLN 3600.00 = PLN 828.00, total PLN 4428.00, default 30-day validity because this prompt did not ask for two weeks. quote_decline -> open_quotes_now 0."
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes + invoice",
+      "id": "q6",
+      "prompt": "What is my win rate this quarter?",
+      "score": 2,
+      "tool_calls": 2,
+      "seconds": 14.6,
+      "tools": [
+        "quote_report",
+        "quote_list"
+      ],
+      "note": "quote_report is Pro; the refusal carried both prices and both tenant-carrying links and the model did not buy. It computed from quote_list {from, to}: 1 accepted of 2 decided = 50%, which is right, and named the tool it would have used. Same shape as r11 D-R55: the paywall removes the server arithmetic, not the answer."
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar + timezone",
+      "id": "c1",
+      "prompt": "Here is my work calendar (1272-byte .ics pasted). Import it as Work.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 13.3,
+      "tools": [
+        "ics_import"
+      ],
+      "note": "One ics_import {text, name}: 8 event definitions, 1 recurring, Source text, kept for your token (1 KB), the free counter (1 of 2 calendars used) and a ready events_list next step. No path anywhere. The model volunteered the Wednesday overlap unprompted."
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar + timezone",
+      "id": "c2",
+      "prompt": "What is on my calendar next week?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 14.8,
+      "tools": [
+        "events_list"
+      ],
+      "note": "Resolved next week to 2026-09-07..13 itself. All 8 rows, times in Europe/Warsaw from the shared profile, the standup occurrence expanded from the RRULE, the all-day holiday as all day. It flagged both the overlap and the vendor sync landing on the holiday."
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar + timezone",
+      "id": "c3",
+      "prompt": "Where do I have a free two-hour block next week between 9 and 17 Warsaw time?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.1,
+      "tools": [
+        "free_busy"
+      ],
+      "note": "One free_busy with zone Europe/Warsaw passed through: 13h 45m booked inside working hours, 26h 15m free, six busy blocks, the two overlapping Wednesday events collapsed into one 10:00-12:00 busy block."
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar + timezone",
+      "id": "c4",
+      "prompt": "Do I have any conflicts next week?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 7.8,
+      "tools": [
+        "conflicts"
+      ],
+      "note": "Exactly one pair: 2026-09-09, 60 min, deep-work block against the design review. The all-day holiday against the Thursday vendor sync is correctly not a timed clash, and the model said so rather than leaving it silent."
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar + timezone",
+      "id": "c5",
+      "prompt": "Export next week events to a calendar file I can download.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.8,
+      "tools": [
+        "event_export"
+      ],
+      "note": "One event_export, 8 events, first and last named, free-tier export cap stated. GET the link: 200, text/calendar; charset=utf-8, filename next_week.ics, 1481 bytes, 8 VEVENTs, and the holiday round-trips as DTSTART;VALUE=DATE:20260910 / DTEND;VALUE=DATE:20260911 - the CALENDAR_AUDIT all-day fix holds hosted."
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar + timezone",
+      "id": "c6",
+      "prompt": "My team publishes its calendar at <url> - can you subscribe to that feed and pull it in?",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 27.7,
+      "tools": [
+        "ics_import"
+      ],
+      "note": "Refused: importing a calendar from a URL is Pro, both prices, both tenant-carrying links. The model neither bought nor invented events. The deduction is what the refusal did not say - that pasting the file contents gets the identical events for nothing, which is the only free hosted path since ics_import path is refused by design. The model worked it out; the endpoint did not. D-R58, fixed."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p1",
+      "prompt": "Two 1-page PDFs pasted as base64: upload them as invoice-a and invoice-b.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 76.4,
+      "tools": [
+        "pdf_upload",
+        "pdf_upload"
+      ],
+      "note": "Uploaded invoice-a.pdf (1009 bytes) and invoice-b.pdf (1011 bytes), exactly the fixture sizes, each answering with the name to pass back. No filesystem call at all, which is the D-R57 re-run condition holding. 76.4 s for 2696 characters of base64 is the cost, not a failure (D-R62)."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p2",
+      "prompt": "Merge those two into one file.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.7,
+      "tools": [
+        "pdf_merge"
+      ],
+      "note": "One pdf_merge {paths, out_path}: 2 pages, both sources listed with their page counts. GET: 200, application/pdf, filename invoices-merged.pdf, 2001 bytes, %PDF-1.7."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p3",
+      "prompt": "Stamp the merged file PAID and give me the file.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.5,
+      "tools": [
+        "pdf_stamp"
+      ],
+      "note": "One pdf_stamp on 2 pages; it volunteered that the stamp is selectable drawn text and the input is unchanged. GET: 3069 bytes, application/pdf. Local decode: both pages carry PAID and still carry Status: UNPAID. The response leaked the virtual root as source /out/invoices-merged.pdf - D-R59, fixed; it did not cost this answer because the model never repeated it."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p4",
+      "prompt": "How many pages is that?",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 2.9,
+      "tools": [],
+      "note": "Answered 2 pages with NO tool call, restating pdf_merge pages: 2 from the previous turn. The number is right and the page count had not changed, but a stamp had rewritten the file in between and pdf_count costs one call. D-R63, client-side."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p5",
+      "prompt": "What does page 2 say the total is?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.3,
+      "tools": [
+        "pdf_text"
+      ],
+      "note": "pdf_text {pages: 2} read Total EUR 2500.00 off the stamped file, and the answer added that the page own status field still says UNPAID under the stamp - the file/record gap named unprompted. The tool printed how it read the page: node:zlib, no OCR, drawing order."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p6",
+      "prompt": "Split the stamped file back into single pages.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.4,
+      "tools": [
+        "pdf_split"
+      ],
+      "note": "One pdf_split, two parts, two links. GET both: 2031 and 2033 bytes, application/pdf, filenames invoices-merged-paid-page1.pdf and -page2.pdf, 1 page each, each carrying its own invoice text plus PAID."
+    }
+  ],
+  "totals": {
+    "score": 51,
+    "max": 54,
+    "tool_calls": 21,
+    "seconds": 272.1,
+    "per_server": {
+      "quotes": {
+        "score": 17,
+        "max": 18
+      },
+      "calendar": {
+        "score": 17,
+        "max": 18
+      },
+      "pdf": {
+        "score": 17,
+        "max": 18
+      }
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "three lanes, five /t/<token> entries, every lane connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The quote store",
+      "evidence": "quote_list by curl: Q-2026-0001 Nova Ltd accepted EUR 1697.40 with invoice_number INV-2026-0001; Q-2026-0002 Acme declined PLN 4428.00",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The accepted quote really became an invoice on the OTHER endpoint",
+      "evidence": "invoice_get INV-2026-0001 on /mcp/invoice, same token: gross_minor 108000, tax_rate 23, due 2026-09-18, client Nova Ltd",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The quote text download",
+      "evidence": "GET /mcp/download/95698b93... -> 200, text/plain; charset=utf-8, Q-2026-0001.txt, 465 bytes, opens Hello Nova Ltd,",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The calendar export is a real calendar and keeps the all-day event",
+      "evidence": "GET -> 200, text/calendar; charset=utf-8, next_week.ics, 1481 bytes, 8 VEVENT, holiday as DTSTART;VALUE=DATE:20260910 / DTEND;VALUE=DATE:20260911",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Attendees survive the export",
+      "evidence": "0 ATTENDEE lines in the exported .ics against 1 in the source fixture",
+      "verdict": "FAIL, D-R61, logged"
+    },
+    {
+      "claim": "The PDF downloads are real PDFs",
+      "evidence": "four GET /mcp/download/<id>: 2001 / 3069 / 2031 / 2033 bytes, all application/pdf, all %PDF-1.7, filenames matching the names the caller chose",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Page counts and page text, decoded locally",
+      "evidence": "pdf-lib: merged 2 pages, stamped 2, each split part 1. Inflating every content stream and reading the hex Tj operands gives page 1 Acme Ltd - Invoice INV-A-001 / Design sprint / Total EUR 1000.00 / Status: UNPAID and page 2 the INV-B-002 equivalent with Total EUR 2500.00, with PAID present twice in the stamped file and once in each split part",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "pdf_files shows what the token owns",
+      "evidence": "2 uploaded (1009, 1011) and 4 generated, every name stripped of the virtual root",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The url gate names the free path",
+      "evidence": "before: Pro price and links only. After the fix, live: Free alternative, same result: ... ics_import {name: \"Team\", text: \"<the .ics contents>\"} ...",
+      "verdict": "FIXED, verified live"
+    },
+    {
+      "claim": "A pdf tool echoed input path",
+      "evidence": "before: source /out/invoices-merged.pdf. After the fix, live: source invoices-merged.pdf",
+      "verdict": "FIXED, verified live"
+    },
+    {
+      "claim": "business_set on the hosted invoice endpoint",
+      "evidence": "reply names /home/mcp/.local/share/mcp-servers/invoice and lists seven profile readers, none of them quotes, pdf or calendar",
+      "verdict": "FAIL, D-R60, logged"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R58",
+      "severity": "medium",
+      "server": "calendar",
+      "status": "fixed",
+      "hosted_only": false,
+      "summary": "The Pro refusal for ics_import {url} named the price and never the free paste path that gets the identical events. Hosted, path is refused by design and url is Pro, so paste is the only free way in, and this is the gate a free caller hits first. servers/calendar/src/index.ts now answers with the upgrade text plus a runnable ics_import {name, text} example carrying the name the caller already asked for. Test: D-R58: the url gate names the free text path that gets the same events."
+    },
+    {
+      "id": "D-R59",
+      "severity": "medium",
+      "server": "pdf",
+      "status": "fixed",
+      "hosted_only": true,
+      "summary": "pdf_split, pdf_rotate, pdf_stamp and pdf_reorder echo the input path back as source, and the link substitution only rewrites paths published in that request, so an input published by an EARLIER request printed raw as /out/invoices-merged.pdf - a virtual root the caller cannot see and not a string any tool accepts. remote/src/index.ts now gives pdf strip: [/uploads/, /out/], the same pair image and bank-statement already carry. Live: source invoices-merged.pdf."
+    },
+    {
+      "id": "D-R60",
+      "severity": "low",
+      "server": "invoice",
+      "status": "logged",
+      "hosted_only": true,
+      "summary": "Hosted business_set answers Business profile saved to /home/mcp/.local/share/mcp-servers/invoice and lists docx, expense-tracker, recurring, time-tracker, timezone, resume and clauses as the readers. The directory is the worker virtual homedir, and the list omits quotes, pdf and calendar, all three of which read that profile. The string lives in servers/invoice/src/index.ts, held by another agent this session. Fix direction: name the endpoint, not the path, and derive the reader list from the servers that import readSharedProfile."
+    },
+    {
+      "id": "D-R61",
+      "severity": "low",
+      "server": "calendar",
+      "status": "logged",
+      "hosted_only": false,
+      "summary": "event_export drops ATTENDEE lines. events_list shows the attendee and event_to_time_entry puts it in the note, but a round trip through export loses who was invited. Fix direction: carry ATTENDEE and ORGANIZER through icsText() the way LOCATION already is."
+    },
+    {
+      "id": "D-R62",
+      "severity": "low",
+      "server": "pdf",
+      "status": "logged (client-side, measured)",
+      "hosted_only": true,
+      "summary": "r11 D-R51 fixed what the upload tools say; it did not make the paste cheap. Two PDFs at 1348 characters of base64 each - roughly a seventieth of the 190 KB request-body ceiling - cost 76.4 s in one turn against 8.7 s for the next turn in the same session. The honest number for a hosted paste is tens of seconds for a couple of KB."
+    },
+    {
+      "id": "D-R63",
+      "severity": "low",
+      "server": "pdf",
+      "status": "logged (client-side)",
+      "hosted_only": false,
+      "summary": "p4 answered a page count with no tool call, restating pdf_merge pages: 2 from the previous turn, after a stamp had rewritten the file in between. pdf_count exists and costs one call. Nothing server-side to fix; noted because it is the failure mode a scorecard cannot distinguish from a correct read."
+    }
+  ],
+  "tests": {
+    "servers/calendar": "51/51 (was 50), new: D-R58: the url gate names the free text path that gets the same events",
+    "scripts/validate.mjs": "remote 50/50, billing 23/23, validation db run 50 399/399, after the deploy"
+  },
+  "deploy": {
+    "worker": "mcp-remote",
+    "version_id": "24b536d4-ccca-4a19-9da5-2d1f6118b3e4",
+    "note": "remote/src/index.ts pdf strip plus the re-vendored servers/calendar/src/index.ts"
+  },
+  "insight": "r11 seam was an endpoint stating a limit that is not the limit that binds. r12 is the same species one step down: an endpoint stating a PATH and a PRICE that are not the caller. pdf_stamp handed back /out/invoices-merged.pdf, a root with no meaning on the other side of a URL; ics_import answered the one gate a free hosted caller cannot route around with $19 and no mention of the paste that gets the identical events for nothing. The model recovered from both, which is exactly why neither showed up as a wrong answer.",
+  "artifacts": [
+    "docs/USER_VALUE_R12.md",
+    "data/user_value_r12.json",
+    "servers/calendar/src/index.ts",
+    "servers/calendar/test/adversarial.test.mjs",
+    "remote/src/index.ts",
+    "/private/tmp/uv12/"
+  ]
+}

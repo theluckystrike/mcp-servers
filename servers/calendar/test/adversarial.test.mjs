@@ -203,6 +203,21 @@ test("missing and wrong-typed arguments are refused at the schema, and stdout st
   assert.match(textOf(out, 5), /Pro feature/);   // free tier never reaches the network
 });
 
+test("D-R58: the url gate names the free text path that gets the same events", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "cal-r58-"));
+  const { out, bad } = await rpc([
+    { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "ics_import", arguments: { url: "https://example.com/team.ics", name: "Team" } } },
+  ], dir);
+  assert.deepEqual(bad, []);
+  const t = textOf(out, 1);
+  assert.match(t, /Pro feature/);
+  assert.match(t, /Free alternative/);
+  // the alternative has to be usable as written: the tool name, the argument, and the
+  // name the caller already asked for.
+  assert.match(t, /ics_import \{name: "Team", text:/);
+  assert.match(t, /identical/);
+});
+
 test("an all-day event survives export and re-import as a whole day, on any machine zone", async () => {
   const dir = mkdtempSync(join(tmpdir(), "cal-rt-"));
   const src = join(dir, "src.ics");

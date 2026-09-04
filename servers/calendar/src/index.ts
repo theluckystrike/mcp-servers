@@ -324,7 +324,16 @@ server.registerTool("ics_import", {
   let source: CalendarRecord["source"];
   let ref: string | undefined;
   if (a.url && a.url.trim()) {
-    if (!gate.isPro()) return gated("importing a calendar from a URL");
+    // The refusal has to name the free path that does the same thing, or a caller reads
+    // "Pro feature" and stops: url only adds fetching the feed, and text stores the same
+    // events for nothing (D-R58).
+    if (!gate.isPro())
+      return ok(
+        gate.upgradeText("importing a calendar from a URL") +
+          `\n\nFree alternative, same result: open the feed in a browser or download the .ics, then paste the ` +
+          `file contents - ics_import {name: "${name}", text: "<the .ics contents>"}. url only adds fetching the ` +
+          `feed for you; the events, the parser and the free-tier calendar allowance are identical.`,
+      );
     const got = await fetchIcs(a.url.trim());
     raw = got.text; source = "url"; ref = got.finalUrl;
   } else if (a.path && a.path.trim()) {

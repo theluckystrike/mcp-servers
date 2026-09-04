@@ -150,7 +150,11 @@ const SERVERS: Record<string, ServerCfg> = {
     publish: (p) => p.startsWith("/out/"),
     persistPublished: true,
     maxBytes: PDF_MAX_BYTES,
-    strip: ["/uploads/"],
+    // An input path a tool echoes back (pdf_split/pdf_rotate/pdf_stamp/pdf_reorder all report
+    // "source") is NOT published in that request, so the link substitution never touches it and
+    // the caller was shown "/out/invoices-merged.pdf" - a root that exists nowhere they can
+    // reach and is not the name they pass back. Stripped like image and bank-statement do (D-R59).
+    strip: ["/uploads/", "/out/"],
   },
   "calendar": {
     factory: createCalendar as () => McpServer,
