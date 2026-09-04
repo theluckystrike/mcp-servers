@@ -435,6 +435,10 @@ server.registerTool("category_rules", {
       save(db);
       return json({
         rules: db.rules.length, categorised: applied,
+        // D-R52: the read path reports free_limit and the write path did not, so a caller
+        // that had just written rules had to guess how many of the free slots were left.
+        free_limit: gate.isPro() ? undefined : FREE_RULES,
+        rules_remaining: gate.isPro() ? undefined : Math.max(0, FREE_RULES - db.rules.length),
         refused_as_regex: refused.length ? refused : undefined,
         note: refused.length
           ? `${refused.length} pattern(s) could backtrack exponentially and were used as plain substrings instead.`

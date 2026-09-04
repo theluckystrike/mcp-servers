@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T01:53:11.473Z",
+  "generated_at": "2026-09-04T03:08:25.899Z",
   "rounds": [
     {
       "round": 1,
@@ -227,9 +227,34 @@
       },
       "at": "2026-09-03T16:45:00Z",
       "method": "Six local-scope MCP entries in a temp project /private/tmp/uv52: invoice, time-tracker, expense-tracker, timezone, docx, currency, each as https://mcp.zovo.one/"
+    },
+    {
+      "round": 11,
+      "file": "user_value_r11.json",
+      "score": 49,
+      "max": 54,
+      "pct": 91,
+      "scenarios": 18,
+      "per_server": {
+        "kanban": {
+          "score": 17,
+          "max": 18
+        },
+        "image": {
+          "score": 18,
+          "max": 18
+        },
+        "bank-statement": {
+          "score": 14,
+          "max": 18
+        }
+      },
+      "at": "2026-09-04T03:20:00Z",
+      "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_f2a6240310b1076d5eb4824e313c96fb) and reused for every lane. Client: claude CLI 2.1.2"
     }
   ],
   "servers": [
+    "bank-statement",
     "bundle-licence",
     "expense-tracker",
     "hosted/all six",
@@ -240,13 +265,33 @@
     "hosted/invoice, new session",
     "hosted/time-tracker + expense-tracker",
     "hosted/timezone",
+    "image",
     "invoice",
+    "kanban",
     "office-suite",
     "price-tracker",
     "spreadsheet",
     "time-tracker"
   ],
   "matrix": [
+    {
+      "server": "bank-statement",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "14/18"
+      ],
+      "best_pct": 78,
+      "last_round": 11
+    },
     {
       "server": "bundle-licence",
       "cells": [
@@ -255,6 +300,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -276,6 +322,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -293,7 +340,8 @@
         "",
         "",
         "",
-        "2/3"
+        "2/3",
+        ""
       ],
       "best_pct": 67,
       "last_round": 10
@@ -310,7 +358,8 @@
         "",
         "",
         "",
-        "2/3"
+        "2/3",
+        ""
       ],
       "best_pct": 67,
       "last_round": 10
@@ -327,7 +376,8 @@
         "",
         "",
         "",
-        "2/3"
+        "2/3",
+        ""
       ],
       "best_pct": 67,
       "last_round": 10
@@ -344,7 +394,8 @@
         "",
         "",
         "",
-        "2/3"
+        "2/3",
+        ""
       ],
       "best_pct": 67,
       "last_round": 10
@@ -361,7 +412,8 @@
         "",
         "",
         "",
-        "2/3"
+        "2/3",
+        ""
       ],
       "best_pct": 67,
       "last_round": 10
@@ -378,7 +430,8 @@
         "",
         "",
         "",
-        "3/3"
+        "3/3",
+        ""
       ],
       "best_pct": 100,
       "last_round": 10
@@ -395,7 +448,8 @@
         "",
         "",
         "",
-        "3/3"
+        "3/3",
+        ""
       ],
       "best_pct": 100,
       "last_round": 10
@@ -412,10 +466,29 @@
         "",
         "",
         "",
-        "3/3"
+        "3/3",
+        ""
       ],
       "best_pct": 100,
       "last_round": 10
+    },
+    {
+      "server": "image",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "18/18"
+      ],
+      "best_pct": 100,
+      "last_round": 11
     },
     {
       "server": "invoice",
@@ -429,10 +502,29 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
       "last_round": 5
+    },
+    {
+      "server": "kanban",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "17/18"
+      ],
+      "best_pct": 94,
+      "last_round": 11
     },
     {
       "server": "office-suite",
@@ -440,6 +532,7 @@
         "",
         "",
         "8/12",
+        "",
         "",
         "",
         "",
@@ -463,6 +556,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -480,6 +574,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -493,6 +588,7 @@
         "9/9",
         "",
         "9/9",
+        "",
         "",
         "",
         "",
@@ -1268,7 +1364,7 @@
       "severity": "medium",
       "title": "D-R43 (medium) — the $39 every-server price was quoted in every free-cap message and never",
       "status": "fixed",
-      "scraped_status": "open",
+      "scraped_status": "fixed",
       "note": "remote-only, round 10. bundleUrl() carries /buy/bundle?tenant=<anonToken> into upgradeText next to the $39 and into license_status; verified 303 to Stripe with metadata.product bundle and the same tenant. Deployed 7d3f5812.",
       "triaged": true
     },
@@ -1343,6 +1439,55 @@
       "triaged": true
     },
     {
+      "id": "D-R51",
+      "first_seen": "USER_VALUE_R11.md",
+      "severity": "",
+      "title": "D-R51** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R52",
+      "first_seen": "USER_VALUE_R11.md",
+      "severity": "",
+      "title": "D-R52** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R53",
+      "first_seen": "USER_VALUE_R11.md",
+      "severity": "medium",
+      "title": "D-R53 (medium, hosted only) - FIXED and deployed",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R54",
+      "first_seen": "USER_VALUE_R11.md",
+      "severity": "",
+      "title": "D-R54, logged** |",
+      "status": "open"
+    },
+    {
+      "id": "D-R55",
+      "first_seen": "USER_VALUE_R11.md",
+      "severity": "medium",
+      "title": "D-R55 (medium, bank-statement, product) - logged",
+      "status": "open"
+    },
+    {
+      "id": "D-R56",
+      "first_seen": "USER_VALUE_R11.md",
+      "severity": "",
+      "title": "D-R56); the spelling matched anyway |",
+      "status": "open (client or accepted)"
+    },
+    {
+      "id": "D-R57",
+      "first_seen": "USER_VALUE_R11.md",
+      "severity": "",
+      "title": "D-R57 (client-side) - not fixable server-side",
+      "status": "fixed"
+    },
+    {
       "id": "D-T1",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
@@ -1371,15 +1516,16 @@
     }
   ],
   "counts": {
-    "defects": 109,
-    "fixed": 92,
-    "open": 10,
+    "defects": 116,
+    "fixed": 96,
+    "open": 13,
     "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 92,
+      "fixed": 96,
       "client": 3,
-      "open": 10,
+      "open": 12,
+      "open (client or accepted)": 1,
       "superseded": 1
     },
     "unknown_overrides": []

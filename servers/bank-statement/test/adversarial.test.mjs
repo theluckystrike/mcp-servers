@@ -137,6 +137,25 @@ test("a rule with an empty match is refused instead of categorising the whole le
   c.close();
 });
 
+test("D-R52: writing rules reports the free limit and what is left, like the read path does", async () => {
+  const dir = fixtureDir();
+  const p = join(dir, "s.csv");
+  writeFileSync(p, "Date,Description,Amount\n2026-08-01,Spotify,-9.99\n2026-08-02,Coffee,-2.00\n");
+  const c = client({ XDG_DATA_HOME: join(dir, "data"), XDG_CONFIG_HOME: join(dir, "cfg") });
+  await c.start();
+  await c.call("statement_import", { path: p, account: "e" });
+  const read = JSON.parse(textOf(await c.call("category_rules", {})));
+  const written = JSON.parse(textOf(await c.call("category_rules", {
+    rules: [{ match: "spotify", category: "Software" }, { match: "coffee", category: "Meals" }],
+  })));
+  assert.equal(written.rules, 2);
+  assert.equal(written.categorised, 2);
+  // the number the read path already reported, now on the write path too
+  assert.equal(written.free_limit, read.free_limit);
+  assert.equal(written.rules_remaining, read.free_limit - 2);
+  c.close();
+});
+
 test("a catastrophic regex rule is refused as a regex and cannot hang the server", async () => {
   const dir = fixtureDir();
   const p = join(dir, "s.csv");

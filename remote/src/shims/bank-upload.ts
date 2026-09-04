@@ -100,7 +100,7 @@ export function registerBankUpload(server: { registerTool: Function }): void {
       "Send a bank export to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with bank_upload and then pass its name as `path` to statement_import. " +
       "Give either content (the export as text, header row included - this is the normal case for a CSV) or content_base64 (the file's bytes, which keeps a UTF-16 export from Excel readable). " +
       "Uploads are kept for your token between calls; bank_files lists them and bank_delete_upload removes one. " +
-      "The request body cap is 256 KB, so a large export has to be split by month, or run over stdio.",
+      "The request body cap is 256 KB, so a large export has to be split by month, or run over stdio. The binding limit in practice is lower, because the whole file has to be written out as an argument to this call: a few KB of CSV is quick, tens of KB is a long tool call, and 50 KB or more can stall the turn before the upload is sent. Split a big export by month.",
     inputSchema: {
       name: z.string().min(1).max(70).describe('Name to refer to this statement by: 1-64 characters of letters, digits, underscore or dash, e.g. "september"'),
       content: z.string().optional().describe("The export as text, including the header row"),

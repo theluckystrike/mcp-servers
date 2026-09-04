@@ -104,7 +104,7 @@ export function registerImageUpload(server: { registerTool: Function }): void {
       "PNG, JPEG, BMP, GIF and TIFF are accepted and the format is read from the file's magic bytes, not from the name. " +
       "Uploads are kept for your token between calls; image_files lists them and image_delete_upload removes one. " +
       "A file this server writes is named the same way and comes back as a download link valid for one hour, served with the real image content type. " +
-      "The request body cap is 256 KB, which is about 190 KB of image once base64-encoded; a larger file has to be shrunk before upload, or run over stdio.",
+      "The request body cap is 256 KB, which is about 190 KB of image once base64-encoded. In practice the binding limit is much lower, because the base64 has to be written out in full as an argument to this call: a few tens of KB of base64 is a long tool call and 50 KB or more can stall the turn before the upload is ever sent. Keep a paste to roughly 20 KB of base64 (about 15 KB of image), shrink the file first, or run this server over stdio where a real photo is read from disk by path.",
     inputSchema: {
       name: z.string().min(1).max(70).describe('Name to refer to this image by: 1-64 characters of letters, digits, underscore or dash, e.g. "shot"'),
       image_base64: z.string().describe("The image file, base64-encoded"),
