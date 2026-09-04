@@ -1,0 +1,97 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-calendar",
+  "display_name": "Calendar",
+  "version": "0.6.0",
+  "description": "Read the .ics your calendar already exports: what is on this week, when you are actually free, what is double-booked, and turn a meeting into billable time. All local.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "ics_import",
+      "description": "Read a calendar export and keep it locally under a name. Give exactly one of path (a .ics file on this machine), text (the file contents pasted in), or url (a public .ics or webcal feed; Pro). Google Calendar, Apple Calendar and Outlook exports are all read. Importing the same name again replaces that calendar."
+    },
+    {
+      "name": "calendars_list",
+      "description": "Every calendar imported into this server: its name, where it came from, how many event definitions it holds and when it was imported."
+    },
+    {
+      "name": "events_list",
+      "description": "Every event between two dates, with recurring events expanded to their real occurrences and sorted by start. Times are shown in your own zone (the shared business profile's timezone, else this machine's) unless you pass zone. Each row carries an id you can pass to event_export or event_to_time_entry."
+    },
+    {
+      "name": "events_search",
+      "description": "Find events whose title, description, location or attendees contain a phrase. Searches every imported calendar. Without from/to it looks a year back and a year forward on Pro, and the free window either side of today."
+    },
+    {
+      "name": "free_busy",
+      "description": "Where the time actually went and what is left: merged busy blocks from the calendars you name, and the gaps inside your working hours where nothing is booked. Events marked free/transparent do not count as busy; whole-day events block the day."
+    },
+    {
+      "name": "conflicts",
+      "description": "Every pair of events that overlap in time, with how many minutes they collide. Across all imported calendars unless you name one, so a work meeting clashing with a family event is caught. Whole-day events are reported separately from timed clashes."
+    },
+    {
+      "name": "next_event",
+      "description": "The next event that has not started yet, with how long until it begins. Looks ahead up to a year."
+    },
+    {
+      "name": "event_export",
+      "description": "Write chosen events to a new .ics file you can send or import elsewhere. Either pass ids (from events_list) or a from/to window to export everything in it. Times are written in UTC so the file lands correctly in any client."
+    },
+    {
+      "name": "event_to_time_entry",
+      "description": "Take one event and return the exact arguments for the time-tracker's entry_add, so a meeting that already happened becomes billable time without retyping it. It does not write anything: pass the JSON straight to entry_add."
+    },
+    {
+      "name": "ics_forget",
+      "description": "Remove one imported calendar and the local copy of its .ics file. Nothing else is touched."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "calendar",
+    "ics",
+    "events",
+    "freebusy"
+  ]
+}

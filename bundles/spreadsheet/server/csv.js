@@ -1,4 +1,7 @@
 /** RFC 4180 CSV parser with delimiter sniffing. No dependencies. */
+import { parseNumberStrict } from "./num.js";
+export class CsvError extends Error {
+}
 export const DELIMITERS = [",", ";", "\t", "|"];
 /** Sniff the delimiter by counting occurrences outside quotes across the first lines. */
 export function sniffDelimiter(text, sample = 64) {
@@ -57,16 +60,21 @@ export function sniffDelimiter(text, sample = 64) {
     return best;
 }
 /** Parse CSV text into a matrix of strings. Handles CRLF, quoted delimiters and embedded newlines. */
-export function parseCsv(text, delimiter) {
+export function parseCsv(text, delimiter, opts = {}) {
     let src = text;
-    if (src.charCodeAt(0) === 0xfeff)
+    let base = 0;
+    if (src.charCodeAt(0) === 0xfeff) {
         src = src.slice(1);
+        base = 1;
+    }
     const d = delimiter ?? sniffDelimiter(src);
+    const maxRows = opts.maxRows ?? Infinity;
     const rows = [];
     let row = [];
     let field = "";
     let inQ = false;
     let started = false;
+    let consumed = 0;
     for (let i = 0; i < src.length; i++) {
         const c = src[i];
         if (inQ) {
@@ -93,43 +101,47 @@ export function parseCsv(text, delimiter) {
             started = true;
             continue;
         }
-        if (c === "\r") {
-            if (src[i + 1] === "\n")
+        if (c === "\r" || c === "\n") {
+            if (c === "\r" && src[i + 1] === "\n")
                 i++;
             row.push(field);
             rows.push(row);
             row = [];
             field = "";
             started = false;
-            continue;
-        }
-        if (c === "\n") {
-            row.push(field);
-            rows.push(row);
-            row = [];
-            field = "";
-            started = false;
+            consumed = i + 1;
+            if (rows.length >= maxRows)
+                return { rows, delimiter: d, consumed: consumed + base, complete: false };
             continue;
         }
         field += c;
         started = true;
     }
+    // v3 #3: EOF inside a quoted field swallowed the rest of the file into one cell.
+    if (inQ && !opts.partial)
+        throw new CsvError('unterminated quoted field: a \'"\' was opened and never closed. Check for a stray double quote in the file.');
     if (started || field !== "" || row.length) {
         row.push(field);
         rows.push(row);
+        consumed = src.length;
     }
-    return { rows, delimiter: d };
+    return { rows, delimiter: d, consumed: consumed + base, complete: true };
 }
-/** Coerce a CSV string cell to number/boolean when unambiguous. */
+/**
+ * Coerce a CSV string cell to number/boolean when unambiguous.
+ *
+ * D-R12: the decision is by PATTERN, never by string length, so "403.00" stays a number
+ * and Excel's own SUM does not skip it. v3 #4/#5: the pattern rules now live in
+ * src/num.ts and are shared with aggregation and expression comparison, so locale
+ * numbers and unsafe integers are judged the same way everywhere.
+ */
 export function coerce(v) {
     const s = v.trim();
     if (s === "")
         return "";
-    if (/^-?(\d+|\d*\.\d+)([eE][+-]?\d+)?$/.test(s)) {
-        const n = Number(s);
-        if (Number.isFinite(n) && String(n).length >= s.replace(/^\+/, "").length - 1)
-            return n;
-    }
+    const n = parseNumberStrict(s);
+    if (n !== null)
+        return n;
     if (s === "true" || s === "TRUE")
         return true;
     if (s === "false" || s === "FALSE")

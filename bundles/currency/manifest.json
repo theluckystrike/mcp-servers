@@ -1,0 +1,89 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-currency",
+  "display_name": "Currency Converter",
+  "version": "0.6.0",
+  "description": "Live and historical exchange rates from the European Central Bank, in your AI chat. Convert amounts, read rate history, and hand invoice tools the FX rates they need. No API key, cached locally, works offline.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "rates_latest",
+      "description": "Call this tool for the most recent European Central Bank daily reference rates, re-expressed against any base. Returns the rates, the ECB rate date they belong to, and how old the local cache is."
+    },
+    {
+      "name": "convert",
+      "description": "Call this tool to convert an amount between any two ECB-quoted currencies, today or on a past date. Returns the converted amount, the cross rate to 6 decimals, the rounding applied and the rate date used."
+    },
+    {
+      "name": "convert_many",
+      "description": "One amount, one source currency, many targets, all off the same ECB rate date. Each result is rounded to that target's own minor units."
+    },
+    {
+      "name": "fx_rates_for",
+      "description": "Call this tool when a rebill or an invoice spans more than one currency, instead of asking the user for rates. Returns the fx_rates object expense_to_invoice takes, plus the rate date to write on the invoice."
+    },
+    {
+      "name": "rate_history",
+      "description": "Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change over the whole window."
+    },
+    {
+      "name": "rate_on",
+      "description": "Call this tool for the ECB rate of one pair on one date. Returns both directions, the date the rate came from, and which way round the ECB publishes the pair, so a reciprocal is never reported as the published figure."
+    },
+    {
+      "name": "currencies_list",
+      "description": "Every currency in the ECB daily reference set, with its rate against the euro and the number of decimal places it is rounded to. Anything not on this list cannot be converted here."
+    },
+    {
+      "name": "cache_status",
+      "description": "What is cached on this machine, how old it is, and when it will next be refreshed. Answer this before trusting a rate on a machine that has been offline."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "currency",
+    "exchange-rates",
+    "ecb",
+    "fx"
+  ]
+}

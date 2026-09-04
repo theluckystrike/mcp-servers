@@ -1,0 +1,106 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-recurring",
+  "display_name": "Recurring Invoices",
+  "version": "0.6.0",
+  "description": "Bill the same clients every month without remembering to. Define a recurring invoice once, then generate the real PDFs that are due into your invoice server, with month-end safe dates, an audit log and a revenue forecast. Everything stays on your machine.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "schedule_create",
+      "description": "Define a repeating invoice: a client, the line items, how often to bill, and when it starts and ends. Returns the schedule id, a summary and its next dates. Nothing is invoiced until invoice_generate_due runs."
+    },
+    {
+      "name": "schedule_list",
+      "description": "Every schedule with its cadence, per-period amount, next due date and status (active or paused)."
+    },
+    {
+      "name": "schedule_get",
+      "description": "The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated."
+    },
+    {
+      "name": "schedule_update",
+      "description": "Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only."
+    },
+    {
+      "name": "schedule_pause",
+      "description": "Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed."
+    },
+    {
+      "name": "schedule_resume",
+      "description": "Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due."
+    },
+    {
+      "name": "schedule_delete",
+      "description": "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Returns the client and how many invoices and history rows remain."
+    },
+    {
+      "name": "schedule_skip",
+      "description": "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. Returns the amount that will not be billed and how to undo it."
+    },
+    {
+      "name": "schedule_upcoming",
+      "description": "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free lists the first 3 occurrences in the horizon you ask for."
+    },
+    {
+      "name": "invoice_generate_due",
+      "description": "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Returns what was created, what was skipped and what is still due."
+    },
+    {
+      "name": "schedule_history",
+      "description": "The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path."
+    },
+    {
+      "name": "forecast",
+      "description": "Expected invoiced revenue per calendar month per currency from every active schedule. Free covers 3 months ahead; Pro covers up to 120."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "invoice",
+    "recurring",
+    "subscription",
+    "billing",
+    "freelance"
+  ]
+}

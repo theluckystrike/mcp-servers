@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-time-tracker",
   "display_name": "Time Tracker",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "Track billable time without leaving your AI chat. Timers, entries, reports, CSV export and invoice line items, all stored locally.",
   "author": {
     "name": "theluckystrike",
@@ -39,7 +39,7 @@
   "tools": [
     {
       "name": "timer_start",
-      "description": "Start tracking time on a project. Only one timer runs at a time: starting a new one stops and logs the previous one."
+      "description": "Start a stopwatch for billable work on a project or client (timesheet / hours per project). Only one timer runs at a time: starting a new one stops and logs the previous one."
     },
     {
       "name": "timer_stop",
@@ -47,15 +47,15 @@
     },
     {
       "name": "timer_status",
-      "description": "Show the running timer, how long it has been running, and today's total so far."
+      "description": "Show the running timer, how long it has been running, and today's total hours so far."
     },
     {
       "name": "entry_add",
-      "description": "Log time you already worked. Give start plus either end or minutes."
+      "description": "Log billable (or non-billable) time you already worked on a project - a timesheet entry. Give start plus either end or minutes, and optionally the hourly rate and its currency, e.g. rate '90 euros an hour' -> EUR."
     },
     {
       "name": "entry_list",
-      "description": "List logged time entries as a compact table. Free tier shows the last 7 days."
+      "description": "List logged time entries (timesheet rows) as a compact table, with hours, billable flag and project. Free tier shows the last 7 days."
     },
     {
       "name": "entry_delete",
@@ -67,19 +67,23 @@
     },
     {
       "name": "project_set_rate",
-      "description": "Set the hourly rate used to turn tracked hours into money for a project."
+      "description": "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Returns the new rate and, when re-rating is asked for, how many already logged entries changed."
     },
     {
       "name": "report",
-      "description": "Total tracked hours and money for a period, grouped by project, day, task or tag. Free tier covers the last 7 days."
+      "description": "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency."
     },
     {
       "name": "export_csv",
-      "description": "Write time entries to a CSV file you can hand to a bookkeeper or import into a spreadsheet. Free tier exports the last 7 days."
+      "description": "Call this tool to export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Returns the file path written."
+    },
+    {
+      "name": "entry_mark_billed",
+      "description": "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice."
     },
     {
       "name": "invoice_summary",
-      "description": "Turn tracked time into invoice line items for one project: hours, rate, amount per task, plus the total."
+      "description": "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00)."
     },
     {
       "name": "license_status",

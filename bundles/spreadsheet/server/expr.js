@@ -11,6 +11,7 @@
  *   primary   := number | string | "[" name "]" | bareword | "(" or ")"
  * Column names: [With Spaces] or bareword. Strings: 'single' or "double", doubled quote escapes.
  */
+import { parseNumberForCompare } from "./num.js";
 const WORD_OPS = new Set(["contains", "startswith", "endswith", "and", "or", "not", "true", "false", "null"]);
 export class ExprError extends Error {
 }
@@ -207,23 +208,17 @@ export function parse(src) {
         throw new ExprError("trailing input in expression");
     return e;
 }
+/**
+ * v3 #7: one shared locale-aware parser. A value the CSV layer preserved as text ("007")
+ * is not a number here either, and "12,99" is 12.99 rather than 1299, so `[Code] = 7` is
+ * false on "007" and `[Price] > 13` is false on "12,99".
+ */
 function num(v) {
-    if (typeof v === "number")
-        return Number.isFinite(v) ? v : null;
-    if (typeof v === "boolean")
-        return v ? 1 : 0;
-    if (v instanceof Date)
-        return v.getTime();
-    if (typeof v === "string") {
-        const s = v.trim().replace(/[$€£]/g, "").replace(/,/g, "");
-        if (s === "")
-            return null;
-        const n = Number(s.endsWith("%") ? s.slice(0, -1) : s);
-        if (!Number.isFinite(n))
-            return null;
-        return s.endsWith("%") ? n / 100 : n;
-    }
-    return null;
+    return parseNumberForCompare(v);
+}
+/** True when the value is text that carries no number at all (so ordering it is meaningless). */
+function isNonNumericText(v) {
+    return typeof v === "string" && v.trim() !== "" && num(v) === null;
 }
 function str(v) {
     if (v === null || v === undefined)
@@ -318,6 +313,10 @@ export function evaluate(node, row) {
                     let c;
                     if (x !== null && y !== null)
                         c = x < y ? -1 : x > y ? 1 : 0;
+                    // v3 #8: a number against non-numeric text has no order. Comparing them
+                    // lexically made [v] > 2 true for "abc"; the pair is simply not comparable.
+                    else if ((x !== null && isNonNumericText(b)) || (y !== null && isNonNumericText(a)))
+                        return false;
                     else {
                         const sa = str(a).toLowerCase(), sb = str(b).toLowerCase();
                         c = sa < sb ? -1 : sa > sb ? 1 : 0;

@@ -1,0 +1,106 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-expense-tracker",
+  "display_name": "Expense Tracker",
+  "version": "0.6.0",
+  "description": "Local expenses, receipts and mileage ledger for freelancers: categorise, split VAT, summarise, export to CSV or xlsx and rebill straight into an invoice.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "expense_add",
+      "description": "Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess."
+    },
+    {
+      "name": "expense_list",
+      "description": "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed."
+    },
+    {
+      "name": "expense_update",
+      "description": "Change any field of a stored expense by id. Only the fields you pass are changed."
+    },
+    {
+      "name": "expense_delete",
+      "description": "Delete one expense by id. The receipt file itself is left on disk."
+    },
+    {
+      "name": "receipt_attach",
+      "description": "Call this tool to attach a receipt file to a stored expense. Returns the stored path and sha256. The file must exist; it is hashed so a later audit can prove the file has not changed."
+    },
+    {
+      "name": "category_rules",
+      "description": "Replace the merchant-to-category rules, or call with no rules to list them. Returns the stored rule list. The rules are applied by expense_add whenever a call gives no category of its own."
+    },
+    {
+      "name": "expense_settings",
+      "description": "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate and default_currency. Returns the stored defaults. Call with no arguments to read them without changing anything."
+    },
+    {
+      "name": "expense_summary",
+      "description": "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; imported bank transactions live in bank-statement."
+    },
+    {
+      "name": "mileage_add",
+      "description": "Record a business trip as an expense, priced as distance x rate. Give exactly one of km or miles. Returns the saved id with the rate used, where that rate came from and the money, in the rate's own currency."
+    },
+    {
+      "name": "expense_export",
+      "description": "Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. Covers manually logged receipts only; imported bank transactions live in the bank-statement server."
+    },
+    {
+      "name": "expense_to_invoice",
+      "description": "Preview the unbilled billable expenses of one project as invoice_create line items (description, quantity, unit_price, tax_rate), grouped per currency. Read-only: nothing is marked rebilled here."
+    },
+    {
+      "name": "expense_mark_rebilled",
+      "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or that project, date range and currency. Returns what was marked."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "expenses",
+    "receipts",
+    "mileage",
+    "vat",
+    "freelance"
+  ]
+}

@@ -5,16 +5,52 @@ import { homedir } from "node:os";
 import { isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createLicenseGate } from "@theluckystrike/mcp-license";
+import { createLicenseGate, inferTimezoneFromAddress, readSharedProfile, withFileLock, writeSharedProfile, } from "@theluckystrike/mcp-license";
 import { z } from "zod";
-import { addDays, computeTotals, daysBetween, formatMoney, isoDate, } from "./money.js";
+import { addDays, computeTotals, daysBetween, formatMoney, isoDate, toMinor, } from "./money.js";
 import { renderInvoicePdf } from "./pdf.js";
 import { dataDir, findClient, getBusiness, getClients, getInvoices, hasBusiness, invoicesInMonth, nextNumber, setBusiness, setClients, setInvoices, } from "./store.js";
 const FREE_INVOICES_PER_MONTH = 3;
+const BUSINESS_FIELDS = [
+    "name", "address", "email", "phone", "timezone", "vat_id", "iban", "bank", "logo_path",
+    "default_currency", "default_tax_rate", "payment_terms_days", "invoice_prefix",
+    "tax_rate", "vat_rate", "vat",
+];
 const gate = createLicenseGate({ product: "invoice" });
+/**
+ * Serialise every read-modify-write cycle on the data dir across processes.
+ * Two instances sharing one XDG_DATA_HOME otherwise overwrite each other's
+ * clients.json / invoices.json / counter.json (see docs/AUDIT.md).
+ */
+function locked(fn) {
+    return withFileLock(join(dataDir(), ".lock"), fn);
+}
 const ok = (text) => ({ content: [{ type: "text", text }] });
 const fail = (text) => ({ content: [{ type: "text", text: `Error: ${text}` }], isError: true });
 const json = (v) => ok(JSON.stringify(v, null, 2));
+/**
+ * D-R2: a missing business profile must never block the invoice. The document is
+ * created with a placeholder issuer and the response says so in one line.
+ */
+const PLACEHOLDER_ISSUER = "Your business";
+const NO_BUSINESS_NOTE = "No business profile yet: the PDF shows a placeholder issuer. " +
+    "Run business_set {name, address, vat_id, iban} and render the PDF again.";
+function businessMissing() {
+    return !hasBusiness() || !getBusiness().name.trim();
+}
+/** The issuer block used on every document: the stored profile, or the placeholder. */
+function issuer() {
+    const b = getBusiness();
+    return b.name.trim() ? b : { ...b, name: PLACEHOLDER_ISSUER };
+}
+/**
+ * D-R6: only call a file a PDF when it is one. The stdio server always writes PDF
+ * bytes; an .html path (or an HTML link handed over by another transport) is
+ * described as a printable HTML invoice instead.
+ */
+function documentLabel(pathOrLink, html) {
+    return (html ?? /\.html?(\?|#|$)/i.test(pathOrLink)) ? "HTML invoice (print to PDF)" : "PDF invoice";
+}
 function summarize(inv) {
     return {
         number: inv.number,
@@ -33,19 +69,54 @@ function summarize(inv) {
         balance_due: formatMoney(inv.total_minor - inv.paid_minor, inv.currency),
     };
 }
+/**
+ * Line detail for the text response. Every money value carries its currency
+ * code (D-8, user-value audit 2026-09-02) so no amount on an invoice is ever
+ * printed as a bare number.
+ */
+function lineRows(inv) {
+    return inv.lines.map((l) => ({
+        description: l.description,
+        quantity: l.quantity,
+        unit_price: formatMoney(l.unit_price_minor, inv.currency),
+        tax_rate: `${l.tax_rate}%`,
+        amount: formatMoney(l.gross_minor, inv.currency),
+    }));
+}
+/**
+ * D-R46: when a unit price is rounded to a whole cent before being multiplied by the
+ * quantity (the default, D-R24, basis), the printed line can sit a cent or two above or
+ * below the amount an fx conversion actually names. Say so, and name the fix.
+ */
+function roundingNote(inv) {
+    const drift = inv.rounding_drift_minor ?? 0;
+    if (!drift)
+        return undefined;
+    const above = drift > 0;
+    const amount = formatMoney(Math.abs(drift), inv.currency);
+    return (`rounding_note: this invoice's total is ${amount} ${above ? "above" : "below"} the exact ` +
+        `converted amount, because at least one unit price is rounded to the nearest cent before ` +
+        `being multiplied by the quantity (the D-R24 basis: unit_price_minor x quantity always ` +
+        `equals the printed line, so the invoice adds up on a calculator). Pass round_total: true ` +
+        `on that item (or the whole call, for invoice_from_hours) to round the line's TOTAL to the ` +
+        `exact converted amount instead - the trade-off is that unit_price x quantity may then be a ` +
+        `cent or two off the printed total, for the same reason in reverse.`);
+}
 function expandPath(p) {
     const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
     return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
 }
-const server = new McpServer({ name: "mcp-invoice", version: "0.1.0" }, { capabilities: { tools: {}, resources: {} } });
+const server = new McpServer({ name: "mcp-invoice", version: "0.1.0" }, { capabilities: { tools: {}, resources: {}, prompts: {} } });
 /* ------------------------------------------------------------------ business */
 server.registerTool("business_set", {
     title: "Set your business details",
-    description: "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices.",
-    inputSchema: {
+    description: "The ONE business profile for the whole suite: name, address, VAT id, bank details and defaults (currency, tax rate, terms, prefix, timezone). Saved to the shared profile every other server reads. Call it once, first.",
+    inputSchema: z.object({
         name: z.string().describe("Your business or freelancer name"),
         address: z.string().optional().describe("Postal address, newlines allowed"),
-        email: z.string().optional(),
+        email: z.string().optional().describe("Your own email address. Leave it out unless the user gave it: no server ever fills an email from anything but this profile or an explicit argument"),
+        phone: z.string().optional().describe("Your own phone number. Same rule as email: only if the user gave it"),
+        timezone: z.string().optional().describe("IANA zone you work in, e.g. Europe/Warsaw. Shared with time-tracker (entries are stamped in it) and timezone (your home zone)"),
         vat_id: z.string().optional().describe("VAT / tax registration id"),
         iban: z.string().optional().describe("IBAN or account number for payment"),
         bank: z.string().optional().describe("Bank name / BIC"),
@@ -54,31 +125,82 @@ server.registerTool("business_set", {
         default_tax_rate: z.number().optional().describe("Default VAT percent applied to items without their own rate"),
         payment_terms_days: z.number().optional().describe("Default days until due. Default 14"),
         invoice_prefix: z.string().optional().describe("Invoice number prefix, default INV (custom prefix is Pro)"),
-    },
+        tax_rate: z.number().optional().describe("Alias for default_tax_rate"),
+        vat_rate: z.number().optional().describe("Alias for default_tax_rate"),
+        vat: z.number().optional().describe("Alias for default_tax_rate"),
+    }).passthrough(),
 }, async (a) => {
     try {
-        const prev = getBusiness();
-        let prefix = a.invoice_prefix ?? prev.invoice_prefix;
-        let note = "";
-        if (a.invoice_prefix && a.invoice_prefix !== "INV" && !gate.isPro()) {
-            prefix = "INV";
-            note = `\n\nNote: custom invoice prefix is a Pro feature, kept "INV". ${gate.upgradeText("custom invoice prefix")}`;
-        }
-        const biz = {
-            name: a.name,
-            address: a.address ?? prev.address,
-            email: a.email ?? prev.email,
-            vat_id: a.vat_id ?? prev.vat_id,
-            iban: a.iban ?? prev.iban,
-            bank: a.bank ?? prev.bank,
-            logo_path: a.logo_path ?? prev.logo_path,
-            default_currency: (a.default_currency ?? prev.default_currency).toUpperCase(),
-            default_tax_rate: a.default_tax_rate ?? prev.default_tax_rate,
-            payment_terms_days: a.payment_terms_days ?? prev.payment_terms_days,
-            invoice_prefix: prefix.replace(/[^A-Za-z0-9_-]/g, "") || "INV",
-        };
-        setBusiness(biz);
-        return ok(`Business profile saved to ${dataDir()}.\n\n${JSON.stringify(biz, null, 2)}${note}`);
+        return await locked(() => {
+            const prev = getBusiness();
+            // D-R7: "tax rate" is what users and models say; default_tax_rate is what the
+            // field is called. Accept the aliases, and never drop a key in silence.
+            const aliasKey = ["tax_rate", "vat_rate", "vat"].find((k) => typeof a[k] === "number");
+            const taxRate = a.default_tax_rate ?? (aliasKey ? a[aliasKey] : undefined);
+            const unknown = Object.keys(a).filter((k) => !BUSINESS_FIELDS.includes(k));
+            let warn = "";
+            if (aliasKey)
+                warn += `\n\nRead ${aliasKey}: ${a[aliasKey]} as default_tax_rate: ${taxRate}.`;
+            if (unknown.length) {
+                warn += `\n\nWarning: ignored unknown field${unknown.length > 1 ? "s" : ""} ${unknown.join(", ")}. ` +
+                    `Accepted fields: ${BUSINESS_FIELDS.join(", ")}.`;
+            }
+            let prefix = a.invoice_prefix ?? prev.invoice_prefix;
+            let note = "";
+            if (a.invoice_prefix && a.invoice_prefix !== "INV" && !gate.isPro()) {
+                prefix = "INV";
+                note = `\n\nNote: custom invoice prefix is a Pro feature, kept "INV". ${gate.upgradeText("custom invoice prefix")}`;
+            }
+            const biz = {
+                name: a.name,
+                address: a.address ?? prev.address,
+                email: a.email ?? prev.email,
+                vat_id: a.vat_id ?? prev.vat_id,
+                iban: a.iban ?? prev.iban,
+                bank: a.bank ?? prev.bank,
+                logo_path: a.logo_path ?? prev.logo_path,
+                default_currency: (a.default_currency ?? prev.default_currency).toUpperCase(),
+                default_tax_rate: taxRate ?? prev.default_tax_rate,
+                payment_terms_days: a.payment_terms_days ?? prev.payment_terms_days,
+                invoice_prefix: prefix.replace(/[^A-Za-z0-9_-]/g, "") || "INV",
+            };
+            setBusiness(biz);
+            // D-R48: an address with no explicit timezone infers one from the last city or
+            // country name in the address (the same place table the timezone server itself
+            // reads for a bare place name), instead of leaving the shared profile's timezone
+            // blank. An explicit timezone always wins and clears any earlier inference.
+            let tzNote = "";
+            const priorTimezone = readSharedProfile().timezone;
+            let timezoneToWrite = a.timezone;
+            let timezoneSource;
+            if (a.timezone) {
+                timezoneSource = null; // explicit value clears any earlier "inferred from address" marker
+            }
+            else if (a.address && !priorTimezone) {
+                const inferred = inferTimezoneFromAddress(a.address);
+                if (inferred) {
+                    timezoneToWrite = inferred.zone;
+                    timezoneSource = "inferred from address";
+                    tzNote = `\n\nInferred timezone ${inferred.zone} from "${inferred.matched}" in the address ` +
+                        `(timezone_source: "inferred from address"). Pass timezone: "Area/City" to override.`;
+                }
+                else {
+                    tzNote = `\n\nCould not infer a timezone from the address; no city or country in it matched ` +
+                        `the timezone lib's place table. Pass timezone: "Area/City" (e.g. Europe/Warsaw) if you want ` +
+                        `one stored.`;
+                }
+            }
+            if (a.phone || timezoneToWrite || timezoneSource !== undefined) {
+                writeSharedProfile({ phone: a.phone, timezone: timezoneToWrite, timezone_source: timezoneSource });
+            }
+            const shared = readSharedProfile();
+            return ok(`Business profile saved to ${dataDir()} and to the shared profile at ` +
+                `mcp-servers/profile/business.json, which docx, expense-tracker, recurring, time-tracker, ` +
+                `timezone, resume and clauses all read. You do not need to repeat it anywhere else.\n\n` +
+                `${JSON.stringify({
+                    ...biz, phone: shared.phone, timezone: shared.timezone, timezone_source: shared.timezone_source,
+                }, null, 2)}${tzNote}${note}${warn}`);
+        });
     }
     catch (e) {
         return fail(String(e.message ?? e));
@@ -96,22 +218,24 @@ server.registerTool("client_add", {
     },
 }, async (a) => {
     try {
-        const clients = getClients();
-        const existing = clients.find((c) => c.name.toLowerCase() === a.name.trim().toLowerCase());
-        if (existing) {
-            existing.address = a.address ?? existing.address;
-            existing.email = a.email ?? existing.email;
-            existing.vat_id = a.vat_id ?? existing.vat_id;
+        return await locked(() => {
+            const clients = getClients();
+            const existing = clients.find((c) => c.name.toLowerCase() === a.name.trim().toLowerCase());
+            if (existing) {
+                existing.address = a.address ?? existing.address;
+                existing.email = a.email ?? existing.email;
+                existing.vat_id = a.vat_id ?? existing.vat_id;
+                setClients(clients);
+                return ok(`Updated client ${existing.name} (${existing.id}).`);
+            }
+            const c = {
+                id: randomBytes(4).toString("hex"), name: a.name.trim(),
+                address: a.address, email: a.email, vat_id: a.vat_id, created: isoDate(),
+            };
+            clients.push(c);
             setClients(clients);
-            return ok(`Updated client ${existing.name} (${existing.id}).`);
-        }
-        const c = {
-            id: randomBytes(4).toString("hex"), name: a.name.trim(),
-            address: a.address, email: a.email, vat_id: a.vat_id, created: isoDate(),
-        };
-        clients.push(c);
-        setClients(clients);
-        return ok(`Added client ${c.name} (${c.id}).`);
+            return ok(`Added client ${c.name} (${c.id}).`);
+        });
     }
     catch (e) {
         return fail(String(e.message ?? e));
@@ -131,12 +255,54 @@ server.registerTool("client_list", {
 // persist an invoice whose totals serialize to null.
 const MAX_AMOUNT = 1e12;
 const amount = (what) => z.number().finite().min(-MAX_AMOUNT, `${what} is out of range`).max(MAX_AMOUNT, `${what} is out of range`);
+const rate = z.number().finite().min(-100).max(1000).optional();
 const itemSchema = z.object({
     description: z.string(),
     quantity: amount("quantity").describe("Hours, units or 1 for a flat fee"),
     unit_price: amount("unit_price").describe("Price per unit in major units, e.g. 90 for 90 EUR"),
-    tax_rate: z.number().finite().min(-100).max(1000).optional().describe("VAT percent for this line, overrides the business default"),
-});
+    tax_rate: rate.describe("VAT percent for this line, overrides the business default"),
+    vat_rate: rate.describe("Alias for tax_rate"),
+    vat: rate.describe("Alias for tax_rate"),
+    // D-R14: a line may carry the currency it was captured in (expense_to_invoice emits it).
+    // It is NOT silently ignored: mixing currencies on one invoice is refused below.
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional()
+        .describe("Currency this line was captured in. Every line on one invoice must agree; convert first with expense_to_invoice target_currency + fx_rates"),
+    // D-R46: when unit_price carries sub-cent precision (typically an fx conversion done
+    // before calling this tool), the default basis rounds the unit to a whole cent and
+    // multiplies, which can drift a cent or two from the exact converted amount - see
+    // rounding_note in the response. round_total asks for the line gross to equal the
+    // exact converted total to the cent instead; unit_price is then reported, not used
+    // to compute the gross.
+    round_total: z.boolean().optional()
+        .describe("D-R46: round this line's TOTAL to the exact converted amount instead of rounding the unit price to cents first. Default false keeps the D-R24 basis (unit price x quantity always equals the printed gross); true trades that off so the gross matches an fx conversion to the cent."),
+    // D-R7: an item's rate must not vanish because the caller spelled it vat_rate.
+}).transform((i) => ({
+    description: i.description, quantity: i.quantity, unit_price: i.unit_price,
+    tax_rate: i.tax_rate ?? i.vat_rate ?? i.vat,
+    currency: i.currency ? i.currency.toUpperCase() : undefined,
+    round_total: i.round_total === true,
+}));
+/**
+ * D-R14: one invoice carries one currency. Before this, a line that arrived carrying
+ * currency "EUR" was billed under the invoice's USD heading with no conversion and no
+ * warning. Refuse, and name the argument that fixes it.
+ */
+function itemCurrencyConflict(items, invoiceCurrency) {
+    const seen = [...new Set(items.map((i) => i.currency).filter((c) => !!c))];
+    if (!seen.length)
+        return null;
+    const advice = (codes, target) => `one invoice carries one currency and nothing here converts on its own. Convert first: ` +
+        `expense_to_invoice {project: "...", from: "...", to: "...", target_currency: "${target}", ` +
+        `fx_rates: {${codes.filter((c) => c !== target).map((c) => `"${c}": <1 ${c} in ${target}>`).join(", ")}}} ` +
+        `- 1 unit of that currency = X units of ${target} - then pass that single group's items here. ` +
+        `Or issue one invoice per currency.`;
+    if (seen.length > 1)
+        return `the items mix currencies (${seen.join(", ")}): ` + advice(seen, seen[0]);
+    if (seen[0] !== invoiceCurrency) {
+        return `the items are in ${seen[0]} but the invoice currency is ${invoiceCurrency}: ` + advice([seen[0], invoiceCurrency], invoiceCurrency);
+    }
+    return null;
+}
 function monthLimitBlocked(issueDate) {
     if (gate.isPro())
         return null;
@@ -148,17 +314,20 @@ function monthLimitBlocked(issueDate) {
         gate.upgradeText("unlimited invoices");
 }
 function createInvoice(a) {
-    if (!hasBusiness())
-        return { error: "no business profile yet. Call business_set first." };
     if (!a.items.length)
         return { error: "an invoice needs at least one item." };
-    const biz = getBusiness();
+    // D-R2: no business profile is not a reason to lose the work. Issue the document
+    // with a placeholder issuer and say so in the response.
+    const noBusiness = businessMissing();
+    const biz = issuer();
     let client = findClient(a.client);
+    let clientCreated = false;
     if (!client) {
         const clients = getClients();
         client = { id: randomBytes(4).toString("hex"), name: a.client.trim(), created: isoDate() };
         clients.push(client);
         setClients(clients);
+        clientCreated = true;
     }
     const issue = a.issue_date ?? isoDate();
     // Shape and calendar validity are both checked here, before nextNumber() is
@@ -174,9 +343,14 @@ function createInvoice(a) {
     const gated = monthLimitBlocked(issue);
     if (gated)
         return { gated };
-    const currency = (a.currency ?? biz.default_currency).toUpperCase();
+    const itemCurrencies = [...new Set(a.items.map((i) => i.currency).filter((c) => !!c))];
+    // With no explicit invoice currency, a single agreed item currency is the invoice's.
+    const currency = (a.currency ?? (itemCurrencies.length === 1 ? itemCurrencies[0] : biz.default_currency)).toUpperCase();
     if (!/^[A-Z]{3}$/.test(currency))
         return { error: `currency must be a 3-letter ISO code such as EUR or USD, got "${currency}".` };
+    const clash = itemCurrencyConflict(a.items, currency);
+    if (clash)
+        return { error: clash };
     const totals = computeTotals(a.items, currency, a.discount_percent ?? 0, biz.default_tax_rate);
     // Guard against a total that has left the exactly-representable integer range;
     // past this point the printed lines and the stored minor units can disagree.
@@ -194,21 +368,32 @@ function createInvoice(a) {
         discount_percent: totals.discount_percent, discount_minor: totals.discount_minor,
         net_minor: totals.net_minor, tax_lines: totals.tax_lines, tax_minor: totals.tax_minor,
         total_minor: totals.total_minor,
+        rounding_drift_minor: totals.rounding_drift_minor,
         notes: a.notes, status: "unpaid", paid_minor: 0,
         created: new Date().toISOString(), branded: !gate.isPro(),
     };
     const all = getInvoices();
     all.push(inv);
     setInvoices(all);
-    return { invoice: inv };
+    // The BILL TO block on the PDF is the first thing a client's accounts
+    // department reads. Say so when it will only carry a bare name (D-8).
+    const clientNote = !client.address
+        ? `Note: the BILL TO block will show only "${client.name}" - ` +
+            (clientCreated
+                ? `that client did not exist yet and was created from the name alone, with no address. `
+                : `that client has no address stored. `) +
+            `Add one with client_add {name: "${client.name}", address: "...", email: "...", vat_id: "..."} and render the PDF again, ` +
+            `so the invoice carries a complete billing address.`
+        : undefined;
+    return { invoice: inv, clientNote, businessNote: noBusiness ? NO_BUSINESS_NOTE : undefined };
 }
 server.registerTool("invoice_create", {
     title: "Create an invoice",
-    description: "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed.",
+    description: "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused) and returns the stored invoice with its subtotal, discount, one tax line per rate and the total.",
     inputSchema: {
         client: z.string().describe("Client name or id. Unknown names are added automatically"),
-        items: z.array(itemSchema).describe("Line items"),
-        currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional(),
+        items: z.array(itemSchema).describe("Line items. Amounts are held as integer minor units and every line is rounded first, then summed, so the printed lines can never disagree with the total. A line may carry its own currency"),
+        currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Invoice currency, 3-letter ISO code. Defaults to the one currency every item agrees on, else your business default. Every line on one invoice must agree with it; a mix is refused with the exact conversion argument to pass rather than billed as if it were one currency"),
         issue_date: z.string().optional().describe("YYYY-MM-DD, defaults to today"),
         due_days: z.number().optional().describe("Days until due, defaults to your payment terms"),
         notes: z.string().optional().describe("Free text printed under the totals"),
@@ -216,12 +401,16 @@ server.registerTool("invoice_create", {
     },
 }, async (a) => {
     try {
-        const r = createInvoice(a);
+        const r = await locked(() => createInvoice(a));
         if (r.error)
             return fail(r.error);
         if (r.gated)
             return ok(r.gated);
-        return ok(`Created invoice ${r.invoice.number}.\n\n${JSON.stringify(summarize(r.invoice), null, 2)}\n\nRender it with invoice_pdf.`);
+        return ok(`Created invoice ${r.invoice.number}.\n\n` +
+            `${JSON.stringify({ ...summarize(r.invoice), lines: lineRows(r.invoice) }, null, 2)}\n\n` +
+            `Amounts are integer minor units: each line was rounded first and then summed, so the total always agrees with the printed lines. ` +
+            `Every line on this invoice is in ${r.invoice.currency}; to bill a line in another currency, convert it yourself and pass the converted unit_price.\n\n` +
+            `Render it with invoice_pdf.${roundingNote(r.invoice) ? `\n\n${roundingNote(r.invoice)}` : ""}${r.businessNote ? `\n\n${r.businessNote}` : ""}${r.clientNote ? `\n\n${r.clientNote}` : ""}`);
     }
     catch (e) {
         return fail(String(e.message ?? e));
@@ -229,35 +418,85 @@ server.registerTool("invoice_create", {
 });
 server.registerTool("invoice_from_hours", {
     title: "Invoice from hours",
-    description: "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice.",
+    description: "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates and returns a single-line invoice, converting the rate into target_currency when you supply fx_rates, and echoing back any entry_ids.",
     inputSchema: {
         client: z.string(),
         hours: amount("hours"),
-        rate: amount("rate").describe("Hourly rate in major units"),
+        rate: amount("rate").describe("Hourly rate in major units, expressed in currency (or the business default currency)"),
         description: z.string().optional().describe("Line description, default 'Consulting services'"),
         tax_rate: z.number().finite().min(-100).max(1000).optional(),
-        currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional(),
+        currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Currency the rate is in. Without target_currency this is also the invoice currency"),
+        target_currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as USD").optional().describe('Issue the invoice in this currency instead, converting the rate. Needs fx_rates for the rate currency'),
+        fx_rates: z.record(z.string(), z.number().finite().positive()).optional().describe('Conversion rates, the same pair expense_to_invoice takes: fx_rates maps the RATE\'s currency to the number of target units one of it buys, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.1578} with target_currency "USD". You supply the rate; nothing here fetches or guesses one'),
+        entry_ids: z.array(z.string()).optional().describe("Time-tracker entry ids these hours came from (the entry_ids invoice_summary returns). Echoed back with the new invoice number so you can call entry_mark_billed"),
         issue_date: z.string().optional(),
         due_days: z.number().optional(),
         notes: z.string().optional(),
         discount_percent: z.number().finite().min(0).max(100).optional(),
+        round_total: z.boolean().optional()
+            .describe("D-R46: when converting with fx_rates, round the line's TOTAL to the exact converted amount instead of rounding the hourly rate to cents first. Default false keeps the D-R24 basis (unit price x hours always equals the printed line, so a rounding_note explains any drift from the exact conversion); true removes the drift but unit_price x hours may then be a cent or two off the printed total."),
     },
 }, async (a) => {
     try {
-        const r = createInvoice({
+        // D-R28: same FX semantics as expense_to_invoice, so hours and receipts convert the
+        // same way. The source currency is the rate's currency; the invoice is issued in
+        // target_currency, and the line says where its unit price came from.
+        const source = (a.currency ?? getBusiness().default_currency ?? "EUR").toUpperCase();
+        const target = a.target_currency ? a.target_currency.toUpperCase() : undefined;
+        if (a.fx_rates && !target) {
+            return fail(`fx_rates needs target_currency as well: a rate of 1.1578 means nothing until you say 1.1578 of WHAT. Pass target_currency: "USD" with it.`);
+        }
+        let unitPrice = a.rate;
+        let description = a.description ?? "Consulting services";
+        let fxUsed = null;
+        if (target && target !== source) {
+            const fx = a.fx_rates?.[source] ?? a.fx_rates?.[source.toLowerCase()];
+            if (typeof fx !== "number" || !Number.isFinite(fx) || fx <= 0) {
+                return fail(`no rate for ${source}. Pass fx_rates with one entry, meaning 1 ${source} = X ${target}: ` +
+                    `invoice_from_hours {client: ${JSON.stringify(a.client)}, hours: ${a.hours}, rate: ${a.rate}, currency: "${source}", ` +
+                    `target_currency: "${target}", fx_rates: {"${source}": <rate>}}. Nothing here fetches or guesses a rate.`);
+            }
+            fxUsed = fx;
+            unitPrice = a.rate * fx;
+            description = `${description} [converted from ${formatMoney(toMinor(a.rate, source), source)}/h at ${fx}]`;
+        }
+        const r = await locked(() => createInvoice({
             client: a.client,
             items: [{
-                    description: a.description ?? "Consulting services",
-                    quantity: a.hours, unit_price: a.rate, tax_rate: a.tax_rate,
+                    description,
+                    quantity: a.hours, unit_price: unitPrice, tax_rate: a.tax_rate, currency: undefined,
+                    round_total: a.round_total === true,
                 }],
-            currency: a.currency, issue_date: a.issue_date, due_days: a.due_days,
+            currency: target ?? a.currency, issue_date: a.issue_date, due_days: a.due_days,
             notes: a.notes, discount_percent: a.discount_percent,
-        });
+        }));
         if (r.error)
             return fail(r.error);
         if (r.gated)
             return ok(r.gated);
-        return ok(`Created invoice ${r.invoice.number}.\n\n${JSON.stringify(summarize(r.invoice), null, 2)}`);
+        const ids = a.entry_ids ?? [];
+        // D-S1: the fx direction contract is actionable at call time, so the response
+        // states it as well as the fx_rates argument description.
+        const fxLine = fxUsed !== null
+            ? `\n\nfx_rates is directional: {${JSON.stringify(source)}: ${fxUsed}} means 1 ${source} = ${fxUsed} ${target}, the number of ${target} units one ${source} buys, so the rate was multiplied by it. It is the same pair expense_to_invoice takes, and nothing here fetches or guesses a rate.`
+            : "";
+        const closeLine = ids.length
+            ? `\n\nThese hours are still open in the time tracker. Call entry_mark_billed {ids: ${JSON.stringify(ids)}, invoice_number: "${r.invoice.number}"} now, or the same hours appear on the next invoice.`
+            : `\n\nIf these hours came from the time tracker, call entry_mark_billed {ids: <entry_ids from invoice_summary>, invoice_number: "${r.invoice.number}"} so they are not billed twice.`;
+        return ok(`Created invoice ${r.invoice.number}.\n\n` +
+            `${JSON.stringify({
+                ...summarize(r.invoice),
+                lines: lineRows(r.invoice),
+                rate_currency: source,
+                target_currency: target ?? null,
+                fx_rate_used: fxUsed,
+                entry_ids: ids,
+            }, null, 2)}` +
+            fxLine +
+            closeLine +
+            `${roundingNote(r.invoice) ? `\n\n${roundingNote(r.invoice)}` : ""}` +
+            `${r.businessNote ? `\n\n${r.businessNote}` : ""}` +
+            `${r.clientNote ? `\n\n${r.clientNote}` : ""}`);
     }
     catch (e) {
         return fail(String(e.message ?? e));
@@ -314,19 +553,21 @@ server.registerTool("invoice_mark_paid", {
     },
 }, async (a) => {
     try {
-        const all = getInvoices();
-        const inv = all.find((i) => i.number === a.number);
-        if (!inv)
-            return fail(`no invoice numbered ${a.number}.`);
-        const f = Math.pow(10, inv.decimals);
-        const paid = a.amount === undefined ? inv.total_minor : Math.round(a.amount * f);
-        inv.paid_minor = paid;
-        inv.paid_date = a.paid_date ?? isoDate();
-        inv.status = paid >= inv.total_minor ? "paid" : paid > 0 ? "partial" : "unpaid";
-        setInvoices(all);
-        const bal = inv.total_minor - inv.paid_minor;
-        return ok(`${inv.number} marked ${inv.status} on ${inv.paid_date}. Received ${formatMoney(inv.paid_minor, inv.currency)}` +
-            (bal > 0 ? `, balance due ${formatMoney(bal, inv.currency)}.` : "."));
+        return await locked(() => {
+            const all = getInvoices();
+            const inv = all.find((i) => i.number === a.number);
+            if (!inv)
+                return fail(`no invoice numbered ${a.number}.`);
+            const f = Math.pow(10, inv.decimals);
+            const paid = a.amount === undefined ? inv.total_minor : Math.round(a.amount * f);
+            inv.paid_minor = paid;
+            inv.paid_date = a.paid_date ?? isoDate();
+            inv.status = paid >= inv.total_minor ? "paid" : paid > 0 ? "partial" : "unpaid";
+            setInvoices(all);
+            const bal = inv.total_minor - inv.paid_minor;
+            return ok(`${inv.number} marked ${inv.status} on ${inv.paid_date}. Received ${formatMoney(inv.paid_minor, inv.currency)}` +
+                (bal > 0 ? `, balance due ${formatMoney(bal, inv.currency)}.` : "."));
+        });
     }
     catch (e) {
         return fail(String(e.message ?? e));
@@ -334,21 +575,30 @@ server.registerTool("invoice_mark_paid", {
 });
 server.registerTool("invoice_pdf", {
     title: "Render invoice PDF",
-    description: "Render an invoice as an A4 PDF you can send: issuer block, client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Returns the file path.",
+    description: "Call this tool to render a stored invoice as an A4 PDF you can send. Returns the path of the file written.",
     inputSchema: {
-        number: z.string(),
-        out_path: z.string().optional().describe("Where to write the PDF. Defaults to the data directory"),
+        number: z.string().describe("Invoice number to render, as returned by invoice_create"),
+        out_path: z.string().optional().describe("Where to write the PDF; defaults to <data dir>/pdf/<number>.pdf. The page carries the issuer block, the BILL TO client block, dates, an item table with wrapped descriptions, subtotal, discount, one tax line per rate, the total, payment details and notes, and every money value on it carries its currency code. Use a .pdf path: the bytes written are always PDF"),
     },
 }, async (a) => {
     try {
         const inv = getInvoices().find((i) => i.number === a.number);
         if (!inv)
             return fail(`no invoice numbered ${a.number}.`);
-        const biz = getBusiness();
+        const biz = issuer();
         const pro = gate.isPro();
         const out = expandPath(a.out_path ?? join(dataDir(), "pdf", `${inv.number}.pdf`));
         await renderInvoicePdf(inv, biz, out, { branded: !pro, logo: pro });
         let note = "";
+        // D-R6: this server always writes PDF bytes, so only an .html out_path could
+        // make the wording wrong. Name the file for what it actually contains.
+        // D-R2: and say once more that the issuer block is a placeholder.
+        let extra = "";
+        if (documentLabel(out) !== "PDF invoice") {
+            extra += `\n\nNote: ${out} holds PDF bytes despite the .html name. Use a .pdf path.`;
+        }
+        if (businessMissing())
+            extra += `\n\n${NO_BUSINESS_NOTE}`;
         if (!pro) {
             note = `\n\nFree tier: the PDF carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +
                 gate.upgradeText("unbranded PDFs with your logo");
@@ -356,7 +606,7 @@ server.registerTool("invoice_pdf", {
         else if (biz.logo_path && !existsSync(biz.logo_path)) {
             note = `\n\nNote: logo_path ${biz.logo_path} does not exist, rendered without it.`;
         }
-        return ok(`Wrote ${out}${note}`);
+        return ok(`Wrote ${documentLabel(out)} ${out}${note}${extra}`);
     }
     catch (e) {
         return fail(String(e.message ?? e));
@@ -364,12 +614,10 @@ server.registerTool("invoice_pdf", {
 });
 server.registerTool("overdue_report", {
     title: "Overdue report",
-    description: "List every unpaid or partly paid invoice past its due date with days overdue, plus outstanding totals per currency. Pro.",
+    description: "Answer \"which invoices are overdue?\": every unpaid or partly paid invoice past its due date, with days overdue, the outstanding amount per invoice and the outstanding total per currency. Free and unlimited.",
     inputSchema: { as_of: z.string().optional().describe("YYYY-MM-DD, defaults to today") },
 }, async (a) => {
     try {
-        if (!gate.isPro())
-            return ok(gate.upgradeText("overdue_report"));
         const today = a.as_of ?? isoDate();
         const rows = getInvoices()
             .filter((i) => i.status !== "paid" && i.due_date < today)
@@ -403,6 +651,36 @@ server.registerResource("open-invoices", "invoices://open", {
             text: JSON.stringify(getInvoices().filter((i) => i.status !== "paid").map(summarize), null, 2),
         }],
 }));
+/* ------------------------------------------------------------------- prompts */
+server.registerPrompt("monthly_invoicing", {
+    title: "Monthly invoicing",
+    description: "Review what is unpaid and what is overdue, then draft the next invoice for the client that owes the most.",
+    argsSchema: {
+        month: z.string().optional().describe("YYYY-MM, default the current month"),
+        client: z.string().optional().describe("Limit the review, and the drafted invoice, to one client name or id"),
+    },
+}, ({ month, client }) => {
+    const m = month && /^\d{4}-\d{2}$/.test(month) ? month : isoDate().slice(0, 7);
+    const from = `${m}-01`;
+    const to = new Date(Date.UTC(Number(m.slice(0, 4)), Number(m.slice(5, 7)), 0)).toISOString().slice(0, 10);
+    const who = client && client.trim() ? client.trim() : null;
+    return {
+        messages: [{
+                role: "user",
+                content: {
+                    type: "text",
+                    text: [
+                        `Run the invoicing round for ${m} (${from} to ${to}) with the invoice tools and report it as one short summary:`,
+                        `1. invoice_list {status: "unpaid"}${who ? ` and invoice_list {status: "unpaid", client: ${JSON.stringify(who)}}` : ""} - list every unpaid invoice with its number, client, issue date, due date and amount.`,
+                        `2. invoice_list {status: "partial"} - add the part-paid ones, showing the balance still due on each.`,
+                        `3. overdue_report {as_of: "${to}"} - name every overdue invoice with its days overdue and outstanding amount, and give the outstanding total per currency. Do not add across currencies.`,
+                        `4. Draft the next invoice: invoice_create {client: ${JSON.stringify(who ?? "<client name>")}, items: [{description: "<work>", quantity: 1, unit_price: 0}], issue_date: "${to}"} - or invoice_from_hours {client: ${JSON.stringify(who ?? "<client name>")}, hours: 0, rate: 0, issue_date: "${to}"} when it is billed by the hour. Ask me for the real line items and rate before you call either one.`,
+                        `5. Render whatever you created with invoice_pdf {number: "<the number invoice_create returned>"} and give me the file path.`,
+                    ].join("\n"),
+                },
+            }],
+    };
+});
 gate.registerTools(server);
 const transport = new StdioServerTransport();
 await server.connect(transport);

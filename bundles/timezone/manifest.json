@@ -1,0 +1,93 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-timezone",
+  "display_name": "Timezone Planner",
+  "version": "0.6.0",
+  "description": "Time zones, meeting slots and calendar invites for people who work with clients abroad. Convert times, find hours that suit everyone, check DST, write .ics. All local.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "now",
+      "description": "The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC."
+    },
+    {
+      "name": "convert_time",
+      "description": "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'."
+    },
+    {
+      "name": "overlap",
+      "description": "The window each day when every listed place is inside working hours. Computed on a real date, so a DST week that widens or narrows the overlap is reflected."
+    },
+    {
+      "name": "find_meeting_slots",
+      "description": "Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first."
+    },
+    {
+      "name": "dst_changes",
+      "description": "The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October."
+    },
+    {
+      "name": "business_days",
+      "description": "Count the business days between two dates in a place, for delivery dates and payment terms. Returns the business-day count, the calendar total, and how many days fell on a weekend or on a holiday you passed."
+    },
+    {
+      "name": "contacts_set",
+      "description": "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later."
+    },
+    {
+      "name": "contacts_list",
+      "description": "Everyone you have saved, with their current local time and whether they are inside working hours right now."
+    },
+    {
+      "name": "ics_create",
+      "description": "Call this tool to write a .ics calendar file for one meeting. Returns the path written and the meeting time in UTC and in the zone you gave."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "timezone",
+    "meeting",
+    "scheduling",
+    "ics"
+  ]
+}

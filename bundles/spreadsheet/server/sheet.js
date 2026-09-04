@@ -1,12 +1,14 @@
-import { existsSync, statSync, readFileSync } from "node:fs";
+import { closeSync, existsSync, openSync, readSync, statSync, readFileSync } from "node:fs";
+import { StringDecoder } from "node:string_decoder";
 import { homedir } from "node:os";
 import { resolve, extname, dirname, basename, join } from "node:path";
 import * as XLSX from "xlsx";
 import { parseCsv, coerce } from "./csv.js";
+import { parseNumberLoose } from "./num.js";
 export const MAX_FILE_BYTES = 50 * 1024 * 1024;
 export const FREE_MAX_ROWS = 5000;
 export const FREE_MAX_BYTES = 5 * 1024 * 1024;
-export const FREE_WRITE_ROWS = 200;
+export const FREE_WRITE_ROWS = 500;
 export class UserError extends Error {
 }
 export function expandPath(p) {
@@ -31,6 +33,36 @@ export function requireExisting(p) {
     }
     return full;
 }
+/**
+ * v3 #17: an xlsx date cell stays a Date through the internal model so a conversion back
+ * to xlsx writes a date cell, not text. Rendered as ISO, with the time only when the cell
+ * actually carries one.
+ */
+export function formatCellDate(d) {
+    const p = (n, w = 2) => String(n).padStart(w, "0");
+    const base = `${p(d.getFullYear(), 4)}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    const ms = d.getMilliseconds();
+    if (!d.getHours() && !d.getMinutes() && !d.getSeconds() && !ms)
+        return base;
+    const time = `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+    return `${base}T${time}${ms ? "." + p(ms, 3) : ""}`;
+}
+/** Text form of a cell for tables, CSV output and JSON output. */
+export function cellText(c) {
+    if (c === null || c === undefined)
+        return "";
+    if (c instanceof Date)
+        return formatCellDate(c);
+    return String(c);
+}
+/** JSON-safe form of a cell: Dates become ISO strings, everything else is unchanged. */
+export function jsonCell(c) {
+    if (c === null || c === undefined)
+        return null;
+    if (c instanceof Date)
+        return formatCellDate(c);
+    return c;
+}
 function normMatrix(rows) {
     return rows.map((r) => r.map((c) => {
         if (c === undefined || c === null || c === "")
@@ -38,7 +70,7 @@ function normMatrix(rows) {
         if (typeof c === "number" || typeof c === "boolean" || typeof c === "string")
             return c;
         if (c instanceof Date)
-            return c.toISOString().slice(0, 10);
+            return Number.isFinite(c.getTime()) ? c : null;
         return String(c);
     }));
 }
@@ -48,14 +80,63 @@ function trimTrailing(m) {
         end--;
     return m.slice(0, end);
 }
+/** Read just enough of a CSV to yield `maxRows` complete rows. Returns the text read. */
+function readCsvHead(full, maxRows, delimiter) {
+    const size = statSync(full).size;
+    const fd = openSync(full, "r");
+    const dec = new StringDecoder("utf8");
+    const buf = Buffer.allocUnsafe(1 << 20);
+    let text = "";
+    let bytesRead = 0;
+    try {
+        for (;;) {
+            const n = readSync(fd, buf, 0, buf.length, bytesRead);
+            bytesRead += n;
+            text += n > 0 ? dec.write(buf.subarray(0, n)) : dec.end();
+            const eof = n === 0 || bytesRead >= size;
+            if (eof)
+                return { text, bytesRead, eof: true };
+            const probe = parseCsv(text, delimiter, { maxRows: maxRows + 1, partial: true });
+            if (!probe.complete)
+                return { text: text.slice(0, probe.consumed), bytesRead, eof: false };
+        }
+    }
+    finally {
+        closeSync(fd);
+    }
+}
+const RECENT_MAX = 20;
+/**
+ * D-S5: the files opened in THIS process, most recent first, for sheet://recent.
+ * In memory only - this server is stateless on disk and must stay that way.
+ */
+const recentOpens = [];
+export function recentOpened() {
+    return recentOpens.map((e) => ({ ...e }));
+}
+function recordOpen(full) {
+    const i = recentOpens.findIndex((e) => e.path === full);
+    if (i >= 0)
+        recentOpens.splice(i, 1);
+    recentOpens.unshift({ path: full, opened: new Date().toISOString() });
+    if (recentOpens.length > RECENT_MAX)
+        recentOpens.length = RECENT_MAX;
+}
 export function loadWorkbook(pathIn, opts = {}) {
     const full = requireExisting(pathIn);
+    recordOpen(full);
     const bytes = statSync(full).size;
     const ext = extname(full).toLowerCase();
     const maxRows = opts.maxRows ?? Infinity;
     if (ext === ".csv" || ext === ".tsv" || ext === ".txt") {
-        const text = readFileSync(full, "utf8");
-        const parsed = parseCsv(text, ext === ".tsv" ? "\t" : undefined);
+        const forced = ext === ".tsv" ? "\t" : undefined;
+        const budget = opts.rowBudget;
+        // rowBudget + 1 for the header row; a header row is never all we need.
+        const head = budget !== undefined && Number.isFinite(budget)
+            ? readCsvHead(full, Math.max(1, budget) + 1, forced)
+            : { text: readFileSync(full, "utf8"), bytesRead: bytes, eof: true };
+        const parsed = parseCsv(head.text, forced, head.eof ? {} : { maxRows: Math.max(1, budget ?? 0) + 1, partial: true });
+        const partial = !head.eof;
         const all = trimTrailing(normMatrix(parsed.rows.map((r) => r.map((c) => coerce(c)))));
         const name = basename(full);
         return {
@@ -64,7 +145,7 @@ export function loadWorkbook(pathIn, opts = {}) {
                 if (sheet && sheet !== name && sheet !== "0")
                     throw new UserError(`${name} is a CSV file; it has one sheet named ${JSON.stringify(name)}`);
                 const body = all.length > 1 ? all.slice(0, Math.max(1, Math.min(all.length, maxRows + 1))) : all;
-                return { name, matrix: body, truncated: body.length < all.length, totalRowsSeen: all.length };
+                return { name, matrix: body, truncated: body.length < all.length, totalRowsSeen: all.length, partial };
             },
         };
     }
@@ -77,7 +158,7 @@ export function loadWorkbook(pathIn, opts = {}) {
     }
     const sheetNames = wb.SheetNames.slice();
     return {
-        path: full, kind: "xlsx", bytes, sheetNames,
+        path: full, kind: "xlsx", bytes, sheetNames, raw: wb,
         get(sheet) {
             const name = sheet ?? sheetNames[0];
             if (!sheetNames.includes(name))
@@ -96,10 +177,16 @@ export function guessHeaderRow(m) {
     for (let i = 0; i < limit; i++) {
         const row = m[i];
         const filled = row.filter((c) => c !== null && String(c).trim() !== "");
-        if (filled.length < 2 && row.length > 1)
-            continue;
         if (filled.length === 0)
             continue;
+        // v3 #9: a one-cell report title must not become the header row just because the
+        // title row is physically one cell wide. Score it against the rows that follow: if
+        // any nearby row has more filled cells, this row is a title, not a header.
+        if (filled.length < 2) {
+            const widest = m.slice(i + 1, i + 6).reduce((w, r) => Math.max(w, r.filter((c) => c !== null && String(c).trim() !== "").length), 0);
+            if (row.length > 1 || widest >= 2)
+                continue;
+        }
         const allText = filled.every((c) => typeof c === "string" && String(c).trim() !== "");
         const uniq = new Set(filled.map((c) => String(c).trim().toLowerCase())).size === filled.length;
         if (!allText || !uniq)
@@ -119,7 +206,7 @@ export function headerNames(m, headerRow) {
     const names = [];
     const seen = new Map();
     for (let c = 0; c < width; c++) {
-        let n = headerRow >= 0 ? String(m[headerRow]?.[c] ?? "").trim() : "";
+        let n = headerRow >= 0 ? cellText(m[headerRow]?.[c] ?? null).trim() : "";
         if (n === "")
             n = colLetter(c);
         const prev = seen.get(n.toLowerCase());
@@ -132,6 +219,31 @@ export function headerNames(m, headerRow) {
         names.push(n);
     }
     return names;
+}
+/**
+ * Coerce a cell to a number for aggregation: accepts real numbers and text such as
+ * "1,250.00", "$1,250.00", "EUR 1 250,00", "(300)" and "12.5%". Returns null when there is no number.
+ * v3 #4: the separator rules live in src/num.ts and are shared with CSV coercion and the
+ * expression language, so "12,99" is 12.99 in every code path rather than 1299 in one.
+ */
+export function toNumber(v) {
+    return parseNumberLoose(v);
+}
+/**
+ * v3 #14: Math.min(...nums) / Math.max(...nums) throw "too many arguments" on a column of
+ * roughly 150,000 numbers. One pass, no spread.
+ */
+export function minMax(nums) {
+    if (!nums.length)
+        return null;
+    let min = nums[0], max = nums[0];
+    for (const n of nums) {
+        if (n < min)
+            min = n;
+        if (n > max)
+            max = n;
+    }
+    return { min, max };
 }
 export function colLetter(i) {
     let s = "";
@@ -168,6 +280,10 @@ export function inferType(values) {
         }
         if (typeof v === "boolean") {
             b++;
+            continue;
+        }
+        if (v instanceof Date) {
+            d++;
             continue;
         }
         const t = String(v).trim();
@@ -212,7 +328,7 @@ export function outputPath(input, outPath, suffix, ext) {
     return join(dir, `${base}${suffix}${e}`);
 }
 export function renderTable(headers, rows, maxWidth = 40) {
-    const cells = [headers, ...rows.map((r) => r.map((c) => (c === null ? "" : String(c))))];
+    const cells = [headers, ...rows.map((r) => r.map((c) => cellText(c)))];
     const widths = headers.map((_, i) => Math.min(maxWidth, cells.reduce((w, r) => Math.max(w, String(r[i] ?? "").length), 0)));
     const line = (r) => "| " + widths.map((w, i) => {
         let s = String(r[i] ?? "");
@@ -221,5 +337,5 @@ export function renderTable(headers, rows, maxWidth = 40) {
         return s.padEnd(w);
     }).join(" | ") + " |";
     const sep = "|" + widths.map((w) => "-".repeat(w + 2)).join("|") + "|";
-    return [line(headers), sep, ...rows.map((r) => line(r.map((c) => (c === null ? "" : String(c)))))].join("\n");
+    return [line(headers), sep, ...rows.map((r) => line(r.map((c) => cellText(c))))].join("\n");
 }

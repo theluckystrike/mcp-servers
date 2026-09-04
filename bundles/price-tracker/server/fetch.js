@@ -63,7 +63,9 @@ export async function fetchPage(url, timeoutMs = TIMEOUT_MS) {
     if (/captcha|are you a human|enable javascript and cookies|access denied|unusual traffic/i.test(html.slice(0, 4000))) {
         throw new FetchError(blockedText(res.url || parsed.toString(), res.status), res.status, true);
     }
-    return { html, finalUrl: res.url || parsed.toString(), status: res.status };
+    const requestedUrl = parsed.toString();
+    const finalUrl = res.url || requestedUrl;
+    return { html, requestedUrl, finalUrl, status: res.status, redirected: finalUrl !== requestedUrl };
 }
 async function readCapped(res) {
     const body = res.body;

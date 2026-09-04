@@ -1,0 +1,94 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-docx",
+  "display_name": "Docx",
+  "version": "0.6.0",
+  "description": "Turn a chat into a real Word document: proposals, quotes, contracts, statements of work and letters as .docx files, plus reading and filling existing .docx templates. Everything stays on your machine.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "business_set",
+      "description": "The sender profile printed on every proposal, contract and letter. The SAME profile invoice's business_set writes: it goes to the shared profile, so it also sets your invoice issuer and default VAT."
+    },
+    {
+      "name": "doc_create",
+      "description": "Call this tool to write a real .docx file from structured sections. Returns the file path, the number of blocks written and the layout used. Free and unlimited."
+    },
+    {
+      "name": "doc_from_markdown",
+      "description": "Call this tool to turn markdown into a .docx. Returns the file path and a count of the blocks written, by type. Free and unlimited."
+    },
+    {
+      "name": "doc_read",
+      "description": "Call this tool to extract the text of an existing .docx. Returns an outline of the headings and the full text in document order, or the block structure. Free and unlimited."
+    },
+    {
+      "name": "doc_to_html",
+      "description": "Call this tool to convert a .docx to semantic HTML you can open in a browser and print to PDF. Returns the path of the .html file. This is the supported PDF route; no PDF is rendered here. Free and unlimited."
+    },
+    {
+      "name": "doc_fill_template",
+      "description": "Call this tool to replace {{placeholders}} in an existing .docx and write a new file. Returns the new path and which placeholders were replaced, unfilled or ignored. Call with no values to list a template's placeholders."
+    },
+    {
+      "name": "proposal_create",
+      "description": "Call this tool to produce a client-ready .docx proposal from summary, scope, deliverables, timeline, price and terms. Returns the reference, the total and the file path. Free tier: 3 proposals or contracts per month."
+    },
+    {
+      "name": "proposal_update",
+      "description": "Rewrite an existing proposal in place from its reference. Only the fields you pass change; the rest comes from the data stored at creation. Returns the fields that changed and the file path."
+    },
+    {
+      "name": "contract_create",
+      "description": "Call this tool to produce a freelance service agreement .docx. Returns the reference, the fee and the file path. It is a template skeleton for a lawyer to review, not legal advice. Free tier: 3 agreements per month."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "docx",
+    "word",
+    "proposal",
+    "contract",
+    "markdown"
+  ]
+}

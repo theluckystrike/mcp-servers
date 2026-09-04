@@ -1,0 +1,90 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-resume",
+  "display_name": "Resume",
+  "version": "0.6.0",
+  "description": "Turn your CV facts into a tailored Word resume and a cover letter that invents nothing: keyword matching against the posting, page-fit trimming, and bracketed prompts wherever a fact is missing. Everything stays on your machine.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "profile_set",
+      "description": "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. Returns a count of what was stored."
+    },
+    {
+      "name": "profile_get",
+      "description": "Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job."
+    },
+    {
+      "name": "resume_create",
+      "description": "Call this tool to write the stored profile to a Word .docx. Returns the output path, the estimated page count, which bullets were dropped to fit, and which keywords matched or are missing."
+    },
+    {
+      "name": "resume_to_markdown",
+      "description": "Return the stored profile as markdown: paste it into a form, an email or an ATS box."
+    },
+    {
+      "name": "resume_to_html",
+      "description": "Call this tool to write the resume as semantic HTML with a print stylesheet. Returns the output path. Open the file in a browser and print it to PDF."
+    },
+    {
+      "name": "resume_read",
+      "description": "Call this tool to extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Returns the parsed profile, the sections found, and anything unparsed."
+    },
+    {
+      "name": "cover_letter_create",
+      "description": "Call this tool to write a one-page cover letter from the stored profile: opening, fit, proof, close. Returns the output path, the word count, and every bracketed prompt left for you to fill in."
+    },
+    {
+      "name": "tailor_to_job",
+      "description": "READ-ONLY gap analysis against a posting: writes nothing, changes nothing. Returns matched keywords, missing ones, a coverage figure and orderings of facts you already stated. Act on it with resume_create."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "resume",
+    "cv",
+    "cover-letter",
+    "docx",
+    "job-application"
+  ]
+}

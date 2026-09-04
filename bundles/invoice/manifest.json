@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-invoice",
   "display_name": "Invoice",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "Make real, sendable PDF invoices from a sentence. Clients, numbering that never repeats, VAT lines, discounts and overdue reports, all stored locally.",
   "author": {
     "name": "theluckystrike",
@@ -39,7 +39,7 @@
   "tools": [
     {
       "name": "business_set",
-      "description": "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices."
+      "description": "The ONE business profile for the whole suite: name, address, VAT id, bank details and defaults (currency, tax rate, terms, prefix, timezone). Saved to the shared profile every other server reads. Call it once, first."
     },
     {
       "name": "client_add",
@@ -51,11 +51,11 @@
     },
     {
       "name": "invoice_create",
-      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is rounded first, then summed."
+      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused) and returns the stored invoice with its subtotal, discount, one tax line per rate and the total."
     },
     {
       "name": "invoice_from_hours",
-      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice."
+      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates and returns a single-line invoice, converting the rate into target_currency when you supply fx_rates, and echoing back any entry_ids."
     },
     {
       "name": "invoice_list",
@@ -71,11 +71,11 @@
     },
     {
       "name": "invoice_pdf",
-      "description": "Render an invoice as an A4 PDF you can send: issuer block, client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Returns the file path."
+      "description": "Call this tool to render a stored invoice as an A4 PDF you can send. Returns the path of the file written."
     },
     {
       "name": "overdue_report",
-      "description": "List every unpaid or partly paid invoice past its due date with days overdue, plus outstanding totals per currency. Pro."
+      "description": "Answer \"which invoices are overdue?\": every unpaid or partly paid invoice past its due date, with days overdue, the outstanding amount per invoice and the outstanding total per currency. Free and unlimited."
     },
     {
       "name": "license_status",

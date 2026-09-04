@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-price-tracker",
   "display_name": "Price Tracker",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "Ask your AI what something costs right now, track price drops and get told when a target price is hit. All data stays local.",
   "author": {
     "name": "theluckystrike",
@@ -37,38 +37,6 @@
     }
   },
   "tools": [
-    {
-      "name": "price_check",
-      "description": "Fetch a product page right now and report its price, currency and title, plus the change against the last price stored for that URL. Does not create a watch."
-    },
-    {
-      "name": "watch_add",
-      "description": "Start tracking a product page. Fetches it once and stores the first observation. Optionally set a target price to be alerted about."
-    },
-    {
-      "name": "watch_list",
-      "description": "Show every tracked item with its current price, target and last check time."
-    },
-    {
-      "name": "watch_remove",
-      "description": "Stop tracking an item, by watch id or by URL. Its history is deleted."
-    },
-    {
-      "name": "watch_refresh",
-      "description": "Re-fetch one watch or every watch, append the new observations and show current, previous, min, max, change % and target hits."
-    },
-    {
-      "name": "price_history",
-      "description": "List the stored observations for one watch, newest last. Free shows the last 10."
-    },
-    {
-      "name": "price_add_manual",
-      "description": "Store a price you read yourself, for shops that block automated requests. Creates the watch if it does not exist yet."
-    },
-    {
-      "name": "alerts_pending",
-      "description": "Show watches whose latest price is at or below the target, or which dropped 5% or more against the previous observation."
-    },
     {
       "name": "license_status",
       "description": "Show whether this server runs in free or Pro mode and where to upgrade."

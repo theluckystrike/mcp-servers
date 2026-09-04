@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-spreadsheet",
   "display_name": "Spreadsheet",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "Open, inspect, query, edit and convert xlsx and csv files locally from your AI assistant",
   "author": {
     "name": "theluckystrike",
@@ -39,35 +39,35 @@
   "tools": [
     {
       "name": "sheet_info",
-      "description": "Open an xlsx or csv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading or querying."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Start here: sheet names, size, header row, column types and samples."
     },
     {
       "name": "sheet_read",
-      "description": "Read rows from a sheet as a text table, JSON records or CSV. Use limit/offset to page through big files, or range for an A1 block like B2:F40."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Reads rows as a table, JSON or CSV; page with limit/offset or an A1 range."
     },
     {
       "name": "sheet_query",
-      "description": "Filter, pick columns and sort rows without writing any code. where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. Column names with spaces go in brackets: [Unit Price] > 10 AND [Region] contains \"north\". Strings use single or double quotes."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filters, groups, aggregates and sorts in one call, e.g. where '[Qty] > 10'."
     },
     {
       "name": "sheet_stats",
-      "description": "Per-column count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Whole-column statistics: count, empty, distinct, min, max, sum, mean, median."
     },
     {
       "name": "sheet_find",
-      "description": "Search every cell for text (case insensitive) and return cell addresses with a preview of the row it is on."
+      "description": "Call this tool to search every cell of a spreadsheet or CSV for text; built-in file readers cannot parse spreadsheets. Matching is case insensitive. Returns cell addresses with a preview of the row each hit is on."
     },
     {
       "name": "sheet_write",
-      "description": "Write rows to a spreadsheet. rows may be objects (keys become headers) or arrays (first array is the header row). mode new_file writes a brand new file and refuses to clobber an existing one; append adds the rows under the existing data; overwrite replaces the file contents. Format follows the extension of out_path (.xlsx, .csv, .tsv, .json)."
+      "description": "Call this tool to write rows to an excel (xlsx) or csv/tsv/json file. Returns the rows, columns, byte size and column names of the file written."
     },
     {
       "name": "sheet_add_column",
-      "description": "Add a computed column and save the result to a NEW file (the source is never modified unless out_path points at it). formula uses the same expression language as sheet_query over the columns of each row, e.g. \"[Qty] * [Unit Price]\" or '[Country] = \"PL\"'. Alternatively pass values, one per data row."
+      "description": "Call this tool to add a computed column and save the result to a NEW file; the source is never modified unless out_path points at it. Returns the new file path, the row count and a preview of the first rows."
     },
     {
       "name": "sheet_convert",
-      "description": "Convert a sheet to csv, xlsx or json. Writes a new file next to the source unless out_path is given."
+      "description": "Call this tool to convert a sheet between excel (xlsx), csv and json. Writes a new file next to the source unless out_path is given; the source is never modified. Returns the new file path with its row and column counts."
     },
     {
       "name": "license_status",

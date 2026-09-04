@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
@@ -195,7 +195,7 @@
     },
     {
       "name": "expense_summary",
-      "description": "Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together."
+      "description": "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; imported bank transactions live in bank-statement."
     },
     {
       "name": "mileage_add",
@@ -203,7 +203,7 @@
     },
     {
       "name": "expense_export",
-      "description": "Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. The money column is `amount` (gross), as in time-tracker's export_csv, with `gross`, `net`, `vat` alongside."
+      "description": "Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. Covers manually logged receipts only; imported bank transactions live in the bank-statement server."
     },
     {
       "name": "expense_to_invoice",
@@ -512,6 +512,138 @@
     {
       "name": "ics_forget",
       "description": "Remove one imported calendar and the local copy of its .ics file. Nothing else is touched."
+    },
+    {
+      "name": "task_add",
+      "description": "Add a task to a project board (todo list / kanban card). Optional column, due date, estimate, priority, tags and notes."
+    },
+    {
+      "name": "task_list",
+      "description": "List tasks as a table, filtered by project, column, tag, due date or overdue."
+    },
+    {
+      "name": "task_move",
+      "description": "Move a task to another column on its board."
+    },
+    {
+      "name": "task_update",
+      "description": "Change any field of a task: title, notes, due date, estimate, priority, tags or project."
+    },
+    {
+      "name": "task_done",
+      "description": "Mark a task done: it moves to the done column and is stamped with the time."
+    },
+    {
+      "name": "task_delete",
+      "description": "Delete a task permanently."
+    },
+    {
+      "name": "task_search",
+      "description": "Find tasks whose title, notes, tags or id match a query."
+    },
+    {
+      "name": "board",
+      "description": "Column-by-column summary of a project board: task counts and estimate totals."
+    },
+    {
+      "name": "task_start_timer",
+      "description": "Return the exact arguments to pass to the time-tracker server's timer_start for this task, and record the link on the task."
+    },
+    {
+      "name": "task_log_time",
+      "description": "Add real minutes worked to a task, so estimate and actual can be compared."
+    },
+    {
+      "name": "project_list",
+      "description": "All project boards with open task counts, remaining estimate and overdue counts."
+    },
+    {
+      "name": "overdue",
+      "description": "Every task past its due date, across all boards."
+    },
+    {
+      "name": "weekly_review",
+      "description": "Done versus planned for a week, with estimate against actual minutes per project."
+    },
+    {
+      "name": "columns_set",
+      "description": "Replace the columns of one board (Pro). Tasks sitting in a removed column move to the first column."
+    },
+    {
+      "name": "image_info",
+      "description": "Format, pixel dimensions, megapixels, file size in bytes and whether the image carries an alpha channel. Read-only: the file is never modified. Free tier: unlimited, at any size."
+    },
+    {
+      "name": "image_resize",
+      "description": "Write a resized copy. fit: \"inside\" scales to fit the box and keeps the aspect ratio; \"cover\" fills the box and crops the overflow; \"exact\" stretches to the given width and height. With only one of width or height, the other follows the aspect ratio. The input is never modified. Free tier: sources up to 4 MP."
+    },
+    {
+      "name": "image_convert",
+      "description": "Re-encode an image as PNG, JPEG, BMP, GIF or TIFF. quality is a JPEG parameter only and is reported as ignored for the lossless formats. Converting an image with transparency to JPEG flattens it onto white, and the answer says so. Free tier: sources up to 4 MP."
+    },
+    {
+      "name": "image_compress",
+      "description": "Re-encode an image smaller and report the byte count before and after. quality (default 80) applies when the output is a JPEG; for a PNG output only max_width reduces bytes, and the answer says which of the two did the work. Free tier: sources up to 4 MP."
+    },
+    {
+      "name": "image_crop",
+      "description": "Cut a rectangle out of an image. x and y are the top-left corner in pixels, counted from the top-left of the image. A rectangle that runs past an edge is refused with the image's real size, never silently clamped. Free tier: sources up to 4 MP."
+    },
+    {
+      "name": "image_thumbnails",
+      "description": "One thumbnail per input, written into out_dir as <name>-thumb.<ext>. Each thumbnail fits inside size by size and keeps its aspect ratio, so a wide photo stays wide. Every output path is reserved before any file is written, so a collision does not leave a half-done batch. Free tier: up to 5 files per call and sources up to 4 MP."
+    },
+    {
+      "name": "image_watermark",
+      "description": "Draw text over an image at a chosen corner and opacity. With no text the shared business profile name is used, the same profile mcp-invoice and mcp-docx write. The text is drawn white on a translucent dark plate so it stays legible on a light photo. Free tier: the profile name; Pro: any text you pass."
+    },
+    {
+      "name": "image_strip_metadata",
+      "description": "Write a copy carrying pixels and nothing else. It works by decoding the image and re-encoding it from the raw pixels: EXIF, GPS coordinates, the camera and lens, the capture time, XMP and colour-profile blocks are not carried across, because the encoder writes only what it is given. The pixels are the same; the bytes are not. Free tier: sources up to 4 MP."
+    },
+    {
+      "name": "image_batch_resize",
+      "description": "Resize every image into out_dir, keeping each one's aspect ratio, named <name>-<W>x<H>.<ext>. With one of width or height the other follows; with both, each image is scaled to fit inside that box. Free tier: up to 5 files per call and sources up to 4 MP."
+    },
+    {
+      "name": "image_dominant_colors",
+      "description": "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Free tier: the top 3 colours; Pro: up to 16."
+    },
+    {
+      "name": "statement_import",
+      "description": "Read a bank CSV export into the local ledger. Columns are detected from the headers (date, description, one signed amount or a debit and a credit column, currency, balance), amounts are read in the file's own locale, and every line already stored is skipped rather than doubled. Returns what was detected, what was stored, and what was skipped and why."
+    },
+    {
+      "name": "transactions_list",
+      "description": "List stored transactions in a date range, optionally for one account or category, or only the ones no rule has categorised yet. Totals are reported per currency and never added across currencies."
+    },
+    {
+      "name": "transactions_search",
+      "description": "Find transactions whose description, counterparty, category or account contains the query. Case-insensitive substring search, never a regex, so a query with brackets in it cannot hang the server."
+    },
+    {
+      "name": "transaction_categorize",
+      "description": "Set the category on one or more transactions by id. Nothing is changed unless every id exists, so a typo cannot half-apply."
+    },
+    {
+      "name": "statement_summary",
+      "description": "What was spent and received in a date range according to the BANK ACCOUNT itself, grouped by category, month, account or counterparty. This is the tool for \"what did I spend in August by category\" whenever a bank statement has been imported: it covers every line the bank shows, not only the receipts that were logged by hand. Every total is reported per currency; amounts in different currencies are never added together and never converted."
+    },
+    {
+      "name": "reconcile_expenses",
+      "description": "Match bank debits against the expenses recorded by mcp-expense-tracker: same currency, same amount, and a date within a few days. Reports what matched, which bank lines have no expense behind them and which expenses never reached the bank. The expense ledger is only ever read, never written."
+    },
+    {
+      "name": "recurring_detect",
+      "description": "Find the charges that come back: the same counterparty, an amount that barely moves and a steady cadence. Reports the cadence, the typical amount, when it was last taken, when it is next due and what it costs per year, per currency."
+    },
+    {
+      "name": "statement_export",
+      "description": "Write the BANK transactions of a date range (a month, a quarter, a year) to a .csv or .json file and return the path. This is the tool for \"export September to <path>\" once a statement has been imported. The file is written atomically, so a failed export never leaves a half-written file behind."
+    },
+    {
+      "name": "accounts_list",
+      "description": "List the imported accounts with their bank, currency, transaction count and date range."
     }
   ],
   "keywords": [

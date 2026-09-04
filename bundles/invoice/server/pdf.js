@@ -2,16 +2,24 @@ import { createWriteStream, existsSync } from "node:fs";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import PDFDocument from "pdfkit";
-import { formatAmount, formatMoney } from "./money.js";
+import { formatMoney } from "./money.js";
 const PAGE_W = 595.28;
 const M = 50;
 const CONTENT_W = PAGE_W - M * 2;
 const INK = "#111111";
 const MUTED = "#666666";
 const RULE = "#cccccc";
-const COLS = { desc: M, qty: M + 250, unit: M + 320, tax: M + 400, amount: M + 455 };
+// Every money column prints the currency code ("EUR 1080.00"), so UNIT and
+// AMOUNT are wide enough for code + digits; DESCRIPTION takes what is left.
+const COLS = { desc: M, qty: M + 196, unit: M + 244, tax: M + 336, amount: M + 381 };
+const COL_W = { desc: 190, qty: 44, unit: 88, tax: 41 };
 const RIGHT_EDGE = PAGE_W - M;
-function money(minor, currency) { return formatAmount(minor, currency); }
+/**
+ * Every money value on the page carries its currency code (D-8, user-value
+ * audit 2026-09-02): a client's accounts department should never have to infer
+ * the currency of a line from the currency of the total.
+ */
+function money(minor, currency) { return formatMoney(minor, currency); }
 function qtyText(q) {
     return Number.isInteger(q) ? String(q) : String(Number(q.toFixed(4)));
 }
@@ -90,10 +98,10 @@ export async function renderInvoicePdf(inv, biz, outPath, opts) {
     // Items table header
     const drawTableHead = (top) => {
         doc.font("Helvetica-Bold").fontSize(9).fillColor(MUTED);
-        doc.text("DESCRIPTION", COLS.desc, top, { width: 240 });
-        doc.text("QTY", COLS.qty, top, { width: 60, align: "right" });
-        doc.text("UNIT", COLS.unit, top, { width: 70, align: "right" });
-        doc.text("TAX", COLS.tax, top, { width: 45, align: "right" });
+        doc.text("DESCRIPTION", COLS.desc, top, { width: COL_W.desc });
+        doc.text("QTY", COLS.qty, top, { width: COL_W.qty, align: "right" });
+        doc.text("UNIT", COLS.unit, top, { width: COL_W.unit, align: "right" });
+        doc.text("TAX", COLS.tax, top, { width: COL_W.tax, align: "right" });
         doc.text("AMOUNT", COLS.amount, top, { width: RIGHT_EDGE - COLS.amount, align: "right" });
         const b = top + 14;
         doc.moveTo(M, b).lineTo(RIGHT_EDGE, b).lineWidth(0.8).strokeColor(RULE).stroke();
@@ -103,16 +111,16 @@ export async function renderInvoicePdf(inv, biz, outPath, opts) {
     const pageBottom = 841.89 - M - 60;
     doc.font("Helvetica").fontSize(9);
     for (const l of inv.lines) {
-        const h = Math.max(doc.heightOfString(l.description, { width: 240 }), 11);
+        const h = Math.max(doc.heightOfString(l.description, { width: COL_W.desc }), 11);
         if (y + h > pageBottom) {
             doc.addPage();
             y = drawTableHead(M);
             doc.font("Helvetica").fontSize(9);
         }
-        doc.fillColor(INK).text(l.description, COLS.desc, y, { width: 240 });
-        doc.text(qtyText(l.quantity), COLS.qty, y, { width: 60, align: "right" });
-        doc.text(money(l.unit_price_minor, inv.currency), COLS.unit, y, { width: 70, align: "right" });
-        doc.text(l.tax_rate ? `${l.tax_rate}%` : "-", COLS.tax, y, { width: 45, align: "right" });
+        doc.fillColor(INK).text(l.description, COLS.desc, y, { width: COL_W.desc });
+        doc.text(qtyText(l.quantity), COLS.qty, y, { width: COL_W.qty, align: "right" });
+        doc.text(money(l.unit_price_minor, inv.currency), COLS.unit, y, { width: COL_W.unit, align: "right" });
+        doc.text(l.tax_rate ? `${l.tax_rate}%` : "-", COLS.tax, y, { width: COL_W.tax, align: "right" });
         doc.text(money(l.gross_minor, inv.currency), COLS.amount, y, { width: RIGHT_EDGE - COLS.amount, align: "right" });
         y += h + 8;
         doc.moveTo(M, y - 4).lineTo(RIGHT_EDGE, y - 4).lineWidth(0.4).strokeColor("#eeeeee").stroke();
@@ -149,10 +157,10 @@ export async function renderInvoicePdf(inv, biz, outPath, opts) {
     }
     doc.moveTo(labelX, y + 2).lineTo(RIGHT_EDGE, y + 2).lineWidth(0.8).strokeColor(RULE).stroke();
     y += 8;
-    row("Total", formatMoney(inv.total_minor, inv.currency), true);
+    row("Total", money(inv.total_minor, inv.currency), true);
     if (inv.paid_minor) {
-        row("Paid", formatMoney(inv.paid_minor, inv.currency));
-        row("Balance due", formatMoney(inv.total_minor - inv.paid_minor, inv.currency));
+        row("Paid", money(inv.paid_minor, inv.currency));
+        row("Balance due", money(inv.total_minor - inv.paid_minor, inv.currency));
     }
     // Payment details + notes
     y += 16;
