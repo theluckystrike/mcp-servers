@@ -384,3 +384,41 @@ test("a rule that could backtrack exponentially is used as a substring, not comp
     c.close(); s.cleanup();
   }
 });
+
+// Profile-first sweep (docs/PROFILE_FIRST_RESULT.md), the D-R64 species: the currency your
+// own bank account is denominated in is business identity, held once behind the token.
+// statement_import silently assumed EUR for a file that names no currency.
+const NO_CURRENCY_CSV = "Date,Description,Amount\n2026-01-05,SPOTIFY,-9.99\n2026-01-06,CLIENT PAYMENT,1200.00\n";
+
+test("statement_import takes the fallback currency from the shared business profile", async () => {
+  const s = sandbox();
+  writeFileSync(join(s.dir, "plain.csv"), NO_CURRENCY_CSV, "utf8");
+  mkdirSync(join(s.dataHome, "mcp-servers", "profile"), { recursive: true });
+  writeFileSync(join(s.dataHome, "mcp-servers", "profile", "business.json"),
+    JSON.stringify({ name: "Nova Studio", default_currency: "PLN" }), "utf8");
+  const c = client(s.env);
+  try {
+    await c.init();
+    const imp = await c.json("statement_import", { path: join(s.dir, "plain.csv"), account: "biz" });
+    assert.deepEqual(imp.currencies, ["PLN"]);
+    assert.ok(imp.notes.some((n) => /shared business profile/.test(n)), JSON.stringify(imp.notes));
+
+    // An explicit currency still wins and is not annotated as profile-sourced.
+    writeFileSync(join(s.dir, "plain2.csv"), NO_CURRENCY_CSV, "utf8");
+    const imp2 = await c.json("statement_import", { path: join(s.dir, "plain2.csv"), account: "biz2", currency: "GBP" });
+    assert.deepEqual(imp2.currencies, ["GBP"]);
+    assert.ok(!imp2.notes.some((n) => /shared business profile/.test(n)), JSON.stringify(imp2.notes));
+  } finally { c.close(); s.cleanup(); }
+});
+
+test("statement_import with no profile currency still falls back to EUR and says nothing about the profile", async () => {
+  const s = sandbox();
+  writeFileSync(join(s.dir, "plain.csv"), NO_CURRENCY_CSV, "utf8");
+  const c = client(s.env);
+  try {
+    await c.init();
+    const imp = await c.json("statement_import", { path: join(s.dir, "plain.csv"), account: "biz" });
+    assert.deepEqual(imp.currencies, ["EUR"]);
+    assert.ok(!imp.notes.some((n) => /shared business profile/.test(n)), JSON.stringify(imp.notes));
+  } finally { c.close(); s.cleanup(); }
+});

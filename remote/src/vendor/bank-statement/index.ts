@@ -5,7 +5,7 @@ import { existsSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSy
 import { homedir } from "../../shims/os.js";
 import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createLicenseGate, withFileLock } from "../../shims/license.js";
+import { createLicenseGate, readSharedProfile, withFileLock } from "../../shims/license.js";
 import { z } from "zod";
 import {
   BANK_IDS, counterpartyKey, readStatement, StatementError,
@@ -245,7 +245,7 @@ server.registerTool("statement_import", {
     account: text(120).optional().describe("Name for this account, e.g. \"business EUR\". Default: the file name without its extension. Later imports of the same account are deduplicated against it"),
     bank: z.enum(BANK_IDS as [BankId, ...BankId[]]).optional().describe("Bank profile. Default \"auto\": the headers decide. \"generic\" skips profile detection and uses the header heuristics alone"),
     overwrite: z.boolean().optional().describe("Delete every transaction already stored for this account before importing, instead of merging. Use it when the bank reissued a corrected export"),
-    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Currency for rows where the file names none. Without it EUR is assumed and the response says so"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "must be a 3-letter ISO code such as EUR").optional().describe("Currency for rows where the file names none. Defaults to the shared business profile's default_currency, else EUR; the response says which it used"),
   },
 }, async (a) => {
   try {
@@ -258,11 +258,20 @@ server.registerTool("statement_import", {
     if (size > MAX_FILE_BYTES) return fail(`that file is ${(size / 1048576).toFixed(1)} MB; the limit is ${MAX_FILE_BYTES / 1048576} MB. Split the export by month.`);
     if (a.currency && !isKnownCurrency(a.currency)) return fail(`"${a.currency.toUpperCase()}" is not an ISO 4217 currency code.`);
 
+    // Profile-first sweep: the currency your own bank account is denominated in is business
+    // identity, not a per-import fact. An explicit currency still wins and is not annotated.
+    const sharedCurrency = (() => {
+      const c = readSharedProfile().default_currency;
+      return c && /^[A-Za-z]{3}$/.test(c.trim()) && isKnownCurrency(c.trim()) ? c.trim().toUpperCase() : undefined;
+    })();
+    const fallbackCurrency = a.currency ?? sharedCurrency;
+    const currencyFromProfile = !a.currency && !!sharedCurrency;
+
     const raw = readStatementText(p);
     const account = (a.account ?? p.split("/").pop()!.replace(/\.[^.]+$/, "")).trim().slice(0, 120) || "default";
 
     let parsed;
-    try { parsed = readStatement(raw, { bank: a.bank ?? "auto", fallbackCurrency: a.currency }); }
+    try { parsed = readStatement(raw, { bank: a.bank ?? "auto", fallbackCurrency }); }
     catch (e) { return fail(e instanceof StatementError ? e.message : String((e as Error).message ?? e)); }
     if (parsed.rows.length > MAX_ROWS) return fail(`that file holds ${parsed.rows.length} transactions; the limit is ${MAX_ROWS}.`);
 
@@ -321,6 +330,9 @@ server.registerTool("statement_import", {
       save(db);
 
       const notes = [...parsed.notes];
+      if (currencyFromProfile) {
+        notes.push(`Rows that named no currency were read as ${fallbackCurrency}, taken from the shared business profile (default_currency). Pass currency to override it.`);
+      }
       if (!gate.isPro()) notes.push(`Everything was stored, but the free tier only READS the last ${FREE_WINDOW_MONTHS} months.`);
       return json({
         account, bank: parsed.bank, delimiter: parsed.delimiter === "\t" ? "tab" : parsed.delimiter,
