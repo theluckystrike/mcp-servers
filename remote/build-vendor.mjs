@@ -170,18 +170,13 @@ function patchExpenseIndex(src) {
   src = must(src, 'return ok(`Wrote ${data.length} expenses to ${target} (${a.format}).`',
     'return ok(`Exported ${data.length} expenses (${a.format}). Download: ${target}`',
     "expense export result text");
-  // 4. D-R76. Over stdio the bank ledger is a sibling file this process can open, so
-  //    bankLedgerLine counts the transactions in the period and names them. Hosted, the
-  //    bank ledger is a SEPARATE tenant document served by /mcp/bank-statement and this
-  //    endpoint cannot read it at all, so readBankTransactions() always answers "absent"
-  //    and the whole D-B4 warning silently disappeared - measured in round 15 with four
-  //    bank transactions stored under the same token in the same month. The count is not
-  //    available here; the fact that the receipts are not the whole picture is, and that
-  //    is the half that matters. Unconditional, because "absent" is not evidence of empty.
-  src = must(src, /function bankLedgerLine\([\s\S]*?\n\}\n/,
-    'function bankLedgerLine(_from: string | undefined, _to: string, tool: "statement_summary" | "statement_export"): string | undefined {\n' +
-    '  return "These are hand-logged receipts only. Any bank statements you imported under this same token live in a separate store on https://mcp.zovo.one/mcp/bank-statement, which this endpoint cannot read, so nothing from them is counted above and no count of them can be given here: call that endpoint\'s " + tool + " for the bank side of this period.";\n' +
-    '}\n', "expense bankLedgerLine hosted");
+  // 4. D-R76, follow-up. bankLedgerLine (D-B4) reads servers/bank-statement's ledger, and
+  //    that ledger is now hydrated into this request as a shared tenant document (see
+  //    SERVERS["expense-tracker"].sharedDoc in remote/src/index.ts, the mirror of
+  //    /mcp/bank-statement's own read-only hydration of the expense ledger), so the real
+  //    stdio bankLedgerLine runs unmodified: readBankTransactions() finds the hydrated
+  //    file at BANK_DIR and can once again count the transactions in the period and name
+  //    the exact bank tool to call. No patch needed here any more.
   return src;
 }
 

@@ -144,6 +144,25 @@ receipts only, any statements imported under this token are in a separate store 
 read, and **no count of them can be given here**, so call `/mcp/bank-statement`'s tool. It does not
 pretend to a number it cannot have. Absent is not evidence of empty, and that is the whole fix.
 
+**Follow-up, 2026-09-04: the unconditional sentence is now the real count again.** The
+`bankLedgerLine` patch above was a stopgap while `remote/src/index.ts` hydrated only one side of
+this pair (`/mcp/bank-statement` reading the expense ledger, per Extension 6 in
+`docs/REMOTE_RESULT.md`). `SERVERS["expense-tracker"]` now carries the mirror image -
+`sharedDoc: { server: "bank-statement", owns: p => p.startsWith(BANK_DIR) }` - so the bank
+ledger `/mcp/bank-statement` serves for the same token is hydrated into the expense-tracker
+request too, read-only: this server never writes a path under `BANK_DIR`, so the flush finds the
+bank document byte-identical to what it hydrated and writes nothing (verified by grep - the only
+write in `servers/expense-tracker/src/store.ts` is `save()`, which writes its own `dbPath()`,
+never `bankDbPath()`). The `bankLedgerLine` patch in `remote/build-vendor.mjs` was reverted, so
+the real stdio function runs unmodified and `readBankTransactions()` finds the hydrated file.
+Verified live with a signed key: `bank_upload` + `statement_import` of 4 rows on
+`/mcp/bank-statement`, then `expense_summary` on `/mcp/expense-tracker` for the same month
+returned `"bank_ledger": "The bank ledger (mcp-bank-statement) holds 4 transactions in this
+period that are not counted here; call that server's statement_summary for them."` On a fresh
+token with no bank data, the same call's response carries no `bank_ledger` field at all.
+`scripts/validate.mjs`'s `remote` block gained one check for the positive case; the whole run is
+green.
+
 ### D-R77 (medium, expense-tracker) - FIXED, with tests
 
 **The free 30-day window could return a range whose start is after its end, and describe it as

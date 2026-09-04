@@ -412,6 +412,13 @@ async function remote() {
     const bres = bdl ? await fetch(bdl) : null;
     const bbody = bres ? await bres.text() : "";
     ok("hosted bank statement_export download is text/csv and carries the rows", bbody.startsWith("id,date,account,") && /NETFLIX/.test(bbody) && (bres?.headers.get("content-type") || "").startsWith("text/csv"), `${bdl ? "link" : "no link"} ${bres?.headers.get("content-type")}`);
+    // D-R76 follow-up: /mcp/expense-tracker hydrates the bank ledger read-only (the mirror
+    // of /mcp/bank-statement's own hydration of the expense ledger), so bankLedgerLine
+    // (D-B4) runs for real on the hosted endpoint again and names the bank transaction
+    // count plus the sibling tool to call, for the SAME token that just imported the rows
+    // above.
+    const esum = await rpc("expense-tracker", { jsonrpc: "2.0", id: 315, method: "tools/call", params: { name: "expense_summary", arguments: { from: "2026-07-01", to: "2026-09-30", group_by: "category" } } });
+    ok("hosted expense_summary names the bank transaction count and statement_summary", /bank_ledger/.test(JSON.stringify(esum)) && /\d+ transactions?/.test(JSON.stringify(esum)) && /statement_summary/.test(JSON.stringify(esum)), JSON.stringify(esum).slice(0, 160));
     const qbiz = await rpc("invoice", { jsonrpc: "2.0", id: 32, method: "tools/call", params: { name: "business_set", arguments: { name: "Probe Studio", default_currency: "EUR", default_tax_rate: 23, iban: "DE89370400440532013000" } } });
     const qc = await rpc("quotes", { jsonrpc: "2.0", id: 33, method: "tools/call", params: { name: "quote_create", arguments: { client: `Probe ${Date.now()}`, items: [{ description: "Design sprint", quantity: 12, unit_price_minor: 9000 }] } } });
     const qid = (JSON.stringify(qc).match(/Q-\d{4}-\d{4}/) || [])[0];

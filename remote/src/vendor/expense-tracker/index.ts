@@ -101,8 +101,12 @@ function windowNote(from: string | undefined, to?: string): { from?: string; not
  * silent when the sibling store is missing, unreadable or empty for the period, so a normal
  * run without bank-statement installed is unchanged.
  */
-function bankLedgerLine(_from: string | undefined, _to: string, tool: "statement_summary" | "statement_export"): string | undefined {
-  return "These are hand-logged receipts only. Any bank statements you imported under this same token live in a separate store on https://mcp.zovo.one/mcp/bank-statement, which this endpoint cannot read, so nothing from them is counted above and no count of them can be given here: call that endpoint's " + tool + " for the bank side of this period.";
+function bankLedgerLine(from: string | undefined, to: string, tool: "statement_summary" | "statement_export"): string | undefined {
+  const bank = readBankTransactions();
+  if (!bank.present || bank.note) return undefined;
+  const count = bank.transactions.filter((t) => (!from || t.date >= from) && t.date <= to).length;
+  if (count === 0) return undefined;
+  return `The bank ledger (mcp-bank-statement) holds ${count} transaction${count === 1 ? "" : "s"} in this period that are not counted here; call that server's ${tool} for them.`;
 }
 
 function select(db: DB, f: Filter): Expense[] {

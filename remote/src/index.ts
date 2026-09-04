@@ -86,6 +86,8 @@ interface ServerCfg {
 const INVOICE_DIR = "/home/mcp/.local/share/mcp-servers/invoice/";
 /** The expense ledger /mcp/expense-tracker owns; /mcp/bank-statement reconciles against it. */
 const EXPENSE_DIR = "/home/mcp/.local/share/mcp-servers/expense-tracker/";
+/** The bank ledger /mcp/bank-statement owns; /mcp/expense-tracker's bankLedgerLine (D-B4) reads it. */
+const BANK_DIR = "/home/mcp/.local/share/mcp-servers/bank-statement/";
 
 const SERVERS: Record<string, ServerCfg> = {
   "time-tracker": {
@@ -98,6 +100,13 @@ const SERVERS: Record<string, ServerCfg> = {
     factory: createExpenseTracker as () => McpServer,
     // Everything the export tool writes; never the ledger itself.
     publish: (p) => !p.endsWith("/data.json") && !p.endsWith(".lock"),
+    // D-R76. bankLedgerLine (D-B4) reads servers/bank-statement's ledger to name the bank
+    // transaction count in the period, and that is a SEPARATE tenant document here, so it
+    // is hydrated on top of this one - the mirror of /mcp/bank-statement's own hydration of
+    // the expense ledger. Read-only in practice: this server never writes a path under
+    // BANK_DIR, so the flush finds the bank document byte-identical to what it hydrated and
+    // writes nothing.
+    sharedDoc: { server: "bank-statement", owns: (p) => p.startsWith(BANK_DIR) },
   },
   "spreadsheet": {
     factory: createSpreadsheet as () => McpServer,
