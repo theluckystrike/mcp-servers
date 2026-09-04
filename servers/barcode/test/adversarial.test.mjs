@@ -79,6 +79,57 @@ test("an invalid IBAN, a zero amount and a huge amount are each refused by name"
   assert.match(list.text, /1 of 20 free codes used/, "only the one accepted amount may be registered");
 });
 
+test("an IBAN with a valid checksum but the wrong length for its country is refused on length, not silently accepted", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  // PL is 28 characters; this one is 20, with check digits computed by the same ISO 7064
+  // algorithm so the checksum alone would pass. Length must be checked independently.
+  const wrongLength = "PL151111111111111111";
+  const r = await c.call("qr_payment_sepa", { iban: wrongLength, name: "A", amount: 10 });
+  assert.equal(r.isError, true);
+  assert.match(r.text, /PL IBAN is 28 characters/);
+  assert.match(r.text, /is 20/);
+});
+
+test("a lowercase BIC is normalized and accepted, not refused for case", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  const iban = "DE89370400440532013000";
+  const r = await c.call("qr_payment_sepa", { iban, name: "A", amount: 10, bic: "deutdeff" });
+  assert.equal(r.isError, false, r.text.slice(0, 200));
+});
+
+test("remittance text one character over the EPC limit is refused; exactly at the limit is accepted", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  const iban = "DE89370400440532013000";
+  const over = await c.call("qr_payment_sepa", { iban, name: "A", amount: 10, remittance: "x".repeat(141) });
+  assert.equal(over.isError, true);
+  assert.match(over.text, /allows 140/);
+
+  const atLimit = await c.call("qr_payment_sepa", { iban, name: "A", amount: 10, remittance: "x".repeat(140) });
+  assert.equal(atLimit.isError, false, atLimit.text.slice(0, 200));
+});
+
+test("amount given as a formatted string is refused by the protocol, not parsed as a number", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  const iban = "DE89370400440532013000";
+  const r = await c.call("qr_payment_sepa", { iban, name: "A", amount: "1,230.00" });
+  assert.equal(r.isError, true);
+  assert.match(r.text, /Expected number, received string/);
+  const list = await c.call("code_list", {});
+  assert.match(list.text, /0 of 20 free codes used/, "a rejected string amount must cost no allowance");
+});
+
 test("an EAN with the wrong check digit is refused and the right one is named", async (t) => {
   const box = sandbox();
   const c = client({ dataHome: box.dataHome });
