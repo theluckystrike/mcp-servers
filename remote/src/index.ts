@@ -923,6 +923,34 @@ a{color:#1a4fd6}
 
 const esc = (x: string) => x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+/**
+ * A product page of our own, so price-tracker can be tried (and this suite's runs
+ * reproduced) without pointing a fetcher at somebody else's shop. `?price=` sets the
+ * asking price so a drop can be demonstrated on a URL the caller controls; everything
+ * else on the page is fixed. The price is carried in JSON-LD, which is the "high"
+ * confidence path in the extractor, and repeated in the visible text.
+ */
+function sampleProductPage(base: string, priceRaw: string | null): string {
+  const price = /^\d{1,6}(\.\d{1,2})?$/.test(String(priceRaw ?? "")) ? Number(priceRaw).toFixed(2) : "49.00";
+  const ld = JSON.stringify({
+    "@context": "https://schema.org", "@type": "Product",
+    name: "Zovo Sample Desk Lamp",
+    sku: "ZS-LAMP-01",
+    offers: { "@type": "Offer", priceCurrency: "EUR", price, availability: "https://schema.org/InStock", url: `${base}/mcp/sample/product` },
+  });
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zovo Sample Desk Lamp</title><style>${CONNECT_CSS}</style>
+<script type="application/ld+json">${ld}</script></head><body><main>
+<h1>Zovo Sample Desk Lamp</h1>
+<p class="tok">EUR ${price}</p>
+<p>SKU ZS-LAMP-01. In stock. This is a fixture page served by mcp.zovo.one so you can try the
+price-tracker server against a URL nobody else owns. Add <code>?price=39.00</code> to the URL to
+serve a different asking price and watch an alert fire.</p>
+<p class="note">Not a shop: nothing here is for sale.</p>
+</main></body></html>`;
+}
+
 function connectPage(base: string, token: string): string {
   const rows = Object.keys(SERVERS).map((n) =>
     `<tr><td>${n}</td><td class="u">${esc(`${base}/mcp/${n}/t/${token}`)}</td></tr>`).join("\n");
@@ -1091,6 +1119,15 @@ export default {
     }
 
     if (path === "/mcp") return json(indexDoc(base));
+
+    // A price-tracker fixture: a real page, on a host this suite controls, with a price in
+    // JSON-LD. `?price=` changes the asking price so a drop and an alert can be demonstrated.
+    if (path === "/mcp/sample/product") {
+      if (req.method !== "GET" && req.method !== "HEAD") return json({ error: "method_not_allowed" }, 405, { allow: "GET" });
+      return new Response(sampleProductPage(base, url.searchParams.get("price")), {
+        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+      });
+    }
 
     if (path === "/mcp/connect") {
       if (req.method !== "GET" && req.method !== "HEAD") return json({ error: "method_not_allowed" }, 405, { allow: "GET" });
