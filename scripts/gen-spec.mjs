@@ -24,8 +24,9 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "clauses", "currency", "docx", "expense-tracker", "invoice", "price-tracker",
-  "recurring", "resume", "spreadsheet", "time-tracker", "timezone",
+  "bank-statement", "calendar", "clauses", "currency", "docx", "expense-tracker",
+  "image", "invoice", "kanban", "pdf", "price-tracker", "recurring", "resume",
+  "spreadsheet", "time-tracker", "timezone",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -45,6 +46,123 @@ const COMMON_INVARIANTS = [
  * common list. `caps` documents the enforced limits that a contract test can assert.
  */
 const CURATED = {
+  "bank-statement": {
+    summary: "Reads a bank CSV, OFX or QIF export into a local ledger: import, list, search, categorise with rules, summarise a period, detect recurring charges, and reconcile against the expense-tracker ledger.",
+    storageFiles: [["data.json", "accounts, transactions and category rules"]],
+    primaryFile: "data.json",
+    caps: [
+      "`FREE_ACCOUNTS` = 2 accounts on free.",
+      "`FREE_WINDOW_MONTHS` = 12 months of history read back on free.",
+      "`FREE_RULES` = 5 category rules on free.",
+      "`FREE_RECONCILE_DAYS` = 31 days per `reconcile_expenses` answer on free. The guardrail answers over the most recent slice and names the cap (docs/GUARDRAILS_RESULT.md).",
+      "`FREE_RECURRING_MONTHS` = 3 months and `FREE_RECURRING_CHARGES` = 5 charges per `recurring_detect` answer on free. It answers and names the cap; it does not refuse.",
+      "`statement_export` is Pro. The refusal is an answer, not a protocol error, and no file is written.",
+      "`MAX_FILE_BYTES` = 32 MB and `MAX_ROWS` = 200000 per imported statement.",
+      "`MAX_REGEX_SOURCE` = 100 characters of rule pattern and `MAX_MATCH_INPUT` = 512 characters matched against it.",
+    ],
+    extra: [
+      "Import always stores every row, on either tier. Dropping rows on the way in would make the ledger disagree with the bank; the free limit is on what is read back.",
+      "`amount_minor` is a SIGNED integer: a debit is negative, a credit positive. A trailing minus (`12.50-`, the German, Polish and SAP export form) is a debit, not income (D-B1).",
+      "A category rule whose `match` is empty or whitespace is refused. `description.includes(\"\")` is true for every row, so an empty rule rewrites the whole ledger (D-B2).",
+      "Statement text is decoded from the bytes: a UTF-16 byte-order mark either way is honoured, UTF-8 otherwise (D-B3).",
+      "`statement_export` writes through `<out>.<pid>.tmp` then `rename`, and removes the tmp file if the write fails, so a failed export leaves no partial file. Replacing an existing file is allowed but always reported.",
+      "The expense-tracker ledger is read read-only, from the same XDG data root; a missing or corrupt sibling store is ignored rather than raised.",
+    ],
+  },
+  "calendar": {
+    summary: "Reads .ics calendar exports into a local store and answers questions about them: what is on, what is free, what conflicts, what is next, and writes a chosen set of events back out as a new .ics file.",
+    storageFiles: [["data.json", "imported calendars, their events and the source they came from"]],
+    primaryFile: "data.json",
+    caps: [
+      "`FREE_MAX_CALENDARS` = 2 calendars kept on free.",
+      "`FREE_MAX_WINDOW_DAYS` = 31 days per question on free.",
+      "`FREE_MAX_EXPORT_EVENTS` = 50 events per `event_export` on free. Over the cap nothing is written.",
+      "`conflicts` over a longer window is answered for the first 31 days with the cap named, not refused (docs/GUARDRAILS_RESULT.md).",
+      "Importing from a `url` or webcal feed is Pro. The refusal names the free path that gets the same result: paste the file contents as `text`.",
+      "`MAX_BYTES` = 5 MB per fetched feed, `MAX_TEXT_BYTES` = 5 MB of pasted text, `MAX_WINDOW_DAYS` = 1830, `MAX_IDS` = 500, `MAX_LIST_ROWS` = 500.",
+      "`MAX_CANDIDATES` = 100000 and `MAX_OCCURRENCES` = 20000 bound recurrence expansion, so an endless RRULE cannot run away.",
+    ],
+    extra: [
+      "There is exactly one network call in the server, and only when the caller passes a `url`: one fetch, 12-second timeout, 5 MB cap, and loopback, private and cloud-metadata addresses refused before and after any redirect.",
+      "Folds are rejoined on the raw bytes before decoding, so a multi-byte character split across an Outlook fold survives (D-24).",
+      "`FREQ=HOURLY` is expanded; `FREQ=SECONDLY` and `FREQ=MINUTELY` are deliberately not, and the note says why. `BYSETPOS`, `BYDAY` ordinals and `RDATE`/`EXDATE` are parsed (D-12, D-14).",
+      "A `DTEND` before `DTSTART` is read as zero length and says so rather than rendering a plausible appointment (D-19).",
+      "A `TZID` that `Intl` does not know keeps the event, read as local time, with the reason named once per file.",
+      "Exported times are written in UTC, and one occurrence of a recurring event is one addressable UID, not twelve VEVENTs sharing one.",
+      "A per-process parse cache is keyed on the stored file's path, size and mtime, so four questions over a 20,000-event calendar do not re-parse it four times.",
+    ],
+    dropInvariants: ["Money is stored and compared in minor units"],
+  },
+  "image": {
+    summary: "Local image work with no native dependency: read a header, resize, convert, compress, crop, thumbnail, watermark, strip metadata, batch-resize a folder, and report the dominant colours.",
+    storageFiles: [["operations.json", "the last 500 operations this server performed, for the image://recent resource"]],
+    primaryFile: "operations.json",
+    caps: [
+      "`FREE_MAX_PIXELS` = 4000000 output pixels per written file on free. The limit is on what is WRITTEN, not on what is read.",
+      "`FREE_MAX_BATCH` = 5 files per `image_thumbnails` or `image_batch_resize` call on free.",
+      "`FREE_MAX_COLORS` = 3 colours from `image_dominant_colors` on free. It answers with the top 3 rather than refusing, because a refusal made the model invent hex codes (docs/IMAGE_AUDIT.md).",
+      "Custom `image_watermark` text is Pro; free watermarks with the business name from the shared profile.",
+      "`MAX_BYTES` = 50 MB and `MAX_DIM` = 10000 px on any input, on either tier.",
+    ],
+    extra: [
+      "`process.stdout.write` is wrapped before the transport is created: anything not beginning `{` or `[` is diverted to stderr, and `console.log/info/warn/debug` are bound to stderr outright. A decoder warning from `omggif` or `jpeg-js` on stdout killed the session (D-I1).",
+      "A tier limit is an answer, not a protocol error: it comes back without `isError`, and nothing is written when one refuses a call.",
+      "The operation register is best effort. The image is already on disk when the register is touched, so a corrupt register is quarantined and reported as a note on a successful answer, never as \"nothing was written\".",
+      "An animated GIF is read as its first frame and the output is a still; the count of frames and that fact are stated rather than left silent (D-I2).",
+      "EXIF orientation is applied on read. When the header disagrees, `image_info` prints `declared_in_header` and says a copy written here carries no EXIF block and will not be turned again (D-I3).",
+      "A resize past the source resolution says the extra pixels are interpolated, not new detail (D-I4).",
+      "Watermark text outside the bundled Latin-1 bitmap font is transliterated or reported, never silently drawn as nothing (D-I5).",
+    ],
+    dropInvariants: [
+      "Money is stored and compared in minor units",
+      "A store file that fails to parse is quarantined",
+    ],
+  },
+  "kanban": {
+    summary: "A local task board per project: add, move, update and finish tasks across columns, search them, see what is overdue, run a weekly review, and start a timer on the time-tracker server.",
+    storageFiles: [["data.json", "boards, their columns and every task"]],
+    primaryFile: "data.json",
+    caps: [
+      "`FREE_PROJECTS` = 3 project boards on free.",
+      "`FREE_OPEN_TASKS` = 200 open tasks on free.",
+      "`columns_set` (custom columns) is Pro; free boards use the default five: backlog, todo, doing, review, done.",
+      "`weekly_review` is free for the current week; a past week is Pro.",
+      "`MAX_TITLE` = 300, `MAX_NOTES` = 5000, `MAX_PROJECT` = 100, `MAX_ID` = 64, `MAX_COLUMN_NAME` = 40, `MAX_COLUMNS` = 12, `MAX_TAGS` = 30, `MAX_TAG` = 60, `MAX_QUERY` = 200, `MAX_MINUTES` = 100000.",
+      "Listing prints 200 rows by default and `limit` reaches 2000 (`MAX_ROW_LIMIT`). The totals line still counts every row.",
+    ],
+    extra: [
+      "A blank project name is refused, and `resolveProject` never near-matches an empty stored name, so a board with an empty name cannot swallow every later project (D-K2).",
+      "`columns_set` validates the normalised list, not the raw array, so a board cannot be collapsed to one column, which would make every task on it read as done (D-K4).",
+      "`task_list`, `task_search` and `overdue` cap the printed rows and say what was cut. One 5,000-task listing was 430 KB, roughly 110,000 tokens, which no client can use (D-K9).",
+      "`task_start_timer` reads the sibling `time-tracker/data.json` under the same XDG data root, read-only and best effort, and warns before starting when the two stores would resolve the project name differently (D-K10).",
+      "Accepted due-date forms: `YYYY-MM-DD` (a real calendar day), `today`, `tomorrow`, `yesterday`, `+Nd`, a bare weekday meaning the nearest on or after today, and `next <weekday>` meaning the nearest strictly after. Anything else is refused with the list.",
+    ],
+    dropInvariants: ["Money is stored and compared in minor units"],
+  },
+  "pdf": {
+    summary: "Local PDF work with no native dependency: read a document's shape, count and extract pages, merge, split, rotate, reorder, stamp, add a business footer, and read the text back out.",
+    storageFiles: [["operations.json", "the last 500 operations this server performed, for the pdf://recent resource"]],
+    primaryFile: "operations.json",
+    caps: [
+      "`FREE_MAX_MERGE_FILES` = 5 files per `pdf_merge` on free.",
+      "`FREE_MAX_PAGES` = 30 pages per file for `pdf_split`, `pdf_pages` and `pdf_rotate` on free.",
+      "`pdf_stamp` is free for the `PAID` and `DRAFT` presets in their preset colours; custom text, colour and size are Pro.",
+      "`pdf_watermark_business` and `pdf_reorder` are Pro.",
+      "`MAX_BYTES` = 100 MB per input, `MAX_FONT_SIZE` = 1600 points, `MAX_TEXT_CHARS` = 200000 per `pdf_text` answer.",
+    ],
+    extra: [
+      "`reserveOutput(out, overwrite, inputs)` refuses an `out_path` that resolves to, or shares an inode with, any input of the same call, before any directory is made and before any work. `overwrite: true` does not override it: it is consent to replace some other file, never to consume an input (D-P1).",
+      "A tier limit is an answer, not a protocol error: it comes back without `isError`, and nothing is written when one refuses a call.",
+      "The operation register is best effort. The file is already on disk when the register is touched, so a corrupt register is quarantined and reported as a note on a successful answer, never as \"nothing was written\".",
+      "Stamp text is sanitised, not deleted: a whitespace control is a word separator (D-P2), and a character outside WinAnsi is transliterated (`OPLACONE` for `OPŁACONE`) with the count of replacements and the text actually drawn reported (D-P3).",
+      "A stamp that does not fit is refused with the measurement, not drawn off the page: the width is compared against the room available and the overflow is named in points (D-P4).",
+      "`pdf_text` is best effort and says so: it reads `Tj`, `TJ`, `'` and `\"` out of the FlateDecode content streams with `node:zlib`. A scan carries no text operators, and the answer names the exact argument that continues a truncated read (D-P6).",
+    ],
+    dropInvariants: [
+      "Money is stored and compared in minor units",
+      "A store file that fails to parse is quarantined",
+    ],
+  },
   "clauses": {
     summary: "A local clause library for contracts: store your own clauses, search them, and assemble a contract from a list of clause titles with variables filled in.",
     storageFiles: [["data.json", "clause library, own clauses plus imports"]],
