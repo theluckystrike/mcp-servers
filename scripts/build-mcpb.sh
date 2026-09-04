@@ -17,6 +17,11 @@ ROOT="/Users/mike/mcp-servers"
 export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
 mkdir -p "$npm_config_cache"
 
+# First step, before anything is built: fail the release when a server is only half wired
+# (missing registry name, over-length description, unmerged remotes, absent from a list).
+# Set RELEASE_CHECK=0 to build bundles anyway while iterating on a server.
+if [ "${RELEASE_CHECK:-1}" != "0" ]; then node "$ROOT/scripts/release-check.mjs"; fi
+
 # serverInfo.version is compiled in from src/version.ts; regenerate it from each
 # package.json so a bundle can never announce a version its manifest disagrees with.
 node "$ROOT/scripts/sync-versions.mjs"
