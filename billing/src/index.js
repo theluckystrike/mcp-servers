@@ -129,7 +129,7 @@ function home() {
   }).join("\n");
   const rows = Object.entries(PRODUCTS).map(([id, p]) =>
     `<tr><td><strong>${p.pkg ? `<a href="/s/${esc(id)}">${esc(p.name)}</a>` : esc(p.name)}</strong><br>${esc(p.desc)}<br><span class="muted">${esc(p.free)} ${esc(p.pro)}</span>${p.pkg ? `<br><span class="muted">Install: <code>npx -y ${esc(p.pkg)}</code> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}#readme">docs</a></span>` : ""}</td>
-<td>$${p.usd}</td><td><a class="buy" href="/buy/${id}">Buy</a></td></tr>`).join("\n");
+<td>$${p.usd}</td><td><a class="buy" href="/buy/${id}?src=store.home">Buy</a></td></tr>`).join("\n");
   const ld = [
     {
       "@context": "https://schema.org",
@@ -444,11 +444,11 @@ export default {
       const pg = PAGES[id];
       if (!pg) return new Response(page("Not found", `<h1>Unknown server</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
       const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/s/${esc(id)}">
-<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "SoftwareApplication", name: pg.title, applicationCategory: "DeveloperApplication", operatingSystem: "macOS, Windows, Linux", description: pg.description, url: `https://mcp.zovo.one/s/${id}`, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, offers: [{ "@type": "Offer", price: "0", priceCurrency: "USD", name: "Free tier" }, { "@type": "Offer", price: String(PRODUCTS[id].usd), priceCurrency: "USD", name: "Pro, lifetime", url: `https://mcp.zovo.one/buy/${id}` }] })}</script>`;
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "SoftwareApplication", name: pg.title, applicationCategory: "DeveloperApplication", operatingSystem: "macOS, Windows, Linux", description: pg.description, url: `https://mcp.zovo.one/s/${id}`, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, offers: [{ "@type": "Offer", price: "0", priceCurrency: "USD", name: "Free tier" }, { "@type": "Offer", price: String(PRODUCTS[id].usd), priceCurrency: "USD", name: "Pro, lifetime", url: `https://mcp.zovo.one/buy/${id}?src=store.s.${id}` }] })}</script>`;
       const setupLinks = SETUP_SERVERS[id]
         ? CLIENT_ORDER.map((c) => `<a href="/setup/${c}/${id}">${esc(CLIENTS[c].name)}</a>`).join(" &middot; ")
         : null;
-      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}">Buy Pro $${PRODUCTS[id].usd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a> &middot; <a href="${REPO}/releases/tag/v0.1.1">Claude Desktop bundle (.mcpb)</a></p>${pg.html}
+      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}?src=store.s.${esc(id)}">Buy Pro $${PRODUCTS[id].usd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a> &middot; <a href="${REPO}/releases/tag/v0.1.1">Claude Desktop bundle (.mcpb)</a></p>${pg.html}
 ${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry and caveats: ${setupLinks} &middot; <a href="/setup">all clients</a></p>` : ""}
 ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/${esc(id)}">${esc(COMPARE[id].title)}</a> &middot; <a href="/compare">all comparisons</a></p>` : ""}
 <h2>Guides</h2>
@@ -483,7 +483,7 @@ ${g.html}
 <h2>Questions</h2>
 ${faqHtml}
 <h2>Related</h2>
-<p><a href="/">All MCP servers and prices</a> &middot; <a href="/guides">All guides</a></p>`;
+<p><a href="/">All MCP servers and prices</a> &middot; <a href="/guides">All guides</a> &middot; <a class="buy" href="/buy/bundle?src=store.guide.${slug}">Buy the bundle $${PRODUCTS.bundle.usd}</a></p>`;
       return new Response(page(g.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
     }
 
@@ -514,7 +514,7 @@ ${c.html}
 <h2>Questions</h2>
 ${faqHtml}
 <h2>Related</h2>
-<p><a href="/s/${esc(slug)}">Product page</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/compare">All comparisons</a></p>`;
+<p><a href="/s/${esc(slug)}">Product page</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/compare">All comparisons</a>${PRODUCTS[slug] ? ` &middot; <a class="buy" href="/buy/${esc(slug)}?src=store.compare.${esc(slug)}">Buy Pro $${PRODUCTS[slug].usd}</a>` : ""}</p>`;
       return new Response(page(c.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
     }
 

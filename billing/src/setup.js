@@ -959,7 +959,7 @@ export function setupPage(clientId, serverId) {
 ${faq.map((f) => `<h3>${esc(f.q)}</h3>\n<p>${esc(f.a)}</p>`).join("\n")}
 
 <h2>Related</h2>
-<p>${s.sPage ? `<a href="${s.sPage}">${esc(s.title)} in detail</a> &middot; ` : ""}<a href="/guides/connect-mcp-servers-without-installing">How connect-by-URL works</a> &middot; <a href="/setup/${clientId}">Every server for ${esc(c.name)}</a> &middot; <a href="/setup">All clients</a> &middot; <a href="${esc(c.docs)}">${esc(c.name)} docs</a></p>`;
+<p>${s.sPage ? `<a href="${s.sPage}">${esc(s.title)} in detail</a> &middot; ` : ""}<a href="/guides/connect-mcp-servers-without-installing">How connect-by-URL works</a> &middot; <a href="/setup/${clientId}">Every server for ${esc(c.name)}</a> &middot; <a href="/setup">All clients</a> &middot; <a href="${esc(c.docs)}">${esc(c.name)} docs</a> &middot; <a class="buy" href="/buy/${esc(serverId)}?src=store.setup.${esc(clientId)}">Buy Pro</a></p>`;
     return { title, description, body, faq, canonical };
   }
 
@@ -992,7 +992,7 @@ ${hostedBlock(clientId, s)}
 ${faq.map((f) => `<h3>${esc(f.q)}</h3>\n<p>${esc(f.a)}</p>`).join("\n")}
 
 <h2>Related</h2>
-<p>${s.sPage ? `<a href="${s.sPage}">${esc(s.title)} in detail</a> &middot; ` : ""}The same server in <a href="/setup/${prev}/${serverId}">${esc(CLIENTS[prev].name)}</a> and <a href="/setup/${next}/${serverId}">${esc(CLIENTS[next].name)}</a> &middot; <a href="/setup/${clientId}">Every server in ${esc(c.name)}</a> &middot; <a href="/guides">Guides</a> &middot; <a href="${esc(c.docs)}">${esc(c.name)} docs</a></p>`;
+<p>${s.sPage ? `<a href="${s.sPage}">${esc(s.title)} in detail</a> &middot; ` : ""}The same server in <a href="/setup/${prev}/${serverId}">${esc(CLIENTS[prev].name)}</a> and <a href="/setup/${next}/${serverId}">${esc(CLIENTS[next].name)}</a> &middot; <a href="/setup/${clientId}">Every server in ${esc(c.name)}</a> &middot; <a href="/guides">Guides</a> &middot; <a href="${esc(c.docs)}">${esc(c.name)} docs</a> &middot; <a class="buy" href="/buy/${esc(serverId)}?src=store.setup.${esc(clientId)}">Buy Pro</a></p>`;
 
   return { title, description, body, faq, canonical };
 }

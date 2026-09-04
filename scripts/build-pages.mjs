@@ -5,10 +5,19 @@ import { marked } from "marked";
 const ids = ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip"];
 const facts = JSON.parse(readFileSync("data/facts.json", "utf8"));
 const out = {};
+
+/** Append ?src=<src> to every untagged /buy/<product> href in a block of rendered HTML. */
+function tagBuyLinks(html, src) {
+  return html.replace(/(href="(?:https:\/\/mcp\.zovo\.one)?\/buy\/[a-z0-9-]+)"/g, `$1?src=${src}"`);
+}
 for (const id of ids) {
   if (!existsSync(`servers/${id}/README.md`)) { console.error(`skip ${id}: no README yet`); continue; }
   const md = readFileSync(`servers/${id}/README.md`, "utf8");
-  const body = marked.parse(md.replace(/<!--[\s\S]*?-->/g, ""));
+  // Conversion instrument (docs/CONVERSION_INSTRUMENT.md): a /buy link that reaches the
+  // storefront from a README carried no src, so its clicks landed in <product>.unknown.
+  // Tag every one of them with the page that rendered it. Links that already carry a
+  // query string are left alone, so this stays idempotent.
+  const body = tagBuyLinks(marked.parse(md.replace(/<!--[\s\S]*?-->/g, "")), `store.s.${id}`);
   const f = facts.servers[id];
   out[id] = { title: f.title, tagline: f.tagline, description: f.does, html: body };
 }
