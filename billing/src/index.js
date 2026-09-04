@@ -219,6 +219,74 @@ async function bindTenant(env, tenant, key) {
   await env.REMOTE_DATA.put(`bind:${tenant}`, key);
 }
 
+/**
+ * Conversion instrument (docs/CONVERSION_INSTRUMENT.md). Every cap message's upgrade
+ * link carries ?src=<product>.<tool-or-slug>; a well-formed one is lowercase, digits,
+ * dot, underscore and hyphen only, so it is safe to fold into a KV key unescaped.
+ */
+const SRC_RE = /^[a-z0-9][a-z0-9._-]{0,90}$/;
+
+/** Pure: is this a well-formed src tag? */
+export function validSrc(src) {
+  return typeof src === "string" && SRC_RE.test(src);
+}
+
+const CLICK_DAY_TTL = 60 * 60 * 24 * 120; // 120 days of daily buckets is enough for any 7/30d KPI
+
+/**
+ * Count one human click on an upgrade link, before the redirect to Stripe. Two counters
+ * per src: a per-day bucket (`click:<src>:<yyyy-mm-dd>`, TTL'd) for recent-window KPIs,
+ * and a running total (`click:<src>:total`, no TTL) for lifetime counts. Stored in
+ * REMOTE_DATA rather than LICENSES: clicks are hosted-traffic telemetry, the same bucket
+ * as anon tokens and rate-limit counters, not a licensing record, and LICENSES is kept
+ * lean for the session:/lic: keys the mint path depends on. Read-then-write like the
+ * hosted rate limiter (remote/src/index.ts): an undercount under concurrency is the same
+ * already-accepted approximation, not a new one.
+ */
+export async function recordClick(env, src) {
+  const day = new Date().toISOString().slice(0, 10);
+  const dayKey = `click:${src}:${day}`;
+  const totalKey = `click:${src}:total`;
+  const [dayN, totalN] = await Promise.all([env.REMOTE_DATA.get(dayKey), env.REMOTE_DATA.get(totalKey)]);
+  await Promise.all([
+    env.REMOTE_DATA.put(dayKey, String((Number(dayN) || 0) + 1), { expirationTtl: CLICK_DAY_TTL }),
+    env.REMOTE_DATA.put(totalKey, String((Number(totalN) || 0) + 1)),
+  ]);
+}
+
+/**
+ * Aggregate click:<src>:<day|total> keys into per-src totals and trailing-7-day counts.
+ * REMOTE_DATA.list() is a real runtime binding call (not just a wrangler CLI feature), so
+ * this works from a live request, not only from local tooling.
+ */
+export async function clickStats(env) {
+  const today = new Date();
+  const last7 = new Set();
+  for (let i = 0; i < 7; i++) last7.add(new Date(today.getTime() - i * 86400000).toISOString().slice(0, 10));
+  const bySrc = {};
+  let cursor;
+  for (;;) {
+    const page = await env.REMOTE_DATA.list({ prefix: "click:", cursor });
+    for (const k of page.keys) {
+      const rest = k.name.slice("click:".length);
+      const sep = rest.lastIndexOf(":");
+      if (sep < 0) continue;
+      const src = rest.slice(0, sep);
+      const tag = rest.slice(sep + 1);
+      if (tag !== "total" && !last7.has(tag)) continue; // older daily buckets don't affect any reported figure
+      const n = Number(await env.REMOTE_DATA.get(k.name)) || 0;
+      bySrc[src] ??= { total: 0, last7d: 0 };
+      if (tag === "total") bySrc[src].total = n;
+      else bySrc[src].last7d += n;
+    }
+    if (page.list_complete || !page.cursor) break;
+    cursor = page.cursor;
+  }
+  const total_clicks = Object.values(bySrc).reduce((a, s) => a + s.total, 0);
+  const clicks_7d = Object.values(bySrc).reduce((a, s) => a + s.last7d, 0);
+  return { generated_at: new Date().toISOString(), by_src: bySrc, total_clicks, clicks_7d };
+}
+
 class MintError extends Error {}
 
 /**
@@ -342,7 +410,7 @@ export async function verifySig(env, body, header) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const host = url.host;
     const path = url.pathname.replace(/\/+$/, "") || "/";
@@ -500,6 +568,11 @@ ${faqHtml}
       if (!PRODUCTS[id]) return new Response(page("Not found", `<h1>Unknown product</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
       const tenantParam = url.searchParams.get("tenant") || "";
       const tenant = validTenant(tenantParam) ? tenantParam : "";
+      // Conversion instrument: count the click before the redirect, skipping the same
+      // probe-tagged and scripted requests the Stripe metadata already excludes.
+      const srcParam = url.searchParams.get("src") || "";
+      const src = validSrc(srcParam) ? srcParam : `${id}.unknown`;
+      if (!probeTag) ctx.waitUntil(recordClick(env, src));
       try {
         const session = await createCheckout(env, host, id, probeTag, tenant);
         return new Response(null, { status: 303, headers: { Location: session.url, "cache-control": "no-store" } });
@@ -634,6 +707,13 @@ ${faqHtml}
       const r = await verifyLicenseKey(key, null);
       if (!r.ok) return Response.json({ bound: false, product: null, reason: r.reason }, { headers: nostore });
       return Response.json({ bound: true, product: r.payload.p }, { headers: nostore });
+    }
+
+    // Conversion instrument (docs/CONVERSION_INSTRUMENT.md). Plain JSON, no auth: the
+    // counters are per-src click counts, nothing that identifies a person.
+    if (path === "/stats/clicks" && method === "GET") {
+      const stats = await clickStats(env);
+      return Response.json(stats, { headers: { "cache-control": "no-store" } });
     }
 
     return new Response(page("Not found", `<h1>Not found</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });

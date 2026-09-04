@@ -421,8 +421,11 @@ async function rateLimit(env: Env, auth: Auth, ctx: ExecutionContext, product?: 
       note: auth.isPro
         ? `This token has made ${auth.limit} calls in the current hour. The counter resets at ${resetsAt}.`
         : `This token has made ${auth.limit} calls in the current hour, which is the free-tier ceiling. The counter resets at ${resetsAt}; a Pro token gets ${RATE_LIMIT_PRO} calls an hour. Note that a client which re-handshakes every registered endpoint on every turn spends several calls per turn before any tool runs.`,
-      upgradeUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/${product ?? "bundle"}${tenantQ}`,
-      bundleUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/bundle${tenantQ}`,
+      // src tags this cap message for the click instrument (docs/CONVERSION_INSTRUMENT.md).
+      // The tool has not been parsed off the request body yet at this gate, so the tag is
+      // product-level: "<product>.rate_limit".
+      upgradeUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/${product ?? "bundle"}${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit`,
+      bundleUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/bundle${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit`,
       guide: GUIDE,
     }, 429, { "retry-after": String(retryAfter) });
   }

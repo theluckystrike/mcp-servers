@@ -88,12 +88,24 @@ function writeStoredKeys(keys: Record<string, string>) {
 }
 
 /**
+ * Conversion-instrument tag for the /buy link on a cap message: `<product>.<tool>`.
+ * The billing worker counts clicks on this tag (docs/CONVERSION_INSTRUMENT.md), so it
+ * only has to be stable and traceable back to the message that produced it, not a
+ * registered tool id. When the call site does not pass an explicit tool name, the
+ * feature text itself is slugified so every cap message still tags a distinct src.
+ */
+export function slugifySrc(s: string): string {
+  return s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 60) || "unknown";
+}
+
+/**
  * Upgrade text for a hosted (streamable-HTTP) tenant: the checkout link carries
  * `?tenant=<anon token>` so fulfilment binds that same anonymous token to the
  * purchased key, and the hosted endpoint recognizes it as Pro with no key paste.
  */
-export function hostedUpgradeText(feature: string, product: string, tenant: string): string {
-  const url = `${CHECKOUT_BASE}/buy/${product}?tenant=${encodeURIComponent(tenant)}`;
+export function hostedUpgradeText(feature: string, product: string, tenant: string, toolName?: string): string {
+  const src = `${product}.${slugifySrc(toolName ?? feature)}`;
+  const url = `${CHECKOUT_BASE}/buy/${product}?tenant=${encodeURIComponent(tenant)}&src=${encodeURIComponent(src)}`;
   return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime). ` +
     `Buy at ${url} , and this hosted connection is Pro automatically once payment completes - no key to paste.`;
 }
@@ -103,7 +115,7 @@ export interface LicenseGate {
   isPro(): boolean;
   status(): { product: string; tier: "free" | "pro"; licenseId?: string; expires?: string | null; source?: string; reason?: string; upgradeUrl: string };
   activate(key: string): VerifyResult & { savedTo?: string };
-  upgradeText(feature: string): string;
+  upgradeText(feature: string, toolName?: string): string;
   registerTools(server: { registerTool: Function }): void;
 }
 
@@ -153,9 +165,11 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       cached = null;
       return { ...r, savedTo: configPath() };
     },
-    upgradeText(feature: string) {
+    upgradeText(feature: string, toolName?: string) {
+      const src = `${product}.${slugifySrc(toolName ?? feature)}`;
+      const taggedUrl = `${upgradeUrl}?src=${encodeURIComponent(src)}`;
       return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime). ` +
-        `Buy at ${upgradeUrl} , then run license_activate with the key shown after checkout. Keys verify offline; nothing is sent anywhere.`;
+        `Buy at ${taggedUrl} , then run license_activate with the key shown after checkout. Keys verify offline; nothing is sent anywhere.`;
     },
     registerTools(server) {
       server.registerTool("license_status",

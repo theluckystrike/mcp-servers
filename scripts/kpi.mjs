@@ -60,6 +60,15 @@ try {
   latency.p50_ms = latency.samples.slice().sort((a, b) => a - b)[1];
 } catch {}
 
+// Conversion instrument (docs/CONVERSION_INSTRUMENT.md): clicks on the tagged upgrade
+// link, counted by the billing worker before it redirects to Stripe.
+let clickStats = null;
+try { clickStats = await (await fetch("https://mcp.zovo.one/stats/clicks")).json(); } catch {}
+const clicks7d = clickStats?.clicks_7d ?? null;
+const clickToSession = clicks7d && stripe.human_sessions !== null && clicks7d > 0
+  ? Math.round((1000 * stripe.human_sessions) / clicks7d) / 10
+  : null;
+
 // Sitemap size and registry entries
 let sitemapUrls = null; try { const x = await (await fetch("https://mcp.zovo.one/sitemap.xml")).text(); sitemapUrls = (x.match(/<loc>/g) || []).length; } catch {}
 let registryLatest = null; try { const r = await (await fetch("https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike&limit=100")).json(); const latest = {}; for (const s of (r.servers || []).filter((x) => (x._meta?.["io.modelcontextprotocol.registry/official"]?.status || x.server?.status || "active") !== "deprecated")) { const n = s.server.name; latest[n] = latest[n] && latest[n] > s.server.version ? latest[n] : s.server.version; } registryLatest = { entries: Object.keys(latest).length, hosted: (r.servers || []).filter((s) => s.server.remotes && s.server.remotes.length).map((s) => s.server.name).filter((v, i, a) => a.indexOf(v) === i).length }; } catch {}
@@ -103,6 +112,8 @@ const kpis = [
   { cat: "Monetization", name: "Checkout sessions from humans (last 100)", value: stripe.human_sessions, target: 50, unit: "sessions", how: "stripe checkout sessions list --live, metadata.probe absent", why: "Validation probes create sessions too; only untagged ones are demand." },
   { cat: "Monetization", name: "Paid sessions", value: stripe.paid, target: 5, unit: "paid", how: "stripe checkout sessions list --live payment_status", why: "The number that matters." },
   { cat: "Monetization", name: "License keys minted", value: licKv.total, target: 5, unit: "keys", how: "wrangler kv key list --remote on LICENSES", why: "One key per paid session; zero means no purchase reached /success." },
+  { cat: "Monetization", name: "Upgrade link clicks (humans, 7d)", value: clicks7d, target: 20, unit: "clicks", how: "GET https://mcp.zovo.one/stats/clicks, sum of by_src[*].last7d; the billing worker excludes probe-tagged and scripted user agents before counting", why: "The click is the step between a cap message and a checkout session; without it a stalled funnel and a message nobody reads look the same." },
+  { cat: "Monetization", name: "Click to checkout-session ratio", value: clickToSession, target: 40, unit: "% (sessions per 100 clicks)", how: "100 * checkout sessions from humans (last 100, Stripe) / upgrade link clicks (7d, /stats/clicks) - the two windows differ (last 100 ever vs last 7 days), so this is an approximation, not the true window-matched ratio", why: "Separates whether people are seeing the link (clicks) from whether the checkout page itself converts (ratio); a link with clicks and no sessions points at the redirect or the Stripe page, not the message." },
   { cat: "Monetization", name: "Pro tenants on hosted endpoints", value: proTenants, target: 20, unit: "tenants", how: `Stripe-bound tenants (REMOTE_DATA bind: prefix, ${proTenantDetail.stripe_bound_tenants ?? "?"}) plus distinct lic: tenant ids whose key the billing worker minted (LICENSES session:*, ${proTenantDetail.minted_key_ids} keys). EXCLUDED: the ${proTenantDetail.lic_keys ?? "?"} raw lic: documents are per (key, server) pairs, not tenants (${proTenantDetail.lic_distinct_ids ?? "?"} distinct ids), and ${proTenantDetail.probe_ids_excluded ?? "?"} of those ids are validation probes signed locally by scripts/sign-license.mjs, never bought.`, why: "Real Pro usage on hosted. The old count read every lic: document, so one validation run over 16 servers looked like 16 paying tenants.", detail: proTenantDetail },
 ];
 const status = (k) => { if (k.value === null || k.value === undefined) return "unmeasured"; if (typeof k.target === "number" && typeof k.value === "number") { if (k.lower_is_better) return k.value <= k.target ? "met" : "progress"; return k.value >= k.target ? "met" : k.value > 0 ? "progress" : "zero"; } if (typeof k.value === "string" && /^(\d+)\/(\d+)$/.test(k.value)) { const [a, b] = k.value.split("/").map(Number); return a === b ? "met" : "progress"; } return "measured"; };

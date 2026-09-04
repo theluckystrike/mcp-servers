@@ -179,8 +179,18 @@ export interface LicenseGate {
   product: string;
   isPro(): boolean;
   status(): Record<string, unknown>;
-  upgradeText(feature: string): string;
+  upgradeText(feature: string, toolName?: string): string;
   registerTools(server: { registerTool: Function }): void;
+}
+
+/**
+ * Conversion-instrument tag for the /buy link on a cap message: `<product>.<tool>`. See
+ * packages/mcp-license/src/index.ts for the stdio twin and docs/CONVERSION_INSTRUMENT.md
+ * for how the billing worker counts clicks on it. Feature text is slugified when no
+ * explicit tool name is passed, so every cap message still tags a distinct src.
+ */
+function slugifySrc(s: string): string {
+  return s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 60) || "unknown";
 }
 
 /**
@@ -189,15 +199,21 @@ export interface LicenseGate {
  * worker writes `bind:<anonToken>` = key on payment, and this endpoint reads that binding
  * on the next request and serves the same anonymous data document in Pro mode.
  */
-function buyUrl(product: string): string {
+function buyUrl(product: string, src?: string): string {
   const anon = ctx().anonToken;
-  return `${CHECKOUT_BASE}/buy/${product}` + (anon ? `?tenant=${encodeURIComponent(anon)}` : "");
+  const params: string[] = [];
+  if (anon) params.push(`tenant=${encodeURIComponent(anon)}`);
+  if (src) params.push(`src=${encodeURIComponent(src)}`);
+  return `${CHECKOUT_BASE}/buy/${product}` + (params.length ? `?${params.join("&")}` : "");
 }
 
 /** The every-server bundle, carrying the same tenant, so the $39 price has a link too. */
-function bundleUrl(): string {
+function bundleUrl(src?: string): string {
   const anon = ctx().anonToken;
-  return `${CHECKOUT_BASE}/buy/bundle` + (anon ? `?tenant=${encodeURIComponent(anon)}` : "");
+  const params: string[] = [];
+  if (anon) params.push(`tenant=${encodeURIComponent(anon)}`);
+  if (src) params.push(`src=${encodeURIComponent(src)}`);
+  return `${CHECKOUT_BASE}/buy/bundle` + (params.length ? `?${params.join("&")}` : "");
 }
 
 export function createLicenseGate(opts: { product: string }): LicenseGate {
@@ -217,9 +233,10 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       limits: `This tool does not count your usage. The free-tier caps of every server are listed at ${GUIDE_URL}; a call that exceeds one is refused with the cap named and an upgrade link.`,
       guide: GUIDE_URL,
     }),
-    upgradeText: (feature: string) => {
-      const url = buyUrl(product);
-      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime: ${bundleUrl()}). ` +
+    upgradeText: (feature: string, toolName?: string) => {
+      const src = `${product}.${slugifySrc(toolName ?? feature)}`;
+      const url = buyUrl(product, src);
+      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime: ${bundleUrl(src)}). ` +
         (ctx().anonToken
           ? `Buy at ${url} - that link carries your token, so Pro switches on for this same connection right after payment, with nothing to paste and no data to move.`
           : `Buy at ${url} , then send the key as "Authorization: Bearer <key>" to this endpoint.`);
