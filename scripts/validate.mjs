@@ -273,12 +273,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 17 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 17 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 18 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 18 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -359,7 +359,7 @@ async function remote() {
     const bres = bdl ? await fetch(bdl) : null;
     const bbody = bres ? await bres.text() : "";
     ok("hosted bank statement_export download is text/csv and carries the rows", bbody.startsWith("id,date,account,") && /NETFLIX/.test(bbody) && (bres?.headers.get("content-type") || "").startsWith("text/csv"), `${bdl ? "link" : "no link"} ${bres?.headers.get("content-type")}`);
-    const qbiz = await rpc("invoice", { jsonrpc: "2.0", id: 32, method: "tools/call", params: { name: "business_set", arguments: { name: "Probe Studio", default_currency: "EUR", default_tax_rate: 23 } } });
+    const qbiz = await rpc("invoice", { jsonrpc: "2.0", id: 32, method: "tools/call", params: { name: "business_set", arguments: { name: "Probe Studio", default_currency: "EUR", default_tax_rate: 23, iban: "DE89370400440532013000" } } });
     const qc = await rpc("quotes", { jsonrpc: "2.0", id: 33, method: "tools/call", params: { name: "quote_create", arguments: { client: `Probe ${Date.now()}`, items: [{ description: "Design sprint", quantity: 12, unit_price_minor: 9000 }] } } });
     const qid = (JSON.stringify(qc).match(/Q-\d{4}-\d{4}/) || [])[0];
     ok("hosted quote_create: 12 x 90.00 + 23% = EUR 1328.40", !qc.error && /1328\.40/.test(JSON.stringify(qc)), `${qid} ${JSON.stringify(qc).slice(0, 80)}`);
@@ -372,6 +372,21 @@ async function remote() {
     const qinv = (JSON.stringify(qacc).match(/INV-\d{4}-\d{4}/) || [])[0];
     const qil = await rpc("invoice", { jsonrpc: "2.0", id: 36, method: "tools/call", params: { name: "invoice_list", arguments: {} } });
     ok("hosted quote_accept writes the invoice into the store /mcp/invoice serves for the same token", !qbiz.error && !!qinv && new RegExp(qinv).test(JSON.stringify(qil)) && /1328\.40/.test(JSON.stringify(qil)), `${qinv} ${JSON.stringify(qil).slice(0, 80)}`);
+    const zsvg = await rpc("barcode", { jsonrpc: "2.0", id: 37, method: "tools/call", params: { name: "qr_create", arguments: { text: "https://mcp.zovo.one/mcp/barcode", out_path: "probe-qr", overwrite: true } } });
+    const zsl = (JSON.stringify(zsvg).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const zsr = zsl ? await fetch(zsl) : null;
+    const zsb = zsr ? await zsr.text() : "";
+    ok("hosted qr_create svg download starts with <svg and is served image/svg+xml", zsb.startsWith("<svg") && /viewBox/.test(zsb) && (zsr?.headers.get("content-type") || "").startsWith("image/svg+xml"), `${zsl ? "link" : "no link"} ${zsr?.headers.get("content-type")}`);
+    const zpng = await rpc("barcode", { jsonrpc: "2.0", id: 38, method: "tools/call", params: { name: "qr_create", arguments: { text: "hosted PNG probe", format: "png", size: 240, out_path: "probe-qr-png", overwrite: true } } });
+    const zpl = (JSON.stringify(zpng).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const zpr = zpl ? await fetch(zpl) : null;
+    const zph = zpr ? Buffer.from(await zpr.arrayBuffer()).subarray(0, 8).toString("hex") : "";
+    ok("hosted qr_create png download carries the PNG signature and is served image/png", zph === "89504e470d0a1a0a" && (zpr?.headers.get("content-type") || "") === "image/png", `${zpl ? "link" : "no link"} ${zph} ${zpr?.headers.get("content-type")}`);
+    const zean = await rpc("barcode", { jsonrpc: "2.0", id: 39, method: "tools/call", params: { name: "barcode_create", arguments: { symbology: "ean13", value: "590123412345", out_path: "probe-ean", overwrite: true } } });
+    const zbad = await rpc("barcode", { jsonrpc: "2.0", id: 40, method: "tools/call", params: { name: "barcode_create", arguments: { symbology: "ean13", value: "5901234123450" } } });
+    ok("hosted barcode_create ean13 computes check digit 7 and refuses a wrong one", /5901234123457/.test(JSON.stringify(zean)) && /check digit is wrong/.test(JSON.stringify(zbad)), JSON.stringify(zean).slice(0, 90));
+    const zpay = await rpc("barcode", { jsonrpc: "2.0", id: 41, method: "tools/call", params: { name: "invoice_payment_qr", arguments: { invoice_id: qinv, out_path: "probe-pay", overwrite: true } } });
+    ok("hosted invoice_payment_qr reads the invoice store of the same token and the shared profile IBAN (EUR 1328.40)", !!qinv && new RegExp(qinv).test(JSON.stringify(zpay)) && /1328\.40/.test(JSON.stringify(zpay)), JSON.stringify(zpay).slice(0, 140));
     const bound = await fetch("https://mcp.zovo.one/bound?tenant=anon_00000000000000000000000000000000").then((r) => r.json()); ok("bound endpoint answers for an unknown tenant", bound.bound === false, JSON.stringify(bound).slice(0, 80));
     const buyT = await fetch("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok("buy with tenant still 303 to Stripe", buyT.status === 303, buyT.status);
     const batch = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: "[{}]" }); ok("JSON-RPC batch rejected 400", batch.status === 400, batch.status);

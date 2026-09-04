@@ -1864,3 +1864,226 @@ endpoints to 17: **remote 50/50, whole run 399/399.**
   which on a fresh token is false until something exists on `/mcp/invoice` (a `business_set`
   is enough, and the shared profile makes that one call). The refusal names that; the
   validate probe passes `"always"` so it never depends on ordering.
+
+---
+
+# Extension 8 2026-09-04 - barcode
+
+status: DONE
+
+An eighteenth endpoint, `POST /mcp/barcode`. Worker `mcp-remote`, version ID
+`3ca91a31-88dd-4114-8188-f0b2deb069bb`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list eighteen.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/barcode | 10 | pure download: every SVG and PNG comes back as a one-hour link served `image/svg+xml` or `image/png`. `invoice_payment_qr` reads the invoice store of the SAME token, read-only, the way `/mcp/bank-statement` reads the expense ledger |
+
+### Vendoring: six files, no lib.ts
+
+`SERVERS.barcode` is `index.ts, version.ts, payloads.ts, render.ts, store.ts,
+symbology.ts`. `servers/barcode/src/lib.ts` is deliberately not vendored: nothing in the
+suite imports `@theluckystrike/mcp-barcode/lib` yet, and what it re-exports is the disk
+half of the server (`checkOutPath`, `writeAtomic`, `expandPath`), whose hosted shapes are
+different by design. Adding it later means one line in `SERVERS` and a `patchBarcodeLib`
+in the shape `patchQuotesLib` already has.
+
+The register needs **no patch at all**, kanban's case again: `servers/barcode/src/store.ts`
+reaches the disk through `$XDG_DATA_HOME || homedir()/.local/share` + `mcp-servers/barcode`
+and writes `codes.json` tmp + rename, so the month counter and the code history are one
+JSON document per token. `symbology.ts` and `payloads.ts` are pure arithmetic; `payloads.ts`
+only needed the `node:buffer` import, because `Buffer` is not a global on Workers.
+
+### qrcode under nodejs_compat: the browser condition, and the PNG path
+
+Two things in `qrcode` 1.5.4 do not survive a Workers bundle, and neither is a runtime
+error you would see in a test.
+
+1. *The `browser` map.* `qrcode`'s `package.json` carries
+   `"browser": { "./lib/index.js": "./lib/browser.js", "fs": false }`, and wrangler's
+   bundler resolves it, so `import QRCode from "qrcode"` would silently become the
+   **canvas** renderer: `lib/browser.js` draws through `document.createElement("canvas")`,
+   which does not exist here. This is jimp's blocker exactly (Extension 5), and it takes
+   jimp's fix: `rewriteSpec` maps the `qrcode` specifier to
+   `node_modules/qrcode/lib/server.js` by file path, so the exports map is never consulted.
+2. *The PNG renderer streams.* `qrcode`'s own `renderToBuffer` goes through
+   `pngjs`'s `PNG.pack()`, an async deflate stream, not `zlib.deflateSync`. The `[alias]`
+   block in `wrangler.toml` already points `pngjs` at `remote/src/shims/pngjs.ts` (real
+   pngjs with only `PNG.sync.read` re-implemented on `zlib.inflateSync`), and that shim
+   covers the **sync read** path; a streaming pack is a different question and not one
+   worth answering when the answer is already on this worker. So `patchBarcodeIndex`
+   rewrites `renderQr`'s PNG branch to take the modules from `QRCode.create` - pure JS,
+   no renderer - and paint them with **jimp**, the encoder every other image on this worker
+   already goes through (`servers/image`). `renderQr`'s SVG branch is untouched:
+   `QRCode.toString({type: "svg"})` builds a string and touches nothing.
+
+`node_modules/qrcode/lib/renderer/png.js` is still in the bundle and still `require`s
+`fs` and `pngjs` at module load. Both resolve (nodejs_compat, and the alias), nothing calls
+them, and dropping the require would mean patching a dependency rather than the server.
+
+### jimp's fonts, again
+
+`servers/barcode/src/render.ts` imports `SANS_8_BLACK/16/32` from `jimp/fonts` to print the
+digits under a PNG barcode. `jimp/fonts` resolves its `.fnt` directory with
+`fileURLToPath(import.meta.url)` at **module load**, which fails deploy validation for the
+whole worker - the same defect Extension 5 hit in `image_watermark`, and the same fix: the
+import and the `loadFont`/`measureText` block go, and `linearPng` draws bars only. This is
+narrower than it sounds. The default and the whole free tier is SVG, and `linearSvg` draws
+its own `<text>` element, so the human-readable line is present on every free code and on
+every Pro SVG. Only a **Pro PNG barcode** loses the digits, and the `GET /mcp` entry says so.
+
+### Every output is a name under /out/
+
+`patchBarcodeRender` replaces the two filesystem functions:
+
+- `expandPath` is the name-not-path rule the pdf, image, bank-statement and quotes
+  endpoints already use: `~`, directories and traversal are stripped to the basename,
+  which must be 1-64 characters of `[A-Za-z0-9_-]` with an optional extension, and the
+  result is `/out/<name><ext>`. So `out_path: "../../etc/passwd"` writes `/out/passwd.svg`
+  and the caller gets a download link, never a path on anyone's disk.
+- `checkOutPath` keeps exactly one of its four refusals. A directory, a missing parent and
+  someone else's file are failures that cannot happen here; an extension that disagrees
+  with `format` still can, and it would publish a `.png` that is an SVG, which a caller
+  discovers in an image viewer. The "already exists" check is kept but re-worded: within
+  one request `/out/` is real, so a repeated name is refused unless `overwrite: true`.
+- `writeAtomic` becomes one `writeFileSync` plus `publishFile`. The fs shim publishes on
+  the rename too, but the explicit call hands the URL back for the response text and keeps
+  this off `process.pid`, which is not a meaningful thing on Workers.
+
+`SERVERS.barcode` in `remote/src/index.ts` is `publish: p => p.startsWith("/out/")` with
+`strip: ["/out/"]` and no `persistPublished`: an image is a fresh download every time, and
+the tenant document holds only the register. `svg: "image/svg+xml"` was added to the fs
+shim's MIME table - it was the one image type no endpoint had produced before, and without
+it the first live run served a QR code as `application/octet-stream`.
+
+Two response shapes changed for the hosted caller:
+
+- **A PNG no longer needs `out_path`.** Over stdio, `format: "png"` with no `out_path` is
+  refused, because the alternative is 80,000 tokens of base64 in the conversation. Here the
+  alternative is a link, so `deliver`'s refusal is dropped and both `qr*` and
+  `barcode_create` auto-name a PNG `code-<6 hex>.png`. `outLine` says
+  `Download (PNG, 1434 bytes): <url>` instead of `Wrote <path>`.
+- **`barcode_batch` has no `out_dir`.** It is accepted and ignored, the schema says so, and
+  every row comes back as its own link - `image_thumbnails`' shape.
+
+`code_list` named `dataDir()` and the two `invoice_payment_qr` not-found messages named the
+invoice server's store on "this machine"; all three now name the token and the endpoint.
+
+### invoice_payment_qr reads the invoice store, read-only
+
+`readInvoice()` in the stdio server already resolves
+`$XDG_DATA_HOME/mcp-servers/invoice/invoices.json` by hand, on purpose, so the barcode
+package does not depend on the invoice package. Through the `node:os` shim that is
+`/home/mcp/.local/share/mcp-servers/invoice/invoices.json`, byte-for-byte the path
+`/mcp/invoice` persists for the same token, so the hydration is one line and **no patch at
+all** on the reader: `sharedDoc = { server: "invoice", owns: p => p.startsWith(INVOICE_DIR) }`.
+Read-only in practice rather than by construction, exactly as bank-statement's is: this
+server never writes a path under that prefix, so the flush finds the invoice document
+byte-identical to what it hydrated and writes nothing. The beneficiary IBAN and name come
+from the same `/profile/business.json` the licence shim hydrates, so one `business_set` on
+`/mcp/invoice` supplies both. `business_set`'s own reader list now prints barcode first.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP, and
+the run below tripped that limit on `/mcp/connect`, which mints one per view - it was read
+back with `?token=` instead). One POST per call.
+
+```
+$ GET /mcp
+  18 endpoints: time-tracker, price-tracker, invoice, expense-tracker, spreadsheet,
+  currency, timezone, docx, resume, recurring, clauses, pdf, calendar, kanban, image,
+  bank-statement, quotes, barcode
+
+$ GET /mcp/connect?token=anon_0000...
+  18 ready URLs, mcp.zovo.one/mcp/barcode/t/<token> among them (plus the /mcp/whoami example)
+
+$ barcode tools/list
+  10 tools: license_status, license_activate, qr_create, qr_wifi, qr_vcard,
+  qr_payment_sepa, invoice_payment_qr, barcode_create, barcode_batch, code_list
+
+$ barcode qr_create {text: "https://mcp.zovo.one/mcp/barcode", out_path: "probe-qr"}
+  text QR code b9ab3488: version 3, 29x29 modules, error correction M, 32 bytes of payload.
+  Download (SVG, 1570 bytes): https://mcp.zovo.one/mcp/download/abf51af0... (valid 1 hour)
+  GET that URL -> 200, 1570 bytes starting "<svg ", content-type image/svg+xml,
+                  content-disposition inline; filename="probe-qr.svg"
+
+$ barcode qr_create {text: "hosted PNG probe", format: "png", size: 240, out_path: "probe-qr-png"}
+  text QR code 7e2b35e9: version 2, 25x25 modules, error correction M, 16 bytes of payload.
+  Download (PNG, 1434 bytes): https://mcp.zovo.one/mcp/download/6bf85221... (valid 1 hour)
+  GET that URL -> 200, 1434 bytes, content-type image/png,
+                  first 8 bytes 89 50 4e 47 0d 0a 1a 0a   (the PNG signature)
+
+$ barcode qr_payment_sepa {iban: "DE89370400440532013000", name: "Probe Studio",
+                           amount: 1328.40, remittance: "INV-2026-0001", out_path: "sepa"}
+  sepa QR code d9c3ce47: version 5, 37x37 modules, error correction M, 77 bytes of payload.
+  Pay Probe Studio at DE89370400440532013000, EUR 1328.40.
+  Download (SVG, 2400 bytes): https://mcp.zovo.one/mcp/download/17cbdde3... (valid 1 hour)
+
+$ barcode barcode_create {symbology: "ean13", value: "590123412345", out_path: "shelf"}
+  EAN13 f9b7c537: 5901234123457, 95 modules plus a 11-module quiet zone each side.
+  Check digit 7 was computed and added.
+  Download (SVG, 1585 bytes): ...  GET -> 200, image/svg+xml, 1585 bytes starting "<svg "
+$ barcode barcode_create {symbology: "ean13", value: "5901234123450"}
+  Error: EAN-13 check digit is wrong: "5901234123450" ends in 0, but the first 12 digits
+  give 7. Pass 5901234123457, or pass the first 12 digits and the check digit is computed.
+
+$ invoice business_set {name: "Probe Studio", iban: "DE89370400440532013000",
+                        default_tax_rate: 23, timezone: "Europe/Warsaw"}
+  Business profile saved to the shared business profile behind this token, which barcode,
+  calendar, clauses, docx, expense-tracker, ... all read
+$ invoice invoice_create {client: "Acme Ltd",
+                          items: [{description: "Design sprint", quantity: 12, unit_price: 90}]}
+  Created invoice INV-2026-0001, subtotal EUR 1080.00, 23% = EUR 248.40, total EUR 1328.40
+$ barcode invoice_payment_qr {invoice_id: "INV-2026-0001", out_path: "pay"}   (the OTHER endpoint, same token)
+  invoice QR code 603dcfc5: version 5, 37x37 modules, error correction M, 77 bytes of
+  payload. INV-2026-0001 for Acme Ltd: pay Probe Studio at DE89370400440532013000,
+  EUR 1328.40.                        <- amount from the invoice store, IBAN from the profile
+  Download (SVG, 2400 bytes): https://mcp.zovo.one/mcp/download/ca86e2e0... (valid 1 hour)
+
+$ barcode qr_create {text: "x", out_path: "../../etc/passwd"}
+  text QR code 93755325: ... Download (SVG, 945 bytes): ...
+  code_list shows it as -> passwd.svg      <- reduced to a bare name, never a path
+$ barcode barcode_batch {items: [{value: "ABC-1"}, {value: "ABC-2"}], symbology: "code128"}
+  Wrote 2 of 2 SVG file(s); each link below is valid for one hour.
+  https://mcp.zovo.one/mcp/download/2406aa2a... (valid 1 hour) (1361 bytes)
+  https://mcp.zovo.one/mcp/download/234e50e8... (valid 1 hour) (1361 bytes)
+$ barcode code_list {}
+  8 code(s) in the register stored for your token, 8 this month. Pro: no limit.
+  2026-09-04 04:33:30  3f87c32f  batch/code128  svg  ABC-2  -> ABC-2.svg
+  ...
+```
+
+`scripts/validate.mjs` gained `barcode` to the tools/list sweep plus four real calls
+(`qr_create` SVG: body starts `<svg`, served `image/svg+xml`; `qr_create` PNG: the
+`89504e470d0a1a0a` signature, served `image/png`; `barcode_create` ean13 computing check
+digit 7 and refusing a wrong one; `invoice_payment_qr` reading the invoice the quotes probe
+just created on `/mcp/invoice` and the profile IBAN), and the index assertion moved from 17
+endpoints to 18: **remote 55/55, whole run 431/431.**
+
+### Limitations
+
+- **A PNG barcode has no digits under the bars.** jimp's bitmap fonts are `.fnt` files on a
+  filesystem this endpoint does not have. SVG - the default, the whole free tier, and the
+  better file for anything that gets printed - carries them.
+- `out_dir` on `barcode_batch` is accepted and ignored: there are no directories, and each
+  row is its own download link.
+- `/out/` is transient: nothing generated is persisted, so `overwrite` only ever refers to
+  a name already produced **in the same request**, and a link dies after an hour. The
+  register (`code_list`) keeps the row and the name; it cannot hand the file back.
+- The register counts a code the moment its slot is reserved, so `code_list` shows names,
+  not retrievable files. That is the stdio behaviour too, where the name is a real path.
+- `barcode` is charged the default 512 KB tenant cap, and the invoice files it hydrates for
+  `invoice_payment_qr` count against it - the limitation `/mcp/recurring` and `/mcp/quotes`
+  already carry. A tenant with hundreds of invoices hits that before the 20-codes-a-month
+  free cap.
+- The QR PNG is painted by jimp at an integer module scale, so the delivered pixel size is
+  the largest multiple of the module count that fits `size`, not `size` exactly (240 px
+  requested at 25 modules plus an 8-module margin gives 231 px). A scanner reads modules,
+  not millimetres, and SVG has no such rounding.
+- `qrcode`'s own PNG and canvas renderers, and `pngjs`'s streaming pack, are in the bundle
+  and unreachable. Nothing calls them; a future tool that does would need the streaming
+  question answered first.
+- The free monthly cap is per token **and per endpoint document**: 20 codes on
+  `/mcp/barcode` are counted separately from anything the same licence draws over stdio.

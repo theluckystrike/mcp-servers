@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, seventeen endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, eighteen endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -27,6 +27,7 @@ import { createServer as createKanban } from "./vendor/kanban/index.js";
 import { createServer as createImage } from "./vendor/image/index.js";
 import { createServer as createBankStatement } from "./vendor/bank-statement/index.js";
 import { createServer as createQuotes } from "./vendor/quotes/index.js";
+import { createServer as createBarcode } from "./vendor/barcode/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -207,6 +208,22 @@ const SERVERS: Record<string, ServerCfg> = {
     // quote_pdf renders through remote/src/shims/pdf.ts and pushes its own download, so the
     // only thing publish() has to catch is quote_send_text's .txt under /out/.
     factory: createQuotes as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+    sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
+  },
+  "barcode": {
+    // The code register (codes.json, one JSON document under the homedir shim, tmp +
+    // rename exactly as kanban's board is) is the tenant's state; every SVG and PNG a tool
+    // draws lands under /out/ and is a transient one-hour download served with the real
+    // image content type.
+    //
+    // invoice_payment_qr reads the invoice store of the SAME token to get the amount and
+    // the reference, so the invoice data directory is hydrated on top of this request -
+    // read-only in practice, like /mcp/bank-statement's hydration of the expense ledger:
+    // this server never writes a path under INVOICE_DIR, so the flush finds the invoice
+    // document byte-identical to what it hydrated and writes nothing.
+    factory: createBarcode as () => McpServer,
     publish: (p) => p.startsWith("/out/"),
     strip: ["/out/"],
     sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
@@ -581,6 +598,7 @@ const TOOLS: Record<string, string[]> = {
   "kanban": ["task_add", "task_list", "task_move", "task_update", "task_done", "task_delete", "task_search", "board", "task_start_timer", "task_log_time", "project_list", "overdue", "weekly_review", "columns_set", "license_status", "license_activate"],
   "image": ["image_upload", "image_files", "image_delete_upload", "image_info", "image_resize", "image_convert", "image_compress", "image_crop", "image_thumbnails", "image_watermark", "image_strip_metadata", "image_batch_resize", "image_dominant_colors", "license_status", "license_activate"],
   "bank-statement": ["bank_upload", "bank_files", "bank_delete_upload", "statement_import", "transactions_list", "transactions_search", "category_rules", "transaction_categorize", "statement_summary", "reconcile_expenses", "recurring_detect", "statement_export", "accounts_list", "license_status", "license_activate"],
+  "barcode": ["qr_create", "qr_wifi", "qr_vcard", "qr_payment_sepa", "invoice_payment_qr", "barcode_create", "barcode_batch", "code_list", "license_status", "license_activate"],
   "quotes": ["quote_create", "quote_list", "quote_get", "quote_update", "quote_send_text", "quote_accept", "quote_decline", "quote_pdf", "quote_report", "license_status", "license_activate"],
 };
 
@@ -727,6 +745,14 @@ function indexDoc(base: string) {
         outputs: "quote_pdf returns a print-ready HTML quote behind a one-hour download link (there is no PDF renderer on Workers, so it is the same document invoice_pdf produces, in the quote layout). quote_send_text returns the pasteable text in the answer and the same text as a .txt download link.",
         free_limits: "5 open quotes at a time (accepted, declined and lapsed ones never count); quote_pdf and quote_report are Pro",
         notes: "an accepted quote's stored lines are copied into the invoice, never recomputed, so a VAT default changed between quoting and accepting cannot move the total the client agreed to. The invoice is written through the shared engine, so the /mcp/invoice free cap of 3 invoices a month does not apply to it; the quotes free cap does. Today's date comes from the timezone on the shared profile when one is set, which is what a validity window is counted in",
+      },
+      {
+        name: "barcode", url: `${base}/mcp/barcode`, tools: TOOLS["barcode"],
+        mode: "download",
+        how: "There is no disk here: out_path is not a path, it is only the name the downloaded file carries (1-64 characters of letters, digits, underscore or dash). Leave it out and an SVG comes back inline in the answer, ready to paste into a document; a PNG always comes back as a link.",
+        outputs: "qr_create, qr_wifi, qr_vcard, qr_payment_sepa, invoice_payment_qr, barcode_create and barcode_batch return a download link valid for one hour, served as image/svg+xml or image/png",
+        free_limits: "20 codes per calendar month, SVG output; PNG output and barcode_batch are Pro",
+        notes: "invoice_payment_qr reads the invoice stored for the SAME token on /mcp/invoice for the amount and the reference, hydrated read-only and never written, and takes the beneficiary IBAN and name from the shared business profile (business_set on /mcp/invoice). A PNG barcode carries no printed digits under the bars: jimp's bitmap fonts are files on a filesystem this endpoint does not have, and the SVG, which is the default, draws its own text and does carry them",
       },
     ],
     limits: {

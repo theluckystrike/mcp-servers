@@ -28,6 +28,7 @@ const MIME: Record<string, string> = {
   xlsm: "application/vnd.ms-excel.sheet.macroEnabled.12",
   pdf: "application/pdf",
   png: "image/png",
+  svg: "image/svg+xml",
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   bmp: "image/bmp",

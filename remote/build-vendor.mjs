@@ -39,6 +39,9 @@ const SERVERS = {
   // shim's renderQuotePdf so a later server reading @theluckystrike/mcp-quotes/lib gets the
   // hosted renderer rather than a module that cannot load here.
   "quotes": ["index.ts", "version.ts", "day.ts", "store.ts", "lib.ts"],
+  // lib.ts is not vendored: nothing here imports @theluckystrike/mcp-barcode/lib yet, and it
+  // re-exports the disk helpers (checkOutPath, writeAtomic) whose hosted shapes differ.
+  "barcode": ["index.ts", "version.ts", "payloads.ts", "render.ts", "store.ts", "symbology.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
@@ -55,6 +58,11 @@ function rewriteSpec(spec, depth) {
   // browser condition; @jimp/* resolve normally.
   const JIMP = `${up}../../node_modules/jimp/dist/esm`;
   if (spec === "jimp") return `${JIMP}/index.js`;
+  // qrcode's package.json has a "browser" map that swaps lib/index.js for lib/browser.js,
+  // which renders through a <canvas> element that does not exist here. Addressed as a file
+  // path so the map is not consulted: lib/server.js is the node build, and the two entry
+  // points this server uses (toString type "svg" and create) are pure JS.
+  if (spec === "qrcode") return `${up}../../node_modules/qrcode/lib/server.js`;
   // A sibling engine: "@theluckystrike/mcp-<x>/lib" is that server's own lib.ts, which is
   // vendored next to this one (servers/docx/src/lib.ts, servers/invoice/src/lib.ts).
   const sib = /^@theluckystrike\/mcp-([a-z-]+)\/lib$/.exec(spec);
@@ -1361,6 +1369,207 @@ function patchQuotesIndex(src) {
   return src;
 }
 
+/* ----------------------------------------------------------------- barcode */
+
+/**
+ * The hosted barcode endpoint has no disk and no bitmap fonts.
+ *   1. out_path is a NAME: every output lands under /out/<name>.<svg|png> and comes back
+ *      as a one-hour download link with the right content type (image/svg+xml, image/png).
+ *   2. writeAtomic is a plain write plus publishFile: the fs shim publishes on rename, but
+ *      the explicit call keeps the link in hand for the response text.
+ *   3. jimp/fonts cannot load here (it resolves a .fnt directory with fileURLToPath at
+ *      module load, which fails worker validation), so a PNG barcode carries no printed
+ *      digits. SVG, which is the default and the free tier, draws its own <text> and is
+ *      unaffected.
+ *   4. QR PNGs are painted with jimp rather than qrcode's own PNG renderer, which streams
+ *      through pngjs's async deflate. The modules come from QRCode.create, which is pure.
+ * The register needs no patch: codes.json is one document per token under the homedir
+ * shim, written tmp + rename, exactly kanban's shape. The invoice store invoice_payment_qr
+ * reads is a sibling tenant document, hydrated read-only (SERVERS.barcode.sharedDoc).
+ */
+function patchBarcodeRender(src) {
+  // jimp/fonts: see above. loadFont/measureText go with it.
+  src = must(src, 'import { SANS_8_BLACK, SANS_16_BLACK, SANS_32_BLACK } from "jimp/fonts";\nimport { loadFont, measureText } from "jimp";\n', "",
+    "barcode drop jimp/fonts import");
+  src = must(src, /  if \(textH && enc\.human\) \{[\s\S]*?\n  \}\n/,
+`  // The human-readable line is dropped in PNG: jimp's bitmap fonts are files on a disk
+  // this endpoint does not have. The SVG renderer draws its own <text> and still carries it.
+`, "barcode linearPng text");
+
+  // out_path is a name, and every file lands in the published root.
+  src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`export const OUT_ROOT = "/out/";
+
+/** The bare name a hosted out_path has to be, or a caller-facing refusal. */
+export function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const b = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "");
+  const m = /^([A-Za-z0-9_-]{1,64})(\\.[A-Za-z0-9]{1,8})?$/.exec(b);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable file name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the name the downloaded file carries, 1-64 characters of letters, digits, \` +
+      \`underscore or dash, optionally with a .svg or .png extension.\`);
+  }
+  return \`\${OUT_ROOT}\${m[1]}\${(m[2] ?? "").toLowerCase()}\`;
+}
+`, "barcode expandPath");
+
+  // No directories, no parent to stat, no file on anyone's disk to overwrite by accident.
+  // The one check worth keeping is the extension/format disagreement, which is a real
+  // caller mistake and would otherwise publish a .png that is an SVG.
+  src = must(src, /\/\*\*\n \* Everything known about an out_path before a single byte is written\.[\s\S]*?\n \*\/\n/,
+`/**
+ * Everything known about an out_path before a byte is written, hosted shape.
+ *
+ * There is no disk, so a directory, a missing parent and someone else's file are not
+ * failures that can happen. The one check worth keeping is a name whose extension
+ * disagrees with the requested format, which would otherwise publish a .png that is an
+ * SVG and a caller would only find out in an image viewer.
+ */
+`, "barcode checkOutPath doc");
+  src = must(src, /export function checkOutPath\(out: string, format: Format, overwrite: boolean\): string \{[\s\S]*?\n\}\n/,
+`export function checkOutPath(out: string, format: Format, overwrite: boolean): string {
+  const p = expandPath(out);
+  const ext = (/\\.[A-Za-z0-9]+$/.exec(p)?.[0] ?? "").toLowerCase();
+  const want = \`.\${format}\`;
+  if (ext !== "" && ext !== want) {
+    throw new Error(
+      \`out_path ends in "\${ext}" but the requested format is \${format}. \` +
+      \`Rename it to \${want} or pass format: "\${ext.slice(1)}" if that format is supported. Nothing was written.\`);
+  }
+  const withExt = ext === want ? p : p + want;
+  if (existsSync(withExt) && !overwrite) {
+    throw new Error(\`a file named \${withExt.slice(OUT_ROOT.length)} was already produced in this request. \` +
+      \`Pass overwrite: true to replace it, or give a different out_path. Nothing was written.\`);
+  }
+  return withExt;
+}
+`, "barcode checkOutPath");
+
+  // The fs shim publishes on rename, but the explicit publish hands back the URL and
+  // keeps this off process.pid, which is not a thing on Workers.
+  src = must(src, "/** tmp + rename, so a half-written image never appears at out_path. */",
+    "/** One write into the published root; publishFile turns it into a one-hour download link. */",
+    "barcode writeAtomic doc");
+  src = must(src, /export function writeAtomic\(path: string, bytes: Buffer \| string\): number \{[\s\S]*?\n\}\n/,
+`export function writeAtomic(path: string, bytes: Buffer | string): number {
+  writeFileSync(path, bytes as unknown as Uint8Array);
+  publishFile(path);
+  return typeof bytes === "string" ? Buffer.byteLength(bytes) : bytes.length;
+}
+`, "barcode writeAtomic");
+
+  src = must(src, 'export function ensureDir(dir: string): void { mkdirSync(dir, { recursive: true }); }',
+    'export function ensureDir(dir: string): void { mkdirSync(dir, { recursive: true }); }\n\n' +
+    '/** The modules of a QR code, painted with jimp: qrcode\'s own PNG renderer streams\n' +
+    ' *  through pngjs\'s async deflate, and jimp is the encoder every other image on this\n' +
+    ' *  worker already goes through. */\n' +
+    'export async function qrPng(modules: { size: number; data: ArrayLike<number> }, width: number, margin: number): Promise<Buffer> {\n' +
+    '  const n = modules.size;\n' +
+    '  const total = n + margin * 2;\n' +
+    '  const scale = Math.max(1, Math.floor(width / total));\n' +
+    '  const px = total * scale;\n' +
+    '  const img = new Jimp({ width: px, height: px, color: 0xffffffff });\n' +
+    '  for (let y = 0; y < n; y++) {\n' +
+    '    for (let x = 0; x < n; x++) {\n' +
+    '      if (!modules.data[y * n + x]) continue;\n' +
+    '      const x0 = (x + margin) * scale;\n' +
+    '      const y0 = (y + margin) * scale;\n' +
+    '      for (let dy = 0; dy < scale; dy++) for (let dx = 0; dx < scale; dx++) img.setPixelColor(0x000000ff, x0 + dx, y0 + dy);\n' +
+    '    }\n' +
+    '  }\n' +
+    '  return Buffer.from(await img.getBuffer("image/png"));\n' +
+    '}',
+    "barcode qrPng");
+
+  // node:buffer, the fs shim's publishFile, and node:fs existsSync for the overwrite check.
+  src = 'import { Buffer } from "node:buffer";\n' + src;
+  src = must(src, 'import { existsSync, mkdirSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";',
+    'import { existsSync, mkdirSync, writeFileSync } from "node:fs";\nimport { publishFile } from "../../shims/fs.js";',
+    "barcode render fs imports");
+  return src;
+}
+
+function patchBarcodeIndex(src) {
+  // QR PNGs go through jimp (see patchBarcodeRender); the SVG string renderer is pure JS.
+  src = must(src,
+    '  return { png: await QRCode.toBuffer(text, { ...opts, type: "png", width: o.size }) };',
+    '  const info = QRCode.create(text, { errorCorrectionLevel: o.ecc });\n' +
+    '  return { png: await qrPng(info.modules as unknown as { size: number; data: ArrayLike<number> }, o.size, o.margin) };',
+    "barcode renderQr png");
+  src = must(src, 'import { LINEAR_DEFAULTS, MAX_PX, MIN_PX, checkOutPath, linearPng, linearSvg, writeAtomic, type Format } from "./render.js";',
+    'import { LINEAR_DEFAULTS, MAX_PX, MIN_PX, checkOutPath, linearPng, linearSvg, qrPng, writeAtomic, type Format } from "./render.js";',
+    "barcode render import");
+
+  // A PNG needs no out_path here: it comes back as a download link, never as base64.
+  src = must(src, /  if \(!outPath\) \{\n    if \("png" in body\) \{[\s\S]*?\n    \}\n    return \{ inline: body\.svg \};\n  \}\n/,
+`  if (!outPath) return { inline: (body as { svg: string }).svg };
+`, "barcode deliver png refusal");
+  src = mustAll(src, /const target = a\.out_path \? checkOutPath\(a\.out_path, format, a\.overwrite === true\) : undefined;/g,
+    'const target = a.out_path || format === "png"\n' +
+    '    ? checkOutPath(a.out_path ?? `code-${randomBytes(3).toString("hex")}`, format, a.overwrite === true)\n' +
+    '    : undefined;',
+    "barcode auto out_path for png");
+  src = must(src,
+    'return "inline" in w ? `\\n\\n${w.inline}` : `\\nWrote ${w.where} (${w.bytes} bytes, ${format.toUpperCase()}).`;',
+    'return "inline" in w\n' +
+    '    ? `\\n\\n${w.inline}`\n' +
+    '    : `\\nDownload (${format.toUpperCase()}, ${w.bytes} bytes): ${w.where}`;',
+    "barcode outLine download wording");
+  src = mustAll(src, /out_path: z\.string\(\)\.optional\(\)\.describe\("Where to write the file\. SVG is returned inline when this is left out; PNG always needs it"\),/g,
+    'out_path: z.string().optional().describe("Name for the downloaded file, e.g. acme-code. SVG is returned inline when this is left out; a PNG always comes back as a download link valid for one hour"),',
+    "barcode out_path descriptions");
+  src = mustAll(src, /overwrite: z\.boolean\(\)\.optional\(\)\.describe\("Replace out_path if it already exists \(default false\)"\),/g,
+    'overwrite: z.boolean().optional().describe("Replace a file of the same name already produced in this request (default false)"),',
+    "barcode overwrite descriptions");
+  src = must(src,
+    'if (o.format === "svg") {\n    return { svg: await QRCode.toString(text, { ...opts, type: "svg", width: o.size }) };',
+    'if (o.format === "svg") {\n    return { svg: await QRCode.toString(text, { ...opts, type: "svg", width: o.size }) as unknown as string };',
+    "barcode toString typing");
+
+  // barcode_batch: there is no out_dir, only the published root.
+  src = must(src,
+    '    out_dir: z.string().describe("Existing directory the files are written into"),',
+    '    out_dir: z.string().optional().describe("Ignored on this hosted endpoint: there are no directories, and every row comes back as its own download link"),',
+    "barcode batch out_dir description");
+  src = must(src,
+    '  const dir = checkOutPath(join(a.out_dir, "probe"), format, true).replace(/\\/probe\\.[a-z]+$/, "");',
+    '  const dir = "";   // no directories here: every row is written into the published /out/ root',
+    "barcode batch dir");
+  src = must(src, '      const path = checkOutPath(join(dir, safe), format, a.overwrite === true);',
+    '      const path = checkOutPath(dir + safe, format, a.overwrite === true);',
+    "barcode batch row path");
+  src = must(src,
+    '  const head = `Wrote ${done.length} of ${items.length} ${format.toUpperCase()} file(s) into ${dir}.`;',
+    '  const head = `Wrote ${done.length} of ${items.length} ${format.toUpperCase()} file(s); each link below is valid for one hour.`;',
+    "barcode batch head");
+  src = must(src,
+    'description: "Call this tool to draw many barcodes or QR codes at once from a list of rows, each with its own value and file name, into out_dir. Pro; the free tier does one code per call.",',
+    'description: "Call this tool to draw many barcodes or QR codes at once from a list of rows, each with its own value and file name. Every row comes back as its own download link valid for one hour. Pro; the free tier does one code per call.",',
+    "barcode batch description");
+
+  // dataDir() is a virtual path here, not something a caller can open.
+  src = must(src,
+    '    ? `${rows.length} code(s) in the register at ${dataDir()}, ${used} this month. Pro: no limit.`\n' +
+    '    : `${rows.length} code(s) in the register at ${dataDir()}. ${used} of ${FREE_PER_MONTH} free codes used in ${monthOf()}.`;',
+    '    ? `${rows.length} code(s) in the register stored for your token, ${used} this month. Pro: no limit.`\n' +
+    '    : `${rows.length} code(s) in the register stored for your token. ${used} of ${FREE_PER_MONTH} free codes used in ${monthOf()}.`;',
+    "barcode code_list register wording");
+
+  // The invoice store is the sibling tenant document /mcp/invoice serves for this token.
+  src = must(src,
+    '      `invoice ${a.invoice_id} was not found in the invoice server\'s store, and no amount was given, so there is nothing to ask for. ` +\n' +
+    '      `Pass amount, or create the invoice first. Nothing was written.`,',
+    '      `invoice ${a.invoice_id} is not stored for your token on https://mcp.zovo.one/mcp/invoice, and no amount was given, ` +\n' +
+    '      `so there is nothing to ask for. Pass amount, or create the invoice there first, with the same token. Nothing was written.`,',
+    "barcode invoice not-found message");
+  src = must(src, '    note = ` Invoice ${a.invoice_id} was not found in the invoice store; the amount and reference given were used as they are.`;',
+    '    note = ` Invoice ${a.invoice_id} is not stored for your token on https://mcp.zovo.one/mcp/invoice; the amount and reference given were used as they are.`;',
+    "barcode invoice fallback note");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -1389,6 +1598,7 @@ const EXTRA_IMPORTS = {
   ],
   "bank-statement": ['import { registerBankUpload } from "../../shims/bank-upload.js";'],
   quotes: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
+  barcode: ['import { Buffer } from "node:buffer";'],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -1416,6 +1626,8 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "calendar" && f === "fetch.ts") src = patchCalendarFetch(src);
       if (name === "image" && f === "imageio.ts") src = patchImageIo(src);
       if (name === "image" && f === "store.ts") src = patchImageStore(src);
+      if (name === "barcode" && f === "render.ts") src = patchBarcodeRender(src);
+      if (name === "barcode" && f === "payloads.ts") src = 'import { Buffer } from "node:buffer";\n' + src;
       writeFileSync(join(dir, f), rewriteImports(src, 2));
       continue;
     }
@@ -1435,6 +1647,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "image") src = patchImageIndex(src);
     if (name === "bank-statement") src = patchBankIndex(src);
     if (name === "quotes") src = patchQuotesIndex(src);
+    if (name === "barcode") src = patchBarcodeIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
