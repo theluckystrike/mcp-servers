@@ -40,8 +40,8 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/bank-statement",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.1.0",
-    "@theluckystrike/mcp-spreadsheet": "^0.5.0",
+    "@theluckystrike/mcp-license": "^0.6.0",
+    "@theluckystrike/mcp-spreadsheet": "^0.6.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {
