@@ -71,7 +71,8 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | Tool | What it does |
 | --- | --- |
 | `task_add` | Add a task: title plus optional project, column, due date, estimate, priority, tags and notes. A new project name creates its board; a partial name that matches exactly one existing project is used as that project. |
-| `task_list` | Table of tasks, filtered by project, column, tag, `due_before` or `overdue`. Finished tasks are hidden unless you ask for them. |
+| | Due dates accept `YYYY-MM-DD`, `today`, `tomorrow`, `yesterday`, `+3d`, a weekday (`friday`, the nearest one from today) and `next friday` (the one after that). |
+| `task_list` | Table of tasks, filtered by project, column, tag, `due_before` or `overdue`. Finished tasks are hidden unless you ask for them. Prints 200 rows by default and says how many more there are; raise it with `limit` (max 2,000). |
 | `task_move` | Move a task to another column on its board. |
 | `task_update` | Change any field: title, notes, due (`none` clears it), estimate, priority, tags, column or project. |
 | `task_done` | Mark a task done: it moves to the done column and is stamped with the time. |
@@ -109,6 +110,7 @@ Also exposed: the resource `kanban://today` (due today plus everything overdue) 
 | Columns | the default five (backlog, todo, doing, review, done) | custom columns per board (`columns_set`) |
 | Weekly review | the current week | any week, full history |
 | Estimate vs actual reports | current week only | every week |
+| Listing output | 200 rows per call, `limit` up to 2,000 | same |
 | Everything else | included | included |
 
 Pro is a one-time $19 for this server, or $39 for every server, lifetime.

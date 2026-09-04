@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -11,6 +11,8 @@ import { readJsonFile } from "./jsonstore.js";
 import {
   DEFAULT_COLUMNS, PRIORITIES, EMPTY_DB, ambiguousText, doneColumn, hm, isDone, isDueOn, isOverdue,
   makeId, normColumn, resolveProject, slugFor, table, totalActual, totalEstimate,
+  DEFAULT_ROW_LIMIT, MAX_COLUMNS, MAX_COLUMN_NAME, MAX_ID, MAX_MINUTES, MAX_NOTES, MAX_PROJECT,
+  MAX_QUERY, MAX_ROW_LIMIT, MAX_TAG, MAX_TAGS, MAX_TITLE,
   type Board, type DB, type Priority, type Task,
 } from "./board.js";
 
@@ -66,6 +68,34 @@ const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
 const err = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true });
 const gated = (feature: string) => ok(gate.upgradeText(feature));
 
+/**
+ * D-K1. Bounded free text at the schema, the way expense-tracker does it, so an oversized
+ * string is refused by name before it is written, rendered or handed to a model.
+ */
+const text = (max: number, min = 0) =>
+  z.string().max(max, { message: `must be ${max} characters or fewer` }).refine(
+    v => v.trim().length >= min,
+    { message: min > 0 ? `must not be blank` : `` },
+  );
+
+/** D-K3. Minutes a caller may set: whole, in range, and never a silent 16,666-hour estimate. */
+const minutes = (opts: { negative?: boolean } = {}) =>
+  z.number().int()
+    .min(opts.negative ? -MAX_MINUTES : 0, { message: `must be at least ${opts.negative ? -MAX_MINUTES : 0}` })
+    .max(MAX_MINUTES, { message: `must be ${MAX_MINUTES} minutes (about 69 days) or fewer` });
+
+/** D-K9. How many rows a listing tool prints before it truncates and says so. */
+const limitArg = z.number().int().min(1).max(MAX_ROW_LIMIT).optional();
+
+function capRows<T>(rows: T[], limit: number | undefined): { shown: T[]; note: string } {
+  const n = limit ?? DEFAULT_ROW_LIMIT;
+  if (rows.length <= n) return { shown: rows, note: "" };
+  return {
+    shown: rows.slice(0, n),
+    note: `\nShowing the first ${n} of ${rows.length}. Narrow it with project/column/tag/due_before, or raise limit (max ${MAX_ROW_LIMIT}).`,
+  };
+}
+
 function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }>) {
   return async (a: A) => {
     try { return await fn(a); }
@@ -92,6 +122,22 @@ function parseDay(input: string, what = "due"): string {
   if (s === "yesterday") return shift(-1);
   const rel = /^\+(\d+)\s*d(ays?)?$/.exec(s);
   if (rel) return shift(Number(rel[1]));
+  /**
+   * D-K6. "Friday" and "next Monday" are how a user states a due date out loud, and the
+   * round-2 prompts use both. A bare weekday is the nearest one on or after today; "next"
+   * (or "coming"/"this coming") is the nearest one strictly after today.
+   */
+  const wd = /^(next|this|this\s+coming|coming|on)?\s*(mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)(day|sday|nesday|rsday|urday)?$/.exec(s);
+  if (wd) {
+    const NAMES: Record<string, number> = { sun: 0, mon: 1, tue: 2, tues: 2, wed: 3, thu: 4, thur: 4, thurs: 4, fri: 5, sat: 6 };
+    const want = NAMES[wd[2]];
+    const [y, m, d] = localToday().split("-").map(Number);
+    const todayDow = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    const strict = wd[1] === "next" || wd[1] === "coming" || wd[1] === "this coming";
+    let delta = (want - todayDow + 7) % 7;
+    if (strict && delta === 0) delta = 7;
+    return shift(delta);
+  }
   if (DATE_ONLY.test(s)) {
     const [y, m, d] = s.split("-").map(Number);
     const probe = new Date(Date.UTC(y, m - 1, d));
@@ -104,6 +150,27 @@ function parseDay(input: string, what = "due"): string {
 }
 
 function knownProjects(db: DB): string[] { return Object.values(db.boards).map(b => b.name); }
+
+/**
+ * D-K10. time-tracker resolves a project name by exact match FIRST, then by a unique
+ * prefix/containment match (board.ts resolveProject, the same rule this server uses). So a
+ * kanban board called "Nova" hands its timer to a time-tracker project called "Nova App"
+ * and neither store says the two now disagree. Read the sibling store (same XDG data root,
+ * read-only, best effort) and warn at the point of handoff, before the timer is started.
+ */
+function timeTrackerProjects(): string[] {
+  try {
+    const base = process.env.XDG_DATA_HOME || join(homedir(), ".local", "share");
+    const file = join(base, "mcp-servers", "time-tracker", "data.json");
+    if (!existsSync(file)) return [];
+    const raw = JSON.parse(readFileSync(file, "utf8")) as { entries?: { project?: unknown }[]; projects?: Record<string, unknown>; running?: { project?: unknown } };
+    const names = new Set<string>();
+    for (const e of raw.entries ?? []) if (typeof e?.project === "string" && e.project) names.add(e.project);
+    for (const k of Object.keys(raw.projects ?? {})) if (k) names.add(k);
+    if (typeof raw.running?.project === "string" && raw.running.project) names.add(raw.running.project);
+    return [...names];
+  } catch { return []; }        // a corrupt or unreadable sibling store is not this server's problem
+}
 
 type Filter = { kind: "ok"; project?: string } | { kind: "ambiguous"; text: string };
 function resolveFilter(db: DB, project: string | undefined): Filter {
@@ -195,19 +262,22 @@ server.registerTool("task_add", {
   title: "Add task",
   description: "Add a task to a project board (todo list / kanban card). Optional column, due date, estimate, priority, tags and notes.",
   inputSchema: {
-    title: z.string().min(1).describe("What the task is, e.g. 'Write the launch email'"),
-    project: z.string().optional().describe("Project or board name. A partial name matching exactly one existing project is used as that project. Defaults to your only board."),
-    column: z.string().optional().describe("Column to start in; defaults to the first column (backlog)"),
-    due: z.string().optional().describe("Due date: YYYY-MM-DD, 'today', 'tomorrow' or '+3d'"),
-    estimate_minutes: z.number().int().nonnegative().optional().describe("How long you think it will take, in minutes"),
+    title: text(MAX_TITLE, 1).describe("What the task is, e.g. 'Write the launch email'"),
+    project: text(MAX_PROJECT).optional().describe("Project or board name. A partial name matching exactly one existing project is used as that project. Defaults to your only board."),
+    column: text(MAX_COLUMN_NAME).optional().describe("Column to start in; defaults to the first column (backlog)"),
+    due: text(64).optional().describe("Due date: YYYY-MM-DD, 'today', 'tomorrow', 'Friday', 'next Monday' or '+3d'"),
+    estimate_minutes: minutes().optional().describe("How long you think it will take, in minutes"),
     priority: z.enum(["low", "normal", "high", "urgent"]).optional().describe("Priority; defaults to normal"),
-    tags: z.array(z.string()).optional().describe("Free-form tags, e.g. ['writing','client']"),
-    notes: z.string().optional().describe("Longer notes for the task"),
+    tags: z.array(text(MAX_TAG)).max(MAX_TAGS).optional().describe("Free-form tags, e.g. ['writing','client']"),
+    notes: text(MAX_NOTES).optional().describe("Longer notes for the task"),
   },
 }, guard(async (a: { title: string; project?: string; column?: string; due?: string; estimate_minutes?: number; priority?: Priority; tags?: string[]; notes?: string }) => {
   return withFileLock(LOCK, async () => {
     const db = load();
-    const wanted = a.project ?? defaultProject(db) ?? "inbox";
+    if (a.project !== undefined && !a.project.trim()) {
+      return err(`project is blank. Give a board name, or leave project out to use your current board.`);
+    }
+    const wanted = a.project?.trim() || defaultProject(db) || "inbox";
     const r = resolveProject(knownProjects(db), wanted);
     if (r.kind === "ambiguous") return ok(ambiguousText(wanted, r.candidates));
     const key = r.project.toLowerCase();
@@ -255,14 +325,15 @@ server.registerTool("task_list", {
   title: "List tasks",
   description: "List tasks as a table, filtered by project, column, tag, due date or overdue.",
   inputSchema: {
-    project: z.string().optional().describe("Only this project"),
-    column: z.string().optional().describe("Only this column, e.g. 'doing'"),
-    tag: z.string().optional().describe("Only tasks carrying this tag"),
-    due_before: z.string().optional().describe("Only tasks due on or before this day (YYYY-MM-DD, 'today', '+7d')"),
+    project: text(MAX_PROJECT).optional().describe("Only this project"),
+    column: text(MAX_COLUMN_NAME).optional().describe("Only this column, e.g. 'doing'"),
+    tag: text(MAX_TAG).optional().describe("Only tasks carrying this tag"),
+    due_before: text(64).optional().describe("Only tasks due on or before this day (YYYY-MM-DD, 'today', 'Friday', '+7d')"),
     overdue: z.boolean().optional().describe("Only tasks past their due date"),
     include_done: z.boolean().optional().describe("Include finished tasks; default false"),
+    limit: limitArg.describe(`Rows to print; default ${DEFAULT_ROW_LIMIT}`),
   },
-}, guard(async (a: { project?: string; column?: string; tag?: string; due_before?: string; overdue?: boolean; include_done?: boolean }) => {
+}, guard(async (a: { project?: string; column?: string; tag?: string; due_before?: string; overdue?: boolean; include_done?: boolean; limit?: number }) => {
   const db = load();
   const f = resolveFilter(db, a.project);
   if (f.kind === "ambiguous") return ok(f.text);
@@ -280,15 +351,16 @@ server.registerTool("task_list", {
     .sort((x, y) => (x.due ?? "9999-12-31").localeCompare(y.due ?? "9999-12-31") || x.id.localeCompare(y.id));
   if (!rows.length) return ok("No tasks match. Add one with task_add.");
   const est = totalEstimate(rows);
-  return ok(`${table(TASK_HEADERS, rows.map(t => taskLine(t, today, columnsOf(db, t.project))))}\n\n${rows.length} task(s), estimate ${hm(est)}.`);
+  const { shown, note } = capRows(rows, a.limit);
+  return ok(`${table(TASK_HEADERS, shown.map(t => taskLine(t, today, columnsOf(db, t.project))))}\n\n${rows.length} task(s), estimate ${hm(est)}.${note}`);
 }));
 
 server.registerTool("task_move", {
   title: "Move task",
   description: "Move a task to another column on its board.",
   inputSchema: {
-    id: z.string().describe("Task id, e.g. NOVA-12"),
-    column: z.string().describe("Target column, e.g. 'doing'"),
+    id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12"),
+    column: text(MAX_COLUMN_NAME, 1).describe("Target column, e.g. 'doing'"),
   },
 }, guard(async ({ id, column }: { id: string; column: string }) => {
   return withFileLock(LOCK, async () => {
@@ -312,15 +384,15 @@ server.registerTool("task_update", {
   title: "Update task",
   description: "Change any field of a task: title, notes, due date, estimate, priority, tags or project.",
   inputSchema: {
-    id: z.string().describe("Task id, e.g. NOVA-12"),
-    title: z.string().optional(),
-    notes: z.string().optional(),
-    due: z.string().optional().describe("New due date, or 'none' to clear it"),
-    estimate_minutes: z.number().int().nonnegative().optional(),
+    id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12"),
+    title: text(MAX_TITLE, 1).optional(),
+    notes: text(MAX_NOTES).optional(),
+    due: text(64).optional().describe("New due date, or 'none' to clear it"),
+    estimate_minutes: minutes().optional(),
     priority: z.enum(["low", "normal", "high", "urgent"]).optional(),
-    tags: z.array(z.string()).optional().describe("Replaces the whole tag list"),
-    column: z.string().optional(),
-    project: z.string().optional().describe("Move the task to another existing project board"),
+    tags: z.array(text(MAX_TAG)).max(MAX_TAGS).optional().describe("Replaces the whole tag list"),
+    column: text(MAX_COLUMN_NAME).optional(),
+    project: text(MAX_PROJECT).optional().describe("Move the task to another existing project board"),
   },
 }, guard(async (a: { id: string; title?: string; notes?: string; due?: string; estimate_minutes?: number; priority?: Priority; tags?: string[]; column?: string; project?: string }) => {
   return withFileLock(LOCK, async () => {
@@ -360,7 +432,7 @@ server.registerTool("task_update", {
 server.registerTool("task_done", {
   title: "Complete task",
   description: "Mark a task done: it moves to the done column and is stamped with the time.",
-  inputSchema: { id: z.string().describe("Task id, e.g. NOVA-12") },
+  inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
 }, guard(async ({ id }: { id: string }) => {
   return withFileLock(LOCK, async () => {
     const db = load();
@@ -381,7 +453,7 @@ server.registerTool("task_done", {
 server.registerTool("task_delete", {
   title: "Delete task",
   description: "Delete a task permanently.",
-  inputSchema: { id: z.string().describe("Task id, e.g. NOVA-12") },
+  inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
 }, guard(async ({ id }: { id: string }) => {
   return withFileLock(LOCK, async () => {
     const db = load();
@@ -389,15 +461,26 @@ server.registerTool("task_delete", {
     if (!t) return err(`no task with id ${id}. Run task_list to see the ids.`);
     db.tasks = db.tasks.filter(x => x !== t);
     save(db);
-    return ok(`Deleted ${t.id} "${t.title}" from ${t.project}. The id is not reused.`);
+    /**
+     * D-K7. Deleting a task that carries logged minutes throws away the only record of
+     * that work on this board. Say how much, and say plainly that the time-tracker's own
+     * entries are a separate store and were not touched.
+     */
+    const logged = typeof t.actual_minutes === "number" && t.actual_minutes > 0
+      ? ` It carried ${hm(t.actual_minutes)} of logged time, which is gone from this board; any time-tracker entries for "${t.title}" are a separate store and were not touched.`
+      : "";
+    return ok(`Deleted ${t.id} "${t.title}" from ${t.project}. The id is not reused.${logged}`);
   });
 }));
 
 server.registerTool("task_search", {
   title: "Search tasks",
   description: "Find tasks whose title, notes, tags or id match a query.",
-  inputSchema: { query: z.string().min(1).describe("Text to look for") },
-}, guard(async ({ query }: { query: string }) => {
+  inputSchema: {
+    query: text(MAX_QUERY, 1).describe("Text to look for"),
+    limit: limitArg.describe(`Rows to print; default ${DEFAULT_ROW_LIMIT}`),
+  },
+}, guard(async ({ query, limit }: { query: string; limit?: number }) => {
   const db = load();
   const q = String(query).trim().toLowerCase();
   const today = localToday();
@@ -407,13 +490,14 @@ server.registerTool("task_search", {
     (t.notes ?? "").toLowerCase().includes(q) ||
     t.tags.some(x => x.toLowerCase().includes(q)));
   if (!rows.length) return ok(`Nothing matches "${query}".`);
-  return ok(`${table(TASK_HEADERS, rows.map(t => taskLine(t, today, columnsOf(db, t.project))))}\n\n${rows.length} match(es).`);
+  const { shown, note } = capRows(rows, limit);
+  return ok(`${table(TASK_HEADERS, shown.map(t => taskLine(t, today, columnsOf(db, t.project))))}\n\n${rows.length} match(es).${note}`);
 }));
 
 server.registerTool("board", {
   title: "Show board",
   description: "Column-by-column summary of a project board: task counts and estimate totals.",
-  inputSchema: { project: z.string().optional().describe("Which board; defaults to your busiest one") },
+  inputSchema: { project: text(MAX_PROJECT).optional().describe("Which board; defaults to your busiest one") },
 }, guard(async ({ project }: { project?: string }) => {
   const db = load();
   const f = resolveFilter(db, project);
@@ -437,7 +521,7 @@ server.registerTool("board", {
 server.registerTool("task_start_timer", {
   title: "Start a timer for a task",
   description: "Return the exact arguments to pass to the time-tracker server's timer_start for this task, and record the link on the task.",
-  inputSchema: { id: z.string().describe("Task id, e.g. NOVA-12") },
+  inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
 }, guard(async ({ id }: { id: string }) => {
   return withFileLock(LOCK, async () => {
     const db = load();
@@ -449,10 +533,21 @@ server.registerTool("task_start_timer", {
     t.timer_links = [...(t.timer_links ?? []), { at, project: args.project, task: args.task }];
     t.updated = at;
     save(db);
+    const tt = timeTrackerProjects();
+    const clash = resolveProject(tt, args.project);
+    let warn = "";
+    if (clash.kind === "ambiguous") {
+      warn = `\n\nWarning: the time tracker already has ${clash.candidates.length} projects that "${args.project}" could mean ` +
+        `(${clash.candidates.map(c => `"${c}"`).join(", ")}), and it will refuse the call. Rename this board, or start the timer with the exact name you mean.`;
+    } else if (clash.project.toLowerCase() !== args.project.toLowerCase()) {
+      warn = `\n\nWarning: the time tracker has no project called "${args.project}" but it does have "${clash.project}", ` +
+        `and it matches partial names, so it will log this time under "${clash.project}" instead. ` +
+        `The two stores would then disagree. Rename this board to "${clash.project}", or tell the user before you continue.`;
+    }
     return ok(
       `Call the time-tracker server's timer_start with exactly these arguments:\n` +
       `${JSON.stringify(args, null, 2)}\n\n` +
-      `Then stop it with timer_stop and record the minutes back here with task_log_time, id ${t.id}.`,
+      `Then stop it with timer_stop and record the minutes back here with task_log_time, id ${t.id}.${warn}`,
     );
   });
 }));
@@ -461,16 +556,17 @@ server.registerTool("task_log_time", {
   title: "Log time on a task",
   description: "Add real minutes worked to a task, so estimate and actual can be compared.",
   inputSchema: {
-    id: z.string().describe("Task id, e.g. NOVA-12"),
-    minutes: z.number().int().describe("Minutes to add; a negative number corrects an over-count"),
+    id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12"),
+    minutes: minutes({ negative: true }).describe("Minutes to add; a negative number corrects an over-count"),
   },
-}, guard(async ({ id, minutes }: { id: string; minutes: number }) => {
+}, guard(async ({ id, minutes: mins }: { id: string; minutes: number }) => {
   return withFileLock(LOCK, async () => {
     const db = load();
     const t = findTask(db, id);
     if (!t) return err(`no task with id ${id}. Run task_list to see the ids.`);
-    const next = (t.actual_minutes ?? 0) + minutes;
+    const next = (t.actual_minutes ?? 0) + mins;
     if (next < 0) return err(`that would leave ${t.id} at ${next} minutes. Actual time cannot go below zero.`);
+    if (next > MAX_MINUTES) return err(`that would leave ${t.id} at ${next} minutes, past the ${MAX_MINUTES}-minute ceiling. Nothing was logged.`);
     t.actual_minutes = next;
     t.updated = new Date().toISOString();
     save(db);
@@ -504,21 +600,25 @@ server.registerTool("project_list", {
 server.registerTool("overdue", {
   title: "Overdue tasks",
   description: "Every task past its due date, across all boards.",
-  inputSchema: { as_of: z.string().optional().describe("Measure against this day instead of today (YYYY-MM-DD)") },
-}, guard(async ({ as_of }: { as_of?: string }) => {
+  inputSchema: {
+    as_of: text(64).optional().describe("Measure against this day instead of today (YYYY-MM-DD, 'next Monday', '+7d')"),
+    limit: limitArg.describe(`Rows to print; default ${DEFAULT_ROW_LIMIT}`),
+  },
+}, guard(async ({ as_of, limit }: { as_of?: string; limit?: number }) => {
   const db = load();
   const day = as_of ? parseDay(as_of, "as_of") : localToday();
   const rows = db.tasks
     .filter(t => isOverdue(t, day, columnsOf(db, t.project)))
     .sort((a, b) => (a.due ?? "").localeCompare(b.due ?? "") || a.id.localeCompare(b.id));
   if (!rows.length) return ok(`Nothing is overdue as of ${day}.`);
-  return ok(`${table(TASK_HEADERS, rows.map(t => taskLine(t, day, columnsOf(db, t.project))))}\n\n${rows.length} overdue as of ${day}.`);
+  const { shown, note } = capRows(rows, limit);
+  return ok(`${table(TASK_HEADERS, shown.map(t => taskLine(t, day, columnsOf(db, t.project))))}\n\n${rows.length} overdue as of ${day}.${note}`);
 }));
 
 server.registerTool("weekly_review", {
   title: "Weekly review",
   description: "Done versus planned for a week, with estimate against actual minutes per project.",
-  inputSchema: { week: z.string().optional().describe("ISO week, e.g. '2026-W36'. Defaults to this week. Past weeks are a Pro feature.") },
+  inputSchema: { week: text(16).optional().describe("ISO week, e.g. '2026-W36'. Defaults to this week. Past weeks are a Pro feature.") },
 }, guard(async ({ week }: { week?: string }) => {
   const db = load();
   const thisWeek = weekKey(localToday());
@@ -550,8 +650,9 @@ server.registerTool("columns_set", {
   title: "Set board columns",
   description: "Replace the columns of one board (Pro). Tasks sitting in a removed column move to the first column.",
   inputSchema: {
-    project: z.string().describe("Which board"),
-    columns: z.array(z.string().min(1)).min(2).describe("The new column names in order, e.g. ['inbox','next','doing','done']"),
+    project: text(MAX_PROJECT, 1).describe("Which board"),
+    columns: z.array(text(MAX_COLUMN_NAME)).min(2).max(MAX_COLUMNS)
+      .describe(`The new column names in order, at most ${MAX_COLUMNS}, e.g. ['inbox','next','doing','done']`),
   },
 }, guard(async ({ project, columns }: { project: string; columns: string[] }) => {
   if (!gate.isPro()) return gated("custom columns");
@@ -561,7 +662,15 @@ server.registerTool("columns_set", {
     if (f.kind === "ambiguous") return ok(f.text);
     const b = f.project ? boardOf(db, f.project) : undefined;
     if (!b) return err(`no project board "${project}". Create it by adding a task with task_add.`);
+    /**
+     * D-K4. The min(2) on the array ran BEFORE the blanks were dropped, so ["only", "   "]
+     * left a one-column board: that single column is doneColumn(), so every task on the
+     * board became "done" and vanished from task_list. Validate the normalised list.
+     */
     const cols = columns.map(normColumn).filter(Boolean);
+    if (cols.length < 2) {
+      return err(`a board needs at least 2 named columns; ${columns.length - cols.length} of the ${columns.length} you gave were blank. Nothing was changed.`);
+    }
     if (new Set(cols).size !== cols.length) return err(`column names must be unique: ${cols.join(", ")}`);
     const gone = b.columns.filter(c => !cols.includes(c));
     b.columns = cols;

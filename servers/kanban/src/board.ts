@@ -6,6 +6,27 @@
 
 export const DEFAULT_COLUMNS = ["backlog", "todo", "doing", "review", "done"];
 
+/**
+ * D-K1/D-K3/D-K8. Every free-text field and every number a caller can set is bounded, so a
+ * 1 MB title or a 1e9 estimate cannot reach the store, the table renderer or the model's
+ * context. The caps are generous for real use and small enough that the worst case is a
+ * readable error rather than a 430 KB tool result.
+ */
+export const MAX_TITLE = 300;
+export const MAX_NOTES = 5000;
+export const MAX_PROJECT = 100;
+export const MAX_ID = 64;
+export const MAX_COLUMN_NAME = 40;
+export const MAX_COLUMNS = 12;
+export const MAX_TAGS = 30;
+export const MAX_TAG = 60;
+export const MAX_QUERY = 200;
+/** 100,000 minutes is about 69 days: past that a number is a typo, not an estimate. */
+export const MAX_MINUTES = 100_000;
+/** D-K9: rows returned by one listing tool before it truncates and says so. */
+export const DEFAULT_ROW_LIMIT = 200;
+export const MAX_ROW_LIMIT = 2000;
+
 export type Priority = "low" | "normal" | "high" | "urgent";
 export const PRIORITIES: Priority[] = ["low", "normal", "high", "urgent"];
 
@@ -93,6 +114,9 @@ export function resolveProject(known: string[], input: string): Resolved {
   if (!q) return { kind: "use", project: given };
   const near = known.filter(p => {
     const k = p.toLowerCase();
+    // D-K2: an empty (or whitespace-only) stored name is a prefix of EVERY input, so one
+    // blank board would silently swallow every later project. Never match on it.
+    if (!k) return false;
     return k.startsWith(q) || q.startsWith(k) || k.includes(q) || q.includes(k);
   });
   if (near.length === 1) return { kind: "use", project: near[0], note: `Used the existing project "${near[0]}" (you said "${given}").` };
