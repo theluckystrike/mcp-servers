@@ -145,10 +145,9 @@ export const CLIENTS = {
 export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
- * five child processes and has no single connector URL. It also skips bank-statement:
- * remote/src/index.ts has no /mcp/bank-statement route yet, so there is nothing to connect. */
+ * five child processes and has no single connector URL. */
 export function serversFor(clientId) {
-  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => id !== "office-suite" && id !== "bank-statement") : SERVER_ORDER;
+  return clientId === "claude-web" ? SERVER_ORDER.filter((id) => id !== "office-suite") : SERVER_ORDER;
 }
 
 /** Servers. Prompts are lines from each README's "What you can say" table. */
@@ -624,8 +623,7 @@ const WEB_ANGLE = {
   calendar: "There is no local .ics file to import from over a browser connector, so the practical route here is ics_import with a url or webcal feed, which is a Pro feature: the free tier's local-file import has nothing to point at from claude.ai.",
   kanban: "The board is a JSON file behind the connector's token rather than on your disk, so it is the same board whether you connect from claude.ai in a browser or from Claude Desktop, and task_start_timer still only hands back arguments for the time tracker connector to use.",
   image: "The resized or watermarked file comes back as a one-hour download link rather than a path, the same trade every writing tool makes on the hosted route, so the practical habit is downloading it in the same session you ask for it.",
-  // bank-statement has no entry: it is excluded from claude-web by serversFor(), since
-  // remote/src/index.ts has no /mcp/bank-statement route to connect to yet.
+  "bank-statement": "There is no local CSV to point at over a browser connector, so the statement goes in through bank_upload first, by name, and the export comes back as a one-hour download link; the expense ledger it reconciles against is the same one behind the token.",
 };
 
 const FAQ = {
@@ -835,7 +833,7 @@ export function setupPage(clientId, serverId) {
   const c = CLIENTS[clientId];
   const s = SETUP_SERVERS[serverId];
   if (!c || !s) return null;
-  if (clientId === "claude-web" && (serverId === "office-suite" || serverId === "bank-statement")) return null;
+  if (clientId === "claude-web" && serverId === "office-suite") return null;
   const canonical = `${BASE}/setup/${clientId}/${serverId}`;
   const title = `${s.title} in ${c.name}`;
 
