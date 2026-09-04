@@ -148,22 +148,20 @@ EOF
   #    this server's own package.json, vendored recursively (so e.g. resume's mcp-docx
   #    dep pulls in mcp-docx's own mcp-license dep too).
   vendor_closure "$ROOT/packages/mcp-license" "$MIRROR" "mcp-license"
-  if [ "$NAME" = "office-suite" ]; then
-    for CHILD in time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses; do
-      vendor_closure "$ROOT/servers/$CHILD" "$MIRROR" "mcp-$CHILD"
-    done
-  else
-    for DEP in $(python3 -c '
+  #    office-suite is not a special case: its proxied children are exactly the
+  #    @theluckystrike deps in its own package.json, and step 3 below rewrites every one
+  #    of them to file:vendor/<pkg>, so a hand-maintained child list here silently
+  #    produces a mirror whose npm install cannot resolve the children it left out.
+  for DEP in $(python3 -c '
 import json, sys
 p = json.load(open(sys.argv[1]))
 for k in (p.get("dependencies") or {}):
     if k.startswith("@theluckystrike/"):
         print(k)
 ' "$SRC/package.json"); do
-      DEPBASE="${DEP#@theluckystrike/}"
-      vendor_closure "$(pkg_src_dir "$DEPBASE")" "$MIRROR" "$DEPBASE"
-    done
-  fi
+    DEPBASE="${DEP#@theluckystrike/}"
+    vendor_closure "$(pkg_src_dir "$DEPBASE")" "$MIRROR" "$DEPBASE"
+  done
 
   # 3. package.json: point @theluckystrike deps at the vendored copies
   python3 - "$MIRROR/package.json" <<'PY'
