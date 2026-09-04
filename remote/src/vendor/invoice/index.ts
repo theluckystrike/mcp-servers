@@ -35,8 +35,8 @@ const gate = createLicenseGate({ product: "invoice" });
  * stops) reading the shared profile cannot go unnoticed here again.
  */
 const PROFILE_READERS = [
-  "barcode", "calendar", "clauses", "docx", "expense-tracker", "image",
-  "kanban", "pdf", "quotes", "resume", "time-tracker", "timezone",
+  "bank-statement", "barcode", "calendar", "clauses", "currency", "docx", "expense-tracker",
+  "image", "kanban", "pdf", "quotes", "resume", "time-tracker", "timezone",
 ];
 
 /**
