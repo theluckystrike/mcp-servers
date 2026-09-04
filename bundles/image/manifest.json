@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-image",
   "display_name": "Image Tools",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Resize, convert, compress, crop, thumbnail and watermark images from chat: no upload, no account, no native dependency. Every file stays on your machine.",
   "author": {
     "name": "theluckystrike",

@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-invoice",
   "display_name": "Invoice",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Make real, sendable PDF invoices from a sentence. Clients, numbering that never repeats, VAT lines, discounts and overdue reports, all stored locally.",
   "author": {
     "name": "theluckystrike",

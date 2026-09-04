@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-recurring",
   "display_name": "Recurring Invoices",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Bill the same clients every month without remembering to. Define a recurring invoice once, then generate the real PDFs that are due into your invoice server, with month-end safe dates, an audit log and a revenue forecast. Everything stays on your machine.",
   "author": {
     "name": "theluckystrike",

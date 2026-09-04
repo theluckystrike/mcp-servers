@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-bank-statement",
   "display_name": "Bank Statement",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Import a bank CSV export, categorise it, summarise it per currency, find recurring charges and reconcile it against your expense ledger. Everything stays on your machine.",
   "author": {
     "name": "theluckystrike",

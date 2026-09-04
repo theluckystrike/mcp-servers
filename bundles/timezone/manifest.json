@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-timezone",
   "display_name": "Timezone Planner",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Time zones, meeting slots and calendar invites for people who work with clients abroad. Convert times, find hours that suit everyone, check DST, write .ics. All local.",
   "author": {
     "name": "theluckystrike",

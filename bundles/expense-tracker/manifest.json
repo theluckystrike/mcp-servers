@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-expense-tracker",
   "display_name": "Expense Tracker",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Local expenses, receipts and mileage ledger for freelancers: categorise, split VAT, summarise, export to CSV or xlsx and rebill straight into an invoice.",
   "author": {
     "name": "theluckystrike",
@@ -67,7 +67,7 @@
     },
     {
       "name": "expense_summary",
-      "description": "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; imported bank transactions live in bank-statement."
+      "description": "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; bank transactions are totalled by bank-statement's statement_summary."
     },
     {
       "name": "mileage_add",
@@ -75,7 +75,7 @@
     },
     {
       "name": "expense_export",
-      "description": "Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. Covers manually logged receipts only; imported bank transactions live in the bank-statement server."
+      "description": "Call this tool to write manually logged receipts to a csv, xlsx or json file. Returns the path. Bank transactions for the period are exported by bank-statement's statement_export tool, not this one."
     },
     {
       "name": "expense_to_invoice",

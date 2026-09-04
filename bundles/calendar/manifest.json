@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-calendar",
   "display_name": "Calendar",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Read the .ics your calendar already exports: what is on this week, when you are actually free, what is double-booked, and turn a meeting into billable time. All local.",
   "author": {
     "name": "theluckystrike",
