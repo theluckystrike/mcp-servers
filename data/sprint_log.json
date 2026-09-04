@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-04T03:37:20.348Z",
-  "total_commits": 234,
-  "sessions": 35,
+  "generated_at": "2026-09-04T03:38:01.546Z",
+  "total_commits": 235,
+  "sessions": 36,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -45,8 +45,8 @@
     },
     {
       "name": "Loop 9: handshake version, quotes, hosted round 11, v0.7.0",
-      "sessions": 0,
-      "commits": 50
+      "sessions": 1,
+      "commits": 51
     }
   ],
   "rows": [
@@ -390,7 +390,15 @@
       "at": "2026-09-04T01:55:44.772Z",
       "note": "loop 8 closed: v0.6.0, 16 servers + bundle, 686 tests, validation 370/370, audits kanban 18/18 image 16/18 bank 13/18 (52 defects fixed), 16 hosted endpoints, 30 registry entries at 0.6.0, sitemap 179, Docker PR 16 entries, Cline 2424, zovo.one footer link, GSC sitemap resubmitted (0 indexed, never crawled), downloads 703",
       "loop": "Loop 8: kanban, image, bank-statement, v0.6.0",
-      "commits": 50,
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 36,
+      "at": "2026-09-04T03:37:20.419Z",
+      "note": "loop 9 closed: v0.7.0, 17 servers + bundle (+quotes on the invoice engine, audit 18/18), 771 tests, validation 399/399, 17 hosted endpoints, 33 registry entries at 0.7.0 (templates + estimates variants), hosted round 11 49/54 (uv index 91%), handshake version from package.json (14 of 17 were stale), KPI readers fixed, sitemap 189, zovo.one footer link live, GSC 189 submitted 0 indexed, Docker PR 17 entries, Cline 2426, downloads 843, sales 0",
+      "loop": "Loop 9: handshake version, quotes, hosted round 11, v0.7.0",
+      "commits": 51,
       "subjects": [
         "Plan v5; image and bank-statement products",
         "INTEL_R5: image/bank-statement naming slots, next three candidates",
