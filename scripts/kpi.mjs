@@ -25,9 +25,32 @@ const bal = sh("stripe", ["balance_transactions", "list", "--live", "--limit", "
 let sales = null; if (bal) { try { const d = JSON.parse(bal).data; sales = d.filter((t) => t.type === "charge" && /MCP/i.test(t.description || "")).length; } catch {} }
 
 // KV populations (hosted usage): wrangler needs --remote
-const kvCount = (ns) => { const out = sh("wrangler", ["kv", "key", "list", "--namespace-id", ns, "--remote"]); try { const ks = JSON.parse(out).map((k) => k.name); const by = {}; for (const k of ks) { const p = k.includes(":") ? k.split(":")[0] : k.split("_")[0]; by[p] = (by[p] || 0) + 1; } return { total: ks.length, by }; } catch { return { total: null, by: {} }; } };
-const remoteKv = nsOf(remoteToml) ? kvCount(nsOf(remoteToml)) : { total: null, by: {} };
-const licKv = nsOf(licToml) ? kvCount(nsOf(licToml)) : { total: null, by: {} };
+const kvCount = (ns) => { const out = sh("wrangler", ["kv", "key", "list", "--namespace-id", ns, "--remote"]); try { const ks = JSON.parse(out).map((k) => k.name); const by = {}; for (const k of ks) { const p = k.includes(":") ? k.split(":")[0] : k.split("_")[0]; by[p] = (by[p] || 0) + 1; } return { total: ks.length, by, names: ks }; } catch { return { total: null, by: {}, names: null }; } };
+const remoteKv = nsOf(remoteToml) ? kvCount(nsOf(remoteToml)) : { total: null, by: {}, names: null };
+const licKv = nsOf(licToml) ? kvCount(nsOf(licToml)) : { total: null, by: {}, names: null };
+
+// Pro tenants on hosted endpoints, without the validation probes.
+// REMOTE_DATA holds one `lic:<id>:<server>` document per (Pro key, server) pair, so the raw
+// key count (507) is neither tenants nor people: 107 distinct ids, and almost all of them are
+// throwaway keys signed locally by scripts/sign-license.mjs for a validation run.
+// A tenant counts as real only if money or a person is attached to it:
+//   1. `bind:<anon token>` in REMOTE_DATA -- written by the billing worker only after Stripe
+//      fulfilment, so every one of these is a paid tenant;
+//   2. a `lic:<id>` whose id belongs to a key the billing worker actually minted. Minted keys
+//      are stored in LICENSES as `session:<checkout session id>`; their payload id is decoded
+//      here. Every other lic id was signed from keys/license-private.pem by validation.
+const licenseKeyId = (key) => { try { return JSON.parse(Buffer.from(String(key).split(".")[1], "base64url").toString("utf8")).id || null; } catch { return null; } };
+const mintedIds = new Set();
+if (licKv.names && nsOf(licToml)) {
+  for (const name of licKv.names.filter((n) => n.startsWith("session:"))) {
+    const id = licenseKeyId(sh("wrangler", ["kv", "key", "get", name, "--namespace-id", nsOf(licToml), "--remote"]).trim());
+    if (id) mintedIds.add(id);
+  }
+}
+const licTenants = remoteKv.names ? [...new Set(remoteKv.names.filter((n) => n.startsWith("lic:")).map((n) => n.split(":")[1]))] : null;
+const boundTenants = remoteKv.names ? [...new Set(remoteKv.names.filter((n) => n.startsWith("bind:")).map((n) => n.slice(5)))] : null;
+const proTenants = licTenants === null ? null : new Set([...boundTenants, ...licTenants.filter((id) => mintedIds.has(id))]).size;
+const proTenantDetail = { lic_keys: remoteKv.by.lic ?? null, lic_distinct_ids: licTenants ? licTenants.length : null, minted_key_ids: mintedIds.size, stripe_bound_tenants: boundTenants ? boundTenants.length : null, probe_ids_excluded: licTenants ? licTenants.filter((id) => !mintedIds.has(id)).length : null };
 
 // Hosted latency: three tools/list calls with a signed Pro key
 let latency = { p50_ms: null, samples: [] };
@@ -44,7 +67,9 @@ let registryLatest = null; try { const r = await (await fetch("https://registry.
 const tests = Number((sh("bash", ["-lc", `cd ${ROOT} && npm test 2>/dev/null | grep -E '^# pass' | awk '{s+=$3} END {print s}'`]) || "").trim()) || null;
 const tools = ledger.servers.reduce((a, s) => a + (s.tool_count || 0), 0);
 const servers = ledger.servers.filter((s) => s.id !== "office-suite").length;
-const hostedServers = Object.values(dist.per_server || {}).filter((s) => s.hosted === "published").length;
+// per_server.hosted is "published <url>", not the bare "published" this once matched:
+// the URL was appended in the v0.6.0 ledger rewrite and the equality test silently read 0.
+const hostedServers = Object.values(dist.per_server || {}).filter((s) => /^published\b/.test(String(s.hosted ?? ""))).length;
 const latestRound = uvi.rounds.at(-1) || {};
 const surfacesLive = Object.values(dist.surfaces || {}).filter((s) => s.status === "published").length;
 const surfacesTotal = Object.keys(dist.surfaces || {}).length;
@@ -78,10 +103,10 @@ const kpis = [
   { cat: "Monetization", name: "Checkout sessions from humans (last 100)", value: stripe.human_sessions, target: 50, unit: "sessions", how: "stripe checkout sessions list --live, metadata.probe absent", why: "Validation probes create sessions too; only untagged ones are demand." },
   { cat: "Monetization", name: "Paid sessions", value: stripe.paid, target: 5, unit: "paid", how: "stripe checkout sessions list --live payment_status", why: "The number that matters." },
   { cat: "Monetization", name: "License keys minted", value: licKv.total, target: 5, unit: "keys", how: "wrangler kv key list --remote on LICENSES", why: "One key per paid session; zero means no purchase reached /success." },
-  { cat: "Monetization", name: "Pro tenants on hosted endpoints", value: remoteKv.by.lic ?? null, target: 20, unit: "tenants (includes validation keys)", how: "wrangler kv key list --remote (prefix lic)", why: "Real Pro usage on hosted; today inflated by validation runs with signed keys." },
+  { cat: "Monetization", name: "Pro tenants on hosted endpoints", value: proTenants, target: 20, unit: "tenants", how: `Stripe-bound tenants (REMOTE_DATA bind: prefix, ${proTenantDetail.stripe_bound_tenants ?? "?"}) plus distinct lic: tenant ids whose key the billing worker minted (LICENSES session:*, ${proTenantDetail.minted_key_ids} keys). EXCLUDED: the ${proTenantDetail.lic_keys ?? "?"} raw lic: documents are per (key, server) pairs, not tenants (${proTenantDetail.lic_distinct_ids ?? "?"} distinct ids), and ${proTenantDetail.probe_ids_excluded ?? "?"} of those ids are validation probes signed locally by scripts/sign-license.mjs, never bought.`, why: "Real Pro usage on hosted. The old count read every lic: document, so one validation run over 16 servers looked like 16 paying tenants.", detail: proTenantDetail },
 ];
 const status = (k) => { if (k.value === null || k.value === undefined) return "unmeasured"; if (typeof k.target === "number" && typeof k.value === "number") { if (k.lower_is_better) return k.value <= k.target ? "met" : "progress"; return k.value >= k.target ? "met" : k.value > 0 ? "progress" : "zero"; } if (typeof k.value === "string" && /^(\d+)\/(\d+)$/.test(k.value)) { const [a, b] = k.value.split("/").map(Number); return a === b ? "met" : "progress"; } return "measured"; };
 for (const k of kpis) k.status = status(k);
-const out = { generated_at: new Date().toISOString(), kpis, raw: { stripe, sales_charges_seen: sales, remote_kv: remoteKv, license_kv: licKv, latency, registry: registryLatest, sitemap_urls: sitemapUrls } };
+const out = { generated_at: new Date().toISOString(), kpis, raw: { stripe, sales_charges_seen: sales, remote_kv: remoteKv, license_kv: licKv, pro_tenants: proTenantDetail, latency, registry: registryLatest, sitemap_urls: sitemapUrls } };
 writeFileSync(`${ROOT}/data/kpi.json`, JSON.stringify(out, null, 2));
 console.log(`kpi: ${kpis.length} indicators, ${kpis.filter((k) => k.status === "met").length} met, ${kpis.filter((k) => k.status === "unmeasured").length} unmeasured`);
