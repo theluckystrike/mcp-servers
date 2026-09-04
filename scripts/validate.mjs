@@ -70,7 +70,8 @@ const PROBES = {
     const twice = await c.tool("quote_accept", { id: qid });
     ok(`${tier}: accepting the same quote twice is refused`, twice.isError && /already accepted/i.test(twice.text), twice.text.replace(/\s+/g, " ").slice(0, 110));
     const rep = await c.tool("quote_report", {});
-    ok(`${tier}: quote_report ${tier === "pro" ? "gives the win rate" : "gated"}`, tier === "pro" ? !rep.isError && /win/i.test(rep.text) : /mcp\.zovo\.one\/buy\/quotes/.test(rep.text), rep.text.replace(/\s+/g, " ").slice(0, 100));
+    // D-R55: the report is a guardrail, so free answers it for the current year to date and names the cap.
+    ok(`${tier}: quote_report gives the win rate${tier === "pro" ? "" : " with the free cap named"}`, !rep.isError && /win_rate/i.test(rep.text) && (tier === "pro" || /current calendar year to date/.test(rep.text)), rep.text.replace(/\s+/g, " ").slice(0, 100));
   },
   "bank-statement": async (c, tmp, tier, ok) => {
     const csv = "Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance\n" + [["2026-08-02","Spotify","-9.99"],["2026-08-05","Adobe","-61.50"],["2026-08-09","Coffee Bar","-3.50"],["2026-08-12","Nova Labs","4500.00"],["2026-09-02","Spotify","-9.99"],["2026-09-04","Adobe","-61.50"]].map(([d, desc, a]) => `CARD_PAYMENT,Current,${d} 10:00:00,${d} 10:00:01,${desc},${a},0.00,EUR,COMPLETED,1000.00`).join("\n") + "\n";
@@ -79,7 +80,7 @@ const PROBES = {
     const again = await c.tool("statement_import", { path: f, account: "Main" }); ok(`${tier}: re-import stores 0 and reports duplicates`, !again.isError && /"duplicates_skipped":\s*6/.test(again.text) && /"imported":\s*0/.test(again.text), again.text.slice(0, 100));
     const rules = await c.tool("category_rules", { rules: [{ match: "spotify", category: "Software" }, { match: "adobe", category: "Software" }] }); ok(`${tier}: category_rules`, !rules.isError, rules.text.slice(0, 80));
     const sum = await c.tool("statement_summary", { from: "2026-08-01", to: "2026-08-31", group_by: "category" }); ok(`${tier}: summary shows Software 71.49 EUR`, !sum.isError && /71\.49/.test(sum.text), sum.text.slice(0, 120));
-    const rec = await c.tool("recurring_detect", { months: 3 }); ok(`${tier}: recurring_detect ${tier === "pro" ? "finds Spotify" : "gated"}`, tier === "pro" ? !rec.isError && /Spotify/i.test(rec.text) : /mcp\.zovo\.one\/buy\/bank-statement/.test(rec.text), rec.text.slice(0, 100));
+    const rec = await c.tool("recurring_detect", { months: 3 }); ok(`${tier}: recurring_detect finds Spotify${tier === "pro" ? "" : " with the free cap named"}`, !rec.isError && /Spotify/i.test(rec.text) && (tier === "pro" || /last 3 months and up to 5 recurring charges/.test(rec.text)), rec.text.slice(0, 100));
   },
   image: async (c, tmp, tier, ok) => {
     const { Jimp } = await import("jimp");
@@ -164,7 +165,7 @@ const PROBES = {
   currency: async (c, tmp, tier, ok) => {
     const a = await c.tool("convert", { amount: 100, from: "USD", to: "PLN" }); ok(`${tier}: convert USD->PLN with rate date`, !a.isError && /PLN/.test(a.text) && /20\d\d-\d\d-\d\d/.test(a.text), a.text.slice(0, 120));
     const f = await c.tool("fx_rates_for", { target: "USD", currencies: ["EUR", "GBP"] }); ok(`${tier}: fx_rates_for shape`, !f.isError && /"EUR"/.test(f.text) && /"GBP"/.test(f.text), f.text.slice(0, 120));
-    const h = await c.tool("rate_history", { from: "EUR", to: "USD", days: 91 }); ok(`${tier}: 91-day history ${tier === "pro" ? "allowed" : "gated"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(h.text) : /mcp\.zovo\.one\/buy\/currency/.test(h.text), h.text.slice(0, 100));
+    const h = await c.tool("rate_history", { from: "EUR", to: "USD", days: 91 }); ok(`${tier}: 91-day history ${tier === "pro" ? "allowed" : "shortened to 90 days and answered"}`, tier === "pro" ? !/mcp\.zovo\.one/.test(h.text) : /Free tier reads 90 days back/.test(h.text) && /"rates"/.test(h.text), h.text.slice(0, 100));
   },
   "expense-tracker": async (c, tmp, tier, ok) => {
     const a = await c.tool("expense_add", { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23, note: "USB hub" }); ok(`${tier}: expense_add VAT split 50.00 + 11.50`, !a.isError && /50\.00/.test(a.text) && /11\.50/.test(a.text), a.text);
