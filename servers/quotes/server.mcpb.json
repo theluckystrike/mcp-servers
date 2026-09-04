@@ -1,0 +1,45 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/quotes-estimates-proposals-vat-win-rate",
+  "description": "Quotes and estimates for freelancers: VAT line items, a validity date, a pasteable text version and an A4 PDF.",
+  "version": "0.6.1",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/quotes"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/quotes",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.1/quotes.mcpb",
+      "version": "0.6.1",
+      "fileSha256": "TBD",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/quotes",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
