@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-04T00:58:45.911Z",
+  "generated_at": "2026-09-04T01:17:47.837Z",
   "session": {
-    "count": 33,
+    "count": 34,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -134,6 +134,10 @@
       {
         "at": "2026-09-04T00:58:45.851Z",
         "note": "loop 8: image, bank-statement, kanban in build; variants for 7 servers in progress; Stripe products live; intel R5 next picks kanban, quote, notes"
+      },
+      {
+        "at": "2026-09-04T01:17:47.792Z",
+        "note": "loop 8: kanban, image, bank-statement built (11/20/28 tests), validation 361/361, 13 registry variants, Docker PR 15 entries, Cline 2422/2423; audits, hosting, content in flight"
       }
     ]
   },
@@ -143,19 +147,30 @@
       "npm_name": "@theluckystrike/mcp-bank-statement",
       "version": "0.6.0",
       "dir": "servers/bank-statement",
-      "tools": [],
-      "tool_count": 0,
+      "tools": [
+        "statement_import",
+        "transactions_list",
+        "transactions_search",
+        "category_rules",
+        "transaction_categorize",
+        "statement_summary",
+        "reconcile_expenses",
+        "recurring_detect",
+        "statement_export",
+        "accounts_list"
+      ],
+      "tool_count": 10,
       "free_limits": "pending",
       "price_usd": 19,
-      "build_ok": false,
-      "test_summary": "pending",
-      "result_status": "pending",
-      "loc": 325,
+      "build_ok": true,
+      "test_summary": "# pass 60 / # fail 0 / # pass 28 / # fail 0 / # pass 14   # fail 0 / # pass 6    # fail 0   duration_ms 1391 / # pass 8    # fail 0",
+      "result_status": "DONE",
+      "loc": 1564,
       "files_present": {
-        "readme": false,
-        "server_json": false,
-        "smithery_yaml": false,
-        "dockerfile": false,
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
         "license": true
       },
       "distribution": {
@@ -362,23 +377,34 @@
     },
     {
       "id": "image",
-      "npm_name": "pending",
-      "version": "pending",
+      "npm_name": "@theluckystrike/mcp-image",
+      "version": "0.6.0",
       "dir": "servers/image",
-      "tools": [],
-      "tool_count": 0,
+      "tools": [
+        "image_info",
+        "image_resize",
+        "image_convert",
+        "image_compress",
+        "image_crop",
+        "image_thumbnails",
+        "image_watermark",
+        "image_strip_metadata",
+        "image_batch_resize",
+        "image_dominant_colors"
+      ],
+      "tool_count": 10,
       "free_limits": "pending",
       "price_usd": 19,
-      "build_ok": false,
-      "test_summary": "pending",
-      "result_status": "pending",
-      "loc": 331,
+      "build_ok": true,
+      "test_summary": "# pass 20 / # fail 0 / ## failures",
+      "result_status": "DONE",
+      "loc": 1124,
       "files_present": {
-        "readme": false,
-        "server_json": false,
-        "smithery_yaml": false,
-        "dockerfile": false,
-        "license": false
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
       },
       "distribution": {
         "npm": "unknown",
@@ -428,6 +454,49 @@
       }
     },
     {
+      "id": "kanban",
+      "npm_name": "@theluckystrike/mcp-kanban",
+      "version": "0.6.0",
+      "dir": "servers/kanban",
+      "tools": [
+        "task_add",
+        "task_list",
+        "task_move",
+        "task_update",
+        "task_done",
+        "task_delete",
+        "task_search",
+        "board",
+        "task_start_timer",
+        "task_log_time",
+        "project_list",
+        "overdue",
+        "weekly_review",
+        "columns_set"
+      ],
+      "tool_count": 14,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "- `npm test -w servers/kanban`: `# tests 11 / # pass 11 / # fail 0 / # duration_ms 504.8`, wall `npm test 0.699 total`",
+      "result_status": "DONE",
+      "loc": 1083,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
       "version": "0.5.0",
@@ -439,7 +508,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 413,
+      "loc": 416,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -786,6 +855,11 @@
         "url": "https://mcp.zovo.one/buy/invoice"
       },
       {
+        "id": "kanban",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/kanban"
+      },
+      {
         "id": "office-suite",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/office-suite"
@@ -929,6 +1003,10 @@
       "first_line": "Distribution round 5: pdf, calendar onto Docker MCP catalog + Cline marketplace"
     },
     {
+      "file": "docs/DIST_R6_RESULT.md",
+      "first_line": "Distribution round 6: kanban, image onto Docker MCP catalog + Cline marketplace"
+    },
+    {
       "file": "docs/DOCX_AUDIT.md",
       "first_line": "mcp-docx: adversarial audit and user-value run"
     },
@@ -969,6 +1047,10 @@
       "first_line": "INTEL_R5 -- naming slots for image / bank-statement, plus next three candidates"
     },
     {
+      "file": "docs/KANBAN_AUDIT.md",
+      "first_line": "mcp-kanban: adversarial audit and user-value run"
+    },
+    {
       "file": "docs/LAUNCH_POSTS.md",
       "first_line": "Launch posts"
     },
@@ -983,6 +1065,10 @@
     {
       "file": "docs/NAMING_R2_RESULT.md",
       "first_line": "NAMING_R2_RESULT.md — registry name variants, round 2, 2026-09-03"
+    },
+    {
+      "file": "docs/NAMING_R3_RESULT.md",
+      "first_line": "NAMING_R3_RESULT.md — registry name variants, round 3, 2026-09-04"
     },
     {
       "file": "docs/NAMING_RESULT.md",
