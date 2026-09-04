@@ -171,18 +171,20 @@ test("stdio: initialize, tools/list, convert, fx_rates_for, resource, prompt", a
   assert.match(got.result.messages[0].content.text, /invoice_create/);
 });
 
-test("free: a 91-day history window is refused with upgrade text, not truncated", async (t) => {
+test("free: a 91-day history window is shortened to 90 days and answered, cap named", async (t) => {
   const { srv, url } = await ecbServer();
   t.after(() => srv.close());
   const c = client({ ECB_BASE_URL: url });
   t.after(() => c.close());
   await init(c);
 
+  // D-R55: a wider window is shortened, not refused. The answer carries the cap.
   const r = await c.call("rate_history", { from: "USD", to: "PLN", days: 91 });
   assert.equal(r.isError, false, "a limit hit is information, not a transport error");
-  assert.match(r.text, /free tier reads 90 days/);
+  assert.match(r.text, /Free tier reads 90 days back/);
   assert.match(r.text, /mcp\.zovo\.one/);
-  assert.doesNotMatch(r.text, /"rates":/, "nothing was looked up");
+  const body = JSON.parse(r.text);
+  assert.ok(Array.isArray(body.rates), "the free window is still answered");
 
   const old = await c.call("rate_on", { from: "USD", to: "PLN", date: daysAgo(400) });
   assert.equal(old.isError, false);

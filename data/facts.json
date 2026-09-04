@@ -276,7 +276,7 @@
       "does": "Fetches and caches the European Central Bank daily and historical reference rates (keyless, free), converts any amount between currencies via EUR cross rates with the rate date stated, returns history tables with min, max and average, and emits the exact fx_rates object the expense tracker needs to rebill a project in one currency, so a model can chain the two without the user supplying rates.",
       "for": "Freelancers billing across currencies and anyone who wants an honest, dated exchange rate without an API key.",
       "example": "\"What is 4,500 EUR in USD today?\" ... \"Rebill Nova in USD using today's rates.\"",
-      "free": "Latest rates, convert, convert_many, fx_rates_for, history up to 90 days.",
+      "free": "Latest rates, convert, convert_many, fx_rates_for, history up to 90 days (a wider window is shortened and answered, not refused).",
       "pro": "Full history back to 1999, any-date rates, unlimited history windows.",
       "storage": "~/.local/share/mcp-servers/currency/ (rate cache)"
     },

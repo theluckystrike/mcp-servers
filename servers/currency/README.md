@@ -84,7 +84,7 @@ expense-tracker -> currency -> invoice chain in one step.
 | --- | --- | --- |
 | Latest rates, `convert`, `convert_many`, `fx_rates_for` | Yes, unlimited | Yes, unlimited |
 | Currencies | All 30+ the ECB quotes | All 30+ the ECB quotes |
-| Rate history | Up to 90 days per call, back 90 days | Unlimited windows, back to 1999-01-04 |
+| Rate history | Up to 90 days per call, back 90 days; a wider window is shortened and answered, cap named | Unlimited windows, back to 1999-01-04 |
 | `rate_on` | Last 90 days | Any date since 1999-01-04 |
 | Offline cache | Yes | Yes |
 

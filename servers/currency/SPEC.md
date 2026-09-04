@@ -28,7 +28,7 @@ ECB reference rates: convert amounts, look up a rate on a past date, and read th
 | `fx_rates_for` | Call this tool when a rebill or an invoice spans more than one currency, instead of asking the user for rates. Returns the fx_rates object expense_to_invoice takes, plus the rate date to write on the invoice. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
 | `license_status` | Show whether this server runs in free or Pro mode and where to upgrade. |
-| `rate_history` | Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change over the whole window. |
+| `rate_history` | Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change. A window wider than the free 90 days is shortened, not refused. |
 | `rate_on` | Call this tool for the ECB rate of one pair on one date. Returns both directions, the date the rate came from, and which way round the ECB publishes the pair, so a reciprocal is never reported as the published figure. |
 | `rates_latest` | Call this tool for the most recent European Central Bank daily reference rates, re-expressed against any base. Returns the rates, the ECB rate date they belong to, and how old the local cache is. |
 
@@ -174,13 +174,13 @@ From `servers/currency/README.md`.
 | --- | --- | --- |
 | Latest rates, `convert`, `convert_many`, `fx_rates_for` | Yes, unlimited | Yes, unlimited |
 | Currencies | All 30+ the ECB quotes | All 30+ the ECB quotes |
-| Rate history | Up to 90 days per call, back 90 days | Unlimited windows, back to 1999-01-04 |
+| Rate history | Up to 90 days per call, back 90 days; a wider window is shortened and answered, cap named | Unlimited windows, back to 1999-01-04 |
 | `rate_on` | Last 90 days | Any date since 1999-01-04 |
 | Offline cache | Yes | Yes |
 
 Enforced limits in the source:
 
-- `FREE_HISTORY_DAYS` = 90 days of history on free.
+- `FREE_HISTORY_DAYS` = 90 days of history on free. `rate_history` over a wider window is shortened to the free window and answered with `free_tier_note`; it is refused only when the whole window lies outside it.
 
 ## Storage
 
