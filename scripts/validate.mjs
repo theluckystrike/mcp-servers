@@ -53,6 +53,15 @@ async function runServer(id, probes) {
 }
 
 const PROBES = {
+  "bank-statement": async (c, tmp, tier, ok) => {
+    const csv = "Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance\n" + [["2026-08-02","Spotify","-9.99"],["2026-08-05","Adobe","-61.50"],["2026-08-09","Coffee Bar","-3.50"],["2026-08-12","Nova Labs","4500.00"],["2026-09-02","Spotify","-9.99"],["2026-09-04","Adobe","-61.50"]].map(([d, desc, a]) => `CARD_PAYMENT,Current,${d} 10:00:00,${d} 10:00:01,${desc},${a},0.00,EUR,COMPLETED,1000.00`).join("\n") + "\n";
+    const f = join(tmp, "revolut.csv"); writeFileSync(f, csv);
+    const imp = await c.tool("statement_import", { path: f, account: "Main" }); ok(`${tier}: statement_import stores 6 rows`, !imp.isError && /6/.test(imp.text), imp.text.slice(0, 100));
+    const again = await c.tool("statement_import", { path: f, account: "Main" }); ok(`${tier}: re-import stores 0 and reports duplicates`, !again.isError && /"duplicates":\s*6/.test(again.text) && /"added":\s*0/.test(again.text), again.text.slice(0, 100));
+    const rules = await c.tool("category_rules", { rules: [{ match: "spotify", category: "Software" }, { match: "adobe", category: "Software" }] }); ok(`${tier}: category_rules`, !rules.isError, rules.text.slice(0, 80));
+    const sum = await c.tool("statement_summary", { from: "2026-08-01", to: "2026-08-31", group_by: "category" }); ok(`${tier}: summary shows Software 71.49 EUR`, !sum.isError && /71\.49/.test(sum.text), sum.text.slice(0, 120));
+    const rec = await c.tool("recurring_detect", { months: 3 }); ok(`${tier}: recurring_detect ${tier === "pro" ? "finds Spotify" : "gated"}`, tier === "pro" ? !rec.isError && /Spotify/i.test(rec.text) : /mcp\.zovo\.one\/buy\/bank-statement/.test(rec.text), rec.text.slice(0, 100));
+  },
   image: async (c, tmp, tier, ok) => {
     const { Jimp } = await import("jimp");
     const src = join(tmp, "in.png"); const img = new Jimp({ width: 640, height: 480, color: 0x3366ccff }); await img.write(src);

@@ -608,5 +608,47 @@
       "name": "image_dominant_colors",
       "description": "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Pro only."
     }
+  ],
+  "bank-statement": [
+    {
+      "name": "statement_import",
+      "description": "Read a bank CSV export into the local ledger. Columns are detected from the headers (date, description, one signed amount or a debit and a credit column, currency, balance), amounts are read in the file's own locale, and"
+    },
+    {
+      "name": "transactions_list",
+      "description": "List stored transactions in a date range, optionally for one account or category, or only the ones no rule has categorised yet. Totals are reported per currency and never added across currencies."
+    },
+    {
+      "name": "transactions_search",
+      "description": "Find transactions whose description, counterparty, category or account contains the query. Case-insensitive substring search, never a regex, so a query with brackets in it cannot hang the server."
+    },
+    {
+      "name": "category_rules",
+      "description": "Set the rules that categorise transactions, or call with no arguments to list them. Each rule is matched against the counterparty and the description: a plain match is a case-insensitive substring, and regex: true compil"
+    },
+    {
+      "name": "transaction_categorize",
+      "description": "Set the category on one or more transactions by id. Nothing is changed unless every id exists, so a typo cannot half-apply."
+    },
+    {
+      "name": "statement_summary",
+      "description": "Money in, money out and the net for a date range, grouped by category, month, account or counterparty. Every total is reported per currency; amounts in different currencies are never added together and never converted."
+    },
+    {
+      "name": "reconcile_expenses",
+      "description": "Match bank debits against the expenses recorded by mcp-expense-tracker: same currency, same amount, and a date within a few days. Reports what matched, which bank lines have no expense behind them and which expenses neve"
+    },
+    {
+      "name": "recurring_detect",
+      "description": "Find the charges that come back: the same counterparty, an amount that barely moves and a steady cadence. Reports the cadence, the typical amount, when it was last taken, when it is next due and what it costs per year, p"
+    },
+    {
+      "name": "statement_export",
+      "description": "Write the transactions of a date range to a .csv or .json file and return the path. The file is written atomically, so a failed export never leaves a half-written file behind."
+    },
+    {
+      "name": "accounts_list",
+      "description": "List the imported accounts with their bank, currency, transaction count and date range."
+    }
   ]
 }
