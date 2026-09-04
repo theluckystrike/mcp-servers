@@ -2323,3 +2323,239 @@ endpoints to 19: **remote 60/60, whole run 463/463.**
   burst, and re-upload if `zip_files` comes back empty.
 - Generated archives and uploads share the 2 MB tenant cap and the 64-file limit;
   `zip_delete_upload` removes an upload by name.
+
+---
+
+# Extension 10 2026-09-04 - a `url` alternative on every upload shim
+
+status: DONE
+
+Worker `mcp-remote`, version ID `4f0766e0-8ca3-424a-b7b1-a2a7911f378d`, same KV namespace
+`REMOTE_DATA` (`cf848cc5c07d4e0a9c7c65ad1c70055c`). `node scripts/validate.mjs` run 50:
+`remote: 67/67`, whole run **470/470**.
+
+## Why
+
+D-R74 measured the ceiling on the hosted upload path and it is not a size: a 13 KB base64
+paste took **sixteen minutes and never emitted the tool call**, while the same template at
+1.4 KB took 46.9 s. Every upload shim on this worker asks the model to retype a file, so
+every one of them inherits that ceiling. The 256 KB request body, the 2 MB per-file cap and
+the 2 MB tenant document all bind far later than the model's own output time does.
+
+A `url` moves the bytes off the model's output budget entirely: the caller writes one line
+and the worker does the fetch. It is the difference between a path that stops working
+somewhere between 1.4 KB and 13 KB, and one whose only real limit is the per-shim cap.
+
+## What shipped
+
+`url` is now an alternative to the pasted payload on all six upload shims, and on each one
+the rule is **exactly one of** the sources:
+
+| tool | sources | cap on a fetched file |
+|---|---|---|
+| `pdf_upload` | `pdf_base64` \| `url` | 2 MB |
+| `doc_upload` | `docx_base64` \| `url` | 2 MB |
+| `image_upload` | `image_base64` \| `url` | 2 MB |
+| `sheet_load` | `csv` \| `xlsx_base64` \| `url` | 2 MB (the tenant cap) |
+| `bank_upload` | `content` \| `content_base64` \| `url` | 1 MB |
+| `zip_upload` | `content` \| `content_base64` \| `url` | 1 MB |
+
+Every `url` argument carries the same sentence, exported once as `URL_ARG_DESCRIPTION` so
+it cannot drift between six descriptions: **"url: fetch a public file instead of pasting
+base64 (recommended above about 10 KB)"**.
+
+One helper, `remote/src/shims/fetch-upload.ts`, does the whole fetch:
+
+1. **http(s) only.** `data:`, `file:`, `ftp:` refused by scheme.
+2. **10 second timeout** across the whole exchange, redirects included, on one
+   `AbortController`.
+3. **At most 3 redirects**, followed by hand (`redirect: "manual"`), and the guard runs
+   again on **every hop**, not only on the URL the caller typed.
+4. **Private and link-local refused.** The IPv4 parser is inet_aton (dotted quad, bare
+   decimal, hex, octal, the short forms) and IPv6 is parsed to 16 bytes, so
+   `http://2130706433/`, `http://0x7f000001/` and `[::ffff:127.0.0.1]` are classified from
+   the bytes rather than matched as text. 0/8, 10/8, 127/8, 169.254/16, 172.16/12,
+   192.168/16, 100.64/10, 224/4, `::`, `::1`, fc00::/7, fe80::/10, ff00::/8, NAT64 and 6to4
+   are all refused, as are `localhost`, `*.localhost`, `*.internal`, `*.local` and
+   `metadata.google.internal`. This is the same classification the vendored price-tracker
+   and calendar guards use.
+5. **The worker's own zone refused** - `zovo.one`, `mcp.zovo.one`, any `*.zovo.one`, and the
+   `*.lipmichal.workers.dev` name of the same worker. D-R73 says this fetch cannot work
+   (HTTP 522); the guard turns a 12-second timeout into a sentence that names
+   `raw.githubusercontent.com` as the way out.
+6. **Capped twice.** A declared `content-length` over the cap is refused before the body is
+   touched, and the stream is read chunk by chunk and abandoned the moment it passes the
+   cap, so a server that declares 10 bytes and sends 300 KB is refused rather than stored
+   truncated. Nothing partial is ever staged.
+7. **Magic bytes verified, the same check the base64 path runs.** Each shim passes its own:
+   `%PDF-` in the first kilobyte, the `PK` zip header for a `.docx` and for a name ending
+   `.zip`, the PNG/JPEG/BMP/GIF/TIFF sniff for an image (and the stored extension comes from
+   those bytes, never from the caller's name), delimited-text-or-`PK` for a sheet, and
+   not-a-zip/PDF/image for a bank statement.
+8. **The answer names the source.** `Fetched 1074 bytes from raw.githubusercontent.com`,
+   plus the redirect count when there was one.
+
+The refactor kept one write path per shim: `stagePdfBuffer`, `stageDocxBuffer`,
+`stageImageBuffer` are what both the base64 and the url path call, so the name rules, the
+per-file cap and the fs-shim byte and file counters apply identically to a fetched file.
+
+## Tests
+
+`remote/test/fetch-upload.test.mjs`, 21 cases, `node --test`. Node 22 strips the types on
+import, so the module under test is the module that ships - not an extract, not a copy. An
+injected `fetch` records every URL it was asked for, which is how the guard cases assert the
+thing that matters: **the private address was never fetched**, not merely that an error came
+back.
+
+```
+$ cd remote && node --test test/fetch-upload.test.mjs
+# tests 21
+# pass 21
+# fail 0
+```
+
+The guard cases required by the brief, and what each asserts beyond the message:
+
+| case | assertion |
+|---|---|
+| `http://10.0.0.1/x.pdf` | refused, `fetch` called **0 times** |
+| `http://169.254.169.254/latest/meta-data/` | refused, `fetch` called 0 times |
+| `http://[::1]:8080/x.pdf` | refused, 0 fetches (the v6 literal is parsed, not regexed) |
+| own zone, 3 spellings | refused with the 522 reason; `isOwnZone("raw.githubusercontent.com") === false` as non-vacuity |
+| 302 to `169.254.169.254` | refused **on the hop**; `seen` is exactly the first URL |
+| oversize, declared | `content-length: 5000000` against a 1 MB cap, refused before the read |
+| oversize, lying | `content-length: 10`, 300 KB body, refused on the stream at the cap |
+| oversize, no length at all | still refused on the stream |
+| wrong magic | an HTML page offered as a PDF is refused after the fetch, before staging |
+
+Plus: >3 redirects refused after exactly 4 requests, non-http schemes, the internal name
+patterns, every inet_aton spelling of 127.0.0.1, a whole 2-hop happy path with the final
+host reported, a hung server abandoned on the timeout, and `exactlyOne` in both failure
+directions.
+
+## Live transcript
+
+Deployed worker, signed `MCPL1` key, fixtures on `raw.githubusercontent.com` (D-R73: they
+cannot be served from this zone to this worker).
+
+```
+### pdf_upload {url: .../remote/fixtures/sample-doc.pdf}
+Uploaded "urlpdf.pdf" (1074 bytes).
+Fetched 1074 bytes from raw.githubusercontent.com.
+Pass path: "urlpdf" to any pdf tool.
+### pdf_info {path: "urlpdf"}     -> "pages": 2, 400x300 pt, creator pdf-lib
+
+### doc_upload {url: .../sample-template.docx}
+Uploaded "urldocx.docx" (1215 bytes).  Fetched 1215 bytes from raw.githubusercontent.com.
+### doc_read {path: "urldocx"}    -> 2 blocks, 96 characters,
+                                     "Agreement between {{client}} and {{supplier}}."
+
+### sheet_load {url: .../sample-rows.csv}
+Loaded "urlcsv" (csv, 203 bytes, 5 lines including the header).
+Fetched 203 bytes from raw.githubusercontent.com.
+### sheet_info {path: "urlcsv"}   -> 5 rows x 4 cols, date/text/number/text typed
+
+### image_upload {url: .../sample-image.png}
+Uploaded "urlpng.png" (PNG, 189 bytes).  Fetched 189 bytes from raw.githubusercontent.com.
+### image_info {path: "urlpng"}   -> png, 64 x 64, has_alpha false
+
+### bank_upload {url: .../sample-rows.csv}
+Uploaded "urlbank.csv" (203 bytes, 5 lines including the header).
+Fetched 203 bytes from raw.githubusercontent.com.
+### statement_import              -> rows_read 4, "imported": 4, 2026-09-01..2026-09-04, EUR
+
+### zip_upload {name: "urlzip.zip", url: .../sample-archive.zip}
+Uploaded "urlzip.zip" (407 bytes).  Fetched 407 bytes from raw.githubusercontent.com.
+### zip_list {path: "urlzip"}     -> 2 entries, rows.csv + notes.txt, nothing suspicious
+```
+
+Refusals, live, same key:
+
+```
+pdf_upload   http://10.0.0.1/x.pdf
+  Error: 10.0.0.1 is not a public address, so this hosted endpoint will not fetch it. Only
+  public http(s) URLs can be fetched here; a file on your own machine or network has to be
+  sent base64-encoded, or the server run locally over stdio.
+
+image_upload http://169.254.169.254/latest/meta-data/   -> same refusal
+zip_upload   http://[::1]:8080/a.zip                    -> same refusal
+
+pdf_upload   https://mcp.zovo.one/mcp/sample/product
+  Error: mcp.zovo.one is this endpoint's own zone, and a Cloudflare worker cannot fetch the
+  zone it serves (the request comes back HTTP 522). Host the file somewhere else, for
+  example raw.githubusercontent.com, or send the bytes base64-encoded.
+
+pdf_upload   .../sample-rows.csv
+  Error: that file is not a PDF (no %PDF- header in the first kilobyte). Nothing was stored.
+image_upload .../sample-doc.pdf
+  Error: that file does not start with the magic bytes of a PNG, JPEG, BMP, GIF or TIFF ...
+zip_upload   {name: "bad.zip", url: .../sample-rows.csv}
+  Error: those bytes do not start with the zip magic "PK" (first bytes 64 61 74 65) ...
+sheet_load   .../sample-doc.pdf
+  Error: that file is neither delimited text (csv/tsv) nor an .xlsx workbook ...
+bank_upload  .../sample-archive.zip
+  Error: that file is not a statement export: it is a zip, a PDF or an image, not delimited
+  text. Nothing was stored. Point at the CSV your bank exports, not at the PDF statement.
+
+doc_upload   {url, docx_base64}
+  Error: give exactly one of docx_base64, url, not 2 (docx_base64 and url were both given)
+pdf_upload   {name only}
+  Error: give exactly one of pdf_base64, url
+```
+
+## Fixtures
+
+Five new files under `remote/fixtures/`, pushed before the live run because the worker reads
+them over `raw.githubusercontent.com`: `sample-doc.pdf` (1,074 B, 2 pages), `sample-rows.csv`
+(203 B, 4 data rows), `sample-image.png` (189 B, 64x64), `sample-archive.zip` (407 B, 2
+entries) and `sample-template.docx` (1,215 B, five `{{placeholders}}`).
+
+## validate.mjs
+
+Seven checks added to the remote block: one `url` fetch per shim, each paired with a read of
+the stored file rather than with the upload's own prose (`pdf_info` 2 pages, `doc_read` sees
+`{{client}}`, `sheet_info` 5 rows x 4 cols, `image_info` 64x64, `statement_import` 4 rows,
+`zip_list` 2 entries), plus one refusal check covering both a blocked address and a wrong
+magic. Every one also asserts the exact `Fetched N bytes from raw.githubusercontent.com`
+line, so a silently-truncated fetch fails the check. `remote` went 60/60 -> **67/67**, whole
+run 470/470.
+
+## One defect found and fixed during the live run
+
+The first deploy (`553236ac`) reported a magic-byte refusal as a **network** failure:
+
+```
+Error: could not reach raw.githubusercontent.com (that file is not a PDF ...)
+```
+
+The verify callback threw a plain `Error` inside the same `try` that turns any non-
+`UploadFetchError` into "could not reach `<host>`", so a refusal about the *file* was
+dressed up as a refusal about the *network* - the caller would have retried a URL that was
+never going to be accepted. The verify call now rethrows as an `UploadFetchError`, and the
+redeploy (`4f0766e0`) prints the file's own reason. It is the r14 species again: text that
+is true of one path leaking into another.
+
+## Limitations
+
+1. **DNS is still invisible to the guard.** A public hostname that resolves to a private
+   address is not caught; only literals and the internal name patterns are. Unchanged
+   accepted risk from Hardening v2 item 11, and it now applies to six more tools. Workers
+   offers no resolve-then-connect API to close it.
+2. **The redirect budget is 3, not the price-tracker's 5.** A shortener chain longer than
+   three hops has to be resolved by the caller. Deliberate: an upload URL should point at a
+   file, and every extra hop is another guard evaluation on attacker-chosen input.
+3. **A fetched file is charged its decoded size** against the tenant byte cap, exactly like
+   a pasted one, and KV stores it base64 inside a JSON document - about a third more. Same
+   bounded understatement as Hardening v2 item 4.
+4. **No `Range`, no resume, no conditional fetch.** An oversize file is refused, not
+   truncated to the cap - which is the right behaviour for a magic-checked upload, but it
+   means the cap cannot be worked around by fetching a prefix.
+5. **`bank_upload {url}` stores bytes, not text.** The fetched statement goes through the
+   `content_base64` path so a UTF-16 export keeps its BOM; the line count reported in the
+   answer is read from a UTF-8 decode of the same bytes and will be 0 for a UTF-16 file
+   whose real row count `statement_import` still reports correctly.
+6. **`sheet_load {url}` decides csv vs xlsx from the bytes**, not from the URL's extension:
+   `PK` means xlsx, anything else is delimited text. A `.csv` link that actually serves a
+   zip is stored as a workbook, which is what the caller wanted but not what they typed.
+7. **The 10 second timeout is the whole exchange**, redirects included, so a slow origin
+   behind two redirects can time out where the same file fetched directly would not.

@@ -463,6 +463,31 @@ async function remote() {
     const zev = await rpc("zip", { jsonrpc: "2.0", id: 49, method: "tools/call", params: { name: "zip_upload", arguments: { name: "evil.zip", content_base64: evilTrav.toString("base64") } } });
     const zer = await rpc("zip", { jsonrpc: "2.0", id: 50, method: "tools/call", params: { name: "zip_extract", arguments: { path: "evil" } } });
     ok("hosted zip_extract refuses a traversal entry before anything is inflated", !zev.error && /parent traversal/.test(JSON.stringify(zer)) && /nothing was extracted/.test(JSON.stringify(zer)), JSON.stringify(zer).slice(0, 110));
+    // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
+    // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
+    const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
+    const updf = await rpc("pdf", { jsonrpc: "2.0", id: 51, method: "tools/call", params: { name: "pdf_upload", arguments: { name: "urlpdf", url: `${RAWFX}/sample-doc.pdf` } } });
+    const updfi = await rpc("pdf", { jsonrpc: "2.0", id: 52, method: "tools/call", params: { name: "pdf_info", arguments: { path: "urlpdf" } } });
+    ok("url upload: pdf_upload {url} fetches the PDF and pdf_info reads 2 pages", /Fetched 1074 bytes from raw\.githubusercontent\.com/.test(JSON.stringify(updf)) && /"pages": 2/.test(JSON.stringify(updfi).replace(/\\n/g, "\n").replace(/\\"/g, '"')), JSON.stringify(updf).slice(0, 120));
+    const udx = await rpc("docx", { jsonrpc: "2.0", id: 53, method: "tools/call", params: { name: "doc_upload", arguments: { name: "urldocx", url: `${RAWFX}/sample-template.docx` } } });
+    const udxr = await rpc("docx", { jsonrpc: "2.0", id: 54, method: "tools/call", params: { name: "doc_read", arguments: { path: "urldocx", format: "text" } } });
+    ok("url upload: doc_upload {url} fetches the .docx and doc_read sees its placeholders", /Fetched 1215 bytes from raw\.githubusercontent\.com/.test(JSON.stringify(udx)) && /\{\{client\}\}/.test(JSON.stringify(udxr)), JSON.stringify(udx).slice(0, 120));
+    const ush = await rpc("spreadsheet", { jsonrpc: "2.0", id: 55, method: "tools/call", params: { name: "sheet_load", arguments: { name: "urlcsv", url: `${RAWFX}/sample-rows.csv` } } });
+    const ushi = await rpc("spreadsheet", { jsonrpc: "2.0", id: 56, method: "tools/call", params: { name: "sheet_info", arguments: { path: "urlcsv" } } });
+    ok("url upload: sheet_load {url} loads the CSV and sheet_info reports 5 rows x 4 cols", /Fetched 203 bytes from raw\.githubusercontent\.com/.test(JSON.stringify(ush)) && /5 rows x 4 cols/.test(JSON.stringify(ushi)), JSON.stringify(ush).slice(0, 120));
+    const uim = await rpc("image", { jsonrpc: "2.0", id: 57, method: "tools/call", params: { name: "image_upload", arguments: { name: "urlpng", url: `${RAWFX}/sample-image.png` } } });
+    const uimi = await rpc("image", { jsonrpc: "2.0", id: 58, method: "tools/call", params: { name: "image_info", arguments: { path: "urlpng" } } });
+    ok("url upload: image_upload {url} fetches the PNG and image_info reads 64x64", /Fetched 189 bytes from raw\.githubusercontent\.com/.test(JSON.stringify(uim)) && /"width": 64/.test(JSON.stringify(uimi).replace(/\\n/g, "\n").replace(/\\"/g, '"')), JSON.stringify(uim).slice(0, 120));
+    const ubn = `urlbank${Date.now().toString(36)}`;
+    const ubk = await rpc("bank-statement", { jsonrpc: "2.0", id: 59, method: "tools/call", params: { name: "bank_upload", arguments: { name: ubn, url: `${RAWFX}/sample-rows.csv` } } });
+    const ubki = await rpc("bank-statement", { jsonrpc: "2.0", id: 60, method: "tools/call", params: { name: "statement_import", arguments: { path: ubn, account: ubn } } });
+    ok("url upload: bank_upload {url} fetches the export and statement_import reads 4 rows", /Fetched 203 bytes from raw\.githubusercontent\.com/.test(JSON.stringify(ubk)) && /"imported": 4/.test(JSON.stringify(ubki).replace(/\\n/g, "\n").replace(/\\"/g, '"')), JSON.stringify(ubk).slice(0, 120));
+    const uzp = await rpc("zip", { jsonrpc: "2.0", id: 61, method: "tools/call", params: { name: "zip_upload", arguments: { name: "urlzip.zip", url: `${RAWFX}/sample-archive.zip` } } });
+    const uzpl = await rpc("zip", { jsonrpc: "2.0", id: 62, method: "tools/call", params: { name: "zip_list", arguments: { path: "urlzip" } } });
+    ok("url upload: zip_upload {url} fetches the archive and zip_list reads 2 entries", /Fetched 407 bytes from raw\.githubusercontent\.com/.test(JSON.stringify(uzp)) && /2 entries/.test(JSON.stringify(uzpl)), JSON.stringify(uzp).slice(0, 120));
+    const uref = await rpc("pdf", { jsonrpc: "2.0", id: 63, method: "tools/call", params: { name: "pdf_upload", arguments: { name: "urlbad", url: "http://169.254.169.254/latest/meta-data/" } } });
+    const uref2 = await rpc("image", { jsonrpc: "2.0", id: 64, method: "tools/call", params: { name: "image_upload", arguments: { name: "urlbad2", url: `${RAWFX}/sample-doc.pdf` } } });
+    ok("url upload refusals: the metadata address is not fetched, and a PDF is not stored as an image", /not a public address/.test(JSON.stringify(uref)) && /magic bytes of a PNG/.test(JSON.stringify(uref2)), JSON.stringify(uref).slice(0, 110));
     const bound = await fetch("https://mcp.zovo.one/bound?tenant=anon_00000000000000000000000000000000").then((r) => r.json()); ok("bound endpoint answers for an unknown tenant", bound.bound === false, JSON.stringify(bound).slice(0, 80));
     const buyT = await fetch("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok("buy with tenant still 303 to Stripe", buyT.status === 303, buyT.status);
     const batch = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: "[{}]" }); ok("JSON-RPC batch rejected 400", batch.status === 400, batch.status);

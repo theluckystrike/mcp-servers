@@ -15,6 +15,7 @@ import { Buffer } from "node:buffer";
 import { z } from "zod";
 import { ctx } from "./ctx.js";
 import { byteLen, writeFileSync, unlinkSync, BIN } from "./fs.js";
+import { fetchUpload, exactlyOne, URL_ARG_DESCRIPTION } from "./fetch-upload.js";
 
 export const UPLOAD_ROOT = "/uploads/";
 /** Everything statement_export writes lands here and comes back as a download link. */
@@ -90,6 +91,28 @@ export function stageBankUpload(name: string, content?: string, contentB64?: str
   return { path, bytes };
 }
 
+/**
+ * The magic check for a fetched statement. A bank export is delimited text (csv, tsv,
+ * ofx, qif), so a zip, a PDF or an image means the url points at the wrong file. This is
+ * the check the base64 path cannot run, because there content_base64 is deliberately
+ * whatever bytes the caller says, BOM included.
+ */
+export function verifyStatementMagic(buf: Buffer): void {
+  const head = buf.subarray(0, 8192);
+  const bad =
+    (head[0] === 0x50 && head[1] === 0x4b) ||
+    head.subarray(0, 5).toString("latin1") === "%PDF-" ||
+    (head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47) ||
+    (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff);
+  // A UTF-16 export from Excel is full of NUL bytes and is a legitimate statement, so
+  // only a known binary header is refused here.
+  if (bad) {
+    throw new Error(
+      "that file is not a statement export: it is a zip, a PDF or an image, not delimited text. Nothing was stored. " +
+      "Point at the CSV your bank exports, not at the PDF statement.");
+  }
+}
+
 const ok = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
 const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: ${t}` }], isError: true as const });
 
@@ -98,23 +121,35 @@ export function registerBankUpload(server: { registerTool: Function }): void {
     title: "Upload a bank statement file",
     description:
       "Send a bank export to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with bank_upload and then pass its name as `path` to statement_import. " +
-      "Give either content (the export as text, header row included - this is the normal case for a CSV) or content_base64 (the file's bytes, which keeps a UTF-16 export from Excel readable). " +
+      "Give exactly one of content (the export as text, header row included - this is the normal case for a CSV), content_base64 (the file's bytes, which keeps a UTF-16 export from Excel readable) or url. " +
+      URL_ARG_DESCRIPTION + ": the url is fetched here with a 10 second timeout, at most 3 redirects, public http(s) hosts only, and a 1 MB cap; the fetched file has to be delimited text, so a PDF statement is refused rather than stored. " +
       "Uploads are kept for your token between calls; bank_files lists them and bank_delete_upload removes one. " +
-      "The request body cap is 256 KB, so a large export has to be split by month, or run over stdio. The binding limit in practice is lower, because the whole file has to be written out as an argument to this call: a few KB of CSV is quick, tens of KB is a long tool call, and 50 KB or more can stall the turn before the upload is sent. Split a big export by month.",
+      "The request body cap is 256 KB, so a large export pasted as text has to be split by month.",
     inputSchema: {
       name: z.string().min(1).max(70).describe('Name to refer to this statement by: 1-64 characters of letters, digits, underscore or dash, e.g. "september"'),
       content: z.string().optional().describe("The export as text, including the header row"),
       content_base64: z.string().optional().describe("The file's bytes, base64-encoded, instead of text"),
+      url: z.string().optional().describe(URL_ARG_DESCRIPTION + ". Public http(s) only; private, link-local and this endpoint's own zone are refused"),
     },
-  }, async (a: { name: string; content?: string; content_base64?: string }) => {
+  }, async (a: { name: string; content?: string; content_base64?: string; url?: string }) => {
     try {
-      if (a.content === undefined && a.content_base64 === undefined) return fail("give either content or content_base64");
-      if (a.content !== undefined && a.content_base64 !== undefined) return fail("give content or content_base64, not both");
-      const { path, bytes } = stageBankUpload(a.name, a.content, a.content_base64);
+      const which = exactlyOne({ content: a.content, content_base64: a.content_base64, url: a.url });
+      let path: string;
+      let bytes: number;
+      let lines = 0;
+      let source = "";
+      if (which === "url") {
+        const f = await fetchUpload(a.url!, { maxBytes: MAX_UPLOAD_BYTES, label: "statement", verify: verifyStatementMagic });
+        ({ path, bytes } = stageBankUpload(a.name, undefined, f.buf.toString("base64")));
+        lines = f.buf.toString("utf8").split(/\r?\n/).filter((l) => l.trim() !== "").length;
+        source = `\nFetched ${f.bytes} bytes from ${f.host}${f.redirects ? ` after ${f.redirects} redirect(s)` : ""}.`;
+      } else {
+        ({ path, bytes } = stageBankUpload(a.name, a.content, a.content_base64));
+        lines = a.content ? a.content.split(/\r?\n/).filter((l) => l.trim() !== "").length : 0;
+      }
       const name = path.slice(UPLOAD_ROOT.length);
-      const lines = a.content ? a.content.split(/\r?\n/).filter((l) => l.trim() !== "").length : 0;
       return ok(
-        `Uploaded ${JSON.stringify(name)} (${bytes} bytes${lines ? `, ${lines} lines including the header` : ""}).\n` +
+        `Uploaded ${JSON.stringify(name)} (${bytes} bytes${lines ? `, ${lines} lines including the header` : ""}).${source}\n` +
         `Pass path: ${JSON.stringify(name.replace(/\.[^.]+$/, ""))} to statement_import.`);
     } catch (e) { return fail(String((e as Error).message ?? e)); }
   });

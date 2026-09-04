@@ -15,6 +15,7 @@ import { Buffer } from "node:buffer";
 import { z } from "zod";
 import { ctx } from "./ctx.js";
 import { byteLen, writeFileSync, unlinkSync, BIN } from "./fs.js";
+import { fetchUpload, exactlyOne, URL_ARG_DESCRIPTION } from "./fetch-upload.js";
 
 export const UPLOAD_ROOT = "/uploads/";
 /** Everything a pdf tool writes lands here and comes back as a download link. */
@@ -43,20 +44,19 @@ export function safePdfName(raw: string): string {
   return base;
 }
 
-/**
- * Decode a base64 PDF and store it under /uploads/<name>.pdf. Returns the virtual path,
- * which every tool's `path` argument resolves to. Throws with caller-facing text.
- */
-export function stagePdfUpload(name: string, b64: string): string {
+/** The magic check the base64 path runs, shared with the url path. */
+export function verifyPdfMagic(buf: Buffer): void {
+  if (!buf.subarray(0, 1024).toString("latin1").includes("%PDF-")) {
+    throw new Error("that file is not a PDF (no %PDF- header in the first kilobyte). Nothing was stored.");
+  }
+}
+
+/** Store PDF bytes under /uploads/<name>.pdf. The one write path for base64 and url. */
+export function stagePdfBuffer(name: string, buf: Buffer): string {
   const base = safePdfName(name);
   const path = `${UPLOAD_ROOT}${base}.pdf`;
-  let buf: Buffer;
-  try { buf = Buffer.from(String(b64).replace(/\s+/g, ""), "base64"); }
-  catch { throw new Error("pdf_base64 is not valid base64"); }
-  if (buf.length === 0) throw new Error("pdf_base64 decoded to zero bytes");
-  if (!buf.subarray(0, 1024).toString("latin1").includes("%PDF-")) {
-    throw new Error("that base64 does not decode to a PDF (no %PDF- header in the first kilobyte). Send the file's bytes base64-encoded.");
-  }
+  if (buf.length === 0) throw new Error("that PDF is zero bytes");
+  verifyPdfMagic(buf);
   if (buf.length > MAX_UPLOAD_BYTES) {
     throw new Error(
       `that PDF is ${(buf.length / 1048576).toFixed(2)} MB and the hosted cap is ${MAX_UPLOAD_BYTES / 1048576} MB per file. ` +
@@ -68,6 +68,22 @@ export function stagePdfUpload(name: string, b64: string): string {
   return path;
 }
 
+/**
+ * Decode a base64 PDF and store it under /uploads/<name>.pdf. Returns the virtual path,
+ * which every tool's `path` argument resolves to. Throws with caller-facing text.
+ */
+export function stagePdfUpload(name: string, b64: string): string {
+  safePdfName(name);
+  let buf: Buffer;
+  try { buf = Buffer.from(String(b64).replace(/\s+/g, ""), "base64"); }
+  catch { throw new Error("pdf_base64 is not valid base64"); }
+  if (buf.length === 0) throw new Error("pdf_base64 decoded to zero bytes");
+  if (!buf.subarray(0, 1024).toString("latin1").includes("%PDF-")) {
+    throw new Error("that base64 does not decode to a PDF (no %PDF- header in the first kilobyte). Send the file's bytes base64-encoded.");
+  }
+  return stagePdfBuffer(name, buf);
+}
+
 const ok = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
 const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: ${t}` }], isError: true as const });
 
@@ -76,19 +92,30 @@ export function registerPdfUpload(server: { registerTool: Function }): void {
     title: "Upload a PDF to work on",
     description:
       "Send a PDF to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with pdf_upload and then pass its name as `path` (or inside `paths`) to pdf_info, pdf_count, pdf_merge, pdf_split, pdf_pages, pdf_rotate, pdf_stamp, pdf_reorder and pdf_text. " +
+      "Give exactly one of pdf_base64 or url. " + URL_ARG_DESCRIPTION + ": pasting a large base64 payload is slow to write out and can stall the turn before the call is ever sent, while a url costs one line and the fetch happens here. " +
       "Uploads are kept for your token between calls; pdf_files lists them and pdf_delete_upload removes one. " +
       "A file this server writes is named the same way and comes back as a download link valid for one hour. " +
-      "The request body cap is 256 KB, which is about 190 KB of PDF once base64-encoded; a larger file has to be split before upload, or run over stdio.",
+      "The request body cap is 256 KB, which is about 190 KB of PDF once base64-encoded; a url is fetched with a 10 second timeout, at most 3 redirects, public http(s) hosts only, and is capped at 2 MB.",
     inputSchema: {
       name: z.string().min(1).max(70).describe('Name to refer to this PDF by: 1-64 characters of letters, digits, underscore or dash, e.g. "invoice"'),
-      pdf_base64: z.string().describe("The PDF file, base64-encoded"),
+      pdf_base64: z.string().optional().describe("The PDF file, base64-encoded"),
+      url: z.string().optional().describe(URL_ARG_DESCRIPTION + ". Public http(s) only; private, link-local and this endpoint's own zone are refused"),
     },
-  }, async (a: { name: string; pdf_base64: string }) => {
+  }, async (a: { name: string; pdf_base64?: string; url?: string }) => {
     try {
-      const path = stagePdfUpload(a.name, a.pdf_base64);
+      const which = exactlyOne({ pdf_base64: a.pdf_base64, url: a.url });
+      let path: string;
+      let source = "";
+      if (which === "url") {
+        const f = await fetchUpload(a.url!, { maxBytes: MAX_UPLOAD_BYTES, label: "PDF", verify: verifyPdfMagic });
+        path = stagePdfBuffer(a.name, f.buf);
+        source = `\nFetched ${f.bytes} bytes from ${f.host}${f.redirects ? ` after ${f.redirects} redirect(s)` : ""}.`;
+      } else {
+        path = stagePdfUpload(a.name, a.pdf_base64!);
+      }
       const bytes = byteLen(ctx().files.get(path)!);
       return ok(
-        `Uploaded ${JSON.stringify(path.slice(UPLOAD_ROOT.length))} (${bytes} bytes).\n` +
+        `Uploaded ${JSON.stringify(path.slice(UPLOAD_ROOT.length))} (${bytes} bytes).${source}\n` +
         `Pass path: ${JSON.stringify(path.slice(UPLOAD_ROOT.length, -4))} to any pdf tool.`);
     } catch (e) { return fail(String((e as Error).message ?? e)); }
   });

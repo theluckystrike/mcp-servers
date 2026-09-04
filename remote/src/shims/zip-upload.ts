@@ -18,6 +18,7 @@ import { Buffer } from "node:buffer";
 import { z } from "zod";
 import { ctx } from "./ctx.js";
 import { byteLen, writeFileSync, unlinkSync, BIN } from "./fs.js";
+import { fetchUpload, exactlyOne, URL_ARG_DESCRIPTION } from "./fetch-upload.js";
 
 export const UPLOAD_ROOT = "/uploads/";
 /** Everything a tool writes lands here and comes back as a download link. */
@@ -98,6 +99,23 @@ export function stageZipUpload(name: string, content?: string, contentB64?: stri
   return { path, bytes };
 }
 
+/**
+ * The magic check a fetched file gets, and it depends on the name exactly as the
+ * content_base64 path does: a name ending .zip must carry the PK header, anything else
+ * is stored as it arrives.
+ */
+export function verifyZipMagicFor(name: string): (buf: Buffer) => void {
+  const { ext } = safeZipName(name);
+  return (buf: Buffer) => {
+    if (ext === ".zip" && !looksLikeZip(buf)) {
+      throw new Error(
+        `those bytes do not start with the zip magic "PK" (first bytes ${[...buf.subarray(0, 4)].map((b) => b.toString(16).padStart(2, "0")).join(" ")}), ` +
+        "so this is not a zip archive and nothing was stored. Point at the .zip file itself. " +
+        "To fetch a plain file to pack, give the name its real extension, for example notes.txt.");
+    }
+  };
+}
+
 const ok = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
 const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: ${t}` }], isError: true as const });
 
@@ -106,22 +124,32 @@ export function registerZipUpload(server: { registerTool: Function }): void {
     title: "Upload a file or an archive",
     description:
       "Send a file to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with zip_upload and then pass its name wherever a path is asked for: an archive to zip_list, zip_extract, zip_extract_text or zip_add, a plain file to zip_create. " +
-      "Give content_base64 (the file's bytes) for an archive or any binary - a name ending .zip is checked for the PK magic before it is stored - or content (text) for a text file to pack. " +
+      "Give exactly one of content_base64 (the file's bytes, the only paste form an archive can take), content (text, for a text file to pack) or url. " +
+      URL_ARG_DESCRIPTION + ": the url is fetched here with a 10 second timeout, at most 3 redirects, public http(s) hosts only, and a 1 MB cap, and a name ending .zip is checked for the PK magic before anything is stored. " +
       "Uploads are kept for your token between calls; zip_files lists them and zip_delete_upload removes one. " +
-      "The request body cap is 256 KB, so the practical ceiling is about 190 KB of file per call once it is base64 inside a JSON-RPC envelope; a bigger archive has to be split, or run over stdio.",
+      "The request body cap is 256 KB, so the practical ceiling on a paste is about 190 KB of file once it is base64 inside a JSON-RPC envelope.",
     inputSchema: {
       name: z.string().min(1).max(70).describe('Name to refer to this file by: 1-64 characters of letters, digits, underscore or dash, with an optional extension. No extension means .zip, e.g. "reports" or "notes.txt"'),
       content: z.string().optional().describe("The file as text (a .txt, .csv, .md or source file to pack). Not accepted for a .zip"),
-      content_base64: z.string().optional().describe("The file's bytes, base64-encoded. This is the only form an archive can be uploaded in"),
+      content_base64: z.string().optional().describe("The file's bytes, base64-encoded. This is the only paste form an archive can be uploaded in"),
+      url: z.string().optional().describe(URL_ARG_DESCRIPTION + ". Public http(s) only; private, link-local and this endpoint's own zone are refused"),
     },
-  }, async (a: { name: string; content?: string; content_base64?: string }) => {
+  }, async (a: { name: string; content?: string; content_base64?: string; url?: string }) => {
     try {
-      if (a.content === undefined && a.content_base64 === undefined) return fail("give either content or content_base64");
-      if (a.content !== undefined && a.content_base64 !== undefined) return fail("give content or content_base64, not both");
-      const { path, bytes } = stageZipUpload(a.name, a.content, a.content_base64);
+      const which = exactlyOne({ content: a.content, content_base64: a.content_base64, url: a.url });
+      let path: string;
+      let bytes: number;
+      let source = "";
+      if (which === "url") {
+        const f = await fetchUpload(a.url!, { maxBytes: MAX_UPLOAD_BYTES, label: "file", verify: verifyZipMagicFor(a.name) });
+        ({ path, bytes } = stageZipUpload(a.name, undefined, f.buf.toString("base64")));
+        source = `\nFetched ${f.bytes} bytes from ${f.host}${f.redirects ? ` after ${f.redirects} redirect(s)` : ""}.`;
+      } else {
+        ({ path, bytes } = stageZipUpload(a.name, a.content, a.content_base64));
+      }
       const name = path.slice(UPLOAD_ROOT.length);
       return ok(
-        `Uploaded ${JSON.stringify(name)} (${bytes} bytes).\n` +
+        `Uploaded ${JSON.stringify(name)} (${bytes} bytes).${source}\n` +
         (name.endsWith(".zip")
           ? `Pass path: ${JSON.stringify(name)} to zip_list, zip_extract, zip_extract_text or zip_add.`
           : `Pass paths: [${JSON.stringify(name)}] to zip_create.`));

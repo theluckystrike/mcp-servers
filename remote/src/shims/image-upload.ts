@@ -16,6 +16,7 @@ import { Buffer } from "node:buffer";
 import { z } from "zod";
 import { ctx } from "./ctx.js";
 import { byteLen, writeFileSync, unlinkSync, BIN } from "./fs.js";
+import { fetchUpload, exactlyOne, URL_ARG_DESCRIPTION } from "./fetch-upload.js";
 
 export const UPLOAD_ROOT = "/uploads/";
 /** Everything an image tool writes lands here and comes back as a download link. */
@@ -58,29 +59,27 @@ export function safeImageName(raw: string): string {
   return base;
 }
 
-/**
- * Decode a base64 image and store it under /uploads/<name>.<ext>, where the extension
- * comes from the magic bytes rather than from anything the caller said. Returns the
- * virtual path, which every tool's `path` argument resolves to.
- */
-export function stageImageUpload(name: string, b64: string): { path: string; format: string } {
-  const base = safeImageName(name);
-  let buf: Buffer;
-  try { buf = Buffer.from(String(b64).replace(/\s+/g, ""), "base64"); }
-  catch { throw new Error("image_base64 is not valid base64"); }
-  if (buf.length === 0) throw new Error("image_base64 decoded to zero bytes");
-  const kind = sniff(buf);
-  if (!kind) {
+/** The magic check the base64 path runs, shared with the url path. */
+export function verifyImageMagic(buf: Buffer): void {
+  if (!sniff(buf)) {
     throw new Error(
-      "that base64 does not start with the magic bytes of a PNG, JPEG, BMP, GIF or TIFF, so nothing was stored. " +
-      "Send the image file's own bytes, base64-encoded.");
+      "that file does not start with the magic bytes of a PNG, JPEG, BMP, GIF or TIFF, so nothing was stored. " +
+      "Point at the image file itself, not at a page that shows it.");
   }
+}
+
+/** Store image bytes under /uploads/<name>.<ext>, the extension read from the bytes. */
+export function stageImageBuffer(name: string, buf: Buffer): { path: string; format: string } {
+  const base = safeImageName(name);
+  if (buf.length === 0) throw new Error("that image is zero bytes");
+  const kind = sniff(buf);
+  if (!kind) verifyImageMagic(buf);
   if (buf.length > MAX_UPLOAD_BYTES) {
     throw new Error(
       `that image is ${(buf.length / 1048576).toFixed(2)} MB and the hosted cap is ${MAX_UPLOAD_BYTES / 1048576} MB per file. ` +
       `Nothing was stored. Run the server locally over stdio (npx -y @theluckystrike/mcp-image), where there is no cap.`);
   }
-  const path = `${UPLOAD_ROOT}${base}${kind.ext}`;
+  const path = `${UPLOAD_ROOT}${base}${kind!.ext}`;
   const c = ctx();
   // One name is one image: a second upload under the same name replaces every spelling
   // of it, so "shot" can never resolve to a stale shot.png beside a fresh shot.jpg.
@@ -90,7 +89,26 @@ export function stageImageUpload(name: string, b64: string): { path: string; for
   }
   writeFileSync(path, BIN + buf.toString("base64"));
   c.dirs.add("/uploads");
-  return { path, format: kind.format };
+  return { path, format: kind!.format };
+}
+
+/**
+ * Decode a base64 image and store it under /uploads/<name>.<ext>, where the extension
+ * comes from the magic bytes rather than from anything the caller said. Returns the
+ * virtual path, which every tool's `path` argument resolves to.
+ */
+export function stageImageUpload(name: string, b64: string): { path: string; format: string } {
+  safeImageName(name);
+  let buf: Buffer;
+  try { buf = Buffer.from(String(b64).replace(/\s+/g, ""), "base64"); }
+  catch { throw new Error("image_base64 is not valid base64"); }
+  if (buf.length === 0) throw new Error("image_base64 decoded to zero bytes");
+  if (!sniff(buf)) {
+    throw new Error(
+      "that base64 does not start with the magic bytes of a PNG, JPEG, BMP, GIF or TIFF, so nothing was stored. " +
+      "Send the image file's own bytes, base64-encoded.");
+  }
+  return stageImageBuffer(name, buf);
 }
 
 const ok = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
@@ -102,20 +120,31 @@ export function registerImageUpload(server: { registerTool: Function }): void {
     description:
       "Send an image to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with image_upload and then pass its name as `path` (or inside `paths`) to image_info, image_resize, image_convert, image_compress, image_crop, image_thumbnails, image_batch_resize and image_dominant_colors. " +
       "PNG, JPEG, BMP, GIF and TIFF are accepted and the format is read from the file's magic bytes, not from the name. " +
+      "Give exactly one of image_base64 or url. " + URL_ARG_DESCRIPTION + ": writing out a real photo as base64 is a long tool call and 50 KB or more can stall the turn before the upload is sent, while a url costs one line and the fetch happens here (10 second timeout, at most 3 redirects, public http(s) hosts only, 2 MB cap). " +
       "Uploads are kept for your token between calls; image_files lists them and image_delete_upload removes one. " +
       "A file this server writes is named the same way and comes back as a download link valid for one hour, served with the real image content type. " +
-      "The request body cap is 256 KB, which is about 190 KB of image once base64-encoded. In practice the binding limit is much lower, because the base64 has to be written out in full as an argument to this call: a few tens of KB of base64 is a long tool call and 50 KB or more can stall the turn before the upload is ever sent. Keep a paste to roughly 20 KB of base64 (about 15 KB of image), shrink the file first, or run this server over stdio where a real photo is read from disk by path.",
+      "The request body cap is 256 KB, which is about 190 KB of image once base64-encoded.",
     inputSchema: {
       name: z.string().min(1).max(70).describe('Name to refer to this image by: 1-64 characters of letters, digits, underscore or dash, e.g. "shot"'),
-      image_base64: z.string().describe("The image file, base64-encoded"),
+      image_base64: z.string().optional().describe("The image file, base64-encoded"),
+      url: z.string().optional().describe(URL_ARG_DESCRIPTION + ". Public http(s) only; private, link-local and this endpoint's own zone are refused"),
     },
-  }, async (a: { name: string; image_base64: string }) => {
+  }, async (a: { name: string; image_base64?: string; url?: string }) => {
     try {
-      const { path, format } = stageImageUpload(a.name, a.image_base64);
-      const bytes = byteLen(ctx().files.get(path)!);
-      const name = path.slice(UPLOAD_ROOT.length);
+      const which = exactlyOne({ image_base64: a.image_base64, url: a.url });
+      let staged: { path: string; format: string };
+      let source = "";
+      if (which === "url") {
+        const f = await fetchUpload(a.url!, { maxBytes: MAX_UPLOAD_BYTES, label: "image", verify: verifyImageMagic });
+        staged = stageImageBuffer(a.name, f.buf);
+        source = `\nFetched ${f.bytes} bytes from ${f.host}${f.redirects ? ` after ${f.redirects} redirect(s)` : ""}.`;
+      } else {
+        staged = stageImageUpload(a.name, a.image_base64!);
+      }
+      const bytes = byteLen(ctx().files.get(staged.path)!);
+      const name = staged.path.slice(UPLOAD_ROOT.length);
       return ok(
-        `Uploaded ${JSON.stringify(name)} (${format.toUpperCase()}, ${bytes} bytes).\n` +
+        `Uploaded ${JSON.stringify(name)} (${staged.format.toUpperCase()}, ${bytes} bytes).${source}\n` +
         `Pass path: ${JSON.stringify(name.replace(/\.[a-z]+$/, ""))} to any image tool.`);
     } catch (e) { return fail(String((e as Error).message ?? e)); }
   });

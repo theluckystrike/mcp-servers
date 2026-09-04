@@ -9,6 +9,7 @@ import { Buffer } from "node:buffer";
 import { z } from "zod";
 import { ctx } from "./ctx.js";
 import { byteLen, BIN, writeFileSync, unlinkSync } from "./fs.js";
+import { fetchUpload, exactlyOne, URL_ARG_DESCRIPTION } from "./fetch-upload.js";
 
 export const SHEET_ROOT = "/sheets/";
 /** Hard ceiling on everything one tenant keeps in KV for this endpoint. */
@@ -49,6 +50,25 @@ export function tenantBytes(): number {
   return n;
 }
 
+/**
+ * The magic check for a fetched sheet, the counterpart of the PK check the xlsx_base64
+ * path runs. A workbook is a zip; anything else has to be delimited text, so a NUL byte
+ * or a known binary header means the url points at the wrong file.
+ */
+export function verifySheetMagic(buf: Buffer): void {
+  if (buf.length >= 2 && buf[0] === 0x50 && buf[1] === 0x4b) return;           // .xlsx (zip)
+  const head = buf.subarray(0, 8192);
+  const binaryHeader =
+    head.subarray(0, 5).toString("latin1") === "%PDF-" ||
+    (head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47) ||
+    (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff);
+  if (binaryHeader || head.includes(0x00)) {
+    throw new Error(
+      "that file is neither delimited text (csv/tsv) nor an .xlsx workbook (no PK zip header, and the bytes are binary). " +
+      "Nothing was loaded. Point at the raw CSV or the .xlsx itself, not at a page or a PDF that shows it.");
+  }
+}
+
 const ok = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
 const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: ${t}` }], isError: true as const });
 
@@ -57,37 +77,58 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
     title: "Load a sheet into this session",
     description:
       "Upload data to work on. This hosted endpoint has no filesystem, so instead of a file path you send the data once with sheet_load and then pass its name as `path` to sheet_info, sheet_read, sheet_query, sheet_stats, sheet_find, sheet_add_column, sheet_convert and sheet_write. " +
-      "Give either csv (raw text, comma or tab separated) or xlsx_base64 (a base64-encoded .xlsx workbook). Loaded sheets are kept for your token and survive between calls; the total is capped at 2 MB per token. " +
+      "Give exactly one of csv (raw text, comma or tab separated), xlsx_base64 (a base64-encoded .xlsx workbook) or url. " + URL_ARG_DESCRIPTION + ": the url is fetched here with a 10 second timeout, at most 3 redirects, public http(s) hosts only, and a 2 MB cap, and a fetched file is stored as an .xlsx when it carries the PK zip header and as delimited text otherwise. " +
+      "Loaded sheets are kept for your token and survive between calls; the total is capped at 2 MB per token. " +
       "Files the other tools write come back as a download link that is valid for one hour.",
     inputSchema: {
       name: z.string().min(1).max(70).describe('Name to refer to this data by: 1-64 characters of letters, digits, underscore or dash, e.g. "sales" or "sales.csv"'),
       csv: z.string().optional().describe("Raw CSV or TSV text, including the header row"),
       xlsx_base64: z.string().optional().describe("Base64-encoded .xlsx workbook"),
+      url: z.string().optional().describe(URL_ARG_DESCRIPTION + ". Public http(s) only; private, link-local and this endpoint's own zone are refused"),
     },
-  }, async (a: { name: string; csv?: string; xlsx_base64?: string }) => {
+  }, async (a: { name: string; csv?: string; xlsx_base64?: string; url?: string }) => {
     try {
-      if (!a.csv && !a.xlsx_base64) return fail("give either csv or xlsx_base64");
-      if (a.csv && a.xlsx_base64) return fail("give csv or xlsx_base64, not both");
+      const which = exactlyOne({ csv: a.csv, xlsx_base64: a.xlsx_base64, url: a.url });
       const base = safeName(a.name);
-      const ext = a.xlsx_base64 ? "xlsx" : /\t/.test((a.csv ?? "").split("\n")[0] ?? "") ? "tsv" : "csv";
-      const path = `${SHEET_ROOT}${base}.${ext}`;
       const c = ctx();
 
+      let ext: string;
       let value: string;
       let bytes: number;
-      if (a.xlsx_base64) {
+      let lines = 0;
+      let source = "";
+
+      if (which === "url") {
+        const f = await fetchUpload(a.url!, { maxBytes: TENANT_MAX_BYTES, label: "sheet", verify: verifySheetMagic });
+        source = `\nFetched ${f.bytes} bytes from ${f.host}${f.redirects ? ` after ${f.redirects} redirect(s)` : ""}.`;
+        if (f.buf[0] === 0x50 && f.buf[1] === 0x4b) {
+          ext = "xlsx";
+          value = BIN + f.buf.toString("base64");
+          bytes = f.buf.length;
+        } else {
+          const text = f.buf.toString("utf8").replace(/^\uFEFF/, "");
+          ext = /\t/.test(text.split("\n")[0] ?? "") ? "tsv" : "csv";
+          value = text;
+          bytes = byteLen(text);
+          lines = text.split(/\r?\n/).filter((l) => l.trim() !== "").length;
+        }
+      } else if (which === "xlsx_base64") {
         let buf: Buffer;
-        try { buf = Buffer.from(a.xlsx_base64.replace(/\s+/g, ""), "base64"); }
+        try { buf = Buffer.from(a.xlsx_base64!.replace(/\s+/g, ""), "base64"); }
         catch { return fail("xlsx_base64 is not valid base64"); }
         if (buf.length === 0) return fail("xlsx_base64 decoded to zero bytes");
         if (buf[0] !== 0x50 || buf[1] !== 0x4b) return fail("that base64 does not decode to an xlsx workbook (no PK zip header)");
+        ext = "xlsx";
         value = BIN + buf.toString("base64");
         bytes = buf.length;
       } else {
+        ext = /\t/.test((a.csv ?? "").split("\n")[0] ?? "") ? "tsv" : "csv";
         value = a.csv!;
         bytes = byteLen(value);
+        lines = a.csv!.split(/\r?\n/).filter((l) => l.trim() !== "").length;
       }
 
+      const path = `${SHEET_ROOT}${base}.${ext}`;
       const existing = c.files.has(path) ? byteLen(c.files.get(path)!) : 0;
       const after = tenantBytes() - existing + bytes + path.length;
       if (after > TENANT_MAX_BYTES) {
@@ -105,9 +146,8 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
       writeFileSync(path, value);
       c.dirs.add("/sheets");
 
-      const lines = a.csv ? a.csv.split(/\r?\n/).filter((l) => l.trim() !== "").length : 0;
       return ok(
-        `${replaced ? "Replaced" : "Loaded"} ${JSON.stringify(base)} (${ext}, ${bytes} bytes${lines ? `, ${lines} lines including the header` : ""}).\n` +
+        `${replaced ? "Replaced" : "Loaded"} ${JSON.stringify(base)} (${ext}, ${bytes} bytes${lines ? `, ${lines} lines including the header` : ""}).${source}\n` +
         `Pass path: ${JSON.stringify(base)} to sheet_info, sheet_read, sheet_query, sheet_stats, sheet_find, sheet_add_column, sheet_convert or sheet_write.\n` +
         `Loaded for this token: ${(tenantBytes() / 1024).toFixed(1)} KB of ${TENANT_MAX_BYTES / 1048576} MB.`);
     } catch (e) { return fail(String((e as Error).message ?? e)); }
