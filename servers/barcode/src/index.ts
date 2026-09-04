@@ -316,7 +316,7 @@ function readInvoice(id: string): { number: string; total_minor: number; currenc
 
 server.registerTool("invoice_payment_qr", {
   title: "Payment QR for an invoice",
-  description: "Call this tool to make the payment QR code for an invoice: your IBAN and name come from the shared business profile, the amount and reference from invoice_id or from the arguments.",
+  description: "Call this tool for a SEPA payment QR from just an amount and reference: IBAN and name are read from the shared business profile, never asked for; pass invoice_id instead to take the amount from an invoice.",
   inputSchema: {
     invoice_id: z.string().optional().describe("Invoice number, for example INV-2026-0007. Read from the invoice server's store if it is present"),
     amount: z.number().optional().describe("Amount in EUR. Overrides the invoice total; required when there is no invoice to read"),
