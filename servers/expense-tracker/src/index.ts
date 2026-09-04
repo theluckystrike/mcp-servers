@@ -218,7 +218,7 @@ server.registerTool("expense_add", {
         if (!known.some((p) => p.toLowerCase() === a.project!.toLowerCase()) && known.length >= FREE_PROJECTS) {
           return gated(`This would be project number ${known.length + 1} (${known.join(", ")} already exist). ` +
             `The free tier tracks ${FREE_PROJECTS} projects. The expense was not saved; add it without a project, or reuse one of those.\n\n` +
-            gate.upgradeText("unlimited projects"));
+            gate.upgradeText("unlimited projects", "expense_add"));
         }
       }
       // D-R3: accept the names a caller actually uses for the same number.
@@ -419,7 +419,7 @@ server.registerTool("category_rules", {
       return json({ count: db.rules.length, rules: db.rules, free_limit: gate.isPro() ? null : FREE_RULES });
     }
     if (!gate.isPro() && a.rules.length > FREE_RULES) {
-      return gated(`That is ${a.rules.length} rules; the free tier stores ${FREE_RULES}. Nothing was changed.\n\n` + gate.upgradeText("unlimited category rules"));
+      return gated(`That is ${a.rules.length} rules; the free tier stores ${FREE_RULES}. Nothing was changed.\n\n` + gate.upgradeText("unlimited category rules", "category_rules"));
     }
     for (const r of a.rules) {
       if (!r.match.trim()) return fail("a rule needs a non-empty match.");
@@ -596,7 +596,7 @@ server.registerTool("mileage_add", {
       if (a.project && !gate.isPro()) {
         const known = projectsOf(db);
         if (!known.some((p) => p.toLowerCase() === a.project!.toLowerCase()) && known.length >= FREE_PROJECTS) {
-          return gated(`This would be project number ${known.length + 1}. The free tier tracks ${FREE_PROJECTS} projects. Nothing was saved.\n\n` + gate.upgradeText("unlimited projects"));
+          return gated(`This would be project number ${known.length + 1}. The free tier tracks ${FREE_PROJECTS} projects. Nothing was saved.\n\n` + gate.upgradeText("unlimited projects", "mileage_add"));
         }
       }
       const e: Expense = {
@@ -672,13 +672,13 @@ server.registerTool("expense_export", {
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
     const pro = gate.isPro();
     if (a.format === "xlsx" && !pro) {
-      return gated(`xlsx export is a Pro format. Nothing was written. Export as csv instead, which the free tier supports up to ${FREE_EXPORT_ROWS} rows.\n\n` + gate.upgradeText("xlsx export"));
+      return gated(`xlsx export is a Pro format. Nothing was written. Export as csv instead, which the free tier supports up to ${FREE_EXPORT_ROWS} rows.\n\n` + gate.upgradeText("xlsx export", "expense_export"));
     }
     const w = windowNote(a.from, a.to);
     const rows = select(load(), { from: w.from, to: a.to, project: a.project, category: a.category, billable: a.billable });
     if (!pro && rows.length > FREE_EXPORT_ROWS) {
       // Refuse before opening the file: a truncated export looks complete and is worse than none.
-      return gated(`That range holds ${rows.length} expenses and the free tier exports ${FREE_EXPORT_ROWS} rows. No file was written. Narrow the range or filter by project or category to get under ${FREE_EXPORT_ROWS}.\n\n` + gate.upgradeText(`exports over ${FREE_EXPORT_ROWS} rows`));
+      return gated(`That range holds ${rows.length} expenses and the free tier exports ${FREE_EXPORT_ROWS} rows. No file was written. Narrow the range or filter by project or category to get under ${FREE_EXPORT_ROWS}.\n\n` + gate.upgradeText(`exports over ${FREE_EXPORT_ROWS} rows`, "expense_export"));
     }
     const data = exportRows(rows);
     const target = a.path
@@ -752,7 +752,7 @@ server.registerTool("expense_to_invoice", {
       let rows = select(db, { from: w.from, to: a.to, project: a.project, billable: true });
       if (!a.include_rebilled) rows = rows.filter((e) => !e.rebilled_at);
       if (!gate.isPro() && rows.length > FREE_REBILL_ITEMS) {
-        return gated(`There are ${rows.length} billable expenses to rebill and the free tier converts ${FREE_REBILL_ITEMS} at a time. Nothing was changed. Narrow the date range.\n\n` + gate.upgradeText("unlimited rebill items"));
+        return gated(`There are ${rows.length} billable expenses to rebill and the free tier converts ${FREE_REBILL_ITEMS} at a time. Nothing was changed. Narrow the date range.\n\n` + gate.upgradeText("unlimited rebill items", "expense_to_invoice"));
       }
       interface Line { description: string; quantity: number; unit_price: number; tax_rate: number }
       const byCurrency = new Map<string, Line[]>();

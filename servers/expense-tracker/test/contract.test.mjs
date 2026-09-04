@@ -196,6 +196,13 @@ test("cap: an export over the free 200-row cap writes no file at all", async (t)
   const r2 = await c.call("expense_export", { from: iso(29), to: iso(0), format: "csv", path: ok });
   assert.equal(r2.isError, false, r2.text);
   assert.equal(existsSync(ok), true, r2.text);
+
+  // Conversion instrument (docs/CONVERSION_INSTRUMENT.md): the /buy link on a cap message
+  // must name the tool that produced it, not the prose of the feature. Asserted on the
+  // cheapest gate this suite already trips, so it costs no extra server run.
+  const wantSrc = `https://mcp.zovo.one/buy/${PRODUCT}?src=${PRODUCT}.expense_export`;
+  assert.ok(r.text.includes(wantSrc),
+    `the expense_export cap message must carry ${wantSrc}, got: ` + r.text.slice(0, 400));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {
