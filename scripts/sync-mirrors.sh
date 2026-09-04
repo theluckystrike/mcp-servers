@@ -254,6 +254,52 @@ PY
     python3 -c 'import sys; p=sys.argv[1]; t=open(p).read(); open(p,"w").write(t.replace("join(here, \"..\", \"..\", \"..\", \"node_modules\"", "join(here, \"..\", \"node_modules\""))' "$T"
   done
 
+  # 5a2b. The same three-levels-up idiom is used for REPO, the monorepo root, so that a
+  #       test can read servers/<name>/package.json or spawn a sibling. In a mirror the
+  #       package root is one level up from test/ and there is no servers/ directory, so
+  #       REPO becomes the mirror root and join(REPO, "servers", "<name>") collapses to it.
+  for T in "$MIRROR"/test/*.mjs; do
+    [ -f "$T" ] || continue
+    python3 - "$T" "$NAME" <<'PYREPO'
+import sys
+path, name = sys.argv[1], sys.argv[2]
+t = open(path).read()
+t = t.replace('join(here, "..", "..", "..")', 'join(here, "..")')
+t = t.replace('join(REPO, "servers", "%s", ' % name, 'join(REPO, ')
+t = t.replace('join(REPO, "servers", "%s")' % name, 'REPO')
+open(path, "w").write(t)
+PYREPO
+  done
+
+  # 5a2c. Some assertions reach into the monorepo's own scripts/ (e.g. running
+  #       scripts/sync-versions.mjs --check). That directory is not part of a server
+  #       folder and never reaches a mirror, so those test blocks are marked skipped
+  #       rather than left to fail on a missing file.
+  for T in "$MIRROR"/test/*.mjs; do
+    [ -f "$T" ] || continue
+    python3 - "$T" <<'PYSCRIPTS'
+import re, sys
+path = sys.argv[1]
+src = open(path).read()
+if 'join(REPO, "scripts"' not in src:
+    sys.exit(0)
+lines = src.split("\n")
+starts = [i for i, l in enumerate(lines) if l.startswith("test(")]
+if not starts:
+    sys.exit(0)
+bounds = starts + [len(lines)]
+out = lines[:starts[0]]
+for a, b in zip(bounds, bounds[1:]):
+    block = lines[a:b]
+    if 'join(REPO, "scripts"' in "\n".join(block):
+        block[0] = "test.skip(" + block[0][len("test("):]
+    out += block
+note = ("// Mirror note: tests that run a script from the monorepo's scripts/ directory are\n"
+        "// skipped here. That directory is not part of a server folder; run them in the monorepo.\n")
+open(path, "w").write(note + "\n".join(out))
+PYSCRIPTS
+  done
+
   # 5a3. recurring's smoke test spawns the sibling invoice server directly (as a second
   #      process, to confirm the invoice server's own process sees what recurring wrote)
   #      via a "../../invoice/dist/index.js" monorepo-sibling path. In a mirror that
@@ -267,13 +313,51 @@ PY
   # 5b. pro-tier tests sign a key with keys/license-private.pem, which is private to the
   #     monorepo and must never reach a public mirror. Mark exactly those tests skipped so
   #     a fresh clone runs green on the free-tier suite.
+  # A signer that lives in a shared helper (test/_client.mjs, test/harness.mjs) is not
+  # visible to the per-file scan below: the consuming test file never spells
+  # sign-license. Collect the identifiers such a helper exports so a test block that
+  # calls one is recognised as pro-tier and skipped, rather than left to fail on the
+  # empty key the neutralised helper now returns.
+  PRO_HELPER_IDS="$(python3 - "$MIRROR" <<'PYIDS'
+import os, re, sys
+d = os.path.join(sys.argv[1], "test")
+ids = set()
+if os.path.isdir(d):
+    for f in sorted(os.listdir(d)):
+        if not f.endswith(".mjs") or f.endswith(".test.mjs"):
+            continue
+        src = open(os.path.join(d, f)).read()
+        if "sign-license" not in src:
+            continue
+        for m in re.finditer(r"export\s+(?:async\s+)?function\s+(\w+)\s*\([^)]*\)\s*\{", src):
+            start = m.end()
+            depth, i = 1, start
+            while i < len(src) and depth:
+                if src[i] == "{":
+                    depth += 1
+                elif src[i] == "}":
+                    depth -= 1
+                i += 1
+            if "sign-license" in src[start:i]:
+                ids.add(m.group(1))
+        for m in re.finditer(r"export\s+const\s+(\w+)\s*=[^;]*sign-license", src):
+            ids.add(m.group(1))
+print(" ".join(sorted(ids)))
+PYIDS
+)"
+  [ -n "$PRO_HELPER_IDS" ] && echo "    pro-tier helper exports: $PRO_HELPER_IDS"
+  export PRO_HELPER_IDS
+
   for T in "$MIRROR"/test/*.mjs; do
     [ -f "$T" ] || continue
     python3 - "$T" <<'PYTESTS'
 import re, sys
 path = sys.argv[1]
 src = open(path).read()
-if "sign-license" not in src:
+import os
+helper_ids = [i for i in (os.environ.get("PRO_HELPER_IDS") or "").split() if i]
+uses_helper = any(re.search(r"\b%s\b" % i, src) for i in helper_ids)
+if "sign-license" not in src and not uses_helper:
     sys.exit(0)
 lines = src.split("\n")
 starts = [i for i, l in enumerate(lines) if l.startswith("test(")]
@@ -282,6 +366,7 @@ head = lines[:starts[0]] if starts else lines
 toplevel_key = any("sign-license" in l and ".trim()" in l for l in head)
 # variables that hold the signer path, so blocks using them count as pro-tier too
 signer_vars = re.findall(r"const\s+(\w+)\s*=\s*[^;]*sign-license", "\n".join(head))
+signer_vars = signer_vars + helper_ids
 NOTE = ("// Mirror note: tests that need a signed Pro key are skipped here. The signing key\n"
         "// lives only in the monorepo (keys/license-private.pem); run them there.\n")
 
@@ -291,7 +376,7 @@ def is_pro(block):
         return True
     return any(re.search(r"\b%s\b" % v, text) for v in signer_vars)
 
-if toplevel_key or not starts:
+if (toplevel_key and starts) or (not starts and "sign-license" in src):
     # the key is computed at module scope, so every test in this file depends on it
     src = re.sub(r"execFileSync\([^;]*sign-license[^;]*\.trim\(\)", '""', src)
     src = re.sub(r"^test\(", "test.skip(", src, flags=re.M)
