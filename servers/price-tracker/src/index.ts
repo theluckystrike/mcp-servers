@@ -240,7 +240,7 @@ registerTool(
     if (!gate.isPro() && db.watches.length >= FREE_WATCH_LIMIT) {
       return text(
         `The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${db.watches.length}. ` +
-        `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches")}`
+        `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches", "watch_add")}`
       );
     }
     let target: string | null = null;
@@ -264,7 +264,7 @@ registerTool(
       if (!gate.isPro() && fresh.watches.length >= FREE_WATCH_LIMIT) {
         return text(
           `The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${fresh.watches.length}. ` +
-          `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches")}`
+          `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches", "watch_add")}`
         );
       }
       db.watches = fresh.watches;
@@ -359,7 +359,7 @@ registerTool(
     if (all || !id) {
       if (!gate.isPro()) {
         if (db.watches.length === 1) targets = db.watches;
-        else return text(`Refreshing every watch in one call is a Pro feature. On free, pass an id: ${db.watches.map((w) => w.id).join(", ")}.\n\n${gate.upgradeText("watch_refresh all")}`);
+        else return text(`Refreshing every watch in one call is a Pro feature. On free, pass an id: ${db.watches.map((w) => w.id).join(", ")}.\n\n${gate.upgradeText("watch_refresh all", "watch_refresh")}`);
       } else targets = db.watches;
     } else {
       const w = findWatch(db, id);
@@ -427,7 +427,7 @@ registerTool(
       `${w.label ?? w.url} (${w.id}) - ${obs.length} of ${w.observations.length} observation(s)`,
       s ? `min ${displayPrice(s.min, w.currency)} / max ${displayPrice(s.max, w.currency)}${w.currency ? ` ${w.currency}` : ""}` : "",
       JSON.stringify(obs, null, 2),
-      truncated ? `\nFree shows the last ${FREE_HISTORY_LIMIT} observations; ${w.observations.length - FREE_HISTORY_LIMIT} older one(s) are stored but hidden.\n\n${gate.upgradeText("full price history")}` : "",
+      truncated ? `\nFree shows the last ${FREE_HISTORY_LIMIT} observations; ${w.observations.length - FREE_HISTORY_LIMIT} older one(s) are stored but hidden.\n\n${gate.upgradeText("full price history", "price_history")}` : "",
     ].filter(Boolean);
     return text(lines.join("\n"));
   }
@@ -458,7 +458,7 @@ registerTool(
     if (!w) {
       if (!gate.isPro() && db.watches.length >= FREE_WATCH_LIMIT) {
         return text(
-          `The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${db.watches.length}.\n\n${gate.upgradeText("unlimited watches")}`
+          `The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${db.watches.length}.\n\n${gate.upgradeText("unlimited watches", "price_add_manual")}`
         );
       }
       w = {
