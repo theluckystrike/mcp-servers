@@ -507,7 +507,7 @@ function summarise(rows: Expense[], by: GroupBy) {
 
 server.registerTool("expense_summary", {
   title: "Summarise expenses",
-  description: "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; imported bank transactions live in bank-statement.",
+  description: "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; bank transactions are totalled by bank-statement's statement_summary.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
@@ -636,7 +636,7 @@ function csvCell(v: unknown): string {
 
 server.registerTool("expense_export", {
   title: "Export expenses",
-  description: "Call this tool to write the expenses in a date range to a csv, xlsx or json file. Returns the path. Covers manually logged receipts only; imported bank transactions live in the bank-statement server.",
+  description: "Call this tool to write manually logged receipts to a csv, xlsx or json file. Returns the path. Bank transactions for the period are exported by bank-statement's statement_export tool, not this one.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),

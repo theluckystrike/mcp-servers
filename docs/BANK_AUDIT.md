@@ -297,3 +297,71 @@ top-level tool that lists both ledgers before either summary/export tool is chos
 
 Evidence: `/private/tmp/uv80/s3c.json`, `/private/tmp/uv80/s6c.json`.
 
+
+## D-B4 packaging measurement (2026-09-04, single-server vs combined)
+
+Follow-up to the follow-up: does the routing failure on s6 come from the two-server
+packaging itself, or from expense_export/expense_summary not naming the sibling tool
+by name. Two more description edits inside `servers/expense-tracker/src/index.ts`
+made the sibling tool's name explicit and routable before either tool is called:
+
+- `expense_export` description, 214 chars (was 199): "Call this tool to write manually
+  logged receipts to a csv, xlsx or json file. Returns the path. Bank transactions for
+  the period are exported by bank-statement's statement_export tool, not this one."
+- `expense_summary` description, 208 chars (was 189): "Totals for a date range grouped
+  by category, project, month or merchant, per currency with gross, net and VAT, never
+  mixed. Receipts only; bank transactions are totalled by bank-statement's
+  statement_summary."
+
+`bankLedgerLine()` was already verified to fire on `expense_export` (it names
+`statement_export` in the plain-text result whenever the sibling store holds rows in
+range) and on `expense_summary` (the `bank_ledger` JSON field), from the prior D-B4
+follow-up; unchanged here. `npm test -w servers/expense-tracker`: 53 tests, 53 pass.
+
+Three configurations, same prompt ("Export September to /private/tmp/uv80/sept.csv."),
+same seeded data dir (39 bank transactions imported and categorised, one Adobe receipt
+logged), `claude -p`, `--strict-mcp-config`, `--model sonnet`, `--output-format json`,
+`--max-turns 14`, one bounded 180 s request per run, 2 runs each:
+
+| Config | Run | Score | Turns | Sec | Result |
+|---|---|---|---|---|---|
+| (a) bank-statement only | 1 | 3 | 3 | 7.8 | "Exported 4 transactions (Sept 1-30, 2026) to `/private/tmp/uv80/sept.csv`" |
+| (a) bank-statement only | 2 | 3 | 3 | 11.4 | "Exported September ... 4 rows, 349 bytes" |
+| (b) both, before this fix | 1 | 1 | 2 | 9.4 | "You have two export-capable tools available ... Which one do you want exported: bank statement transactions or expense-tracker expenses?" - no tool called, no file written |
+| (b) both, before this fix | 2 | 1 | 2 | 17.6 | Flagged `statement_export`'s own description line ("This is the tool for \"export September to <path>\" once a statement has been imported") as a likely prompt-injection pattern, then asked the same which-server question. No tool called, no file written |
+| (c) both, after this fix | 1 | 3 | 3 | 19.5 | "Exported 4 bank transactions (Sept 1-30, 2026) to `/private/tmp/uv80/sept.csv` (349 bytes)" - called `statement_export` directly, file correct (verified: Spotify 9.99, Costa 3.60, Biedronka 25.00, Zabka 6.40, matching the independently-computed September rows in Part 2) |
+| (c) both, after this fix | 2 | 1 | 2 | 10.1 | "I have two possible data sources ... Do you want bank transactions (bank-statement) or tracked expenses (expense-tracker) exported? ... Which year ..." - no tool called, no file written |
+
+(a) is 3/3 on both runs: with only one export tool in the tool list there is nothing to
+route between, so the same seeded data that stalls s6 in Part 2 exports cleanly in 3
+turns each time. (b) is 1/1 on both runs, matching the original D-B4 measurement: the
+model reads both tool lists, sees two plausible export tools, and asks rather than
+guesses, in one run going further and treating `statement_export`'s deliberately
+question-shaped description text as a suspicious pattern rather than a routing hint.
+(c) moved one of two runs from "asks" to "exports correctly" - the newly explicit
+"exported by bank-statement's statement_export tool, not this one" line let the model
+route straight to `statement_export` without asking, once - but the other run asked
+the identical clarifying question anyway, word for word the same shape as (b). The
+fix is a real, verified improvement (bankLedgerLine already covered the case where
+expense_export gets called and under-answers; this description edit covers a second,
+narrower case where the model reads expense_export's description, recognizes it does
+not apply, and picks statement_export instead) but it is not a fix for the routing
+question itself, which happens before any tool is invoked and depends on how the model
+weighs two simultaneously-plausible tools, something a description on only one side of
+the pair cannot fully determine on every run.
+
+Recommendation: keep the description fix (it is strictly better than the prior wording,
+costs nothing, and the response-body fix for `expense_summary`/`expense_export` already
+lets a *called* tool report the ledger it cannot see) but do not treat it as a routing
+fix. The numbers argue for single-server packaging over combined for any workflow where
+"export" or "what did I spend" must resolve deterministically: 3/3 vs 3/6 (1 real
+success out of two combined-server runs after the fix, 0/2 before) on the identical
+prompt and data dir. A top-level disambiguating tool, or merging bank-statement and
+expense-tracker into one server the way `office-suite` merges several document tools,
+removes the two-way choice entirely rather than making one side of it 50% more
+persuasive.
+
+Evidence: `/private/tmp/uv80/mcp-bankonly.json`, `/private/tmp/uv80/allow-bankonly.txt`,
+`/private/tmp/uv80/a1.json`, `/private/tmp/uv80/a2.json`, `/private/tmp/uv80/b1.json`,
+`/private/tmp/uv80/b2.json`, `/private/tmp/uv80/c1.json`, `/private/tmp/uv80/c2.json`,
+`/private/tmp/uv80/sept.csv` (written by c1, 4 rows, 349 bytes).
