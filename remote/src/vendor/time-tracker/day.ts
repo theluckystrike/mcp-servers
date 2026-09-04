@@ -64,6 +64,23 @@ export function dayKey(isoStr: string, zone = homeZone()): string {
   return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
 }
 
+/**
+ * Wall clock HH:MM at that instant in the home zone. D-R67: dayKey() has been zone-aware
+ * since D-R35, but the clock beside it came from the host process zone, so a hosted row
+ * read "2026-09-03  07:00" for work the caller logged at 09:00 Warsaw - the day in one
+ * zone, the time in another, in the same row.
+ */
+export function hhmm(isoStr: string, zone = homeZone()): string {
+  const d = new Date(isoStr);
+  if (zone) {
+    const parts = new Intl.DateTimeFormat("en-GB", { timeZone: zone, hour12: false, hour: "2-digit", minute: "2-digit" }).formatToParts(d);
+    const v: Record<string, string> = {};
+    for (const p of parts) if (p.type !== "literal") v[p.type] = p.value;
+    return `${v.hour === "24" ? "00" : v.hour}:${v.minute}`;
+  }
+  return `${p2(d.getHours())}:${p2(d.getMinutes())}`;
+}
+
 /** Today on the local calendar, YYYY-MM-DD. */
 export function localToday(): string {
   return dayKey(new Date().toISOString());

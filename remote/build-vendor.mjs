@@ -1492,6 +1492,23 @@ export function expandPath(p: string): string {
 }
 
 function patchBarcodeIndex(src) {
+  // D-R65: hosted, a PNG barcode is bars only (patchBarcodeRender drops the bitmap font),
+  // and the gate that asks for $19 was the one place that never said so. Both the refusal a
+  // free caller reads and the PNG a Pro caller pays for now name it.
+  src = must(src,
+    '  return `PNG output is a Pro feature; the free tier writes SVG, which scans and prints at any size because it has no resolution. ` +\n    `Ask for format: "svg" and this is free.\\n\\n${gate.upgradeText(feature)}`;',
+    '  const bars = feature.startsWith("barcode_")\n' +
+    '    ? ` On this endpoint SVG is also the only format that prints the human-readable digits under the bars: a PNG barcode here is bars only, Pro or not.`\n' +
+    '    : ``;\n' +
+    '  return `PNG output is a Pro feature; the free tier returns SVG inline, which scans and prints at any size because it has no resolution.${bars} ` +\n' +
+    '    `Ask for format: "svg" and this is free.\\n\\n${gate.upgradeText(feature)}`;',
+    "barcode png gate names the missing digits");
+  src = must(src,
+    "  const check = enc.value !== String(a.value).replace(/[\\s-]/g, \"\") && a.symbology !== \"code128\"\n    ? ` Check digit ${enc.value.slice(-1)} was computed and added.` : \"\";",
+    "  const check = (enc.value !== String(a.value).replace(/[\\s-]/g, \"\") && a.symbology !== \"code128\"\n    ? ` Check digit ${enc.value.slice(-1)} was computed and added.` : \"\")\n" +
+    "    + (format === \"png\" ? ` The digits are NOT printed under the bars in a PNG on this endpoint; ask for format: \"svg\" if the code has to be human-readable.` : \"\");",
+    "barcode_create png names the missing digits");
+
   // QR PNGs go through jimp (see patchBarcodeRender); the SVG string renderer is pure JS.
   src = must(src,
     '  return { png: await QRCode.toBuffer(text, { ...opts, type: "png", width: o.size }) };',

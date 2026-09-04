@@ -105,3 +105,40 @@ test("invoice_payment_qr reads the IBAN and name from the shared business profil
   assert.match(r2.text, /INV-2026-0009 for Acme Ltd/);
   assert.match(r2.text, /EUR 456\.00/);
 });
+
+// Round 13 (docs/USER_VALUE_R13.md), D-R64: the beneficiary is business identity, not
+// per-call input. qr_payment_sepa used to require iban and name, so a model asked the user
+// for an IBAN the shared profile already held and drew nothing.
+test("qr_payment_sepa falls back to the shared business profile for iban and name", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  const profileDir = join(box.dataHome, "mcp-servers", "profile");
+  mkdirSync(profileDir, { recursive: true });
+  writeFileSync(join(profileDir, "business.json"), JSON.stringify({ name: "Nova Studio", iban: "PL61109010140000071219812874" }));
+
+  await c.init();
+  const r = await c.call("qr_payment_sepa", { amount: 1230, remittance: "INV-2026-0001" });
+  assert.equal(r.isError, false, r.text);
+  assert.match(r.text, /Pay Nova Studio at PL61109010140000071219812874, EUR 1230\.00/);
+  assert.match(r.text, /shared business profile/);
+
+  // An explicit beneficiary still wins and is not annotated.
+  const r2 = await c.call("qr_payment_sepa", { iban: "DE89370400440532013000", name: "Zovo", amount: 10 });
+  assert.equal(r2.isError, false, r2.text);
+  assert.match(r2.text, /Pay Zovo at DE89370400440532013000, EUR 10\.00/);
+  assert.doesNotMatch(r2.text, /shared business profile/);
+});
+
+test("qr_payment_sepa with no beneficiary anywhere names business_set rather than failing blank", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  const r = await c.call("qr_payment_sepa", { amount: 50 });
+  assert.equal(r.isError, true, r.text);
+  assert.match(r.text, /business_set/);
+  assert.match(r.text, /Nothing was written/);
+});

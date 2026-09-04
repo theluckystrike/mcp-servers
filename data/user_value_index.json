@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T05:23:24.912Z",
+  "generated_at": "2026-09-04T06:19:06.850Z",
   "rounds": [
     {
       "round": 1,
@@ -275,10 +275,35 @@
       },
       "at": "2026-09-04T04:30:00Z",
       "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_9018420e8c11890e1671d0ea5ca1887e) and reused for every lane. Registered PER LANE only"
+    },
+    {
+      "round": 13,
+      "file": "user_value_r13.json",
+      "score": 50,
+      "max": 54,
+      "pct": 93,
+      "scenarios": 18,
+      "per_server": {
+        "barcode": {
+          "score": 16,
+          "max": 18
+        },
+        "kanban": {
+          "score": 17,
+          "max": 18
+        },
+        "time-tracker": {
+          "score": 17,
+          "max": 18
+        }
+      },
+      "at": "2026-09-04T06:20:00Z",
+      "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_99d439c70625548432cd7f127d9b7793, 7916-byte page) and reused for every lane. Register"
     }
   ],
   "servers": [
     "bank-statement",
+    "barcode",
     "bundle-licence",
     "calendar",
     "expense-tracker",
@@ -315,10 +340,31 @@
         "",
         "",
         "14/18",
+        "",
         ""
       ],
       "best_pct": 78,
       "last_round": 11
+    },
+    {
+      "server": "barcode",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "16/18"
+      ],
+      "best_pct": 89,
+      "last_round": 13
     },
     {
       "server": "bundle-licence",
@@ -328,6 +374,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -353,7 +400,8 @@
         "",
         "",
         "",
-        "17/18"
+        "17/18",
+        ""
       ],
       "best_pct": 94,
       "last_round": 12
@@ -366,6 +414,7 @@
         "2/3",
         "",
         "6/6",
+        "",
         "",
         "",
         "",
@@ -391,6 +440,7 @@
         "",
         "2/3",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -409,6 +459,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         ""
       ],
@@ -429,6 +480,7 @@
         "",
         "2/3",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -447,6 +499,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         ""
       ],
@@ -467,6 +520,7 @@
         "",
         "2/3",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -485,6 +539,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         ""
       ],
@@ -505,6 +560,7 @@
         "",
         "3/3",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -523,6 +579,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         ""
       ],
@@ -543,6 +600,7 @@
         "",
         "",
         "18/18",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -556,6 +614,7 @@
         "4/6",
         "",
         "1/3",
+        "",
         "",
         "",
         "",
@@ -581,10 +640,11 @@
         "",
         "",
         "17/18",
-        ""
+        "",
+        "17/18"
       ],
       "best_pct": 94,
-      "last_round": 11
+      "last_round": 13
     },
     {
       "server": "office-suite",
@@ -592,6 +652,7 @@
         "",
         "",
         "8/12",
+        "",
         "",
         "",
         "",
@@ -619,7 +680,8 @@
         "",
         "",
         "",
-        "17/18"
+        "17/18",
+        ""
       ],
       "best_pct": 94,
       "last_round": 12
@@ -632,6 +694,7 @@
         "2/3",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -657,7 +720,8 @@
         "",
         "",
         "",
-        "17/18"
+        "17/18",
+        ""
       ],
       "best_pct": 94,
       "last_round": 12
@@ -670,6 +734,7 @@
         "3/3",
         "",
         "4/6",
+        "",
         "",
         "",
         "",
@@ -695,10 +760,11 @@
         "",
         "",
         "",
-        ""
+        "",
+        "17/18"
       ],
       "best_pct": 100,
-      "last_round": 5
+      "last_round": 13
     }
   ],
   "ledger": [
@@ -1632,6 +1698,41 @@
       "status": "open (client or accepted)"
     },
     {
+      "id": "D-R64",
+      "first_seen": "USER_VALUE_R13.md",
+      "severity": "",
+      "title": "D-R64, fixed with code, not prose** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R65",
+      "first_seen": "USER_VALUE_R13.md",
+      "severity": "",
+      "title": "D-R65 |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R66",
+      "first_seen": "USER_VALUE_R13.md",
+      "severity": "",
+      "title": "D-R66, fixed** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R67",
+      "first_seen": "USER_VALUE_R13.md",
+      "severity": "medium",
+      "title": "D-R67 (medium, time-tracker) - FIXED, with a test",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R68",
+      "first_seen": "USER_VALUE_R13.md",
+      "severity": "low",
+      "title": "D-R68 (low, time-tracker) - logged",
+      "status": "open"
+    },
+    {
       "id": "D-T1",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
@@ -1660,15 +1761,15 @@
     }
   ],
   "counts": {
-    "defects": 122,
-    "fixed": 99,
-    "open": 16,
+    "defects": 127,
+    "fixed": 103,
+    "open": 17,
     "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 99,
+      "fixed": 103,
       "client": 3,
-      "open": 13,
+      "open": 14,
       "open (client or accepted)": 3,
       "superseded": 1
     },

@@ -7,7 +7,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { createLicenseGate, readSharedProfile, withFileLock } from "@theluckystrike/mcp-license";
-import { dayKey, homeZone, localDayStart, wallClockInZone } from "./day.js";
+import { dayKey, hhmm, homeZone, localDayStart, wallClockInZone } from "./day.js";
 import { readJsonFile } from "./jsonstore.js";
 import { VERSION } from "./version.js";
 
@@ -465,7 +465,7 @@ server.registerTool("timer_stop", {
   const cur = currencyForEntry(db, e);
   const amount = rc > 0
     ? `  ${money(amountCents(e.seconds, rc), cur)}`
-    : "  No rate: this entry carries no currency and no amount. Set one with project_set_rate, or entry_update {rate, currency}.";
+    : "  No rate: this entry carries no currency and no amount. Set one with project_set_rate, or entry_edit {id, rate, currency}.";
   return ok(`Stopped "${e.project}"${e.task ? ` - ${e.task}` : ""}. Duration ${hms(e.seconds)} (${hours(e.seconds)} h).${amount}\nEntry id ${e.id}.`);
   });
 }));
@@ -570,7 +570,7 @@ server.registerTool("entry_list", {
   const body = table(
     ["id", "day", "start", "project", "task", "hours", "bill", "tags", "note"],
     rows.map(e => [
-      e.id, dayKey(e.start), new Date(e.start).toTimeString().slice(0, 5),
+      e.id, dayKey(e.start), hhmm(e.start),
       e.project, e.task ?? "", hours(e.seconds), e.billable ? "y" : "n",
       e.tags.join(","), e.note ?? "",
     ]),

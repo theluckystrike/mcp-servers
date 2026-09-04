@@ -115,7 +115,10 @@ const formatArg = z.enum(["svg", "png"]).optional().describe("svg (default, free
 
 function tierCheckFormat(format: Format, feature: string): string | null {
   if (format !== "png" || gate.isPro()) return null;
-  return `PNG output is a Pro feature; the free tier writes SVG, which scans and prints at any size because it has no resolution. ` +
+  const bars = feature.startsWith("barcode_")
+    ? ` On this endpoint SVG is also the only format that prints the human-readable digits under the bars: a PNG barcode here is bars only, Pro or not.`
+    : ``;
+  return `PNG output is a Pro feature; the free tier returns SVG inline, which scans and prints at any size because it has no resolution.${bars} ` +
     `Ask for format: "svg" and this is free.\n\n${gate.upgradeText(feature)}`;
 }
 
@@ -267,10 +270,10 @@ server.registerTool("qr_vcard", {
 
 server.registerTool("qr_payment_sepa", {
   title: "SEPA payment QR code",
-  description: "Call this tool to make an EPC069-12 payment QR code a euro banking app can scan: IBAN, beneficiary name, optional amount and reference. The IBAN is checked before drawing.",
+  description: "Call this tool for an EPC069-12 payment QR a euro banking app can scan. Amount and reference are enough: the beneficiary IBAN and name default to the shared business profile, never asked for.",
   inputSchema: {
-    iban: z.string().describe("Beneficiary IBAN. Checked with ISO 7064 mod 97 and refused if it does not validate"),
-    name: z.string().describe("Beneficiary name, up to 70 characters"),
+    iban: z.string().optional().describe("Beneficiary IBAN. Defaults to the iban in the shared business profile (set once with the invoice server's business_set). Checked with ISO 7064 mod 97 and refused if it does not validate"),
+    name: z.string().optional().describe("Beneficiary name, up to 70 characters. Defaults to the name in the shared business profile"),
     amount: z.number().optional().describe("Amount in EUR, 0.01 to 999999999.99. Leave out and the payer types it"),
     currency: z.string().optional().describe("EUR only; any other value is refused, because EPC encodes a SEPA credit transfer"),
     bic: z.string().optional().describe("Beneficiary BIC. Optional under EPC version 002"),
@@ -279,10 +282,23 @@ server.registerTool("qr_payment_sepa", {
     purpose: z.string().optional().describe("Four-letter ISO 20022 purpose code, for example GDDS"),
     ...qrShape,
   },
-}, async (a: QrShape & Parameters<typeof epcPayload>[0]) => wrap(async () => {
-  const epc = epcPayload(a);
+}, async (a: QrShape & Partial<Parameters<typeof epcPayload>[0]>) => wrap(async () => {
+  // D-R64: the beneficiary is business identity, not per-call input. A caller who has run
+  // business_set once should never be asked for their own IBAN again, and a model that is
+  // asked stops and asks the user rather than drawing the code.
+  const profile = readSharedProfile();
+  const iban = a.iban ?? profile.iban;
+  const name = a.name ?? profile.name;
+  if (!iban) {
+    return fail(
+      `no IBAN: pass iban, or set one once in the shared business profile (the invoice server's business_set, field iban) and every server in this suite uses it. Nothing was written.`,
+    );
+  }
+  if (!name) return fail(`no beneficiary name: pass name, or set it in the shared business profile. Nothing was written.`);
+  const epc = epcPayload({ ...a, iban, name });
   const amount = epc.amount === undefined ? "no amount (the payer types it)" : `EUR ${epc.amount.toFixed(2)}`;
-  return qrTool(epc.text, a, "sepa", "qr_payment_sepa PNG output", ` Pay ${a.name} at ${epc.iban}, ${amount}.`);
+  const from = a.iban && a.name ? "" : " Beneficiary taken from the shared business profile.";
+  return qrTool(epc.text, a, "sepa", "qr_payment_sepa PNG output", ` Pay ${name} at ${epc.iban}, ${amount}.${from}`);
 }));
 
 /**
@@ -415,8 +431,9 @@ server.registerTool("barcode_create", {
     throw e;
   }
   const note = await finalize(r.id as string, { bytes: "bytes" in w ? w.bytes : Buffer.byteLength((w as { inline: string }).inline) });
-  const check = enc.value !== String(a.value).replace(/[\s-]/g, "") && a.symbology !== "code128"
-    ? ` Check digit ${enc.value.slice(-1)} was computed and added.` : "";
+  const check = (enc.value !== String(a.value).replace(/[\s-]/g, "") && a.symbology !== "code128"
+    ? ` Check digit ${enc.value.slice(-1)} was computed and added.` : "")
+    + (format === "png" ? ` The digits are NOT printed under the bars in a PNG on this endpoint; ask for format: "svg" if the code has to be human-readable.` : "");
   return ok(
     `${a.symbology.toUpperCase()} ${r.id}: ${enc.value}, ${enc.modules.length} modules plus a ${enc.quiet}-module quiet zone each side.${check}` +
     outLine(w, format) + note,
