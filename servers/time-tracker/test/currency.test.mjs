@@ -164,3 +164,44 @@ test("D-7: a partial project name resolves to the one existing project, ambiguit
   assert.doesNotMatch(exact.text, /matches/);
   assert.match(exact.text, /"Acme mobile" - clear/);
 });
+
+// Profile-first sweep (docs/PROFILE_FIRST_RESULT.md), the D-R64 species: project_set_rate
+// defaulted to USD while currencyFor() in the same file already read the shared profile, so
+// a PLN business setting a rate silently got a USD project.
+test("project_set_rate takes its currency from the shared business profile", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  const dir = join(c.sandbox, "data", "mcp-servers", "profile");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "business.json"), JSON.stringify({ name: "Nova Studio", default_currency: "PLN" }));
+  await c.init();
+
+  const r = await c.call("project_set_rate", { project: "Acme", hourly_rate: 85 });
+  assert.equal(r.isError, false, r.text);
+  assert.match(r.text, /PLN/);
+  assert.match(r.text, /shared business profile \(default_currency\)/);
+
+  // An explicit currency still wins and is not annotated as profile-sourced.
+  const r2 = await c.call("project_set_rate", { project: "Beta", hourly_rate: 85, currency: "GBP" });
+  assert.equal(r2.isError, false, r2.text);
+  assert.match(r2.text, /GBP/);
+  assert.doesNotMatch(r2.text, /shared business profile \(default_currency\)/);
+
+  // A currency spelled out in the rate itself also wins over the profile (re-rating Acme,
+  // because the free tier caps rated projects at two).
+  const r3 = await c.call("project_set_rate", { project: "Acme", hourly_rate: "90 euros an hour" });
+  assert.equal(r3.isError, false, r3.text);
+  assert.match(r3.text, /EUR/);
+  assert.doesNotMatch(r3.text, /shared business profile \(default_currency\)/);
+});
+
+test("project_set_rate with no profile currency still falls back to USD, unannotated", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await c.init();
+  const r = await c.call("project_set_rate", { project: "Acme", hourly_rate: 85 });
+  assert.equal(r.isError, false, r.text);
+  assert.match(r.text, /\$|USD/);
+  assert.doesNotMatch(r.text, /shared business profile \(default_currency\)/);
+});

@@ -646,7 +646,7 @@ server.registerTool("project_set_rate", {
   inputSchema: {
     project: z.string().min(1).describe("Project or client name. A partial name that matches exactly one existing project is used as that project."),
     hourly_rate: z.union([z.number().nonnegative(), z.string()]).describe("Hourly rate: a number (85) or the words the user said ('90 euros an hour'). '1,200 USD' is 1200; '12,50 EUR' is 12.50; anything ambiguous is refused."),
-    currency: z.string().optional().describe("Currency: a code (EUR, USD, GBP, PLN) or a word ('euros', 'pounds', 'zl'). Default USD."),
+    currency: z.string().optional().describe("Currency: a code (EUR, USD, GBP, PLN) or a word ('euros', 'pounds', 'zl'). Defaults to the shared business profile's default_currency, else USD."),
     apply_to_existing: z.boolean().optional().describe("Re-rate time already logged for this project: every entry is re-stamped with the new rate, including entries that already carry one. Default false: the new rate applies to future entries only, because each entry captures the rate in force when it was logged."),
     only_missing: z.boolean().optional().describe("Only meaningful with apply_to_existing. True restores the old fill-the-gaps behaviour: only entries that carry no rate of their own are touched. Default false, which re-stamps every entry of the project."),
   },
@@ -662,9 +662,17 @@ server.registerTool("project_set_rate", {
   }
   const parsed = parseRate(a.hourly_rate);
   if (typeof parsed.rate !== "number") throw new Error("hourly_rate must contain a number");
+  // Profile-first sweep: the currency you bill in is business identity, held once behind
+  // the token. This tool defaulted to USD while currencyFor() one screen up already reads
+  // the shared profile, so a PLN business setting a rate got a USD project. An explicit
+  // currency, and a currency spelled out in hourly_rate, both still win.
+  const shared = readSharedProfile().default_currency;
+  const profileCurrency = shared && /^[A-Za-z]{3}$/.test(shared.trim()) ? shared.trim().toUpperCase() : undefined;
+  const chosen = normCurrency(a.currency) ?? parsed.currency ?? profileCurrency ?? "USD";
+  const currencyFromProfile = !normCurrency(a.currency) && !parsed.currency && !!profileCurrency;
   db.projects[project] = {
     rateCents: toCents(parsed.rate),
-    currency: normCurrency(a.currency) ?? parsed.currency ?? "USD",
+    currency: chosen,
   };
   const m = db.projects[project];
   // Codex v3 #19 kept the rate captured at log time on every entry, which made the old
@@ -686,6 +694,7 @@ server.registerTool("project_set_rate", {
   }
   save(db);
   const lines = [`Rate for "${project}" set to ${money(m.rateCents, m.currency)} per hour.`];
+  if (currencyFromProfile) lines.push(`Currency ${m.currency} came from the shared business profile (default_currency); pass currency to override it.`);
   if (a.apply_to_existing) {
     const totals = totalsOf(db, projectEntries);
     const scope = onlyMissing ? "entries that had no rate of their own" : "already logged entries";
