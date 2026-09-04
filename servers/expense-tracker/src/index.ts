@@ -69,13 +69,32 @@ function normCurrency(raw: string | undefined, fallback = "EUR"): string {
 
 interface Filter { from?: string; to?: string; project?: string; category?: string; billable?: boolean }
 
-function windowNote(from: string | undefined): { from?: string; note?: string } {
+/**
+ * D-R77. The free window used to clamp `from` forward and describe the result as "covers
+ * <cutoff> onwards", which is a sentence about a range that may not exist: a caller asking
+ * for June with a cutoff in August got `from` AFTER `to`, an empty window by construction,
+ * and a note claiming coverage from a date past the end of what they asked for. Nothing was
+ * read, and the note said the opposite. When the whole requested range is older than the
+ * window the answer now says so in those words, the way currency's rate_on does (D-R71).
+ */
+function windowNote(from: string | undefined, to?: string): { from?: string; note?: string; nothing_read?: boolean } {
   if (gate.isPro()) return { from };
   const cutoff = isoDaysAgo(FREE_WINDOW_DAYS);
   if (from && from >= cutoff) return { from };
+  if (to && to < cutoff) {
+    return {
+      // `from` still clamps the SELECT so no gated row is read; the reported window is null,
+      // because printing `from: <cutoff>` next to `to: <an earlier date>` is a range that
+      // cannot exist, which is how this defect read on the wire.
+      from: cutoff,
+      nothing_read: true,
+      note: `Nothing was read. The free tier reads the last ${FREE_WINDOW_DAYS} days only, back to ${cutoff}, and every day you asked for (${from ?? "the start of the ledger"} to ${to}) is older than that, so this is not an empty result - the period was never opened. ` +
+        gate.upgradeText("full expense history"),
+    };
+  }
   return {
     from: cutoff,
-    note: `Free tier reads the last ${FREE_WINDOW_DAYS} days only, so this covers ${cutoff} onwards${from ? ` instead of ${from}` : ""}. ` +
+    note: `Free tier reads the last ${FREE_WINDOW_DAYS} days only, so this covers ${cutoff} to ${to ?? "today"}${from ? ` instead of ${from} to ${to ?? "today"}` : ""}. ` +
       gate.upgradeText("full expense history"),
   };
 }
@@ -265,15 +284,16 @@ server.registerTool("expense_list", {
     for (const [k, v] of Object.entries({ from: a.from, to: a.to })) {
       if (v && !isIsoDate(v)) return fail(`${k} must be YYYY-MM-DD, got "${v}".`);
     }
-    const w = windowNote(a.from);
+    const w = windowNote(a.from, a.to);
     const db = load();
     const rows = select(db, { ...a, from: w.from });
     const totals: Record<string, number> = {};
     for (const e of rows) totals[e.currency] = (totals[e.currency] ?? 0) + e.amount_minor;
     return json({
-      from: w.from ?? null, to: a.to ?? null, count: rows.length,
+      from: w.nothing_read ? null : (w.from ?? null), to: a.to ?? null, count: rows.length,
       totals_per_currency: Object.entries(totals).map(([c, v]) => formatMoney(v, c)),
       expenses: rows.map(view),
+      nothing_read: w.nothing_read,
       note: w.note,
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -519,10 +539,10 @@ server.registerTool("expense_summary", {
   try {
     if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
-    const w = windowNote(a.from);
+    const w = windowNote(a.from, a.to);
     const rows = select(load(), { from: w.from, to: a.to, project: a.project, billable: a.billable });
     const bankLine = bankLedgerLine(w.from, a.to, "statement_summary");
-    return json({ from: w.from, to: a.to, group_by: a.group_by, by_currency: summarise(rows, a.group_by), note: w.note, bank_ledger: bankLine });
+    return json({ from: w.nothing_read ? null : w.from, to: a.to, group_by: a.group_by, by_currency: summarise(rows, a.group_by), nothing_read: w.nothing_read, note: w.note, bank_ledger: bankLine });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
@@ -654,7 +674,7 @@ server.registerTool("expense_export", {
     if (a.format === "xlsx" && !pro) {
       return gated(`xlsx export is a Pro format. Nothing was written. Export as csv instead, which the free tier supports up to ${FREE_EXPORT_ROWS} rows.\n\n` + gate.upgradeText("xlsx export"));
     }
-    const w = windowNote(a.from);
+    const w = windowNote(a.from, a.to);
     const rows = select(load(), { from: w.from, to: a.to, project: a.project, category: a.category, billable: a.billable });
     if (!pro && rows.length > FREE_EXPORT_ROWS) {
       // Refuse before opening the file: a truncated export looks complete and is worse than none.
@@ -726,7 +746,7 @@ server.registerTool("expense_to_invoice", {
     // the exact double-tax shape expense_to_invoice exists to prevent. The item-count cap below is
     // the free-tier limit; the arithmetic is not.
     const markup = a.markup_percent ?? 0;
-    const w = windowNote(a.from);
+    const w = windowNote(a.from, a.to);
     return await locked(() => {
       const db = load();
       let rows = select(db, { from: w.from, to: a.to, project: a.project, billable: true });

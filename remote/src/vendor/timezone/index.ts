@@ -259,33 +259,62 @@ server.registerTool("overlap", {
 /* ----------------------------------------------------- find_meeting_slots */
 
 const participantSchema = z.object({
-  name: text(MAX_ZONE_TEXT, "name").min(1).describe("Person or client name"),
-  zone: text(MAX_ZONE_TEXT, "zone").min(1).describe("Their place or IANA zone"),
-  work_start: text(16, "work_start").optional().describe("Their local day start, default 09:00"),
-  work_end: text(16, "work_end").optional().describe("Their local day end, default 17:00"),
+  name: text(MAX_ZONE_TEXT, "name").min(1).describe("Person or client name. A name you already saved with contacts_set needs nothing else: their zone and working hours are read from the contact"),
+  zone: text(MAX_ZONE_TEXT, "zone").optional().describe("Their place or IANA zone. Optional: leave it out for a saved contact, and leave it out for YOURSELF - your own zone comes from your shared business profile, so you never have to be asked for it"),
+  work_start: text(16, "work_start").optional().describe("Their local day start, default 09:00 or the saved contact's"),
+  work_end: text(16, "work_end").optional().describe("Their local day end, default 17:00 or the saved contact's"),
 });
 
-function toParticipants(list: { name: string; zone: string; work_start?: string; work_end?: string }[]): Participant[] {
-  return list.map(p => {
-    const startMin = hhmmToMinutes(p.work_start ?? "09:00", `${p.name} work_start`);
-    const endMin = hhmmToMinutes(p.work_end ?? "17:00", `${p.name} work_end`);
+/**
+ * D-R82, the D-R64 species in a third server. "Find a slot that works for all three of us"
+ * used to be unanswerable: every participant needed an explicit `zone`, nothing surfaced the
+ * caller's own, and the model did the only thing left and asked the user what timezone they
+ * are in - a fact the shared business profile has carried since D-R31, and that this same
+ * file already reads for `now` and for the ICS organizer. Measured hosted in round 15: the
+ * turn produced no tool call at all. A zone is now optional and resolved from, in order, a
+ * saved contact of that name, then the shared business profile. Where each one came from is
+ * reported, because a slot computed against a guessed zone is worse than a question.
+ */
+function resolveParticipantZone(p: { name: string; zone?: string }, contacts: Record<string, Contact>):
+  { zone: string; source: string; contact?: Contact } {
+  if (p.zone) return { zone: zoneOf(p.zone), source: "the zone you passed" };
+  const saved = Object.values(contacts).find(c => c.name.trim().toLowerCase() === p.name.trim().toLowerCase());
+  if (saved) return { zone: saved.zone, source: `your saved contact "${saved.name}"`, contact: saved };
+  const home = readSharedProfile().timezone;
+  if (home) return { zone: zoneOf(home), source: "your shared business profile (set with business_set on any endpoint)" };
+  throw new Error(
+    `${p.name} has no timezone. Pass zone for them, or save them once with contacts_set {name, zone}. ` +
+    `If ${p.name} is you, set your own timezone once with business_set {timezone: "Europe/Warsaw"} on any endpoint ` +
+    `and every server behind this token reads it - you should not have to be asked for it again.`);
+}
+
+function toParticipants(list: { name: string; zone?: string; work_start?: string; work_end?: string }[]):
+  { parts: Participant[]; sources: string[] } {
+  const contacts = load().contacts;
+  const sources: string[] = [];
+  const parts = list.map(p => {
+    const r = resolveParticipantZone(p, contacts);
+    if (!p.zone) sources.push(`${p.name}: ${r.zone}, from ${r.source}`);
+    const startMin = hhmmToMinutes(p.work_start ?? r.contact?.workStart ?? "09:00", `${p.name} work_start`);
+    const endMin = hhmmToMinutes(p.work_end ?? r.contact?.workEnd ?? "17:00", `${p.name} work_end`);
     if (endMin <= startMin) throw new Error(`${p.name}: work_end must be after work_start`);
-    return { name: p.name, zone: zoneOf(p.zone), startMin, endMin };
+    return { name: p.name, zone: r.zone, startMin, endMin };
   });
+  return { parts, sources };
 }
 
 server.registerTool("find_meeting_slots", {
   title: "Find meeting slots",
   description: "Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first.",
   inputSchema: {
-    participants: z.array(participantSchema).min(1).max(MAX_PARTICIPANTS).describe("Who has to attend, with their zone and optional working hours. Every slot returned is inside all of their hours; weekends in the first participant's zone are skipped. Free tier: up to 3 participants"),
+    participants: z.array(participantSchema).min(1).max(MAX_PARTICIPANTS).describe("Who has to attend. A zone is OPTIONAL per person: a saved contact supplies their own, and anyone left without one (you, typically) takes the timezone on your shared business profile, so never ask the caller what timezone they are in - include yourself by name and let the server resolve it. Every slot returned is inside all of their hours; weekends in the first participant's zone are skipped. Free tier: up to 3 participants"),
     duration_minutes: z.number().int().positive().max(MAX_DURATION).optional().describe("Meeting length in minutes, default 60, at most 1440"),
     days: z.number().int().positive().max(MAX_DAYS).optional().describe("How many days ahead to search, default 5, at most 366. Free tier: a search longer than 5 days is shortened to 5, not refused"),
     earliest_date: text(MAX_ZONE_TEXT, "earliest_date").optional().describe("First date to consider, YYYY-MM-DD, default today"),
     limit: z.number().int().positive().max(100).optional().describe("How many slots to return, default 8. Slots are ranked by fairness: the score is the WORST participant's distance in hours from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody"),
     recurring: z.boolean().optional().describe("Pro: also report the weekly recurring times that work on every searched weekday"),
   },
-}, guard(async (a: { participants: { name: string; zone: string; work_start?: string; work_end?: string }[]; duration_minutes?: number; days?: number; earliest_date?: string; limit?: number; recurring?: boolean }) => {
+}, guard(async (a: { participants: { name: string; zone?: string; work_start?: string; work_end?: string }[]; duration_minutes?: number; days?: number; earliest_date?: string; limit?: number; recurring?: boolean }) => {
   const pro = gate.isPro();
   const duration = a.duration_minutes ?? 60;
   const asked = a.days ?? 5;
@@ -301,7 +330,11 @@ server.registerTool("find_meeting_slots", {
     : "";
   if (!pro && a.recurring) return gated("recurring-slot search");
 
-  const parts = toParticipants(a.participants);
+  const resolved = toParticipants(a.participants);
+  const parts = resolved.parts;
+  const zoneSources = resolved.sources.length
+    ? `\n\nZones you did not pass, and where each came from:\n${resolved.sources.map(r => `  ${r}`).join("\n")}`
+    : "";
   const first = a.earliest_date ? parseTimeIn(a.earliest_date, parts[0].zone) : new Date();
   const all = findSlots(parts, duration, days, first);
   if (!all.length) {
@@ -322,7 +355,7 @@ server.registerTool("find_meeting_slots", {
       `No slot fits everyone's working hours in the next ${days} day(s) for ${duration} minutes.\n${rows}` +
       nearText +
       `\n\nTry a shorter duration, widen someone's work_start/work_end, or use overlap to see how far apart the days are.` +
-      capped,
+      zoneSources + capped,
     );
   }
   const limit = Math.max(1, Math.min(a.limit ?? 8, pro ? 50 : 10));
@@ -347,7 +380,7 @@ server.registerTool("find_meeting_slots", {
     `${all.length} slot(s) fit all ${parts.length} participants (${duration} min, ${days} day(s)). ` +
     `Best first, ranked by fairness: the score is the worst participant's distance in hours from 13:00 local, ` +
     `so a slot that suits everybody outranks one that is 07:00 for someone. Weekends in ${parts[0].zone} are skipped.\n` +
-    lines.join("\n") + extra + note,
+    lines.join("\n") + zoneSources + extra + note,
   );
 }));
 
@@ -442,8 +475,15 @@ server.registerTool("contacts_list", {
   inputSchema: {},
 }, guard(async () => {
   const db = load();
+  // D-R82. A contact list that holds everyone EXCEPT the caller is why a model asked the
+  // user what timezone they are in. The home zone is on the shared business profile and
+  // this file already reads it; it just never showed it to anyone.
+  const home = readSharedProfile().timezone;
+  const youLine = home
+    ? `  You: ${zoneOf(home)}, ${describe(new Date(), zoneOf(home))} - from your shared business profile, so you never need to pass your own zone to find_meeting_slots`
+    : `  You: no timezone yet. Set it once with business_set {timezone: "Europe/Warsaw"} on any endpoint and every server behind this token reads it.`;
   const cs = Object.values(db.contacts).sort((a, b) => a.name.localeCompare(b.name));
-  if (!cs.length) return ok("No contacts saved yet. Use contacts_set with a name and a place.");
+  if (!cs.length) return ok(`No contacts saved yet. Use contacts_set with a name and a place.\n\n${youLine}`);
   const at = new Date();
   const rows = cs.map(c => {
     const w = wallIn(at, c.zone);
@@ -452,7 +492,7 @@ server.registerTool("contacts_list", {
       && weekdayIn(at, c.zone) !== "Sat" && weekdayIn(at, c.zone) !== "Sun";
     return `  ${c.name}: ${c.zone}, ${describe(at, c.zone)}, works ${c.workStart}-${c.workEnd} - ${inHours ? "available now" : "outside working hours"}`;
   });
-  return ok(`${cs.length} contact(s):\n${rows.join("\n")}`);
+  return ok(`${cs.length} contact(s):\n${rows.join("\n")}\n${youLine}`);
 }));
 
 /* ------------------------------------------------------------- ics_create */

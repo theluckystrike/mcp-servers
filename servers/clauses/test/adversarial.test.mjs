@@ -73,7 +73,9 @@ test("hostile arguments are refused by the schema, not by a crash", async (t) =>
   assert.match((await c.call("contract_assemble", { title: "T" })).text, /pass clause_ids or categories/);
   assert.match((await c.call("contract_assemble", { title: "T", clause_ids: ["nope-xyz"] })).text, /no clause matches "nope-xyz"/);
   assert.match((await c.call("variables_list", { clause_ids: ["nope-xyz"] })).text, /no clause matches/);
-  assert.match((await c.call("clause_add", { title: "Payment Terms", body: "dup", category: "payment" })).text, /already exists/);
+  // D-R80: this probe used to assert the vague "already exists", which was the defect
+  // asserted - "Payment Terms" is a STARTER clause, and saying so is the whole answer.
+  assert.match((await c.call("clause_add", { title: "Payment Terms", body: "dup", category: "payment" })).text, /STARTER clause \(payment-terms\)/);
   assert.equal(c.bad.length, 0, `non-JSON on stdout: ${c.bad.join(" | ")}`);
 });
 

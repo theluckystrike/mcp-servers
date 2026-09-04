@@ -192,8 +192,17 @@ server.registerTool("clause_add", {
         return ok(`The free tier holds ${FREE_OWN_CLAUSES} of your own clauses on top of the 25 starter clauses, and you have ${own}. ` +
           gate.upgradeText("an unlimited clause library"));
       }
-      if (db.clauses.some((c) => c.title.trim().toLowerCase() === a.title.trim().toLowerCase())) {
-        return fail(`a clause titled "${a.title}" already exists; use clause_update, or give a different title`);
+      // D-R80. The 25 starter clauses ship with this server and occupy the obvious titles
+      // ("Payment Terms", "Limitation of Liability"). The old error said only that the title
+      // "already exists" and offered clause_update, which reads as "you wrote this before" -
+      // so a model spent four extra calls searching for a clause of the caller's that was
+      // never there. Which library the collision is in is the whole answer, and the server
+      // knew it. Measured in round 15.
+      const clash = db.clauses.find((c) => c.title.trim().toLowerCase() === a.title.trim().toLowerCase());
+      if (clash) {
+        return fail(clash.starter
+          ? `"${a.title}" is the title of a STARTER clause (${clash.id}) that ships with this server, not one you wrote - you have not saved a clause by this name. Give yours a distinguishing title (for example "${a.title} (${a.jurisdiction ?? "yours"})") and both stay in the library, or call clause_update {id: "${clash.id}"} to overwrite the starter text with yours.`
+          : `a clause titled "${a.title}" already exists and it is one of yours (${clash.id}); use clause_update {id: "${clash.id}"}, or give a different title`);
       }
       const now = new Date().toISOString();
       const c: Clause = {

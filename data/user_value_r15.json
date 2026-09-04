@@ -1,0 +1,400 @@
+{
+  "at": "2026-09-04T11:10:00Z",
+  "round": 15,
+  "compares_to": "data/user_value_r14.json",
+  "scope": "HOSTED round for the four servers whose value is a SECOND PARTY: expense-tracker (the bank ledger its receipts are not), recurring (the invoice server it writes into), clauses (the 25 starter clauses that are not yours) and timezone (the two people on the other end, and you). Sixteen prompts, four per server, through https://mcp.zovo.one/mcp/<server>/t/<token> as a claude.ai user arrives. Free tier, one fresh anonymous token, two curl seeds.",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_fcafe20560c3d162ea9d4bbbb493081d, 8025-byte page) and reused for every lane. Registered PER LANE only, one http entry each, because the free tier is 600 calls per hour per token and a CLI session re-handshakes every registered endpoint on every turn (D-R53). Client: claude CLI 2.1.260, --model sonnet, --mcp-config with type http and the /t/<token> URL, --strict-mcp-config, no headers anywhere, per-tool allowlist of 51 mcp__<server>__<tool> entries from a live tools/list (expense-tracker 14, recurring 14, clauses 12, timezone 11), --output-format stream-json --verbose --max-turns 12, one --session-id then three --resume per lane. Per r11 D-R57 every lane ran in an EMPTY working directory with the CLI own filesystem tools disallowed (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite). All four lanes ran in parallel: they write different stores. Two curl seeds before the run: business_set on /mcp/invoice (Nova Studio, PL61109010140000071219812874, EUR, 23%, 14-day terms, Europe/Warsaw), and a four-row bank statement imported on /mcp/bank-statement under the SAME token, because the bank-ledger question is only worth asking if the ledger is present. Tool-call counts exclude the client ToolSearch schema lookups. Machine day 2026-09-04 on a UTC+07 host.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, 8025 bytes, minted anon_fcafe20560c3d162ea9d4bbbb493081d",
+    "registration": "four lanes, four http entries, each https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; every lane connected first try",
+    "tools_list": {
+      "expense-tracker": 14,
+      "recurring": 14,
+      "clauses": 12,
+      "timezone": 11
+    },
+    "seed": "business_set on /mcp/invoice, and a 4-row bank statement imported on /mcp/bank-statement under the same token"
+  },
+  "scenarios": [
+    {
+      "server": "expense-tracker",
+      "surface": "hosted/expense-tracker",
+      "id": "ex1",
+      "prompt": "Log three expenses for me: 2026-09-01 Figma subscription EUR 45 (software), 2026-09-02 taxi to a client meeting PLN 68 (travel), 2026-09-03 Adobe Creative Cloud EUR 22.99 (software).",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 21,
+      "tools": [
+        "expense_add x3"
+      ],
+      "note": "Every reply carried net, VAT and the rate WITH where the rate came from (the shared business profile default_tax_rate, set with business_set), and said unprompted that a receipt with no project is not billable and will not appear in expense_to_invoice. Two currencies, never mixed."
+    },
+    {
+      "server": "expense-tracker",
+      "surface": "hosted/expense-tracker",
+      "id": "ex2",
+      "prompt": "Give me a summary of September so far, grouped by category.",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 10,
+      "tools": [
+        "expense_summary"
+      ],
+      "note": "EUR software 67.99 and PLN travel 68.00, per currency, correct to the cent. And no bank_ledger line, with four bank transactions stored under the SAME token in the same month worth EUR 177.40 out. The D-B4 cross-server warning is dead on every hosted endpoint. D-R76, fixed."
+    },
+    {
+      "server": "expense-tracker",
+      "surface": "hosted/expense-tracker",
+      "id": "ex3",
+      "prompt": "Export those September expenses as a CSV I can download.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10,
+      "tools": [
+        "expense_export"
+      ],
+      "note": "GET the link: 200, text/csv; charset=utf-8, 389 bytes, filename=expenses-2026-09-01-to-2026-09-04.csv, 16 columns, exactly the three rows, 45,45,36.59,8.41,23 on the Figma row."
+    },
+    {
+      "server": "expense-tracker",
+      "surface": "hosted/expense-tracker",
+      "id": "ex4",
+      "prompt": "Now show me everything I logged in June 2026.",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 10,
+      "tools": [
+        "expense_list"
+      ],
+      "note": "Returned from 2026-08-05, to 2026-06-30: a window whose start is six weeks after its end, and a note claiming it covers 2026-08-05 onwards. Nothing was read. The model saw through it and relayed it correctly, which is the only reason this is not a 1. D-R77, fixed."
+    },
+    {
+      "server": "recurring",
+      "surface": "hosted/recurring",
+      "id": "rc1",
+      "prompt": "Set up a monthly retainer for Beta Corp: EUR 1500 for the ongoing platform retainer, first invoice 2026-09-01.",
+      "score": 2,
+      "tool_calls": 2,
+      "seconds": 32,
+      "tools": [
+        "schedule_list",
+        "schedule_create"
+      ],
+      "note": "Correct in every respect, and the reply's only money figure was amount EUR 1845.00 against a prompt that said 1500. The model stopped and asked whether the server had misunderstood the price or added tax. /mcp/invoice invoice_list breaks the identical number into subtotal 1500 plus 23% = 345. D-R78, fixed."
+    },
+    {
+      "server": "recurring",
+      "surface": "hosted/recurring",
+      "id": "rc2",
+      "prompt": "Do a dry run so I can see what would be invoiced right now before anything is created.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10,
+      "tools": [
+        "invoice_generate_due dry_run"
+      ],
+      "note": "One occurrence, period 2026-09-01, still_due_after_this_run 0, and the sentence that makes a dry run safe to trust: nothing was created, and the real run is idempotent, keyed by the occurrence date."
+    },
+    {
+      "server": "recurring",
+      "surface": "hosted/recurring",
+      "id": "rc3",
+      "prompt": "Looks right. Run it for real and give me the invoice.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10,
+      "tools": [
+        "invoice_generate_due"
+      ],
+      "note": "INV-2026-0001 Beta Corp period 2026-09-01 EUR 1845.00 due 2026-09-15 plus a link, and it said the invoices land in the store /mcp/invoice reads. Verified: invoice_list on that second endpoint, same token, returns exactly that invoice, unpaid, total_minor 184500."
+    },
+    {
+      "server": "recurring",
+      "surface": "hosted/recurring",
+      "id": "rc4",
+      "prompt": "What is coming up on that schedule over the next six months?",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 14,
+      "tools": [
+        "schedule_upcoming"
+      ],
+      "note": "count 3, occurrences_found_in_horizon 6, three rows of EUR 1845.00 and totals_per_currency EUR 11070.00, which is six of them. The model closed the gap by printing a six-row table, three rows of which it had never been sent. D-R79, fixed."
+    },
+    {
+      "server": "clauses",
+      "surface": "hosted/clauses",
+      "id": "cl1",
+      "prompt": "Save these two clauses for me (payment terms and limitation of liability, Poland, pasted in full). Tag both retainer and b2b.",
+      "score": 2,
+      "tool_calls": 6,
+      "seconds": 28,
+      "tools": [
+        "clause_add x2 (refused)",
+        "clause_search x2",
+        "clause_add x2"
+      ],
+      "note": "Both titles belong to the STARTER library that ships with the server, not to anything the caller wrote, and the error did not say so. The model read it as 'you wrote this before', spent two searches on clauses that were never there, then renamed to (Poland) and saved both. D-R80, fixed."
+    },
+    {
+      "server": "clauses",
+      "surface": "hosted/clauses",
+      "id": "cl2",
+      "prompt": "Find my payment clauses that apply in Poland.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9,
+      "tools": [
+        "clause_search"
+      ],
+      "note": "One clause_search with query, category and jurisdiction PL: FREE per GUARDRAILS_RESULT, and this prompt is the reason it is free. One result, payment-terms-poland, score 98, starter false."
+    },
+    {
+      "server": "clauses",
+      "surface": "hosted/clauses",
+      "id": "cl3",
+      "prompt": "Assemble a Service Agreement for Beta Corp using my payment and liability clauses, EUR 1500 per month, 14 day payment terms, liability cap EUR 18000. Give me a Word file I can download.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 23,
+      "tools": [
+        "variables_list",
+        "contract_assemble"
+      ],
+      "note": "variables_list first, and the model relayed its most useful output unprompted: neither clause has a fee placeholder so EUR 1,500 will not appear in the document. GET the link: 200, Word content type, 9,955 bytes, PK; word/document.xml holds 'within 14 days', 'statutory interest', '18,000' and 'intentionally' once each and zero {{."
+    },
+    {
+      "server": "clauses",
+      "surface": "hosted/clauses",
+      "id": "cl4",
+      "prompt": "Now search my clauses again but only the ones tagged retainer.",
+      "score": 2,
+      "tool_calls": 2,
+      "seconds": 22,
+      "tools": [
+        "clause_search",
+        "clause_list"
+      ],
+      "note": "The search ran, the tag filter was skipped and the payload said so by name, which is the GUARDRAILS rule working. The gap is what it does not say: clause_list is free and returns the tags of all 27 clauses. The model found that itself, on a second call. D-R81, logged."
+    },
+    {
+      "server": "timezone",
+      "surface": "hosted/timezone",
+      "id": "tz1",
+      "prompt": "Save two contacts for me: Ann in New York and Kenji in Tokyo.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 13,
+      "tools": [
+        "contacts_set x2"
+      ],
+      "note": "Bare place names resolved to America/New_York and Asia/Tokyo, default hours named, and each reply gave the current local time there."
+    },
+    {
+      "server": "timezone",
+      "surface": "hosted/timezone",
+      "id": "tz2",
+      "prompt": "Find me a 60 minute meeting slot with Ann and Kenji in the next week that works for all three of us.",
+      "score": 1,
+      "tool_calls": 0,
+      "seconds": 13,
+      "tools": [],
+      "note": "NO TOOL RAN. The model asked the user what timezone they are in. Europe/Warsaw is on the shared business profile, this same file already reads it for now and for the ICS organizer, and zoneOf('home') resolves it, but find_meeting_slots made zone required per participant and contacts_list held everyone except the caller. The D-R64 species, third server. D-R82, fixed."
+    },
+    {
+      "server": "timezone",
+      "surface": "hosted/timezone",
+      "id": "tz3",
+      "prompt": "What time is 2026-11-05 09:00 Warsaw for Ann in New York? I want to be sure the daylight saving changes are handled.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 14,
+      "tools": [
+        "convert_time"
+      ],
+      "note": "09:00 Warsaw (GMT+1) to 03:00 New York (EST, UTC-05:00), UTC instant 2026-11-05T08:00:00.000Z. Both zones have left DST by 5 November (EU 25 Oct, US 1 Nov), the offsets prove it, and the model named both dates and the steady 6-hour gap."
+    },
+    {
+      "server": "timezone",
+      "surface": "hosted/timezone",
+      "id": "tz4",
+      "prompt": "Book that November 5th call as a 60 minute meeting and give me an .ics file I can download.",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 27,
+      "tools": [
+        "ics_create (second turn)"
+      ],
+      "note": "No tool ran on the first turn: the model warned that 03:00 is the middle of Ann's night and asked whether to book anyway. On the second turn one ics_create. GET: 200, text/calendar; charset=utf-8, 472 bytes, meeting.ics, and the file parses: BEGIN:VEVENT, DTSTART:20261105T080000Z, DTEND:20261105T090000Z, SUMMARY, ORGANIZER;CN=\"Nova Studio\". Ann and Kenji have no email so the server put them in DESCRIPTION and said why."
+    }
+  ],
+  "totals": {
+    "score": 39,
+    "max": 48,
+    "tool_calls": 26,
+    "seconds": 266.0,
+    "per_server": {
+      "expense-tracker": {
+        "score": 10,
+        "max": 12
+      },
+      "recurring": {
+        "score": 10,
+        "max": 12
+      },
+      "clauses": {
+        "score": 10,
+        "max": 12
+      },
+      "timezone": {
+        "score": 9,
+        "max": 12
+      }
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "four lanes, four /t/<token> entries, every lane connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The CSV is a real CSV",
+      "evidence": "GET -> 200, text/csv; charset=utf-8, 389 B, expenses-2026-09-01-to-2026-09-04.csv, 16-column header, 3 data rows, eade809e,2026-09-01,EUR,45,45,36.59,8.41,23,software,Figma",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The contract is a real .docx",
+      "evidence": "9,955 B, magic 50 4b 03 04, the Word content type; word/document.xml holds 'within 14 days', 'statutory interest', '18,000' and 'intentionally' once each and {{ zero times",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The .ics is a real calendar file",
+      "evidence": "472 B, text/calendar, BEGIN:VCALENDAR / VERSION:2.0 / BEGIN:VEVENT / DTSTART:20261105T080000Z / DTEND:20261105T090000Z / END:VEVENT; DTSTART is 09:00 Warsaw on a post-DST date to the second",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The invoice really crossed endpoints",
+      "evidence": "invoice_list by curl on /mcp/invoice, same token: INV-2026-0001, Beta Corp, subtotal EUR 1500.00, 23% on EUR 1500.00 = EUR 345.00, total EUR 1845.00, unpaid",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The jurisdiction filter is free",
+      "evidence": "clause_search {jurisdiction: PL} answered on the free tier, one result, no gate text",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The tag filter skips rather than refuses",
+      "evidence": "clause_search {tags} returned results-shaped output plus free_tier_note naming the dropped filter",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The summary names the bank ledger when present",
+      "evidence": "4 bank transactions imported for the token; expense_summary returned no bank_ledger field at all",
+      "verdict": "FAIL, D-R76, fixed"
+    },
+    {
+      "claim": "The free window shortens rather than lying",
+      "evidence": "expense_list {from 06-01, to 06-30} -> from 2026-08-05, to 2026-06-30, note claiming coverage 2026-08-05 onwards",
+      "verdict": "FAIL, D-R77, fixed"
+    },
+    {
+      "claim": "A recurring amount is legible",
+      "evidence": "schedule_create -> amount EUR 1845.00 and nothing else, for a EUR 1500 retainer",
+      "verdict": "FAIL, D-R78, fixed"
+    },
+    {
+      "claim": "An upcoming total matches its rows",
+      "evidence": "3 rows of EUR 1845.00 above totals_per_currency EUR 11070.00",
+      "verdict": "FAIL, D-R79, fixed"
+    },
+    {
+      "claim": "A title collision names the library it hit",
+      "evidence": "'a clause titled Payment Terms already exists; use clause_update' - for a starter clause",
+      "verdict": "FAIL, D-R80, fixed"
+    },
+    {
+      "claim": "Your own timezone is never asked for",
+      "evidence": "find_meeting_slots required zone per participant; contacts_list had no row for the caller",
+      "verdict": "FAIL, D-R82, fixed"
+    },
+    {
+      "claim": "After the fixes, live on version 38ce5e28",
+      "evidence": "fresh token anon_7cc163f79f32d66bfc0f7d696a7bbef7: bank_ledger line present; expense_list from null with nothing_read true; schedule_list subtotal EUR 1500.00 plus 23% = EUR 345.00; totals_cover names 6 found vs 3 listed and EUR 5535.00; clause_add names the STARTER clause; find_meeting_slots resolves Me/Ann/Kenji from nothing but names; contacts_list shows 'You: Europe/Warsaw ... from your shared business profile'",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R76",
+      "severity": "high",
+      "servers": [
+        "expense-tracker"
+      ],
+      "status": "fixed",
+      "title": "The hosted expense summary never names the bank ledger, because the bank ledger is a separate tenant document it cannot read and 'absent' was treated as 'you do not have bank-statement'",
+      "fix": "remote/build-vendor.mjs replaces bankLedgerLine for the hosted build with an unconditional sentence: these are hand-logged receipts only, statements imported under this token are in a separate store on /mcp/bank-statement that this endpoint cannot read, no count of them can be given here, call that endpoint's statement_summary or statement_export"
+    },
+    {
+      "id": "D-R77",
+      "severity": "medium",
+      "servers": [
+        "expense-tracker"
+      ],
+      "status": "fixed",
+      "title": "The free 30-day window clamped from forward past to, returning a range whose start is after its end and a note describing it as coverage",
+      "fix": "windowNote(from, to) in servers/expense-tracker/src/index.ts has three outcomes: untouched, shortened with both ends named, or nothing_read true with from reported as null and a note that opens 'Nothing was read' and closes 'the period was never opened'. The clamp still governs the SELECT. servers/expense-tracker/test/round15.test.mjs, 3 tests, non-vacuous in both directions"
+    },
+    {
+      "id": "D-R78",
+      "severity": "medium",
+      "servers": [
+        "recurring"
+      ],
+      "status": "fixed",
+      "title": "Every amount the server printed was gross - line items plus the shared profile default_tax_rate - and never said so, while the sibling that issues the invoice breaks the same number into subtotal and tax",
+      "fix": "scheduleAmounts() in servers/recurring/src/index.ts is the single money-display path and returns amount, subtotal, tax per rate in invoice_list's own wording, and amount_includes_tax; summarize() and the schedule_upcoming rows spread it. Storage and arithmetic untouched. 2 tests"
+    },
+    {
+      "id": "D-R79",
+      "severity": "medium",
+      "servers": [
+        "recurring"
+      ],
+      "status": "fixed",
+      "title": "schedule_upcoming totalled every occurrence found while listing only the free-tier slice, so no visible row added up to the total, and the model invented the three rows it was never sent",
+      "fix": "totals_cover names which set the grand total covers, and totals_per_currency_listed_rows gives the sum of the rows actually returned when any were withheld. 3 tests, including one that the internal per-occurrence minor value never leaks"
+    },
+    {
+      "id": "D-R80",
+      "severity": "medium",
+      "servers": [
+        "clauses"
+      ],
+      "status": "fixed",
+      "title": "A title collision with one of the 25 starter clauses was reported as a collision with the caller's own, costing four calls",
+      "fix": "The clause_add error branches on clash.starter: it names the starter clause and its id, says you have not saved a clause by this name, and offers both a distinguishing title suggested from the jurisdiction passed and clause_update {id}. The adversarial probe that asserted the vague wording now asserts the starter sentence. 3 tests"
+    },
+    {
+      "id": "D-R81",
+      "severity": "low",
+      "servers": [
+        "clauses"
+      ],
+      "status": "logged",
+      "title": "The tag-filter skip message names the dropped filter but not clause_list, which is free and carries the tags of all 27 clauses",
+      "fix": "not fixed this round; the model found clause_list itself on a second call"
+    },
+    {
+      "id": "D-R82",
+      "severity": "high",
+      "servers": [
+        "timezone"
+      ],
+      "status": "fixed",
+      "title": "find_meeting_slots required a zone per participant and contacts_list held everyone except the caller, so the model asked the user what timezone they are in and made no tool call at all - the D-R64 species in a third server",
+      "fix": "zone is optional and resolved in order: the zone passed, a saved contact of that name with its own working hours, then the shared business profile timezone; where each unpassed zone came from is reported; with neither it refuses by naming contacts_set and business_set rather than asking. contacts_list ends with a You: row carrying the home zone. 7 tests, including a saved contact's 11:00-15:00 hours yielding strictly fewer slots than the default"
+    }
+  ]
+}

@@ -189,6 +189,28 @@ function scheduleTotalMinor(s: Schedule, currency: string): number {
   return t.total_minor;
 }
 
+/**
+ * D-R78. Every amount this server prints is the GROSS total: the line items plus whatever
+ * default_tax_rate the shared business profile carries. A caller who set up "EUR 1500 a
+ * month" and read back "amount: EUR 1845.00" has no way to tell whether the server
+ * misunderstood the price or added tax, and the sibling that actually issues the invoice
+ * (/mcp/invoice invoice_list) breaks the same number into subtotal + tax and total. Measured
+ * in round 15: the model stopped and asked the user which of the two had happened. The number
+ * was right; the one line that made it legible was on the other endpoint. Now it is on both.
+ */
+function scheduleAmounts(s: Schedule, currency: string): { amount: string; subtotal: string; tax: string[]; amount_includes_tax: boolean } {
+  const biz = getBusiness();
+  const t = computeTotals(s.items as ScheduleItem[], currency, 0, biz.default_tax_rate);
+  const tax = (t.tax_lines ?? []).filter((l) => l.rate || l.tax_minor)
+    .map((l) => `${l.rate}% on ${formatMoney(l.base_minor, currency)} = ${formatMoney(l.tax_minor, currency)}`);
+  return {
+    amount: formatMoney(t.total_minor, currency),
+    subtotal: formatMoney(t.subtotal_minor, currency),
+    tax,
+    amount_includes_tax: t.total_minor !== t.subtotal_minor,
+  };
+}
+
 function currencyOf(s: Schedule): string {
   return (s.currency ?? getBusiness().default_currency).toUpperCase();
 }
@@ -199,7 +221,7 @@ function summarize(s: Schedule, asOf: string) {
     id: s.id,
     client: s.client,
     every: everyLabel(s.every),
-    amount: formatMoney(scheduleTotalMinor(s, cur), cur),
+    ...scheduleAmounts(s, cur),
     currency: cur,
     start_date: s.start_date,
     end_date: s.end_date ?? null,
@@ -488,7 +510,7 @@ server.registerTool("schedule_upcoming", {
         if (upcomingDone.has(`${s.id}|${d}`)) continue;
         rows.push({
           due_date: d, schedule_id: s.id, client: s.client, every: everyLabel(s.every),
-          amount: formatMoney(per, cur), currency: cur,
+          ...scheduleAmounts(s, cur), currency: cur, _minor: per,
           invoice_due: addDays(d, s.due_days ?? getBusiness().payment_terms_days),
         });
         totals[cur] = (totals[cur] ?? 0) + per;
@@ -499,12 +521,18 @@ server.registerTool("schedule_upcoming", {
     // occurrences were withheld - never return a shorter horizon than the one asked for.
     const foundInHorizon = rows.length;
     let shown = rows;
+    const shownTotals: Record<string, number> = {};
     if (!gate.isPro() && foundInHorizon > FREE_UPCOMING_PERIODS) {
       shown = rows.slice(0, FREE_UPCOMING_PERIODS);
       note = `Free tier lists ${FREE_UPCOMING_PERIODS} occurrences per call: showing ${FREE_UPCOMING_PERIODS} of ${foundInHorizon} found in the ${days}-day horizon you asked for. ${gate.upgradeText("every occurrence in the horizon")}`;
     }
     // D-R5: "what is due" also means the periods that already fell due and were never
     // invoiced. Looking only forward hid a whole unbilled month from the answer.
+    for (const r of shown) {
+      const c = String(r.currency);
+      shownTotals[c] = (shownTotals[c] ?? 0) + Number(r._minor ?? 0);
+    }
+    for (const r of rows) delete (r as Record<string, unknown>)._minor;
     const history = getHistory();
     const done = generatedKeys(history);
     const backlog: Array<Record<string, unknown>> = [];
@@ -526,7 +554,16 @@ server.registerTool("schedule_upcoming", {
       past_due_not_yet_invoiced: backlog.length
         ? { count: backlog.length, periods: backlog.slice(0, MAX_PERIODS_PER_RUN), hint: "run invoice_generate_due to create these" }
         : undefined,
+      // D-R79. `totals` is summed over every occurrence FOUND, and the free tier lists only
+      // the first few, so the total used to be a figure the rows on screen could not add up
+      // to, with nothing saying which set it covered. Measured in round 15: 3 rows of
+      // EUR 1845.00 printed above a total of EUR 11070.00, and the model filled the gap by
+      // inventing the three occurrences it had never been sent. Both totals are named now.
       totals_per_currency: Object.entries(totals).map(([c, v]) => formatMoney(v, c)),
+      totals_cover: shown.length === foundInHorizon
+        ? `all ${foundInHorizon} occurrence(s) in the horizon, every one of them listed above`
+        : `all ${foundInHorizon} occurrence(s) found in the horizon, which is MORE than the ${shown.length} listed above: the rows you can see add up to ${Object.entries(shownTotals).map(([c, v]) => formatMoney(v, c)).join(", ")}`,
+      totals_per_currency_listed_rows: shown.length === foundInHorizon ? undefined : Object.entries(shownTotals).map(([c, v]) => formatMoney(v, c)),
       note: note || undefined,
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
