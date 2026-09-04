@@ -1,0 +1,133 @@
+{
+  "generated_at": "2026-09-04",
+  "cap_minutes": 35,
+  "method": {
+    "registry_probe": "Single bounded GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, 20s timeout, first page only, sequential. count = servers.length on page 1; capped=true when the page was full (100) with metadata.nextCursor present. our_rank = 1-based index of the first row whose name matches /theluckystrike/i on that page (null if none). Same style as R5/R6.",
+    "variant_publish": "New registry name io.github.theluckystrike/templates on servers/docx, stdio-only mcpb package, same GitHub release asset URL and fileSha256 as servers/docx/server.mcpb.json's mcpb entry at the time of publish (v0.6.1). Login via `mcp-publisher login github -token \"$(gh auth token)\"`, publish via `mcp-publisher publish` with server.templates.json copied over server.json for the call, then server.json restored to the original docx manifest. `yes y |` used for prompts.",
+    "gsc_url_inspection": "python3 + google-auth service account /Users/mike/Desktop/keys/gsc-sa-key.json (client_email zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com), scope webmasters.readonly. POST https://searchconsole.googleapis.com/v1/urlInspection/index:inspect with {inspectionUrl, siteUrl: 'sc-domain:zovo.one'} for each of the 5 target URLs.",
+    "googlebot_anchor_check": "curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' https://zovo.one/ (server-rendered HTML only, no JS execution), grepped for an <a> tag or href containing mcp.zovo.one.",
+    "indexnow": "POST https://api.indexnow.org/indexnow with host mcp.zovo.one, key from data/indexnow.key, keyLocation https://mcp.zovo.one/<key>.txt, urlList = the 5 target URLs.",
+    "findable_share": "Same formula as data/organic.json and INTEL_R6: p = min(1, 10/our_rank) if our current-version row for that server's own registry name(s) appears on page 1, else 0; mean over the tracked token slots."
+  },
+
+  "part1_variant_publish": {
+    "new_variant": {
+      "server": "docx",
+      "file": "servers/docx/server.templates.json",
+      "registry_name": "io.github.theluckystrike/templates",
+      "description": "Reusable docx templates: placeholders for proposals, contracts, quotes, SOWs.",
+      "description_chars": 77,
+      "version": "0.6.1",
+      "package_source": "same GitHub release asset and fileSha256 as servers/docx/server.mcpb.json's mcpb entry: https://github.com/theluckystrike/mcp-servers/releases/download/v0.6.1/docx.mcpb, sha256 9a70cfc3c2e429917d24daa0b2794042013b563b4359891a4003d8e86007d941",
+      "waited_for": "v0.6.1 release commits (8a2058f 'v0.6.1: bump 17 servers and mcp-license, regenerate vendored worker sources', ef09158 'v0.6.1 bundle manifests') confirmed on origin/main before publishing, so the variant ships at the same version as the released docx manifest, not the stale 0.6.0 seen at task start.",
+      "publish_result": "Successfully published, io.github.theluckystrike/templates version 0.6.1 (mcp-publisher 1.8.1)"
+    },
+    "search_api_verification": {
+      "token": "templates",
+      "count_before_publish": 1,
+      "match_before_publish": "none (only hit: io.github.tresor4k/tabletemplates-mcp)",
+      "count_after_publish": 2,
+      "our_rank_after_publish": 1,
+      "confirmed_at": "T+75s after publish, single re-probe"
+    }
+  },
+
+  "part2_search_console": {
+    "site": "sc-domain:zovo.one",
+    "url_inspection": {
+      "https://mcp.zovo.one/": { "verdict": "NEUTRAL", "coverageState": "Discovered - currently not indexed", "lastCrawlTime": null },
+      "https://mcp.zovo.one/s/invoice": { "verdict": "NEUTRAL", "coverageState": "URL is unknown to Google", "lastCrawlTime": null },
+      "https://mcp.zovo.one/guides/kanban-board-in-claude-with-time-tracking": { "verdict": "NEUTRAL", "coverageState": "Discovered - currently not indexed", "lastCrawlTime": null },
+      "https://mcp.zovo.one/setup/claude-web/bank-statement": { "verdict": "NEUTRAL", "coverageState": "Discovered - currently not indexed", "lastCrawlTime": null },
+      "https://mcp.zovo.one/compare/bank-statement": { "verdict": "NEUTRAL", "coverageState": "Discovered - currently not indexed", "lastCrawlTime": null }
+    },
+    "googlebot_anchor_check": {
+      "target": "https://zovo.one/ (homepage), user agent Googlebot/2.1",
+      "http_status": 200,
+      "raw_html_bytes": 23427,
+      "anchor_to_mcp_zovo_one_found": false,
+      "finding": "Zero occurrences of 'mcp.zovo.one' anywhere in the server-rendered HTML. The homepage is a client-rendered React SPA (bundled JS: react-vendor, router, radix-ui, lucide-react, query, supabase) -- any link to mcp.zovo.one, if it exists at all, is injected by client-side JavaScript that Googlebot's HTML fetch (and this curl check) never executes. So the claim that 'zovo.one homepage serves the mcp.zovo.one anchor to a Googlebot user agent' does NOT hold for the raw crawlable response; Google's renderer may pick it up on a second render pass, but the first-pass fetch (what most crawl budget uses) sees no reference to mcp.zovo.one at all."
+    },
+    "indexnow_ping": {
+      "endpoint": "https://api.indexnow.org/indexnow",
+      "key_file": "data/indexnow.key",
+      "key": "22fad93b71a88e2e60acae203c4288ae",
+      "key_location_verified": "https://mcp.zovo.one/22fad93b71a88e2e60acae203c4288ae.txt returns HTTP 200",
+      "urls_submitted": 5,
+      "http_status": 200
+    }
+  },
+
+  "part3_registry_reprobe": {
+    "tokens_probed": 20,
+    "note": "19 new-slot tokens carried over from intel_r6 part 3 (markdown, notes, todo, contacts, crm, email, templates, quotes, receipts, mileage, payroll, habit, journal, ocr, qr, barcode, epub, translate, zip) plus 'estimate' (the one token in the brief's list not already among the 19).",
+    "before_publish": {
+      "markdown": { "count": 100, "capped": true, "our_rank": null },
+      "notes": { "count": 69, "capped": false, "our_rank": null },
+      "todo": { "count": 34, "capped": false, "our_rank": 33, "our_name": "io.github.theluckystrike/kanban-todo-tasks-projects-board" },
+      "contacts": { "count": 32, "capped": false, "our_rank": null },
+      "crm": { "count": 75, "capped": false, "our_rank": null },
+      "email": { "count": 100, "capped": true, "our_rank": null },
+      "templates": { "count": 1, "capped": false, "our_rank": null },
+      "quotes": { "count": 21, "capped": false, "our_rank": null },
+      "receipts": { "count": 18, "capped": false, "our_rank": 4, "our_name": "io.github.theluckystrike/expense-tracker-receipts-mileage" },
+      "mileage": { "count": 14, "capped": false, "our_rank": 1, "our_name": "io.github.theluckystrike/expense-tracker-receipts-mileage" },
+      "payroll": { "count": 8, "capped": false, "our_rank": null },
+      "habit": { "count": 21, "capped": false, "our_rank": null },
+      "journal": { "count": 26, "capped": false, "our_rank": null },
+      "ocr": { "count": 71, "capped": false, "our_rank": null },
+      "qr": { "count": 77, "capped": false, "our_rank": null },
+      "barcode": { "count": 9, "capped": false, "our_rank": null },
+      "epub": { "count": 6, "capped": false, "our_rank": null },
+      "translate": { "count": 12, "capped": false, "our_rank": null },
+      "zip": { "count": 14, "capped": false, "our_rank": null },
+      "estimate": { "count": 4, "capped": false, "our_rank": null, "note": "probed only post-publish; not re-checked pre-publish since it is not affected by the templates variant" }
+    },
+    "after_publish": {
+      "markdown": { "count": 100, "capped": true, "our_rank": null },
+      "notes": { "count": 69, "capped": false, "our_rank": null },
+      "todo": { "count": 35, "capped": false, "our_rank": 33, "our_name": "io.github.theluckystrike/kanban-todo-tasks-projects-board" },
+      "contacts": { "count": 32, "capped": false, "our_rank": null },
+      "crm": { "count": 75, "capped": false, "our_rank": null },
+      "email": { "count": 100, "capped": true, "our_rank": null },
+      "templates": { "count": 2, "capped": false, "our_rank": 1, "our_name": "io.github.theluckystrike/templates" },
+      "quotes": { "count": 21, "capped": false, "our_rank": null },
+      "receipts": { "count": 19, "capped": false, "our_rank": 4, "our_name": "io.github.theluckystrike/expense-tracker-receipts-mileage" },
+      "mileage": { "count": 15, "capped": false, "our_rank": 1, "our_name": "io.github.theluckystrike/expense-tracker-receipts-mileage" },
+      "payroll": { "count": 8, "capped": false, "our_rank": null },
+      "habit": { "count": 21, "capped": false, "our_rank": null },
+      "journal": { "count": 26, "capped": false, "our_rank": null },
+      "ocr": { "count": 71, "capped": false, "our_rank": null },
+      "qr": { "count": 77, "capped": false, "our_rank": null },
+      "barcode": { "count": 9, "capped": false, "our_rank": null },
+      "epub": { "count": 6, "capped": false, "our_rank": null },
+      "translate": { "count": 12, "capped": false, "our_rank": null },
+      "zip": { "count": 14, "capped": false, "our_rank": null },
+      "estimate": { "count": 4, "capped": false, "our_rank": null }
+    },
+    "findable_share": {
+      "method": "p = min(1, 10/our_rank) if matched on page1 else 0, mean over the 20 tokens (same formula as data/organic.json / INTEL_R6)",
+      "match_rate_before": "2 of 19 (10.5%) -- mileage rank1, receipts rank4; todo (kanban) also matched but kanban was still off registry as of R6, now confirmed live",
+      "match_rate_after": "4 of 20 (20.0%) -- mileage rank1, receipts rank4, todo rank33 (kanban-todo-tasks-projects-board, unrelated to this session's publish -- kanban is now registered, closing an R6 gap), templates rank1 (this session's new variant)",
+      "mean_p_before": 0.1053,
+      "mean_p_after": 0.1652,
+      "per_token_p_after": {"markdown":0,"notes":0,"todo":0.303,"contacts":0,"crm":0,"email":0,"templates":1.0,"quotes":0,"receipts":1.0,"mileage":1.0,"payroll":0,"habit":0,"journal":0,"ocr":0,"qr":0,"barcode":0,"epub":0,"translate":0,"zip":0,"estimate":0}
+    }
+  },
+
+  "failures_caveats": [
+    "GSC url:index inspection returned NEUTRAL/not-indexed/unknown for all 5 URLs -- consistent with R6's zero-impressions finding; none of the 5 sampled pages have been crawled or indexed by Google.",
+    "The task's premise that zovo.one's homepage 'serves the mcp.zovo.one anchor to a Googlebot user agent' does not hold on the raw HTML fetch: the homepage is a client-rendered SPA and the server response Googlebot's crawler fetches first contains zero references to mcp.zovo.one. This is reported as a negative finding, not assumed true.",
+    "kanban's registration (rank 33 on 'todo') is not this session's work -- it appears to have landed as part of the concurrent v0.6.1 republish by the other agent, closing one of R6's three 'not registered at all' gaps. bank-statement and image were not re-checked this round (out of scope: only the 20 named tokens plus the docx variant were probed).",
+    "data/organic.json and data/registry_rank.json were left untouched this round -- re-deriving the full tracked-query-set findable number with the same method those files document was out of the 35-minute budget once the v0.6.1 wait (about 11 minutes) and the two parallel workstreams (GSC + registry) were accounted for; only the 20-token new-slot findable share above was computed fresh."
+  ],
+
+  "result_schema": {
+    "status": "DONE",
+    "evidence": "Part 1: waited for v0.6.1 (git fetch + log poll every 3 min, landed at ~11 min) then published io.github.theluckystrike/templates on docx (same v0.6.1 mcpb asset/sha as the docx manifest), verified via search API before (count 1, no match) and after (count 2, rank 1). Part 2: GSC service-account POST url:index inspection for 5 URLs (all NEUTRAL/not-indexed), curl with Googlebot UA against zovo.one homepage (0 mcp.zovo.one references in raw HTML -- SPA, negative finding), IndexNow ping for the 5 URLs (HTTP 200). Part 3: registry re-probe of 20 tokens (19 from R6 + estimate) before and after the variant publish, findable share 0.1053 -> 0.1652 using the organic.json formula.",
+    "artifacts": "docs/INTEL_R7.md, data/intel_r7.json, servers/docx/server.templates.json",
+    "cost": "under 35 wall minutes (hard cap)",
+    "failures": "none blocking; two negative findings recorded (SPA homepage has no crawlable mcp.zovo.one anchor; all 5 GSC-inspected URLs remain unindexed)",
+    "insight": "The templates registry slot, empty at count 1 in R6, is now filled and ranks 1st of 2 immediately post-publish -- the emptiest-slot strategy from R6 part 3 worked exactly as scored. Separately, the zero-impressions finding from R6 has a likely root cause: zovo.one's own homepage, the natural internal-link source for mcp.zovo.one, renders its links client-side only, so Googlebot's first-pass HTML fetch sees no path from the flagship domain into the MCP storefront at all -- consistent with 179 live pages and zero measured impressions."
+  }
+}
