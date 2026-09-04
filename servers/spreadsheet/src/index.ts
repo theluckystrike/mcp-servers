@@ -118,13 +118,13 @@ function withNotes(notes: string[], body: string) {
  * D-1: the free write cap must never produce a partial file that looks complete.
  * Over the cap we write nothing at all and return the reason plus a free workaround.
  */
-function writeCapRefusal(rowCount: number, what: string, workaround: string): string | null {
+function writeCapRefusal(rowCount: number, what: string, workaround: string, toolName: string): string | null {
   if (gate.isPro() || rowCount <= FREE_WRITE_ROWS) return null;
   return [
     `Nothing was written. ${what} would be ${rowCount} rows and the free tier writes at most ${FREE_WRITE_ROWS} rows per file.`,
     `No file was created, so you do not have a truncated file that looks complete. The source file is untouched.`,
     `Free workaround: ${workaround}`,
-    gate.upgradeText(`writing more than ${FREE_WRITE_ROWS} rows`),
+    gate.upgradeText(`writing more than ${FREE_WRITE_ROWS} rows`, toolName),
   ].join("\n\n");
 }
 
@@ -498,7 +498,7 @@ server.registerTool("sheet_find", {
   const notes: string[] = [];
   for (const n of names) {
     const ls = wb.get(n);
-    if (ls.truncated) notes.push(`Sheet ${JSON.stringify(n)}: only the first ${FREE_MAX_ROWS} rows were searched. ${gate.upgradeText("searching files over 5,000 rows")}`);
+    if (ls.truncated) notes.push(`Sheet ${JSON.stringify(n)}: only the first ${FREE_MAX_ROWS} rows were searched. ${gate.upgradeText("searching files over 5,000 rows", "sheet_find")}`);
     for (let r = 0; r < ls.matrix.length; r++) {
       for (let c = 0; c < ls.matrix[r].length; c++) {
         const v = ls.matrix[r][c];
@@ -554,7 +554,7 @@ server.registerTool("sheet_write", {
     notes.push(...o.notes);
   }
   if (extname(target) === "") throw new UserError(`out_path ${target} has no file extension; use .xlsx, .csv, .tsv or .json`);
-  const refusal = writeCapRefusal(matrix.length, "This write", `write the rows in batches of ${FREE_WRITE_ROWS} or fewer to separate files, or filter the data down first (sheet_query with a where filter) and write only the rows you need.`);
+  const refusal = writeCapRefusal(matrix.length, "This write", `write the rows in batches of ${FREE_WRITE_ROWS} or fewer to separate files, or filter the data down first (sheet_query with a where filter) and write only the rows you need.`, "sheet_write");
   if (refusal) return withNotes(notes, refusal);
   writeMatrix(target, headers, matrix, sheetName, base);
   const size = statSync(target).size;
@@ -614,7 +614,7 @@ server.registerTool("sheet_add_column", {
   const matrix = o.table.rows.map((r, i) => [...r, computed[i] ?? null]);
   const target = out_path ? expandPath(out_path) : outputPath(o.wb.path, undefined, `-plus-${String(name).replace(/[^A-Za-z0-9_-]+/g, "_")}`);
   if (!out_path && existsSync(target)) throw new UserError(`${target} already exists; pass out_path to choose another name`);
-  const refusal = writeCapRefusal(matrix.length, `The file with the new column`, `narrow the sheet first with sheet_query (for example a where filter on the rows you care about, as: "csv", saved with sheet_write), then add the column to that smaller file; or use sheet_stats / sheet_query aggregates if you only need the totals rather than the whole file.`);
+  const refusal = writeCapRefusal(matrix.length, `The file with the new column`, `narrow the sheet first with sheet_query (for example a where filter on the rows you care about, as: "csv", saved with sheet_write), then add the column to that smaller file; or use sheet_stats / sheet_query aggregates if you only need the totals rather than the whole file.`, "sheet_add_column");
   if (refusal) return withNotes(notes, refusal);
   writeMatrix(target, headers, matrix, o.ls.name);
   const preview = renderTable(headers, matrix.slice(0, 5));
@@ -637,7 +637,7 @@ server.registerTool("sheet_convert", {
   const target = out_path ? expandPath(out_path) : outputPath(o.wb.path, undefined, "", `.${to}`);
   if (target === o.wb.path) throw new UserError("the converted file would overwrite the source; pass out_path");
   if (!out_path && existsSync(target)) throw new UserError(`${target} already exists; pass out_path to choose another name`);
-  const refusal = writeCapRefusal(o.table.rows.length, "The converted file", `filter first with sheet_query (where + limit, as: "csv") and save that subset, or convert the sheet in ${FREE_WRITE_ROWS}-row slices.`);
+  const refusal = writeCapRefusal(o.table.rows.length, "The converted file", `filter first with sheet_query (where + limit, as: "csv") and save that subset, or convert the sheet in ${FREE_WRITE_ROWS}-row slices.`, "sheet_convert");
   if (refusal) return withNotes(notes, refusal);
   writeMatrix(target, o.table.headers, o.table.rows, o.ls.name);
   return withNotes(notes, `Converted ${o.wb.path} [${o.ls.name}] to ${target} (${o.table.rows.length} rows, ${o.table.headers.length} columns).`);
