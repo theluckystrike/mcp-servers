@@ -5,6 +5,8 @@ flyer. Give a client's invoice an EPC payment code their banking app scans and f
 for a product, a Code 128 for a shelf label, a WiFi code for the office wall, a vCard for a conference badge.
 Everything is drawn on your machine: no upload, no account, no API key, and no network call of any kind.
 
+![barcode demo](../../assets/demo-barcode.gif)
+
 ## Install
 
 Claude Desktop, `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or

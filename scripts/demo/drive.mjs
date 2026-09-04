@@ -160,6 +160,13 @@ async function run(name) {
       [join(ROOT, "scripts", "sign-license.mjs"), "quotes"],
     ).toString().trim();
   }
+  if (name === "barcode") {
+    const { execFileSync } = await import("node:child_process");
+    env.MCP_LICENSE_KEY = execFileSync(
+      process.execPath,
+      [join(ROOT, "scripts", "sign-license.mjs"), "barcode"],
+    ).toString().trim();
+  }
   const c = client(entry, env, { showStderr });
   await c.init();
 
@@ -607,6 +614,29 @@ async function run(name) {
     await sleep(STEP_DELAY_MS);
     toolLine("quote_report", {});
     resultLine(await c.call("quote_report", {}));
+  }
+
+  if (name === "barcode") {
+    say("$ QR codes and barcodes drawn on this machine: no upload, no account, no network call.\n");
+    await sleep(STEP_DELAY_MS);
+    const qrArgs = { text: "https://mcp.zovo.one/s/barcode", format: "png", size: 512, out_path: join(c.sandbox, "site.png") };
+    toolLine("qr_create", qrArgs);
+    resultLine(await c.call("qr_create", qrArgs));
+    await sleep(STEP_DELAY_MS);
+    const sepaArgs = {
+      name: "Lucky Strike Software", iban: "DE89370400440532013000",
+      amount: 1697.4, reference: "INV-2026-0007", out_path: join(c.sandbox, "pay.svg"),
+    };
+    toolLine("qr_payment_sepa", sepaArgs);
+    resultLine(await c.call("qr_payment_sepa", sepaArgs));
+    await sleep(STEP_DELAY_MS);
+    const eanArgs = { symbology: "ean13", value: "590123412345", out_path: join(c.sandbox, "ean.svg") };
+    toolLine("barcode_create", eanArgs);
+    resultLine(await c.call("barcode_create", eanArgs));
+    await sleep(STEP_DELAY_MS);
+    const badArgs = { symbology: "ean13", value: "5901234123450", out_path: join(c.sandbox, "bad.svg") };
+    toolLine("barcode_create", badArgs);
+    resultLine(await c.call("barcode_create", badArgs));
   }
 
   await sleep(STEP_DELAY_MS);
