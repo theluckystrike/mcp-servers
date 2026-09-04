@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Human-Gated Distribution Pack</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 90em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  table { display:block; overflow-x:auto; white-space:normal; }
+code { white-space: pre-wrap; word-break: break-word; }
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Human-Gated Distribution Pack</h1>
+</header>
+<h1 id="human-gated-distribution-pack">Human-Gated Distribution
+Pack</h1>
+<p>Work through this in order. Each section is one surface: exact URL,
+why it needs a human, every form field with exact text to paste, the
+command to run after the human step, and how to verify it landed. No
+paid submissions anywhere in this pack. Support email everywhere:
+support@zovo.one. License everywhere: MIT. Repo everywhere:
+https://github.com/theluckystrike/mcp-servers.</p>
+<p>Package/server count: 20 (19 standalone servers + the office-suite
+bundle). All at version 0.9.0. Icons live at
+<code>assets/&lt;name&gt;-logo.png</code> in the repo root, except
+<strong>office-suite has no dedicated logo file</strong> (not in
+<code>assets/</code>) — use <code>assets/office-suite-logo.png</code>
+only after creating it, or reuse <code>assets/invoice-logo.png</code> as
+a placeholder the way earlier rounds reused logos for missing servers
+(noted in memory, e.g. quotes reused invoice’s logo before its own
+existed).</p>
+<hr />
+<h2 id="per-server-field-reference-used-by-every-section-below">0.
+Per-server field reference (used by every section below)</h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Server</th>
+<th>Short desc (&lt;=100 chars, registry-safe)</th>
+<th>Long description</th>
+<th>Category</th>
+<th>Homepage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>time-tracker</td>
+<td>Track billable time from your AI chat: timers, entries, reports, CSV
+export. All data stays local.</td>
+<td>Track billable time without leaving your AI chat. Timers, entries,
+reports, CSV export and invoice line items, all stored locally.</td>
+<td>Productivity</td>
+<td>https://mcp.zovo.one/buy/time-tracker</td>
+</tr>
+<tr>
+<td>price-tracker</td>
+<td>Check a shop page price now, keep a watch list, see history and
+target alerts. All data stays local.</td>
+<td>Ask your AI what something costs right now, track price drops and
+get told when a target price is hit. All data stays local.</td>
+<td>Finance</td>
+<td>https://mcp.zovo.one/buy/price-tracker</td>
+</tr>
+<tr>
+<td>spreadsheet</td>
+<td>Open, inspect, filter, edit and convert xlsx and csv files from your
+AI chat. Processing is local.</td>
+<td>Open, inspect, query, edit and convert xlsx and csv files locally
+from your AI assistant.</td>
+<td>Productivity</td>
+<td>https://mcp.zovo.one/buy/spreadsheet</td>
+</tr>
+<tr>
+<td>invoice</td>
+<td>Create PDF invoices from your AI chat: clients, numbering, VAT,
+overdue reports. All data is local.</td>
+<td>Make real, sendable PDF invoices from a sentence. Clients, numbering
+that never repeats, VAT lines, discounts and overdue reports, all stored
+locally.</td>
+<td>Finance</td>
+<td>https://mcp.zovo.one/buy/invoice</td>
+</tr>
+<tr>
+<td>expense-tracker</td>
+<td>Log expenses, receipts and mileage from chat: auto-categorise, split
+VAT, summarise, export, rebill.</td>
+<td>Local expenses, receipts and mileage ledger for freelancers:
+categorise, split VAT, summarise, export to CSV or xlsx and rebill
+straight into an invoice.</td>
+<td>Finance</td>
+<td>https://mcp.zovo.one/buy/expense-tracker</td>
+</tr>
+<tr>
+<td>currency</td>
+<td>Convert currencies and read exchange rate history from the European
+Central Bank. No API key,.</td>
+<td>Live and historical exchange rates from the European Central Bank,
+in your AI chat. Convert amounts, read rate history, and hand invoice
+tools the FX rates they need. No API key, cached locally, works
+offline.</td>
+<td>Finance</td>
+<td>https://mcp.zovo.one/buy/currency</td>
+</tr>
+<tr>
+<td>docx</td>
+<td>Create real Word .docx files from your AI chat: proposals, quotes,
+contracts, statements of work.</td>
+<td>Turn a chat into a real Word document: proposals, quotes, contracts,
+statements of work and letters as .docx files, plus reading and filling
+existing .docx templates. Everything stays on your machine.</td>
+<td>Productivity</td>
+<td>https://mcp.zovo.one/buy/docx</td>
+</tr>
+<tr>
+<td>timezone</td>
+<td>Time zone conversion, meeting-slot finding across countries, DST
+checks and .ics invites. All.</td>
+<td>Time zones, meeting slots and calendar invites for people who work
+with clients abroad. Convert times, find hours that suit everyone, check
+DST, write .ics. All local.</td>
+<td>Productivity</td>
+<td>https://mcp.zovo.one/buy/timezone</td>
+</tr>
+<tr>
+<td>resume</td>
+<td>Tailor a resume and write a cover letter as real Word .docx files,
+from facts you stored once. Nothing is invented.</td>
+<td>Turn your CV facts into a tailored Word resume and a cover letter
+that invents nothing: keyword matching against the posting, page-fit
+trimming, and bracketed prompts wherever a fact is missing.</td>
+<td>Career/Productivity</td>
+<td>https://mcp.zovo.one/buy/resume</td>
+</tr>
+<tr>
+<td>recurring</td>
+<td>Recurring invoices on a schedule: define once, generate the due PDFs
+into your invoice server, forecast revenue. All data is local.</td>
+<td>Bill the same clients every month without remembering to. Define a
+recurring invoice once, then generate the real PDFs that are due, with
+month-end safe dates, an audit log and a revenue forecast.</td>
+<td>Finance</td>
+<td>https://mcp.zovo.one/buy/recurring</td>
+</tr>
+<tr>
+<td>clauses</td>
+<td>A personal library of reusable contract and proposal clauses,
+assembled into a real Word .docx with variables filled and missing facts
+flagged. Generic templates, not legal advice.</td>
+<td>25 generic freelance clause starters with {{variables}}, ranked
+search, one-call assembly into a real Word .docx with every missing fact
+left as a bracketed prompt.</td>
+<td>Legal/Productivity</td>
+<td>https://mcp.zovo.one/buy/clauses</td>
+</tr>
+<tr>
+<td>pdf</td>
+<td>Merge, split, extract, rotate, reorder and stamp PDF pages from your
+AI chat: mark an invoice PAID, pull pages out of a scan, join documents
+into one.</td>
+<td>Merge, split, extract, rotate, reorder and stamp PDF files from
+chat. Everything stays on your machine.</td>
+<td>Productivity</td>
+<td>https://mcp.zovo.one/buy/pdf</td>
+</tr>
+<tr>
+<td>calendar</td>
+<td>Read the .ics your calendar exports: events in a window, free-busy,
+double bookings, export, meeting to timesheet.</td>
+<td>Read the .ics your calendar already exports: what is on this week,
+when you are actually free, what is double-booked, and turn a meeting
+into billable time. All local.</td>
+<td>Productivity</td>
+<td>https://mcp.zovo.one/buy/calendar</td>
+</tr>
+<tr>
+<td>image</td>
+<td>Resize, convert, compress, crop, thumbnail and watermark images from
+your AI chat: prepare a photo for the web, make thumbnails, strip EXIF.
+Files stay on your machine.</td>
+<td>Resize, convert, compress, crop, thumbnail and watermark images from
+chat: no upload, no account, no native dependency.</td>
+<td>Media/Productivity</td>
+<td>https://mcp.zovo.one/buy/image</td>
+</tr>
+<tr>
+<td>bank-statement</td>
+<td>Import a bank CSV, categorise it, summarise it per currency and
+reconcile it against your expenses.</td>
+<td>Import a bank CSV export, categorise it, summarise it per currency,
+find recurring charges and reconcile it against your expense ledger.
+Everything stays on your machine.</td>
+<td>Finance</td>
+<td>https://mcp.zovo.one/buy/bank-statement</td>
+</tr>
+<tr>
+<td>kanban</td>
+<td>A local task board per project: columns, due dates, estimates,
+priorities, overdue, weekly review.</td>
+<td>A local task board per project: columns, due dates, estimates,
+priorities and a link into your time tracker. All data stays on your
+machine.</td>
+<td>Productivity</td>
+<td>https://mcp.zovo.one/buy/kanban</td>
+</tr>
+<tr>
+<td>quotes</td>
+<td>Quotes and estimates for freelancers: VAT line items, a validity
+date, a pasteable text version, an A4 PDF, and accept turns it into an
+invoice.</td>
+<td>Send a client a real quote in seconds: line items with VAT, a
+validity date, a plain-text version to paste into email and an A4 PDF.
+Accepting a quote turns it into an invoice with the same numbers.</td>
+<td>Finance</td>
+<td>https://mcp.zovo.one/buy/quotes</td>
+</tr>
+<tr>
+<td>barcode</td>
+<td>QR codes and barcodes offline: URLs, WiFi joins, vCards, EPC SEPA
+payment codes a banking app can scan, Code 128, EAN-13, EAN-8 and UPC-A,
+as SVG or PNG.</td>
+<td>QR codes and barcodes from chat: URLs, WiFi joins, vCards, SEPA
+payment QR that a banking app can scan, Code 128 and EAN-13, as SVG or
+PNG. No network, no account.</td>
+<td>Utilities</td>
+<td>https://mcp.zovo.one/buy/barcode</td>
+</tr>
+<tr>
+<td>zip</td>
+<td>Create, inspect and extract zip archives offline: glob a directory
+into a zip, list entries with sizes and ratios, and unpack with
+traversal, symlink and zip-bomb guards.</td>
+<td>Create, inspect and extract zip archives from chat: glob a directory
+into a zip, list what is inside with a bomb and traversal check, extract
+safely, read one text entry without unpacking. No network.</td>
+<td>Utilities</td>
+<td>https://mcp.zovo.one/buy/zip</td>
+</tr>
+<tr>
+<td>office-suite</td>
+<td>One MCP server for the whole freelancer office: time tracking, price
+watching, spreadsheets and PDF invoicing. Proxies four servers behind
+one install.</td>
+<td>One install for the whole freelancer office. Proxies time-tracker,
+price-tracker, spreadsheet and invoice (and can be extended) behind a
+single MCP config entry.</td>
+<td>Productivity</td>
+<td>https://mcp.zovo.one/buy/office-suite</td>
+</tr>
+</tbody>
+</table>
+<p>Tags (common, from package.json keywords, use a relevant subset per
+server): <code>mcp</code>, <code>model-context-protocol</code>, plus the
+server’s own domain words already in its package.json
+<code>keywords</code> array (e.g. time-tracker:
+<code>time-tracking, timesheet, invoicing, freelance</code>).</p>
+<p>Pricing statement (paste verbatim where a pricing field exists):
+<strong>Free tier with real limits, $19 one-time lifetime Pro unlock
+(offline license key, no subscription), $39 one-time bundle for all
+servers. Card payment via Stripe Checkout at mcp.zovo.one.</strong></p>
+<p>Icon path: <code>assets/&lt;name&gt;-logo.png</code> (repo root).
+Confirmed present for all 19 standalone servers; <strong>office-suite
+has none</strong> — flag this to the operator before submitting
+office-suite anywhere that requires an icon upload.</p>
+<hr />
+<h2 id="npm-publish-the-20-packages">1. npm — publish the 20
+packages</h2>
+<p><strong>URL:</strong> https://www.npmjs.com/~theluckystrike (profile)
+— login itself happens at whatever URL
+<code>npm login --auth-type=web</code> prints (a one-time npmjs.com
+device-auth page, not a fixed URL you can bookmark).</p>
+<p><strong>Why human-gated:</strong> the saved npm token is dead (401).
+No browser profile on this machine holds an npmjs.com session (Chrome
+default, Brave CDP, Safari all anonymous), and npmjs.com’s Cloudflare
+challenge blocks headless Chrome unless given a normal desktop UA, which
+this environment cannot reliably supply.
+<code>npm login --auth-type=web</code> opens a real browser and needs
+one human click to approve the device code. There is no field to fill in
+beyond what npm’s own page prompts for.</p>
+<p><strong>Step 1 (human):</strong></p>
+<pre><code>npm login --auth-type=web</code></pre>
+<p>Approve the login in the browser tab it opens. Confirm with:</p>
+<pre><code>npm whoami</code></pre>
+<p>should print <code>theluckystrike</code>.</p>
+<p><strong>Step 2 (command to run after login):</strong>
+<code>scripts/publish-all.sh --go</code> exists but <strong>only covers
+4 of the 20 packages</strong>
+(<code>SERVERS=(time-tracker price-tracker spreadsheet invoice)</code>
+is hardcoded in the script). It builds, tests, npm-publishes those four,
+tags them in git, and runs <code>mcp-publisher publish</code> on each
+<code>server.json</code>. Run it first:</p>
+<pre><code>cd /Users/mike/mcp-servers
+scripts/publish-all.sh --go</code></pre>
+<p>Then publish the remaining 16 packages by hand. <strong>Publish order
+matters</strong>: some servers depend on sibling
+<code>@theluckystrike/*</code> packages at runtime (npm range, not just
+at build time), so publish base servers before anything that depends on
+them, and office-suite last:</p>
+<pre><code>cd /Users/mike/mcp-servers
+export npm_config_cache=&quot;${npm_config_cache:-/Users/mike/.npm-cache-local}&quot;
+npm run build
+
+# base servers with no @theluckystrike/* runtime dependency
+for n in currency timezone docx pdf calendar expense-tracker image bank-statement \
+         kanban barcode zip quotes; do
+  (cd &quot;servers/$n&quot; &amp;&amp; npm publish --access public)
+done
+
+# depend on docx and/or invoice (already published in step 1 above)
+for n in resume recurring clauses; do
+  (cd &quot;servers/$n&quot; &amp;&amp; npm publish --access public)
+done
+
+# depends on 12 siblings above — publish last
+(cd servers/office-suite &amp;&amp; npm publish --access public)</code></pre>
+<p><strong>Open question worth checking before this step:</strong>
+<code>packages/mcp-license</code> is itself named
+<code>@theluckystrike/mcp-license</code> in its own
+<code>package.json</code> and is <strong>not</strong> published to npm
+today, yet several servers (<code>resume</code>, <code>recurring</code>,
+<code>clauses</code>, <code>office-suite</code>, and likely all of them)
+list it as a runtime <code>dependencies</code> entry at
+<code>^0.9.0</code>. If the build does not bundle
+<code>mcp-license</code>’s compiled output into each server’s
+<code>dist/index.js</code>, a fresh <code>npm install</code> of any of
+these packages will 404 on <code>@theluckystrike/mcp-license</code>.
+Check one server’s <code>dist/index.js</code> for the
+license-verification code before trusting a public <code>npx</code>
+install; if it is not bundled, publish <code>packages/mcp-license</code>
+first, ahead of everything else in this section.</p>
+<p><strong>Verify it landed:</strong></p>
+<pre><code>npm view @theluckystrike/mcp-time-tracker version
+npm view @theluckystrike/mcp-office-suite version</code></pre>
+<p>should print <code>0.9.0</code> for each of the 20 packages. Then a
+clean-machine smoke test:</p>
+<pre><code>npx -y @theluckystrike/mcp-time-tracker --help 2&gt;&amp;1 | head -5</code></pre>
+<p>should start without an npm 404. Also re-run
+<code>scripts/registry-check.sh</code> — the registry entries already
+reference these npm package names, so a successful <code>npm view</code>
+plus a registry search hit at
+https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike
+confirms both sides are now consistent.</p>
+<hr />
+<h2 id="smithery">2. Smithery</h2>
+<p><strong>URL:</strong> https://smithery.ai/auth/cli (direct fetch of
+this URL returns 404 outside the CLI flow — it is only meaningful as the
+target the <code>smithery</code> CLI itself opens, not a page to visit
+directly).</p>
+<p><strong>Why human-gated:</strong>
+<code>npx -y @smithery/cli auth login</code> prints a one-time
+<code>https://smithery.ai/auth/cli?s=&lt;session&gt;</code> URL that
+must be opened in a real browser and approved by a human (GitHub OAuth).
+There is no email/password form and no way to script the OAuth consent
+click. Once that one login is done, the CLI holds a bearer key and
+everything after is scriptable.</p>
+<p><strong>Step 1 (human):</strong></p>
+<pre><code>npx -y @smithery/cli auth login</code></pre>
+<p>Open the printed URL
+(<code>https://smithery.ai/auth/cli?s=&lt;session&gt;</code>), approve
+via GitHub. <code>smithery.yaml</code> in each server directory is
+already validated against the CLI schema (name + target, loose).</p>
+<p><strong>Step 2 (command to run after login), once per
+server:</strong></p>
+<pre><code>cd /Users/mike/mcp-servers/servers/&lt;name&gt;
+npx -y @smithery/cli deploy</code></pre>
+<p>(or <code>publish</code>/<code>register</code> — confirm the exact
+subcommand with <code>npx -y @smithery/cli --help</code> once logged in;
+the CLI version pinned in this repo’s notes is 4.11.1 and its subcommand
+surface should be re-checked at login time since it was not exercised
+this session). Repeat for all 20 server directories (19 standalone +
+office-suite), each has its own <code>smithery.yaml</code>.</p>
+<p>Fields Smithery’s own <code>smithery.yaml</code> schema wants
+(already filled per server, verify before deploy): <code>name</code>,
+<code>target</code> (loose in this repo’s validated config) — no
+long-form web submission form exists; the CLI is the entire intake.</p>
+<p><strong>Verify it landed:</strong> https://smithery.ai/server/<span
+class="citation"
+data-cites="theluckystrike">@theluckystrike</span>/<name> (or search
+https://smithery.ai/search?q=theluckystrike) should list each server;
+<code>npx -y @smithery/cli list</code> after login should also enumerate
+what is registered under the account.</p>
+<hr />
+<h2 id="cursor.directory">3. cursor.directory</h2>
+<p><strong>URL:</strong> https://cursor.directory/plugins/new</p>
+<p><strong>Why human-gated:</strong> <code>/plugins/new</code> redirects
+straight to <code>/login</code>, which offers GitHub or Google OAuth
+only — no plain form fields to fill and no email/password option.
+<code>/mcp</code> on this site redirects to the homepage (no separate
+MCP submission path exists). This session re-fetched the page and got
+HTTP 429 (rate-limited) on top of the login redirect noted in prior
+rounds — both are consistent with “still login-gated,” not evidence it
+opened up.</p>
+<p><strong>Step 1 (human):</strong> open
+https://cursor.directory/plugins/new, sign in with GitHub or Google.</p>
+<p><strong>Step 2 (form fields, unverified beyond the login wall — the
+actual submission form has never been reached without an account, so
+treat every field below as likely-but-unconfirmed):</strong> - Name:
+<code>&lt;server display name&gt;</code>, e.g. <code>Time Tracker</code>
+(or the mcp-<name> form used elsewhere) - Description: use the short
+desc from the table in section 0 - Repo URL:
+<code>https://github.com/theluckystrike/mcp-servers/tree/main/servers/&lt;name&gt;</code>
+- Category: per the table in section 0 - Icon/logo upload:
+<code>assets/&lt;name&gt;-logo.png</code></p>
+<p><strong>Step 3 (command):</strong> none — this is a manual web form
+per server, no CLI exists for cursor.directory.</p>
+<p><strong>Verify it landed:</strong> search
+https://cursor.directory/mcp?q=<name> or browse the plugins list for the
+entry; it should show the repo link and description you typed.</p>
+<hr />
+<h2 id="claude-desktop-claude.ai-directory-connectors-directory">4.
+Claude Desktop / Claude.ai directory (Connectors Directory)</h2>
+<p><strong>URL:</strong> unresolved. There is no
+<code>data/distribution.json</code> entry for this surface (it is not
+one of the 32 surfaces already tracked there), and this session could
+not find a public self-serve submission form. A direct fetch of
+Anthropic’s own custom-connectors support article (support.claude.com
+“Getting started with custom connectors using remote MCP”) confirms a
+“Connectors Directory” exists inside the product (“Browse skills,
+connectors, and plugins in one directory”) but documents no developer
+submission URL or form — only a HackerOne link for reporting
+<em>malicious</em> servers, which is not a listing path. Two direct URL
+guesses (<code>claude.ai/directory/submit</code>) returned HTTP 403.</p>
+<p><strong>Why human-gated:</strong> no scriptable form was found at
+all; if a submission path exists it likely requires a signed-in
+claude.ai session (human login) the same way the other directories
+do.</p>
+<p><strong>What to do:</strong> before spending operator time here, have
+a human sign into claude.ai, open Settings -&gt; Connectors (or the
+in-app directory browse view), and look for a “Submit your connector” /
+developer-facing link from inside the logged-in UI — that is the most
+likely place a submission entry point would surface, since none exists
+on the public web. If found, record the exact URL and fields back into
+<code>data/distribution.json</code> under a new
+<code>claude-directory</code> key so the next round does not re-search
+this. Treat all fields below as <strong>unverified / likely, not
+confirmed</strong>, based on the pattern every other directory in this
+pack uses: - Name, one-line description (&lt;=100 chars, use the short
+desc from section 0) - Long description (use the long description from
+section 0) - Repo/homepage URL - Icon (assets/<name>-logo.png) -
+Category/tags - Support contact: support@zovo.one</p>
+<p><strong>Command / verify:</strong> not applicable until the form
+itself is located.</p>
+<hr />
+<h2 id="vercel-login">5. Vercel login</h2>
+<p><strong>URL:</strong> https://vercel.com/login (device-flow login
+only; no fixed submission form — this is a deploy credential, not a
+directory listing).</p>
+<p><strong>Why human-gated:</strong> this is not an MCP-server directory
+at all — it is the deploy blocker behind the <strong>zovo.one footer
+backlink</strong> to mcp.zovo.one (the organic-traffic surface, tracked
+under <code>estate-backlinks</code> / the
+<code>extension-insiders</code> project, not <code>mcp-servers</code>).
+Per memory (<code>vercel-api-access.md</code>): the OAuth device flow
+works headless, but the CLI <strong>deletes <code>auth.json</code> when
+the token is expired</strong> on any failed call, so the current token
+must be treated as dead and a fresh device-flow login run by a human
+before any <code>vercel</code> CLI command is attempted again. Per the
+mcp-servers-monorepo memory note (Loop 8/9), the zovo.one footer anchor
+to mcp.zovo.one was committed (<code>extension-insiders</code> commit
+<code>0abd1977</code>, <code>MegaFooter.tsx</code> +
+<code>api/render.ts</code> SSR skeleton) but the Vercel deploy was
+<strong>never confirmed live</strong> because the CLI token was invalid
+at the time.</p>
+<p><strong>Step 1 (human):</strong></p>
+<pre><code>vercel login</code></pre>
+<p>Complete the device-flow approval in the browser. <strong>Before
+running any other <code>vercel</code> command, copy the resulting
+<code>~/.vercel/auth.json</code> (or the platform-equivalent path) to a
+backup</strong> — a later expired-token failure will delete it
+again.</p>
+<p><strong>Step 2 (command to run after login):</strong> from the
+<code>extension-insiders</code> project directory (not this repo):</p>
+<pre><code>vercel deploy --prod</code></pre>
+<p>or, if the project is already git-connected, trigger via
+<code>git push</code> to the branch Vercel watches, then confirm the
+deployment finished with:</p>
+<pre><code>vercel ls</code></pre>
+<p><strong>Verify it landed:</strong> fetch https://zovo.one and confirm
+the footer contains a link to <code>https://mcp.zovo.one</code>
+(<code>curl -s https://zovo.one | grep -o 'mcp.zovo.one'</code>). This
+is out of scope for this repo’s own git history — do not commit anything
+here for this section, it lives in the <code>extension-insiders</code>
+project.</p>
+<hr />
+<h2 id="glama-claim">6. Glama claim</h2>
+<p><strong>URL:</strong>
+https://glama.ai/mcp/servers?query=theluckystrike (search/browse) and
+https://glama.ai/settings/api-keys (API key, needs an account).</p>
+<p><strong>Why human-gated:</strong> Glama has no unauthenticated “add
+server” endpoint. The crawler discovers servers automatically from
+<code>glama.json</code> (already committed at the repo root and in every
+<code>servers/&lt;name&gt;/</code> directory,
+<code>maintainers: theluckystrike</code>), but <em>claiming</em> a
+listing (to control its page, add a score badge, etc.) requires the “Add
+Server” button, which needs a signed-in Glama account, and the directory
+API needs a key minted from account settings while logged in. A fresh
+fetch this session confirmed the “Add Server” button is present in the
+nav but has no visible form fields without an account, and confirmed at
+least one theluckystrike-maintained server (BeLikeNative Grammar Server,
+a different project) is already indexed by the crawler — consistent with
+crawler discovery working but claim/API access needing login.</p>
+<p><strong>Step 1 (human):</strong> create/sign into a Glama account,
+click “Add Server” (or find the specific “claim this listing” control on
+each server’s own Glama page once the crawler has indexed it), and
+generate an API key at https://glama.ai/settings/api-keys if
+programmatic access is wanted afterward.</p>
+<p><strong>Step 2 (fields, if a manual add/claim form appears —
+unverified beyond the button existing):</strong> - Repo URL:
+<code>https://github.com/theluckystrike/mcp-servers</code> (or the
+<code>tree/main/servers/&lt;name&gt;</code> subpath if Glama wants
+per-server repo links) - Name / description: per the table in section 0
+- Maintainer: <code>theluckystrike</code> (already declared in each
+<code>glama.json</code>)</p>
+<p><strong>Step 3 (command, only relevant after an API key
+exists):</strong> none scripted in this repo yet; if a key is obtained,
+the Glama directory API (documented at glama.ai once logged in) can
+presumably be used to confirm/refresh listings, but no such script
+exists here — this would be a new script to write, not an existing one
+to run.</p>
+<p><strong>Verify it landed:</strong>
+https://glama.ai/mcp/servers?query=theluckystrike should list each of
+the 20 servers with a claimed/verified badge instead of only
+crawler-discovered rows. This also unblocks the
+<code>awesome-mcp-servers</code> PR #13473, which is hard-blocked
+specifically on “must be listed and passing on Glama with a score badge
+per entry” — so this step has a second payoff beyond Glama itself.</p>
+<hr />
+<h2 id="appendix-sources-checked">Appendix: sources checked</h2>
+<ul>
+<li><code>data/distribution.json</code> (32 surfaces tracked;
+npm/smithery/cursor.directory/glama entries read directly;
+Claude-directory and Vercel are not tracked keys in this file)</li>
+<li><code>docs/DIST_R4_RESULT.md</code>, <code>DIST_R5_RESULT.md</code>,
+<code>DIST_R6_RESULT.md</code>, <code>DIST_R10_RESULT.md</code> (round
+notes confirming smithery/cursor.directory/glama status unchanged across
+rounds 3-11)</li>
+<li><code>servers/*/server.json</code>,
+<code>servers/*/package.json</code> (descriptions, versions,
+dependencies)</li>
+<li><code>servers/office-suite/README.md</code></li>
+<li><code>data/facts.json</code> (pricing, Stripe products)</li>
+<li><code>docs/how-it-works.html</code></li>
+<li><code>scripts/publish-all.sh</code> (confirmed hardcoded 4-server
+<code>SERVERS</code> array)</li>
+<li><code>assets/</code> (confirmed 19 of 20 logo files present,
+office-suite missing)</li>
+<li>memory: <code>mcp-servers-monorepo.md</code>,
+<code>vercel-api-access.md</code></li>
+<li>live fetches this session: <code>smithery.ai/auth/cli</code> (404
+outside CLI flow), <code>cursor.directory/plugins/new</code> (429,
+consistent with prior login-redirect finding),
+<code>glama.ai/mcp/servers?query=theluckystrike</code> (confirmed
+crawler-indexed content, Add Server button present, no field list
+visible), <code>npmjs.com/login</code> (403 to the fetcher),
+<code>support.claude.com</code> custom-connectors article (no developer
+submission path documented), two Claude-directory URL guesses (403
+each)</li>
+</ul>
+</body>
+</html>
