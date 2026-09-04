@@ -1,0 +1,49 @@
+{
+  "name": "@theluckystrike/mcp-kanban",
+  "version": "0.6.0",
+  "description": "A local task board per project: columns, due dates, estimates, priorities and a link into your time tracker. All data stays on your machine.",
+  "type": "module",
+  "bin": {
+    "mcp-kanban": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "kanban",
+    "todo",
+    "tasks",
+    "project-management",
+    "board"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/kanban"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/kanban",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-license": "^0.1.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}
