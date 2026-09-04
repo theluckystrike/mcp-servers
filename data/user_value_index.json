@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:19:40.901Z",
+  "generated_at": "2026-09-04T08:57:34.887Z",
   "rounds": [
     {
       "round": 1,
@@ -299,6 +299,38 @@
       },
       "at": "2026-09-04T06:20:00Z",
       "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_99d439c70625548432cd7f127d9b7793, 7916-byte page) and reused for every lane. Register"
+    },
+    {
+      "round": 14,
+      "file": "user_value_r14.json",
+      "score": 57,
+      "max": 60,
+      "pct": 95,
+      "scenarios": 20,
+      "per_server": {
+        "price-tracker": {
+          "score": 12,
+          "max": 12
+        },
+        "spreadsheet": {
+          "score": 12,
+          "max": 12
+        },
+        "currency": {
+          "score": 11,
+          "max": 12
+        },
+        "docx": {
+          "score": 11,
+          "max": 12
+        },
+        "resume": {
+          "score": 11,
+          "max": 12
+        }
+      },
+      "at": "2026-09-04T09:05:00Z",
+      "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_47af12da7aa03aa9f5c5e5cd60f118fd, 8025-byte page) and reused for every lane. Register"
     }
   ],
   "servers": [
@@ -306,6 +338,8 @@
     "barcode",
     "bundle-licence",
     "calendar",
+    "currency",
+    "docx",
     "expense-tracker",
     "hosted/all six",
     "hosted/currency + expense-tracker + invoice",
@@ -322,6 +356,7 @@
     "pdf",
     "price-tracker",
     "quotes",
+    "resume",
     "spreadsheet",
     "time-tracker"
   ],
@@ -340,6 +375,7 @@
         "",
         "",
         "14/18",
+        "",
         "",
         ""
       ],
@@ -361,7 +397,8 @@
         "",
         "",
         "",
-        "16/18"
+        "16/18",
+        ""
       ],
       "best_pct": 89,
       "last_round": 13
@@ -374,6 +411,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -401,10 +439,53 @@
         "",
         "",
         "17/18",
+        "",
         ""
       ],
       "best_pct": 94,
       "last_round": 12
+    },
+    {
+      "server": "currency",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "11/12"
+      ],
+      "best_pct": 92,
+      "last_round": 14
+    },
+    {
+      "server": "docx",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "11/12"
+      ],
+      "best_pct": 92,
+      "last_round": 14
     },
     {
       "server": "expense-tracker",
@@ -414,6 +495,7 @@
         "2/3",
         "",
         "6/6",
+        "",
         "",
         "",
         "",
@@ -441,6 +523,7 @@
         "2/3",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -459,6 +542,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         "",
         ""
@@ -481,6 +565,7 @@
         "2/3",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -499,6 +584,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         "",
         ""
@@ -521,6 +607,7 @@
         "2/3",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -539,6 +626,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         ""
@@ -561,6 +649,7 @@
         "3/3",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -579,6 +668,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         ""
@@ -601,6 +691,7 @@
         "",
         "18/18",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -614,6 +705,7 @@
         "4/6",
         "",
         "1/3",
+        "",
         "",
         "",
         "",
@@ -641,7 +733,8 @@
         "",
         "17/18",
         "",
-        "17/18"
+        "17/18",
+        ""
       ],
       "best_pct": 94,
       "last_round": 13
@@ -652,6 +745,7 @@
         "",
         "",
         "8/12",
+        "",
         "",
         "",
         "",
@@ -681,6 +775,7 @@
         "",
         "",
         "17/18",
+        "",
         ""
       ],
       "best_pct": 94,
@@ -701,10 +796,11 @@
         "",
         "",
         "",
-        ""
+        "",
+        "12/12"
       ],
       "best_pct": 100,
-      "last_round": 5
+      "last_round": 14
     },
     {
       "server": "quotes",
@@ -721,10 +817,32 @@
         "",
         "",
         "17/18",
+        "",
         ""
       ],
       "best_pct": 94,
       "last_round": 12
+    },
+    {
+      "server": "resume",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "11/12"
+      ],
+      "best_pct": 92,
+      "last_round": 14
     },
     {
       "server": "spreadsheet",
@@ -741,10 +859,11 @@
         "",
         "",
         "",
-        ""
+        "",
+        "12/12"
       ],
       "best_pct": 100,
-      "last_round": 5
+      "last_round": 14
     },
     {
       "server": "time-tracker",
@@ -761,7 +880,8 @@
         "",
         "",
         "",
-        "17/18"
+        "17/18",
+        ""
       ],
       "best_pct": 100,
       "last_round": 13
@@ -1733,6 +1853,55 @@
       "status": "open"
     },
     {
+      "id": "D-R69",
+      "first_seen": "USER_VALUE_R14.md",
+      "severity": "",
+      "title": "D-R69, fixed** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R70",
+      "first_seen": "USER_VALUE_R14.md",
+      "severity": "",
+      "title": "D-R70, fixed** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R71",
+      "first_seen": "USER_VALUE_R14.md",
+      "severity": "",
+      "title": "D-R71, fixed** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R72",
+      "first_seen": "USER_VALUE_R14.md",
+      "severity": "",
+      "title": "D-R72, fixed** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R73",
+      "first_seen": "USER_VALUE_R14.md",
+      "severity": "",
+      "title": "D-R73). The copy the hosted endpoint reads",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R74",
+      "first_seen": "USER_VALUE_R14.md",
+      "severity": "",
+      "title": "D-R74) |",
+      "status": "open"
+    },
+    {
+      "id": "D-R75",
+      "first_seen": "USER_VALUE_R14.md",
+      "severity": "",
+      "title": "D-R75) |",
+      "status": "open"
+    },
+    {
       "id": "D-T1",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
@@ -1761,15 +1930,15 @@
     }
   ],
   "counts": {
-    "defects": 127,
-    "fixed": 103,
-    "open": 17,
+    "defects": 134,
+    "fixed": 108,
+    "open": 19,
     "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 103,
+      "fixed": 108,
       "client": 3,
-      "open": 14,
+      "open": 16,
       "open (client or accepted)": 3,
       "superseded": 1
     },
