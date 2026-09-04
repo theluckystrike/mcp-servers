@@ -66,11 +66,25 @@ seconds and the rate in one rounding step, then summed, so the total of a report
 lines you can see. There is no floating point drift between what the report shows and what you invoice.</p>
 
 <h2>Free tier and Pro</h2>
-<p>Free gives unlimited timers and entries, reports and CSV export over the last 7 days, and two projects
-with an hourly rate. Pro ($19 once, lifetime) opens full history, invoice summaries, grouping by tag and
-unlimited rated projects. The full comparison is in
+<p>Free gives unlimited timers and entries. Reports, invoice summaries and grouping by project, day, task
+or tag all run on the free tier too; the limit is that every read (report, invoice_summary, entry_list,
+CSV export) is clamped to the last 7 days, and only two projects can carry an hourly rate. Pro ($19 once,
+lifetime) opens the full history and unlimited rated projects. The full comparison is in
 <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>. Product page:
-<a href="/s/time-tracker">MCP Time Tracker</a>.</p>
+<a href="/s/time-tracker">MCP Time Tracker</a>. There are nineteen of these MCP servers in total; one
+lifetime key covering all of them, this one included, is $39.</p>
+
+<h2>Connect without installing</h2>
+<p>Claude.ai, the Claude Desktop connector dialog and several IDE pickers take a remote URL and nothing
+else, so the command above is not the only way in. <a href="/mcp/connect">mcp/connect</a> mints a token
+and prints a ready-to-paste URL for every server, including time-tracker, and the
+<a href="/setup/claude-web/time-tracker">claude.ai and Claude Desktop setup page</a> has the exact steps.</p>
+
+<h2>A kanban board on the same task</h2>
+<p>If the hours you log start life as a task on a board, <a href="/s/kanban">MCP Kanban</a> hands
+<code>task_start_timer</code> the exact project and task name for this server's <code>timer_start</code>,
+so the entry never drifts from what the board calls the task; see
+<a href="/guides/kanban-board-in-claude-with-time-tracking">running a kanban board with time tracking</a>.</p>
 ${FOOT}`,
     faq: [
       { q: "Does this work in Cursor as well as Claude Code?", a: "Yes. Both speak MCP over stdio. Claude Code takes the claude mcp add command; Cursor reads the same JSON block from ~/.cursor/mcp.json. The tools and the data directory are identical." },
@@ -151,9 +165,21 @@ tracker produces are the items this server wants.</p>
 
 <h2>Free tier</h2>
 <p>Free covers 3 invoices per calendar month, with a small footer line on the PDF; the overdue report is
-free. Pro ($19 once) removes the count limit and the footer, and adds a logo and a custom number prefix.
-Details on <a href="/s/invoice">the MCP Invoice page</a> and in
+free and unlimited. Pro ($19 once) removes the count limit and the footer, and adds a logo and a custom
+number prefix. Details on <a href="/s/invoice">the MCP Invoice page</a> and in
 <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>.</p>
+
+<h2>Connect without installing</h2>
+<p>Claude.ai, the Claude Desktop connector dialog and several IDE pickers take a remote URL and nothing
+else, so the command above is not the only way in. <a href="/mcp/connect">mcp/connect</a> mints a token
+and prints a ready-to-paste URL for every server, including invoice, and the
+<a href="/setup/claude-web/invoice">claude.ai and Claude Desktop setup page</a> has the exact steps.</p>
+
+<h2>Quoting the work before you bill it</h2>
+<p>If the client has not said yes yet, <a href="/s/quotes">MCP Quotes</a> keeps a quote and the invoice it
+becomes as one lifecycle, in this same client list and number series: "Acme said yes" turns a sent quote
+straight into an invoice here. See
+<a href="/guides/quotes-and-estimates-to-invoice-in-claude">sending a quote and turning the yes into an invoice</a>.</p>
 ${FOOT}`,
     faq: [
       { q: "Can I put several VAT rates on one invoice?", a: "Yes. Tax rate is per line item. The totals block prints one tax line per distinct rate, so a 23% line and a 0% reverse-charge line appear separately and the total adds up." },
@@ -492,6 +518,19 @@ in <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>. Product page:
 <a href="/s/invoice">MCP Invoice</a> for the rebill above and
 <a href="/s/time-tracker">MCP Time Tracker</a> for the hours on the same project, covered in
 <a href="/guides/track-time-in-claude-code">the time tracking guide</a>.</p>
+
+<h2>Connect without installing</h2>
+<p>Claude.ai, the Claude Desktop connector dialog and several IDE pickers take a remote URL and nothing
+else, so the command above is not the only way in. <a href="/mcp/connect">mcp/connect</a> mints a token
+and prints a ready-to-paste URL for every server, including expense-tracker, and the
+<a href="/setup/claude-web/expense-tracker">claude.ai and Claude Desktop setup page</a> has the exact
+steps.</p>
+
+<h2>Checking the ledger against the bank</h2>
+<p>Logging an expense here does not confirm the money actually left an account. <a href="/s/bank-statement">MCP
+Bank Statement</a> imports the CSV export from the bank and can flag debits that have no matching expense
+logged in this server, or the reverse. See
+<a href="/guides/bank-statement-csv-categorize-reconcile">categorizing and reconciling a bank CSV export</a>.</p>
 ${FOOT}`,
     faq: [
       { q: "How exactly is VAT split out of a receipt amount?", a: "The amount you give is the gross figure on the receipt. net = round(gross * 100 / (100 + vat_rate)) and vat = gross - net, so net plus VAT always equals the gross exactly. 61.50 EUR at 23% VAT splits to net 50.00 EUR and VAT 11.50 EUR." },
