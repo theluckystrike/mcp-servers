@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T03:34:35.414Z",
+  "generated_at": "2026-09-04T04:24:01.694Z",
   "rounds": [
     {
       "round": 1,
@@ -251,11 +251,36 @@
       },
       "at": "2026-09-04T03:20:00Z",
       "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_f2a6240310b1076d5eb4824e313c96fb) and reused for every lane. Client: claude CLI 2.1.2"
+    },
+    {
+      "round": 12,
+      "file": "user_value_r12.json",
+      "score": 51,
+      "max": 54,
+      "pct": 94,
+      "scenarios": 18,
+      "per_server": {
+        "quotes": {
+          "score": 17,
+          "max": 18
+        },
+        "calendar": {
+          "score": 17,
+          "max": 18
+        },
+        "pdf": {
+          "score": 17,
+          "max": 18
+        }
+      },
+      "at": "2026-09-04T04:30:00Z",
+      "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_9018420e8c11890e1671d0ea5ca1887e) and reused for every lane. Registered PER LANE only"
     }
   ],
   "servers": [
     "bank-statement",
     "bundle-licence",
+    "calendar",
     "expense-tracker",
     "hosted/all six",
     "hosted/currency + expense-tracker + invoice",
@@ -269,7 +294,9 @@
     "invoice",
     "kanban",
     "office-suite",
+    "pdf",
     "price-tracker",
+    "quotes",
     "spreadsheet",
     "time-tracker"
   ],
@@ -287,7 +314,8 @@
         "",
         "",
         "",
-        "14/18"
+        "14/18",
+        ""
       ],
       "best_pct": 78,
       "last_round": 11
@@ -305,10 +333,30 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
       "last_round": 5
+    },
+    {
+      "server": "calendar",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "17/18"
+      ],
+      "best_pct": 94,
+      "last_round": 12
     },
     {
       "server": "expense-tracker",
@@ -318,6 +366,7 @@
         "2/3",
         "",
         "6/6",
+        "",
         "",
         "",
         "",
@@ -341,6 +390,7 @@
         "",
         "",
         "2/3",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -359,6 +409,7 @@
         "",
         "",
         "2/3",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -377,6 +428,7 @@
         "",
         "",
         "2/3",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -395,6 +447,7 @@
         "",
         "",
         "2/3",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -413,6 +466,7 @@
         "",
         "",
         "2/3",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -431,6 +485,7 @@
         "",
         "",
         "3/3",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -449,6 +504,7 @@
         "",
         "",
         "3/3",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -467,6 +523,7 @@
         "",
         "",
         "3/3",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -485,7 +542,8 @@
         "",
         "",
         "",
-        "18/18"
+        "18/18",
+        ""
       ],
       "best_pct": 100,
       "last_round": 11
@@ -498,6 +556,7 @@
         "4/6",
         "",
         "1/3",
+        "",
         "",
         "",
         "",
@@ -521,7 +580,8 @@
         "",
         "",
         "",
-        "17/18"
+        "17/18",
+        ""
       ],
       "best_pct": 94,
       "last_round": 11
@@ -539,10 +599,30 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
       "last_round": 3
+    },
+    {
+      "server": "pdf",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "17/18"
+      ],
+      "best_pct": 94,
+      "last_round": 12
     },
     {
       "server": "price-tracker",
@@ -557,10 +637,30 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
       "last_round": 5
+    },
+    {
+      "server": "quotes",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "17/18"
+      ],
+      "best_pct": 94,
+      "last_round": 12
     },
     {
       "server": "spreadsheet",
@@ -570,6 +670,7 @@
         "3/3",
         "",
         "4/6",
+        "",
         "",
         "",
         "",
@@ -588,6 +689,7 @@
         "9/9",
         "",
         "9/9",
+        "",
         "",
         "",
         "",
@@ -1488,6 +1590,48 @@
       "status": "fixed"
     },
     {
+      "id": "D-R58",
+      "first_seen": "USER_VALUE_R12.md",
+      "severity": "",
+      "title": "D-R58, fixed** |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R59",
+      "first_seen": "USER_VALUE_R12.md",
+      "severity": "",
+      "title": "D-R59, fixed**; it did not cost this answer because the model never repeated it |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R60",
+      "first_seen": "USER_VALUE_R12.md",
+      "severity": "",
+      "title": "D-R60, logged** |",
+      "status": "open"
+    },
+    {
+      "id": "D-R61",
+      "first_seen": "USER_VALUE_R12.md",
+      "severity": "",
+      "title": "D-R61, logged** |",
+      "status": "open"
+    },
+    {
+      "id": "D-R62",
+      "first_seen": "USER_VALUE_R12.md",
+      "severity": "",
+      "title": "D-R62 (client-side, measured) - the base64 turn is slow even well under the ceiling",
+      "status": "open (client or accepted)"
+    },
+    {
+      "id": "D-R63",
+      "first_seen": "USER_VALUE_R12.md",
+      "severity": "",
+      "title": "D-R63, client-side |",
+      "status": "open (client or accepted)"
+    },
+    {
       "id": "D-T1",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
@@ -1516,16 +1660,16 @@
     }
   ],
   "counts": {
-    "defects": 116,
-    "fixed": 96,
-    "open": 13,
+    "defects": 122,
+    "fixed": 98,
+    "open": 17,
     "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 96,
+      "fixed": 98,
       "client": 3,
-      "open": 12,
-      "open (client or accepted)": 1,
+      "open": 14,
+      "open (client or accepted)": 3,
       "superseded": 1
     },
     "unknown_overrides": []
