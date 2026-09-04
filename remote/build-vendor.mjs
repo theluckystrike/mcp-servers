@@ -42,6 +42,10 @@ const SERVERS = {
   // lib.ts is not vendored: nothing here imports @theluckystrike/mcp-barcode/lib yet, and it
   // re-exports the disk helpers (checkOutPath, writeAtomic) whose hosted shapes differ.
   "barcode": ["index.ts", "version.ts", "payloads.ts", "render.ts", "store.ts", "symbology.ts"],
+  // Every source file, lib.ts included: it re-exports the patched paths.ts and the
+  // untouched zipfile.ts, so @theluckystrike/mcp-zip/lib resolves here to the hosted
+  // shapes rather than to a module that cannot load.
+  "zip": ["index.ts", "version.ts", "lib.ts", "paths.ts", "store.ts", "zipfile.ts"],
 };
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
@@ -63,6 +67,12 @@ function rewriteSpec(spec, depth) {
   // path so the map is not consulted: lib/server.js is the node build, and the two entry
   // points this server uses (toString type "svg" and create) are pure JS.
   if (spec === "qrcode") return `${up}../../node_modules/qrcode/lib/server.js`;
+  // fflate's exports map offers a "node" condition whose ESM build opens with
+  // createRequire("/") and require("worker_threads") at module load; the browser build is
+  // the same pure-JS codebase with the worker shim behind a function that the sync API
+  // never calls. Addressed as a file path so which one loads is not left to the bundler's
+  // condition order. zipSync, inflateSync and deflateSync are pure in both.
+  if (spec === "fflate") return `${up}../../node_modules/fflate/esm/browser.js`;
   // A sibling engine: "@theluckystrike/mcp-<x>/lib" is that server's own lib.ts, which is
   // vendored next to this one (servers/docx/src/lib.ts, servers/invoice/src/lib.ts).
   const sib = /^@theluckystrike\/mcp-([a-z-]+)\/lib$/.exec(spec);
@@ -1587,6 +1597,262 @@ function patchBarcodeIndex(src) {
   return src;
 }
 
+/* --------------------------------------------------------------------- zip */
+
+/**
+ * The hosted zip endpoint has no disk and no directories.
+ *   1. Every `path` is a NAME: it resolves to a file uploaded with zip_upload, or to
+ *      something this token's earlier call in the same request wrote under /out/.
+ *   2. Every output lands under /out/ and comes back as a one-hour download link:
+ *      the archive zip_create writes, and each file zip_extract unpacks.
+ *   3. `dir` and `out_dir` are not directories that can exist here, so dir is refused
+ *      with what to pass instead and out_dir is accepted and ignored.
+ * The register needs no patch: archives.json is one document per token under the homedir
+ * shim, written tmp + rename, exactly kanban's shape.
+ */
+function patchZipPaths(src) {
+  src = must(src, 'import { closeSync, existsSync, mkdirSync, openSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";',
+    'import { existsSync, mkdirSync, writeFileSync } from "node:fs";\nimport { publishFile, readdirSync } from "../../shims/fs.js";',
+    "zip paths fs imports");
+  src = must(src, 'import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";\n', "",
+    "zip paths drop node:path");
+  src = must(src, 'import { homedir } from "node:os";\n', "", "zip paths drop node:os");
+
+  src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`export const UPLOAD_ROOT = "/uploads/";
+export const OUT_ROOT = "/out/";
+
+/** The bare name a hosted path argument has to be, or a caller-facing refusal. */
+export function archiveName(p: string, what: string): { base: string; ext: string } {
+  const raw = String(p ?? "").trim();
+  if (!raw) throw new Error(\`\${what} is required: it names a file uploaded with zip_upload\`);
+  const b = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "");
+  const m = /^([A-Za-z0-9_-]{1,64})(\\.[A-Za-z0-9]{1,8})?$/.exec(b);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable file name. On this hosted endpoint a path is just a name - \` +
+      \`the one you uploaded a file under with zip_upload, or the name to give an output: 1-64 characters \` +
+      \`of letters, digits, underscore or dash, optionally with an extension. zip_files lists what is stored.\`);
+  }
+  return { base: m[1], ext: (m[2] ?? "").toLowerCase() };
+}
+
+/**
+ * Resolve an input name: an upload wins, then something written earlier in this request.
+ * With no extension every stored file whose name matches is considered, so "reports"
+ * finds reports.zip and "notes" finds notes.txt.
+ */
+export function expandPath(p: string): string {
+  const { base, ext } = archiveName(p, "path");
+  for (const root of [UPLOAD_ROOT, OUT_ROOT]) {
+    if (ext) {
+      if (existsSync(\`\${root}\${base}\${ext}\`)) return \`\${root}\${base}\${ext}\`;
+      continue;
+    }
+    for (const n of readdirSync(root)) if (n === base || n.startsWith(\`\${base}.\`)) return \`\${root}\${n}\`;
+  }
+  return \`\${UPLOAD_ROOT}\${base}\${ext || ".zip"}\`;
+}
+`, "zip expandPath");
+
+  src = must(src, /\/\*\*\n \* Reserve an output path with an exclusive create[\s\S]*?\n \*\/\n/,
+`/**
+ * Reserve an output name. There is no disk, so a directory, a missing parent and someone
+ * else's file are not failures that can happen; the only real clash is a name this same
+ * request already produced, which overwrite still decides.
+ */
+`, "zip reserveOutput doc");
+  src = must(src, /export function reserveOutput\(out: string, overwrite: boolean, ext = "\.zip"\): Reservation \{[\s\S]*?\n\}\n/,
+`export function reserveOutput(out: string, overwrite: boolean, ext = ".zip"): Reservation {
+  const { base, ext: given } = archiveName(out, "out_path");
+  const path = \`\${OUT_ROOT}\${base}\${given === ext ? given : ext}\`;
+  if (existsSync(path) && !overwrite) {
+    throw new Error(\`a file named \${path.slice(OUT_ROOT.length)} was already produced in this request. Pass overwrite: true to replace it, or give a different out_path. Nothing was written.\`);
+  }
+  return { path, created: false };
+}
+`, "zip reserveOutput");
+
+  src = must(src, '/** tmp + rename in the target directory, so a reader never sees a half-written archive. */',
+    '/** One write into the published root; publishFile turns it into a one-hour download link. */',
+    "zip writeAtomic doc");
+  src = must(src, /export function writeAtomic\(path: string, bytes: Uint8Array\): number \{[\s\S]*?\n\}\n/,
+`export function writeAtomic(path: string, bytes: Uint8Array): number {
+  writeFileSync(path, bytes);
+  if (path.startsWith(OUT_ROOT)) publishFile(path);
+  return bytes.length;
+}
+`, "zip writeAtomic");
+  return src;
+}
+
+function patchZipIndex(src) {
+  // A hosted extraction hands back one download link per entry, so the count is capped
+  // per request rather than by the caller's disk.
+  src = must(src, '/** Nothing above this is read as an archive at all: it is read into memory whole. */',
+    '/** One request publishes one download link per extracted entry, so the count is capped. */\nconst MAX_EXTRACT_ENTRIES = 20;\n/** Nothing above this is read as an archive at all: it is read into memory whole. */',
+    "zip MAX_EXTRACT_ENTRIES");
+
+  // collect(): names, not paths, and there is no directory to walk.
+  src = must(src, /\/\*\*\n \* Collect the files to pack\.[\s\S]*?\nfunction collect\(a: \{ paths\?: string\[\]; dir\?: string; patterns\?: string\[\]; exclude\?: string\[\] \}\): Candidate\[\] \{[\s\S]*?\n\}\n/,
+`/**
+ * Collect the files to pack, hosted shape. There are no directories here, so \`dir\` is
+ * refused with what to pass instead, and every entry of \`paths\` is a name: a file
+ * uploaded with zip_upload, or one this token's earlier call in this request wrote.
+ * Entry names are the bare file names, so an archive from here cannot be a traversal
+ * archive for the same reason it cannot be over stdio.
+ */
+function collect(a: { paths?: string[]; dir?: string; patterns?: string[]; exclude?: string[] }): Candidate[] {
+  const patterns = a.patterns ?? [];
+  const exclude = a.exclude ?? [];
+  const out: Candidate[] = [];
+  if (a.dir) {
+    throw new Error(
+      "there are no directories on this hosted endpoint, so dir cannot be walked. Pass paths instead: " +
+      "the names of files uploaded with zip_upload {name, content}, each packed under that name. " +
+      "zip_files lists what is stored. Nothing was written.");
+  }
+  for (const raw of a.paths ?? []) {
+    const abs = expandPath(raw);
+    if (!existsSync(abs)) {
+      throw new Error(
+        \`nothing is stored under the name \${JSON.stringify(String(raw))}. Upload it first with \` +
+        "zip_upload {name, content}; zip_files lists what is stored. Nothing was written.");
+    }
+    out.push({ abs, entry: abs.split("/").pop() as string, size: statSync(abs).size });
+  }
+  const kept = out.filter((c) => matchesAny(c.entry, patterns) && !(exclude.length && matchesAny(c.entry, exclude)));
+  kept.sort((x, y) => (x.entry < y.entry ? -1 : x.entry > y.entry ? 1 : 0));
+  return kept;
+}
+`, "zip collect");
+
+  // readArchive: the refusals name the upload, not a path on a disk.
+  src = must(src, '  if (!existsSync(path)) throw new Error(`${path} does not exist. Give the full path of a .zip file.`);',
+    '  if (!existsSync(path)) {\n' +
+    '    throw new Error(`nothing is uploaded under the name ${JSON.stringify(String(input))}. ` +\n' +
+    '      "Upload the archive first with zip_upload {name, content_base64}; zip_files lists what is stored.");\n' +
+    '  }',
+    "zip readArchive not-found message");
+  src = must(src, '  if (st.isDirectory()) throw new Error(`${path} is a directory, not a zip file.`);\n', "",
+    "zip readArchive directory check");
+
+  // zip_create / zip_bundle_month: out_path is a name and the archive is a download.
+  src = must(src,
+    '    out_path: z.string().describe("Where to write the .zip. A directory, a missing parent or an existing file without overwrite is refused before anything is packed"),',
+    '    out_path: z.string().describe("Name for the archive, e.g. reports. It comes back as a download link valid for one hour; a name already produced in this request is refused without overwrite"),',
+    "zip zip_create out_path description");
+  src = must(src,
+    '    paths: z.array(z.string()).optional().describe("Files to pack, each stored under its own file name. A directory here contributes its whole tree under its own name"),',
+    '    paths: z.array(z.string()).optional().describe("Names of files uploaded with zip_upload, each packed under that name"),',
+    "zip zip_create paths description");
+  src = must(src,
+    '    dir: z.string().optional().describe("Pack this directory\'s tree; entry names are relative to it"),',
+    '    dir: z.string().optional().describe("Not available on this hosted endpoint: there are no directories. Passing it is refused rather than ignored, so nobody believes a tree was packed"),',
+    "zip zip_create dir description");
+  src = must(src,
+    'description: "Call this tool to pack files or a whole directory (with glob patterns) into a new .zip at out_path. Entry names are always relative, so the archive cannot write outside where it is unpacked.",',
+    'description: "Call this tool to pack files uploaded with zip_upload into a new .zip and get a download link valid for one hour. Entry names are always relative, so the archive cannot write outside where it is unpacked.",',
+    "zip zip_create description");
+  src = must(src,
+    '    out_path: z.string().optional().describe("Where to write the .zip. Default: <data dir>/bundles/<month>.zip"),',
+    '    out_path: z.string().optional().describe("Name for the bundle. Default: the month, e.g. 2026-09"),',
+    "zip zip_bundle_month out_path description");
+
+  // zip_extract: no out_dir, a per-request entry cap, one download link per entry.
+  src = must(src,
+    '    out_dir: z.string().describe("Directory to unpack into. It is created if missing; every file written is checked to land inside it"),',
+    '    out_dir: z.string().optional().describe("Ignored on this hosted endpoint: there are no directories, and every extracted entry comes back as its own download link valid for one hour"),',
+    "zip zip_extract out_dir description");
+  src = must(src,
+    'description: "Call this tool to unpack an archive into out_dir. Traversal, absolute-path and symlink entries are refused, a size and ratio cap stops a zip bomb, and dry_run reports exactly what would be written.",',
+    'description: "Call this tool to unpack an archive; every entry comes back as its own download link valid for one hour. Traversal, absolute-path and symlink entries are refused, a size and ratio cap stops a zip bomb, and dry_run reports exactly what would be written.",',
+    "zip zip_extract description");
+  src = must(src,
+    'async (a: { path: string; out_dir: string; patterns?: string[]; dry_run?: boolean; overwrite?: boolean; skip_unsafe?: boolean; max_total_mb?: number; max_ratio?: number })',
+    'async (a: { path: string; out_dir?: string; patterns?: string[]; dry_run?: boolean; overwrite?: boolean; skip_unsafe?: boolean; max_total_mb?: number; max_ratio?: number })',
+    "zip zip_extract handler type");
+  src = must(src, '  const outDir = expandPath(a.out_dir);',
+    '  // Every file lands in the one published root. The resolve + prefix check below is\n' +
+    '  // kept exactly as it is: it is what refuses an entry name that walks out of it.\n' +
+    '  const outDir = "/out";',
+    "zip zip_extract outDir");
+  src = must(src, '  // Every guard below is decided from the central directory, before one byte is inflated.',
+    '  if (selected.filter((e) => !e.is_dir).length > MAX_EXTRACT_ENTRIES) {\n' +
+    '    return fail(\n' +
+    '      `that selects ${selected.filter((e) => !e.is_dir).length} entries and this hosted endpoint publishes one download link per entry, ` +\n' +
+    '      `so it extracts at most ${MAX_EXTRACT_ENTRIES} per call. Nothing was extracted. Narrow it with patterns and run it again, ` +\n' +
+    '      `or run the server over stdio (npx -y @theluckystrike/mcp-zip), where the files go to a directory.`);\n' +
+    '  }\n\n' +
+    '  // Every guard below is decided from the central directory, before one byte is inflated.',
+    "zip zip_extract entry cap");
+  src = must(src,
+    '    mkdirSync(dirname(p.target), { recursive: true });\n' +
+    '    writeFileSync(p.target, data);\n' +
+    '    written++;\n' +
+    '    done.push(`  ${humanBytes(data.length).padStart(9)}  ${p.target}`);',
+    '    writeFileSync(p.target, data);\n' +
+    '    const link = publishFile(p.target);\n' +
+    '    written++;\n' +
+    '    done.push(`  ${humanBytes(data.length).padStart(9)}  ${p.e.name}  ${link ?? p.target}`);',
+    "zip zip_extract write loop publishes");
+  src = must(src,
+    '    `Extracted ${written} file${written === 1 ? "" : "s"} (${humanBytes(bytes)}) from ${path} into ${outDir}.\\n\\n` +',
+    '    `Extracted ${written} file${written === 1 ? "" : "s"} (${humanBytes(bytes)}) from ${path}; each link below is valid for one hour.\\n\\n` +',
+    "zip zip_extract head");
+  src = must(src,
+    '      `Dry run: ${planned.length} file${planned.length === 1 ? "" : "s"}, ${humanBytes(declared)} uncompressed, would be written into ${outDir}. Nothing was written.\\n\\n${lines}` +',
+    '      `Dry run: ${planned.length} file${planned.length === 1 ? "" : "s"}, ${humanBytes(declared)} uncompressed, would be extracted. Nothing was written.\\n\\n${lines}` +',
+    "zip zip_extract dry run head");
+  src = must(src,
+    '    const lines = planned.slice(0, 50).map((p) => `  ${humanBytes(p.e.size).padStart(9)}  ${p.target}`).join("\\n");',
+    '    const lines = planned.slice(0, 50).map((p) => `  ${humanBytes(p.e.size).padStart(9)}  ${p.e.name}`).join("\\n");',
+    "zip zip_extract dry run lines");
+  src = must(src,
+    '    if (!a.overwrite && existsSync(target)) clashes.push(target);',
+    '    if (!a.overwrite && existsSync(target)) clashes.push(target);   // a name this same request already wrote',
+    "zip zip_extract clash comment");
+  src = must(src,
+    '      `${clashes.length} file${clashes.length === 1 ? "" : "s"} in ${outDir} would be replaced and nothing was extracted:\\n` +',
+    '      `${clashes.length} entr${clashes.length === 1 ? "y" : "ies"} would replace a file already extracted in this request and nothing was extracted:\\n` +',
+    "zip zip_extract clash head");
+  src = must(src,
+    '      `\\n\\nPass overwrite: true, or extract into an empty directory.`,',
+    '      `\\n\\nPass overwrite: true, or extract them one at a time with patterns.`,',
+    "zip zip_extract clash tail");
+
+  // zip_bundle_month: the sibling servers write no files on this worker at all.
+  src = must(src,
+    'description: "Call this tool to zip one month of invoices, quotes and exports written by the sibling servers into their default output folders. Best effort: it names every folder it looked in and what it found.",',
+    'description: "Local (stdio) install only. On this hosted endpoint /mcp/invoice, /mcp/quotes, /mcp/expense-tracker, /mcp/docx and /mcp/resume return their documents as one-hour download links and keep no output folder to read, so there is nothing for this tool to bundle. Pack the files with zip_upload plus zip_create instead.",',
+    "zip zip_bundle_month description");
+  src = must(src,
+    '    return fail(`nothing was modified in ${month} in any of the folders below, so no archive was written.\\n\\n${where}\\n\\nThese are the default output folders of the sibling servers. If you write invoices or exports somewhere else, pack that folder with zip_create and dir instead.`);',
+    '    return fail(\n' +
+    '      `this tool bundles the output FOLDERS the sibling servers write on a local install, and this hosted endpoint has none: ` +\n' +
+    '      `/mcp/invoice, /mcp/quotes, /mcp/expense-tracker, /mcp/docx and /mcp/resume hand their documents back as one-hour download ` +\n' +
+    '      `links and keep no folder to read, so nothing was written for ${month}.\\n\\n${where}\\n\\n` +\n' +
+    '      "Upload the documents you want bundled with zip_upload and pack them with zip_create, or run the server locally over stdio " +\n' +
+    '      "(npx -y @theluckystrike/mcp-zip) beside the other servers, where the folders are real.");',
+    "zip zip_bundle_month empty message");
+
+  // The register is a per-token document, not a directory anyone can open.
+  src = must(src,
+    '    ? `${rows.length} archive(s) in the register at ${dataDir()}, ${used} this month. Pro: no limit.`\n' +
+    '    : `${rows.length} archive(s) in the register at ${dataDir()}. ${used} of ${FREE_PER_MONTH} free archives used in ${monthOf()}.`;',
+    '    ? `${rows.length} archive(s) in the register stored for your token, ${used} this month. Pro: no limit.`\n' +
+    '    : `${rows.length} archive(s) in the register stored for your token. ${used} of ${FREE_PER_MONTH} free archives used in ${monthOf()}.`;',
+    "zip zip_history register wording");
+  src = must(src, 'description: "List the archives this server created, newest first, with their entry counts and sizes, plus how many of this month\'s free allowance are left.",',
+    'description: "List the archives created for your token, newest first, with their entry counts and sizes, plus how many of this month\'s free allowance are left. The link an archive was handed back on expires after an hour; the row keeps the name.",',
+    "zip zip_history description");
+
+  src = must(src, "gate.registerTools(server);",
+    "gate.registerTools(server);\nregisterZipUpload(server as unknown as { registerTool: Function });",
+    "zip zip_upload registration");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -1616,6 +1882,11 @@ const EXTRA_IMPORTS = {
   "bank-statement": ['import { registerBankUpload } from "../../shims/bank-upload.js";'],
   quotes: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   barcode: ['import { Buffer } from "node:buffer";'],
+  zip: [
+    'import { Buffer } from "node:buffer";',
+    'import { registerZipUpload } from "../../shims/zip-upload.js";',
+    'import { publishFile } from "../../shims/fs.js";',
+  ],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -1645,6 +1916,8 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "image" && f === "store.ts") src = patchImageStore(src);
       if (name === "barcode" && f === "render.ts") src = patchBarcodeRender(src);
       if (name === "barcode" && f === "payloads.ts") src = 'import { Buffer } from "node:buffer";\n' + src;
+      if (name === "zip" && f === "paths.ts") src = patchZipPaths(src);
+      if (name === "zip" && f === "zipfile.ts") src = 'import { Buffer } from "node:buffer";\n' + src;
       writeFileSync(join(dir, f), rewriteImports(src, 2));
       continue;
     }
@@ -1665,6 +1938,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "bank-statement") src = patchBankIndex(src);
     if (name === "quotes") src = patchQuotesIndex(src);
     if (name === "barcode") src = patchBarcodeIndex(src);
+    if (name === "zip") src = patchZipIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {

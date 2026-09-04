@@ -2087,3 +2087,239 @@ endpoints to 18: **remote 55/55, whole run 431/431.**
   question answered first.
 - The free monthly cap is per token **and per endpoint document**: 20 codes on
   `/mcp/barcode` are counted separately from anything the same licence draws over stdio.
+
+---
+
+# Extension 9 2026-09-04 - zip
+
+status: DONE
+
+A nineteenth endpoint, `POST /mcp/zip`. Worker `mcp-remote`, version ID
+`27536f77-61ef-4123-a570-6b1abafccc98`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list nineteen.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/zip | 12 | upload-and-download: `zip_upload` replaces every file path, `zip_create` packs uploaded names into a one-hour `application/zip` link, `zip_extract` returns ONE link per entry served with that entry's own content type. `zip_bundle_month` is stdio-only and says so |
+
+### Vendoring: all six sources, and fflate under nodejs_compat
+
+`SERVERS.zip` is `index.ts, version.ts, lib.ts, paths.ts, store.ts, zipfile.ts` - every file
+in `servers/zip/src`. `lib.ts` is vendored this time rather than dropped (the barcode case):
+it re-exports the patched `paths.ts` and the untouched `zipfile.ts`, so a later server
+importing `@theluckystrike/mcp-zip/lib` here gets the hosted shapes rather than a module that
+cannot load.
+
+**fflate bundles, with the entry point pinned.** Its exports map offers a `node` condition
+whose ESM build opens with `createRequire("/")` and `require("worker_threads")` at module
+load; the `import` condition is `esm/browser.js`, the same pure-JS codebase with the worker
+shim behind a function the sync API never calls. Which one a bundler picks is a condition-order
+question, and the failure mode of picking wrong is a module-load error on a deployed worker, so
+`rewriteSpec` maps the `fflate` specifier to `node_modules/fflate/esm/browser.js` by file path -
+jimp's and qrcode's fix, for the third time. `zipSync`, `inflateSync` and `deflateSync` are pure
+in both builds. `zipfile.ts` needed one added `import { Buffer } from "node:buffer"`, because
+`Buffer` is not a global on Workers; nothing else in the format reader changed, so the central
+directory is parsed, the CRC is checked and every bomb, traversal, absolute-path and symlink
+decision is made by exactly the code the adversarial suite in `docs/ZIP_RESULT.md` measured.
+
+The register needs **no patch at all**, kanban's case again: `servers/zip/src/store.ts` reaches
+the disk through `$XDG_DATA_HOME || homedir()/.local/share` + `mcp-servers/zip` and writes
+`archives.json` tmp + rename, so the month counter and the archive history are one JSON document
+per token.
+
+### Every path is a name; every output is a link
+
+`patchZipPaths` replaces three functions in `paths.ts`:
+
+- `expandPath` is the name-not-path rule the pdf, image, bank-statement, quotes and barcode
+  endpoints already use, with one addition: a name given **without** an extension matches any
+  stored file with that stem, so `path: "probe"` finds `probe.zip` and `paths: ["notes"]` finds
+  `notes.txt`. An upload wins over something written earlier in the same request.
+- `reserveOutput` keeps the `overwrite` decision and drops the three refusals that cannot
+  happen here (a directory, a missing parent, someone else's file). Every output is
+  `/out/<name>.zip`; the exclusive-create reservation is gone because one request owns its
+  virtual filesystem, so there is no second process to race.
+- `writeAtomic` is one `writeFileSync` plus `publishFile` when the target is under `/out/`.
+  `zip_add` writes back to `/uploads/<name>.zip` and is deliberately **not** published: it
+  edits the upload in place, which is what the tool means, and the next `zip_list` sees it.
+
+`patchZipIndex` moves four more things:
+
+- **`collect` refuses `dir` rather than ignoring it.** There is no directory tree to walk, and
+  a `dir` that silently packed nothing would be the worst possible answer. The refusal names
+  `zip_upload` and `paths`. Every entry of `paths` is a stored name and the entry name is the
+  file name, so an archive written here cannot be a traversal archive for the same reason it
+  cannot be over stdio.
+- **`zip_extract` writes into one published root.** `out_dir` is accepted and ignored (the
+  schema says so) and `outDir` is `/out`. The `resolve(outDir, e.name)` + `startsWith(outDir + sep)`
+  check is kept **exactly as it is**: it is the second traversal guard, the one that catches a
+  name that survived the header checks, and it works unchanged on a flat path map. Each written
+  entry is published, so the answer is one link per file. A new `MAX_EXTRACT_ENTRIES = 20`
+  caps the count per request - one link per entry is real work and real KV - and the refusal
+  says to narrow it with `patterns` or run over stdio.
+- **`zip_bundle_month` is stdio-only and says so in the description, not only in the failure.**
+  Hydrating the invoice and quotes stores was considered and is worthless here: that tool
+  reads the output *folders* those servers write on a disk (`invoice/pdf`, `quotes/pdf`,
+  `expense-tracker/exports`, ...), and every hosted endpoint hands its documents back as a
+  one-hour download link instead, so those folders are empty on this worker no matter what is
+  hydrated. This is the honest difference from `/mcp/barcode`'s hydration of the invoice
+  store, which is a real JSON document at a known path. The tool still runs, still names every
+  folder it looked in, and its refusal points at `zip_upload` + `zip_create`.
+- Two response strings named a directory no caller can see: `zip_history`'s `dataDir()` and
+  `readArchive`'s "does not exist" both now name the token and the upload.
+
+`SERVERS.zip` in `remote/src/index.ts` is `publish: p => p.startsWith("/out/")`,
+`strip: ["/uploads/", "/out/"]`, `maxBytes` 2 MB, no `persistPublished` and no `sharedDoc`.
+`zip: "application/zip"` was added to the fs shim's MIME table.
+
+### The upload shim
+
+`remote/src/shims/zip-upload.ts` adds `zip_upload`, `zip_files` and `zip_delete_upload` in the
+shape `bank-upload.ts` and `pdf-upload.ts` have. It carries two kinds of file, because the
+endpoint needs both: an **archive** to inspect and a plain **file** to pack.
+
+- `{name, content_base64}` stores bytes; `{name, content}` stores text and is refused for a
+  `.zip`, which is not text.
+- A name ending `.zip` is checked for the zip magic (`PK\x03\x04`, plus the EOCD and ZIP64
+  signatures) **before** it is stored, so "this is not a zip" is a refusal at upload time
+  rather than a central-directory error two calls later.
+- Names are rejected, never sanitised: no `/` or `\`, no `..`, no leading dot, no
+  `.tmp/.lock/.corrupt`, 1-64 characters of `[A-Za-z0-9_-]` with an optional extension.
+  No extension means `.zip`.
+- One upload is capped at 1 MB and the 256 KB request-body cap binds long first: about
+  **190 KB of archive per POST** once base64 sits inside a JSON-RPC envelope. That is stated in
+  the `zip_upload` description, in the `zip` entry of `GET /mcp`, and in the refusal text, as the
+  other upload shims now do.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does. `probe.zip` was built **locally with the stdio server**
+(`zip_create` on `servers/zip/dist/index.js` over the test harness, 264 bytes, 2 entries) and
+uploaded as bytes. One POST per call.
+
+```
+$ GET /mcp
+  19 endpoints: time-tracker, price-tracker, invoice, expense-tracker, spreadsheet, currency,
+  timezone, docx, resume, recurring, clauses, pdf, calendar, kanban, image, bank-statement,
+  quotes, barcode, zip
+$ GET /mcp/connect?token=anon_0000...
+  20 distinct ready URLs: the nineteen endpoints plus the /mcp/whoami example
+
+$ zip tools/list
+  12 tools: license_status, license_activate, zip_upload, zip_files, zip_delete_upload,
+  zip_create, zip_list, zip_extract, zip_add, zip_extract_text, zip_bundle_month, zip_history
+
+$ zip zip_upload {name: "probe.zip", content_base64: <264-byte stdio-built zip>}
+  Uploaded "probe.zip" (264 bytes).
+  Pass path: "probe.zip" to zip_list, zip_extract, zip_extract_text or zip_add.
+$ zip zip_upload {name: "fake.zip", content_base64: <"hello there, not a zip">}
+  Error: those bytes do not start with the zip magic "PK" (first bytes 68 65 6c 6c), so this
+  is not a zip archive and nothing was stored.
+
+$ zip zip_list {path: "probe"}            <- no extension: the stem finds probe.zip
+  probe.zip
+  264 B on disk, 2 entries (2 files), 52 B uncompressed, overall 0.93x.
+    file       33 B       35 B  0.9x  2026-09-04 13:33:26  notes.txt
+    file       19 B       21 B  0.9x  2026-09-04 13:33:26  rows.csv
+  Nothing suspicious: no absolute paths, no "..", no symlinks, no duplicate names, no entry
+  over the ratio ceiling.
+
+$ zip zip_extract_text {path: "probe", entry: "notes.txt"}
+  notes.txt (33 B, 2026-09-04 13:33:26) from probe.zip:
+  Hello from the hosted zip probe.
+
+$ zip zip_extract {path: "probe"}
+  Extracted 2 files (52 B) from probe.zip; each link below is valid for one hour.
+         33 B  notes.txt  https://mcp.zovo.one/mcp/download/104460b0...
+         19 B  rows.csv   https://mcp.zovo.one/mcp/download/1bc85d78...
+  GET the first  -> 200, 33 bytes, "Hello from the hosted zi...", content-type text/plain; charset=utf-8
+                    content-disposition: attachment; filename="notes.txt"
+  GET the second -> 200, 19 bytes, "alpha,beta\n1,2\n3,4\n",  content-type text/csv; charset=utf-8
+                    first 4 bytes 61 6c 70 68     <- the entry's own bytes, not the archive's
+
+$ zip zip_upload {name: "one.txt", content: "first uploaded file\n"}   -> Uploaded "one.txt" (20 bytes)
+$ zip zip_upload {name: "two.csv", content: "a,b\n1,2\n"}              -> Uploaded "two.csv" (8 bytes)
+$ zip zip_create {out_path: "bundle", paths: ["one.txt", "two.csv"], overwrite: true}
+  Wrote https://mcp.zovo.one/mcp/download/f995e172... (valid 1 hour): 2 entries, 234 B from 28 B.
+    one.txt  20 B
+    two.csv  8 B
+  GET that URL -> 200, 234 bytes, content-type application/zip,
+                  first 4 bytes 50 4b 03 04   (PK, the local file header)
+$ zip zip_upload {name: "round.zip", content_base64: <those 234 bytes>}   <- the round trip
+$ zip zip_list {path: "round"}   -> 2 entries: one.txt 20 B, two.csv 8 B, nothing suspicious
+$ zip zip_extract_text {path: "round", entry: "one.txt"}  -> "first uploaded file"
+
+$ zip zip_create {out_path: "x", dir: "/etc"}
+  Error: there are no directories on this hosted endpoint, so dir cannot be walked. Pass paths
+  instead: the names of files uploaded with zip_upload {name, content} ...
+$ zip zip_create {out_path: "y", paths: ["nope"]}
+  Error: nothing is stored under the name "nope". Upload it first with zip_upload ...
+
+$ zip zip_upload {name: "evil.zip", content_base64: <safe.txt + ../../escaped.txt + /etc/cron.d/pwn>}
+  Uploaded "evil.zip" (355 bytes).
+$ zip zip_list {path: "evil"}
+  2 things to know before extracting this archive:
+    - ../../escaped.txt: parent traversal - the entry name walks up out of the archive root ...
+    - /etc/cron.d/pwn: absolute path - the entry names an absolute path ...
+$ zip zip_extract {path: "evil"}
+  Error: 2 of the 3 selected entries in evil.zip would be unsafe to write, so nothing was
+  extracted: ...      <- refused from the central directory, nothing inflated, no link published
+$ zip zip_extract {path: "evil", skip_unsafe: true}
+  Extracted 1 file (13 B) from evil.zip; each link below is valid for one hour.
+         13 B  safe.txt  https://mcp.zovo.one/mcp/download/707e2a45...
+  2 entries were skipped as unsafe: ...     <- one link, and it is the safe entry
+
+$ zip zip_files {}      -> probe.zip 264, one.txt 20, two.csv 8, evil.zip 355
+$ zip zip_history {}    -> 1 archive(s) in the register stored for your token, 1 this month.
+                           2026-09-04 06:34:04  24c3451e  zip_create  2 entries  234 B  bundle.zip
+$ zip zip_bundle_month {}
+  Error: this tool bundles the output FOLDERS the sibling servers write on a local install, and
+  this hosted endpoint has none: /mcp/invoice, /mcp/quotes, /mcp/expense-tracker, /mcp/docx and
+  /mcp/resume hand their documents back as one-hour download links and keep no folder to read ...
+  Looked in: <the five folders, each named and each reported missing>
+```
+
+`scripts/validate.mjs` gained `zip` to the tools/list sweep plus four real calls (`zip_upload`
+of a zip built with fflate + `zip_list` asserting 2 entries and nothing suspicious +
+`zip_extract_text` reading the entry; `zip_extract` with `patterns` whose download is the
+entry's own bytes served `text/csv`; `zip_create` from two uploaded text files whose download
+carries the `504b0304` magic served `application/zip`; a traversal entry refused with
+`parent traversal` and `nothing was extracted`), and the index assertion moved from 18
+endpoints to 19: **remote 60/60, whole run 463/463.**
+
+### Limitations
+
+- **190 KB of archive per POST** is the real ceiling, not the 1 MB per-file cap. There is no
+  chunked upload: a bigger archive is split, or run over stdio.
+- **`zip_extract` publishes at most 20 entries per call.** Each entry is a KV-backed download,
+  so the cost is real; a 200-entry archive is extracted with `patterns`, a slice at a time, or
+  over stdio where the files land in a directory.
+- **`zip_bundle_month` cannot work here and is documented as stdio-only**, in the tool
+  description as well as in the refusal. It is the one tool of the nine whose whole subject is
+  other servers' output folders, and this worker has none.
+- **`dir` on `zip_create` is refused, not ignored.** There is no tree to walk. `patterns` and
+  `exclude` still apply, to the uploaded names.
+- `/out/` is transient: a created archive and every extracted entry live only as one-hour
+  links. `zip_history` keeps the row and the name; it cannot hand the file back. `overwrite`
+  therefore only ever refers to a name already produced **in the same request**.
+- **A `zip_add` output is not published**: it rewrites the upload in place, which is what the
+  tool means over stdio too, and `zip_list` sees the result. Download it by packing it again,
+  or extract from it.
+- The free monthly cap (20 archives) is per token **and per endpoint document**: archives
+  created on `/mcp/zip` are counted separately from anything the same licence writes over
+  stdio. `zip_list`, `zip_extract` and `zip_extract_text` stay free on every tier here, exactly
+  as they are over stdio, because the archive somebody sent you is the one that most needs
+  checking.
+- The 512 MB in-memory input ceiling and the 25 MB free archive ceiling are unreachable on this
+  endpoint: the 2 MB tenant document and the 256 KB body cap bind thousands of times sooner,
+  and the refusal a caller actually sees is the fs shim's cap message.
+- **Uploads are KV, so a read can be stale for up to about a minute.** Measured during this
+  run: four uploads written by one script were absent from a `zip_files` issued roughly forty
+  seconds later, and the write that followed then flushed a document that no longer held them.
+  This is the whole worker's existing read-modify-write shape (`hydrate` -> run -> flush, last
+  write wins, KV's default 60-second cache), not something this endpoint added, but it costs
+  more here than anywhere else: a lost upload is a lost file, not a lost counter. Work in one
+  burst, and re-upload if `zip_files` comes back empty.
+- Generated archives and uploads share the 2 MB tenant cap and the 64-file limit;
+  `zip_delete_upload` removes an upload by name.

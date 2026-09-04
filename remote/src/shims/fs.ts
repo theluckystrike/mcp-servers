@@ -27,6 +27,7 @@ const MIME: Record<string, string> = {
   ics: "text/calendar; charset=utf-8",
   xlsm: "application/vnd.ms-excel.sheet.macroEnabled.12",
   pdf: "application/pdf",
+  zip: "application/zip",
   png: "image/png",
   svg: "image/svg+xml",
   jpg: "image/jpeg",

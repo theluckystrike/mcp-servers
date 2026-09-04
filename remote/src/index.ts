@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, eighteen endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, nineteen endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -28,6 +28,7 @@ import { createServer as createImage } from "./vendor/image/index.js";
 import { createServer as createBankStatement } from "./vendor/bank-statement/index.js";
 import { createServer as createQuotes } from "./vendor/quotes/index.js";
 import { createServer as createBarcode } from "./vendor/barcode/index.js";
+import { createServer as createZip } from "./vendor/zip/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -44,6 +45,7 @@ const PDF_MAX_BYTES = 2 * 1024 * 1024;           // uploaded and generated PDFs,
 const CALENDAR_MAX_BYTES = 2 * 1024 * 1024;      // imported .ics calendars, per token
 const IMAGE_MAX_BYTES = 2 * 1024 * 1024;         // uploaded and generated images, per token
 const BANK_MAX_BYTES = 2 * 1024 * 1024;           // uploaded statements and the ledger, per token
+const ZIP_MAX_BYTES = 2 * 1024 * 1024;            // uploaded archives and files, per token
 const DEFAULT_MAX_BYTES = 512 * 1024;            // stored document per token per endpoint
 const MAX_BODY_BYTES = 256 * 1024;               // request body ceiling
 const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour per client IP
@@ -54,7 +56,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-04.2";
+const BUILD_VERSION = "2026-09-04.3";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -227,6 +229,21 @@ const SERVERS: Record<string, ServerCfg> = {
     publish: (p) => p.startsWith("/out/"),
     strip: ["/out/"],
     sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
+  },
+  "zip": {
+    // Uploads (/uploads/) and the archive register are the tenant's state; every archive
+    // zip_create writes and every entry zip_extract unpacks lands under /out/ and is a
+    // transient one-hour download served application/zip or the entry's own type.
+    //
+    // zip_bundle_month is the one tool that cannot work here and says so: it bundles the
+    // output FOLDERS the sibling servers write on a local install, and every hosted
+    // endpoint hands its documents back as a download link instead, so there is no
+    // sibling document worth hydrating - unlike /mcp/barcode's read of the invoice store,
+    // which is a real JSON document at a known path.
+    factory: createZip as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    maxBytes: ZIP_MAX_BYTES,
+    strip: ["/uploads/", "/out/"],
   },
 };
 
@@ -600,6 +617,7 @@ const TOOLS: Record<string, string[]> = {
   "bank-statement": ["bank_upload", "bank_files", "bank_delete_upload", "statement_import", "transactions_list", "transactions_search", "category_rules", "transaction_categorize", "statement_summary", "reconcile_expenses", "recurring_detect", "statement_export", "accounts_list", "license_status", "license_activate"],
   "barcode": ["qr_create", "qr_wifi", "qr_vcard", "qr_payment_sepa", "invoice_payment_qr", "barcode_create", "barcode_batch", "code_list", "license_status", "license_activate"],
   "quotes": ["quote_create", "quote_list", "quote_get", "quote_update", "quote_send_text", "quote_accept", "quote_decline", "quote_pdf", "quote_report", "license_status", "license_activate"],
+  "zip": ["zip_upload", "zip_files", "zip_delete_upload", "zip_create", "zip_list", "zip_extract", "zip_extract_text", "zip_add", "zip_bundle_month", "zip_history", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -754,11 +772,20 @@ function indexDoc(base: string) {
         free_limits: "20 codes per calendar month, SVG output; PNG output and barcode_batch are Pro",
         notes: "invoice_payment_qr reads the invoice stored for the SAME token on /mcp/invoice for the amount and the reference, hydrated read-only and never written, and takes the beneficiary IBAN and name from the shared business profile (business_set on /mcp/invoice). A PNG barcode carries no printed digits under the bars: jimp's bitmap fonts are files on a filesystem this endpoint does not have, and the SVG, which is the default, draws its own text and does carry them",
       },
+      {
+        name: "zip", url: `${base}/mcp/zip`, tools: TOOLS["zip"],
+        mode: "upload and download",
+        how: "There is no disk here: zip_upload {name, content_base64} sends an archive's bytes (a name ending .zip is checked for the PK magic before it is stored) or {name, content} sends a text file to pack, and every `path` argument is one of those names. zip_files lists what is stored, zip_delete_upload removes one. zip_create packs uploaded files by name; `dir` is refused rather than ignored, because there is no directory tree to walk.",
+        outputs: "zip_create and zip_add return the archive as a download link valid for one hour (application/zip), and zip_extract returns ONE link per entry, served with that entry's own content type. There are no directories, so out_dir is accepted and ignored and at most 20 entries are extracted per call.",
+        free_limits: "20 archives per calendar month, 25 MB per archive, 200 entries per archive; zip_list, zip_extract and zip_extract_text are free on every tier, because the archive somebody sent you is the one that most needs checking",
+        storage: `${ZIP_MAX_BYTES / 1048576} MB of uploaded files and the register per token, and at most 1 MB in one upload - the ${MAX_BODY_BYTES / 1024} KB request-body cap binds long first, which is roughly 190 KB of archive once base64-encoded`,
+        notes: "every bomb, traversal, absolute-path and symlink guard is decided from the central directory before a byte is inflated, and each entry's CRC is checked against the data, exactly as over stdio. zip_bundle_month is a local (stdio) tool only: it bundles the output FOLDERS the sibling servers write on a disk, and every hosted endpoint hands its documents back as a download link instead, so there is no folder here to read",
+      },
     ],
     limits: {
       request_body_bytes: MAX_BODY_BYTES,
       jsonrpc_batching: "not accepted - send one request object per POST",
-      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, image: IMAGE_MAX_BYTES, "bank-statement": BANK_MAX_BYTES, currency: "no per-token storage" },
+      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, image: IMAGE_MAX_BYTES, "bank-statement": BANK_MAX_BYTES, zip: ZIP_MAX_BYTES, currency: "no per-token storage" },
       download_ttl_seconds: DOWNLOAD_TTL,
       idle_data_retention_days: SWEEP_AFTER_DAYS,
     },

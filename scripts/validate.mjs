@@ -326,12 +326,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 18 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 18 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 19 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 19 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -440,6 +440,29 @@ async function remote() {
     ok("hosted barcode_create ean13 computes check digit 7 and refuses a wrong one", /5901234123457/.test(JSON.stringify(zean)) && /check digit is wrong/.test(JSON.stringify(zbad)), JSON.stringify(zean).slice(0, 90));
     const zpay = await rpc("barcode", { jsonrpc: "2.0", id: 41, method: "tools/call", params: { name: "invoice_payment_qr", arguments: { invoice_id: qinv, out_path: "probe-pay", overwrite: true } } });
     ok("hosted invoice_payment_qr reads the invoice store of the same token and the shared profile IBAN (EUR 1328.40)", !!qinv && new RegExp(qinv).test(JSON.stringify(zpay)) && /1328\.40/.test(JSON.stringify(zpay)), JSON.stringify(zpay).slice(0, 140));
+    const { zipSync: RemoteZipSync } = await import("fflate");
+    const probeZip = Buffer.from(RemoteZipSync({ "notes.txt": [Buffer.from("Hello from the hosted zip probe.\n"), { level: 6 }], "rows.csv": [Buffer.from("alpha,beta\n1,2\n3,4\n"), { level: 6 }] }));
+    const zup = await rpc("zip", { jsonrpc: "2.0", id: 42, method: "tools/call", params: { name: "zip_upload", arguments: { name: "probe.zip", content_base64: probeZip.toString("base64") } } });
+    const zls = await rpc("zip", { jsonrpc: "2.0", id: 43, method: "tools/call", params: { name: "zip_list", arguments: { path: "probe" } } });
+    const ztx = await rpc("zip", { jsonrpc: "2.0", id: 44, method: "tools/call", params: { name: "zip_extract_text", arguments: { path: "probe", entry: "notes.txt" } } });
+    ok("hosted zip_upload + zip_list (2 entries, nothing suspicious) + zip_extract_text reads one entry", !zup.error && /2 entries/.test(JSON.stringify(zls)) && /Nothing suspicious/.test(JSON.stringify(zls)) && /Hello from the hosted zip probe/.test(JSON.stringify(ztx)), JSON.stringify(ztx).slice(0, 90));
+    const zex = await rpc("zip", { jsonrpc: "2.0", id: 45, method: "tools/call", params: { name: "zip_extract", arguments: { path: "probe", patterns: ["rows.csv"], overwrite: true } } });
+    const zxl = (JSON.stringify(zex).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const zxr = zxl ? await fetch(zxl) : null;
+    const zxb = zxr ? await zxr.text() : "";
+    ok("hosted zip_extract publishes one download per entry, served with the entry's own type", zxb === "alpha,beta\n1,2\n3,4\n" && (zxr?.headers.get("content-type") || "").startsWith("text/csv"), `${zxl ? "link" : "no link"} ${zxr?.headers.get("content-type")}`);
+    await rpc("zip", { jsonrpc: "2.0", id: 46, method: "tools/call", params: { name: "zip_upload", arguments: { name: "one.txt", content: "first uploaded file\n" } } });
+    await rpc("zip", { jsonrpc: "2.0", id: 47, method: "tools/call", params: { name: "zip_upload", arguments: { name: "two.csv", content: "a,b\n1,2\n" } } });
+    const zcr = await rpc("zip", { jsonrpc: "2.0", id: 48, method: "tools/call", params: { name: "zip_create", arguments: { out_path: "bundle", paths: ["one.txt", "two.csv"], overwrite: true } } });
+    const zcl = (JSON.stringify(zcr).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const zcres = zcl ? await fetch(zcl) : null;
+    const zchead = zcres ? Buffer.from(await zcres.arrayBuffer()).subarray(0, 4).toString("hex") : "";
+    ok("hosted zip_create from two uploaded files downloads with the PK magic, served application/zip", /2 entries/.test(JSON.stringify(zcr)) && zchead === "504b0304" && (zcres?.headers.get("content-type") || "") === "application/zip", `${zcl ? "link" : "no link"} ${zchead} ${zcres?.headers.get("content-type")}`);
+    const evilZip = Buffer.concat([Buffer.from(RemoteZipSync({ "safe.txt": [Buffer.from("safe content\n"), { level: 0 }], "xx/xx/escaped.txt": [Buffer.from("pwned\n"), { level: 0 }] }))]);
+    const evilTrav = Buffer.from(evilZip.toString("latin1").split("xx/xx/escaped.txt").join("../../escaped.txt"), "latin1");
+    const zev = await rpc("zip", { jsonrpc: "2.0", id: 49, method: "tools/call", params: { name: "zip_upload", arguments: { name: "evil.zip", content_base64: evilTrav.toString("base64") } } });
+    const zer = await rpc("zip", { jsonrpc: "2.0", id: 50, method: "tools/call", params: { name: "zip_extract", arguments: { path: "evil" } } });
+    ok("hosted zip_extract refuses a traversal entry before anything is inflated", !zev.error && /parent traversal/.test(JSON.stringify(zer)) && /nothing was extracted/.test(JSON.stringify(zer)), JSON.stringify(zer).slice(0, 110));
     const bound = await fetch("https://mcp.zovo.one/bound?tenant=anon_00000000000000000000000000000000").then((r) => r.json()); ok("bound endpoint answers for an unknown tenant", bound.bound === false, JSON.stringify(bound).slice(0, 80));
     const buyT = await fetch("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok("buy with tenant still 303 to Stripe", buyT.status === 303, buyT.status);
     const batch = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: "[{}]" }); ok("JSON-RPC batch rejected 400", batch.status === 400, batch.status);
