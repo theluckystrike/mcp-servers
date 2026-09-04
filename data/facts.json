@@ -326,8 +326,8 @@
       "does": "Ships 25 generic freelance clauses (scope, payment terms, IP, confidentiality, termination, liability, governing law and more), each marked as a template with variables, lets you add and search your own, extracts variables, fills them, and assembles a contract or proposal into .docx or markdown through the docx engine with a not-legal-advice line.",
       "for": "Freelancers who reuse the same terms across contracts and proposals.",
       "example": "\"Assemble a contract for Acme with payment terms, late fees, IP assignment and Polish governing law, 4,500 EUR.\" ... \"What variables are still open?\"",
-      "free": "Starter set plus 10 own clauses, search, assembly up to 8 clauses, markdown export.",
-      "pro": "Unlimited clauses, jurisdiction and tag filters, JSON import and export, unlimited assembly, clause versions.",
+      "free": "Starter set plus 10 own clauses, search with the jurisdiction filter, assembly up to 8 clauses, markdown export.",
+      "pro": "Unlimited clauses, tag filters, JSON import and export, unlimited assembly, clause versions.",
       "storage": "~/.local/share/mcp-servers/clauses/"
     },
     "calendar": {

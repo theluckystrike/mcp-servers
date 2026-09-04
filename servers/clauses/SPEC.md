@@ -27,7 +27,7 @@ A local clause library for contracts: store your own clauses, search them, and a
 | `clause_get` | Return a clause in full by id or by title, with its variables and, in Pro, its revision count. |
 | `clause_import` | Call this tool to bulk-load clauses into the library from a markdown or JSON file. Returns how many clauses were added, replaced, skipped and blocked by the free clause cap, plus the new library total. |
 | `clause_list` | List every clause, newest categories first, optionally narrowed to one category. |
-| `clause_search` | Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature. |
+| `clause_search` | Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Jurisdiction filtering is free; the tag filter is Pro and is skipped rather than refusing the search. |
 | `clause_update` | Change the text, category, tags, variables or jurisdiction of a clause. In Pro the previous text is kept as a version; in the free tier the change is applied without history. |
 | `contract_assemble` | Call this tool to build a contract or proposal document from library clauses. Returns the path written, the clauses used in document order, which variables were filled, and the facts still missing as bracketed prompts. |
 | `license_activate` | Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally. |
@@ -108,12 +108,12 @@ List every clause, newest categories first, optionally narrowed to one category.
 
 Title: Search clauses
 
-Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature.
+Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Jurisdiction filtering is free; the tag filter is Pro and is skipped rather than refusing the search.
 
 | arg | type | required | description |
 | --- | --- | --- | --- |
 | `category` | string | no |  |
-| `jurisdiction` | string | no | Pro: exact jurisdiction match |
+| `jurisdiction` | string | no | Exact jurisdiction match. Free |
 | `query` | string | yes | Words to look for, for example 'late payment interest' |
 | `tags` | string[] | no | Pro: every tag listed must be present |
 
