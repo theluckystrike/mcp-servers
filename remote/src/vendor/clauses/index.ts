@@ -301,27 +301,32 @@ server.registerTool("clause_list", {
 
 server.registerTool("clause_search", {
   title: "Search clauses",
-  description: "Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature.",
+  description: "Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Jurisdiction filtering is free; the tag filter is Pro and is skipped rather than refusing the search.",
   inputSchema: {
     query: z.string().describe("Words to look for, for example 'late payment interest'"),
     category: z.string().optional(),
-    tags: z.array(z.string()).optional().describe("Pro: every tag listed must be present"),
-    jurisdiction: z.string().optional().describe("Pro: exact jurisdiction match"),
+    tags: z.array(z.string()).optional().describe("Pro: every tag listed must be present. On free the search still runs, without this filter"),
+    jurisdiction: z.string().optional().describe("Exact jurisdiction match. Free"),
   },
 }, async (a) => {
   try {
     const pro = gate.isPro();
-    if (!pro && (a.tags?.length || a.jurisdiction)) {
-      return ok("Filtering search by tag or jurisdiction is a Pro feature. The query and category filters work in the free tier. " +
-        gate.upgradeText("tag and jurisdiction filters"));
-    }
+    // D-R55: the jurisdiction filter is a correctness check - a clause from the wrong
+    // jurisdiction assembled into a contract is the error the caller makes by hand - so it
+    // is free. Tag filtering is convenience and stays Pro, but it never costs the caller
+    // the search itself: the query runs without it and the response says so in one line.
+    const tagsGated = !pro && !!a.tags?.length;
     const hits = search(load().clauses, a.query, {
       category: a.category ? slugCategory(a.category) : undefined,
-      tags: pro ? a.tags : undefined,
-      jurisdiction: pro ? a.jurisdiction : undefined,
+      tags: tagsGated ? undefined : a.tags,
+      jurisdiction: a.jurisdiction,
     });
     return json({
       query: a.query, count: hits.length,
+      jurisdiction: a.jurisdiction,
+      free_tier_note: tagsGated
+        ? `Free tier filters by query, category and jurisdiction; the tag filter (${a.tags!.join(", ")}) was not applied. ${gate.upgradeText("tag filters in search")}`
+        : undefined,
       results: hits.slice(0, 25).map((h) => ({ score: h.score, ...summary(h.clause) })),
     });
   } catch (e) { return fail((e as Error).message); }

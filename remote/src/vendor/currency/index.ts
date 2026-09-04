@@ -46,6 +46,10 @@ function dateNote(d: { date: string; refreshed?: boolean; offline_note?: string 
 
 /** The free window is a read limit, never a silent truncation: the caller is always told. */
 function freeCutoff(): string { return isoDaysAgo(FREE_HISTORY_DAYS); }
+/** `days` calendar days before an ISO date, as an ISO date. */
+function isoDaysBefore(date: string, days: number): string {
+  return new Date(Date.parse(`${date}T00:00:00Z`) - days * 86_400_000).toISOString().slice(0, 10);
+}
 
 const server = new McpServer(
   { name: "mcp-currency", version: VERSION },
@@ -228,7 +232,7 @@ server.registerTool("fx_rates_for", {
 
 server.registerTool("rate_history", {
   title: "Rate history for a pair",
-  description: "Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change over the whole window.",
+  description: "Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change. A window wider than the free 90 days is shortened, not refused.",
   inputSchema: {
     from: code("from").describe("Base currency of the pair"),
     to: code("to").describe("Quote currency of the pair. Each row is 1 from = X to"),
@@ -250,19 +254,26 @@ server.registerTool("rate_history", {
       fromDate = new Date(Date.parse(`${toDate}T00:00:00Z`) - (a.days ?? 30) * 86_400_000).toISOString().slice(0, 10);
     }
     if (fromDate > toDate) return fail(`from_date ${fromDate} is after to_date ${toDate}.`);
-    const span = daysBetween(fromDate, toDate) + 1;
-    if (!gate.isPro() && span > FREE_HISTORY_DAYS) {
-      return gated(
-        `That window is ${span} days (${fromDate} to ${toDate}) and the free tier reads ${FREE_HISTORY_DAYS} days at a time. Nothing was looked up. ` +
-        `Ask for ${FREE_HISTORY_DAYS} days or fewer, or unlock the full series back to 1999. ` +
-        gate.upgradeText("unlimited rate history"),
-      );
-    }
-    if (!gate.isPro() && fromDate < freeCutoff()) {
-      return gated(
-        `${fromDate} is older than the ${FREE_HISTORY_DAYS} days the free tier reads (it goes back to ${freeCutoff()}). Nothing was looked up. ` +
-        gate.upgradeText("historical rates back to 1999"),
-      );
+    // D-R55: a window wider than the free tier is SHORTENED to the free window and
+    // answered, with the cap and the Pro extension named in one line. A refusal here is
+    // recomputed by hand off whatever rate the caller can remember.
+    const pro = gate.isPro();
+    let capNote: string | undefined;
+    if (!pro) {
+      const cutoff = freeCutoff();
+      if (toDate < cutoff) {
+        return gated(
+          `${toDate} is older than the ${FREE_HISTORY_DAYS} days the free tier reads (it goes back to ${cutoff}), so there is no part of that window the free tier can answer. Nothing was looked up. ` +
+          gate.upgradeText("historical rates back to 1999"),
+        );
+      }
+      const earliest = [cutoff, isoDaysBefore(toDate, FREE_HISTORY_DAYS - 1)].sort().pop()!;
+      if (fromDate < earliest) {
+        const asked = fromDate;
+        fromDate = earliest;
+        capNote = `Free tier reads ${FREE_HISTORY_DAYS} days back, so this covers ${fromDate} to ${toDate} instead of ${asked}. ` +
+          gate.upgradeText("the full series back to 1999");
+      }
     }
     const h = await getHistory();
     const pts = series(h.data.days, norm(a.from), norm(a.to), fromDate, toDate);
@@ -279,6 +290,7 @@ server.registerTool("rate_history", {
       change_pct: s.change_pct,
       rows_shown: shown.length,
       rates: shown,
+      free_tier_note: capNote,
       note: `Rate dates run ${pts[0].date} to ${pts[pts.length - 1].date}. ${PUBLISH_NOTE}${h.offline_note ? ` ${h.offline_note}` : ""}`,
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }

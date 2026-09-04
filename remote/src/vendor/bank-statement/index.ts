@@ -26,6 +26,14 @@ const PRODUCT = "bank-statement";
 const FREE_ACCOUNTS = 2;
 const FREE_WINDOW_MONTHS = 12;
 const FREE_RULES = 5;
+/**
+ * D-R55: a gated guardrail is worse than no tool. Reconciliation and recurring detection
+ * are checks the caller otherwise does by hand and gets wrong, so both answer on the free
+ * tier inside a stated cap instead of refusing.
+ */
+const FREE_RECONCILE_DAYS = 31;
+const FREE_RECURRING_MONTHS = 3;
+const FREE_RECURRING_CHARGES = 5;
 /** Free text is stored verbatim in data.json and echoed back; a 1 MB category is not a category. */
 const MAX_TEXT = 500;
 /** The whole CSV is read into memory and parsed, so the size is bounded before the read. */
@@ -510,7 +518,7 @@ const DEFAULT_RECONCILE_WINDOW = 3;
 
 server.registerTool("reconcile_expenses", {
   title: "Reconcile against the expense ledger",
-  description: "Match bank debits against the expenses recorded by mcp-expense-tracker: same currency, same amount, and a date within a few days. Reports what matched, which bank lines have no expense behind them and which expenses never reached the bank. The expense ledger is only ever read, never written.",
+  description: "Match bank debits against the expenses recorded by mcp-expense-tracker: same currency, same amount, and a date within a few days. Reports what matched, which bank lines have no expense behind them and which expenses never reached the bank. The expense ledger is only ever read, never written. Free covers 31 days at a time; Pro reconciles any range.",
   inputSchema: {
     from: text(10).describe("ISO date, inclusive"),
     to: text(10).describe("ISO date, inclusive"),
@@ -519,22 +527,34 @@ server.registerTool("reconcile_expenses", {
   },
 }, async (a) => {
   try {
-    if (!gate.isPro()) return gated(`Reconciliation is a Pro feature.\n\n${gate.upgradeText("reconcile_expenses")}`);
     if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
     const window = a.window_days ?? DEFAULT_RECONCILE_WINDOW;
-    const bank = select(load(), { from: a.from, to: a.to, account: a.account }).filter((t) => t.amount_minor < 0);
+    // D-R55: never refuse the check. The free tier reconciles the most recent
+    // FREE_RECONCILE_DAYS days of the range asked for and says so in one line.
+    const pro = gate.isPro();
+    const asked = { from: a.from, to: a.to };
+    let from = a.from;
+    let capNote: string | undefined;
+    if (!pro && dayDiff(a.to, a.from) + 1 > FREE_RECONCILE_DAYS) {
+      from = isoPlusDays(a.to, -(FREE_RECONCILE_DAYS - 1));
+      capNote = `Free tier reconciles ${FREE_RECONCILE_DAYS} days at a time, so this covers ${from} to ${a.to} of the ${asked.from} to ${asked.to} you asked for; ${gate.upgradeText("reconciling any date range")}`;
+    }
+    const bank = select(load(), { from, to: a.to, account: a.account }).filter((t) => t.amount_minor < 0);
     const led = readExpenses();
     if (!led.present) {
       return json({
         matched: 0, expense_ledger: "the expense ledger stored for your token on https://mcp.zovo.one/mcp/expense-tracker", expense_ledger_found: false,
+        from, to: a.to,
+        free_tier_range_days: pro ? undefined : FREE_RECONCILE_DAYS,
+        free_tier_note: capNote,
         unmatched_bank: bank.length,
         note: "no expenses are stored for your token on https://mcp.zovo.one/mcp/expense-tracker, so there was nothing to reconcile against. Log the receipts there first, with the same token, and run this again.",
       });
     }
     // The expense window is widened by the tolerance at both ends, or an expense on the
     // 31st could never match a bank line on the 1st.
-    const lo = isoPlusDays(a.from, -window), hi = isoPlusDays(a.to, window);
+    const lo = isoPlusDays(from, -window), hi = isoPlusDays(a.to, window);
     const expenses = led.expenses.filter((e) => e.date >= lo && e.date <= hi);
 
     /**
@@ -568,9 +588,11 @@ server.registerTool("reconcile_expenses", {
       });
     }
     const unmatchedBank = bank.filter((_, i) => !usedB.has(i));
-    const unmatchedExp = expenses.filter((e, j) => !usedE.has(j) && e.date >= a.from && e.date <= a.to);
+    const unmatchedExp = expenses.filter((e, j) => !usedE.has(j) && e.date >= from && e.date <= a.to);
     return json({
-      from: a.from, to: a.to, window_days: window,
+      from, to: a.to, window_days: window,
+      free_tier_range_days: pro ? undefined : FREE_RECONCILE_DAYS,
+      free_tier_note: capNote,
       expense_ledger: "the expense ledger stored for your token on https://mcp.zovo.one/mcp/expense-tracker", expense_ledger_found: true,
       bank_debits: bank.length, expenses_in_range: expenses.length,
       matched: matched.length, matches: matched.slice(0, 200),
@@ -607,7 +629,7 @@ function median(ns: number[]): number {
 
 server.registerTool("recurring_detect", {
   title: "Subscriptions and recurring charges in the bank data",
-  description: "Find the charges that come back: the same counterparty, an amount that barely moves and a steady cadence. Reports the cadence, the typical amount, when it was last taken, when it is next due and what it costs per year, per currency.",
+  description: "Find the charges that come back: the same counterparty, an amount that barely moves and a steady cadence. Reports the cadence, the typical amount, when it was last taken, when it is next due and what it costs per year, per currency. Free covers the last 3 months and 5 recurring charges; Pro covers the full history and every charge.",
   inputSchema: {
     months: z.number().int().min(1).max(60).optional().describe("How far back to look, default 3. Two occurrences are enough to see a cadence, three make it certain"),
     account: text(120).optional().describe("Limit to one account"),
@@ -615,8 +637,12 @@ server.registerTool("recurring_detect", {
   },
 }, async (a) => {
   try {
-    if (!gate.isPro()) return gated(`Recurring-charge detection is a Pro feature.\n\n${gate.upgradeText("recurring_detect")}`);
-    const months = a.months ?? 3;
+    // D-R55: gating this made the caller compute cadence by hand and annualise two charges
+    // fourteen days apart, exactly the figure cadence_confirmed exists to withhold. It
+    // answers free inside a stated cap instead.
+    const pro = gate.isPro();
+    const askedMonths = a.months ?? 3;
+    const months = !pro && askedMonths > FREE_RECURRING_MONTHS ? FREE_RECURRING_MONTHS : askedMonths;
     const minOcc = a.min_occurrences ?? 2;
     const from = isoMonthsAgo(months);
     const to = isoToday();
@@ -670,11 +696,20 @@ server.registerTool("recurring_detect", {
       });
     }
     found.sort((x, y) => x.currency.localeCompare(y.currency) || y.occurrences - x.occurrences);
+    const shown = pro ? found : found.slice(0, FREE_RECURRING_CHARGES);
+    const freeNote = pro ? undefined
+      : `Free tier: the last ${FREE_RECURRING_MONTHS} months and up to ${FREE_RECURRING_CHARGES} recurring charges` +
+        `${askedMonths > FREE_RECURRING_MONTHS ? ` (you asked for ${askedMonths} months)` : ""}` +
+        `${found.length > FREE_RECURRING_CHARGES ? `, showing ${FREE_RECURRING_CHARGES} of ${found.length} found` : ""}; ` +
+        gate.upgradeText("the full history and every recurring charge");
 
     return json({
       from, to, months, min_occurrences: minOcc,
+      months_asked: askedMonths === months ? undefined : askedMonths,
       debits_examined: rows.length, recurring: found.length,
-      charges: found,
+      charges_shown: shown.length,
+      free_tier_note: freeNote,
+      charges: shown,
       note: found.length
         ? "annualised is the typical amount at the detected cadence, not a forecast of what the bank will actually take."
         : `nothing came back at a steady cadence in ${months} month(s). ${months < 3 ? "Try months: 3 or more." : "A subscription needs at least two charges in the window to be visible."}`,

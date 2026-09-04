@@ -158,6 +158,20 @@ function windowGate(w: Window): string | null {
   return `a ${w.days}-day window (the free tier reads up to ${FREE_MAX_WINDOW_DAYS} days at a time)`;
 }
 
+/**
+ * D-R55: a double booking is a check the caller otherwise makes by eye and gets wrong, so
+ * the conflict scan is never refused. Over the free window it is SHRUNK to the first
+ * FREE_MAX_WINDOW_DAYS days and the answer names the cap and the Pro extension.
+ */
+function clampWindow(w: Window, zone: string, feature: string): { w: Window; note?: string } {
+  if (gate.isPro() || w.days <= FREE_MAX_WINDOW_DAYS) return { w };
+  const cappedTo = addDaysIso(w.fromDate, FREE_MAX_WINDOW_DAYS - 1);
+  return {
+    w: windowOf(w.fromDate, cappedTo, zone),
+    note: `Free tier checks ${FREE_MAX_WINDOW_DAYS} days at a time, so this covers ${w.fromDate} to ${cappedTo} of the ${w.fromDate} to ${w.toDate} you asked for. ${gate.upgradeText(feature)}`,
+  };
+}
+
 function todayIn(zone: string): string {
   return isoDate(wallIn(new Date(), zone));
 }
@@ -571,7 +585,8 @@ server.registerTool("conflicts", {
   title: "Find double bookings",
   description:
     "Every pair of events that overlap in time, with how many minutes they collide. Across all imported calendars unless you " +
-    "name one, so a work meeting clashing with a family event is caught. Whole-day events are reported separately from timed clashes.",
+    "name one, so a work meeting clashing with a family event is caught. Whole-day events are reported separately from timed clashes. " +
+    "Free checks 31 days at a time and says so; Pro checks any window.",
   inputSchema: {
     calendar: text(MAX_NAME, "calendar").optional().describe("One calendar name; default every imported calendar"),
     from: text(20, "from").describe("First day, YYYY-MM-DD"),
@@ -580,9 +595,10 @@ server.registerTool("conflicts", {
 }, guard(async (a: { calendar?: string; from: string; to: string }) => {
   const notes: string[] = [];
   const zone = defaultZone();
-  const w = windowOf(a.from, a.to, zone);
-  const g = windowGate(w);
-  if (g) return gated(g);
+  const asked = windowOf(a.from, a.to, zone);
+  const clamped = clampWindow(asked, zone, "conflict checks over any window");
+  const w = clamped.w;
+  if (clamped.note) notes.push(clamped.note);
   const db = load();
   const recs = pickCalendars(db, a.calendar);
   if (!recs.length) return ok("No calendars imported yet. Run ics_import first.");
