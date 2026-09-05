@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T20:43:03.358Z",
-  "total_commits": 545,
-  "sessions": 51,
+  "generated_at": "2026-09-05T23:15:53.158Z",
+  "total_commits": 567,
+  "sessions": 52,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -116,7 +116,12 @@
     {
       "name": "Loop 23: cash-book, copy buttons, v0.15.0",
       "sessions": 1,
-      "commits": 85
+      "commits": 29
+    },
+    {
+      "name": "Loop 24: amortization, free-tier decision, backlink re-check, v0.16.0",
+      "sessions": 1,
+      "commits": 78
     }
   ],
   "rows": [
@@ -701,7 +706,7 @@
       "at": "2026-09-05T20:42:56.259Z",
       "note": "loop 23 closed: v0.15.0 with cash-book (one double-entry ledger from six sibling stores, trial balance to zero, bank rows as evidence not postings; audit 18/18; the twenty-fifth server and hosted endpoint), 68 manifests verified, 1242 tests, validation 713/713, 26 bundles; copy buttons on every prompt block; statement-of-account hosted 18/18; findable share 50 percent tracked and 55 extended; downloads 3707; clicks 94/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 23: cash-book, copy buttons, v0.15.0",
-      "commits": 56,
+      "commits": 14,
       "subjects": [
         "Distribution round 16 record",
         "Release v0.13.0: asset-register joins; bump 25 packages, 49 internal ranges and 86 server manifests; invoice PROFILE_READERS gains asset-register; per-diem contract accepts a real sha",
@@ -715,6 +720,27 @@
         "sync-mirrors.sh: retry network calls, continue past a failed mirror",
         "Round 25 user-value audit: asset-register hosted (14/18 vs round 24's 16/18 stdio)",
         "Add mcp-statement-of-account 0.13.0"
+      ]
+    },
+    {
+      "n": 52,
+      "at": "2026-09-05T23:15:53.007Z",
+      "note": "loop 24 closed: v0.16.0 with amortization (loan and lease schedules, effective interest, early repayment, cash-book journal lines; rounding the payment once is a term change; audit 18/18; the twenty-sixth server and hosted endpoint), 71 manifests verified, 1207 tests, validation 762/762, 27 bundles; cash-book free tier documented and its export gate names the free evidence; cash-book hosted 17/18; all twelve estate backlinks still serve; release checker number-word table extended; round 31 stdio 15/18 with the lost points on client-side totals over refused data; downloads 3850; clicks 101/7d with 2 bundle-sourced; sales 0; GSC key dataless",
+      "loop": "Loop 24: amortization, free-tier decision, backlink re-check, v0.16.0",
+      "commits": 64,
+      "subjects": [
+        "statement-of-account: products, server count 24, children, mcpb, mirrors, pages, facts, tools, setup, distribution row",
+        "statement-of-account: Part 2 CLI audit and Part 1 gap re-verification, no defects found",
+        "statement-of-account: guide, compare_none note",
+        "statement-of-account: demo scene, GIF, logo; release-check green",
+        "Round 26 user-value audit: statement-of-account stdio",
+        "remote: POST /mcp/statement-of-account, sharedDoc as a read-only list",
+        "statement-of-account: validate probes and buy list, pages regenerated, billing deployed",
+        "Content round 20: month-end-close guide result, round 27 figures in verification",
+        "Remove the round 27 scratch probes that were committed by accident",
+        "Distribution round 17 record: statement-of-account wired, release-check green",
+        "Release v0.14.0: statement-of-account joins; bump 26 packages, 54 internal ranges and 90 server manifests; asset-register contract accepts a real sha",
+        "sha256 of the v0.14.0 bundles into every manifest that references one"
       ]
     }
   ]
