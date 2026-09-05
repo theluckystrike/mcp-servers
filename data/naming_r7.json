@@ -1,0 +1,73 @@
+{
+  "round": 7,
+  "date": "2026-09-05",
+  "input": "docs/INTEL_R10.md uncapped variant candidates: fuel, parking, toll (expense-tracker); loan; margin, discount (quotes or invoice)",
+  "method": "One bounded GET registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, curl -s -m 15, first page only. count = metadata.count. Checked source code of servers/expense-tracker/src/index.ts and servers/quotes/src/index.ts (and servers/invoice/src/index.ts for discount/margin) for a genuine matching field or computed tool before applying the honesty rule from the brief.",
+  "honesty_rule": "fuel/parking/toll honest for expense-tracker only if a category or tag exists specifically for them, not just a generic free-text field; loan is honest for nothing this estate ships; discount honest for quotes/invoice only if a line-level discount field exists (not just a whole-document percent); margin honest only if a margin (cost vs price / profit) is actually computed somewhere.",
+  "candidates": [
+    {
+      "token": "fuel",
+      "count_before": 7,
+      "capped": false,
+      "mapped_server": "expense-tracker",
+      "on_page1_before": false,
+      "decision": "skip",
+      "reason": "expense_add's category field (servers/expense-tracker/src/index.ts:184) is free text with examples 'software, travel, office' -- no enum, no dedicated fuel category or tag, no fuel-specific tool. mileage_add computes distance x a regional per-km/mile rate (money.ts MILEAGE_RATES), which is a genuine mileage feature but is not fuel: it prices distance, not litres/fill-ups. A user could type category:'fuel' but that is true of any arbitrary word, not evidence of a real fuel capability.",
+      "published": false
+    },
+    {
+      "token": "parking",
+      "count_before": 2,
+      "capped": false,
+      "mapped_server": "expense-tracker",
+      "on_page1_before": false,
+      "decision": "skip",
+      "reason": "same generic free-text category field as fuel, no parking-specific field, tag or tool. Same reasoning as fuel applies.",
+      "published": false
+    },
+    {
+      "token": "toll",
+      "count_before": 49,
+      "capped": false,
+      "mapped_server": "expense-tracker",
+      "on_page1_before": false,
+      "decision": "skip",
+      "reason": "same generic free-text category field, no toll-specific field or tool. Also weak signal per INTEL_R10: page-1 hits are mostly x402/crypto payment-gateway servers using 'toll' as a metaphor (tollbooth-x402, tollmint, snaptoll), not toll-road expense tools, so even the empty-slot math is unreliable here.",
+      "published": false
+    },
+    {
+      "token": "loan",
+      "count_before": 9,
+      "capped": false,
+      "mapped_server": "none",
+      "on_page1_before": false,
+      "decision": "skip",
+      "reason": "no server in the 23-server estate does loan tracking, amortization or interest scheduling. INTEL_R10 itself recommends building an amortization server for exactly this gap (score 71.25, BUILD) rather than naming an existing server 'loan' -- the brief's rule states this explicitly: loan is honest for nothing we ship.",
+      "published": false
+    },
+    {
+      "token": "margin",
+      "count_before": 8,
+      "capped": false,
+      "mapped_server": "quotes / invoice",
+      "on_page1_before": false,
+      "decision": "skip",
+      "reason": "grepped servers/quotes/src/index.ts and servers/invoice/src/index.ts for margin/markup: neither computes a cost-vs-price profit margin anywhere. Both servers only track discount_percent, tax_rate and totals -- no cost field is ever recorded or compared to price, so no margin is ever computed.",
+      "published": false
+    },
+    {
+      "token": "discount",
+      "count_before": 3,
+      "capped": false,
+      "mapped_server": "quotes / invoice",
+      "on_page1_before": false,
+      "decision": "skip",
+      "reason": "quotes' itemSchema (servers/quotes/src/index.ts:97-109) has description, quantity, unit_price_minor, tax_rate and currency per line -- no per-line discount field. discount_percent is a single quote-level (or invoice-level) parameter applied uniformly to every line via computeTotals, not a line-level field. invoice/src/index.ts has the identical shape (discount_percent at the invoice level, servers/invoice/src/index.ts:449). Per the brief's exact test -- 'discount is honest for quotes only if a line-level discount field exists' -- neither server has one, so this fails on a technicality even though a document-level discount genuinely exists.",
+      "published": false
+    }
+  ],
+  "published_count": 0,
+  "before_after": "No publishes this round. All 6 counts re-confirmed via curl -s -m 15 immediately before writing this file: fuel 7, parking 2, toll 49, loan 9, margin 8, discount 3 -- all uncapped, none containing a theluckystrike entry on page 1, matching INTEL_R10 exactly. No after-probe needed since nothing changed on the registry.",
+  "registry_requests_used": 12,
+  "wall_minutes_estimate": 12
+}
