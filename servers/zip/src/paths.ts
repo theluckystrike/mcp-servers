@@ -9,7 +9,21 @@ import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
  */
 export const MAX_INPUT_BYTES = 512 * 1024 * 1024;
 
+/** A leading `<scheme>://` means the caller has a URL, not a local path. Checked BEFORE
+ * any resolution, so a URL is never joined against the server's cwd and the refusal
+ * never has a path in it, let alone one that leaks the cwd. */
+const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
+
+// D-R83: a URL handed to a path argument used to be silently resolved as a relative
+// filesystem path, producing an error that leaked the server's own cwd. Refused by
+// name instead.
 export function expandPath(p: string): string {
+  if (URL_SCHEME_RE.test(p)) {
+    throw new Error(
+      `"${p}" is a URL, not a file path; this tool reads and writes local files. On the hosted route, ` +
+      `use the url argument of zip_upload. Locally, download it first and pass the path it was saved to.`,
+    );
+  }
   const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
   return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
 }
