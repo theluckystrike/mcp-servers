@@ -583,6 +583,19 @@
    "mcpb": "pending: bundles/cash-book.mcpb not built, server.mcpb.json fileSha256 is TBD",
    "github-mirror": "pending",
    "registry-name": "pending 0.15.0 (io.github.theluckystrike/ledger, io.github.theluckystrike/trial-balance)"
+  },
+  "amortization": {
+   "github": "published",
+   "registry": "pending",
+   "hosted": "published https://mcp.zovo.one/mcp/amortization",
+   "npm": "missing",
+   "smithery": "pending",
+   "glama": "pending",
+   "docker-mcp-catalog": "submitted",
+   "cline-marketplace": "submitted",
+   "mcpb": "pending: bundles/amortization.mcpb not built, server.mcpb.json fileSha256 is TBD",
+   "github-mirror": "pending",
+   "registry-name": "pending 0.15.0 (io.github.theluckystrike/loan-schedule, io.github.theluckystrike/amortisation)"
   }
  }
 }

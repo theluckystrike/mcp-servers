@@ -2594,6 +2594,111 @@ offline, or <a href="/bundle?src=store.guide.one-ledger-from-every-server">every
     ],
   },
 
+  "loan-and-lease-schedules-from-chat": {
+    title: "Loan and lease schedules from chat, closing exactly on zero",
+    description: "Turn the terms of a credit agreement into the level payment, the effective annual rate and a period-by-period schedule in integer minor units, then cost settling early net of the penalty and book each payment correctly. Why rounding the level payment once is a term change rather than a rounding detail, and why a schedule that fills out the declared term can charge negative interest on a debt that is already gone.",
+    html: `<h1>Loan and lease schedules from chat, closing exactly on zero</h1>
+<p>A credit agreement is four or five numbers and a date. What it costs you is a table nobody hands you: the
+level payment, how much of each payment is interest, what is left outstanding on any given day, and what
+settling early would actually save once the penalty is taken off. The <a href="/s/amortization">MCP
+Amortization</a> server derives that table from the terms, in integer minor units, with every closing balance
+reaching the balloon, or zero, exactly. It stores no schedule and it posts nothing anywhere.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add amortization -- npx -y @theluckystrike/mcp-amortization</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "amortization": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-amortization"]
+    }
+  }
+}</code></pre>
+<p>It reads no other server's store and writes into none. Its own register is two files: the agreements and an
+id counter.</p>
+
+<h2>Rounding the payment once is a term change</h2>
+<p>This is the finding worth the whole page, and it is not a rounding detail. Take 1,000,000 minor units at
+250 basis points over 360 annual periods. The level payment comes out to a fraction and rounds, once, to
+25,292. That rounding is worth a fraction of a minor unit a period, and it repeats. <strong>The balance clears
+at period 356: four periods before the term the agreement declares.</strong> The final payment is 4,165.</p>
+<p>The reason this matters is what the alternative looks like. A schedule that keeps subtracting in order to
+fill out the declared term does not crash and does not warn. It reports four more rows, each with a full
+payment of 25,292 against a balance that has gone negative, each charging <em>negative interest</em>, and the
+totals still reconcile against themselves. The chain arithmetic is self-consistent the whole way down. The
+only thing wrong with it is that the borrower does not owe the last four rows. This server stops the schedule
+where the debt stops and says so, and a 720-schedule sweep across six rates, five terms, two methods, three
+balloon sizes and four payment frequencies is the standing alarm on it: every one closes exactly on its
+balloon and no interest charge is ever negative.</p>
+
+<h2>The residual goes in the split, never in the payment</h2>
+<p>Rounding each period's interest to the minor unit leaves the closing balance a few units from zero after a
+chain of subtractions, and there are exactly two places to put that difference: the final payment, or the
+final period's interest-and-principal split. The payment is what the borrower is contractually due to pay.
+The split is not. So the final period's principal is exactly what is left to repay and its interest is the
+rest of the same level payment.</p>
+<p>On the reference loan, 1,000,000 minor units at a nominal 12 percent compounded monthly over 12 monthly
+payments, that puts the final interest at 882 rather than the 880 an unrounded balance carries, the total
+interest at 66,188, and the closing balance at exactly zero, with all twelve payments at 88,849. Putting the
+2 unit difference into the payment instead would produce a final payment of 88,847, which is an amount that
+appears on no agreement anyone signed.</p>
+
+<h2>Compounding and payment frequency are two different clocks</h2>
+<p>The rate for one payment period is the equivalent rate taken through the compounding clock, not the nominal
+rate divided by the number of payments. Take EUR 10,000 at a nominal 12 percent compounded MONTHLY, repaid in
+four quarterly instalments. The quarterly rate is 3.0301 percent, not 3.0000. Three basis points. It sets the
+payment at EUR 2,692.21 instead of EUR 2,690.27 and the total interest at EUR 768.84 instead of EUR 761.08:
+<strong>EUR 7.76 more, 1.0 percent of the entire interest bill, on a one-year loan of ten thousand</strong>,
+in the lender's favour, and invisible in the quote. Every answer prints the periodic rate it used to six
+decimal places for that reason.</p>
+<p>The same arithmetic is why the effective annual rate is reported beside the nominal one on every loan. A
+nominal 12 percent compounded monthly is an effective 12.68 percent, and that 0.68 of a percent is the part
+of the price the headline rate does not carry.</p>
+
+<h2>Only the interest is an expense</h2>
+<p><code>loan_journal</code> hands back the double entry for a period or a month: debit interest expense,
+debit loan liability, credit cash, in the <a href="/s/cash-book">cash book</a>'s own account ids, character
+for character, so nothing has to be re-mapped later. Beside it sits an
+<a href="/s/expense-tracker">expense_add</a>-ready payload carrying the INTEREST alone. On the reference
+loan's first payment that is 100.00, not 888.49.</p>
+<p>Booking the whole payment as an expense overstates the cost of the business by the principal, every period,
+and it still reconciles perfectly against the bank statement, which is precisely why the error survives a bank
+reconciliation and shows up a year later in the accounts. The payload names the principal as excluded so the
+hand-off cannot make that mistake silently.</p>
+
+<h2>Settling early can cost money, and it says so</h2>
+<p><code>loan_repay_early</code> costs a settlement or an overpayment at any period: the outstanding balance,
+the penalty if the agreement carries one, the recalculated remaining schedule and the interest saved, stated
+gross AND net. On the reference loan at period 6 the outstanding is 514,920, interest already paid is 48,014,
+the saving is 18,174 gross and 13,174 net of a 5,000 penalty. At period 11 the same 5,000 penalty is set
+against a saving of 882, and the verdict says the settlement COSTS rather than reporting a smaller saving.
+Nothing is written: the stored agreement keeps its terms, because an agreement is amended by whoever signs
+it.</p>
+
+<h2>Ask it</h2>
+<pre class="prompt"><code>Record the van finance: 1,000,000 minor units, nominal 12 percent compounded monthly, twelve monthly payments, drawn 2026-01-15.</code></pre>
+<pre class="prompt"><code>Show me the schedule, and the effective annual rate beside the nominal one.</code></pre>
+<pre class="prompt"><code>What would settling at period 6 cost me after the penalty?</code></pre>
+<p><code>loan_create</code>, <code>loan_schedule</code> and <code>loan_list</code> are free;
+<code>loan_repay_early</code>, <code>loan_journal</code> and <code>loans_report</code> are Pro
+(<a href="/buy/amortization?src=store.guide.loan-and-lease-schedules-from-chat">$19 one-time</a>, lifetime,
+verified offline, or <a href="/bundle?src=store.guide.loan-and-lease-schedules-from-chat">every server in the
+bundle</a>).</p>`,
+    faq: [
+      { q: "Does the schedule always close on exactly zero?", a: "Yes, or exactly on the balloon. Every figure is an integer minor unit and the final period's principal is exactly what is left to repay, so the closing balance is zero to the unit rather than nearly zero. A 720-schedule sweep across six rates, five terms, two methods, three balloon sizes and four payment frequencies asserts it, and asserts no interest charge is ever negative." },
+      { q: "Why does my last payment show a different interest split than a bank quote?", a: "Because the residual left by rounding each period's interest goes into the final period's interest-and-principal split rather than into the payment. The payment is contractual and does not move. On the reference loan that is a final interest of 882 rather than 880. The alternative, adjusting the last payment to 88,847, produces an amount that is on no agreement." },
+      { q: "What happens if the debt clears before the term ends?", a: "The schedule stops there and says so. At 250 basis points over 360 annual periods the balance clears at period 356 with a final payment of 4,165. Filling out the declared term would report four more rows charging negative interest on a negative balance, and the totals would still reconcile, which is why this case is swept rather than trusted." },
+      { q: "How is the periodic rate worked out?", a: "As the equivalent rate through the compounding clock, (1 + r/m)^(m/p) - 1, never the nominal rate divided by the number of payments. On a quarterly-paid, monthly-compounded loan that is worth about 1.0 percent of the whole interest bill in the lender's favour. The rate actually used is printed to six decimal places on every answer." },
+      { q: "Can I post the journal straight into my books?", a: "The journal is a payload, not a posting. It debits interest expense and loan liability and credits cash in the cash book's own account ids, and the expense payload carries the interest alone, 100.00 rather than 888.49 on the reference loan's first payment. The servers that own the ledger and the expense book do the writing, because id allocation, category rules and the VAT split live inside their handlers." },
+      { q: "Is a balloon inside the last payment?", a: "No. The closing balance of the final period IS the balloon, and the answer says in words that the borrower owes it on top of the payment shown. Folding it in would make one row the size of a house deposit and would still total correctly, which is the dangerous part." },
+      { q: "Are arrangement fees treated as interest?", a: "No. A fee is paid at drawdown, sits outside every payment row and outside the total interest, and the cost of credit is reported as the two added together. Rolling the fee into the interest would make the schedule disagree with the agreement it came from." },
+      { q: "What does the free tier actually give me?", a: "loan_schedule and loan_list unlimited on every tier, over three agreements held in the register. The payment and the interest are the question this server exists to answer, so they are never metered; the meter is on holding an agreement, which is the unit of work. Re-deriving the schedule of a loan already recorded is free forever." },
+      { q: "Where is the data kept?", a: "Two plain JSON files under ~/.local/share/mcp-servers/amortization/, or $XDG_DATA_HOME if you set it: loans.json and counter.json. No schedule is stored, because a stored schedule is a second copy of what the rate and the term already decide and the copy is the one that gets believed after somebody edits the rate. There is no network call anywhere in this server, no account and no API key, and license keys are verified offline." },
+    ],
+  },
+
   "client-statements-and-dunning-from-chat": {
     title: "Client statements and payment chasers from chat, aged as at any date you name",
     description: "Turn the invoices, credit notes and deposits you already keep into a statement of account for a period, age what is open into 0-30, 31-60, 61-90 and over 90 days AS AT a date, and draft the chaser. Why aging a past date with today's payment figures reports zero overdue on a day when a third of the book was late, and why paid_minor rather than the payment rows is the authority.",
@@ -3152,5 +3257,5 @@ ${FOOT}`,
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, travel allowances, fixed assets and depreciation, client statements and dunning, and the one-install office-suite bundle.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, travel allowances, fixed assets and depreciation, client statements and dunning, loan and lease schedules, and the one-install office-suite bundle.",
 };

@@ -32,7 +32,7 @@ mkdir -p "$BUNDLES"
 MCPB="npx -y @anthropic-ai/mcpb"
 LIC_SRC="$ROOT/packages/mcp-license"
 
-SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book"
+SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization"
 
 declare -A DISPLAY_NAME=(
   [time-tracker]="Time Tracker"
@@ -60,6 +60,7 @@ declare -A DISPLAY_NAME=(
   [asset-register]="Asset Register"
   [statement-of-account]="Statement of Account"
   [cash-book]="Cash Book"
+  [amortization]="Amortization"
 )
 
 declare -A KEYWORDS=(
@@ -88,6 +89,7 @@ declare -A KEYWORDS=(
   [asset-register]='["mcp","model-context-protocol","asset-register","depreciation","fixed-assets","capital-allowances","macrs","kst"]'
   [statement-of-account]='["mcp","model-context-protocol","statement-of-account","aging","dunning","receivables","accounts-receivable","invoice"]'
   [cash-book]='["mcp","model-context-protocol","cash-book","double-entry","bookkeeping","ledger","trial-balance","accounting"]'
+  [amortization]='["mcp","model-context-protocol","amortization","loan","lease","schedule","interest","finance"]'
 )
 
 # ------------------------------------------------------------------ helpers

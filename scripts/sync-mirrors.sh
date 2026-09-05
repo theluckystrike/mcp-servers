@@ -29,7 +29,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OWNER="theluckystrike"
 MONOREPO="https://github.com/${OWNER}/mcp-servers"
 RAW="https://raw.githubusercontent.com/${OWNER}/mcp-servers/main"
-ALL_SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book office-suite"
+ALL_SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization office-suite"
 DRY_RUN="${DRY_RUN:-0}"
 export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
 
@@ -94,6 +94,7 @@ topics_for() {
     asset-register) echo "fixed-assets depreciation capital-allowances accounting" ;;
     statement-of-account) echo "accounts-receivable aging dunning invoicing" ;;
     cash-book) echo "bookkeeping double-entry ledger accounting" ;;
+    amortization) echo "amortization loan-schedule lease finance" ;;
     pdf) echo "pdf merge split stamp" ;;
     calendar) echo "calendar ics free-busy" ;;
     kanban) echo "kanban tasks project-board" ;;

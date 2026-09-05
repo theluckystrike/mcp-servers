@@ -469,7 +469,17 @@
         "free": "trial_balance and ledger_lines are free and unlimited on every tier: whether the books add up is the question this server exists for, and a free tier that hides the answer is a demo. The meter is on the PERIOD, three distinct periods a calendar month, keyed by from, to and currency, so rebuilding one already in the register is free forever on every tier.",
         "pro": "Unlimited periods, month_close with its trial balance snapshot and its list of what the month leaves unposted or inconsistent, ledger_export_csv as RFC 4180 text with no file written, and ledger_report with the movement and closing balance per account plus the purchase commitments held as a memo.",
         "storage": "~/.local/share/mcp-servers/cash-book/"
-      }
+      },
+    "amortization": {
+      "title": "MCP Amortization",
+      "tagline": "Loan and lease schedules from the terms of the agreement, to the minor unit.",
+      "does": "Takes the terms of a credit agreement -- principal in minor units, the nominal annual rate in basis points, how often interest compounds, how often a payment falls due, the term in periods, annuity or straight principal, any arrangement fee, any balloon and the drawdown date -- and derives the level payment, the effective annual rate beside the nominal one, and the schedule period by period: opening balance, payment, interest, principal, closing balance, every figure an integer minor unit and every closing balance reaching the balloon, or zero, exactly. Compounding and payment frequency are two different clocks: the rate for one payment period is the equivalent rate taken through the compounding clock, (1 + r/m)^(m/p) - 1, never the nominal rate divided by the number of payments. The payment never varies and the last period absorbs the rounding residual in the interest and principal SPLIT rather than in the payment, because the payment is what the borrower is contractually due to pay and the split is not. A level payment rounded once can clear the debt before the declared term ends, and the schedule stops where the debt does rather than reporting periods the borrower does not owe. Early settlement and partial overpayment are costed gross AND net of the penalty, and a penalty larger than the interest saved is reported as a COST rather than a smaller saving. The journal debits interest expense and loan liability and credits cash in the cash book's own account ids, and only the interest reaches the expense payload, because booking the whole payment as an expense overstates the cost of the business by the principal every period and still reconciles perfectly against the bank. Nothing is posted from here, no schedule is stored, currencies are never added together, and month arithmetic clamps so a loan drawn on the 31st pays on the 28th in February.",
+      "for": "Anyone who has to answer what a credit agreement actually costs before signing it, and anyone who has to book the payments afterwards: freelancers and small firms with equipment finance, a car lease or a working-capital loan, and the bookkeepers who have to split each payment between interest and principal.",
+      "example": "\"Record the van finance: 40,000 EUR, 12 percent nominal compounded monthly, 12 monthly payments, drawn 15 January.\" ... \"Show me the schedule.\" ... \"What would settling at period 6 cost me?\" ... \"Give me the journal for March.\" ... \"What do I owe across all of them at 30 June?\"",
+      "free": "loan_schedule is free and unlimited on every tier: the payment and the interest are the question this server exists to answer, and a free tier that hides the answer is a demo. The meter is on the number of agreements held, three loans in the register, which is the unit of work.",
+      "pro": "Unlimited loans, loan_repay_early for settling or overpaying at any period costed gross and net of the penalty, loan_journal with its expense-tracker payload carrying the interest alone, and loans_report: what is owed per currency, when each next payment falls due, and the interest charged in a calendar year.",
+      "storage": "~/.local/share/mcp-servers/amortization/"
+    }
   },
   "version": "0.1.1",
   "compare_none": {
@@ -583,6 +593,19 @@
         "note": "Searched the official MCP registry search API for each token on 2026-09-06. Three of the five return 0 results: cash-book, trial-balance and double-entry. bookkeeping returns exactly one row and ledger returns 30, and the ones that are genuinely accounting rather than a substring match on ledger -- ai.craneledger/crane-ledger, io.helloledger/bookkeeping, com.npledger/np-ledger and com.ledgerbeaver/finance -- are all the same shape: a remote streamable-http endpoint in front of a hosted book you keep on their platform, reached with a bearer key and an account. Not one of them was called: probing a metered remote endpoint is a paid API call. The rest of the ledger rows are the word used for something else entirely, tamper-evident action logs, run receipts, congressional trade registers, tariff tables and an EU tutoring platform. This server is not that shape and a comparison page would be dishonest about which one a reader wants: it posts nothing, it stores no book of its own beyond a register of the periods it built, and it derives the whole ledger on the call from six local stores it never writes to. The comparison a reader would actually want is against a spreadsheet, and the measured result of that comparison is the guide /guides/one-ledger-from-every-server rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R18_RESULT.md.",
         "guide": "one-ledger-from-every-server",
         "ttl_days": 30
-      }
+      },
+    "amortization": {
+      "date": "2026-09-06",
+      "tokens": [
+        "amortization",
+        "loan-schedule",
+        "lease",
+        "mortgage-calculator",
+        "effective-rate"
+      ],
+      "note": "Searched the official MCP registry search API for each token on 2026-09-06. Three of the five return 0 results: amortization, loan-schedule and effective-rate. lease returns 30 rows and 28 of them are a substring match on the word release rather than a match on the concept: release trackers for npm, PyPI, HuggingFace and LLM launches, release gates, release-note tooling and CI signoff binders. The one genuine lease row, io.github.amadeuserras/leaseclear-mcp, is document Q&A over a lease you already signed rather than a schedule derived from its terms. mortgage-calculator returns 4 rows and all four are the same server, io.github.CSOAI-ORG/mortgage-calculator-ai-mcp, listed at four versions: a remote US-mortgage payment calculator with comparison and affordability tools. It was not called: probing a remote endpoint someone else meters is a paid API call. That server answers what a monthly payment would be on a hypothetical mortgage. This server holds a register of agreements you actually signed, derives every row in integer minor units so the closing balance reaches the balloon exactly, costs an early settlement net of its penalty, and hands back a balanced double entry in the cash book's own account ids. A comparison table between the two would be dishonest about which one a reader wants, and nothing in the registry does the second thing at all. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R19_RESULT.md.",
+      "guide": "loan-and-lease-schedules-from-chat",
+      "ttl_days": 30
+    }
   }
 }
