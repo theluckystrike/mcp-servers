@@ -27,6 +27,66 @@ export const PRODUCTS = {
   bundle: { desc: "Every server above, one key, lifetime. Saves $322 against buying nineteen.", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
+/** Every sellable single-server product; `bundle` is the one entry that is not one. */
+export const SINGLE_PRODUCT_IDS = Object.keys(PRODUCTS).filter((id) => id !== "bundle");
+
+/** Nineteen, computed rather than typed, so adding a server cannot leave the prose stale. */
+export const SERVER_COUNT = SINGLE_PRODUCT_IDS.length;
+
+/** $322: nineteen single licenses at $19 each, less the $39 bundle. */
+export const BUNDLE_SAVING_USD =
+  SINGLE_PRODUCT_IDS.reduce((n, id) => n + PRODUCTS[id].usd, 0) - PRODUCTS.bundle.usd;
+
+const NUMBER_WORD = { 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two" };
+
+/**
+ * The line under the product name on the Stripe hosted checkout page. Stripe renders a
+ * line item's description from the Product's `description`, not from anything the
+ * Session can pass alongside a `price` id, so this string is the single source of truth
+ * for both: the Session builder sends nothing, and `stripe-sync` below (run by hand with
+ * a live key) writes exactly this onto each Product.
+ *
+ * Audit finding (docs/CHECKOUT_AUDIT.md): before this, the hosted page said only
+ * "Pro license for the MCP Invoice server. One-time, lifetime." - the server count and
+ * the $322 bundle saving appeared nowhere the buyer could see them.
+ */
+export function checkoutDescription(productId) {
+  const p = PRODUCTS[productId];
+  if (!p) throw new Error(`unknown product: ${productId}`);
+  const word = NUMBER_WORD[SERVER_COUNT] || String(SERVER_COUNT);
+  if (productId === "bundle") {
+    return `${word} MCP servers for Claude, one lifetime key, saves $${BUNDLE_SAVING_USD} against buying singly`;
+  }
+  return `Lifetime key for ${p.name}. The ${word.toLowerCase()}-server bundle is $${PRODUCTS.bundle.usd}`;
+}
+
+/**
+ * Checkout Session `custom_text`. Two messages the buyer reads before and after the
+ * pay button:
+ *
+ * - `submit`: on a single-server session this is the bundle cross-sell. Stripe has no
+ *   `cross_sells` parameter on a Product (probed live: `parameter_unknown`). The Session
+ *   *does* accept `optional_items`, and that is deliberately not used: an accepted
+ *   optional item makes the Session carry two line items, which `fulfillmentAllowed`
+ *   rejects, so the buyer would be charged $58 and minted nothing.
+ * - `after_submit`: how the key actually arrives. Nothing is emailed - the key is on the
+ *   /success page - and a hosted tenant is bound automatically. That was previously
+ *   discoverable only after paying.
+ */
+export function checkoutCustomText(productId) {
+  const p = PRODUCTS[productId];
+  if (!p) throw new Error(`unknown product: ${productId}`);
+  const word = NUMBER_WORD[SERVER_COUNT] || String(SERVER_COUNT);
+  const submit = productId === "bundle"
+    ? `One payment, one lifetime key for all ${SERVER_COUNT} servers. Saves $${BUNDLE_SAVING_USD} against buying them singly.`
+    : `Buying more than one? All ${SERVER_COUNT} servers are $${PRODUCTS.bundle.usd} together, a $${BUNDLE_SAVING_USD} saving: https://mcp.zovo.one/buy/bundle?src=checkout.crosssell.${productId}`;
+  const after_submit =
+    `Your license key is shown on the confirmation page immediately after payment. It is not emailed, ` +
+    `so copy it from that page; the same URL always shows the same key. If you started from a hosted ` +
+    `mcp.zovo.one endpoint, that endpoint is upgraded to Pro automatically, with nothing to paste.`;
+  return { submit, after_submit };
+}
+
 const REPO = "https://github.com/theluckystrike/mcp-servers";
 
 const GUIDE_LINKS = Object.entries(GUIDES)
@@ -198,13 +258,22 @@ async function stripe(env, path, params, method = "POST") {
 
 async function createCheckout(env, host, productId, probeTag = "", tenant = "") {
   const p = PRODUCTS[productId];
+  const ct = checkoutCustomText(productId);
   const s = await stripe(env, "checkout/sessions", {
     mode: "payment",
     "line_items[0][price]": p.price,
     "line_items[0][quantity]": "1",
     success_url: `https://${host}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `https://${host}/`,
-    allow_promotion_codes: "true",
+    // Off (audit): a discount field on a $19 one-time page invites the buyer to leave and
+    // hunt for a code that does not exist. fulfillmentAllowed keeps its 100%-discount
+    // branch for any code issued from the Dashboard against an older session.
+    allow_promotion_codes: "false",
+    // Always create a Customer, so the email Checkout collects is kept on an object the
+    // receipt and any later support lookup can be found by, not only inside the Session.
+    customer_creation: "always",
+    "custom_text[submit][message]": ct.submit,
+    "custom_text[after_submit][message]": ct.after_submit,
     "metadata[product]": productId,
       ...(probeTag ? { "metadata[probe]": "1" } : {}),
       ...(tenant ? { client_reference_id: tenant, "metadata[tenant]": tenant } : {}),
