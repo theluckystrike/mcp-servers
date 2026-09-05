@@ -1,0 +1,86 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-zip",
+  "display_name": "Zip",
+  "version": "0.12.0",
+  "description": "Create, inspect and extract zip archives from chat: glob a directory into a zip, list what is inside with a bomb and traversal check, extract safely, read one text entry without unpacking. No network.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "zip_create",
+      "description": "Call this tool to pack files or a whole directory (with glob patterns) into a new .zip at out_path. Entry names are always relative, so the archive cannot write outside where it is unpacked."
+    },
+    {
+      "name": "zip_list",
+      "description": "Call this tool to list an archive's entries with sizes, compressed sizes and ratios, and to flag what is dangerous in it: absolute paths, .., symlinks, encrypted entries, duplicate names and compression bombs."
+    },
+    {
+      "name": "zip_extract",
+      "description": "Call this tool to unpack an archive into out_dir. Traversal, absolute-path and symlink entries are refused, a size and ratio cap stops a zip bomb, and dry_run reports exactly what would be written."
+    },
+    {
+      "name": "zip_add",
+      "description": "Call this tool to add files to an existing archive. The archive is rebuilt from its entries and written tmp-then-rename, so a failure part way leaves the original file exactly as it was."
+    },
+    {
+      "name": "zip_extract_text",
+      "description": "Call this tool to read one text entry out of an archive without unpacking anything: give the entry name and the text comes back inline. Binary entries are refused by name rather than printed as noise."
+    },
+    {
+      "name": "zip_bundle_month",
+      "description": "Call this tool to zip one month of invoices, quotes and exports written by the sibling servers into their default output folders. Best effort: it names every folder it looked in and what it found."
+    },
+    {
+      "name": "zip_history",
+      "description": "List the archives this server created, newest first, with their entry counts and sizes, plus how many of this month's free allowance are left."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "zip",
+    "archive",
+    "compression",
+    "unzip",
+    "extract"
+  ]
+}

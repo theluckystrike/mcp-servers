@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-clauses",
   "display_name": "Clause Library",
-  "version": "0.6.1",
+  "version": "0.12.0",
   "description": "A personal library of reusable contract and proposal clauses: 25 generic freelance starters with {{variables}}, ranked search, and one-call assembly into a real Word .docx with every missing fact left as a bracketed prompt. Everything stays on your machine.",
   "author": {
     "name": "theluckystrike",
@@ -59,7 +59,7 @@
     },
     {
       "name": "clause_search",
-      "description": "Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature."
+      "description": "Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Jurisdiction filtering is free; the tag filter is Pro and is skipped rather than refusing the search."
     },
     {
       "name": "clause_import",

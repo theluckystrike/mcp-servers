@@ -7,8 +7,9 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { createLicenseGate, readSharedProfile, withFileLock } from "@theluckystrike/mcp-license";
-import { dayKey, localDayStart, wallClockInZone } from "./day.js";
+import { dayKey, hhmm, localDayStart, wallClockInZone } from "./day.js";
 import { readJsonFile } from "./jsonstore.js";
+import { VERSION } from "./version.js";
 const PRODUCT = "time-tracker";
 const FREE_WINDOW_DAYS = 7;
 const FREE_RATED_PROJECTS = 2;
@@ -258,7 +259,7 @@ function csvCell(v) {
 const ok = (text) => ({ content: [{ type: "text", text }] });
 const err = (text) => ({ content: [{ type: "text", text: `Error: ${text}` }], isError: true });
 /** Gated feature: not an error, the user must see the upgrade path. */
-const gated = (feature) => ok(gate.upgradeText(feature));
+const gated = (feature, toolName) => ok(gate.upgradeText(feature, toolName));
 function guard(fn) {
     return async (a) => {
         try {
@@ -326,7 +327,7 @@ function resolveFilter(db, project) {
 }
 const FREE_WINDOW_NOTE = `\n\nNote: the free tier shows the last ${FREE_WINDOW_DAYS} days. ` + gate.upgradeText("full history");
 /* ---------------------------------------------------------------- server */
-const server = new McpServer({ name: "mcp-time-tracker", version: "0.1.0" }, { capabilities: { tools: {}, resources: {}, prompts: {} } });
+const server = new McpServer({ name: "mcp-time-tracker", version: VERSION }, { capabilities: { tools: {}, resources: {}, prompts: {} } });
 gate.registerTools(server);
 function stopRunning(db, endDate, note) {
     const r = db.running;
@@ -404,7 +405,7 @@ server.registerTool("timer_stop", {
         const cur = currencyForEntry(db, e);
         const amount = rc > 0
             ? `  ${money(amountCents(e.seconds, rc), cur)}`
-            : "  No rate: this entry carries no currency and no amount. Set one with project_set_rate, or entry_update {rate, currency}.";
+            : "  No rate: this entry carries no currency and no amount. Set one with project_set_rate, or entry_edit {id, rate, currency}.";
         return ok(`Stopped "${e.project}"${e.task ? ` - ${e.task}` : ""}. Duration ${hms(e.seconds)} (${hours(e.seconds)} h).${amount}\nEntry id ${e.id}.`);
     });
 }));
@@ -509,11 +510,18 @@ server.registerTool("entry_list", {
     const all = select(db, w, f.project);
     const limit = a.limit ?? 50;
     const rows = all.slice(-limit).reverse();
-    if (rows.length === 0)
-        return ok(`No entries found.${!pro && w.clamped ? FREE_WINDOW_NOTE : ""}`);
+    if (rows.length === 0) {
+        // D-R85: an empty store reads to a model as "nothing exists here yet, ask before writing".
+        // entry_add already creates the named project on the fly (see resolveProject), so a plain
+        // "no entries found" bought a confirmation question for facts the caller had already given.
+        const msg = db.entries.length === 0
+            ? "No time entries logged yet. entry_add creates the project from its project argument automatically - no setup needed."
+            : "No entries found for that filter.";
+        return ok(`${msg}${!pro && w.clamped ? FREE_WINDOW_NOTE : ""}`);
+    }
     const totalSec = rows.reduce((s, e) => s + e.seconds, 0);
     const body = table(["id", "day", "start", "project", "task", "hours", "bill", "tags", "note"], rows.map(e => [
-        e.id, dayKey(e.start), new Date(e.start).toTimeString().slice(0, 5),
+        e.id, dayKey(e.start), hhmm(e.start),
         e.project, e.task ?? "", hours(e.seconds), e.billable ? "y" : "n",
         e.tags.join(","), e.note ?? "",
     ]));
@@ -599,7 +607,7 @@ server.registerTool("project_set_rate", {
     inputSchema: {
         project: z.string().min(1).describe("Project or client name. A partial name that matches exactly one existing project is used as that project."),
         hourly_rate: z.union([z.number().nonnegative(), z.string()]).describe("Hourly rate: a number (85) or the words the user said ('90 euros an hour'). '1,200 USD' is 1200; '12,50 EUR' is 12.50; anything ambiguous is refused."),
-        currency: z.string().optional().describe("Currency: a code (EUR, USD, GBP, PLN) or a word ('euros', 'pounds', 'zl'). Default USD."),
+        currency: z.string().optional().describe("Currency: a code (EUR, USD, GBP, PLN) or a word ('euros', 'pounds', 'zl'). Defaults to the shared business profile's default_currency, else USD."),
         apply_to_existing: z.boolean().optional().describe("Re-rate time already logged for this project: every entry is re-stamped with the new rate, including entries that already carry one. Default false: the new rate applies to future entries only, because each entry captures the rate in force when it was logged."),
         only_missing: z.boolean().optional().describe("Only meaningful with apply_to_existing. True restores the old fill-the-gaps behaviour: only entries that carry no rate of their own are touched. Default false, which re-stamps every entry of the project."),
     },
@@ -612,14 +620,22 @@ server.registerTool("project_set_rate", {
         const project = r.project;
         const isNew = !(project in db.projects);
         if (isNew && !gate.isPro() && Object.keys(db.projects).length >= FREE_RATED_PROJECTS) {
-            return gated(`more than ${FREE_RATED_PROJECTS} projects with rates`);
+            return gated(`more than ${FREE_RATED_PROJECTS} projects with rates`, "project_set_rate");
         }
         const parsed = parseRate(a.hourly_rate);
         if (typeof parsed.rate !== "number")
             throw new Error("hourly_rate must contain a number");
+        // Profile-first sweep: the currency you bill in is business identity, held once behind
+        // the token. This tool defaulted to USD while currencyFor() one screen up already reads
+        // the shared profile, so a PLN business setting a rate got a USD project. An explicit
+        // currency, and a currency spelled out in hourly_rate, both still win.
+        const shared = readSharedProfile().default_currency;
+        const profileCurrency = shared && /^[A-Za-z]{3}$/.test(shared.trim()) ? shared.trim().toUpperCase() : undefined;
+        const chosen = normCurrency(a.currency) ?? parsed.currency ?? profileCurrency ?? "USD";
+        const currencyFromProfile = !normCurrency(a.currency) && !parsed.currency && !!profileCurrency;
         db.projects[project] = {
             rateCents: toCents(parsed.rate),
-            currency: normCurrency(a.currency) ?? parsed.currency ?? "USD",
+            currency: chosen,
         };
         const m = db.projects[project];
         // Codex v3 #19 kept the rate captured at log time on every entry, which made the old
@@ -643,6 +659,8 @@ server.registerTool("project_set_rate", {
         }
         save(db);
         const lines = [`Rate for "${project}" set to ${money(m.rateCents, m.currency)} per hour.`];
+        if (currencyFromProfile)
+            lines.push(`Currency ${m.currency} came from the shared business profile (default_currency); pass currency to override it.`);
         if (a.apply_to_existing) {
             const totals = totalsOf(db, projectEntries);
             const scope = onlyMissing ? "entries that had no rate of their own" : "already logged entries";

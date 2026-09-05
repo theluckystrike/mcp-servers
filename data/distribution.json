@@ -1,549 +1,562 @@
 {
- "updated_at": "2026-09-05",
- "surfaces": {
-  "github": {
-   "status": "published",
-   "url": "https://github.com/theluckystrike/mcp-servers",
-   "note": "public, topics set, release v0.1.0"
+  "updated_at": "2026-09-05",
+  "surfaces": {
+    "github": {
+      "status": "published",
+      "url": "https://github.com/theluckystrike/mcp-servers",
+      "note": "public, topics set, release v0.1.0"
+    },
+    "billing": {
+      "status": "published",
+      "url": "https://mcp.zovo.one",
+      "note": "Stripe LIVE, custom domain, webhook registered"
+    },
+    "npm": {
+      "status": "blocked",
+      "url": "https://www.npmjs.com/~theluckystrike",
+      "note": "npm token dead (401); run: npm login --auth-type=web"
+    },
+    "registry": {
+      "status": "published",
+      "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
+      "note": "20 primary entries at v0.12.0 (19 servers + office-suite) + 16 stdio-only variants + 1 templates variant + 10 round-4 name variants, all 47 verified 0.12.0 by fully qualified name via the search API; 19 hosted via remotes[]"
+    },
+    "smithery": {
+      "status": "blocked",
+      "url": "https://smithery.ai/auth/cli",
+      "note": "CLI 4.11.1 + REST api.smithery.ai are scriptable with a bearer key, but obtaining one needs one browser login: run `npx -y @smithery/cli auth login` and open the printed https://smithery.ai/auth/cli?s=<session> URL. smithery.yaml validated against the CLI schema (name + target, loose)"
+    },
+    "glama": {
+      "status": "pending",
+      "url": "https://glama.ai/mcp/servers?query=theluckystrike",
+      "note": "glama.json (maintainers: theluckystrike) committed at repo root and in each servers/<name>; crawler discovery only, no unauthenticated add endpoint (Add Server button needs a Glama account; directory API needs a key from https://glama.ai/settings/api-keys)"
+    },
+    "mcpb": {
+      "status": "published",
+      "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.12.0",
+      "note": "20 .mcpb bundles on release v0.12.0; every bundle boots standalone (initialize returns serverInfo 0.12.0 from an unzipped copy outside the monorepo)"
+    },
+    "awesome-mcp-servers": {
+      "status": "blocked",
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13473",
+      "note": "PR 13473 open: 4 entries (Workplace & Productivity: time-tracker, spreadsheet; Finance & Fintech: invoice; E-Commerce: price-tracker); as of 2026-09-03 CI applied labels missing-glama, valid-name, missing-emoji -- 2 bot comments (glama-check: must be listed+passing on Glama with a score badge per entry; emoji-check: each entry needs a permitted category emoji). Hard blocker: none of the 4 servers are on Glama at all yet | Round 7 check: PR #13473 state OPEN, same 2 bot comments verbatim confirmed present (glama-check: requires Glama listing + score badge per entry; emoji-check: requires a permitted category emoji per entry) -- no maintainer human comment, no new activity, still hard-blocked on Glama listing which has not happened."
+    },
+    "mcp.so": {
+      "status": "skipped: paid",
+      "url": "https://mcp.so/submit?type=server",
+      "note": "only submit control is 'Pay and submit automatically', $39 one-time listing fee; no free tier on the form. Skipped per operator rule (free submissions only)"
+    },
+    "docker-mcp-catalog": {
+      "status": "submitted",
+      "url": "https://github.com/docker/mcp-registry/pull/4892",
+      "note": "PR adds servers/{time-tracker,price-tracker,spreadsheet,invoice}/server.yaml + tools.json; source.dockerfile=servers/<name>/Dockerfile with repo root as build context; cmd/validate 11/11 per server; task build not run (no Docker daemon on this machine); awaiting Docker team review; expense-tracker added same PR (server.yaml+tools.json); currency, timezone, docx added same PR (server.yaml+tools.json), tools.json generated from a live tools/list of each dist/index.js; resume, recurring, clauses added same PR (server.yaml+tools.json), resume/clauses depend on @theluckystrike/mcp-docx and recurring on @theluckystrike/mcp-invoice, both build from repo root context per their Dockerfiles; all eleven entries source.commit repinned together to 2f47c581212dcaa080d33e3f04dafefab34c733d (theluckystrike/mcp-servers HEAD at task start); PR still OPEN, 0 comments, no labels | Round 7 check: PR #4892 state OPEN, mergeable, statusCheckRollup empty (no checks configured), 0 comments -- unchanged since submission, no maintainer action yet. | Round 5: added servers/{pdf,calendar}/server.yaml+tools.json (tools.json from a live tools/list of each dist/index.js, pdf 12 tools, calendar 12 tools); all 13 entries (11 prior + pdf, calendar) source.commit and icon repinned together to 75e358fce74fef68c20051209af64f51c917e798 (theluckystrike/mcp-servers origin/main HEAD at task start); cmd/validate 11/11 per server across all 13; pushed to fork branch add-theluckystrike-mcp-servers, commit 0ad018f; PR #4892 still OPEN, mergeable, 0 comments, no labels. | Round 6: added servers/{kanban,image}/server.yaml+tools.json (tools.json from a live tools/list of each dist/index.js, kanban 16 tools, image 12 tools); all 15 entries (13 prior + kanban, image) source.commit and icon repinned together to 806454f16a32918efc20a22e06af04d180e5c14e (theluckystrike/mcp-servers origin/main HEAD at task start); cmd/validate 11/11 per server across all 15; pushed to fork branch add-theluckystrike-mcp-servers, commit 82a76f8; PR #4892 still OPEN, mergeable, 0 comments, no labels. | Round 7: added servers/bank-statement/server.yaml+tools.json (tools.json from a live tools/list of dist/index.js, 12 tools); all 16 entries (15 prior + bank-statement) source.commit and icon repinned together to 5478b42fa9c8432cd34ff61ae559723f909e112b (theluckystrike/mcp-servers origin/main HEAD at task start); server.yaml about.description had to be quoted (an unquoted 'colon-space' inside the sentence broke YAML parsing, caught by cmd/validate); cmd/validate green (11 checks) per server across all 16; pushed to fork branch add-theluckystrike-mcp-servers, commit 9f85c99; PR #4892 still OPEN, mergeable, 0 comments, no labels. | Round 8: added servers/quotes/{server.yaml,tools.json} (the 17th server); tools.json generated from a live tools/list of servers/quotes/dist/index.js (11 tools); no assets/quotes-logo.png exists at any commit on origin/main, so about.icon reuses assets/invoice-logo.png (confirmed HTTP 200), same convention as the other entries but a genuinely different file, noted here rather than fabricated; about.description quoted from the start (same colon-in-prose YAML trap as round 7) to avoid the 'mapping values are not allowed in this context' failure; repinned all 17 entries' commit and icon URL to e89ac6fd0c74e62c573d5214bbebfc6f680c42e2 (theluckystrike/mcp-servers origin/main HEAD at task start via git ls-remote) -- NOTE: servers/quotes does not exist in the mcp-servers repo at that commit (404 on raw.githubusercontent.com for servers/quotes/Dockerfile there), so the quotes Docker build will fail until mcp-servers pushes a commit that includes the quotes server; cmd/validate green (11 checks) for all 17 servers; pushed to fork branch add-theluckystrike-mcp-servers, commit c334505; PR #4892 body table updated with a quotes row (Server Names, Brief Description count and pinned-commit line all bumped to seventeen); PR still OPEN, mergeable. barcode added to PR 4892 (18 entries), all 18 repinned to bc2d1a1 and each pinned Dockerfile and icon URL confirmed HTTP 200 before the fork push; quotes icon now points at its own assets/quotes-logo.png. | Round 11: added servers/zip/{server.yaml,tools.json} (the 19th entry); tools.json generated from a live tools/list of servers/zip/dist/index.js (9 tools); about.description quoted from the start; all 19 entries' commit and icon URL repinned to 95130230c70b066b416d13209571a41d9191a6b2 (origin/main HEAD after this round's two pushes, read with git rev-parse origin/main); the raw HEAD guard ran before the fork push, 38 curl requests against raw.githubusercontent.com for every pinned Dockerfile and icon, raw-check fail=0; go run ./cmd/validate --name <n> green for all 19; fork commit ef26f59 pushed to add-theluckystrike-mcp-servers; PR #4892 body gained a zip row, counts bumped to nineteen, pin moved to 9513023, and the stray blank line that had orphaned the barcode row from the table was closed; PR OPEN, mergeable MERGEABLE."
+    },
+    "cline-marketplace": {
+      "status": "submitted",
+      "url": "https://github.com/cline/mcp-marketplace/issues/2397",
+      "note": "eleven submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice, 2401 expense-tracker, 2408 currency, 2409 timezone, 2410 docx, 2411 resume, 2412 recurring, 2413 clauses; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install; all eleven OPEN, 0 comments, no labels | Round 7 check: all 11 issues (2397-2401, 2408-2413) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 5: two new submission issues, 2416 pdf and 2417 calendar, same honest-checkbox format; all 13 issues (2397-2401, 2408-2413, 2416-2417) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 6: two new submission issues, 2422 kanban and 2423 image, same honest-checkbox format; all 15 issues (2397-2401, 2408-2413, 2416-2417, 2422-2423) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 7: one new submission issue, 2424 bank-statement, same honest-checkbox format; all 16 issues (2397-2401, 2408-2413, 2416-2417, 2422-2424) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 8: one new submission issue, 2426 quotes, same honest-checkbox format; logo field points at assets/invoice-logo.png since no quotes-logo.png exists in the repo, called out explicitly in the issue body rather than left silent; free-tier limits quoted verbatim from the README's Free vs Pro table (5 open quotes on free, quote_pdf and quote_report Pro-only); all 17 issues (2397-2401, 2408-2413, 2416-2417, 2422-2424, 2426) not individually re-verified this round beyond the new one. barcode submitted as issue 2428. | Round 11: one new submission issue, 2430 zip, same honest-checkbox format (installed-from-README unchecked because the npm package is unpublished, stable checked); logo is its own assets/zip-logo.png; free-tier limits quoted verbatim from the README's Free vs Pro table; servers/zip/llms-install.md confirmed present before writing the issue."
+    },
+    "guides": {
+      "status": "published",
+      "url": "https://mcp.zovo.one/guides",
+      "note": "15 guides, 89 setup pages incl. claude-web, 13 compare pages; sitemap 149 URLs | Round 7 (2026-09-04): added kanban and image guides, 14 setup pages (2 servers x 7 clients) and 2 compare pages; 17 guides, 119 setup+hub pages incl. claude-web, 15 compare pages; sitemap.xml 170 <loc> entries, live-verified | Round 8 (2026-09-04): added bank-statement guide, 6 setup pages (claude-desktop, claude-code, cursor, vscode, windsurf, cline; claude-web deliberately excluded, no /mcp/bank-statement route in remote/src/index.ts) and 1 compare page (bank-statement vs MainBook Bank Statement Converter and bankstatementparser-mcp); 18 guides, 125 setup+hub pages incl. claude-web, 16 compare pages; sitemap.xml 178 <loc> entries, live-verified"
+    },
+    "mcpservers.org": {
+      "status": "submitted",
+      "url": "https://mcpservers.org/submit",
+      "note": "free web form (Premium $39 upgrade declined); 4 servers submitted, each returned 'Submission Successful! ... reviewed within 12 hours'; category productivity (time-tracker, spreadsheet) and finance (price-tracker, invoice); this is also the intake for the wong2/awesome-mcp-servers list, which refuses PRs"
+    },
+    "mcpmarket.com": {
+      "status": "submitted",
+      "url": "https://mcpmarket.com/submit",
+      "note": "free queue selected ($0, avg 4-6 weeks) over the $29 'Get Listed Now' tier; 4 repo subdirectory URLs submitted with support@zovo.one; invoice confirmed by the site's own dedupe ('This repository is already in our queue'); the other three could not be re-queried, site rate limits at ~4 submissions/hour"
+    },
+    "cursor.directory": {
+      "status": "blocked",
+      "url": "https://cursor.directory/plugins/new",
+      "note": "/mcp redirects to the homepage; submit path /plugins/new redirects to /login, GitHub or Google OAuth only. Free but login-gated, stopped per no-signup rule"
+    },
+    "pulsemcp": {
+      "status": "blocked",
+      "url": "https://www.pulsemcp.com/submit",
+      "note": "page loads fine in a real browser (no Cloudflare block); intake itself is disabled: 'submissions and changes are temporarily paused', no form rendered"
+    },
+    "wong2-awesome-mcp-servers": {
+      "status": "not applicable",
+      "url": "https://github.com/wong2/awesome-mcp-servers",
+      "note": "README: 'We do not accept PRs. Please submit your MCP on the website: https://mcpservers.org/submit'. Handled via the mcpservers.org surface"
+    },
+    "appcypher-awesome-mcp-servers": {
+      "status": "blocked",
+      "url": "https://github.com/appcypher/awesome-mcp-servers",
+      "note": "repo is archived (gh api archived=true); PR creation returns 404. Branch add-theluckystrike-mcp-servers with the 4 entries is pushed to theluckystrike/awesome-mcp-servers-1 in case it is ever unarchived"
+    },
+    "mcp-get.com": {
+      "status": "closed",
+      "url": "https://mcp-get.com",
+      "note": "'This registry is an archived snapshot. The site is read-only ... installs, submissions, and analytics are no longer active.'"
+    },
+    "mcpserverfinder.com": {
+      "status": "blocked",
+      "url": "https://www.mcpserverfinder.com",
+      "note": "free, but the only Submit control is mailto:info@mcpserverfinder.com; /submit is 404. No mail channel available to the agent"
+    },
+    "mcpindex.net": {
+      "status": "dead",
+      "url": "https://mcpindex.net",
+      "note": "HTTP 522, empty document in the browser"
+    },
+    "mcp.pizza": {
+      "status": "dead",
+      "url": "https://mcp.pizza",
+      "note": "'This deployment is temporarily paused'"
+    },
+    "mcpcentral.io": {
+      "status": "dead",
+      "url": "https://portal.mcpcentral.io",
+      "note": "DNS does not resolve (DNS_PROBE_POSSIBLE, curl exit 6)"
+    },
+    "hosted": {
+      "status": "published",
+      "url": "https://mcp.zovo.one/mcp",
+      "note": "all 16 servers hosted; kanban, image and bank-statement added this release; connect by URL; purchase binding"
+    },
+    "search-console": {
+      "status": "submitted",
+      "url": "https://search.google.com/search-console?resource_id=sc-domain:zovo.one",
+      "note": "sc-domain:zovo.one domain property already existed (siteFullUser, service account zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com) and covers mcp.zovo.one automatically; sitemaps.submit for https://mcp.zovo.one/sitemap.xml returned 204, sitemaps.list confirms it (13 URLs submitted, 0 warnings, 0 errors, indexed 0 so far -- fresh submission, indexing pending); urlInspection on / returned coverageState \"URL is unknown to Google\" and on /guides/track-time-in-claude-code returned \"Discovered - currently not indexed\", both expected within hours of a fresh submission. Round 5, 2026-09-03: resubmitted https://mcp.zovo.one/sitemap.xml after it grew to 129 URLs (was 13 stale from round 4); sitemaps.list now shows submitted 129, indexed 0, 0 warnings, 0 errors (fresh resubmit, indexing pending); urlInspection: / = Discovered - currently not indexed (was 'URL is unknown to Google' in round 4, so it moved forward); /s/invoice = Discovered - currently not indexed; /guides/track-time-in-claude-code = URL is unknown to Google; /setup/claude-code/invoice = URL is unknown to Google; none of the 4 inspected URLs are indexed yet, all NEUTRAL verdict, consistent with a sitemap resubmitted minutes before inspection | Round 7, 2026-09-03: sitemaps.list unchanged from round 5 -- mcp.zovo.one/sitemap.xml still submitted 129, indexed 0, 0 warnings, 0 errors, lastSubmitted/lastDownloaded 2026-09-03T08:42Z (not resubmitted this round, no new URLs to add). urlInspection on 4 URLs: https://mcp.zovo.one/ = Discovered - currently not indexed (unchanged); https://mcp.zovo.one/mcp/connect = URL is unknown to Google; https://mcp.zovo.one/guides/connect-mcp-servers-without-installing = URL is unknown to Google; https://mcp.zovo.one/setup/claude-web/invoice = Discovered - currently not indexed. 0 of 4 indexed, all verdict NEUTRAL, none crawled yet (no lastCrawlTime on any). Still normal Google-side latency, not a defect; 0 of 129 submitted URLs are indexed as of this round."
+    },
+    "github-mirrors": {
+      "status": "published",
+      "url": "https://github.com/theluckystrike?tab=repositories&q=mcp-",
+      "note": "17 mirror repos (sibling engines vendored); fresh clone of mcp-bank-statement: npm install, build, 39 tests 0 fail"
+    },
+    "setup": {
+      "status": "published",
+      "url": "https://mcp.zovo.one/setup",
+      "note": "79 URLs, all HTTP 200; 72 client-by-server pages with FAQPage JSON-LD and canonical, the 18 round-4 pages 547-646 words each; client facts verified against each client's public docs on 2026-09-03. Round 5 added claude-web (claude.ai / Claude Desktop custom connectors): 12 pages (1 hub + 11 servers), URL form instead of a config file, verified against Anthropic's own custom-connector support article with a direct curl before writing rather than assumed"
+    },
+    "estate-backlinks": {
+      "status": "published",
+      "url": "https://github.com/theluckystrike/mcp-servers/blob/main/docs/BACKLINKS_R2_RESULT.md",
+      "note": "Sitewide footer links to /s/invoice, /s/time-tracker and /s/expense-tracker live on 2 owned Astro sites: ukmoneycalc.com (commit 1cab454, 15 pages, GH Actions -> wrangler pages) and statewage.com (commit 362f2d8, 63 pages, wrangler deploy version 503012c3, NOT git-connected despite its workflow comment). Live pages verified byte-identical to the locally built artifacts, diff vs baseline is the added block only, 0 assets deleted. ROUND 2 (2026-09-04, docs/BACKLINKS_R2_RESULT.md): anchor 'MCP servers for Claude' -> https://mcp.zovo.one added to the shared footer of 7 more owned sites, all verified live: ml0x.com (65 pages), heytensor.com (121), kickllm.com (65), toolsthatrank.com (7), aiwebsitepipeline.com (6), deepvalueradar.com (46, wrangler pages deploy), lakelevelnow.com (56, GH Pages CI). The first five are GitHub Pages from main root, so push deploys. Skipped: worthmyclaim.com and dscrradar.com (repo behind live, deploying would delete live pages), ingredientcalculator.com (no git repo and no deploy path), boldtake.io (domain expired, parked for sale at Porkbun). Home page byte deltas all under 0.25 percent, HTTP 200 everywhere, no rollback needed. ROUND 3 (2026-09-04, docs/BACKLINKS_R3_RESULT.md): worthmyclaim.com and dscrradar.com un-skipped via a live-mirror deploy (crawl the live sitemap + every referenced asset into /private/tmp, patch only the footer, redeploy via each repo's own wrangler.toml as Cloudflare Workers Static Assets) rather than building from the behind-live repo. worthmyclaim: 30 sitemap URLs mirrored, anchor added to the About footer column, home page +98 bytes, deployed (worker version d790f16f), all 30 URLs 200 after including the two previously-repo-missing pages. dscrradar: 50 sitemap URLs mirrored, anchor added to the Site footer column, home page +98 bytes, deployed (worker version 990fdcbf), all 50 URLs 200 after including /rental-vacancy-by-county/. wrangler dry-run on both mirrors reported near-zero upload delta (~2 KiB and ~0.3 KiB) before deploy, confirming byte parity with live except the intended anchor. No repo commit or push; no rollback needed."
+    },
+    "awesome-mcpb": {
+      "status": "submitted",
+      "url": "https://github.com/mgoldsborough/awesome-mcpb/pull/11",
+      "note": "PR adds 19 entries (18 servers + office-suite bundle) alphabetized into existing Productivity and Utilities sections, plain [Name](url) - description format, no emoji tags; links to github.com/theluckystrike/mcp-servers/tree/main/servers/<name> and mentions mcp.zovo.one; no changes outside readme.md"
+    },
+    "lobehub-mcp-marketplace": {
+      "status": "not applicable",
+      "url": "https://github.com/lobehub/lobe-chat-agents",
+      "note": "this repo indexes LobeChat *agent* system prompts (agent-template.json), not MCP servers; no lobehub MCP-server marketplace repo found via gh search repos \"lobehub mcp\" (empty result). Skipped, no matching surface"
+    },
+    "tensorblock-awesome-mcp-servers": {
+      "status": "live",
+      "url": "https://github.com/TensorBlock/awesome-mcp-servers/pull/2164",
+      "note": "Round 10c: PR #2154 (Round 10b, 20 entries across six category files) was closed by the maintainer, who requires one MCP entry per PR in the best-fit docs/*.md category. Reopened on the same fork theluckystrike/awesome-mcp-servers-4, new branch add-office-suite-bundle cut from upstream/main, as a single Office Suite bundle entry in docs/developer-productivity--utilities.md naming that it proxies nineteen local servers for freelance work, linking github.com/theluckystrike/mcp-servers and mcp.zovo.one. One commit. PR body thanks the maintainer and references #2154. PR open, awaiting review. PR 2164 merged 2026-09-05: office-suite bundle entry listed."
+    },
+    "yuzehao2023-awesome-mcp-servers": {
+      "status": "submitted",
+      "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
+      "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name — url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
+    },
+    "mcpstar-awesome-dxt-mcp": {
+      "status": "skipped: no populated list to append to",
+      "url": "https://github.com/MCPStar/awesome-dxt-mcp",
+      "note": "20 stars; Community Extensions section is a placeholder (\"Looking for contributions!\"), no existing per-entry format to match, only category descriptions with example bullet-point ideas, not real entries"
+    },
+    "mobinx-awesome-mcp-list": {
+      "status": "submitted",
+      "url": "https://github.com/MobinX/awesome-mcp-list/pull/420",
+      "note": "Round 12: plain bullet list, decorative emoji only on category headings (same convention as TensorBlock/YuzeHao2023). Forked to theluckystrike/awesome-mcp-list, branch add-office-suite, one entry added to Utilities next to Markgatcha/universal-mcp-toolkit. PR open."
+    },
+    "aianytime-awesome-mcp-server": {
+      "status": "live",
+      "url": "https://github.com/AIAnytime/Awesome-MCP-Server/pull/83",
+      "note": "Round 12: CONTRIBUTING.md requires one server per PR, exact bullet format, alphabetical order, no emoji. Forked to theluckystrike/Awesome-MCP-Server, branch add-office-suite, one entry added to Work & productivity between AI Applyd and Process Street. PR open. PR 83 merged 2026-09-05."
+    },
+    "mctrinh-awesome-mcp-servers": {
+      "status": "submitted",
+      "url": "https://github.com/mctrinh/awesome-mcp-servers/pull/112",
+      "note": "Round 12: flat alphabetical Community Servers list, plain bullets, no emoji. Forked to theluckystrike/awesome-mcp-servers-5, branch add-office-suite, one entry Office Suite inserted alphabetically between Office-Visio-MCP-Server and Office-Word-MCP-Server. PR open."
+    },
+    "yzfly-awesome-mcp-zh": {
+      "status": "skipped: emoji tags",
+      "url": "https://github.com/yzfly/Awesome-MCP-ZH",
+      "note": "Round 12: per-entry emoji in the notes column on every row (medal/cloud/house/apple icons marking official/language/deployment/platform), not just category headings. Skipped per no-emoji rule."
+    },
+    "alexmili-awesome-mcp": {
+      "status": "skipped: emoji tags",
+      "url": "https://github.com/AlexMili/Awesome-MCP",
+      "note": "Round 12: table has a checkmark column and a colored-circle Activity column rendered per entry, not just headings. Skipped per no-emoji rule."
+    }
   },
-  "billing": {
-   "status": "published",
-   "url": "https://mcp.zovo.one",
-   "note": "Stripe LIVE, custom domain, webhook registered"
-  },
-  "npm": {
-   "status": "blocked",
-   "url": "https://www.npmjs.com/~theluckystrike",
-   "note": "npm token dead (401); run: npm login --auth-type=web"
-  },
-  "registry": {
-   "status": "published",
-   "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
-   "note": "20 primary entries at v0.12.0 (19 servers + office-suite) + 16 stdio-only variants + 1 templates variant + 10 round-4 name variants, all 47 verified 0.12.0 by fully qualified name via the search API; 19 hosted via remotes[]"
-  },
-  "smithery": {
-   "status": "blocked",
-   "url": "https://smithery.ai/auth/cli",
-   "note": "CLI 4.11.1 + REST api.smithery.ai are scriptable with a bearer key, but obtaining one needs one browser login: run `npx -y @smithery/cli auth login` and open the printed https://smithery.ai/auth/cli?s=<session> URL. smithery.yaml validated against the CLI schema (name + target, loose)"
-  },
-  "glama": {
-   "status": "pending",
-   "url": "https://glama.ai/mcp/servers?query=theluckystrike",
-   "note": "glama.json (maintainers: theluckystrike) committed at repo root and in each servers/<name>; crawler discovery only, no unauthenticated add endpoint (Add Server button needs a Glama account; directory API needs a key from https://glama.ai/settings/api-keys)"
-  },
-  "mcpb": {
-   "status": "published",
-   "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.12.0",
-   "note": "20 .mcpb bundles on release v0.12.0; every bundle boots standalone (initialize returns serverInfo 0.12.0 from an unzipped copy outside the monorepo)"
-  },
-  "awesome-mcp-servers": {
-   "status": "blocked",
-   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13473",
-   "note": "PR 13473 open: 4 entries (Workplace & Productivity: time-tracker, spreadsheet; Finance & Fintech: invoice; E-Commerce: price-tracker); as of 2026-09-03 CI applied labels missing-glama, valid-name, missing-emoji -- 2 bot comments (glama-check: must be listed+passing on Glama with a score badge per entry; emoji-check: each entry needs a permitted category emoji). Hard blocker: none of the 4 servers are on Glama at all yet | Round 7 check: PR #13473 state OPEN, same 2 bot comments verbatim confirmed present (glama-check: requires Glama listing + score badge per entry; emoji-check: requires a permitted category emoji per entry) -- no maintainer human comment, no new activity, still hard-blocked on Glama listing which has not happened."
-  },
-  "mcp.so": {
-   "status": "skipped: paid",
-   "url": "https://mcp.so/submit?type=server",
-   "note": "only submit control is 'Pay and submit automatically', $39 one-time listing fee; no free tier on the form. Skipped per operator rule (free submissions only)"
-  },
-  "docker-mcp-catalog": {
-   "status": "submitted",
-   "url": "https://github.com/docker/mcp-registry/pull/4892",
-   "note": "PR adds servers/{time-tracker,price-tracker,spreadsheet,invoice}/server.yaml + tools.json; source.dockerfile=servers/<name>/Dockerfile with repo root as build context; cmd/validate 11/11 per server; task build not run (no Docker daemon on this machine); awaiting Docker team review; expense-tracker added same PR (server.yaml+tools.json); currency, timezone, docx added same PR (server.yaml+tools.json), tools.json generated from a live tools/list of each dist/index.js; resume, recurring, clauses added same PR (server.yaml+tools.json), resume/clauses depend on @theluckystrike/mcp-docx and recurring on @theluckystrike/mcp-invoice, both build from repo root context per their Dockerfiles; all eleven entries source.commit repinned together to 2f47c581212dcaa080d33e3f04dafefab34c733d (theluckystrike/mcp-servers HEAD at task start); PR still OPEN, 0 comments, no labels | Round 7 check: PR #4892 state OPEN, mergeable, statusCheckRollup empty (no checks configured), 0 comments -- unchanged since submission, no maintainer action yet. | Round 5: added servers/{pdf,calendar}/server.yaml+tools.json (tools.json from a live tools/list of each dist/index.js, pdf 12 tools, calendar 12 tools); all 13 entries (11 prior + pdf, calendar) source.commit and icon repinned together to 75e358fce74fef68c20051209af64f51c917e798 (theluckystrike/mcp-servers origin/main HEAD at task start); cmd/validate 11/11 per server across all 13; pushed to fork branch add-theluckystrike-mcp-servers, commit 0ad018f; PR #4892 still OPEN, mergeable, 0 comments, no labels. | Round 6: added servers/{kanban,image}/server.yaml+tools.json (tools.json from a live tools/list of each dist/index.js, kanban 16 tools, image 12 tools); all 15 entries (13 prior + kanban, image) source.commit and icon repinned together to 806454f16a32918efc20a22e06af04d180e5c14e (theluckystrike/mcp-servers origin/main HEAD at task start); cmd/validate 11/11 per server across all 15; pushed to fork branch add-theluckystrike-mcp-servers, commit 82a76f8; PR #4892 still OPEN, mergeable, 0 comments, no labels. | Round 7: added servers/bank-statement/server.yaml+tools.json (tools.json from a live tools/list of dist/index.js, 12 tools); all 16 entries (15 prior + bank-statement) source.commit and icon repinned together to 5478b42fa9c8432cd34ff61ae559723f909e112b (theluckystrike/mcp-servers origin/main HEAD at task start); server.yaml about.description had to be quoted (an unquoted 'colon-space' inside the sentence broke YAML parsing, caught by cmd/validate); cmd/validate green (11 checks) per server across all 16; pushed to fork branch add-theluckystrike-mcp-servers, commit 9f85c99; PR #4892 still OPEN, mergeable, 0 comments, no labels. | Round 8: added servers/quotes/{server.yaml,tools.json} (the 17th server); tools.json generated from a live tools/list of servers/quotes/dist/index.js (11 tools); no assets/quotes-logo.png exists at any commit on origin/main, so about.icon reuses assets/invoice-logo.png (confirmed HTTP 200), same convention as the other entries but a genuinely different file, noted here rather than fabricated; about.description quoted from the start (same colon-in-prose YAML trap as round 7) to avoid the 'mapping values are not allowed in this context' failure; repinned all 17 entries' commit and icon URL to e89ac6fd0c74e62c573d5214bbebfc6f680c42e2 (theluckystrike/mcp-servers origin/main HEAD at task start via git ls-remote) -- NOTE: servers/quotes does not exist in the mcp-servers repo at that commit (404 on raw.githubusercontent.com for servers/quotes/Dockerfile there), so the quotes Docker build will fail until mcp-servers pushes a commit that includes the quotes server; cmd/validate green (11 checks) for all 17 servers; pushed to fork branch add-theluckystrike-mcp-servers, commit c334505; PR #4892 body table updated with a quotes row (Server Names, Brief Description count and pinned-commit line all bumped to seventeen); PR still OPEN, mergeable. barcode added to PR 4892 (18 entries), all 18 repinned to bc2d1a1 and each pinned Dockerfile and icon URL confirmed HTTP 200 before the fork push; quotes icon now points at its own assets/quotes-logo.png. | Round 11: added servers/zip/{server.yaml,tools.json} (the 19th entry); tools.json generated from a live tools/list of servers/zip/dist/index.js (9 tools); about.description quoted from the start; all 19 entries' commit and icon URL repinned to 95130230c70b066b416d13209571a41d9191a6b2 (origin/main HEAD after this round's two pushes, read with git rev-parse origin/main); the raw HEAD guard ran before the fork push, 38 curl requests against raw.githubusercontent.com for every pinned Dockerfile and icon, raw-check fail=0; go run ./cmd/validate --name <n> green for all 19; fork commit ef26f59 pushed to add-theluckystrike-mcp-servers; PR #4892 body gained a zip row, counts bumped to nineteen, pin moved to 9513023, and the stray blank line that had orphaned the barcode row from the table was closed; PR OPEN, mergeable MERGEABLE."
-  },
-  "cline-marketplace": {
-   "status": "submitted",
-   "url": "https://github.com/cline/mcp-marketplace/issues/2397",
-   "note": "eleven submission issues: 2397 time-tracker, 2398 price-tracker, 2399 spreadsheet, 2400 invoice, 2401 expense-tracker, 2408 currency, 2409 timezone, 2410 docx, 2411 resume, 2412 recurring, 2413 clauses; 400x400 logos in assets/, llms-install.md per server; npx path blocked until npm publish, issues point at the source install; all eleven OPEN, 0 comments, no labels | Round 7 check: all 11 issues (2397-2401, 2408-2413) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 5: two new submission issues, 2416 pdf and 2417 calendar, same honest-checkbox format; all 13 issues (2397-2401, 2408-2413, 2416-2417) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 6: two new submission issues, 2422 kanban and 2423 image, same honest-checkbox format; all 15 issues (2397-2401, 2408-2413, 2416-2417, 2422-2423) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 7: one new submission issue, 2424 bank-statement, same honest-checkbox format; all 16 issues (2397-2401, 2408-2413, 2416-2417, 2422-2424) re-verified state OPEN, labels [], comments [] -- zero maintainer engagement on any of them yet. | Round 8: one new submission issue, 2426 quotes, same honest-checkbox format; logo field points at assets/invoice-logo.png since no quotes-logo.png exists in the repo, called out explicitly in the issue body rather than left silent; free-tier limits quoted verbatim from the README's Free vs Pro table (5 open quotes on free, quote_pdf and quote_report Pro-only); all 17 issues (2397-2401, 2408-2413, 2416-2417, 2422-2424, 2426) not individually re-verified this round beyond the new one. barcode submitted as issue 2428. | Round 11: one new submission issue, 2430 zip, same honest-checkbox format (installed-from-README unchecked because the npm package is unpublished, stable checked); logo is its own assets/zip-logo.png; free-tier limits quoted verbatim from the README's Free vs Pro table; servers/zip/llms-install.md confirmed present before writing the issue."
-  },
-  "guides": {
-   "status": "published",
-   "url": "https://mcp.zovo.one/guides",
-   "note": "15 guides, 89 setup pages incl. claude-web, 13 compare pages; sitemap 149 URLs | Round 7 (2026-09-04): added kanban and image guides, 14 setup pages (2 servers x 7 clients) and 2 compare pages; 17 guides, 119 setup+hub pages incl. claude-web, 15 compare pages; sitemap.xml 170 <loc> entries, live-verified | Round 8 (2026-09-04): added bank-statement guide, 6 setup pages (claude-desktop, claude-code, cursor, vscode, windsurf, cline; claude-web deliberately excluded, no /mcp/bank-statement route in remote/src/index.ts) and 1 compare page (bank-statement vs MainBook Bank Statement Converter and bankstatementparser-mcp); 18 guides, 125 setup+hub pages incl. claude-web, 16 compare pages; sitemap.xml 178 <loc> entries, live-verified"
-  },
-  "mcpservers.org": {
-   "status": "submitted",
-   "url": "https://mcpservers.org/submit",
-   "note": "free web form (Premium $39 upgrade declined); 4 servers submitted, each returned 'Submission Successful! ... reviewed within 12 hours'; category productivity (time-tracker, spreadsheet) and finance (price-tracker, invoice); this is also the intake for the wong2/awesome-mcp-servers list, which refuses PRs"
-  },
-  "mcpmarket.com": {
-   "status": "submitted",
-   "url": "https://mcpmarket.com/submit",
-   "note": "free queue selected ($0, avg 4-6 weeks) over the $29 'Get Listed Now' tier; 4 repo subdirectory URLs submitted with support@zovo.one; invoice confirmed by the site's own dedupe ('This repository is already in our queue'); the other three could not be re-queried, site rate limits at ~4 submissions/hour"
-  },
-  "cursor.directory": {
-   "status": "blocked",
-   "url": "https://cursor.directory/plugins/new",
-   "note": "/mcp redirects to the homepage; submit path /plugins/new redirects to /login, GitHub or Google OAuth only. Free but login-gated, stopped per no-signup rule"
-  },
-  "pulsemcp": {
-   "status": "blocked",
-   "url": "https://www.pulsemcp.com/submit",
-   "note": "page loads fine in a real browser (no Cloudflare block); intake itself is disabled: 'submissions and changes are temporarily paused', no form rendered"
-  },
-  "wong2-awesome-mcp-servers": {
-   "status": "not applicable",
-   "url": "https://github.com/wong2/awesome-mcp-servers",
-   "note": "README: 'We do not accept PRs. Please submit your MCP on the website: https://mcpservers.org/submit'. Handled via the mcpservers.org surface"
-  },
-  "appcypher-awesome-mcp-servers": {
-   "status": "blocked",
-   "url": "https://github.com/appcypher/awesome-mcp-servers",
-   "note": "repo is archived (gh api archived=true); PR creation returns 404. Branch add-theluckystrike-mcp-servers with the 4 entries is pushed to theluckystrike/awesome-mcp-servers-1 in case it is ever unarchived"
-  },
-  "mcp-get.com": {
-   "status": "closed",
-   "url": "https://mcp-get.com",
-   "note": "'This registry is an archived snapshot. The site is read-only ... installs, submissions, and analytics are no longer active.'"
-  },
-  "mcpserverfinder.com": {
-   "status": "blocked",
-   "url": "https://www.mcpserverfinder.com",
-   "note": "free, but the only Submit control is mailto:info@mcpserverfinder.com; /submit is 404. No mail channel available to the agent"
-  },
-  "mcpindex.net": {
-   "status": "dead",
-   "url": "https://mcpindex.net",
-   "note": "HTTP 522, empty document in the browser"
-  },
-  "mcp.pizza": {
-   "status": "dead",
-   "url": "https://mcp.pizza",
-   "note": "'This deployment is temporarily paused'"
-  },
-  "mcpcentral.io": {
-   "status": "dead",
-   "url": "https://portal.mcpcentral.io",
-   "note": "DNS does not resolve (DNS_PROBE_POSSIBLE, curl exit 6)"
-  },
-  "hosted": {
-   "status": "published",
-   "url": "https://mcp.zovo.one/mcp",
-   "note": "all 16 servers hosted; kanban, image and bank-statement added this release; connect by URL; purchase binding"
-  },
-  "search-console": {
-   "status": "submitted",
-   "url": "https://search.google.com/search-console?resource_id=sc-domain:zovo.one",
-   "note": "sc-domain:zovo.one domain property already existed (siteFullUser, service account zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com) and covers mcp.zovo.one automatically; sitemaps.submit for https://mcp.zovo.one/sitemap.xml returned 204, sitemaps.list confirms it (13 URLs submitted, 0 warnings, 0 errors, indexed 0 so far -- fresh submission, indexing pending); urlInspection on / returned coverageState \"URL is unknown to Google\" and on /guides/track-time-in-claude-code returned \"Discovered - currently not indexed\", both expected within hours of a fresh submission. Round 5, 2026-09-03: resubmitted https://mcp.zovo.one/sitemap.xml after it grew to 129 URLs (was 13 stale from round 4); sitemaps.list now shows submitted 129, indexed 0, 0 warnings, 0 errors (fresh resubmit, indexing pending); urlInspection: / = Discovered - currently not indexed (was 'URL is unknown to Google' in round 4, so it moved forward); /s/invoice = Discovered - currently not indexed; /guides/track-time-in-claude-code = URL is unknown to Google; /setup/claude-code/invoice = URL is unknown to Google; none of the 4 inspected URLs are indexed yet, all NEUTRAL verdict, consistent with a sitemap resubmitted minutes before inspection | Round 7, 2026-09-03: sitemaps.list unchanged from round 5 -- mcp.zovo.one/sitemap.xml still submitted 129, indexed 0, 0 warnings, 0 errors, lastSubmitted/lastDownloaded 2026-09-03T08:42Z (not resubmitted this round, no new URLs to add). urlInspection on 4 URLs: https://mcp.zovo.one/ = Discovered - currently not indexed (unchanged); https://mcp.zovo.one/mcp/connect = URL is unknown to Google; https://mcp.zovo.one/guides/connect-mcp-servers-without-installing = URL is unknown to Google; https://mcp.zovo.one/setup/claude-web/invoice = Discovered - currently not indexed. 0 of 4 indexed, all verdict NEUTRAL, none crawled yet (no lastCrawlTime on any). Still normal Google-side latency, not a defect; 0 of 129 submitted URLs are indexed as of this round."
-  },
-  "github-mirrors": {
-   "status": "published",
-   "url": "https://github.com/theluckystrike?tab=repositories&q=mcp-",
-   "note": "17 mirror repos (sibling engines vendored); fresh clone of mcp-bank-statement: npm install, build, 39 tests 0 fail"
-  },
-  "setup": {
-   "status": "published",
-   "url": "https://mcp.zovo.one/setup",
-   "note": "79 URLs, all HTTP 200; 72 client-by-server pages with FAQPage JSON-LD and canonical, the 18 round-4 pages 547-646 words each; client facts verified against each client's public docs on 2026-09-03. Round 5 added claude-web (claude.ai / Claude Desktop custom connectors): 12 pages (1 hub + 11 servers), URL form instead of a config file, verified against Anthropic's own custom-connector support article with a direct curl before writing rather than assumed"
-  },
-  "estate-backlinks": {
-   "status": "published",
-   "url": "https://github.com/theluckystrike/mcp-servers/blob/main/docs/BACKLINKS_R2_RESULT.md",
-   "note": "Sitewide footer links to /s/invoice, /s/time-tracker and /s/expense-tracker live on 2 owned Astro sites: ukmoneycalc.com (commit 1cab454, 15 pages, GH Actions -> wrangler pages) and statewage.com (commit 362f2d8, 63 pages, wrangler deploy version 503012c3, NOT git-connected despite its workflow comment). Live pages verified byte-identical to the locally built artifacts, diff vs baseline is the added block only, 0 assets deleted. ROUND 2 (2026-09-04, docs/BACKLINKS_R2_RESULT.md): anchor 'MCP servers for Claude' -> https://mcp.zovo.one added to the shared footer of 7 more owned sites, all verified live: ml0x.com (65 pages), heytensor.com (121), kickllm.com (65), toolsthatrank.com (7), aiwebsitepipeline.com (6), deepvalueradar.com (46, wrangler pages deploy), lakelevelnow.com (56, GH Pages CI). The first five are GitHub Pages from main root, so push deploys. Skipped: worthmyclaim.com and dscrradar.com (repo behind live, deploying would delete live pages), ingredientcalculator.com (no git repo and no deploy path), boldtake.io (domain expired, parked for sale at Porkbun). Home page byte deltas all under 0.25 percent, HTTP 200 everywhere, no rollback needed. ROUND 3 (2026-09-04, docs/BACKLINKS_R3_RESULT.md): worthmyclaim.com and dscrradar.com un-skipped via a live-mirror deploy (crawl the live sitemap + every referenced asset into /private/tmp, patch only the footer, redeploy via each repo's own wrangler.toml as Cloudflare Workers Static Assets) rather than building from the behind-live repo. worthmyclaim: 30 sitemap URLs mirrored, anchor added to the About footer column, home page +98 bytes, deployed (worker version d790f16f), all 30 URLs 200 after including the two previously-repo-missing pages. dscrradar: 50 sitemap URLs mirrored, anchor added to the Site footer column, home page +98 bytes, deployed (worker version 990fdcbf), all 50 URLs 200 after including /rental-vacancy-by-county/. wrangler dry-run on both mirrors reported near-zero upload delta (~2 KiB and ~0.3 KiB) before deploy, confirming byte parity with live except the intended anchor. No repo commit or push; no rollback needed."
-  },
-  "awesome-mcpb": {
-   "status": "submitted",
-   "url": "https://github.com/mgoldsborough/awesome-mcpb/pull/11",
-   "note": "PR adds 19 entries (18 servers + office-suite bundle) alphabetized into existing Productivity and Utilities sections, plain [Name](url) - description format, no emoji tags; links to github.com/theluckystrike/mcp-servers/tree/main/servers/<name> and mentions mcp.zovo.one; no changes outside readme.md"
-  },
-  "lobehub-mcp-marketplace": {
-   "status": "not applicable",
-   "url": "https://github.com/lobehub/lobe-chat-agents",
-   "note": "this repo indexes LobeChat *agent* system prompts (agent-template.json), not MCP servers; no lobehub MCP-server marketplace repo found via gh search repos \"lobehub mcp\" (empty result). Skipped, no matching surface"
-  },
-  "tensorblock-awesome-mcp-servers": {
-   "status": "live",
-   "url": "https://github.com/TensorBlock/awesome-mcp-servers/pull/2164",
-   "note": "Round 10c: PR #2154 (Round 10b, 20 entries across six category files) was closed by the maintainer, who requires one MCP entry per PR in the best-fit docs/*.md category. Reopened on the same fork theluckystrike/awesome-mcp-servers-4, new branch add-office-suite-bundle cut from upstream/main, as a single Office Suite bundle entry in docs/developer-productivity--utilities.md naming that it proxies nineteen local servers for freelance work, linking github.com/theluckystrike/mcp-servers and mcp.zovo.one. One commit. PR body thanks the maintainer and references #2154. PR open, awaiting review. PR 2164 merged 2026-09-05: office-suite bundle entry listed."
-  },
-  "yuzehao2023-awesome-mcp-servers": {
-   "status": "submitted",
-   "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
-   "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name \u2014 url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
-  },
-  "mcpstar-awesome-dxt-mcp": {
-   "status": "skipped: no populated list to append to",
-   "url": "https://github.com/MCPStar/awesome-dxt-mcp",
-   "note": "20 stars; Community Extensions section is a placeholder (\"Looking for contributions!\"), no existing per-entry format to match, only category descriptions with example bullet-point ideas, not real entries"
-  },
-  "mobinx-awesome-mcp-list": {
-   "status": "submitted",
-   "url": "https://github.com/MobinX/awesome-mcp-list/pull/420",
-   "note": "Round 12: plain bullet list, decorative emoji only on category headings (same convention as TensorBlock/YuzeHao2023). Forked to theluckystrike/awesome-mcp-list, branch add-office-suite, one entry added to Utilities next to Markgatcha/universal-mcp-toolkit. PR open."
-  },
-  "aianytime-awesome-mcp-server": {
-   "status": "live",
-   "url": "https://github.com/AIAnytime/Awesome-MCP-Server/pull/83",
-   "note": "Round 12: CONTRIBUTING.md requires one server per PR, exact bullet format, alphabetical order, no emoji. Forked to theluckystrike/Awesome-MCP-Server, branch add-office-suite, one entry added to Work & productivity between AI Applyd and Process Street. PR open. PR 83 merged 2026-09-05."
-  },
-  "mctrinh-awesome-mcp-servers": {
-   "status": "submitted",
-   "url": "https://github.com/mctrinh/awesome-mcp-servers/pull/112",
-   "note": "Round 12: flat alphabetical Community Servers list, plain bullets, no emoji. Forked to theluckystrike/awesome-mcp-servers-5, branch add-office-suite, one entry Office Suite inserted alphabetically between Office-Visio-MCP-Server and Office-Word-MCP-Server. PR open."
-  },
-  "yzfly-awesome-mcp-zh": {
-   "status": "skipped: emoji tags",
-   "url": "https://github.com/yzfly/Awesome-MCP-ZH",
-   "note": "Round 12: per-entry emoji in the notes column on every row (medal/cloud/house/apple icons marking official/language/deployment/platform), not just category headings. Skipped per no-emoji rule."
-  },
-  "alexmili-awesome-mcp": {
-   "status": "skipped: emoji tags",
-   "url": "https://github.com/AlexMili/Awesome-MCP",
-   "note": "Round 12: table has a checkmark column and a colored-circle Activity column rendered per entry, not just headings. Skipped per no-emoji rule."
+  "per_server": {
+    "time-tracker": {
+      "npm": "missing",
+      "registry": "published 0.12.0 (io.github.theluckystrike/time-tracker-timesheet-billable-hours)",
+      "github": "published",
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "pr-open",
+      "mcp.so": "skipped: paid",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "submitted",
+      "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead",
+      "hosted": "published https://mcp.zovo.one/mcp/time-tracker",
+      "mcpb": "published v0.12.0 (time-tracker.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-time-tracker",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/timer-tracking)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/timer-tracking)"
+    },
+    "price-tracker": {
+      "npm": "missing",
+      "registry": "published 0.12.0 (io.github.theluckystrike/price-tracker-drop-alert-watch)",
+      "github": "published",
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "pr-open",
+      "mcp.so": "skipped: paid",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "submitted",
+      "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead",
+      "hosted": "published https://mcp.zovo.one/mcp/price-tracker",
+      "mcpb": "published v0.12.0 (price-tracker.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-price-tracker",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/prices-deal)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/prices-deal)"
+    },
+    "spreadsheet": {
+      "npm": "missing",
+      "registry": "published 0.12.0 (io.github.theluckystrike/excel-spreadsheet-xlsx-csv)",
+      "github": "published",
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "pr-open",
+      "mcp.so": "skipped: paid",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "submitted",
+      "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead",
+      "hosted": "published https://mcp.zovo.one/mcp/spreadsheet",
+      "mcpb": "published v0.12.0 (spreadsheet.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-spreadsheet",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/sheets)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/pivot)"
+    },
+    "invoice": {
+      "npm": "missing",
+      "registry": "published 0.12.0 (io.github.theluckystrike/invoice-pdf-billing-generator)",
+      "github": "published",
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "pr-open",
+      "mcp.so": "skipped: paid",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "submitted",
+      "mcpmarket.com": "submitted",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead",
+      "hosted": "published https://mcp.zovo.one/mcp/invoice",
+      "mcpb": "published v0.12.0 (invoice.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-invoice",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/invoices-invoicing)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/invoices-invoicing)"
+    },
+    "expense-tracker": {
+      "npm": "missing",
+      "registry": "published 0.12.0 (io.github.theluckystrike/expense-tracker-receipts-mileage)",
+      "github": "published",
+      "smithery": "blocked",
+      "glama": "claimed",
+      "awesome-mcp-servers": "n/a: not in that PR",
+      "mcp.so": "skipped: paid",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpservers.org": "n/a: not in that batch",
+      "mcpmarket.com": "n/a: not in that batch",
+      "cursor.directory": "blocked: login",
+      "pulsemcp": "blocked: intake paused",
+      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
+      "appcypher-awesome-mcp-servers": "blocked: repo archived",
+      "mcp-get.com": "closed: archived",
+      "mcpserverfinder.com": "blocked: email-only",
+      "mcpindex.net": "dead",
+      "mcp.pizza": "dead",
+      "mcpcentral.io": "dead",
+      "hosted": "published https://mcp.zovo.one/mcp/expense-tracker",
+      "mcpb": "published v0.12.0 (expense-tracker.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-expense-tracker",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/expenses)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/expenses)"
+    },
+    "office-suite": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/office-suite-time-invoice-expense-excel-price)",
+      "npm": "missing",
+      "mcpb": "published v0.12.0 (office-suite.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-office-suite"
+    },
+    "currency": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless)",
+      "hosted": "published https://mcp.zovo.one/mcp/currency",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (currency.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-currency",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/exchange-fx)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/exchange-fx)"
+    },
+    "timezone": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics)",
+      "hosted": "published https://mcp.zovo.one/mcp/timezone",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (timezone.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-timezone",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/calendar)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/scheduling)"
+    },
+    "docx": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/docx-document-generator-proposal-contract-markdown)",
+      "hosted": "published https://mcp.zovo.one/mcp/docx",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (docx.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-docx",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/documents)",
+      "registry-templates": "published 0.12.0 (io.github.theluckystrike/templates)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/letterhead)"
+    },
+    "resume": {
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/resume-cover-letter-docx-generator)",
+      "npm": "missing",
+      "hosted": "published https://mcp.zovo.one/mcp/resume",
+      "mcpb": "published v0.12.0 (resume.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-resume",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/application)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/career)"
+    },
+    "recurring": {
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders)",
+      "npm": "missing",
+      "hosted": "published https://mcp.zovo.one/mcp/recurring",
+      "mcpb": "published v0.12.0 (recurring.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-recurring",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/retainer)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/subscriptions)"
+    },
+    "clauses": {
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/contract-clause-library-proposal-template-docx)",
+      "npm": "missing",
+      "hosted": "published https://mcp.zovo.one/mcp/clauses",
+      "mcpb": "published v0.12.0 (clauses.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-clauses",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/agreement)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/terms)"
+    },
+    "pdf": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/pdf-merge-split-stamp-extract-pages)",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "hosted": "published https://mcp.zovo.one/mcp/pdf",
+      "mcpb": "published v0.12.0 (pdf.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-pdf",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/pdfs)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/pdfs)"
+    },
+    "calendar": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts)",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "hosted": "published https://mcp.zovo.one/mcp/calendar",
+      "mcpb": "published v0.12.0 (calendar.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-calendar",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/availability)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/appointment)"
+    },
+    "kanban": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/kanban-todo-tasks-projects-board)",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (kanban.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-kanban",
+      "hosted": "published https://mcp.zovo.one/mcp/kanban",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/standup)"
+    },
+    "image": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/image-resize-convert-compress-watermark)",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (image.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-image",
+      "hosted": "published https://mcp.zovo.one/mcp/image",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/thumbnails)"
+    },
+    "bank-statement": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger)",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (bank-statement.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-bank-statement",
+      "hosted": "published https://mcp.zovo.one/mcp/bank-statement",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/cashflow)"
+    },
+    "quotes": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/quotes-estimates-proposals-vat-win-rate)",
+      "hosted": "published https://mcp.zovo.one/mcp/quotes",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (quotes.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-quotes",
+      "registry-variant": "published 0.12.0 (io.github.theluckystrike/estimates)",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/freelance)"
+    },
+    "barcode": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13)",
+      "hosted": "published https://mcp.zovo.one/mcp/barcode",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (barcode.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-barcode",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/label)"
+    },
+    "zip": {
+      "github": "published",
+      "registry": "published 0.12.0 (io.github.theluckystrike/zip-archive-create-extract-bomb-guard)",
+      "hosted": "published https://mcp.zovo.one/mcp/zip",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "published v0.12.0 (zip.mcpb)",
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-zip",
+      "registry-name": "published 0.12.0 (io.github.theluckystrike/archive)"
+    },
+    "billing-docs": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/billing-docs",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "pending: bundles/billing-docs.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.12.0 (io.github.theluckystrike/purchase-order)"
+    },
+    "deposits": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/deposits",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "pending: bundles/deposits.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.12.0 (io.github.theluckystrike/security-deposit)"
+    },
+    "per-diem": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/per-diem",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "pending: bundles/per-diem.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.12.0 (io.github.theluckystrike/travel-allowance, io.github.theluckystrike/delegacja)"
+    },
+    "asset-register": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/asset-register",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "submitted",
+      "cline-marketplace": "submitted",
+      "mcpb": "pending: bundles/asset-register.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.12.0 (io.github.theluckystrike/fixed-assets, io.github.theluckystrike/depreciation)"
+    }
   }
- },
- "per_server": {
-  "time-tracker": {
-   "npm": "missing",
-   "registry": "published 0.12.0 (io.github.theluckystrike/time-tracker-timesheet-billable-hours)",
-   "github": "published",
-   "smithery": "blocked",
-   "glama": "claimed",
-   "awesome-mcp-servers": "pr-open",
-   "mcp.so": "skipped: paid",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpservers.org": "submitted",
-   "mcpmarket.com": "submitted",
-   "cursor.directory": "blocked: login",
-   "pulsemcp": "blocked: intake paused",
-   "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
-   "appcypher-awesome-mcp-servers": "blocked: repo archived",
-   "mcp-get.com": "closed: archived",
-   "mcpserverfinder.com": "blocked: email-only",
-   "mcpindex.net": "dead",
-   "mcp.pizza": "dead",
-   "mcpcentral.io": "dead",
-   "hosted": "published https://mcp.zovo.one/mcp/time-tracker",
-   "mcpb": "published v0.12.0 (time-tracker.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-time-tracker",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/timer-tracking)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/timer-tracking)"
-  },
-  "price-tracker": {
-   "npm": "missing",
-   "registry": "published 0.12.0 (io.github.theluckystrike/price-tracker-drop-alert-watch)",
-   "github": "published",
-   "smithery": "blocked",
-   "glama": "claimed",
-   "awesome-mcp-servers": "pr-open",
-   "mcp.so": "skipped: paid",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpservers.org": "submitted",
-   "mcpmarket.com": "submitted",
-   "cursor.directory": "blocked: login",
-   "pulsemcp": "blocked: intake paused",
-   "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
-   "appcypher-awesome-mcp-servers": "blocked: repo archived",
-   "mcp-get.com": "closed: archived",
-   "mcpserverfinder.com": "blocked: email-only",
-   "mcpindex.net": "dead",
-   "mcp.pizza": "dead",
-   "mcpcentral.io": "dead",
-   "hosted": "published https://mcp.zovo.one/mcp/price-tracker",
-   "mcpb": "published v0.12.0 (price-tracker.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-price-tracker",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/prices-deal)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/prices-deal)"
-  },
-  "spreadsheet": {
-   "npm": "missing",
-   "registry": "published 0.12.0 (io.github.theluckystrike/excel-spreadsheet-xlsx-csv)",
-   "github": "published",
-   "smithery": "blocked",
-   "glama": "claimed",
-   "awesome-mcp-servers": "pr-open",
-   "mcp.so": "skipped: paid",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpservers.org": "submitted",
-   "mcpmarket.com": "submitted",
-   "cursor.directory": "blocked: login",
-   "pulsemcp": "blocked: intake paused",
-   "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
-   "appcypher-awesome-mcp-servers": "blocked: repo archived",
-   "mcp-get.com": "closed: archived",
-   "mcpserverfinder.com": "blocked: email-only",
-   "mcpindex.net": "dead",
-   "mcp.pizza": "dead",
-   "mcpcentral.io": "dead",
-   "hosted": "published https://mcp.zovo.one/mcp/spreadsheet",
-   "mcpb": "published v0.12.0 (spreadsheet.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-spreadsheet",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/sheets)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/pivot)"
-  },
-  "invoice": {
-   "npm": "missing",
-   "registry": "published 0.12.0 (io.github.theluckystrike/invoice-pdf-billing-generator)",
-   "github": "published",
-   "smithery": "blocked",
-   "glama": "claimed",
-   "awesome-mcp-servers": "pr-open",
-   "mcp.so": "skipped: paid",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpservers.org": "submitted",
-   "mcpmarket.com": "submitted",
-   "cursor.directory": "blocked: login",
-   "pulsemcp": "blocked: intake paused",
-   "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
-   "appcypher-awesome-mcp-servers": "blocked: repo archived",
-   "mcp-get.com": "closed: archived",
-   "mcpserverfinder.com": "blocked: email-only",
-   "mcpindex.net": "dead",
-   "mcp.pizza": "dead",
-   "mcpcentral.io": "dead",
-   "hosted": "published https://mcp.zovo.one/mcp/invoice",
-   "mcpb": "published v0.12.0 (invoice.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-invoice",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/invoices-invoicing)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/invoices-invoicing)"
-  },
-  "expense-tracker": {
-   "npm": "missing",
-   "registry": "published 0.12.0 (io.github.theluckystrike/expense-tracker-receipts-mileage)",
-   "github": "published",
-   "smithery": "blocked",
-   "glama": "claimed",
-   "awesome-mcp-servers": "n/a: not in that PR",
-   "mcp.so": "skipped: paid",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpservers.org": "n/a: not in that batch",
-   "mcpmarket.com": "n/a: not in that batch",
-   "cursor.directory": "blocked: login",
-   "pulsemcp": "blocked: intake paused",
-   "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
-   "appcypher-awesome-mcp-servers": "blocked: repo archived",
-   "mcp-get.com": "closed: archived",
-   "mcpserverfinder.com": "blocked: email-only",
-   "mcpindex.net": "dead",
-   "mcp.pizza": "dead",
-   "mcpcentral.io": "dead",
-   "hosted": "published https://mcp.zovo.one/mcp/expense-tracker",
-   "mcpb": "published v0.12.0 (expense-tracker.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-expense-tracker",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/expenses)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/expenses)"
-  },
-  "office-suite": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/office-suite-time-invoice-expense-excel-price)",
-   "npm": "missing",
-   "mcpb": "published v0.12.0 (office-suite.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-office-suite"
-  },
-  "currency": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless)",
-   "hosted": "published https://mcp.zovo.one/mcp/currency",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (currency.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-currency",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/exchange-fx)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/exchange-fx)"
-  },
-  "timezone": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics)",
-   "hosted": "published https://mcp.zovo.one/mcp/timezone",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (timezone.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-timezone",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/calendar)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/scheduling)"
-  },
-  "docx": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/docx-document-generator-proposal-contract-markdown)",
-   "hosted": "published https://mcp.zovo.one/mcp/docx",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (docx.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-docx",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/documents)",
-   "registry-templates": "published 0.12.0 (io.github.theluckystrike/templates)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/letterhead)"
-  },
-  "resume": {
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/resume-cover-letter-docx-generator)",
-   "npm": "missing",
-   "hosted": "published https://mcp.zovo.one/mcp/resume",
-   "mcpb": "published v0.12.0 (resume.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-resume",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/application)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/career)"
-  },
-  "recurring": {
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders)",
-   "npm": "missing",
-   "hosted": "published https://mcp.zovo.one/mcp/recurring",
-   "mcpb": "published v0.12.0 (recurring.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-recurring",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/retainer)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/subscriptions)"
-  },
-  "clauses": {
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/contract-clause-library-proposal-template-docx)",
-   "npm": "missing",
-   "hosted": "published https://mcp.zovo.one/mcp/clauses",
-   "mcpb": "published v0.12.0 (clauses.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-clauses",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/agreement)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/terms)"
-  },
-  "pdf": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/pdf-merge-split-stamp-extract-pages)",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "hosted": "published https://mcp.zovo.one/mcp/pdf",
-   "mcpb": "published v0.12.0 (pdf.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-pdf",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/pdfs)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/pdfs)"
-  },
-  "calendar": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts)",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "hosted": "published https://mcp.zovo.one/mcp/calendar",
-   "mcpb": "published v0.12.0 (calendar.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-calendar",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/availability)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/appointment)"
-  },
-  "kanban": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/kanban-todo-tasks-projects-board)",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (kanban.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-kanban",
-   "hosted": "published https://mcp.zovo.one/mcp/kanban",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/standup)"
-  },
-  "image": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/image-resize-convert-compress-watermark)",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (image.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-image",
-   "hosted": "published https://mcp.zovo.one/mcp/image",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/thumbnails)"
-  },
-  "bank-statement": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger)",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (bank-statement.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-bank-statement",
-   "hosted": "published https://mcp.zovo.one/mcp/bank-statement",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/cashflow)"
-  },
-  "quotes": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/quotes-estimates-proposals-vat-win-rate)",
-   "hosted": "published https://mcp.zovo.one/mcp/quotes",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (quotes.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-quotes",
-   "registry-variant": "published 0.12.0 (io.github.theluckystrike/estimates)",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/freelance)"
-  },
-  "barcode": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13)",
-   "hosted": "published https://mcp.zovo.one/mcp/barcode",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (barcode.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-barcode",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/label)"
-  },
-  "zip": {
-   "github": "published",
-   "registry": "published 0.12.0 (io.github.theluckystrike/zip-archive-create-extract-bomb-guard)",
-   "hosted": "published https://mcp.zovo.one/mcp/zip",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "published v0.12.0 (zip.mcpb)",
-   "github-mirror": "synced https://github.com/theluckystrike/mcp-zip",
-   "registry-name": "published 0.12.0 (io.github.theluckystrike/archive)"
-  },
-  "billing-docs": {
-   "github": "published",
-   "registry": "pending",
-   "hosted": "published https://mcp.zovo.one/mcp/billing-docs",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "pending: bundles/billing-docs.mcpb not built, server.mcpb.json fileSha256 is TBD",
-   "github-mirror": "pending",
-   "registry-name": "pending 0.12.0 (io.github.theluckystrike/purchase-order)"
-  },
-  "deposits": {
-   "github": "published",
-   "registry": "pending",
-   "hosted": "published https://mcp.zovo.one/mcp/deposits",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "pending: bundles/deposits.mcpb not built, server.mcpb.json fileSha256 is TBD",
-   "github-mirror": "pending",
-   "registry-name": "pending 0.12.0 (io.github.theluckystrike/security-deposit)"
-  },
-  "per-diem": {
-   "github": "published",
-   "registry": "pending",
-   "hosted": "published https://mcp.zovo.one/mcp/per-diem",
-   "npm": "missing",
-   "smithery": "pending",
-   "glama": "pending",
-   "docker-mcp-catalog": "submitted",
-   "cline-marketplace": "submitted",
-   "mcpb": "pending: bundles/per-diem.mcpb not built, server.mcpb.json fileSha256 is TBD",
-   "github-mirror": "pending",
-   "registry-name": "pending 0.12.0 (io.github.theluckystrike/travel-allowance, io.github.theluckystrike/delegacja)"
-  }
- }
 }

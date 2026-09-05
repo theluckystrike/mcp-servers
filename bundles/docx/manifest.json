@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-docx",
   "display_name": "Docx",
-  "version": "0.6.1",
+  "version": "0.12.0",
   "description": "Turn a chat into a real Word document: proposals, quotes, contracts, statements of work and letters as .docx files, plus reading and filling existing .docx templates. Everything stays on your machine.",
   "author": {
     "name": "theluckystrike",

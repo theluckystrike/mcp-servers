@@ -11,9 +11,20 @@ export const FREE_MAX_BYTES = 5 * 1024 * 1024;
 export const FREE_WRITE_ROWS = 500;
 export class UserError extends Error {
 }
+/** A leading `<scheme>://` means the caller has a URL, not a local path. Checked BEFORE
+ * any resolution, so a URL is never joined against the server's cwd and the refusal
+ * never has a path in it, let alone one that leaks the cwd. */
+const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
+// D-R83: a URL handed to `path` used to be silently resolved as a relative filesystem
+// path, producing a "file not found" error that leaked the server's own cwd. Refused by
+// name instead.
 export function expandPath(p) {
     if (typeof p !== "string" || p.trim() === "")
         throw new UserError("path is required");
+    if (URL_SCHEME_RE.test(p.trim())) {
+        throw new UserError(`"${p.trim()}" is a URL, not a file path; this tool reads local files. On the hosted route, ` +
+            `use the url argument of sheet_load. Locally, download it first and pass the path it was saved to.`);
+    }
     let s = p.trim();
     if (s === "~")
         s = homedir();

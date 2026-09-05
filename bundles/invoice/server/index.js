@@ -10,6 +10,7 @@ import { z } from "zod";
 import { addDays, computeTotals, daysBetween, formatMoney, isoDate, toMinor, } from "./money.js";
 import { renderInvoicePdf } from "./pdf.js";
 import { dataDir, findClient, getBusiness, getClients, getInvoices, hasBusiness, invoicesInMonth, nextNumber, setBusiness, setClients, setInvoices, } from "./store.js";
+import { VERSION } from "./version.js";
 const FREE_INVOICES_PER_MONTH = 3;
 const BUSINESS_FIELDS = [
     "name", "address", "email", "phone", "timezone", "vat_id", "iban", "bank", "logo_path",
@@ -17,6 +18,16 @@ const BUSINESS_FIELDS = [
     "tax_rate", "vat_rate", "vat",
 ];
 const gate = createLicenseGate({ product: "invoice" });
+/**
+ * D-R60. Every server that imports readSharedProfile, other than invoice itself, in the
+ * order `grep -rl readSharedProfile servers/*\/src` returns them. test/profile-readers.test.mjs
+ * re-runs that grep and fails if this list ever drifts from it, so a server that starts (or
+ * stops) reading the shared profile cannot go unnoticed here again.
+ */
+export const PROFILE_READERS = [
+    "bank-statement", "barcode", "calendar", "clauses", "currency", "docx", "expense-tracker",
+    "image", "kanban", "pdf", "per-diem", "quotes", "resume", "time-tracker", "timezone",
+];
 /**
  * Serialise every read-modify-write cycle on the data dir across processes.
  * Two instances sharing one XDG_DATA_HOME otherwise overwrite each other's
@@ -106,7 +117,7 @@ function expandPath(p) {
     const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
     return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
 }
-const server = new McpServer({ name: "mcp-invoice", version: "0.1.0" }, { capabilities: { tools: {}, resources: {}, prompts: {} } });
+const server = new McpServer({ name: "mcp-invoice", version: VERSION }, { capabilities: { tools: {}, resources: {}, prompts: {} } });
 /* ------------------------------------------------------------------ business */
 server.registerTool("business_set", {
     title: "Set your business details",
@@ -149,7 +160,7 @@ server.registerTool("business_set", {
             let note = "";
             if (a.invoice_prefix && a.invoice_prefix !== "INV" && !gate.isPro()) {
                 prefix = "INV";
-                note = `\n\nNote: custom invoice prefix is a Pro feature, kept "INV". ${gate.upgradeText("custom invoice prefix")}`;
+                note = `\n\nNote: custom invoice prefix is a Pro feature, kept "INV". ${gate.upgradeText("custom invoice prefix", "business_set")}`;
             }
             const biz = {
                 name: a.name,
@@ -194,9 +205,11 @@ server.registerTool("business_set", {
                 writeSharedProfile({ phone: a.phone, timezone: timezoneToWrite, timezone_source: timezoneSource });
             }
             const shared = readSharedProfile();
-            return ok(`Business profile saved to ${dataDir()} and to the shared profile at ` +
-                `mcp-servers/profile/business.json, which docx, expense-tracker, recurring, time-tracker, ` +
-                `timezone, resume and clauses all read. You do not need to repeat it anywhere else.\n\n` +
+            const readerList = PROFILE_READERS.length > 1
+                ? `${PROFILE_READERS.slice(0, -1).join(", ")} and ${PROFILE_READERS[PROFILE_READERS.length - 1]}`
+                : PROFILE_READERS.join(", ");
+            return ok(`Business profile saved to ${dataDir()}, ` +
+                `which ${readerList} all read. You do not need to repeat it anywhere else.\n\n` +
                 `${JSON.stringify({
                     ...biz, phone: shared.phone, timezone: shared.timezone, timezone_source: shared.timezone_source,
                 }, null, 2)}${tzNote}${note}${warn}`);
@@ -246,8 +259,13 @@ server.registerTool("client_list", {
     inputSchema: {},
 }, async () => {
     const clients = getClients();
-    if (!clients.length)
-        return ok("No clients yet. Add one with client_add.");
+    // D-R85: an empty list reads as "nothing exists, ask before writing". invoice_from_hours
+    // already creates a client on the fly from the name it is given, so nothing here should
+    // buy a confirmation question for a fact the caller already stated.
+    if (!clients.length) {
+        return ok("No clients yet. client_add creates one explicitly, or invoice_from_hours and " +
+            "invoice_create make one automatically from the client name you pass - no setup needed.");
+    }
     return json(clients);
 });
 /* ------------------------------------------------------------------ invoices */
@@ -545,11 +563,14 @@ server.registerTool("invoice_get", {
 });
 server.registerTool("invoice_mark_paid", {
     title: "Mark an invoice paid",
-    description: "Record a payment. Without an amount the invoice is marked fully paid; a smaller amount marks it partial and reports the remaining balance.",
+    description: "Record a payment. It ADDS to what is already paid (never replaces it) and refuses an amount that would overpay, naming the open balance. Omit amount to pay off the rest in full.",
     inputSchema: {
         number: z.string(),
         paid_date: z.string().optional().describe("YYYY-MM-DD, defaults to today"),
-        amount: z.number().optional().describe("Amount received in major units. Omit for the full total"),
+        amount: z.number().finite().positive().optional()
+            .describe("Amount received in major units, ADDED to what is already paid on this invoice. Omit to pay off the remaining balance in full"),
+        method: z.string().optional().describe("How it was paid, e.g. bank transfer, card. Stored on this payment's row"),
+        reference: z.string().optional().describe("Bank reference or transaction id for this payment. Stored on this payment's row"),
     },
 }, async (a) => {
     try {
@@ -559,13 +580,39 @@ server.registerTool("invoice_mark_paid", {
             if (!inv)
                 return fail(`no invoice numbered ${a.number}.`);
             const f = Math.pow(10, inv.decimals);
-            const paid = a.amount === undefined ? inv.total_minor : Math.round(a.amount * f);
-            inv.paid_minor = paid;
-            inv.paid_date = a.paid_date ?? isoDate();
-            inv.status = paid >= inv.total_minor ? "paid" : paid > 0 ? "partial" : "unpaid";
+            const already = inv.paid_minor ?? 0;
+            const open = inv.total_minor - already;
+            const date = a.paid_date ?? isoDate();
+            // D-R87: invoice_mark_paid used to SET paid_minor. Two partial payments of
+            // 200 then 300 on a EUR 1,000 invoice left paid_minor 30000 and silently lost
+            // the first payment (docs/DEPOSITS_RESULT.md). It now ADDS, the same way
+            // deposit_apply already does on this same field.
+            let addMinor;
+            if (a.amount === undefined) {
+                if (open <= 0) {
+                    return ok(`${inv.number} is already ${inv.status} in full: ` +
+                        `${formatMoney(already, inv.currency)} of ${formatMoney(inv.total_minor, inv.currency)} received. Nothing was added.`);
+                }
+                addMinor = open;
+            }
+            else {
+                addMinor = Math.round(a.amount * f);
+                if (addMinor > open) {
+                    return fail(`${inv.number} owes ${formatMoney(open, inv.currency)} ` +
+                        `(${formatMoney(already, inv.currency)} of ${formatMoney(inv.total_minor, inv.currency)} already received); ` +
+                        `a payment of ${formatMoney(addMinor, inv.currency)} would overpay it by ${formatMoney(addMinor - open, inv.currency)}. ` +
+                        `Pass at most ${formatMoney(open, inv.currency)}, or record the extra separately (a new invoice, or a deposit). Nothing was changed.`);
+                }
+            }
+            inv.paid_minor = already + addMinor;
+            inv.paid_date = date;
+            inv.status = inv.paid_minor >= inv.total_minor ? "paid" : inv.paid_minor > 0 ? "partial" : "unpaid";
+            inv.payments = inv.payments ?? [];
+            inv.payments.push({ date, amount_minor: addMinor, method: a.method, reference: a.reference });
             setInvoices(all);
             const bal = inv.total_minor - inv.paid_minor;
-            return ok(`${inv.number} marked ${inv.status} on ${inv.paid_date}. Received ${formatMoney(inv.paid_minor, inv.currency)}` +
+            return ok(`${inv.number} marked ${inv.status} on ${inv.paid_date}. Added ${formatMoney(addMinor, inv.currency)} ` +
+                `(total received ${formatMoney(inv.paid_minor, inv.currency)})` +
                 (bal > 0 ? `, balance due ${formatMoney(bal, inv.currency)}.` : "."));
         });
     }
@@ -601,7 +648,7 @@ server.registerTool("invoice_pdf", {
             extra += `\n\n${NO_BUSINESS_NOTE}`;
         if (!pro) {
             note = `\n\nFree tier: the PDF carries the line "Generated with mcp-invoice by theluckystrike" and no logo. ` +
-                gate.upgradeText("unbranded PDFs with your logo");
+                gate.upgradeText("unbranded PDFs with your logo", "invoice_pdf");
         }
         else if (biz.logo_path && !existsSync(biz.logo_path)) {
             note = `\n\nNote: logo_path ${biz.logo_path} does not exist, rendered without it.`;

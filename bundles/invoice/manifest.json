@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-invoice",
   "display_name": "Invoice",
-  "version": "0.6.1",
+  "version": "0.12.0",
   "description": "Make real, sendable PDF invoices from a sentence. Clients, numbering that never repeats, VAT lines, discounts and overdue reports, all stored locally.",
   "author": {
     "name": "theluckystrike",
@@ -67,7 +67,7 @@
     },
     {
       "name": "invoice_mark_paid",
-      "description": "Record a payment. Without an amount the invoice is marked fully paid; a smaller amount marks it partial and reports the remaining balance."
+      "description": "Record a payment. It ADDS to what is already paid (never replaces it) and refuses an amount that would overpay, naming the open balance. Omit amount to pay off the rest in full."
     },
     {
       "name": "invoice_pdf",

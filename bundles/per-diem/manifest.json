@@ -1,0 +1,82 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-per-diem",
+  "display_name": "Per Diem",
+  "version": "0.12.0",
+  "description": "Daily travel allowances on bundled public rate tables: Poland, HMRC and GSA.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "perdiem_rates",
+      "description": "List a scheme's bundled daily allowance rates with the authority, instrument, source URL and effective date they came from. Filter by country or city. Free and unlimited."
+    },
+    {
+      "name": "perdiem_calc",
+      "description": "Calculate the daily travel allowance for one trip: the amount per day and the total in the scheme's currency, with the partial-day fraction and the meal deductions the scheme's own rule applies. Free and unlimited."
+    },
+    {
+      "name": "trip_record",
+      "description": "Calculate a trip and save it under a name, with the traveller taken from the shared business profile. Returns the TRIP-YYYY-NNNN id. Free tier: 5 trips a calendar month."
+    },
+    {
+      "name": "trip_list",
+      "description": "List saved trips with the scheme, destination, dates and total on each, and a total per currency. Filter by scheme, destination, traveller, project and start date range. Free and unlimited."
+    },
+    {
+      "name": "trip_export",
+      "description": "Return the exact expense_add arguments for a saved trip, one payload per currency, ready to pass to the expense-tracker server. It writes nothing itself: see the note in the answer. Pro."
+    },
+    {
+      "name": "perdiem_report",
+      "description": "Total the saved trips per scheme and per calendar month, in each scheme's own currency, with the day count and the trips behind every figure. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "per-diem",
+    "travel",
+    "allowance",
+    "delegacja",
+    "expenses"
+  ]
+}

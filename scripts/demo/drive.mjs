@@ -843,6 +843,58 @@ async function run(name) {
     const refunded = pick(await c.call("deposit_refund", refundArgs));
     resultLine(`${refunded.refunded.amount} back to the client by ${refunded.refunded.method}: ${refunded.deposit.id} is ${refunded.deposit.status}, held ${refunded.deposit.held}`);
   }
+  if (name === "asset-register") {
+    // The scheme is derived from the shared business profile's default_currency, the same
+    // file every other server reads, so the fixture writes it where that profile lives.
+    const { writeFileSync: wf, mkdirSync: mk } = await import("node:fs");
+    const profileDir = join(c.sandbox, "data", "mcp-servers", "profile");
+    mk(profileDir, { recursive: true });
+    wf(join(profileDir, "business.json"), JSON.stringify({
+      name: "Lucky Strike Software", default_currency: "PLN", timezone: "Europe/Warsaw",
+    }, null, 2));
+
+    // These tools answer in JSON and a whole answer does not fit the recorded frame, so the
+    // demo prints picked fields. Every string below is copied out of the response, never rebuilt.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Depreciate on the tax authority's own table, month by month, and be refused when the class is not bundled.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const addArgs = {
+      name: "Dell workstation", category: "Computers and computer sets",
+      cost_minor: 849900, currency: "PLN", purchase_date: "2026-03-15", scheme: "pl",
+    };
+    toolLine("asset_add", addArgs);
+    const added = pick(await c.call("asset_add", addArgs));
+    const a = added.added;
+    resultLine(`${a.id} ${a.name}, ${a.cost}, KST ${a.category}: ${a.rate_pct}% ${a.method}, life ${a.useful_life_years || added.useful_life_years} yr`);
+    resultLine(`  first charge ${added.first_charge_month}, not ${a.in_service_date.slice(0, 7)}: Poland charges from the month AFTER (art. 16h ust. 1 pkt 1)`);
+    await sleep(STEP_DELAY_MS);
+
+    const schedArgs = { asset: a.id, granularity: "month" };
+    toolLine("asset_schedule", schedArgs);
+    const sched = pick(await c.call("asset_schedule", schedArgs));
+    for (const p of sched.periods) resultLine(`  ${p.year}: ${p.amount}   ${p.basis}`);
+    const y26 = sched.months.filter((m) => m.month.startsWith("2026"));
+    const sum26 = y26.reduce((n, m) => n + m.amount_minor, 0);
+    const sumAll = sched.months.reduce((n, m) => n + m.amount_minor, 0);
+    resultLine(`  ${sched.months.length} monthly rows from ${sched.months[0].month} at ${sched.months[0].amount}; 2026's ${y26.length} sum to ${(sum26 / 100).toFixed(2)} = its own year`);
+    resultLine(`  all ${sched.months.length} months sum to ${(sumAll / 100).toFixed(2)} = ${sched.total}. ${sched.check}`);
+    await sleep(STEP_DELAY_MS);
+
+    // The published US percentages, reproduced rather than approximated.
+    const macrsArgs = { scheme: "us", category: "5-year", cost_minor: 1000000, currency: "USD", purchase_date: "2026-01-01" };
+    toolLine("asset_schedule", macrsArgs);
+    const macrs = pick(await c.call("asset_schedule", macrsArgs));
+    resultLine(`MACRS 5-year GDS half-year: ${macrs.periods.map((p) => p.amount.replace("USD ", "")).join(" / ")} = ${macrs.total}`);
+    resultLine(`  six periods on a five-year class: ${macrs.notes[0].slice(0, 96)}`);
+    await sleep(STEP_DELAY_MS);
+
+    // The refusal that matters. A 10-year class is NOT approximated to the 7-year one.
+    const tenArgs = { scheme: "us", category: "10-year", cost_minor: 1000000, currency: "USD", purchase_date: "2026-01-01" };
+    toolLine("asset_schedule", tenArgs);
+    resultLine(await c.call("asset_schedule", tenArgs));
+  }
   if (name === "per-diem") {
     // The traveller on a saved trip comes from the suite's shared business profile, the same
     // file every other server reads, so the fixture writes it where that profile lives rather

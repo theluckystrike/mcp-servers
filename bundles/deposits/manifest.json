@@ -1,0 +1,90 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-deposits",
+  "display_name": "Deposits",
+  "version": "0.12.0",
+  "description": "Security and retainer deposits per client: hold them, apply them to invoices, refund them.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "deposit_record",
+      "description": "Record a security or retainer deposit received from a client, in minor units, with its currency, the date it arrived and the bank reference. Returns the DEP-YYYY-NNNN id."
+    },
+    {
+      "name": "deposit_list",
+      "description": "List deposits with what was received, applied, refunded and still held on each. Filter by client, by status held, applied or refunded, by kind and by received date range."
+    },
+    {
+      "name": "deposit_apply",
+      "description": "Apply part or all of a held deposit to one invoice: records that amount as a payment on the invoice through the invoice engine. Refuses more than is held or more than the invoice still owes."
+    },
+    {
+      "name": "deposit_refund",
+      "description": "Give part or all of a held deposit back to the client, with the date and how it was sent. Refuses more than is still held. The invoice server is not touched: a refund is not a payment."
+    },
+    {
+      "name": "deposit_balance",
+      "description": "Answer \"how much of theirs am I holding?\" for one client or for everyone: received, applied to invoices, refunded and still held, one row per currency, never added across currencies."
+    },
+    {
+      "name": "deposit_statement_text",
+      "description": "Turn one client's deposits into a plain-text statement with every movement in date order and the closing balance, ready to paste into an email. Free on every tier."
+    },
+    {
+      "name": "deposit_statement_pdf",
+      "description": "Call this tool to write one client's A4 deposit statement and return the file path. Titled DEPOSIT STATEMENT, every movement in date order, closing with what is still held. Pro."
+    },
+    {
+      "name": "deposits_report",
+      "description": "What is held per currency, the oldest held deposits, and every deposit received more than N days ago with none of it applied to an invoice. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "deposit",
+    "retainer",
+    "escrow",
+    "invoice",
+    "accounting"
+  ]
+}

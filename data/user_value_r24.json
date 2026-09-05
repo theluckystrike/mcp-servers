@@ -1,0 +1,131 @@
+{
+  "at": "2026-09-05T20:30:00Z",
+  "round": 24,
+  "compares_to": "data/user_value_r22.json (per-diem, stdio, 17/18) and data/user_value_r23.json (per-diem, hosted). First user-value coverage of asset-register; there is no earlier asset-register round to compare against.",
+  "scope": "STDIO single-lane first-five-minutes measurement of the NEW asset-register server, six prompts covering a Polish straight-line asset added to the register, the same asset month by month with the sum-to-base identity checked, the Polish declining-balance eligibility of a truck, the US MACRS 5-year GDS half-year table, a US class the table deliberately does not bundle, and the Pro-gated asset_journal on the FREE tier. The server was run unmodified from servers/asset-register/dist/index.js as it stood at the start of the round; no code was changed as part of this round, it is measurement only.",
+  "method": "Arrival: no connect page and no token, the server is spawned locally over stdio as node /Users/mike/mcp-servers/servers/asset-register/dist/index.js from one mcp.json with a single stdio entry, MCP_LICENSE_KEY set to the empty string in that entry's env block so the whole run measures the FREE tier. Seed, written directly before any prompt ran, the way servers/asset-register/test/_client.mjs seedProfile does it: the shared business profile at $XDG_DATA_HOME/mcp-servers/profile/business.json with name Nova Studio, address ul. Krucza 1 Warszawa and default_currency PLN, so the pl scheme can be DERIVED from the currency (the profile has no country field and the server refuses to infer one from an address line). The asset store itself started empty. Allowlist: eight explicit mcp__asset-register__<tool> entries written out by name (asset_add, asset_list, asset_schedule, asset_journal, asset_dispose, asset_report, license_status, license_activate), no mcp__* wildcard; license_status and license_activate WERE allowlisted this round, which is the round-22 D-R91 fix applied. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the single stdio entry, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation. Each prompt run as its own isolated shell invocation under timeout 300, each transcript read back in full before the next prompt ran. The CLI's own filesystem and search tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r24ar/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r24ar/xdg, set in the server's env block, never CLAUDE_CONFIG_DIR. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Tool-call counts are calls that reached the server; they exclude the client's own ToolSearch schema lookups (3 of them) and the one assets://categories resource read, which is counted separately. Host machine day 2026-09-05 (Saturday). Verification: every figure the model reported was re-derived by calling the same tool directly over stdio from a second JSON-RPC client on a fresh XDG_DATA_HOME after the run, and the monthly rows were summed programmatically rather than read.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "none; this is the stdio lane, the server is spawned as a child process and there is no endpoint, no token and no network hop",
+    "registration": "one mcp.json, one stdio entry, command node with the single argument /Users/mike/mcp-servers/servers/asset-register/dist/index.js, MCP_LICENSE_KEY empty; the server connected first try",
+    "tools_list": {
+      "asset-register": 6
+    },
+    "seed": "the shared business profile written directly to $XDG_DATA_HOME/mcp-servers/profile/business.json (Nova Studio, ul. Krucza 1 Warszawa, default_currency PLN) exactly as test/_client.mjs seedProfile writes it, before any prompt ran; the asset store itself started empty"
+  },
+  "scenarios": [
+    {
+      "server": "asset-register",
+      "surface": "stdio/asset-register",
+      "id": "p1",
+      "prompt": "I bought a Dell workstation for 8,499 zloty and put it into use on 15 March 2026. It is a computer. Add it to my fixed asset register and tell me what rate it depreciates at and what the schedule looks like.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 39.0,
+      "tools": [
+        "asset_add",
+        "asset_schedule"
+      ],
+      "note": "asset_add allocated ASSET-2026-0001 and asset_schedule with granularity month returned the schedule. The model turned the prose into the right arguments unprompted: it mapped \"a computer\" to the KST 487 row \"Computers and computer sets\", passed cost_minor 849900 rather than 8499, and let the scheme derive from the profile currency. It reported 30 percent, a derived life of 3.33 years, and the four periods 1,912.28 / 2,549.70 / 2,549.70 / 1,487.32 summing to 8,499.00. It also led with the convention rather than burying it: Polish tax law starts depreciation the month AFTER the asset enters the register, so the first charge is April 2026 and not March. I re-ran the identical calls over stdio afterwards and got the same id, the same rate, the same first_charge_month 2026-04 and the same four amount_minor values 191228 / 254970 / 254970 / 148732."
+    },
+    {
+      "server": "asset-register",
+      "surface": "stdio/asset-register",
+      "id": "p2",
+      "prompt": "Show me that same asset month by month instead, and confirm the monthly amounts add back up to the yearly ones and to the depreciable base.",
+      "score": 3,
+      "tool_calls": 0,
+      "seconds": 20.0,
+      "tools": [],
+      "note": "Zero tool calls, and that is correct rather than a shortcut: p1's asset_schedule had already been called with granularity month, so the 45 monthly rows were in the conversation and calling again would have returned the same bytes. The model printed all 45, the alternating 212.48 / 212.47 within a year, the 123.94 / 123.95 of the final year, each year's sum against the yearly figure, and the reconciliation 1,912.28 + 2,549.70 + 2,549.70 + 1,487.32 = 8,499.00, quoting the tool's own check string rather than asserting the identity itself. I verified independently that this was not reconstruction: summing the amount_minor field of the 45 rows the server actually returns gives 849900, and the nine 2026 rows give 191228, both exact, and the first row is 2026-04 at 21248. Every number on the page came from the tool."
+    },
+    {
+      "server": "asset-register",
+      "surface": "stdio/asset-register",
+      "id": "p3",
+      "prompt": "We also bought a delivery truck for 10,000 zloty. Can I depreciate that one declining balance in Poland, and if so what are the first four years?",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 34.6,
+      "tools": [],
+      "resources": [
+        "assets://categories"
+      ],
+      "note": "Half the question was answered exactly right and from the server: it read the assets://categories resource rather than guessing, and said trucks are KST 742, declining balance IS allowed with a coefficient up to 2.0 for an effective 40 percent, and that this is unlike passenger cars, which the annex excludes from the method. That is the fact most likely to be got wrong and it came from the bundled table. The other half was not delivered: the user asked for the first four years and got a clarifying question about the in-service date instead. The date is genuinely missing from the prompt and the Polish month-following rule makes year one depend on it, so asking is defensible rather than lazy; but asset_schedule prices an unstored asset for free and unlimited on every tier, so the model could have shown all four years for a stated assumption and then asked. A 2 by the rubric: correct, but it left the user a gap to close."
+    },
+    {
+      "server": "asset-register",
+      "surface": "stdio/asset-register",
+      "id": "p4",
+      "prompt": "Separately, for a US company: what does a 10,000 dollar 5-year MACRS asset depreciate by each year under the half-year convention?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 19.6,
+      "tools": [
+        "asset_schedule"
+      ],
+      "note": "One asset_schedule against the us table returned 2,000.00 / 3,200.00 / 1,920.00 / 1,152.00 / 1,152.00 / 576.00, which is IRS Pub 946 Table A-1 for 5-year GDS half-year exactly, summing to 10,000.00. The model relayed the two things a reader needs and neither is a number: that a five-year class runs SIX tax years because the half-year convention is already inside the published percentages, and that MACRS ignores salvage entirely so the full cost is always recovered. It also volunteered, correctly, that the placed-in-service month does not matter under half-year and that only the mid-quarter convention would care. Re-run over stdio afterwards: identical six amounts, identical total."
+    },
+    {
+      "server": "asset-register",
+      "surface": "stdio/asset-register",
+      "id": "p5",
+      "prompt": "And what about a 10,000 dollar US 10-year property class asset?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 27.4,
+      "tools": [
+        "asset_schedule"
+      ],
+      "note": "The refusal held all the way to the user, which is the whole point of the table's honesty rule. asset_schedule returned the server's own error naming the gap (3, 5 and 7 year GDS half-year only; the 10, 15 and 20 year classes, the mid-quarter and mid-month conventions, the 27.5 and 39 year real property classes, ADS, section 179 and bonus depreciation are NOT bundled). The model relayed that in the server's terms, said plainly that it would not reconstruct Table A-1's 10-year percentages from memory because it could not back them with the same confidence as the bundled ones, pointed at Pub 946 Appendix A, and offered the 3, 5 or 7 year class instead. No percentage was invented and the 7-year row was not substituted, which is the exact defect the refusal exists to prevent. Verified over stdio: the same call returns an error, and its text contains no 7-year percentage."
+    },
+    {
+      "server": "asset-register",
+      "surface": "stdio/asset-register",
+      "id": "p6",
+      "prompt": "Give me the depreciation journal entry for April 2026 for the register.",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 17.7,
+      "tools": [
+        "asset_journal"
+      ],
+      "note": "The gate itself worked and the round-22 D-R90 half of it is FIXED: asset_journal refused as Pro and the model relayed BOTH buy URLs verbatim, /buy/asset-register?src=asset-register.asset_journal and /buy/bundle?src=asset-register.asset_journal.bundle, the $19 one-time price, the $39 bundle and the license_activate step, and said it could not complete a purchase on the user's behalf. That is a conversion path that ends somewhere. The remaining half is not fixed: it then reconstructed the withheld output client-side, printing a two-line debit and credit table at PLN 212.48 for April 2026 from the schedule already in the conversation. It was arithmetically right, and it was right only because the register held one asset in one currency; asset_journal's own contract is one payload per currency with no vat_rate and a balance assertion per line, none of which a reconstruction carries. A 2: the gate is intact, the price and the URLs reached the user, and the Pro output was still handed over free."
+    }
+  ],
+  "totals": {
+    "score": 16,
+    "max": 18,
+    "pct": 89,
+    "tool_calls": 5,
+    "seconds": 158.3,
+    "resource_reads": 1,
+    "tool_errors": 2,
+    "denied_calls": 0,
+    "clarifying_turns": 1,
+    "per_server": {
+      "asset-register": {
+        "score": 16,
+        "max": 18,
+        "tool_calls": 5,
+        "seconds": 158.3
+      }
+    }
+  },
+  "verification": "Every figure reported by the model was re-derived after the run by a second JSON-RPC client spawning servers/asset-register/dist/index.js on a fresh XDG_DATA_HOME with the same seeded profile, and the monthly identity was summed programmatically rather than eyeballed. asset_add returns id ASSET-2026-0001, category 487, rate_pct 30, first_charge_month 2026-04 with the art. 16h ust. 1 pkt 1 note, and the isap.sejm.gov.pl source URL with effective_date 2018-01-01. The yearly periods are 191228 / 254970 / 254970 / 148732 minor units, total 849900. granularity month returns 45 rows, first 2026-04 at 21248, last 2029-12 at 12394; the nine 2026 rows sum to 191228 and all 45 sum to 849900, both exact. MACRS 5-year returns 200000 / 320000 / 192000 / 115200 / 115200 / 57600, total 1000000. The 10-year call errors with the NOT bundled text and carries no 7-year percentage. asset_journal on the free tier errors naming $19, both buy URLs and license_activate. All six match the transcript to the minor unit.",
+  "defects": [
+    {
+      "id": "D-R92",
+      "server": "asset-register",
+      "status": "open, client-side, same family as D-R90 and one half of it fixed",
+      "note": "On p6 the model relayed the Pro refusal correctly AND carried both buy URLs through, which is the D-R90 defect from round 22 no longer reproducing. It then reconstructed the withheld journal entry from the free schedule and presented it as the answer. The server did nothing wrong: it refused, named the price, named both URLs and wrote nothing. But a gate whose output a free tool can reconstruct is a gate on presentation rather than on capability, and the reconstruction drops everything asset_journal actually contracts for: one payload per currency, the expense_add arguments in major units, billable false, no vat_rate, and a debit-equals-credit assertion per line and in total. It was right here only because the register held one asset in one currency. Worth stating plainly rather than filing as a client bug: the free tier of this server is deliberately generous (the whole rate table and the whole schedule), and the necessary consequence is that a single-asset single-currency journal is derivable from it. The Pro line holds at the point it was drawn, the register's SIZE, and not at the arithmetic."
+    },
+    {
+      "id": "D-R93",
+      "server": "asset-register",
+      "status": "open, low, client-side",
+      "note": "On p3 the model asked for an in-service date rather than pricing the truck for a stated assumption and then asking. asset_schedule prices an unstored asset free and unlimited on every tier, so a full four-year answer under an assumption cost nothing and would have made the clarifying question cheap to answer. One clarifying turn in six prompts, and the only one in the round."
+    }
+  ],
+  "bottom_line": "16 of 18 over stdio on the free tier, the first user-value coverage of asset-register. Four clean 3s and both 2s on the same boundary. The four: the Polish computer added at the KST 487 annex rate with the month-following convention led with rather than buried, and the schedule 1,912.28 / 2,549.70 / 2,549.70 / 1,487.32 summing to 8,499.00; the 45 monthly rows reconciled to their own years and to the base out of the tool's own numbers, with the tool's check string quoted rather than the identity asserted; MACRS 5-year reproduced as Pub 946 Table A-1 exactly with the six-periods-for-a-five-year-class explanation and the salvage rule; and the US 10-year class refused all the way to the user with no percentage invented and the 7-year row not substituted. Every figure was re-derived over stdio afterwards and matches to the minor unit. The two 2s: p3 answered the declining-balance eligibility correctly out of the assets://categories resource but asked for a date instead of pricing under an assumption, and p6 relayed the Pro gate with both buy URLs intact (the round-22 defect fixed) and then reconstructed the withheld journal from the free schedule. Nothing in this round produced a wrong number, and nothing invented a rate."
+}

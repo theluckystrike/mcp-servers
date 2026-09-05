@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-kanban",
   "display_name": "Kanban",
-  "version": "0.6.1",
+  "version": "0.12.0",
   "description": "A local task board per project: columns, due dates, estimates, priorities and a link into your time tracker. All data stays on your machine.",
   "author": {
     "name": "theluckystrike",

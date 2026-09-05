@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-resume",
   "display_name": "Resume",
-  "version": "0.6.1",
+  "version": "0.12.0",
   "description": "Turn your CV facts into a tailored Word resume and a cover letter that invents nothing: keyword matching against the posting, page-fit trimming, and bracketed prompts wherever a fact is missing. Everything stays on your machine.",
   "author": {
     "name": "theluckystrike",

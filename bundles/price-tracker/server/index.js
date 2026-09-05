@@ -8,6 +8,7 @@ import { fetchPage, FetchError } from "./fetch.js";
 import { checkRedirect } from "./redirect.js";
 import { canonicalUrl, dataDir, dbPath, findWatch, latest, load, newId, nowIso, pctChange, previous, save, StoreError, } from "./store.js";
 import { join } from "node:path";
+import { VERSION } from "./version.js";
 /**
  * Advisory lock held across the load-mutate-save cycle. Network fetches stay
  * outside it: two processes on one data dir otherwise discard each other's
@@ -20,20 +21,57 @@ const DROP_ALERT_PCT = 5;
 const gate = createLicenseGate({ product: "price-tracker" });
 const text = (t) => ({ content: [{ type: "text", text: t }] });
 const fail = (t) => ({ content: [{ type: "text", text: `Error: ${t}` }], isError: true });
+/**
+ * ISO 4217 currencies with no minor unit. A price in one of these is whole by definition,
+ * so padding it to two decimals would invent a subdivision that does not exist.
+ */
+const ZERO_DECIMAL = new Set(["JPY", "KRW", "VND", "CLP", "ISK", "XAF", "XOF", "XPF", "PYG", "RWF", "UGX", "VUV", "KMF", "DJF", "GNF", "BIF"]);
+/**
+ * D-R70: prices are stored as decimal strings exactly as they were read, so one watch can
+ * hold "49.00" scraped from a page, "38.5" typed into price_add_manual and a target of
+ * "40". Printed raw, one answer carried three scales of the same currency ("min 38.50 /
+ * max 49", "current": "38.5 EUR", "target": "40 EUR"). Every printed price goes through
+ * here: in a currency with minor units it is padded (never rounded) to two decimals; in a
+ * zero-decimal currency it stays whole; with no currency known the scale it arrived with
+ * is kept, because there is no unit to pad it to. The stored string is untouched - this is
+ * display only, so no comparison anywhere changes.
+ */
+function displayPrice(price, currency = null) {
+    const m = /^(\d+)(?:\.(\d+))?$/.exec(String(price).trim());
+    if (!m)
+        return String(price);
+    const dec = m[2] ?? "";
+    const cur = currency ? currency.trim().toUpperCase() : "";
+    if (cur && ZERO_DECIMAL.has(cur))
+        return m[1];
+    if (!cur)
+        return dec ? `${m[1]}.${dec.padEnd(2, "0")}` : m[1];
+    return `${m[1]}.${dec.padEnd(2, "0")}`;
+}
 function money(price, currency) {
-    return currency ? `${price} ${currency}` : price;
+    const p = displayPrice(price, currency);
+    return currency ? `${p} ${currency}` : p;
 }
 function visibleHistory(w) {
     return gate.isPro() ? w.observations : w.observations.slice(-FREE_HISTORY_LIMIT);
 }
+/**
+ * min and max are returned as the STORED strings of the cheapest and dearest observation,
+ * not as numbers: fmt() on a number turned "49.00" into "49" and put two scales in one
+ * line (D-R70). Comparison is still numeric.
+ */
 function stats(obs) {
-    const nums = obs.map((o) => Number(o.price)).filter((n) => Number.isFinite(n));
-    if (!nums.length)
+    const rows = obs.filter((o) => Number.isFinite(Number(o.price)));
+    if (!rows.length)
         return null;
-    return { min: Math.min(...nums), max: Math.max(...nums) };
-}
-function fmt(n) {
-    return Number.isInteger(n) ? String(n) : n.toFixed(2);
+    let lo = rows[0], hi = rows[0];
+    for (const o of rows) {
+        if (Number(o.price) < Number(lo.price))
+            lo = o;
+        if (Number(o.price) > Number(hi.price))
+            hi = o;
+    }
+    return { min: lo.price, max: hi.price };
 }
 /**
  * Fetch a page and read a price off it.
@@ -95,8 +133,8 @@ function watchRow(w) {
         url: w.url,
         current: last ? money(last.price, last.currency ?? w.currency) : null,
         previous: prev ? money(prev.price, prev.currency ?? w.currency) : null,
-        min: s ? fmt(s.min) : null,
-        max: s ? fmt(s.max) : null,
+        min: s ? displayPrice(s.min, w.currency) : null,
+        max: s ? displayPrice(s.max, w.currency) : null,
         change_pct: change === null ? null : `${change >= 0 ? "+" : ""}${change.toFixed(2)}%`,
         target: w.target_price ? money(w.target_price, w.currency) : null,
         target_hit: targetHit,
@@ -106,7 +144,7 @@ function watchRow(w) {
         last_checked: last?.ts ?? null,
     };
 }
-const server = new McpServer({ name: "mcp-price-tracker", version: "0.1.0" });
+const server = new McpServer({ name: "mcp-price-tracker", version: VERSION });
 /**
  * Every tool goes through here so a StoreError - an unreadable or corrupt
  * database - is reported to the user as a tool error instead of crossing the
@@ -177,7 +215,7 @@ registerTool("watch_add", {
         return text(`Already watching that URL as ${existing.id}${existing.label ? ` (${existing.label})` : ""}. Use watch_refresh to update it.`);
     if (!gate.isPro() && db.watches.length >= FREE_WATCH_LIMIT) {
         return text(`The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${db.watches.length}. ` +
-            `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches")}`);
+            `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches", "watch_add")}`);
     }
     let target = null;
     if (target_price !== undefined) {
@@ -202,7 +240,7 @@ registerTool("watch_add", {
                 return text(`Already watching that URL as ${raced.id}${raced.label ? ` (${raced.label})` : ""}. Use watch_refresh to update it.`);
             if (!gate.isPro() && fresh.watches.length >= FREE_WATCH_LIMIT) {
                 return text(`The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${fresh.watches.length}. ` +
-                    `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches")}`);
+                    `Remove one with watch_remove, or unlock unlimited watches.\n\n${gate.upgradeText("unlimited watches", "watch_add")}`);
             }
             db.watches = fresh.watches;
             const w = {
@@ -285,7 +323,7 @@ registerTool("watch_refresh", {
             if (db.watches.length === 1)
                 targets = db.watches;
             else
-                return text(`Refreshing every watch in one call is a Pro feature. On free, pass an id: ${db.watches.map((w) => w.id).join(", ")}.\n\n${gate.upgradeText("watch_refresh all")}`);
+                return text(`Refreshing every watch in one call is a Pro feature. On free, pass an id: ${db.watches.map((w) => w.id).join(", ")}.\n\n${gate.upgradeText("watch_refresh all", "watch_refresh")}`);
         }
         else
             targets = db.watches;
@@ -357,9 +395,9 @@ registerTool("price_history", {
     const s = stats(obs);
     const lines = [
         `${w.label ?? w.url} (${w.id}) - ${obs.length} of ${w.observations.length} observation(s)`,
-        s ? `min ${fmt(s.min)} / max ${fmt(s.max)}${w.currency ? ` ${w.currency}` : ""}` : "",
+        s ? `min ${displayPrice(s.min, w.currency)} / max ${displayPrice(s.max, w.currency)}${w.currency ? ` ${w.currency}` : ""}` : "",
         JSON.stringify(obs, null, 2),
-        truncated ? `\nFree shows the last ${FREE_HISTORY_LIMIT} observations; ${w.observations.length - FREE_HISTORY_LIMIT} older one(s) are stored but hidden.\n\n${gate.upgradeText("full price history")}` : "",
+        truncated ? `\nFree shows the last ${FREE_HISTORY_LIMIT} observations; ${w.observations.length - FREE_HISTORY_LIMIT} older one(s) are stored but hidden.\n\n${gate.upgradeText("full price history", "price_history")}` : "",
     ].filter(Boolean);
     return text(lines.join("\n"));
 });
@@ -385,7 +423,7 @@ registerTool("price_add_manual", {
         let w = findWatch(db, url);
         if (!w) {
             if (!gate.isPro() && db.watches.length >= FREE_WATCH_LIMIT) {
-                return text(`The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${db.watches.length}.\n\n${gate.upgradeText("unlimited watches")}`);
+                return text(`The free tier tracks ${FREE_WATCH_LIMIT} items at a time and you already have ${db.watches.length}.\n\n${gate.upgradeText("unlimited watches", "price_add_manual")}`);
             }
             w = {
                 id: newId(), url: canonicalUrl(url), label: label?.trim() || null,

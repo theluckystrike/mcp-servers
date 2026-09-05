@@ -1,0 +1,91 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-barcode",
+  "display_name": "Barcode",
+  "version": "0.12.0",
+  "description": "QR codes and barcodes from chat: URLs, WiFi joins, vCards, SEPA payment QR that a banking app can scan, Code 128 and EAN-13, as SVG or PNG. No network, no account.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "qr_create",
+      "description": "Call this tool to turn text or a URL into a QR code, as an SVG returned inline or written to out_path, or as a PNG at a chosen pixel size (Pro)."
+    },
+    {
+      "name": "qr_wifi",
+      "description": "Call this tool to make a QR code that joins a WiFi network when scanned: network name, password and security type, written to out_path or returned as SVG."
+    },
+    {
+      "name": "qr_vcard",
+      "description": "Call this tool to make a QR code that adds a contact when scanned (vCard 3.0). For your own card pass nothing: name, phone, email and address default to the shared business profile, never asked for."
+    },
+    {
+      "name": "qr_payment_sepa",
+      "description": "Call this tool for an EPC069-12 payment QR a euro banking app can scan. Amount and reference are enough: the beneficiary IBAN and name default to the shared business profile, never asked for."
+    },
+    {
+      "name": "invoice_payment_qr",
+      "description": "Call this tool for a SEPA payment QR from just an amount and reference: IBAN and name are read from the shared business profile, never asked for; pass invoice_id instead to take the amount from an invoice."
+    },
+    {
+      "name": "barcode_create",
+      "description": "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG or PNG. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn."
+    },
+    {
+      "name": "barcode_batch",
+      "description": "Call this tool to draw many barcodes or QR codes at once from a list of rows, each with its own value and file name, into out_dir. Pro; the free tier does one code per call."
+    },
+    {
+      "name": "code_list",
+      "description": "List the codes this server generated, newest first, with what each one carried and where it was written, plus how many of this month's free allowance are left."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "qr",
+    "qr-code",
+    "barcode",
+    "ean13",
+    "code128",
+    "sepa"
+  ]
+}
