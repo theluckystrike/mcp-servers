@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-asset-register",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Fixed assets and depreciation on bundled Polish KST, HMRC and IRS MACRS tables.",
   "type": "module",
   "bin": {
@@ -52,9 +52,9 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/asset-register",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.13.0",
+    "@theluckystrike/mcp-license": "^0.14.0",
     "zod": "^3.25.0",
-    "@theluckystrike/mcp-timezone": "^0.13.0"
+    "@theluckystrike/mcp-timezone": "^0.14.0"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

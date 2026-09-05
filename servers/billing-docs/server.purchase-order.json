@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/purchase-order",
   "description": "Purchase orders for suppliers: VAT line items, a delivery date, an A4 PDF, mark received.",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.13.0/billing-docs.mcpb",
-      "version": "0.13.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.14.0/billing-docs.mcpb",
+      "version": "0.14.0",
       "fileSha256": "6f1390cc71cfbd59b13a30d26e343d22cfb1c3cf429ed846cc14346954a9ecc7",
       "transport": {
         "type": "stdio"

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/invoices-invoicing",
   "description": "Invoices and invoicing from your AI chat: PDF generation, numbering, VAT, overdue reports.",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.13.0/invoice.mcpb",
-      "version": "0.13.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.14.0/invoice.mcpb",
+      "version": "0.14.0",
       "fileSha256": "a60b45723c3dfe271b47e404eb20ef4bbb2975e1a7ce9e5b20107a0cb428ae4d",
       "transport": {
         "type": "stdio"

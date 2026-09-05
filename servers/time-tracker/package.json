@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-time-tracker",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Track billable time without leaving your AI chat. Timers, entries, reports, CSV export and invoice line items, all stored locally.",
   "type": "module",
   "bin": {
@@ -38,7 +38,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/time-tracker",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.13.0",
+    "@theluckystrike/mcp-license": "^0.14.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/travel-allowance",
   "description": "Work out the travel allowance for a trip on official Polish, UK and US rate tables.",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.13.0/per-diem.mcpb",
-      "version": "0.13.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.14.0/per-diem.mcpb",
+      "version": "0.14.0",
       "fileSha256": "9b4e2d7dd01c2d2d7ff63262a14a41812f38eb2f043810de820ce83dfdff0c1c",
       "transport": {
         "type": "stdio"

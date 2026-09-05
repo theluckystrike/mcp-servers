@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-deposits",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Security and retainer deposits per client: hold them, apply them to invoices, refund them.",
   "type": "module",
   "bin": {
@@ -51,10 +51,10 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/deposits",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-billing-docs": "^0.13.0",
-    "@theluckystrike/mcp-invoice": "^0.13.0",
-    "@theluckystrike/mcp-license": "^0.13.0",
-    "@theluckystrike/mcp-quotes": "^0.13.0",
+    "@theluckystrike/mcp-billing-docs": "^0.14.0",
+    "@theluckystrike/mcp-invoice": "^0.14.0",
+    "@theluckystrike/mcp-license": "^0.14.0",
+    "@theluckystrike/mcp-quotes": "^0.14.0",
     "pdfkit": "^0.15.0",
     "zod": "^3.25.0"
   },
