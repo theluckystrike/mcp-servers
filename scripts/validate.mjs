@@ -147,7 +147,7 @@ const PROBES = {
     // and writes nothing; perdiem_report totals per scheme and per month.
     const exp = await c.tool("trip_export", { trip: "TRIP-2026-0001" });
     ok(`${tier}: trip_export is ${tier === "pro" ? "allowed and returns expense_add payloads in major units" : "Pro and names the buy link"}`,
-      tier === "pro" ? !exp.isError && /expense_add/.test(exp.text) && /258\.75/.test(exp.text) && !/vat_rate/.test(exp.text) : exp.isError && /mcp\.zovo\.one\/buy\/per-diem/.test(exp.text),
+      tier === "pro" ? !exp.isError && /"tool": "expense_add"/.test(exp.text) && /"amount": 123\.75/.test(exp.text) && /"amount": 135/.test(exp.text) && /No vat_rate is set/.test(exp.text) && /does not write into the expense ledger/.test(exp.text) : exp.isError && /mcp\.zovo\.one\/buy\/per-diem/.test(exp.text),
       exp.text.replace(/\s+/g, " ").slice(0, 130));
     const rep = await c.tool("perdiem_report", {});
     ok(`${tier}: perdiem_report is ${tier === "pro" ? "allowed and totals per scheme" : "Pro and names the buy link"}`,
