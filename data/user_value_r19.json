@@ -1,0 +1,185 @@
+{
+  "at": "2026-09-05T06:38:00Z",
+  "round": 19,
+  "compares_to": "nothing; billing-docs is the one server no previous round has ever covered, so round 19 is its first measurement and there is no earlier score to move",
+  "scope": "FIRST-COVERAGE round for billing-docs as a local stdio install: six natural-language prompts over one conversation covering the two document families the server exists for, credit notes against invoices that already exist in the shared invoice store (a full credit, a proportional gross-amount credit against a MIXED-VAT invoice, and an over-credit that must be refused) and purchase orders to a supplier (raise, receive in part, and ask which orders are late, which is the Pro report). The invoice server was registered alongside it because a credit note is meaningless without a real invoice to credit; invoice tools were available to the model but only for lookup.",
+  "method": "Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config /private/tmp/uv-r19bd/mcp.json with two stdio entries, billing-docs -> node /Users/mike/mcp-servers/servers/billing-docs/dist/index.js (v0.9.5, 14 tools) and invoice -> node /Users/mike/mcp-servers/servers/invoice/dist/index.js (12 tools), --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation, one bounded request per prompt under timeout 240. Allowlist: 26 explicit mcp__billing-docs__<tool> and mcp__invoice__<tool> entries written out by name from a live tools/list of each server, because --allowedTools mcp__* grants nothing (D-E4). The CLI's own tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r19bd/cwd, per r11 D-R57. Fresh XDG_DATA_HOME /private/tmp/uv-r19bd/data and XDG_CONFIG_HOME /private/tmp/uv-r19bd/config and MCP_LICENSE_KEY empty (free tier) set in each server's own env block inside mcp.json, not in the CLI environment, so both servers share one store and neither can see any earlier round's data. Seeded once before the run by direct JSON-RPC against the invoice server over stdio (the shape servers/billing-docs/test/_client.mjs uses): the shared business profile (Nova Studio, ul. Prosta 51 Warszawa, PL1234567890, IBAN PL61109010140000071219812874, EUR, 23 percent, 14-day terms, Europe/Warsaw), one client (Acme Ltd, Dublin, IE9876543Q), and two invoices. INV-2026-0001 is the MIXED-VAT one the round turns on: EUR 1,000.00 consulting at 23 percent plus EUR 500.00 print at 8 percent, tax lines 8% on EUR 500.00 = EUR 40.00 and 23% on EUR 1000.00 = EUR 230.00, total EUR 1,770.00. INV-2026-0002 is a plain single-rate EUR 492.00 (EUR 400.00 at 23 percent) added so the full-credit prompt has its own invoice, because crediting INV-2026-0001 in full first would have left the partial-credit and over-credit prompts nothing to work with. Two unscored direct JSON-RPC probes were run after the six prompts to check server behaviour the model never reached, and are recorded under verification. Tool-call counts exclude the client's ToolSearch schema lookups. Host machine day Saturday 2026-09-05.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "scenarios": [
+    {
+      "server": "billing-docs",
+      "surface": "stdio/billing-docs",
+      "id": "b1",
+      "prompt": "Acme cancelled the whole of invoice INV-2026-0002 after we had already billed it. Please credit that invoice in full.",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 15.2,
+      "tools": [
+        "invoice_get",
+        "credit_note_list",
+        "credit_note_create"
+      ],
+      "note": "One credit_note_create {invoice: INV-2026-0002, reason: Order cancelled by customer} produced CN-2026-0001 for EUR -492.00 on the first turn, with the single line negated to EUR -400.00 and the VAT line reprinted as 23% on EUR -400.00 = EUR -92.00. The model looked the invoice up with invoice_get and checked credit_note_list for existing credits first, so it knew the invoice was uncredited before writing anything. The tool's own reply said still_creditable EUR 0.00 and stated plainly that nothing in the invoice server's store was changed, because the invoice record carries no credited_minor field and the link is held on the credit note; credit_note_list {invoice} is named as the query. No clarification was asked for and no number was invented."
+    },
+    {
+      "server": "billing-docs",
+      "surface": "stdio/billing-docs",
+      "id": "b2",
+      "prompt": "Different invoice: we are refunding Acme EUR 177.00 of INV-2026-0001 as a goodwill gesture. Raise a credit note for that amount.",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 11.3,
+      "tools": [
+        "invoice_get",
+        "credit_note_list",
+        "credit_note_create"
+      ],
+      "note": "A EUR 177.00 gross credit against a mixed-VAT invoice split across BOTH rates the invoice used, in exact proportion, on one credit_note_create {amount_minor: 17700} call: CN-2026-0002 carries a EUR -50.00 line at 8 percent and a EUR -100.00 line at 23 percent, VAT lines 8% on EUR -50.00 = EUR -4.00 and 23% on EUR -100.00 = EUR -23.00, so the 8 percent bucket gives back EUR 54.00 and the 23 percent bucket EUR 123.00 and the two sum to exactly EUR -177.00 with no rounding drift. That is the right split: EUR 177.00 is a tenth of the EUR 1,770.00 invoice and each rate's bucket is credited a tenth of itself, EUR 54.00 of EUR 540.00 and EUR 123.00 of EUR 1,230.00. The tool reported credited_total EUR 177.00 and still_creditable EUR 1,593.00, and the model relayed both rates and both tax figures to the user rather than quoting one blended number."
+    },
+    {
+      "server": "billing-docs",
+      "surface": "stdio/billing-docs",
+      "id": "b3",
+      "prompt": "Acme now want another EUR 1,700 credited on INV-2026-0001 on top of that. Do it.",
+      "score": 1,
+      "tool_calls": 0,
+      "seconds": 4.8,
+      "tools": [],
+      "note": "The over-credit was correctly refused, but by the model reasoning from the previous turn rather than by the server, and the refusal it wrote to the user contains one fabricated number. It correctly said only EUR 1,593.00 of the EUR 1,770.00 invoice remains creditable after the EUR 177.00 credit and correctly declined to raise the note, then claimed a further EUR 1,700.00 would push total credits to EUR 3,400.00; the real figure is EUR 1,877.00, and EUR 3,400.00 is 1,700 doubled. No tool ran, so the server's own refusal text never reached the user. Probed separately by direct JSON-RPC the server does refuse this exact call correctly and stores nothing, which is recorded under verification; the score is for what the user actually saw, which was a right decision carrying a wrong figure."
+    },
+    {
+      "server": "billing-docs",
+      "surface": "stdio/billing-docs",
+      "id": "b4",
+      "prompt": "Raise a purchase order to Paperworks Sp. z o.o. for 500 brochures at EUR 1.20 each and 200 posters at EUR 3.50 each, 23% VAT, expected here on 2026-09-20.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.4,
+      "tools": [
+        "purchase_order_create"
+      ],
+      "note": "One purchase_order_create call turned the sentence into PO-2026-0001 with both lines priced in minor units and no clarification asked: 500 brochures at EUR 1.20 = EUR 600.00, 200 posters at EUR 3.50 = EUR 700.00, subtotal EUR 1,300.00, 23% on EUR 1300.00 = EUR 299.00, total EUR 1,599.00, expected delivery 2026-09-20, status open. The buyer block was filled in from the shared business profile the invoice server holds (Nova Studio, ul. Prosta 51, PL1234567890) without being told, which is the point of the one-profile design. The tool flagged that Paperworks is not a stored record so the supplier block has no address, and the model passed that on and offered to store it."
+    },
+    {
+      "server": "billing-docs",
+      "surface": "stdio/billing-docs",
+      "id": "b5",
+      "prompt": "Only the brochures turned up today, the posters are still coming. Record that on the order.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 7.8,
+      "tools": [
+        "purchase_order_receive"
+      ],
+      "note": "One purchase_order_receive {id: PO-2026-0001, partial: true, note: 500 brochures received; 200 posters still outstanding} moved the order to partially_received and kept it open, with the receipt dated 2026-09-05 and the note stored on the record. The model resolved 'the order' to PO-2026-0001 from the previous turn without asking, set partial itself from 'still coming' rather than closing the order, and wrote what arrived and what did not into the receipt note so the record says more than a status flag would."
+    },
+    {
+      "server": "billing-docs",
+      "surface": "stdio/billing-docs",
+      "id": "b6",
+      "prompt": "Which of my purchase orders are past their delivery date?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.3,
+      "tools": [
+        "purchase_order_list"
+      ],
+      "note": "The question the Pro report answers was answered correctly for free, because the model reached for purchase_order_list {status: all} instead of the gated billing_docs_report and compared the one expected_delivery_date it got back, 2026-09-20, against today: nothing is overdue. No upgrade text was shown to the user and no money was spent on a question one free tool could already settle. This is the honest outcome of an intentionally Pro-shaped prompt on the free tier, and it scores 3 because the user got the right answer on the first turn; separately probed, billing_docs_report itself does refuse on free with the upgrade text, which is recorded under verification."
+    }
+  ],
+  "totals": {
+    "score": 16,
+    "max": 18,
+    "pct": 89,
+    "tool_calls": 9,
+    "seconds": 57.8,
+    "tool_errors": 0,
+    "clarifying_turns": 1,
+    "per_server": {
+      "billing-docs": {
+        "score": 16,
+        "max": 18,
+        "tool_calls": 9,
+        "seconds": 57.8
+      }
+    },
+    "calls_per_tool": {
+      "credit_note_create": 2,
+      "credit_note_list": 2,
+      "purchase_order_create": 1,
+      "purchase_order_receive": 1,
+      "purchase_order_list": 1,
+      "invoice_get": 2
+    }
+  },
+  "verification": [
+    {
+      "claim": "A gross-amount credit against a mixed-VAT invoice splits across every rate the invoice used",
+      "evidence": "CN-2026-0002 raw tool output: lines 'Credit against INV-2026-0001 (VAT 8%)' EUR -50.00 and 'Credit against INV-2026-0001 (VAT 23%)' EUR -100.00, tax ['8% on EUR -50.00 = EUR -4.00', '23% on EUR -100.00 = EUR -23.00'], total EUR -177.00; 54.00 + 123.00 = 177.00 exactly, and each rate got a tenth of its own bucket",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The server refuses a credit note larger than what is left on the invoice",
+      "evidence": "unscored direct JSON-RPC probe after the run, credit_note_create {invoice: INV-2026-0001, amount_minor: 170000}: isError true, 'INV-2026-0001 totals EUR 1770.00 and EUR 177.00 of it has already been credited, so at most EUR 1593.00 can still be credited; this credit note is for EUR 1700.00. A credit note that gives back more than was billed is a refund, not a credit note. Nothing was stored.'",
+      "verdict": "PASS, but the b3 prompt never reached it (see D-R86)"
+    },
+    {
+      "claim": "billing_docs_report is Pro and refuses on the free tier",
+      "evidence": "unscored direct JSON-RPC probe, billing_docs_report {}: isError true, 'the credited and open-orders report' is a Pro feature, one-time $19 or $39 for every server, buy link https://mcp.zovo.one/buy/billing-docs?src=billing-docs.billing_docs_report then license_activate; keys verify offline, nothing sent anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The store holds exactly the two credit notes the run created and nothing else",
+      "evidence": "credit_note_list {} after the run: count 2, credited EUR -669.00, CN-2026-0002 EUR -177.00 against INV-2026-0001 and CN-2026-0001 EUR -492.00 against INV-2026-0002; 177.00 + 492.00 = 669.00, and the refused EUR 1,700.00 note is absent",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The purchase order buyer block comes from the shared business profile without being asked for",
+      "evidence": "PO-2026-0001 raw output buyer: {name: Nova Studio, address: ul. Prosta 51 / 00-838 Warszawa / Poland, vat_id: PL1234567890}; the prompt named only the supplier and the goods",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The free-tier document counter is stated on every write",
+      "evidence": "'Free tier: 1 of 5 documents used in 2026-09' on CN-2026-0001, '2 of 5' on CN-2026-0002, '3 of 5' on PO-2026-0001, each naming credit_note_pdf / purchase_order_pdf and billing_docs_report as the Pro tools",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "No filesystem path leaked into any of the six replies",
+      "evidence": "the only path-shaped strings in the six stream-json transcripts are the sandbox data dir printed on the invoice server's own stderr banner, which never enters a tool result or an assistant message; no /out/, no /uploads/, no home directory in any reply",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R86",
+      "server": "billing-docs",
+      "status": "open, client-side",
+      "note": "On b3 the model refused the over-credit itself instead of letting credit_note_create refuse it, and its hand-written arithmetic was wrong: it told the user a further EUR 1,700.00 would take total credits to EUR 3,400.00 when the sum is EUR 1,877.00. The decision was right and nothing bad was stored, but the reason given to the user contains a number no tool produced. The server's own refusal, probed directly, names the invoice total, the amount already credited, the EUR 1,593.00 that remains and the fact that nothing was stored, all of it correct; a user is better served by that text than by the model's paraphrase. Fix direction is on the client side of the boundary, not in the server: the still_creditable_minor the previous credit_note_create already returned is the number to quote, and the cheapest way to guarantee it is to let the write attempt fail and relay the refusal."
+    },
+    {
+      "id": "D-R87",
+      "server": "billing-docs",
+      "status": "open, cosmetic",
+      "note": "purchase_order_create accepted 'Paperworks Sp. z o.o.' as a free-text supplier and correctly noted the supplier block has no address, but the remedy it names is client_add in the invoice server, which stores a CLIENT. A supplier is not a client, and telling the user to file the firm they buy from in their customer list is confusing even though it happens to work. Fix direction: either name the shared record for what it is in that note, or give purchase_order_create optional supplier address fields so the block can be filled without borrowing the client store."
+    }
+  ],
+  "artifacts": {
+    "run_dir": "/private/tmp/uv-r19bd (scratch, not in the repo)",
+    "mcp_config": "/private/tmp/uv-r19bd/mcp.json, two stdio entries, fresh XDG dirs and empty MCP_LICENSE_KEY in each env block",
+    "transcripts": [
+      "/private/tmp/uv-r19bd/out/s1.jsonl",
+      "/private/tmp/uv-r19bd/out/s2.jsonl",
+      "/private/tmp/uv-r19bd/out/s3.jsonl",
+      "/private/tmp/uv-r19bd/out/s4.jsonl",
+      "/private/tmp/uv-r19bd/out/s5.jsonl",
+      "/private/tmp/uv-r19bd/out/s6.jsonl"
+    ],
+    "store": "/private/tmp/uv-r19bd/data/mcp-servers/{invoice,billing-docs}",
+    "seed_scripts": [
+      "/private/tmp/uv-r19bd/seed.mjs",
+      "/private/tmp/uv-r19bd/seed2.mjs",
+      "/private/tmp/uv-r19bd/probe.mjs"
+    ]
+  },
+  "bottom_line": "16 of 18 on billing-docs' first measured round, and the one interesting question came out right: a EUR 177.00 gross credit against an invoice carrying two VAT rates split across both of them in proportion, EUR 54.00 out of the 8 percent bucket and EUR 123.00 out of the 23 percent bucket, summing to exactly the amount asked for with no drift and with both VAT lines printed on the credit note. Full credit, purchase order, and partial receipt were all one-call first-turn successes, and the buyer block filled itself in from the shared business profile. The only lost points are b3, where the model refused an over-credit for the right reason but with a number it made up (D-R86) rather than letting the server refuse and relaying the correct text, which the server does produce when called. The deliberately Pro-shaped b6 never hit the gate at all: the model answered 'which orders are late' from the free purchase_order_list, which is the honest and cheaper answer, and billing_docs_report's upgrade text was confirmed separately instead."
+}
