@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T03:20:53.168Z",
-  "total_commits": 400,
-  "sessions": 43,
+  "generated_at": "2026-09-05T05:07:12.574Z",
+  "total_commits": 416,
+  "sessions": 45,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -81,7 +81,12 @@
     {
       "name": "Loop 16: round 16 lanes, first five minutes, office-suite guide",
       "sessions": 1,
-      "commits": 42
+      "commits": 0
+    },
+    {
+      "name": "Loop 17: intel R9, digest, round 18, attendee and date-order fixes, v0.9.5",
+      "sessions": 2,
+      "commits": 58
     }
   ],
   "rows": [
@@ -530,9 +535,26 @@
       "at": "2026-09-05T03:20:34.056Z",
       "note": "loop 16 closed: round 16 as three single-lane agents 39/42 (timezone 11/12, bank 16/18, expense 12/12; all round 13 and 15 fixes hold live), every product page now carries up to three copy-paste prompts generated from the measured rounds (48 prompts, all scoring 3, test-traced to round files), office-suite one-install guide and refreshed setup pages, home table buy links slotted per server; no server sources changed so no release; validation 471/471; GSC still 0 indexed; downloads see metrics; clicks 24/7d; sales 0",
       "loop": "Loop 16: round 16 lanes, first five minutes, office-suite guide",
-      "commits": 42,
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 44,
+      "at": "2026-09-05T04:27:56.294Z",
+      "note": "Weekly digest 2026-09-05",
+      "loop": "Loop 17: intel R9, digest, round 18, attendee and date-order fixes, v0.9.5",
+      "commits": 1,
       "subjects": [
-        "Record loop 14 metrics and validation data",
+        "Record loop 14 metrics and validation data"
+      ]
+    },
+    {
+      "n": 45,
+      "at": "2026-09-05T05:07:12.443Z",
+      "note": "loop 17 closed: v0.9.5 (50 registry entries first pass, 968 tests, validation 471/471), round 18 single-lane re-runs 53/54 (quotes 18, calendar 18, pdf 17), calendar keeps attendees and organizer through export (D-R61), bank date-order self-report fixed (D-R54), three honest registry names (letterhead, label, appointment), TensorBlock awesome list MERGED the office-suite entry, intel R9 found five empty slots (credit-note, purchase-order, asset-register, deposit, per-diem) for next loop, weekly digest script and docs/WEEKLY_2026-09-05.md, how-it-works.html refreshed; downloads 1994; clicks 29/7d; sales 0; GSC 0 indexed",
+      "loop": "Loop 17: intel R9, digest, round 18, attendee and date-order fixes, v0.9.5",
+      "commits": 57,
+      "subjects": [
         "timezone: round 15 working-hours test spans a full week so a weekend start cannot empty the window",
         "Release v0.9.3: bump 21 packages, 38 internal ranges and 67 server manifests",
         "sha256 of the v0.9.3 bundles into every manifest that references one",
@@ -543,7 +565,8 @@
         "Checkout audit: customer-visible descriptions, bundle cross-sell, key-delivery note",
         "Checkout audit doc: before and after, session ids, what needs a human",
         "naming r5: measure registry ordering mechanism, publish nothing (11/14 capped tokens structurally unreachable)",
-        "Bundle page: /bundle route, home hero link, per-server CTA cross-sell"
+        "Bundle page: /bundle route, home hero link, per-server CTA cross-sell",
+        "User value round 17: office-suite as one stdio server, 19 children, 186 tools"
       ]
     }
   ]

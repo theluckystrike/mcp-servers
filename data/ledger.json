@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T03:20:34.117Z",
+  "generated_at": "2026-09-05T05:07:12.525Z",
   "session": {
-    "count": 43,
+    "count": 45,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -174,6 +174,14 @@
       {
         "at": "2026-09-05T03:20:34.056Z",
         "note": "loop 16 closed: round 16 as three single-lane agents 39/42 (timezone 11/12, bank 16/18, expense 12/12; all round 13 and 15 fixes hold live), every product page now carries up to three copy-paste prompts generated from the measured rounds (48 prompts, all scoring 3, test-traced to round files), office-suite one-install guide and refreshed setup pages, home table buy links slotted per server; no server sources changed so no release; validation 471/471; GSC still 0 indexed; downloads see metrics; clicks 24/7d; sales 0"
+      },
+      {
+        "at": "2026-09-05T04:27:56.294Z",
+        "note": "Weekly digest 2026-09-05"
+      },
+      {
+        "at": "2026-09-05T05:07:12.443Z",
+        "note": "loop 17 closed: v0.9.5 (50 registry entries first pass, 968 tests, validation 471/471), round 18 single-lane re-runs 53/54 (quotes 18, calendar 18, pdf 17), calendar keeps attendees and organizer through export (D-R61), bank date-order self-report fixed (D-R54), three honest registry names (letterhead, label, appointment), TensorBlock awesome list MERGED the office-suite entry, intel R9 found five empty slots (credit-note, purchase-order, asset-register, deposit, per-diem) for next loop, weekly digest script and docs/WEEKLY_2026-09-05.md, how-it-works.html refreshed; downloads 1994; clicks 29/7d; sales 0; GSC 0 indexed"
       }
     ]
   },
@@ -181,7 +189,7 @@
     {
       "id": "bank-statement",
       "npm_name": "@theluckystrike/mcp-bank-statement",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/bank-statement",
       "tools": [
         "statement_import",
@@ -201,7 +209,7 @@
       "build_ok": true,
       "test_summary": "# pass 60 / # fail 0 / # pass 28 / # fail 0 / # pass 14   # fail 0 / # pass 6    # fail 0   duration_ms 1391 / # pass 8    # fail 0",
       "result_status": "DONE",
-      "loc": 1641,
+      "loc": 1647,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -220,7 +228,7 @@
     {
       "id": "barcode",
       "npm_name": "@theluckystrike/mcp-barcode",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/barcode",
       "tools": [
         "qr_create",
@@ -257,7 +265,7 @@
     {
       "id": "calendar",
       "npm_name": "@theluckystrike/mcp-calendar",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/calendar",
       "tools": [
         "ics_import",
@@ -277,7 +285,7 @@
       "build_ok": true,
       "test_summary": "# pass 36 / # fail 0 / # pass 51 / # fail 0 / ## failures",
       "result_status": "DONE",
-      "loc": 1999,
+      "loc": 2040,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -296,7 +304,7 @@
     {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/clauses",
       "tools": [
         "clause_add",
@@ -335,7 +343,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -372,7 +380,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -410,7 +418,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -451,7 +459,7 @@
     {
       "id": "image",
       "npm_name": "@theluckystrike/mcp-image",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/image",
       "tools": [
         "image_info",
@@ -490,7 +498,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -529,7 +537,7 @@
     {
       "id": "kanban",
       "npm_name": "@theluckystrike/mcp-kanban",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/kanban",
       "tools": [
         "task_add",
@@ -572,7 +580,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -600,7 +608,7 @@
     {
       "id": "pdf",
       "npm_name": "@theluckystrike/mcp-pdf",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/pdf",
       "tools": [
         "pdf_info",
@@ -639,7 +647,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -676,7 +684,7 @@
     {
       "id": "quotes",
       "npm_name": "@theluckystrike/mcp-quotes",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/quotes",
       "tools": [
         "quote_create",
@@ -714,7 +722,7 @@
     {
       "id": "recurring",
       "npm_name": "@theluckystrike/mcp-recurring",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/recurring",
       "tools": [
         "schedule_create",
@@ -755,7 +763,7 @@
     {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/resume",
       "tools": [
         "profile_set",
@@ -792,7 +800,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -829,7 +837,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -870,7 +878,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -908,7 +916,7 @@
     {
       "id": "zip",
       "npm_name": "@theluckystrike/mcp-zip",
-      "version": "0.9.4",
+      "version": "0.9.5",
       "dir": "servers/zip",
       "tools": [
         "zip_create",
@@ -1321,6 +1329,10 @@
       "first_line": "INTEL_R8 -- registry findable share reprobe, release-check re-sync, zip compare waiver cleared, distribution registry-name rows"
     },
     {
+      "file": "docs/INTEL_R9.md",
+      "first_line": "INTEL_R9 -- 30 fresh freelancer/small-business tokens, empty-slot scoring, round 9"
+    },
+    {
       "file": "docs/KANBAN_AUDIT.md",
       "first_line": "mcp-kanban: adversarial audit and user-value run"
     },
@@ -1351,6 +1363,10 @@
     {
       "file": "docs/NAMING_R5_RESULT.md",
       "first_line": "NAMING_R5_RESULT.md -- registry ordering mechanism measured, no publish, round 5, 2026-09-05"
+    },
+    {
+      "file": "docs/NAMING_R6_RESULT.md",
+      "first_line": "NAMING_R6_RESULT.md -- registry name variants, round 6, 2026-09-05"
     },
     {
       "file": "docs/NAMING_RESULT.md",
@@ -1391,6 +1407,10 @@
     {
       "file": "docs/PLAN_V13.md",
       "first_line": "Plan v13 (2026-09-05, loop 16): the first five minutes"
+    },
+    {
+      "file": "docs/PLAN_V14.md",
+      "first_line": "Plan v14 (2026-09-05, loop 17): one page for the operator, fresh slots, the last untested paths"
     },
     {
       "file": "docs/PLAN_V2.md",
@@ -1485,6 +1505,10 @@
       "first_line": "Release v0.9.4 (2026-09-05)"
     },
     {
+      "file": "docs/RELEASE_V095.md",
+      "first_line": "Release v0.9.5 (2026-09-05)"
+    },
+    {
       "file": "docs/REMOTE_RESULT.md",
       "first_line": "REMOTE_RESULT.md - hosted streamable-HTTP endpoints (INTEL R1)"
     },
@@ -1557,6 +1581,18 @@
       "first_line": "User value audit, round 17 — 2026-09-05"
     },
     {
+      "file": "docs/USER_VALUE_R18_CALENDAR.md",
+      "first_line": "User value audit, round 18 (calendar re-run) - 2026-09-05"
+    },
+    {
+      "file": "docs/USER_VALUE_R18_PDF.md",
+      "first_line": "User value audit, round 18 (pdf, hosted url-upload re-run) - 2026-09-05"
+    },
+    {
+      "file": "docs/USER_VALUE_R18_QUOTES.md",
+      "first_line": "User value audit, round 18 (quotes re-run) — 2026-09-05"
+    },
+    {
       "file": "docs/USER_VALUE_R2.md",
       "first_line": "User value audit, round 2 — 2026-09-02"
     },
@@ -1587,6 +1623,10 @@
     {
       "file": "docs/USER_VALUE_R9.md",
       "first_line": "User value audit, round 9 — 2026-09-03"
+    },
+    {
+      "file": "docs/WEEKLY_2026-09-05.md",
+      "first_line": "Weekly digest, 2026-09-05"
     },
     {
       "file": "docs/ZIP_AUDIT.md",
