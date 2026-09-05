@@ -177,7 +177,57 @@ never emits. Found by the run rather than by reading, which cost one run.
 
 ## D. Docker MCP catalog, Cline marketplace, distribution
 
-DOCKER_CLINE_PLACEHOLDER
+Order matters and rounds 8, 9, 11, 13 and 14 record why: **mcp-servers was pushed first, then the fork was
+repinned to the pushed HEAD.** The pin is `c03d4f031308ec063f00e7088051722d0b58e94f`, taken from
+`git rev-parse origin/main` after a fetch and confirmed with `git cat-file -e "${SHA}:<path>"` for both
+`servers/per-diem/Dockerfile` and `assets/per-diem-logo.png`, with the braced quoting round 14 found (bare
+`$SHA:servers/...` is parsed as a zsh `:s` history modifier and silently eats part of the string).
+
+Docker MCP catalog (docker/mcp-registry PR #4892, fork theluckystrike/mcp-registry branch
+`add-theluckystrike-mcp-servers`, clone reused at /private/tmp/docker-mcp-registry, remote `fork`).
+
+- `git -c rebase.autoStash=true pull --rebase` first.
+- Added `servers/per-diem/{server.yaml,tools.json}`, structurally identical to the deposits entry: key order
+  verified programmatically against it, `about.description` quoted from the first character so the
+  colon-space YAML trap does not recur, category `finance` matching invoice, quotes, recurring,
+  bank-statement, billing-docs and deposits, no `directory` key, secret `per-diem.license_key` mapped to
+  `MCP_LICENSE_KEY`.
+- `tools.json` generated from a live stdio `tools/list` against `dist/index.js`: 8 tools with their argument
+  names, types and descriptions, `arguments` omitted where the live schema has no properties. One real trap
+  found here: `meals_provided_daily` comes back as a **`$ref`** to `#/properties/meals_provided/items`, so a
+  naive `props[n].type` yields `undefined` and would have shipped a typeless argument that no other catalog
+  entry has. The generator resolves the `$ref`; the argument is typed `array`.
+- All **22** entries repinned, both `commit:` and the icon URL. The loop was written as
+  `grep -rl ... | while read -r f`, per round 9's zsh word-splitting failure, and the count was verified
+  three ways: 22 files matched, 22 `commit:` lines carry the sha, 22 icon URLs carry it, with zero
+  placeholders and no stale 40-hex sha left on any theluckystrike line.
+- **The raw HEAD guard ran before the fork push**: one `curl -o /dev/null -w '%{http_code}'` per entry
+  against `raw.githubusercontent.com/theluckystrike/mcp-servers/<pinned sha>/<dockerfile>` and against the
+  icon URL. **44 requests, all 200, fail=0.** This is what catches an entry pinned to a commit that predates
+  its own Dockerfile, which `cmd/validate` cannot see.
+- `go run ./cmd/validate --name <n>` for all 22: **22/22 green**, run in three batches (7/7/8) so no shell
+  call hit the two-minute timeout.
+- Fork commit `3f522c2` "Add per-diem server; repin all 22 to c03d4f0", pushed `3651c89..3f522c2`.
+  PR #4892 updates from the branch, still one PR, now twenty-two servers; state OPEN, mergeable MERGEABLE.
+- PR body: read with `gh pr view 4892 --json body`, patched to add per-diem to the Server Names line, add one
+  table row after the deposits row, change three "twenty-one" to "twenty-two" and move the pin from
+  `8418a56` to `c03d4f03`; written back with `gh pr edit --body-file` and re-read: 0 occurrences of the old
+  word, new sha present, old sha absent. Not rewritten.
+
+Cline marketplace: https://github.com/cline/mcp-marketplace/issues/2444, same template and the same
+honest-checkbox pattern as the twenty-one prior submissions ("installed from the README" unchecked because
+the npm package is unpublished, "stable" checked), free-tier limits quoted verbatim from the README's Free vs
+Pro table, `servers/per-diem/llms-install.md` confirmed present (5,333 bytes) and both its raw URL and the
+logo URL at the pinned sha verified 200 before the issue was written. The working claim in the issue was
+proved first rather than asserted: a real `perdiem_calc` against a clean `XDG_DATA_HOME` returned
+`"total_hours": 58`, day 1 at `amount_minor` 3375 (PLN 45.00 less the PLN 11.25 breakfast), day 3's basis
+`"incomplete day over 8 hours, full diet (par. 7(2)(2)(b))"`, `"subsistence": "PLN 123.75"`,
+`"lodging": "PLN 135.00"` and `"total": "PLN 258.75"`, with the Dz.U. source block and the 2023-01-01
+effective date.
+
+Left alone deliberately: PR #4892's body still says "Active Development: repository is active, releases
+through v0.6.0", which is stale against 0.11.0. Round 14 named it rather than fixing it, the patch was meant
+to be minimal and it is not a count-of-servers line, so it is named again here rather than quietly rewritten.
 
 `data/distribution.json`: `per_server["per-diem"]` added with the eleven surface keys. `hosted` records the
 `/mcp/per-diem` endpoint the remote agent shipped this round, which is what the round-14 hosted-row check
