@@ -240,7 +240,10 @@ asserted in `test/{unit,adversarial,corrupt,concurrency,contract}.test.mjs`.
 
 ## The measured insight, reproduced
 
-    node /tmp/naive.mjs        # aging the worked month at 2026-06-10, two rules
+Aging the worked month at 2026-06-10 under both rules, the naive one computed straight
+from the seeded rows (`total_minor - paid_minor - credit notes`, bucketed by due date) and
+the as-at one read off `statement_aging`:
+
     {
       "as_of": "2026-06-10",
       "as_at_rule": { "outstanding": 250000, "overdue": 50000 },
@@ -251,6 +254,7 @@ The naive rule is the one almost every aging report is written as: take each inv
 subtract `paid_minor`, subtract the credit notes, bucket by the due date. It understates
 what was owed on 2026-06-10 by 800.00 of 2,500.00 and reports nothing overdue on a date
 when 500.00 was 31 days late, because the subtraction is the step nobody dates. The
-`as_at_rule` figures are asserted in `test/unit.test.mjs`.
+`as_at_rule` figures are asserted in `test/unit.test.mjs`, in the test named "aging is as
+at the date asked for, not as at now".
 
 Built by theluckystrike. https://github.com/theluckystrike
