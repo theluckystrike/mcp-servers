@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "bank-statement", "calendar", "clauses", "currency", "docx", "expense-tracker",
+  "bank-statement", "billing-docs", "calendar", "clauses", "currency", "docx", "expense-tracker",
   "image", "invoice", "kanban", "pdf", "price-tracker", "recurring", "resume",
   "spreadsheet", "time-tracker", "timezone",
 ].sort();
@@ -46,6 +46,29 @@ const COMMON_INVARIANTS = [
  * common list. `caps` documents the enforced limits that a contract test can assert.
  */
 const CURATED = {
+  "billing-docs": {
+    summary: "Credit notes against the invoices in the invoice server's store and purchase orders to suppliers: negative line totals in minor units, the invoice's own VAT rates reused, an A4 PDF and a pasteable text version.",
+    storageFiles: [
+      ["credit-notes.json", "credit notes, with the invoice number each was issued against"],
+      ["purchase-orders.json", "purchase orders and their receipts"],
+      ["counter.json", "the CN and PO number series, per prefix and year"],
+    ],
+    primaryFile: "credit-notes.json",
+    caps: [
+      "`FREE_DOCS_PER_MONTH` = 5 documents per calendar month on free, credit notes and purchase orders together, counted by issue date.",
+      "`credit_note_pdf`, `purchase_order_pdf` and `billing_docs_report` are Pro. The refusal is an answer, not a protocol error, and no file is written.",
+      "`MAX_ITEMS` = 200 line items per purchase order.",
+      "`MAX_MINOR` = 1e12 per amount field.",
+    ],
+    extra: [
+      "Money and VAT come from `@theluckystrike/mcp-invoice/lib` (`computeTotals`, `currencyDecimals`, `formatMoney`). This server holds no copy of that arithmetic.",
+      "A credit note never exceeds the invoice's remaining creditable amount: the invoice total less everything already credited against it. The check and the write are one critical section under both locks.",
+      "Crediting a whole invoice, or a whole invoice line, COPIES the stored line and its totals rather than recomputing them. Only a partial quantity is recomputed, on the same unit price and rate the invoice used.",
+      "Every money field on a credit note is stored negative in minor units, including the line unit price, so summing a period's documents gives the net of what was billed.",
+      "The invoice engine's `Invoice` record has no `credited_minor` field, so the link lives on the credit note and `credit_note_list {invoice}` is the query. The field is written back only if a future engine version already carries it.",
+      "Locks are always taken billing-docs first, then invoice, the same order servers/quotes and servers/recurring use, so no two processes in this repo can deadlock.",
+    ],
+  },
   "bank-statement": {
     summary: "Reads a bank CSV, OFX or QIF export into a local ledger: import, list, search, categorise with rules, summarise a period, detect recurring charges, and reconcile against the expense-tracker ledger.",
     storageFiles: [["data.json", "accounts, transactions and category rules"]],

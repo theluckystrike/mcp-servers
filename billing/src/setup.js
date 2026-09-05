@@ -146,7 +146,7 @@ export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
  * nineteen child processes and has no single connector URL. */
-const WEB_EXCLUDED = ["office-suite"];
+const WEB_EXCLUDED = ["office-suite", "billing-docs"];
 export function serversFor(clientId) {
   return clientId === "claude-web" ? SERVER_ORDER.filter((id) => !WEB_EXCLUDED.includes(id)) : SERVER_ORDER;
 }
@@ -495,6 +495,24 @@ export const SETUP_SERVERS = {
     pro: "PNG output up to 4000 px, and barcode_batch for up to 500 rows a call.",
     measured: "The first Code 128 table transcription was missing one row, silently shifting 67 of 107 values to their neighbour: a clean-looking barcode that scanned as the wrong string. Comparing against an independent encoder caught it; every table is now pinned against that comparison in the test suite.",
   },
+  "billing-docs": {
+    title: "MCP Billing Docs",
+    slug: "billing-docs",
+    toolCount: "14 tools",
+    pkg: "@theluckystrike/mcp-billing-docs",
+    sPage: "/s/billing-docs",
+    hosted: null,
+    tagline: "Credit notes and purchase orders written against the invoices the invoice server already holds, with the VAT unwound at the rate you charged.",
+    does: "It credits an invoice in full, by a gross amount or by named lines and quantities, storing every money field negative in minor units so a period's documents sum to the net of what was billed, and it refuses to give back more than the invoice's remaining creditable amount. It also raises purchase orders to suppliers with line items, VAT, currency and an expected delivery date, receives them in full or in part, and reports credited and on-order totals per currency alongside deliveries past their date.",
+    prompts: [
+      ["Credit invoice INV-2026-0001 in full, the client sent the work back.", "credit_note_create"],
+      ["Raise a purchase order to Nordic Print for 500 brochures at 1.20 each, due the 20th.", "purchase_order_create"],
+      ["Which purchase orders are past their delivery date?", "billing_docs_report"],
+    ],
+    free: "5 documents a calendar month, credit notes and purchase orders together, counted by issue date. Both text exports are never metered, and full, partial and per-line credit notes, VAT, multiple currencies and receiving orders are all on the free tier.",
+    pro: "Unlimited documents, both A4 PDFs with your logo and no footer credit, and the credited, on-order and overdue-delivery report.",
+    measured: "Crediting ten percent of a mixed-VAT invoice at a single rate and splitting it across the invoice's own rates give the same gross, EUR 177.00, and VAT lines that differ by EUR 6.10, 22.6 percent. The client's document and the payment are identical either way, so nothing downstream ever surfaces the error; only the VAT return does. The split is done at the point the document is written.",
+  },
   zip: {
     title: "MCP Zip",
     slug: "zip",
@@ -673,6 +691,14 @@ const ANGLE = {
     vscode: "In agent mode, `barcode_create` and `qr_create` are tools the agent can reach mid-task the same way it reaches a file write, so \"generate a Code 128 for every SKU in this CSV and save the SVGs next to it\" is a loop the agent can run without a script written for the occasion.",
     windsurf: "Ten tools against Cascade's ceiling of 100, and a code is generated a handful of times a session rather than polled continuously, so leaving it enabled costs little even alongside every other server in this collection.",
     cline: "code_list and license_status are reads and safe to auto-approve; leave the eight drawing tools and license_activate behind a click, since each one writes a file to disk or spends one of this month's 20 free codes.",
+  },
+  "billing-docs": {
+    "claude-desktop": "The invoice that needs crediting was written by mcp-invoice in this same window and its PDF is already in Documents, so \"credit INV-2026-0001 in full\" needs no invoice number looked up and no figures retyped: the credit note copies the stored line totals rather than recomputing them from a rounded unit price.",
+    "claude-code": "Both servers read one XDG data directory per machine, so `claude mcp add billing-docs` alongside `claude mcp add invoice` at any scope sees the same invoices and the same client list, and the 5-document monthly allowance is counted once for the box rather than once per project.",
+    cursor: "A supplier order and the work it pays for tend to be decided in the same chat, so purchase_order_create takes the line items straight out of the discussion, and purchase_order_text gives you the message to send back without leaving the editor.",
+    vscode: "In agent mode the agent can raise the order and later receive it in part, and billing_docs_report is the read that tells it which deliveries are past their date, so chasing suppliers becomes a tool call rather than a spreadsheet somebody keeps.",
+    windsurf: "Fourteen tools against Cascade's ceiling of 100, and this one is only useful with mcp-invoice enabled beside it, so budget the pair at roughly 30 tools when you decide what else fits.",
+    cline: "credit_note_list, credit_note_get, purchase_order_list, purchase_order_get and billing_docs_report are reads and safe to auto-approve; keep credit_note_create, purchase_order_create and purchase_order_receive behind a click, since each writes a numbered document that spends one of the month's five free ones and burns an id that is never reused.",
   },
   zip: {
     "claude-desktop": "This is the client where a zip somebody emailed you already sits in Downloads, so \"what's in this zip, is it safe to open\" is a question asked from the same window the file arrived in, and zip_list answers it without ever running the system Archive Utility on an archive you have not looked inside yet.",

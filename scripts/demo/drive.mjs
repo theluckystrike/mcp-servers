@@ -205,6 +205,14 @@ async function run(name) {
   // the recorded terminal is 900 px wide and a per-run path under $TMPDIR is 62 characters
   // before the file name, which would wrap every line of the transcript.
   const cwd = name === "zip" ? mkdtempSync("/tmp/zip-demo-") : undefined;
+  // billing-docs reads the invoice server's store out of XDG_DATA_HOME, and the fixture below
+  // writes into it, so the demo pins a short data home for the same reason zip pins a short cwd.
+  let bdocsHome;
+  if (name === "billing-docs") {
+    bdocsHome = join(mkdtempSync("/tmp/bdocs-demo-"), "data");
+    env.XDG_DATA_HOME = bdocsHome;
+    env.XDG_CONFIG_HOME = join(bdocsHome, "..", "config");
+  }
   const c = client(entry, env, { showStderr, cwd });
   if (cwd) process.chdir(cwd);
   await c.init();
@@ -699,6 +707,75 @@ async function run(name) {
     await sleep(STEP_DELAY_MS);
     toolLine("zip_extract_text", { path: "august.zip", entry: "notes.txt" });
     resultLine(await c.call("zip_extract_text", { path: "august.zip", entry: "notes.txt" }));
+  }
+
+  if (name === "billing-docs") {
+    // A credit note has to have an invoice to credit, and this server reads the invoice
+    // server's store rather than owning one, so the fixture writes the shared business
+    // profile, the client list and one mixed-VAT invoice straight into this run's invoice
+    // data directory, exactly where the invoice server itself would have put them. Same
+    // approach the suites use (servers/billing-docs/test/_client.mjs seedInvoice).
+    const { writeFileSync, mkdirSync } = await import("node:fs");
+    const invoiceDir = join(bdocsHome, "mcp-servers", "invoice");
+    mkdirSync(invoiceDir, { recursive: true });
+    writeFileSync(join(invoiceDir, "business.json"), JSON.stringify({
+      name: "Lucky Strike Software", default_currency: "EUR", default_tax_rate: 23,
+      payment_terms_days: 14, invoice_prefix: "INV",
+    }, null, 2));
+    writeFileSync(join(invoiceDir, "clients.json"), JSON.stringify([{
+      id: "acme-gmbh", name: "Acme GmbH", address: "Hauptstr. 5\nBerlin", email: "ap@acme.example", created: "2026-09-01",
+    }], null, 2));
+    const invLine = (description, unit, rate) => ({
+      description, quantity: 1, unit_price_minor: unit, tax_rate: rate,
+      gross_minor: unit, discount_minor: 0, net_minor: unit,
+      tax_minor: Math.round(unit * rate / 100), exact_gross_minor: unit, round_total: false,
+    });
+    writeFileSync(join(invoiceDir, "invoices.json"), JSON.stringify([{
+      number: "INV-2026-0042", client_id: "acme-gmbh", client: { name: "Acme GmbH" },
+      issue_date: "2026-09-01", due_date: "2026-09-15", currency: "EUR", decimals: 2,
+      lines: [invLine("Consulting", 100000, 23), invLine("Printed manuals", 50000, 8)],
+      subtotal_minor: 150000, discount_percent: 0, discount_minor: 0, net_minor: 150000,
+      tax_lines: [{ rate: 23, base_minor: 100000, tax_minor: 23000 }, { rate: 8, base_minor: 50000, tax_minor: 4000 }],
+      tax_minor: 27000, total_minor: 177000, status: "unpaid", paid_minor: 0,
+      created: "2026-09-01T00:00:00.000Z", branded: true,
+    }], null, 2));
+
+    // These tools answer in JSON and the whole answer does not fit the recorded frame, so the
+    // demo prints picked fields. Every string below is copied out of the response, never rebuilt.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Credit a mixed-VAT invoice, be stopped from crediting more than it billed, and raise a supplier order.\n");
+    await sleep(STEP_DELAY_MS);
+    const creditArgs = { invoice: "INV-2026-0042", amount_minor: 17700, reason: "Goodwill credit" };
+    toolLine("credit_note_create", creditArgs);
+    const credited = pick(await c.call("credit_note_create", creditArgs));
+    resultLine(`${credited.created.id} credits ${credited.created.invoice_number} of ${credited.created.invoice_total}: ${credited.created.total}`);
+    resultLine(credited.created.tax.join("\n"));
+    resultLine(`still creditable ${credited.invoice.still_creditable}`);
+    await sleep(STEP_DELAY_MS);
+
+    const tooMuchArgs = { invoice: "INV-2026-0042", amount_minor: 200000, reason: "Second credit" };
+    toolLine("credit_note_create", tooMuchArgs);
+    resultLine(await c.call("credit_note_create", tooMuchArgs));
+    await sleep(STEP_DELAY_MS);
+
+    const orderArgs = {
+      supplier: "Nordpapier GmbH", currency: "EUR", expected_delivery: "2026-09-20",
+      items: [
+        { description: "A4 paper, 80gsm", quantity: 40, unit_price_minor: 450, tax_rate: 23 },
+        { description: "Toner cartridge", quantity: 4, unit_price_minor: 8900, tax_rate: 23 },
+      ],
+    };
+    toolLine("purchase_order_create", orderArgs);
+    const order = pick(await c.call("purchase_order_create", orderArgs));
+    resultLine(`${order.created.id} to ${order.created.supplier.name}, ${order.created.status}, net ${order.created.net}, ${order.created.tax[0]}, total ${order.created.total}`);
+    await sleep(STEP_DELAY_MS);
+
+    const receiveArgs = { id: "PO-2026-0001", partial: true, date: "2026-09-05", note: "25 of 40 reams, toner back-ordered" };
+    toolLine("purchase_order_receive", receiveArgs);
+    const received = pick(await c.call("purchase_order_receive", receiveArgs));
+    resultLine(`${received.received.id} ${received.received.status}, received ${received.receipts[0].date}: ${received.receipts[0].note}`);
+    resultLine(received.note);
   }
   await sleep(STEP_DELAY_MS);
   c.close();

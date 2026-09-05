@@ -1,7 +1,7 @@
 // Customer-visible checkout copy (docs/CHECKOUT_AUDIT.md).
 //
 // The audit found that nothing a buyer reads on the Stripe hosted page mentioned the
-// server count, the $322 bundle saving, or how the key is delivered. Those three facts
+// server count, the bundle saving, or how the key is delivered. Those three facts
 // now come from checkoutDescription() and checkoutCustomText(), which are pure, so the
 // exact strings a customer sees are testable without touching Stripe.
 import { test } from "node:test";
@@ -10,33 +10,38 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  PRODUCTS, SINGLE_PRODUCT_IDS, SERVER_COUNT, BUNDLE_SAVING_USD,
+  PRODUCTS, SINGLE_PRODUCT_IDS, SERVER_COUNT, BUNDLE_SAVING_USD, countWord,
   checkoutDescription, checkoutCustomText,
 } from "../src/index.js";
 
 const INDEX = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "index.js"), "utf8");
 
-test("the catalogue is nineteen single servers plus the bundle, and the saving is $322", () => {
-  assert.equal(SERVER_COUNT, 19);
-  assert.equal(SINGLE_PRODUCT_IDS.length, 19);
+test("the catalogue is the single servers plus the bundle, and the saving is their sum less $39", () => {
+  // Pinned as literals until billing-docs made both wrong: nineteen and $322 were typed
+  // here and in the copy, so the twentieth server failed the release check rather than the
+  // test. Both sides now derive from PRODUCTS, and the arithmetic is asserted instead.
+  assert.equal(SERVER_COUNT, SINGLE_PRODUCT_IDS.length);
+  assert.ok(SERVER_COUNT >= 20, `expected at least twenty servers, got ${SERVER_COUNT}`);
   assert.ok(!SINGLE_PRODUCT_IDS.includes("bundle"));
   assert.equal(PRODUCTS.bundle.usd, 39);
-  // 19 x $19 - $39. Derived, not typed: adding a twentieth server moves both numbers.
-  assert.equal(BUNDLE_SAVING_USD, 322);
+  const single = SINGLE_PRODUCT_IDS.reduce((n, id) => n + PRODUCTS[id].usd, 0);
+  assert.equal(BUNDLE_SAVING_USD, single - PRODUCTS.bundle.usd);
+  assert.equal(BUNDLE_SAVING_USD, SERVER_COUNT * 19 - 39);
 });
 
 test("the bundle description names the count, the one key and the saving", () => {
   assert.equal(
     checkoutDescription("bundle"),
-    "Nineteen MCP servers for Claude, one lifetime key, saves $322 against buying singly",
+    `${countWord()} MCP servers for Claude, one lifetime key, saves $${BUNDLE_SAVING_USD} against buying singly`,
   );
+  assert.match(checkoutDescription("bundle"), /^Twenty MCP servers/);
 });
 
 test("every single-server description names the product and prices the bundle", () => {
   for (const id of SINGLE_PRODUCT_IDS) {
     assert.equal(
       checkoutDescription(id),
-      `Lifetime key for ${PRODUCTS[id].name}. The nineteen-server bundle is $39`,
+      `Lifetime key for ${PRODUCTS[id].name}. The ${countWord().toLowerCase()}-server bundle is $${PRODUCTS.bundle.usd}`,
     );
   }
 });
@@ -48,11 +53,11 @@ test("an unknown product cannot silently produce empty checkout copy", () => {
 
 test("custom_text.submit cross-sells the bundle on a single-server session, tagged", () => {
   const ct = checkoutCustomText("invoice");
-  assert.match(ct.submit, /All 19 servers are \$39 together, a \$322 saving/);
+  assert.match(ct.submit, new RegExp(`All ${SERVER_COUNT} servers are \\$39 together, a \\$${BUNDLE_SAVING_USD} saving`));
   assert.match(ct.submit, /https:\/\/mcp\.zovo\.one\/buy\/bundle\?src=checkout\.crosssell\.invoice/);
   // The bundle's own page must not sell the buyer what they are already buying.
   assert.doesNotMatch(checkoutCustomText("bundle").submit, /\/buy\/bundle/);
-  assert.match(checkoutCustomText("bundle").submit, /one lifetime key for all 19 servers/);
+  assert.match(checkoutCustomText("bundle").submit, new RegExp(`one lifetime key for all ${SERVER_COUNT} servers`));
 });
 
 test("the cross-sell tags are shapes the /buy route's validSrc will accept", async () => {

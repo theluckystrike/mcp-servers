@@ -24,20 +24,34 @@ export const PRODUCTS = {
   quotes: { desc: "Estimates and quotes on the invoice engine: line items, VAT, validity dates, accept converts to an invoice, PDF, win rate by currency.", free: "Free: 5 open quotes and text export.", pro: "Pro: unlimited quotes, PDF, win-rate report.", name: "MCP Quotes Pro", price: "price_1UBmtuJKCamubEm1y76zV0CC", usd: 19, pkg: "@theluckystrike/mcp-quotes", bin: "mcp-quotes", payload: "quotes" },
   barcode: { desc: "QR codes and barcodes from chat: SEPA payment QR for an invoice, vCard, WiFi, Code128, EAN-13 and UPC-A as SVG or PNG.", free: "Free: 20 codes a month, SVG.", pro: "Pro: unlimited codes, PNG at any size, batch.", name: "MCP Barcode Pro", price: "price_1UBoNQJKCamubEm1X6CTBLdP", usd: 19, pkg: "@theluckystrike/mcp-barcode", bin: "mcp-barcode", payload: "barcode" },
   zip: { desc: "Create, inspect and extract zip archives safely from chat: bomb and traversal guards decided from the central directory, CRC checked per entry, bundle a month of invoices and exports.", free: "Free: archives to 25 MB and 200 entries, 20 archives a month.", pro: "Pro: unlimited size, entries and archives.", name: "MCP Zip Pro", price: "price_1UBqGgJKCamubEm1SoQ76sXZ", usd: 19, pkg: "@theluckystrike/mcp-zip", bin: "mcp-zip", payload: "zip" },
-  bundle: { desc: "Every server above, one key, lifetime. Saves $322 against buying nineteen.", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
+  "billing-docs": { desc: "Credit notes and purchase orders on the same engine as your invoices: the VAT unwound at the rate you charged, and never more credited than the invoice billed.", free: "Free: 5 documents a calendar month, credit notes and purchase orders together, plus unlimited text exports.", pro: "Pro: unlimited documents, both PDFs, your logo, and the credited and on-order report.", name: "MCP Billing Docs Pro", price: "price_1UCCo9JKCamubEm1TyBUQdzO", usd: 19, pkg: "@theluckystrike/mcp-billing-docs", bin: "mcp-billing-docs", payload: "billing-docs" },
+  bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
 /** Every sellable single-server product; `bundle` is the one entry that is not one. */
 export const SINGLE_PRODUCT_IDS = Object.keys(PRODUCTS).filter((id) => id !== "bundle");
 
-/** Nineteen, computed rather than typed, so adding a server cannot leave the prose stale. */
+/** The number of single-server products, computed rather than typed, so adding a server cannot leave the prose stale. */
 export const SERVER_COUNT = SINGLE_PRODUCT_IDS.length;
 
-/** $322: nineteen single licenses at $19 each, less the $39 bundle. */
+/** Every single license at $19 each, less the $39 bundle. */
 export const BUNDLE_SAVING_USD =
   SINGLE_PRODUCT_IDS.reduce((n, id) => n + PRODUCTS[id].usd, 0) - PRODUCTS.bundle.usd;
 
 const NUMBER_WORD = { 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two" };
+
+/** The server count as a capitalised English word, e.g. "Twenty". Exported so the copy
+ * tests can assert the rendered sentence without pinning a number that a new server moves. */
+export const countWord = () => NUMBER_WORD[SERVER_COUNT] || String(SERVER_COUNT);
+
+/**
+ * The bundle's own one-line description, derived rather than typed. It named nineteen and
+ * $322 as literals until billing-docs made both wrong in the same commit; the count and the
+ * saving now come from PRODUCTS, so a twenty-first server moves them on its own.
+ */
+PRODUCTS.bundle.desc =
+  `Every server above, one key, lifetime. Saves $${BUNDLE_SAVING_USD} against buying ` +
+  `${(NUMBER_WORD[SERVER_COUNT] || String(SERVER_COUNT)).toLowerCase()}.`;
 
 /**
  * The line under the product name on the Stripe hosted checkout page. Stripe renders a
@@ -266,6 +280,7 @@ const FREE_FIVE_WORDS = {
   quotes: "Five open quotes at once",
   barcode: "Twenty codes a month, every symbology",
   zip: "Twenty archives a month, unlimited reading",
+  "billing-docs": "Five documents a month, unlimited text",
 };
 
 const BUNDLE_DESCRIPTION =
@@ -705,7 +720,7 @@ ${faqHtml}
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file || "none, a connector URL"}, key ${CLIENTS[c].key || "none"}. ` +
         serversFor(c).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [Nineteen-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {

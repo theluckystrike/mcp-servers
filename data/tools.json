@@ -752,5 +752,55 @@
       "name": "zip_history",
       "description": "List the archives this server created, newest first, with their entry counts and sizes, plus how many of this month's free allowance are left."
     }
+  ],
+  "billing-docs": [
+    {
+      "name": "credit_note_create",
+      "description": "Issue a credit note against one invoice: the whole invoice, a gross amount, or named lines with quantities. Line totals are stored negative in minor units and the invoice's VAT rates are reused."
+    },
+    {
+      "name": "credit_note_list",
+      "description": "Every credit note with its invoice, client, reason and negative total. Filter by invoice number, by client or by issue date range."
+    },
+    {
+      "name": "credit_note_get",
+      "description": "The full stored record for one credit note: every negated line, the VAT lines, the totals, the reason and the invoice it was issued against."
+    },
+    {
+      "name": "credit_note_pdf",
+      "description": "Call this tool to write the A4 PDF of one credit note and return the file path. The invoice layout, titled CREDIT NOTE and carrying the invoice number it reverses. Pro."
+    },
+    {
+      "name": "credit_note_text",
+      "description": "Turn a credit note into a plain-text summary with the negated line table, the VAT lines, the total and the invoice it reverses, ready to paste into an email. Free on every tier."
+    },
+    {
+      "name": "purchase_order_create",
+      "description": "Order from a supplier: line items with quantity and unit price in minor units, VAT, a currency and an expected delivery date. You are the buyer, from the shared business profile."
+    },
+    {
+      "name": "purchase_order_list",
+      "description": "Every purchase order with its supplier, total, expected delivery date and status (open, partially received or received). Filter by status, by supplier or by order date range."
+    },
+    {
+      "name": "purchase_order_get",
+      "description": "The full stored record for one purchase order: the buyer and supplier blocks, every line with its unit price and VAT, the totals, the expected delivery date and what has been received."
+    },
+    {
+      "name": "purchase_order_pdf",
+      "description": "Call this tool to write the A4 PDF of one purchase order and return the file path. The invoice layout, titled PURCHASE ORDER, with the buyer, the supplier and the delivery date. Pro."
+    },
+    {
+      "name": "purchase_order_text",
+      "description": "Turn a purchase order into a plain-text summary with the line table, the VAT lines, the total and the delivery date, ready to paste into an email to the supplier. Free on every tier."
+    },
+    {
+      "name": "purchase_order_receive",
+      "description": "Record that a purchase order arrived, in full or in part. A partial receipt keeps the order open and is kept on the record with its date and note; a full receipt closes it."
+    },
+    {
+      "name": "billing_docs_report",
+      "description": "What has been credited back per currency, against how many invoices, and what is still on order per currency, with the purchase orders whose delivery date has passed. Pro."
+    }
   ]
 }

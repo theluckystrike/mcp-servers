@@ -50,6 +50,7 @@ const CHILDREN: ChildDef[] = [
   { id: "quotes", pkg: "@theluckystrike/mcp-quotes", optional: true },
   { id: "barcode", pkg: "@theluckystrike/mcp-barcode", optional: true },
   { id: "zip", pkg: "@theluckystrike/mcp-zip", optional: true },
+  { id: "billing-docs", pkg: "@theluckystrike/mcp-billing-docs", optional: true },
 ];
 
 /** Resolve the absolute path to a sibling server's dist/index.js. */

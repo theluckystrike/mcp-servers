@@ -13,6 +13,8 @@ Built on `@theluckystrike/mcp-invoice/lib`: the money, VAT, currency and formatt
 invoice server's, not a second copy of it, so a credit note and the invoice it reverses agree to the
 minor unit.
 
+![billing-docs demo](../../assets/demo-billing-docs.gif)
+
 ## Install
 
 Claude Desktop (`claude_desktop_config.json`):

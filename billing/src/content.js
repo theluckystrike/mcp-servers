@@ -2103,6 +2103,125 @@ ${FOOT}`,
     ],
   },
 
+  "credit-notes-and-purchase-orders-from-chat": {
+    title: "Credit notes and purchase orders from chat, against your real invoices",
+    description: "Reverse an invoice in full, by amount or by line, with the VAT unwound at the rates it actually charged, and raise and receive supplier purchase orders. Why a single-rate credit note on a mixed-VAT invoice is wrong by 22.6 percent.",
+    html: `<h1>Credit notes and purchase orders from chat, against your real invoices</h1>
+<p>Two documents sit either side of an invoice and neither is an invoice. A <strong>credit note</strong> is
+what you owe a client when work comes back or you billed twice: it names the invoice it reverses and takes
+money off it, with the VAT unwound at the rate you charged. A <strong>purchase order</strong> is what you owe
+a supplier before they ship: what you want, at what price, by when, with your own details on it. The MCP
+Billing Docs server writes both against the invoices and clients the
+<a href="/s/invoice">MCP Invoice</a> server already holds, on your machine, with no network call anywhere in
+it.</p>
+
+<h2>Install it beside the invoice server</h2>
+<pre><code>claude mcp add invoice -- npx -y @theluckystrike/mcp-invoice
+claude mcp add billing-docs -- npx -y @theluckystrike/mcp-billing-docs</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "invoice": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-invoice"] },
+    "billing-docs": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-billing-docs"] }
+  }
+}</code></pre>
+<p>Both read one data directory and one business profile, so your name, address, VAT id and default currency
+are set once. Billing Docs holds no copy of the money, VAT or currency code: it imports
+<code>computeTotals</code>, <code>currencyDecimals</code> and <code>formatMoney</code> from the invoice
+engine, which is why a credit note and the invoice it reverses agree to the minor unit rather than to the
+nearest cent.</p>
+
+<h2>The measured thing: a single-rate credit note on a mixed-VAT invoice is wrong by 22.6 percent</h2>
+<p>Take an invoice with two rates on it, which is ordinary the moment printing, food, books or transport sit
+next to consulting: EUR 1,000.00 of consulting at 23% plus EUR 500.00 of print at 8%, EUR 1,770.00 gross. The
+client is owed ten percent back, EUR 177.00.</p>
+<p>Written as a single-rate credit note, at the headline 23%, that is net EUR 143.90 and VAT EUR 33.10. Split
+across the rates the invoice actually used, in proportion to each rate's share of the total, it is net
+EUR 150.00 and VAT EUR 27.00, EUR 23.00 at 23% and EUR 4.00 at 8%.</p>
+<table>
+<tr><th></th><th>Single rate</th><th>Split across the invoice's rates</th></tr>
+<tr><td>Gross</td><td>EUR 177.00</td><td>EUR 177.00</td></tr>
+<tr><td>Net</td><td>EUR 143.90</td><td>EUR 150.00</td></tr>
+<tr><td>VAT</td><td>EUR 33.10</td><td>EUR 27.00</td></tr>
+</table>
+<p><strong>The gross is identical.</strong> The document the client receives, the amount they are refunded and
+the payment that follows are the same under both methods, so the counterparty has nothing to query and no
+later reconciliation surfaces it. The only line that differs is the VAT, by EUR 6.10, which is 22.6 percent of
+it, and that is the number that goes on a VAT return.</p>
+<p>This generalises past VAT: when a wrong answer and a right answer agree on the one figure the counterparty
+checks, no amount of downstream review finds the error. It has to be right at the point the document is
+written. <code>credit_note_create</code> with an <code>amount_minor</code> therefore splits the gross across
+the invoice's own rates and reuses each one, rather than asking you for a rate.</p>
+
+<h2>Three ways to credit, and why two of them copy rather than recompute</h2>
+<p><code>credit_note_create</code> takes an invoice number and one of three things:</p>
+<ul>
+<li><strong>Nothing else</strong>: the whole invoice is reversed.</li>
+<li><strong>An <code>amount_minor</code></strong>: a gross figure in minor units, split across the invoice's
+rates as above.</li>
+<li><strong><code>lines</code></strong>: named invoice lines with quantities, for "they returned two of the
+five".</li>
+</ul>
+<p>A whole invoice and a whole line copy the stored numbers instead of recomputing them. The client agreed to
+the figures the invoice printed, and recomputing a line from a rounded unit price is exactly how a document
+and the credit note that reverses it come to differ by a cent. Only a partial quantity is recomputed, and then
+on the invoice's own unit price, tax rate and discount.</p>
+<p>Every money field is stored negative, including the unit price, while the quantity stays positive: a line
+reads <code>10 x EUR -90.00 = EUR -900.00</code>, which reproduces on a calculator, and summing
+<code>gross_minor</code> over a period's documents gives the net of what was billed without anybody having to
+know which rows to flip.</p>
+
+<h2>You cannot credit more than the invoice charged</h2>
+<p>The remaining creditable amount is the invoice total less everything already credited against it, read
+from this server's own store. Ask for a cent more and it refuses by name, and stores nothing:</p>
+<pre><code>at most EUR 1107.00 can still be credited; this credit note is for EUR 1107.01.
+A credit note that gives back more than was billed is a refund, not a credit note.
+Nothing was stored.</code></pre>
+<p>The check and the write are one critical section under both servers' locks, so two processes cannot each
+see room and both take it. Ten concurrent EUR 200.00 credits against a EUR 1,107.00 invoice store exactly
+five and refuse exactly five.</p>
+<p>The link lives on the credit note rather than on the invoice, deliberately: the invoice engine's record has
+no credited field, and adding one would mean two servers writing the same record with whichever saved last
+winning. <code>credit_note_list {invoice: "INV-2026-0001"}</code> is the query, and the create response says
+so rather than leaving it to be found.</p>
+
+<h2>Purchase orders, and receiving them in part</h2>
+<p><code>purchase_order_create</code> takes line items, VAT, a currency and an expected delivery date, and
+<code>purchase_order_text</code> gives you the message to send the supplier.
+<code>purchase_order_receive</code> marks it received in full or in part, so an order stays open at
+"3 of 10 delivered" instead of being a yes or a no. Receiving the same order in full twice is refused with
+the date it was already received on; a receipt dated before the order is refused by name; two currencies on
+one order is refused before anything is stored.</p>
+<p><code>billing_docs_report</code> is the read that makes the pile useful: credited per currency, on order
+per currency, and every delivery past its date. There is a <code>chase_deliveries</code> prompt and a
+<code>billing-docs://open-orders</code> resource for the same question asked from the client's own UI.</p>
+
+<h2>Numbering</h2>
+<p>Ids are <code>CN-YYYY-NNNN</code> and <code>PO-YYYY-NNNN</code>, the same shape as
+<code>INV-YYYY-NNNN</code> and <code>Q-YYYY-NNNN</code>. A counter that resets every January collides with
+last January's document, so the year is in the id. The counter is written before the row, so a crash burns an
+id rather than reusing one, and existing ids are scanned first so a restored store cannot reissue one.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Free gives 5 documents a calendar month, credit notes and purchase orders together, counted by issue date.
+Everything that decides whether the document is <em>correct</em> is on the free tier: full, partial and
+per-line credit notes, the VAT split, multiple currencies, the over-credit refusal and receiving orders, plus
+both plain-text exports unmetered. Pro ($19 once, or $39 for the whole collection, lifetime) removes the
+monthly count and adds both A4 PDFs with your logo and no footer credit, and
+<code>billing_docs_report</code>. Full detail on <a href="/s/billing-docs">the MCP Billing Docs page</a> and
+the general <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a> comparison.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why does crediting part of a mixed-VAT invoice at one rate matter if the client is refunded the right amount?", a: "Because only the VAT line is wrong. On an EUR 1,770.00 invoice of consulting at 23% and print at 8%, a EUR 177.00 credit is gross EUR 177.00 either way, so the client's document and the payment are identical and nothing downstream queries it. The VAT differs by EUR 6.10, 22.6 percent of it, and that figure goes on a VAT return. The split has to be right when the document is written." },
+      { q: "Can a credit note give back more than the invoice charged?", a: "No. The remaining creditable amount is the invoice total less everything already credited against it, and a request for more is refused by name with nothing stored: a credit note that gives back more than was billed is a refund, not a credit note. The check and the write are one critical section under both locks, so ten concurrent EUR 200.00 credits against EUR 1,107.00 store exactly five." },
+      { q: "Does it write to my invoices?", a: "No. The invoice engine's Invoice record has no credited field, and adding one would mean two servers writing the same record with whichever saved last winning. The link lives on the credit note, and credit_note_list {invoice: \"INV-2026-0001\"} is the query. If a future invoice version carries the field, it is written back too, so the two can never disagree by omission." },
+      { q: "Why are credit note amounts stored negative?", a: "So a bookkeeper summing gross_minor over a period's documents gets the net of what was billed without knowing which rows to flip. The unit price is negative and the quantity positive, so a line reads 10 x EUR -90.00 = EUR -900.00 and reproduces on a calculator." },
+      { q: "What counts against the 5 free documents a month?", a: "Created credit notes and purchase orders together, counted by issue date, so a document dated in another month is not blocked by this month's count. Reading, listing, receiving an order and both plain-text exports are never metered. The two PDFs and billing_docs_report are Pro." },
+      { q: "Do I need the invoice server as well?", a: "For credit notes, yes: they are written against invoices and clients that server holds, and the money and VAT code is imported from it rather than copied. Purchase orders only need the shared business profile, so they work with billing-docs alone, but running both is the intended setup." },
+    ],
+  },
+
   "one-install-nineteen-servers-office-suite": {
     title: "One install for all nineteen MCP servers: the office-suite bundle",
     description: "One stdio server proxies all nineteen sibling servers as 186 tools in one tools/list. What it is, the .mcpb and the npx line, the two prefixed tool names, and the six-prompt cross-server audit that scored 13 of 18.",
@@ -2234,5 +2353,5 @@ ${FOOT}`,
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, and the one-install office-suite bundle.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, and the one-install office-suite bundle.",
 };

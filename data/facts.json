@@ -409,6 +409,16 @@
       "free": "20 archives per calendar month, up to 25 MB and 200 entries each, and unlimited reading: zip_list, zip_extract and zip_extract_text are never metered, along with every bomb, traversal and symlink guard.",
       "pro": "Unlimited archives, no size cap and no entry cap.",
       "storage": "~/.local/share/mcp-servers/zip/"
+    },
+    "billing-docs": {
+      "title": "MCP Billing Docs",
+      "tagline": "Credit notes and purchase orders, on the same engine as your invoices.",
+      "does": "Writes credit notes against the invoices the mcp-invoice server already holds, in full, by gross amount or by named lines and quantities, with every money field stored negative in minor units so a period's documents sum to the net of what was billed; a credit note by amount splits that gross across the VAT rates the invoice actually used, and no credit note can ever give back more than the invoice's remaining creditable amount. It also raises purchase orders to suppliers with line items, VAT, currency and an expected delivery date, receives them in full or in part, and reports credited and on-order totals per currency alongside deliveries past their date.",
+      "for": "Anyone who invoices clients and has to reverse one, and anyone who orders from suppliers and needs the order on paper.",
+      "example": "\"Credit invoice INV-2026-0001 in full, the client returned the work.\" ... \"Credit 177 euro of that invoice, they were overcharged.\" ... \"Raise a purchase order to Nordic Print for 500 brochures at 1.20 each, due the 20th.\" ... \"Which orders are past their delivery date?\"",
+      "free": "5 documents per calendar month, credit notes and purchase orders together, counted by issue date, with full, partial and per-line credit notes, VAT, multiple currencies and receiving orders all included, and both text exports never metered.",
+      "pro": "Unlimited documents, both A4 PDFs with your logo and no footer credit, and the billing_docs_report of credited, on-order and overdue deliveries.",
+      "storage": "~/.local/share/mcp-servers/billing-docs/"
     }
   },
   "version": "0.1.1",
@@ -437,6 +447,26 @@
       ],
       "note": "Searched the official MCP registry search API for each token; nothing found packs, lists or unpacks a .zip file (zip = postal-code servers; archive = Internet Archive wrappers; compress = image/LLM-prompt/scientific-data compressors). See docs/CONTENT_R12_RESULT.md for the per-token breakdown and the guide it produced.",
       "guide": "zip-archives-safely-from-chat",
+      "ttl_days": 30
+    },
+    "billing-docs": {
+      "date": "2026-09-05",
+      "tokens": [
+        "credit-note",
+        "credit note",
+        "purchase-order",
+        "purchase order",
+        "po",
+        "debit note",
+        "refund",
+        "invoice reversal",
+        "procurement",
+        "supplier order",
+        "goods receipt",
+        "accounts payable"
+      ],
+      "note": "Searched the official MCP registry search API for each token; nothing found writes a credit note against an invoice or raises a purchase order (credit = credit-scoring and API-credit meters; purchase order = e-commerce order lookups; procurement = RFP text search). Per docs/INTEL_R9_RESULT.md the registry returns 0 results for the credit-note and purchase-order tokens. See docs/DIST_R13_RESULT.md.",
+      "guide": "credit-notes-and-purchase-orders-from-chat",
       "ttl_days": 30
     }
   }
