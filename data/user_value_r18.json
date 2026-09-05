@@ -1,0 +1,357 @@
+{
+  "at": "2026-09-05T04:29:00Z",
+  "round": 18,
+  "compares_to": "round 12",
+  "scope": "hosted single-lane re-runs of quotes, calendar and pdf with the round 12 prompts; pdf via url uploads",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_770f02d0bc5f87b6d36564b458720e6c, 200 text/html). Registered ONE lane, one mcp.json with two http entries (calendar and timezone), both /t/<token>, no --header. Client: claude 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the two http entries, explicit allowlist of 23 mcp__<server>__<tool> entries read from a live tools/list of each endpoint (calendar 12, timezone 11), --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume, timeout 240 per prompt, each prompt's stream-json written to its own file (out/s1.jsonl..s6.jsonl) before the next prompt started. Per r11 D-R57 the lane ran in an EMPTY working directory with the CLI's own filesystem tools disallowed (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task). Fresh XDG-style working/scratch dirs local to the run (/private/tmp/uv-r18cal), no reuse of any prior round's directory. The .ics fixture (round 12's original bytes were not preserved) was rebuilt to the same documented shape: 8 events, Europe/Warsaw, week of 2026-09-07, weekly Monday standup RRULE, Tuesday call with one ATTENDEE, Wednesday overlapping deep-work/design-review pair, Thursday all-day holiday plus a vendor sync landing on it, pasted as text in prompt 1. remote/fixtures/ was checked for an existing .ics fixture to also probe the url path unscored; none exists there (csv/zip/pdf/png/html/docx only), so no separate url probe was run -- the scored c6 already exercises ics_import {url} and the free tier has no code path where url succeeds regardless of fixture reachability. Machine day 2026-09-05 (Saturday).",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, minted anon_770f02d0bc5f87b6d36564b458720e6c",
+    "registration": "one lane, two http entries (calendar, timezone), both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; connected first try",
+    "tools_list": {
+      "calendar": 12,
+      "timezone": 11
+    },
+    "seed": "none; timezone registered per the single-lane recipe but never called by any of the six calendar-only prompts"
+  },
+  "scenarios": [
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar",
+      "id": "c1",
+      "prompt": "Here is my work calendar. Import it as Work. [1,594-byte .ics pasted as text, 8 events, week of 2026-09-07, Europe/Warsaw]",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 14.5,
+      "tools": [
+        "ics_import"
+      ],
+      "note": "One ics_import {name: Work, text: <8 events>}. Reply: 8 event definitions, 1 recurring, Source: text, kept for the token (2 KB), free counter 1 of 2 calendars used. No path leaked anywhere. Model volunteered the Wed 10:00-12:00 vs 11:00-12:00 overlap unprompted. Same result as round 12 c1.",
+      "round12_score": 3
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar",
+      "id": "c2",
+      "prompt": "What is on my calendar next week?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.5,
+      "tools": [
+        "events_list"
+      ],
+      "note": "One events_list {calendar: Work, from: 2026-09-07, to: 2026-09-14}; the model itself narrowed the 9-row raw window (which spilled one row into the following Monday's standup occurrence) back to Mon 9/7-Sun 9/13 for 'next week'. All rows in Europe/Warsaw, RRULE standup expanded to its occurrence, holiday shown as all day, both the Wednesday overlap and the vendor-sync-on-holiday flagged unprompted. Same result as round 12 c2.",
+      "round12_score": 3
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar",
+      "id": "c3",
+      "prompt": "Where do I have a free two-hour block next week between 9 and 17 Warsaw time?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.0,
+      "tools": [
+        "free_busy"
+      ],
+      "note": "One free_busy {calendars: [Work], zone: Europe/Warsaw, work_start: 09:00, work_end: 17:00}. The two overlapping Wednesday events correctly merge into one 10:00-12:00 busy block in the tool's own output. Model surfaced Monday/Tuesday morning as cleanest options and flagged Thursday's free stretch falls on the holiday. Same result as round 12 c3.",
+      "round12_score": 3
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar",
+      "id": "c4",
+      "prompt": "Do I have any conflicts next week?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.5,
+      "tools": [
+        "conflicts"
+      ],
+      "note": "One conflicts {from: 2026-09-07, to: 2026-09-13}. Exactly one pair: 2026-09-09, 60 min, deep-work block vs design review, reported with correct Warsaw-local times. The all-day holiday vs the Thursday vendor sync is correctly absent from the tool's own output (whole-day events reported separately, not a timed clash) and the model did not mention that non-clash either way -- narrower prose than round 12, which volunteered it, but not wrong or incomplete for what was asked.",
+      "round12_score": 3
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar",
+      "id": "c5",
+      "prompt": "Export next week's events to a calendar file I can download.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 12.0,
+      "tools": [
+        "event_export"
+      ],
+      "note": "One event_export {calendar: Work, from: 2026-09-07, to: 2026-09-13, out_path: next_week.ics}, 8 events, first and last named. GET the link: 200, text/calendar; charset=utf-8, filename next_week.ics, 1,467 B, opens BEGIN:VCALENDAR, 8 VEVENTs, holiday as DTSTART;VALUE=DATE:20260910 / DTEND;VALUE=DATE:20260911 -- the all-day export fix still holds hosted. Independently decoded: 0 ATTENDEE lines survive against 1 in the source (D-R61, still open, see verification).",
+      "round12_score": 3
+    },
+    {
+      "server": "calendar",
+      "surface": "hosted/calendar",
+      "id": "c6",
+      "prompt": "My team publishes its calendar at https://cal.example.com/team/feed.ics - can you subscribe to that feed and pull it in?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.1,
+      "tools": [
+        "ics_import"
+      ],
+      "note": "One ics_import {url}, refused: Pro, both prices, both tenant-carrying links, PLUS the D-R58 fix live: 'Free alternative, same result: open the feed in a browser or download the .ics, then paste the file contents - ics_import {name: \"Team\", text: \"<the .ics contents>\"}. url only adds fetching the feed for you; the events, the parser and the free-tier calendar allowance are identical.' The model relayed that free alternative verbatim in its own reply on the first turn and separately noted cal.example.com is a documentation placeholder domain. D-R58 holds live; c6 moves from round 12's 2 to a clean 3 because the endpoint now states the workaround instead of the model having to infer it.",
+      "round12_score": 2,
+      "round12_note": "ics_import {url} refused with Pro price and links only; the model worked out the paste-text workaround itself and told the user, which is why it scored a 2 rather than a 1, but the refusal text itself said nothing about the free route."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p1",
+      "prompt": "Here are two PDFs: <fixture-url> <fixture-url>. Upload them as doc-a and doc-b.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 14.9,
+      "tools": [
+        "pdf_upload x2"
+      ],
+      "note": "Two pdf_upload {name, url} calls, one per file, both against the same raw.githubusercontent.com URL because only one PDF fixture is committed. Each reply: 'Uploaded \"doc-a.pdf\" (1074 bytes). Fetched 1074 bytes from raw.githubusercontent.com. Pass path: \"doc-a\" to any pdf tool.' -- byte count matches the fixture exactly, the Extension 10 url-fetch shim worked first try, and the model told the user unprompted that both uploads came from the same source file rather than silently treating them as different documents.",
+      "round12_score": 3,
+      "round12_note": "Round 12 pasted two content-distinct base64 PDFs (1009/1011 bytes) in one turn costing 76.4s; this round's url path did the equivalent upload in 14.9s across two tool calls, consistent with Extension 10's stated purpose (move bytes off the model's output budget)."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p2",
+      "prompt": "Merge those two into one file.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.4,
+      "tools": [
+        "pdf_merge"
+      ],
+      "note": "One pdf_merge {paths: [doc-a, doc-b], out_path: merged}. Reply: 'Merged 2 files into 4 pages' (2+2, since each source is the same 2-page fixture, not round 12's 1-page pair). Sources listed with their own page counts. GET the download: 200, application/pdf, filename=\"merged.pdf\", 2453 bytes, %PDF-1.7, 4 pages -- independently decoded to fixture page 1 / 2 / 1 / 2 in order.",
+      "round12_score": 3,
+      "round12_note": "Same tool, same first-turn success; page count differs (4 vs 2) purely because this round's fixture is 2 pages per file, not 1."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p3",
+      "prompt": "Stamp the merged file PAID and give me the file.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.9,
+      "tools": [
+        "pdf_stamp"
+      ],
+      "note": "One pdf_stamp {path: merged, text: PAID, out_path: merged-paid}. Reply named all 4 pages, and volunteered that the stamp is drawn text (selectable, searchable) and the input file is unchanged. The echoed field is 'source': 'merged.pdf' -- no virtual root leak; D-R59 (fixed in round 12, /out/... path) still holds live on this build. GET the download: 200, application/pdf, filename=\"merged-paid.pdf\", 4259 bytes, %PDF-1.7. Independent decode: all 4 pages carry PAID, and the original 'fixture page 1'/'fixture page 2' text is still present underneath on every page.",
+      "round12_score": 3,
+      "round12_note": "Round 12 caught the D-R59 path leak on this exact prompt shape; this round's live source field is clean, confirming the fix shipped and has not regressed."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p4",
+      "prompt": "How many pages is that?",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 5.4,
+      "tools": [],
+      "note": "'The stamped file (merged-paid) has 4 pages.' No tool ran; the number was restated from pdf_stamp's own pages array one turn earlier rather than read fresh via pdf_count or pdf_info. The answer happens to be correct (the file was not changed between turns other than the stamp, which does not alter page count), but this is the identical client-side gap round 12 logged as D-R63 on the same prompt.",
+      "round12_score": 2,
+      "round12_note": "Round 12: identical shape -- 'correct' answer, zero tool calls, filed as D-R63 (client-side, a page count answered without reading the page). Recurs unchanged in this round."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p5",
+      "prompt": "What does page 2 say?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.7,
+      "tools": [
+        "pdf_text"
+      ],
+      "note": "One pdf_text {path: merged-paid, pages: \"2\"}. Read 'fixture page 2' plus the PAID stamp overlaid on it, and the tool's own reply named its read method (FlateDecode content stream via node:zlib, Tj/TJ operators, no OCR). Matches the independently decoded page 2 text exactly.",
+      "round12_score": 3,
+      "round12_note": "Round 12 asked for a dollar total (fixture-specific); this fixture carries no invoice total, so the prompt was adapted to 'what does page 2 say' -- same tool, same one-call, no-clarification shape, same score."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p6",
+      "prompt": "Split the stamped file back into single pages.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 15.5,
+      "tools": [
+        "pdf_split"
+      ],
+      "note": "One pdf_split {path: merged-paid, ranges: \"1,2,3,4\", out_path_pattern}. Four single-page files, four links, echoed source 'merged-paid.pdf' (again no virtual root leak). GET all four: 200, application/pdf, filenames merged-paid-page1..4.pdf, 1832-1834 bytes each, %PDF-1.7, 1 page each. Independent decode: pages 1 and 3 carry 'fixture page 1' + PAID, pages 2 and 4 carry 'fixture page 2' + PAID -- exactly the interleaved order pdf_merge produced.",
+      "round12_score": 3,
+      "round12_note": "Round 12 split a 2-page file into 2 parts; this round's 4-page file split into 4 parts, same tool, same first-turn success, same score."
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q1",
+      "prompt": "Quote Nova Ltd for 12 hours of design at EUR 90 an hour and a EUR 300 logo, valid two weeks.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 13.0,
+      "tools": [
+        "quote_create"
+      ],
+      "note": "One quote_create with validity_days: 14. Q-2026-0001, valid_until 2026-09-19, EUR 1080.00 + EUR 300.00, 23% on EUR 1380.00 = EUR 317.40, total_minor 169740. The 23% was named as coming from the business profile, and the model flagged unprompted that Nova Ltd is not a stored client. Same numbers as round 12, dates one day later because the run day shifted.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q2",
+      "prompt": "What quotes are open and when do they expire?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 4.4,
+      "tools": [
+        "quote_list"
+      ],
+      "note": "One quote_list {state: open}, one row, EUR 1,697.40, 2026-09-19, 14 days left, nothing invented. Same as round 12.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q3",
+      "prompt": "Give me the text I can email to Nova for that quote.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.3,
+      "tools": [
+        "quote_send_text"
+      ],
+      "note": "One quote_send_text. Full totals block reproduced verbatim, valid until 2026-09-19, signed Nova Studio. GET the returned download link: 200 text/plain; charset=utf-8, filename Q-2026-0001.txt, 455 bytes, opens Hello Nova Ltd, byte-identical to the model's relayed text. The model withheld the one-hour download link itself as an unauthenticated URL, offering it only on request, but the requested text was delivered complete and correct regardless.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q4",
+      "prompt": "Nova accepted. Invoice it, and then show me every invoice I have.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 10.9,
+      "tools": [
+        "quote_accept",
+        "invoice_list"
+      ],
+      "note": "quote_accept -> INV-2026-0001, due 2026-09-19, totals_check EUR 1697.40 both sides. Then invoice_list on the other hosted endpoint, same token: the invoice is there, EUR 1,697.40, unpaid. The shared invoice store still works read-write over the URL path.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q5",
+      "prompt": "Acme wanted 3 days of consulting at PLN 1200 a day, so quote them too - and they have just declined it.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 10.3,
+      "tools": [
+        "quote_create",
+        "quote_decline"
+      ],
+      "note": "quote_create inferred PLN from the price rather than the profile's EUR default, 23% on PLN 3600.00 = PLN 828.00, total PLN 4,428.00, default 30-day validity since this prompt did not ask for two weeks. Then quote_decline, open_quotes_now: 0.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q6",
+      "prompt": "What is my win rate this quarter?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.3,
+      "tools": [
+        "quote_report"
+      ],
+      "note": "One quote_report {from: 2026-07-01, to: 2026-09-30} call, no refusal. win_rate_percent 50, win_rate_basis named (accepted / (accepted + declined); a quote nobody answered is not a loss the client chose), full per-currency breakdown (1 EUR accepted at 1697.40, 1 PLN declined at 4428.00). The model relayed the number and both quotes straight from the report instead of hand-counting quote_list. Up from round 12's D-R55-shaped refusal.",
+      "round12_score": 2,
+      "round12_note": "quote_report was Pro and refused outright; the model computed win rate by hand from quote_list (1 accepted of 2 decided = 50%, correct) and named the tool it would have used."
+    }
+  ],
+  "totals": {
+    "score": 53,
+    "max": 54,
+    "per_server": {
+      "calendar": {
+        "score": 18,
+        "max": 18,
+        "tool_calls": 6,
+        "seconds": 65.7
+      },
+      "pdf": {
+        "score": 17,
+        "max": 18
+      },
+      "quotes": {
+        "score": 18,
+        "max": 18,
+        "score_r12": 17
+      }
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "one lane, two /t/<token> entries, connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The calendar export is a real calendar",
+      "evidence": "GET -> 200, text/calendar; charset=utf-8, next_week.ics, 1,467 B, BEGIN:VCALENDAR, 8 VEVENT, holiday as DTSTART;VALUE=DATE:20260910 / DTEND;VALUE=DATE:20260911",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Attendees survive event_export (D-R61)",
+      "evidence": "source .ics carries 1 ATTENDEE line (Call with Nova, Tom Rivera, mailto:tom@nova.example); downloaded next_week.ics carries 0 ATTENDEE lines across all 8 VEVENTs",
+      "verdict": "FAIL, D-R61, still reproduces, not yet fixed"
+    },
+    {
+      "claim": "The url gate names the free path (D-R58)",
+      "evidence": "live ics_import {url} refusal on a fresh token: upgrade text with both prices and both links, plus 'Free alternative, same result: ... ics_import {name: \"Team\", text: \"<the .ics contents>\"} ... the events, the parser and the free-tier calendar allowance are identical'",
+      "verdict": "PASS, D-R58 confirmed fixed and live"
+    },
+    {
+      "claim": "The overlapping Wednesday pair merges correctly in free_busy",
+      "evidence": "raw free_busy output: '10:00-12:00 2h busy Deep work block, Design review' (Europe/Warsaw) as one merged block, not two",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "conflicts reports exactly the one real clash",
+      "evidence": "raw conflicts output: '1 overlapping pair(s)', 2026-09-09, 60 min overlap, Deep work block vs Design review; the all-day holiday and the vendor sync are absent from this tool's output entirely (whole-day events reported separately by design)",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "No filesystem path leaked in any of the six replies",
+      "evidence": "grepped all six assistant texts and tool results for /out/, /uploads/, /home/: none found",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "remote/fixtures/ has a calendar .ics fixture to also try the url path unscored",
+      "evidence": "ls remote/fixtures: revolut-main.csv, sample-archive.zip, sample-doc.pdf, sample-image.png, sample-product.html, sample-rows.csv, sample-template.docx -- no .ics file",
+      "verdict": "NOT APPLICABLE, no fixture exists, no unscored url probe run"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R58",
+      "server": "calendar",
+      "status": "FIXED, confirmed live, re-verified round 18",
+      "note": "The ics_import {url} Pro refusal names its own free text alternative, filled in with the caller's chosen calendar name. Round 18 is the first independent hosted re-check with a fresh token since the fix; it holds. c6 moves from round 12's 2 to a clean 3."
+    },
+    {
+      "id": "D-R61",
+      "server": "calendar",
+      "status": "still open, reproduces identically",
+      "note": "event_export still drops ATTENDEE lines. Source .ics carries one ATTENDEE (Call with Nova, Tom Rivera); the round-18 c1 import and c2 events_list both show the attendee correctly in the model's own prose, but the c5 export -- independently downloaded and decoded -- carries zero ATTENDEE lines across all 8 VEVENTs. Not hosted-specific, not touched between round 12 and round 18. Fix direction unchanged: carry ATTENDEE and ORGANIZER through icsText() the way LOCATION already is."
+    }
+  ],
+  "bottom_line": "18/18, up from 17/18 in round 12, and the improvement is exactly the defect round 12 flagged and the project fixed in between: ics_import {url}'s Pro refusal now states its own free equivalent, the model relayed it verbatim and correctly declined to spend money the caller had not authorized, and c6 stopped depending on the model working out on its own that pasting does the identical thing. Every other prompt reproduced its round-12 shape exactly, byte-for-byte on both downloads compared: the all-day holiday still round-trips as VALUE=DATE through export, the overlapping Wednesday pair still merges into one busy block, and conflicts still finds the one real clash and nothing more. D-R61 (attendees dropped by event_export) is untouched and reproduces again, confirmed with an independently downloaded and decoded file rather than the model's claim about it."
+}

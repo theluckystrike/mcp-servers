@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T03:15:39.424Z",
+  "generated_at": "2026-09-05T04:35:20.153Z",
   "rounds": [
     {
       "round": 1,
@@ -419,6 +419,30 @@
       },
       "at": "2026-09-05T01:40:00Z",
       "method": "Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with one stdio entry named office pointing at servers/office-suite/dist/index."
+    },
+    {
+      "round": 18,
+      "file": "user_value_r18.json",
+      "score": 53,
+      "max": 54,
+      "pct": 98,
+      "scenarios": 18,
+      "per_server": {
+        "calendar": {
+          "score": 18,
+          "max": 18
+        },
+        "pdf": {
+          "score": 17,
+          "max": 18
+        },
+        "quotes": {
+          "score": 18,
+          "max": 18
+        }
+      },
+      "at": "2026-09-05T04:29:00Z",
+      "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_770f02d0bc5f87b6d36564b458720e6c, 200 text/html). Registered ONE lane, one mcp.json w"
     }
   ],
   "servers": [
@@ -472,7 +496,8 @@
         "",
         "",
         "16/18",
-        "2/3"
+        "2/3",
+        ""
       ],
       "best_pct": 89,
       "last_round": 17
@@ -496,6 +521,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 89,
@@ -509,6 +535,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -544,10 +571,11 @@
         "",
         "",
         "",
-        ""
+        "",
+        "18/18"
       ],
-      "best_pct": 94,
-      "last_round": 12
+      "best_pct": 100,
+      "last_round": 18
     },
     {
       "server": "clauses",
@@ -567,6 +595,7 @@
         "",
         "",
         "10/12",
+        "",
         "",
         ""
       ],
@@ -590,6 +619,7 @@
         "",
         "",
         "11/12",
+        "",
         "",
         "",
         ""
@@ -616,6 +646,7 @@
         "11/12",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 92,
@@ -640,6 +671,7 @@
         "",
         "10/12",
         "12/12",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -658,6 +690,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         "",
         "",
@@ -688,6 +721,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -706,6 +740,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         "",
         "",
@@ -736,6 +771,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -754,6 +790,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         "",
         "",
@@ -784,6 +821,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -802,6 +840,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -832,6 +871,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -851,6 +891,7 @@
         "",
         "",
         "18/18",
+        "",
         "",
         "",
         "",
@@ -880,7 +921,8 @@
         "",
         "",
         "",
-        "2/3"
+        "2/3",
+        ""
       ],
       "best_pct": 100,
       "last_round": 17
@@ -904,6 +946,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 94,
@@ -915,6 +958,7 @@
         "",
         "",
         "8/12",
+        "",
         "",
         "",
         "",
@@ -952,10 +996,11 @@
         "",
         "",
         "",
-        "2/3"
+        "2/3",
+        "17/18"
       ],
       "best_pct": 94,
-      "last_round": 17
+      "last_round": 18
     },
     {
       "server": "price-tracker",
@@ -974,6 +1019,7 @@
         "",
         "",
         "12/12",
+        "",
         "",
         "",
         ""
@@ -1000,10 +1046,11 @@
         "",
         "",
         "",
-        "2/3"
+        "2/3",
+        "18/18"
       ],
-      "best_pct": 94,
-      "last_round": 17
+      "best_pct": 100,
+      "last_round": 18
     },
     {
       "server": "recurring",
@@ -1023,6 +1070,7 @@
         "",
         "",
         "10/12",
+        "",
         "",
         ""
       ],
@@ -1046,6 +1094,7 @@
         "",
         "",
         "11/12",
+        "",
         "",
         "",
         ""
@@ -1072,6 +1121,7 @@
         "12/12",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -1093,6 +1143,7 @@
         "",
         "",
         "17/18",
+        "",
         "",
         "",
         "",
@@ -1120,7 +1171,8 @@
         "",
         "9/12",
         "11/12",
-        "2/3"
+        "2/3",
+        ""
       ],
       "best_pct": 92,
       "last_round": 17
@@ -1144,7 +1196,8 @@
         "",
         "",
         "",
-        "3/3"
+        "3/3",
+        ""
       ],
       "best_pct": 100,
       "last_round": 17
@@ -2015,7 +2068,10 @@
       "first_seen": "USER_VALUE_R11.md",
       "severity": "",
       "title": "D-R54, logged** |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "bank-statement inferDateOrder reported dmy/date_order_inferred:false for a column whose every value is unambiguous ISO yyyy-mm-dd, and reported inferred:false for a genuinely ambiguous guessed column while calling a day/month-over-12 settled column inferred:true - backwards. Fixed: a pure-ISO column now reports date_order:'ymd', date_order_inferred:false (certain, nothing guessed); a column settled by a day or month over 12 also reports inferred:false; inferred:true is now reserved for a column with no such evidence, where the profile/default hint was actually guessed. servers/bank-statement/src/detect.ts inferDateOrder and the ambiguous-note condition; tests servers/bank-statement/test/parse.test.mjs ('D-R54: a pure ISO date column...', 'a dd/mm file with a day over 12...') and adversarial.test.mjs ('an ambiguous date column says which order it assumed').",
+      "triaged": true
     },
     {
       "id": "D-R55",
@@ -2264,17 +2320,19 @@
   ],
   "counts": {
     "defects": 144,
-    "fixed": 117,
-    "open": 20,
-    "triaged": 34,
+    "fixed": 118,
+    "open": 19,
+    "triaged": 35,
     "by_status": {
       "harness": 3,
-      "fixed": 117,
+      "fixed": 118,
       "client": 3,
-      "open": 17,
+      "open": 16,
       "open (client or accepted)": 3,
       "superseded": 1
     },
-    "unknown_overrides": []
+    "unknown_overrides": [
+      "D-R16-1"
+    ]
   }
 }
