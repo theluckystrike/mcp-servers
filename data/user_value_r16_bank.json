@@ -1,0 +1,177 @@
+{
+  "at": "2026-09-05T03:15:00Z",
+  "round": 16,
+  "compares_to": "data/user_value_r11.json (bank-statement lane b1-b6, scored 14/18 hosted)",
+  "scope": "HOSTED re-run of the six bank-statement prompts from round 11 (docs/USER_VALUE_R11.md), one lane only, after the D-R55-driven guardrail change in docs/GUARDRAILS_RESULT.md made recurring_detect and reconcile_expenses answer free with a cap instead of refusing outright. https://mcp.zovo.one/mcp/bank-statement/t/<token>, no headers, free tier, one fresh anonymous token, the same Revolut-shaped fixture used as a bank_upload {url} fetch per Extension 10 (docs/REMOTE_RESULT.md) instead of a pasted CSV. expense-tracker registered alongside it, same token, because reconcile_expenses reads that ledger for the same tenant. Report only, no code changed.",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (200, text/html, 8623 bytes, minted anon_2d5f0c11d9f0acc11d8e1ddac2ba8d83) and reused for the whole run. Registered two http entries in mcp.json, https://mcp.zovo.one/mcp/bank-statement/t/<token> and https://mcp.zovo.one/mcp/expense-tracker/t/<token>, no --header anywhere, each carrying a per-server env block with fresh XDG_DATA_HOME/XDG_CONFIG_HOME/XDG_CACHE_HOME/XDG_STATE_HOME under the scratch dir. Explicit allowlist of 29 mcp__<server>__<tool> entries read live from tools/list (bank-statement 15, expense-tracker 14). One curl seed before the run: expense_add on /mcp/expense-tracker, EUR 61.50 Adobe Creative Cloud dated 2026-08-07, matching one of the fixture's two Adobe Creative Cloud debits, so reconcile_expenses (b5) has something to reconcile, per r11's method. Client: claude 2.1.261, --model sonnet, --strict-mcp-config, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume, one per prompt, timeout 240 per prompt, each prompt's raw JSON written to disk before the next ran. Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task and TodoWrite disallowed; the working directory was empty. Fixture: remote/fixtures/revolut-main.csv, committed on main, read by the hosted bank_upload {url} shim from https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/revolut-main.csv (42 data rows, one REVERTED, Spotify x2, Adobe Creative Cloud x2 plus one Adobe Stock, five Coffee Republic rows, three incoming payments, everything else one-off card spend); every total below was independently recomputed with csv.DictReader before the run and matched exactly what the server returned. Clock: 2026-09-05, on a UTC+07 machine.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap. 1 = partially wrong. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, 8623 bytes, minted anon_2d5f0c11d9f0acc11d8e1ddac2ba8d83",
+    "registration": "two lanes, two http entries, each https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; both connected first try",
+    "tools_list": {
+      "bank-statement": 15,
+      "expense-tracker": 14
+    },
+    "seed": "expense_add on /mcp/expense-tracker: EUR 61.50 Adobe Creative Cloud on 2026-08-07, matching one of the two Adobe Creative Cloud debits in the fixture",
+    "fixture_url": "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/revolut-main.csv"
+  },
+  "scenarios": [
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b1",
+      "prompt": "Here is my bank export at https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/revolut-main.csv - import it as Main.",
+      "score": 2,
+      "tool_calls": 7,
+      "seconds": 48.8,
+      "tools": [
+        "bank_upload",
+        "statement_import",
+        "category_rules",
+        "statement_summary",
+        "recurring_detect",
+        "reconcile_expenses"
+      ],
+      "note": "bank_upload {url} fetched 4422 bytes, 43 lines, from raw.githubusercontent.com; statement_import read it by name: 41 imported, 1 REVERTED row skipped and named, Revolut auto-detected, date range 2026-07-28 to 2026-09-03 exactly right. That part is a 3. But the same turn then unprompted set category rules, ran the August summary, ran recurring_detect and reconcile_expenses, and attempted statement_export, none of which b1 asked for - it answered b2 through b6's questions before the user asked them, spending 6 extra tool calls under the same rate-limited token and pre-empting every later turn. Scoped strictly to 'import it as Main', the import itself is right; scoped to what a caller who typed one sentence actually gets back, this is a scope violation, not a wrong answer."
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b2",
+      "prompt": "Categorise Spotify and Adobe as Software, coffee as Meals.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 11.8,
+      "tools": [
+        "accounts_list",
+        "category_rules"
+      ],
+      "note": "Because b1 already did this, the model re-checked live rather than trusting memory: accounts_list confirmed 41 transactions still there, category_rules (read path) confirmed 3 rules exactly as asked, free_limit 5. It reported nothing left to do rather than re-running the write and told the user b3-b5 were already answered. Verified live by curl: category_rules read returns {count:3, rules:[spotify/adobe->Software, coffee->Meals], free_limit:5}."
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b3",
+      "prompt": "What did I spend in August by category?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.7,
+      "tools": [
+        "statement_summary"
+      ],
+      "note": "One fresh statement_summary {group_by: category}: EUR 1,283.73 out over 36 rows, EUR 4,524.99 in kept separate, Software 132.99, Meals 21.30, uncategorised 1,129.44 on 28 rows. Matches an independent csv.DictReader pass over the fixture exactly, and matches r11's identical hosted numbers for the same fixture shape."
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b4",
+      "prompt": "Which subscriptions am I paying?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 7.2,
+      "tools": [
+        "recurring_detect"
+      ],
+      "note": "recurring_detect now answers on the free tier instead of refusing (the D-R55 guardrail fix): Spotify EUR 9.99 and Adobe Creative Cloud EUR 61.50, both cadence_confirmed false with only 2 occurrences each and annualised null, and free_tier_note names the 3-month/5-charge cap. The model relayed the honest uncertainty verbatim instead of hand-computing and inventing a yearly figure - r11's exact defect (Adobe annualised to about EUR 1,656/year off two charges 14 days apart) did not reproduce."
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b5",
+      "prompt": "Which of my expenses have no bank line, and which bank lines have no receipt?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.4,
+      "tools": [
+        "reconcile_expenses"
+      ],
+      "note": "reconcile_expenses now answers on the free tier instead of refusing (the same guardrail fix): 0 expenses without a bank line (the seeded Adobe EUR 61.50 matched), 33 of 34 bank lines in the free 31-day window without a receipt, and the free_tier_note named exactly which slice of the asked range it covered (2026-08-04 to 2026-09-03 of 2026-07-28 to 2026-09-03) and why the first week was left out. Verified live by curl: bank_debits 34, matched 1, unmatched_bank has exactly 33 entries."
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b6",
+      "prompt": "Export September to a file I can download.",
+      "score": 2,
+      "tool_calls": 2,
+      "seconds": 11.9,
+      "tools": [
+        "statement_export",
+        "transactions_list"
+      ],
+      "note": "statement_export is a volume/export gate and stayed Pro-refused (unlike b4/b5, this one was never reclassified as a guardrail). The model did not buy it, relayed the refusal and link, then used the free transactions_list to print the 4 September rows inline (9.99 + 25.00 + 3.60 + 6.40 = EUR 44.99, matching the independent calc) and even hand-typed a CSV block for the user to copy. Right data, no actual download link - same shape and same score as r11's b6."
+    }
+  ],
+  "totals": {
+    "score": 16,
+    "max": 18,
+    "tool_calls": 14,
+    "seconds": 96.8,
+    "per_server": {
+      "bank-statement": {
+        "score": 16,
+        "max": 18
+      }
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "two /t/<token> entries, both connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "bank_upload {url} fetches the Revolut fixture from raw.githubusercontent.com",
+      "evidence": "'Uploaded main.csv (4422 bytes, 43 lines including the header). Fetched 4422 bytes from raw.githubusercontent.com.'; curl of the same URL returns 200 and is byte-identical to remote/fixtures/revolut-main.csv",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "August totals are exact",
+      "evidence": "statement_summary by curl: EUR 1283.73 out, EUR 4524.99 in, Software 132.99, Meals 21.30; csv.DictReader over the fixture computes the identical figures",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "recurring_detect answers free with a cap instead of refusing (D-R55 fix)",
+      "evidence": "free_tier_note names last 3 months / 5 charges; cadence_confirmed false and annualised null on both Spotify and Adobe, no invented yearly figure",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "reconcile_expenses answers free with a cap instead of refusing (D-R55 fix)",
+      "evidence": "free_tier_note names the 31-day window and the exact dates covered; curl reconcile_expenses returns bank_debits 34, matched 1, 33 unmatched_bank entries, matching the model's '33 of 34'",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "statement_export stays Pro (unchanged, volume/export class)",
+      "evidence": "'Export is a Pro feature.' with the tenant-carrying buy links, same shape as r11",
+      "verdict": "PASS, unchanged by design"
+    },
+    {
+      "claim": "category_rules write path reports the free limit (D-R52 fix, from r11)",
+      "evidence": "write call in b1 returned {rules:3, categorised:12, free_limit:5, rules_remaining:2}, not just {rules, categorised}",
+      "verdict": "PASS, still fixed"
+    },
+    {
+      "claim": "date_order is reported correctly for an ISO date column (D-R54, r11)",
+      "evidence": "statement_import returned date_order 'dmy', date_order_inferred false, for a Completed Date column of '2026-08-07 10:00:00' values; every date parsed correctly regardless",
+      "verdict": "STILL PRESENT, logged not fixed (D-R54 unchanged)"
+    },
+    {
+      "claim": "A one-line import request gets back only an import",
+      "evidence": "b1's single turn also ran category_rules, statement_summary, recurring_detect, reconcile_expenses and attempted statement_export - six unrequested tool calls answering b2 through b6 before they were asked",
+      "verdict": "FAIL, new observation, documented not fixed"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R16-1",
+      "severity": "low",
+      "servers": [
+        "bank-statement",
+        "client-side"
+      ],
+      "status": "documented, not fixed (report-only round)",
+      "title": "A single-sentence import request produced a five-tool unrequested cascade covering every later prompt in the round",
+      "detail": "Asked only to 'import it as Main', the model imported correctly and then, in the same turn, set category rules, ran the August summary, ran recurring_detect and reconcile_expenses, and attempted statement_export - six tool calls the prompt never asked for, on a token metered at 600 calls/hour. This is not a server defect (every tool it called answered correctly, verified live by curl) but a client-side scope problem: agentic sonnet, given the whole allowlist up front and no instruction to wait for the next turn, pre-empted the rest of the conversation. It cost b2 nothing (it re-verified live rather than trusting memory) but it means the round's six prompts are no longer independent measurements of what each individual ask produces - b1 alone did the work of b1 through b5 plus a b6 attempt. Not scored as a 1 or 0 because nothing it did was wrong; scored a 2 because the import-only prompt did not get an import-only answer."
+    }
+  ]
+}
