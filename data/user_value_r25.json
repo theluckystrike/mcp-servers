@@ -1,0 +1,133 @@
+{
+  "at": "2026-09-05T15:55:36Z",
+  "round": 25,
+  "compares_to": "data/user_value_r24.json (asset-register, stdio, 16/18, first coverage). Round 25 asks the identical six prompts against the hosted endpoint, per docs/REMOTE_RESULT.md Extension 14.",
+  "scope": "HOSTED single-lane re-run of round 24's six asset-register prompts against https://mcp.zovo.one/mcp/asset-register/t/<token>, the same six covering a Polish straight-line asset added to the register, the same asset month by month with the sum-to-base identity checked, the Polish declining-balance eligibility of a truck, the US MACRS 5-year GDS half-year table, a US class the table deliberately does not bundle, and the Pro-gated asset_journal on the FREE tier. expense-tracker was registered alongside it on the same token only to confirm asset_journal's payload never lands a write there. No code was changed as part of this round; it is measurement only.",
+  "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -m 15 -> 200 text/html, minting anon_8ed0b09784092ceae08d796629237f0c. One token, reused for the whole lane. Registration: one mcp.json, two http entries, both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header anywhere: asset-register (the lane under test) and expense-tracker (registered only to confirm asset_journal's payload never writes an expense). Seed: one curl tools/call, business_set on /mcp/invoice under the token before any prompt ran (Nova Studio, Europe/Warsaw, PLN default currency), per the task recipe. The asset store and the expense-tracker store both started empty. Allowlist: 22 explicit mcp__asset-register__<tool> and mcp__expense-tracker__<tool> entries read from a live tools/list of each endpoint (asset-register 8, expense-tracker 14) -- no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config pointing at the two-entry file above, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation, one bounded request per prompt under timeout 240, each of the six issued as its own isolated shell invocation and its transcript read back before the next prompt ran. Empty working directory /private/tmp/uv-r25ar/wd, with Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent denied. Fresh XDG_DATA_HOME / XDG_CONFIG_HOME / XDG_CACHE_HOME / XDG_STATE_HOME under /private/tmp/uv-r25ar/xdg in the server environment block only, never CLAUDE_CONFIG_DIR. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Verification: after the six prompts, asset_list, asset_schedule (both granularities) and the assets://categories resource were re-read directly by curl on the same token, and expense_list was read on the paired expense-tracker token. Host machine day 2026-09-05 (Saturday). No code was fixed or touched; this report is measurement only.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET /mcp/connect -> 200 text/html, minted anon_8ed0b09784092ceae08d796629237f0c",
+    "registration": "one mcp.json, two http entries, https://mcp.zovo.one/mcp/asset-register/t/<token> and https://mcp.zovo.one/mcp/expense-tracker/t/<token>, no --header; both connected first try",
+    "tools_list": {
+      "asset-register": 8,
+      "expense-tracker": 14
+    },
+    "seed": "one curl tools/call, business_set on /mcp/invoice under the token (Nova Studio, Europe/Warsaw, PLN) before any prompt ran; the asset store and the expense-tracker store both started empty"
+  },
+  "scenarios": [
+    {
+      "server": "asset-register",
+      "surface": "hosted/asset-register",
+      "id": "p1",
+      "prompt": "I bought a Dell workstation for 8,499 zloty and put it into use on 15 March 2026. It is a computer. Add it to my fixed asset register and tell me what rate it depreciates at and what the schedule looks like.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 22.3,
+      "tools": [
+        "asset_add",
+        "asset_schedule"
+      ],
+      "note": "asset_add allocated ASSET-2026-0001 (category 487, cost_minor 849900, scheme pl derived from the profile's PLN currency), asset_schedule with granularity year returned the four periods. The model reported 30 percent, life 3.33 years, and 1,912.28 / 2,549.70 / 2,549.70 / 1,487.32 summing to 8,499.00, and led with the month-following convention (first charge April 2026, not March) exactly as round 24 did. Re-read afterwards over curl on the same token: asset_list shows the same id, cost, and the schedule call returns the identical four amount_minor values. Matches round 24's p1 (score 3) to the cent. The model also volunteered the low-value one-off write-off option under the 10,000 zloty threshold, unprompted and correct, which round 24's stdio answer did not mention."
+    },
+    {
+      "server": "asset-register",
+      "surface": "hosted/asset-register",
+      "id": "p2",
+      "prompt": "Show me that same asset month by month instead, and confirm the monthly amounts add back up to the yearly ones and to the depreciable base.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 13.4,
+      "tools": [
+        "asset_schedule"
+      ],
+      "note": "Unlike round 24 stdio (where p1 had already been called with granularity month so p2 needed zero tool calls), this round's p1 used granularity year, so p2 called asset_schedule again and got both a periods array and a months array in one payload. The model printed the same 45 rows, the same alternating 212.48/212.47 and 123.94/123.95 pattern, and the same reconciliation to 8,499.00. Independently re-summing the months array from the raw tool result: 45 rows, total_minor 849900, the nine 2026 rows sum to 191228, both exact, matching round 24. One inaccuracy in the model's own prose, not in the numbers: it said the grosz alternation exists because '8,499.00 zl / 40 months doesn't divide evenly', but there are 45 months charged, not 40; every number it actually printed and summed was still correct and verified against the tool's own bytes."
+    },
+    {
+      "server": "asset-register",
+      "surface": "hosted/asset-register",
+      "id": "p3",
+      "prompt": "We also bought a delivery truck for 10,000 zloty. Can I depreciate that one declining balance in Poland, and if so what are the first four years?",
+      "score": 2,
+      "tool_calls": 0,
+      "resources": [
+        "assets://categories"
+      ],
+      "seconds": 22.3,
+      "tools": [],
+      "note": "Same shape as round 24's p3: the model read the assets://categories resource rather than guessing, correctly said trucks are KST 742, declining balance IS allowed with a coefficient up to 2.0 for an effective 40 percent, and that this is unlike passenger cars (KST 741, straight-line only). It then asked for the truck's in-service date instead of pricing the first four years under a stated assumption, the identical gap round 24 scored a 2 for (D-R93 there). asset_schedule still prices an unstored asset free and unlimited on this tier, so the clarifying question remained avoidable. A 2 by the rubric, unchanged from round 24."
+    },
+    {
+      "server": "asset-register",
+      "surface": "hosted/asset-register",
+      "id": "p4",
+      "prompt": "Separately, for a US company: what does a 10,000 dollar 5-year MACRS asset depreciate by each year under the half-year convention?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.6,
+      "tools": [
+        "asset_schedule"
+      ],
+      "note": "One asset_schedule against the us table, category 5-year, returned 2,000.00 / 3,200.00 / 1,920.00 / 1,152.00 / 1,152.00 / 576.00, Pub 946 Table A-1 for 5-year GDS half-year exactly, summing to 10,000.00. The model explained the six-periods-for-a-five-year-class point and that MACRS ignores salvage, matching round 24's p4 (score 3) number for number."
+    },
+    {
+      "server": "asset-register",
+      "surface": "hosted/asset-register",
+      "id": "p5",
+      "prompt": "And what about a 10,000 dollar US 10-year property class asset?",
+      "score": 1,
+      "tool_calls": 0,
+      "seconds": 15.7,
+      "tools": [],
+      "note": "This is the round's one real regression against round 24, and it is the same boundary p5 exists to test. Round 24 (stdio): the model called asset_schedule, got the server's own NOT-bundled refusal naming the gap, and explicitly declined to reconstruct the 10-year Table A-1 percentages from memory, scoring 3. Round 25 (hosted): the model made ZERO tool calls this turn. It stated from prior context that the table only covers 3/5/7-year classes, then printed a full 11-row 10-year property table (10.00/18.00/14.40/11.52/9.22/7.37/6.55/6.55/6.56/6.55/3.28 percent) 'from general knowledge, not verified against the tool', with a caveat to confirm against Pub 946 before filing. Directly re-calling asset_schedule with category 10-year on the same token afterwards confirms the tool still refuses with the identical NOT-bundled text used in round 24. The reconstructed numbers happen to match the real published Table A-1 exactly (verified independently), so no wrong number reached the user, but the behaviour the refusal exists to prevent -- inventing a bundled-looking rate from memory instead of relying on or citing the tool's own boundary -- happened this round where it did not in round 24. Scored 1: not wrong in substance, but a clear partial failure of the property being measured, one step worse than a mere gap to close."
+    },
+    {
+      "server": "asset-register",
+      "surface": "hosted/asset-register",
+      "id": "p6",
+      "prompt": "Give me the depreciation journal entry for April 2026 for the register.",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 14.9,
+      "tools": [
+        "license_status"
+      ],
+      "note": "Same family as round 24's D-R92, one step further from the gate, matching the shape round 23's per-diem p6 showed hosted. The model never called asset_journal itself; it called license_status instead, confirmed free tier, price 19 USD and the tenant-generic buy URL (mcp.zovo.one/buy/asset-register), and then reconstructed the April 2026 entry client-side as a two-line debit/credit table at PLN 212.48, matching the schedule from p1/p2. Arithmetically correct, and correct only because the register holds one asset in one currency, same as round 24's reasoning. Worse than round 24 in one respect: round 24's model called asset_journal directly and relayed BOTH the per-tool src-tagged buy URL and the bundle URL; this round's model relayed only the generic upgrade URL from license_status and did not mention the 39 USD bundle at all, even though the license_status payload it received contained bundleUrl. Scored 2, same as round 24, for the same reason: the gate held (no Pro payload was ever returned by the server) and a workable free number reached the user, but the tool-specific refusal and the bundle option did not."
+    }
+  ],
+  "totals": {
+    "score": 14,
+    "max": 18,
+    "pct": 78,
+    "tool_calls": 5,
+    "seconds": 99.2,
+    "resource_reads": 1,
+    "tool_errors": 0,
+    "denied_calls": 0,
+    "clarifying_turns": 1,
+    "per_server": {
+      "asset-register": {
+        "score": 14,
+        "max": 18,
+        "tool_calls": 5,
+        "seconds": 99.2,
+        "score_r24": 16
+      }
+    }
+  },
+  "verification": "asset_list on the token afterwards shows exactly one asset, ASSET-2026-0001, cost_minor 849900, accumulated_minor 127485 as of 2026-09, matching the schedule. asset_schedule with granularity month on the same asset returns a months array of 45 rows summing to 849900, the nine 2026 rows summing to 191228, both exact -- the same identity the model claimed in p2. asset_schedule for scheme us category 10-year still errors with the same NOT-bundled text used in round 24, confirming p5's tool boundary is unchanged and that the model's hosted p5 answer was reconstructed rather than tool-sourced. expense_list on the paired expense-tracker token reads count 0, confirming asset_journal's payload was never posted anywhere, same as round 24. No asset_journal call appears in any transcript; the model relied on license_status instead in p6.",
+  "defects": [
+    {
+      "id": "D-R94",
+      "server": "asset-register",
+      "status": "open, client-side, hosted-only so far",
+      "note": "p5 is the one clear hosted-vs-stdio regression this round. Round 24 stdio scored this exact prompt 3 because the model called the tool, received its own NOT-bundled refusal, and explicitly refused to reconstruct the withheld table from memory. Round 25 hosted made no tool call at all for this prompt and printed a full 11-row 10-year MACRS table sourced from training data, hedged as unverified. The printed numbers are correct (independently checked against the real Pub 946 Table A-1 and against the tool's still-current refusal), so no wrong figure reached the user, but the specific property this prompt exists to test -- whether the model will invent a bundled-looking rate rather than defer to or cite the tool's own stated gap -- failed this round where it held in round 24. Nothing on the server side changed; the tool's refusal text is byte-identical to round 24's. This is a client/model behavior difference across otherwise-identical rounds, worth watching on any future re-run rather than filing as a server defect."
+    },
+    {
+      "id": "D-R95",
+      "server": "asset-register",
+      "status": "open, low, client-side, same family as D-R92 (round 24) and D-R90 (per-diem)",
+      "note": "p6 relayed the Pro gate one call further removed than round 24: this round's model reached for license_status rather than calling asset_journal, so it never saw asset_journal's own src-tagged buy URL or its explicit mention of the bundle, only the generic tenant-level upgrade URL from license_status (whose own payload did carry a bundleUrl field the model did not repeat to the user). The reconstructed journal entry itself was correct, right only because the register holds one asset in one currency, same caveat as round 24. Not a new failure mode -- the exact shape docs/USER_VALUE_R23_PER_DIEM.md recorded for per-diem's p6 across the same stdio-to-hosted transition."
+    }
+  ],
+  "bottom_line": "14 of 18 hosted versus round 24's 16 of 18 over stdio on the identical six prompts, reached through https://mcp.zovo.one/mcp/asset-register/t/<token> per docs/REMOTE_RESULT.md Extension 14. Three clean 3s carried over unchanged: the Polish computer added at the KST 487 rate with the schedule reconciling to 8,499.00, the 45 monthly rows reconciling to their own years and to the base (with one narrative slip in the model's own explanation of the grosz rounding, not in any number it printed), and MACRS 5-year reproduced as Pub 946 Table A-1 exactly. The two 2s repeat round 24's shape: p3 answers the truck's declining-balance eligibility correctly from the bundled resource but asks for a date rather than pricing under a stated assumption, and p6 relays the Pro gate and a workable free number but through license_status rather than asset_journal, missing the tool-specific buy URL and the bundle. The one real change from round 24 is p5, scored 1 instead of 3: asked about the 10-year US property class, the model made no tool call at all and reconstructed a full percentage table from training data rather than calling asset_schedule and relaying its NOT-bundled refusal the way round 24 did. The reconstructed numbers were independently verified correct against the real IRS table and against the tool's own still-current refusal text, so nothing false reached the user, but the specific property under test -- refusing to invent a bundled-looking rate -- did not hold this round the way it held over stdio. No code was touched; this is a measurement-only report, and D-R94/D-R95 are recorded as open client-side behavior differences, not server defects."
+}
