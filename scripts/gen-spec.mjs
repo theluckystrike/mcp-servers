@@ -90,6 +90,7 @@ const CURATED = {
       "A `TZID` that `Intl` does not know keeps the event, read as local time, with the reason named once per file.",
       "Exported times are written in UTC, and one occurrence of a recurring event is one addressable UID, not twelve VEVENTs sharing one.",
       "A per-process parse cache is keyed on the stored file's path, size and mtime, so four questions over a 20,000-event calendar do not re-parse it four times.",
+      "ORGANIZER and ATTENDEE (with CN, ROLE, PARTSTAT, RSVP and the mailto value) are carried through export exactly as parsed from the source .ics, never re-derived or invented; an event imported with no attendees exports none (D-R61).",
     ],
     dropInvariants: ["Money is stored and compared in minor units"],
   },
