@@ -104,7 +104,7 @@
       "server": "pdf",
       "surface": "hosted/pdf",
       "id": "p1",
-      "prompt": "Here are two PDFs: <fixture-url> <fixture-url>. Upload them as doc-a and doc-b.",
+      "prompt": "Here are two PDFs: https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/sample-doc.pdf (twice). Upload them as doc-a and doc-b.",
       "score": 3,
       "tool_calls": 2,
       "seconds": 14.9,

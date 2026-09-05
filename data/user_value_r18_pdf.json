@@ -18,11 +18,13 @@
       "server": "pdf",
       "surface": "hosted/pdf",
       "id": "p1",
-      "prompt": "Here are two PDFs: <fixture-url> <fixture-url>. Upload them as doc-a and doc-b.",
+      "prompt": "Here are two PDFs: https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/sample-doc.pdf (twice). Upload them as doc-a and doc-b.",
       "score": 3,
       "tool_calls": 2,
       "seconds": 14.9,
-      "tools": ["pdf_upload x2"],
+      "tools": [
+        "pdf_upload x2"
+      ],
       "note": "Two pdf_upload {name, url} calls, one per file, both against the same raw.githubusercontent.com URL because only one PDF fixture is committed. Each reply: 'Uploaded \"doc-a.pdf\" (1074 bytes). Fetched 1074 bytes from raw.githubusercontent.com. Pass path: \"doc-a\" to any pdf tool.' -- byte count matches the fixture exactly, the Extension 10 url-fetch shim worked first try, and the model told the user unprompted that both uploads came from the same source file rather than silently treating them as different documents.",
       "round12_score": 3,
       "round12_note": "Round 12 pasted two content-distinct base64 PDFs (1009/1011 bytes) in one turn costing 76.4s; this round's url path did the equivalent upload in 14.9s across two tool calls, consistent with Extension 10's stated purpose (move bytes off the model's output budget)."
@@ -35,7 +37,9 @@
       "score": 3,
       "tool_calls": 1,
       "seconds": 10.4,
-      "tools": ["pdf_merge"],
+      "tools": [
+        "pdf_merge"
+      ],
       "note": "One pdf_merge {paths: [doc-a, doc-b], out_path: merged}. Reply: 'Merged 2 files into 4 pages' (2+2, since each source is the same 2-page fixture, not round 12's 1-page pair). Sources listed with their own page counts. GET the download: 200, application/pdf, filename=\"merged.pdf\", 2453 bytes, %PDF-1.7, 4 pages -- independently decoded to fixture page 1 / 2 / 1 / 2 in order.",
       "round12_score": 3,
       "round12_note": "Same tool, same first-turn success; page count differs (4 vs 2) purely because this round's fixture is 2 pages per file, not 1."
@@ -48,7 +52,9 @@
       "score": 3,
       "tool_calls": 1,
       "seconds": 11.9,
-      "tools": ["pdf_stamp"],
+      "tools": [
+        "pdf_stamp"
+      ],
       "note": "One pdf_stamp {path: merged, text: PAID, out_path: merged-paid}. Reply named all 4 pages, and volunteered that the stamp is drawn text (selectable, searchable) and the input file is unchanged. The echoed field is 'source': 'merged.pdf' -- no virtual root leak; D-R59 (fixed in round 12, /out/... path) still holds live on this build. GET the download: 200, application/pdf, filename=\"merged-paid.pdf\", 4259 bytes, %PDF-1.7. Independent decode: all 4 pages carry PAID, and the original 'fixture page 1'/'fixture page 2' text is still present underneath on every page.",
       "round12_score": 3,
       "round12_note": "Round 12 caught the D-R59 path leak on this exact prompt shape; this round's live source field is clean, confirming the fix shipped and has not regressed."
@@ -74,7 +80,9 @@
       "score": 3,
       "tool_calls": 1,
       "seconds": 9.7,
-      "tools": ["pdf_text"],
+      "tools": [
+        "pdf_text"
+      ],
       "note": "One pdf_text {path: merged-paid, pages: \"2\"}. Read 'fixture page 2' plus the PAID stamp overlaid on it, and the tool's own reply named its read method (FlateDecode content stream via node:zlib, Tj/TJ operators, no OCR). Matches the independently decoded page 2 text exactly.",
       "round12_score": 3,
       "round12_note": "Round 12 asked for a dollar total (fixture-specific); this fixture carries no invoice total, so the prompt was adapted to 'what does page 2 say' -- same tool, same one-call, no-clarification shape, same score."
@@ -87,7 +95,9 @@
       "score": 3,
       "tool_calls": 1,
       "seconds": 15.5,
-      "tools": ["pdf_split"],
+      "tools": [
+        "pdf_split"
+      ],
       "note": "One pdf_split {path: merged-paid, ranges: \"1,2,3,4\", out_path_pattern}. Four single-page files, four links, echoed source 'merged-paid.pdf' (again no virtual root leak). GET all four: 200, application/pdf, filenames merged-paid-page1..4.pdf, 1832-1834 bytes each, %PDF-1.7, 1 page each. Independent decode: pages 1 and 3 carry 'fixture page 1' + PAID, pages 2 and 4 carry 'fixture page 2' + PAID -- exactly the interleaved order pdf_merge produced.",
       "round12_score": 3,
       "round12_note": "Round 12 split a 2-page file into 2 parts; this round's 4-page file split into 4 parts, same tool, same first-turn success, same score."

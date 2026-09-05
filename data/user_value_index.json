@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T04:35:20.153Z",
+  "generated_at": "2026-09-05T06:13:15.503Z",
   "rounds": [
     {
       "round": 1,
@@ -2120,7 +2120,10 @@
       "first_seen": "USER_VALUE_R12.md",
       "severity": "",
       "title": "D-R61, logged** |",
-      "status": "open"
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "event_export dropped ATTENDEE and ORGANIZER on every VEVENT. Fixed: the parser keeps the raw unfolded ATTENDEE/ORGANIZER source lines (CN, ROLE, PARTSTAT, RSVP, the mailto value, param order) on the stored CalEvent, and the exporter (both the all-day writer and the timed icsCreateDetailed path via insertBeforeEndVevent) replays them verbatim before folding, so nothing is re-derived or invented; events_list now also shows attendees. servers/calendar/src/ics.ts (Prop.raw, CalEvent.organizerLine/attendeeLines) and servers/calendar/src/index.ts (attendeeOrganizerLines, insertBeforeEndVevent, renderRows); round-trip and no-attendee assertions added to servers/calendar/test/smoke.test.mjs, test 'initialize, tools/list, and the whole free-tier flow' (D-R61 section).",
+      "triaged": true
     },
     {
       "id": "D-R62",
@@ -2320,14 +2323,14 @@
   ],
   "counts": {
     "defects": 144,
-    "fixed": 118,
-    "open": 19,
-    "triaged": 35,
+    "fixed": 119,
+    "open": 18,
+    "triaged": 36,
     "by_status": {
       "harness": 3,
-      "fixed": 118,
+      "fixed": 119,
       "client": 3,
-      "open": 16,
+      "open": 15,
       "open (client or accepted)": 3,
       "superseded": 1
     },
