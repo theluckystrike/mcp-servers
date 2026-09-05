@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.13.0/timezone.mcpb",
       "version": "0.13.0",
-      "fileSha256": "29aed732dad30d207d89daf641039b9b6f8b98f9c2b3a0d5298dbdbbc21fa14f",
+      "fileSha256": "5d6f06824ffe0301c7acc762207fc9093104ac6f739b3af390722bdc618836c3",
       "transport": {
         "type": "stdio"
       },

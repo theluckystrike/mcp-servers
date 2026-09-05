@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.13.0/deposits.mcpb",
       "version": "0.13.0",
-      "fileSha256": "ab309dcf332d8ad6afc76f3f1f38214a2c97113b975eda7c3198b2999f2f213c",
+      "fileSha256": "8a3090d304c9c45b17340fedf60a75ac2140cd34ad95aae220b65f09e037fe16",
       "transport": {
         "type": "stdio"
       },
