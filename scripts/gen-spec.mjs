@@ -26,7 +26,7 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SERVERS = [
   "asset-register", "bank-statement", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "price-tracker", "recurring",
-  "resume", "spreadsheet", "time-tracker", "timezone",
+  "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -46,6 +46,36 @@ const COMMON_INVARIANTS = [
  * common list. `caps` documents the enforced limits that a contract test can assert.
  */
 const CURATED = {
+  "statement-of-account": {
+    summary: "Per-client statements of account assembled from books this server does not own: the invoice ledger, the credit note store and the deposit store, all read-only. Builds a statement for a period with the opening balance, the invoices issued, the payments received, the credit notes and the closing balance; ages the open invoices into 0-30, 31-60, 61-90 and over 90 days past due; writes the plain-text statement, the A4 PDF and a dunning letter at three levels; and reports what every client owes, per currency.",
+    storageFiles: [
+      ["statements.json", "the register of statements that were built, with the figures each one carried"],
+      ["counter.json", "the STMT number series, per year"],
+    ],
+    primaryFile: "statements.json",
+    caps: [
+      "`FREE_STATEMENTS_PER_MONTH` = 5 DISTINCT statements a calendar month on free, counted per client, period and currency. Rebuilding one already in the register is free forever, on every tier.",
+      "`statement_aging` is free and unlimited on every tier, and `dunning_text` is free at levels 1 and 2.",
+      "`statement_pdf`, `dunning_text` level 3 and `statements_report` are Pro. The refusal is an answer, not a protocol error, and no file is written.",
+      "`MAX_ROWS` = 2000 invoice rows returned by one `statement_aging` answer; `statements_report` lists 20 clients by default and 200 at most.",
+    ],
+    extra: [
+      "This server WRITES NOTHING into the invoice, credit note or deposit stores. It holds one file of its own, a register of the statements that were built, and no balance is ever read back out of it. A statement is a view over books other servers own; a second copy of a balance is a second number to be wrong.",
+      "A sibling store that is missing, empty or QUARANTINED is reported and never fatal, with one exception: the INVOICE store. With no invoice ledger there is no statement, so a corrupt invoices.json refuses every tool by name rather than answering that nothing is owed. A corrupt credit note store still answers, and says in words that the closing balance is too high by whatever was credited.",
+      "An unreadable store is never read as an empty one. That distinction is the whole point of the `sources` block every answer carries: `read: false` with an error is a figure that could not be computed, `read: true` with `rows: 0` is a figure that is genuinely zero.",
+      "`paid_minor` on the invoice is the AUTHORITY and `payments[]` is only the attribution, because the two do not have to agree: `invoice_mark_paid` writes both, `deposit_apply` in servers/deposits raises `paid_minor` and appends NOTHING to `payments[]`, and an invoice created before that field existed has no rows at all. The payment rows are assembled as every `payments[]` row, plus every deposit application naming the invoice, plus one residual row at `paid_date` for the rest, so they sum to `paid_minor` exactly.",
+      "When the attribution sums to MORE than `paid_minor` the invoice book and the deposit book disagree about real money. Nothing is scaled and nothing is dropped silently: the attribution is discarded, one row for `paid_minor` is shown, and the disagreement is returned as a note naming the invoice and the difference.",
+      "A deposit applied to an invoice is money that moves ONCE. It is inside `payments_received`, because `deposit_apply` already put it on the invoice; `of_which_deposits_applied` breaks it out and never adds it again. Deposit money still HELD is a memo line and is never in the balance: it is the client's money until it is applied.",
+      "A credit note's `total_minor` is stored NEGATIVE by servers/billing-docs, which is the sign a statement wants, so no row in this server flips it.",
+      "Aging is AS AT the date asked for, in every direction: an invoice issued after it is not on the books, a payment made after it has not happened, and a credit note issued after it has not been given. Aging that mixes a historic due date with a present-day `paid_minor` produces a bucket nobody can reproduce next month.",
+      "An invoice is overdue only once the date is PAST its due date, so due today sits in `not_yet_due` and the 0-30 bucket holds days one to thirty. `not_yet_due` is reported beside the four buckets, never inside them and never hidden.",
+      "A credit note reduces the invoice it names and no other. An open balance floors at zero and any excess is reported as `unapplied_credit`, rather than quietly cancelling an invoice the client never agreed it against. The statement, which is a balance rather than an aging, does carry the whole credit, so a client who is owed money sees a negative closing balance.",
+      "Currencies are never added together. One statement is one currency and a client billed in two is asked which; `statement_aging` and `statements_report` total per currency. This server holds no exchange rate, so a single figure over a EUR ledger and a USD one would be invented.",
+      "A dunning letter escalates in TONE and never in figures: the amounts, the invoice list and the bank details are identical at all three levels, because a chase whose numbers escalate was wrong at level one. No level states a late fee, interest or a legal cost: this server holds no contract terms, no statutory rate and no jurisdiction, so any such number would be made up and would be made up inside a demand for money.",
+      "Bank details are printed only when the shared business profile actually carries them, and when it does not the answer says the letter asks for payment without saying where to send it.",
+      "A chaser for a client with nothing overdue is REFUSED, and the refusal names what is outstanding but not yet due. A reminder about an invoice that is not late is the fastest way to lose a client.",
+    ],
+  },
   "asset-register": {
     summary: "A fixed asset register and its depreciation, on bundled public tax tables: the Polish annual rates from the annex to the CIT and PIT acts keyed to the KST classification, the UK capital allowance pools with the annual investment allowance, and the US MACRS GDS half-year tables for 3, 5 and 7 year property. Adds an asset, builds the schedule to zero or residual, journals a month, records a disposal with its gain or loss, and reports net book value per category and currency.",
     storageFiles: [
