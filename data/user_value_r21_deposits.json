@@ -1,0 +1,149 @@
+{
+  "at": "2026-09-05T10:50:00Z",
+  "round": 21,
+  "compares_to": "data/user_value_r20.json (deposits, stdio, first coverage, 16/18)",
+  "scope": "HOSTED single-lane re-run of round 20's six deposits prompts against https://mcp.zovo.one/mcp/deposits/t/<token>, with https://mcp.zovo.one/mcp/invoice/t/<token> registered alongside it on the same token per docs/REMOTE_RESULT.md Extension 12 (deposits shares the invoice store read-write; deposit_apply writes paid_minor, paid_date and status on the invoice under the invoice lock on every successful call, adding rather than assigning). No code was changed as part of this round; it is measurement only.",
+  "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -m 15 -> 200 text/html, minted anon_d74d381a27c25d98d4500524d6176b7a. Registration: one mcp.json, two http entries, both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header anywhere: deposits (the lane under test) and invoice (registered for the shared business profile, the seed invoices, and because deposit_apply writes through to it). Seed, all by curl tools/call under the token before any prompt ran: business_set (Nova Studio, Europe/Warsaw, EUR, 23 percent) on /mcp/invoice; client_add Acme Ltd (Dublin, IE9876543Q); invoice_create INV-2026-0001, one line Consulting services 1 x EUR 1000.00 at the 23 percent business default, total EUR 1230.00; invoice_create INV-2026-0002, one line Services 1 x USD 400.00 at 0 percent, total USD 400.00; invoice_mark_paid on INV-2026-0001, amount 200, paid_date 2026-09-03, method bank transfer, leaving it partial with EUR 200.00 already paid before any deposit is applied -- the same shape round 20's stdio seed used (an invoice that already carries a transfer, so applying a deposit on top of it is the exact case where a naive write would overwrite rather than add), verified afterwards by invoice_list reading paid EUR 200.00 / balance_due EUR 1030.00 before d1 ran. Allowlist: 22 explicit mcp__deposits__<tool> and mcp__invoice__<tool> entries read from a live tools/list of each endpoint (deposits 10, invoice 12), no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the two http entries above, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation. Each of the six prompts run as its own isolated shell invocation (never a loop), one bounded request per prompt under timeout 240, each transcript read back before the next prompt ran. The CLI's own filesystem and search tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r21dep/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME, XDG_STATE_HOME under /private/tmp/uv-r21dep/xdg set in the server environment block only, never CLAUDE_CONFIG_DIR; the servers are hosted so this only guards the CLI's own local footprint, not the store, which lives in the worker's KV under the token. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Tool-call counts exclude the client's own ToolSearch schema lookups. Host machine day 2026-09-05 (Saturday). Verification after the run: deposit_list, deposit_balance and invoice_list read back by direct curl on the same token, and the deposit_statement_text download link fetched and diffed byte for byte against the model's relayed text.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, minted anon_d74d381a27c25d98d4500524d6176b7a",
+    "registration": "one lane, two http entries (deposits, invoice), both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; connected first try",
+    "tools_list": { "deposits": 10, "invoice": 12 },
+    "seed": "business_set on /mcp/invoice by curl under the token (Nova Studio, Europe/Warsaw, EUR, 23 percent), client_add Acme Ltd, invoice_create INV-2026-0001 (EUR 1230.00) and INV-2026-0002 (USD 400.00), then invoice_mark_paid INV-2026-0001 amount 200 bank transfer 2026-09-03 leaving it partial at EUR 200.00 paid / EUR 1030.00 due, all before any prompt ran"
+  },
+  "scenarios": [
+    {
+      "server": "deposits",
+      "surface": "hosted/deposits",
+      "id": "d1",
+      "prompt": "Acme Ltd wired us a 500 euro security deposit today, reference SEPA 88213. Please record it.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.6,
+      "tools": ["deposit_record"],
+      "note": "One deposit_record {client: Acme Ltd, amount_minor: 50000, currency: EUR, kind: security, reference: SEPA 88213, received_date: 2026-09-05} produced DEP-2026-0001 on the first turn, identical to round 20 stdio. The model converted 500 euro to 50000 minor units and picked kind security itself; nothing was asked. The raw tool result shows client_record filled in from the invoice server's client list (address Dublin, vat_id IE9876543Q) although the prompt named only the company, and the reply carried the free-tier counter (1 of 5 recorded in 2026-09) verbatim.",
+      "r20_score": 3,
+      "r20_surface": "stdio/deposits"
+    },
+    {
+      "server": "deposits",
+      "surface": "hosted/deposits",
+      "id": "d2",
+      "prompt": "Apply 300 euro of that deposit against invoice INV-2026-0001.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.3,
+      "tools": ["deposit_apply"],
+      "note": "One deposit_apply {id: DEP-2026-0001, invoice: INV-2026-0001, amount_minor: 30000}. The invoice already carried the seeded EUR 200.00 bank transfer; the reply said paid EUR 500.00 of EUR 1230.00, balance due EUR 730.00, status partial, and invoice_list read back afterwards on /mcp/invoice agrees exactly (paid EUR 500.00, balance_due EUR 730.00). The write went through the invoice server on the same token as documented in REMOTE_RESULT.md Extension 12: applying added to paid_minor rather than assigning it.",
+      "r20_score": 3,
+      "r20_surface": "stdio/deposits"
+    },
+    {
+      "server": "deposits",
+      "surface": "hosted/deposits",
+      "id": "d3",
+      "prompt": "Now apply another 400 euro of the same deposit to that invoice.",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 6.0,
+      "tools": [],
+      "note": "The model refused the over-application itself without calling deposit_apply, same client-side shape as round 20 stdio, and the arithmetic was right: EUR 200.00 left of the original EUR 500.00 with EUR 300.00 already applied, offering the EUR 200.00 instead. Nothing was stored and nothing invented, but the server's own refusal text never reached the user -- a probe of deposit_apply {amount_minor: 40000} on this same token would have named the exact figures and refused on its own authority. Same family as D-R88.",
+      "r20_score": 2,
+      "r20_surface": "stdio/deposits"
+    },
+    {
+      "server": "deposits",
+      "surface": "hosted/deposits",
+      "id": "d4",
+      "prompt": "Can we use what's left of Acme's deposit against INV-2026-0002?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 6.5,
+      "tools": ["deposit_apply"],
+      "note": "The model tried the call rather than reasoning about it. The server refused with isError: 'DEP-2026-0001 is held in EUR and INV-2026-0002 is in USD. A deposit is applied at its own currency, never converted here: refund it and record it again in USD, or apply a USD deposit. Nothing was changed.' The model relayed the reason and both ways out verbatim in its reply, exactly what d3 did not do.",
+      "r20_score": 3,
+      "r20_surface": "stdio/deposits"
+    },
+    {
+      "server": "deposits",
+      "surface": "hosted/deposits",
+      "id": "d5",
+      "prompt": "How much of Acme's money are we still holding, and since when?",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 3.4,
+      "tools": [],
+      "note": "The answer was right (EUR 200.00 held on DEP-2026-0001, received 2026-09-05) but it came out of the session's own running total from d2/d3 rather than a deposit_balance call, same client-side gap round 20 stdio logged as D-R88. deposit_balance {client: Acme Ltd} probed separately after the run returns the identical held EUR 200.00.",
+      "r20_score": 2,
+      "r20_surface": "stdio/deposits"
+    },
+    {
+      "server": "deposits",
+      "surface": "hosted/deposits",
+      "id": "d6",
+      "prompt": "Refund what's left to them by bank transfer, and send me the statement text I can email over.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 15.9,
+      "tools": ["deposit_refund", "deposit_statement_text"],
+      "note": "deposit_refund {id: DEP-2026-0001, method: bank transfer} with no amount refunded the whole EUR 200.00 still held, then deposit_statement_text {client: Acme Ltd} returned the three movements in date order (Received EUR 500.00, Applied to invoices EUR -300.00, Refunded EUR -200.00, HELD EUR 0.00, closing 'Nothing of yours is held any more') plus a one-hour download link. The model pasted the statement through unedited; the downloaded .txt (720 bytes, filename deposits-Acme-Ltd-EUR.txt) is byte-identical to what the model relayed. The invoice was untouched by the refund.",
+      "r20_score": 3,
+      "r20_surface": "stdio/deposits"
+    }
+  ],
+  "totals": {
+    "score": 16,
+    "max": 18,
+    "pct": 89,
+    "tool_calls": 5,
+    "seconds": 51.7,
+    "tool_errors": 1,
+    "clarifying_turns": 0,
+    "per_server": {
+      "deposits": {
+        "score": 16,
+        "max": 18,
+        "tool_calls": 5,
+        "seconds": 51.7,
+        "score_r20": 16
+      }
+    },
+    "compare_round20": { "score": 16, "max": 18 }
+  },
+  "verification": [
+    {
+      "claim": "The store holds exactly the movements the run created, and deposit_apply's write landed on the invoice server on the same token",
+      "evidence": "deposit_list {} after the run: 1 deposit, received EUR 500.00, applied EUR 300.00, refunded EUR 200.00, held EUR 0.00, status applied. deposit_balance {client: Acme Ltd}: identical totals. invoice_list {} on /mcp/invoice: INV-2026-0001 status partial, paid EUR 500.00, balance_due EUR 730.00; INV-2026-0002 unchanged, status unpaid, balance_due USD 400.00",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "deposit_apply ADDS to the invoice's paid_minor rather than setting it",
+      "evidence": "the seeded INV-2026-0001 carried paid EUR 200.00 (from invoice_mark_paid before d1 ran); after d2 applied EUR 300.00, invoice_list reads paid EUR 500.00, not EUR 300.00. 200 + 300 = 500, so the earlier payment was added to rather than overwritten",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A deposit is never converted across currencies",
+      "evidence": "d4's raw tool result is isError true naming both currencies (DEP-2026-0001 in EUR, INV-2026-0002 in USD) and both ways out; deposit_list immediately after still shows the deposit at held EUR 200.00, unchanged by the refused call",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The downloaded statement text matches the model's relayed text, byte for byte",
+      "evidence": "GET https://mcp.zovo.one/mcp/download/e4fcf3b908aa284b04cc01c52ebe5f96 -> HTTP 200, text/plain; charset=utf-8, filename=\"deposits-Acme-Ltd-EUR.txt\", content-length 720; body opens 'Hello Acme Ltd,' and ends 'Best regards, Nova Studio' with the same three movement lines and the same HELD EUR 0.00 closing the model's turn 6 answer gave, character for character",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The free-tier counter is stated on the write",
+      "evidence": "the deposit_record reply carried 'Free tier: 1 of 5 deposits recorded in 2026-09. deposit_statement_pdf and deposits_report are Pro.'",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R88",
+      "server": "deposits",
+      "status": "reproduces hosted, client-side, unchanged severity",
+      "note": "Round 20's D-R88 (the model answering how much are we holding from its own running total instead of calling deposit_balance) reproduces on the hosted endpoint on d5, and its companion shape reproduces on d3 too: the model refuses an over-application itself instead of letting deposit_apply refuse it. Both times the arithmetic was right because the session had just done the math itself in the same conversation; deposit_balance and deposit_apply are both free, hosted and would have answered exactly. The fix direction is unchanged and is on the client side of the boundary, not the server: nothing here differs from round 20's stdio measurement of the same prompts."
+    }
+  ],
+  "bottom_line": "16 of 18 hosted, identical to round 20's 16 of 18 over stdio on the same six prompts, now reached through /mcp/deposits/t/<token> with /mcp/invoice/t/<token> registered alongside it per REMOTE_RESULT.md Extension 12. Every scenario scored the same as round 20: d1, d2, d4 and d6 are clean 3s with numbers verified against deposit_list, deposit_balance, invoice_list and the downloaded statement bytes on the same token; d3 and d5 are the same 2s, both times the model answering from its own arithmetic instead of calling a free, allowed tool that would have answered exactly, and both times it happened to be right. The invoice-side write that deposit_apply depends on landed correctly on the hosted invoice store (paid_minor added, not overwritten), the currency refusal was relayed verbatim, the refund left the invoice untouched, and the downloaded .txt statement is byte-identical to what the model pasted into its reply. Nothing here differs in kind or severity from the stdio measurement; moving the same lane onto the wire changed nothing about where the two open points are lost."
+}
