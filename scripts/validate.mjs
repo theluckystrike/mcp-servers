@@ -6,9 +6,11 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, statSy
 import { tmpdir } from "node:os";
 import { createServer } from "node:http";
 import { join } from "node:path";
-const TODAY_ISO = new Date().toISOString().slice(0, 10);
-const IN_14_DAYS_ISO = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
-const TOMORROW_ISO = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+// Probe dates in the profile's home zone (every probe sets Europe/Warsaw), so a receipt is never "before" an order dated by the server.
+const warsawDay = (offsetDays = 0) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Warsaw", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(Date.now() + offsetDays * 86400000));
+const TODAY_ISO = warsawDay(0);
+const IN_14_DAYS_ISO = warsawDay(14);
+const TOMORROW_ISO = warsawDay(1);
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const DB = join(ROOT, "data/validation.json");
