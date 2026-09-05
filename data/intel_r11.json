@@ -1,0 +1,177 @@
+{
+ "generated_at": "2026-09-06",
+ "cap_minutes": 25,
+ "method": {
+  "registry_probe": "Single bounded GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, 15s timeout, first page only, sequential, no background loops, curl -s -m 15 inline inside bounded shell loops (3 calls, resuming from already-fetched tokens each time the 2-minute tool timeout hit mid-loop). count = servers.length on page 1. our_rank = [1-based index, name] for every row on that page whose name matches /theluckystrike/i.",
+  "token_set": "The 97-token NAMING_R4 set (comparable with INTEL_R8's 51.26% measurement, itself over a 100-token set that included 3 tokens outside the 97) plus 16 net-new tokens targeted by names published since R8: qr-code, letterhead, label, appointment, credit-note, purchase-order, deposit, per-diem, travel-allowance, delegacja, depreciation, fixed-assets, aging, dunning, statement-of-account, archive (retainer was already inside the 97-token set) -- 113 distinct tokens probed live on 2026-09-06.",
+  "findable_share_formula": "NAMING_R4 formula, unchanged: p = min(1, 10/our_rank) if our current-version row appears on page 1 for that token, else 0; mean over the token set (computed separately for the 97-token set and the 113-token extended set)."
+ },
+ "part1_registry_findable_share": {
+  "measured_at": "2026-09-06",
+  "set_97": {
+   "tokens_probed": 97,
+   "matched": 70,
+   "findable_share": 0.4998,
+   "findable_share_pct": 49.98,
+   "comparable_prior_pct": 51.26,
+   "note": "INTEL_R8's 51.26% was measured over a 100-token set (the 97-token set plus zip/archive/qr-code, compress already inside the 97); this round's 97-token number is the direct like-for-like continuation. Small regression, not a data quality issue: page-1 slots on shared tokens shifted as more theluckystrike rows (billing-docs, asset-register, per-diem, statement-of-account, and new variants on existing servers) now compete against each other for the same tracked tokens, and one or two previously-page-1 ranks slipped past rank 10 as the registry's own catalog grew."
+  },
+  "set_extended_113": {
+   "tokens_probed": 113,
+   "matched": 86,
+   "findable_share": 0.5514,
+   "findable_share_pct": 55.14,
+   "note": "97-token set plus the 16 tokens targeted by names published for the newest servers (billing-docs, asset-register, per-diem, statement-of-account) and by new variants on barcode (qr-code, label) and docx (letterhead). Not comparable to earlier rounds' percentages since the denominator differs; reported separately as instructed."
+  },
+  "best_rank": 1,
+  "kpi_row_after": "Registry findable share: value 50, target 60, unit % of tracked tokens (data/kpi.json, from node scripts/kpi.mjs, sourced from data/organic.json's 97-token-comparable figure)",
+  "where_stored": "data/registry_rank.json variants_r11_full_probe"
+ },
+ "names_held_per_server": {
+  "statement-of-account": [
+   "aging",
+   "dunning",
+   "statement-of-account"
+  ],
+  "clauses": [
+   "agreement",
+   "contract",
+   "docx",
+   "proposal",
+   "terms"
+  ],
+  "price-tracker": [
+   "alert",
+   "deal",
+   "price-tracker",
+   "prices"
+  ],
+  "resume": [
+   "application",
+   "career",
+   "cover-letter",
+   "docx"
+  ],
+  "calendar": [
+   "appointment",
+   "availability",
+   "calendar",
+   "freebusy"
+  ],
+  "zip": [
+   "archive"
+  ],
+  "time-tracker": [
+   "billable",
+   "hours",
+   "time-tracker",
+   "timer",
+   "timesheet",
+   "tracking"
+  ],
+  "billing-docs": [
+   "billing",
+   "credit-note",
+   "purchase-order"
+  ],
+  "invoice": [
+   "billing",
+   "invoice",
+   "invoices",
+   "invoicing"
+  ],
+  "recurring": [
+   "billing",
+   "recurring",
+   "retainer",
+   "subscription",
+   "subscription-billing",
+   "subscriptions"
+  ],
+  "timezone": [
+   "calendar",
+   "meeting",
+   "overlap",
+   "scheduling",
+   "slots",
+   "timezone",
+   "world-clock"
+  ],
+  "bank-statement": [
+   "cashflow",
+   "csv",
+   "ledger",
+   "reconcile"
+  ],
+  "image": [
+   "compress",
+   "thumbnails",
+   "watermark"
+  ],
+  "spreadsheet": [
+   "csv",
+   "pivot",
+   "sheets",
+   "spreadsheet",
+   "xlsx"
+  ],
+  "currency": [
+   "currency",
+   "ecb",
+   "exchange",
+   "fx"
+  ],
+  "per-diem": [
+   "delegacja",
+   "per-diem",
+   "travel-allowance"
+  ],
+  "deposits": [
+   "deposit"
+  ],
+  "asset-register": [
+   "depreciation",
+   "fixed-assets"
+  ],
+  "docx": [
+   "documents",
+   "docx",
+   "letterhead",
+   "proposal",
+   "sow"
+  ],
+  "expense-tracker": [
+   "expense",
+   "expenses",
+   "mileage",
+   "receipt",
+   "receipts"
+  ],
+  "office-suite": [
+   "expense",
+   "office",
+   "suite"
+  ],
+  "quotes": [
+   "freelance",
+   "proposal",
+   "quote"
+  ],
+  "barcode": [
+   "label",
+   "qr-code",
+   "sepa"
+  ],
+  "pdf": [
+   "merge",
+   "pdfs",
+   "split",
+   "stamp"
+  ],
+  "kanban": [
+   "standup",
+   "tasks",
+   "todo"
+  ]
+ }
+}
