@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T05:07:18.638Z",
-  "total_commits": 417,
-  "sessions": 45,
+  "generated_at": "2026-09-05T07:09:23.645Z",
+  "total_commits": 433,
+  "sessions": 46,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -86,7 +86,12 @@
     {
       "name": "Loop 17: intel R9, digest, round 18, attendee and date-order fixes, v0.9.5",
       "sessions": 2,
-      "commits": 59
+      "commits": 1
+    },
+    {
+      "name": "Loop 18: billing-docs, the twentieth server, v0.10.0",
+      "sessions": 1,
+      "commits": 74
     }
   ],
   "rows": [
@@ -553,12 +558,21 @@
       "at": "2026-09-05T05:07:12.443Z",
       "note": "loop 17 closed: v0.9.5 (50 registry entries first pass, 968 tests, validation 471/471), round 18 single-lane re-runs 53/54 (quotes 18, calendar 18, pdf 17), calendar keeps attendees and organizer through export (D-R61), bank date-order self-report fixed (D-R54), three honest registry names (letterhead, label, appointment), TensorBlock awesome list MERGED the office-suite entry, intel R9 found five empty slots (credit-note, purchase-order, asset-register, deposit, per-diem) for next loop, weekly digest script and docs/WEEKLY_2026-09-05.md, how-it-works.html refreshed; downloads 1994; clicks 29/7d; sales 0; GSC 0 indexed",
       "loop": "Loop 17: intel R9, digest, round 18, attendee and date-order fixes, v0.9.5",
-      "commits": 58,
+      "commits": 4,
       "subjects": [
         "timezone: round 15 working-hours test spans a full week so a weekend start cannot empty the window",
         "Release v0.9.3: bump 21 packages, 38 internal ranges and 67 server manifests",
         "sha256 of the v0.9.3 bundles into every manifest that references one",
-        "Record release v0.9.3",
+        "Record release v0.9.3"
+      ]
+    },
+    {
+      "n": 46,
+      "at": "2026-09-05T07:09:23.532Z",
+      "note": "loop 18 closed: v0.10.0 with billing-docs (credit notes and purchase orders on the invoice engine; audit 18/18 no defects; hosted round 19 16/18; the twentieth server and hosted endpoint), 53 registry entries first pass (credit-note and purchase-order names on empty slots), 1011 tests, validation 510/510, bundle text derives twenty and , three more single-entry list PRs (MobinX 420, AIAnytime 83, mctrinh 112), Docker PR 20 entries, Cline 2439; downloads 2165; clicks 35/7d across nine cap sources; sales 0; GSC 0 indexed",
+      "loop": "Loop 18: billing-docs, the twentieth server, v0.10.0",
+      "commits": 70,
+      "subjects": [
         "Loop 14 close: v0.9.3 dashboard, per-name registry KPI, sprint log loop 14",
         "Sprint log: loop 14 row",
         "Plan v12: finish the funnel, re-test the weakest lanes",
@@ -566,7 +580,11 @@
         "Checkout audit doc: before and after, session ids, what needs a human",
         "naming r5: measure registry ordering mechanism, publish nothing (11/14 capped tokens structurally unreachable)",
         "Bundle page: /bundle route, home hero link, per-server CTA cross-sell",
-        "User value round 17: office-suite as one stdio server, 19 children, 186 tools"
+        "User value round 17: office-suite as one stdio server, 19 children, 186 tools",
+        "bank-statement: refuse a URL passed as path instead of resolving it (D-R83)",
+        "image: refuse a URL passed as path instead of resolving it (D-R83)",
+        "timezone: find_meeting_slots reports the window it actually searched (D-R84)",
+        "time-tracker: empty entry_list says entry_add creates the project (D-R85)"
       ]
     }
   ]
