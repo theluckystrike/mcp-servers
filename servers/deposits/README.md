@@ -13,6 +13,8 @@ Built on `@theluckystrike/mcp-invoice/lib` for the money, currency and store cod
 `@theluckystrike/mcp-billing-docs/lib` for the A4 page, so a deposit statement looks like the credit
 note and the invoice next to it and agrees with them to the minor unit.
 
+![deposits demo](../../assets/demo-deposits.gif)
+
 ## Install
 
 Claude Desktop (`claude_desktop_config.json`):

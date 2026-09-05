@@ -31,6 +31,7 @@ nine products are also reachable as a hosted remote endpoint with no install at 
 | [mcp-barcode](servers/barcode/README.md) | ![barcode](assets/demo-barcode.gif) | QR codes, WiFi and vCard codes, SEPA payment codes and EAN/UPC/Code 128 barcodes, drawn locally | `npx -y @theluckystrike/mcp-barcode`* |
 | [mcp-zip](servers/zip/README.md) | ![zip](assets/demo-zip.gif) | Pack a folder with a glob, look inside an archive somebody sent you, unpack it with bomb, traversal and symlink guards | `npx -y @theluckystrike/mcp-zip`* |
 | [mcp-billing-docs](servers/billing-docs/README.md) | ![billing-docs](assets/demo-billing-docs.gif) | Credit notes and purchase orders on your invoices, with the VAT split across the rates the invoice used and no credit larger than what it billed | `npx -y @theluckystrike/mcp-billing-docs`* |
+| [mcp-deposits](servers/deposits/README.md) | ![deposits](assets/demo-deposits.gif) | Security and retainer deposits held per client, applied to an invoice as a payment that adds to what was already paid rather than replacing it | `npx -y @theluckystrike/mcp-deposits`* |
 | [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that proxies all eight servers above behind a single config line, 76 tools | `npx -y @theluckystrike/mcp-office-suite`* |
 
 \* npm publish is still pending for all nine packages (see npm status below). Until then, the fastest path is the

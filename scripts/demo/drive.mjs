@@ -208,7 +208,7 @@ async function run(name) {
   // billing-docs reads the invoice server's store out of XDG_DATA_HOME, and the fixture below
   // writes into it, so the demo pins a short data home for the same reason zip pins a short cwd.
   let bdocsHome;
-  if (name === "billing-docs") {
+  if (name === "billing-docs" || name === "deposits") {
     bdocsHome = join(mkdtempSync("/tmp/bdocs-demo-"), "data");
     env.XDG_DATA_HOME = bdocsHome;
     env.XDG_CONFIG_HOME = join(bdocsHome, "..", "config");
@@ -776,6 +776,72 @@ async function run(name) {
     const received = pick(await c.call("purchase_order_receive", receiveArgs));
     resultLine(`${received.received.id} ${received.received.status}, received ${received.receipts[0].date}: ${received.receipts[0].note}`);
     resultLine(received.note);
+  }
+
+  if (name === "deposits") {
+    // Same fixture reasoning as billing-docs: this server reads and writes the invoice
+    // server's store rather than owning one, so the run's invoice data directory gets the
+    // shared business profile, one client and one unpaid invoice written straight into it,
+    // exactly where the invoice server itself would have put them.
+    const { writeFileSync, mkdirSync, readFileSync } = await import("node:fs");
+    const invoiceDir = join(bdocsHome, "mcp-servers", "invoice");
+    mkdirSync(invoiceDir, { recursive: true });
+    writeFileSync(join(invoiceDir, "business.json"), JSON.stringify({
+      name: "Lucky Strike Software", default_currency: "EUR", default_tax_rate: 23,
+      payment_terms_days: 14, invoice_prefix: "INV",
+    }, null, 2));
+    writeFileSync(join(invoiceDir, "clients.json"), JSON.stringify([{
+      id: "acme-gmbh", name: "Acme GmbH", address: "Hauptstr. 5\nBerlin", email: "ap@acme.example", created: "2026-09-01",
+    }], null, 2));
+    writeFileSync(join(invoiceDir, "invoices.json"), JSON.stringify([{
+      number: "INV-2026-0042", client_id: "acme-gmbh", client: { name: "Acme GmbH" },
+      issue_date: "2026-09-01", due_date: "2026-09-15", currency: "EUR", decimals: 2,
+      lines: [{
+        description: "Consulting", quantity: 1, unit_price_minor: 100000, tax_rate: 23,
+        gross_minor: 100000, discount_minor: 0, net_minor: 100000, tax_minor: 23000,
+        exact_gross_minor: 100000, round_total: false,
+      }],
+      subtotal_minor: 100000, discount_percent: 0, discount_minor: 0, net_minor: 100000,
+      tax_lines: [{ rate: 23, base_minor: 100000, tax_minor: 23000 }],
+      tax_minor: 23000, total_minor: 123000, status: "unpaid",
+      // EUR 200.00 already arrived by bank transfer before the deposit is applied. This is the
+      // number the demo is about: applying through invoice_mark_paid would overwrite it.
+      paid_minor: 20000, paid_date: "2026-09-03",
+      created: "2026-09-01T00:00:00.000Z", branded: true,
+    }], null, 2));
+
+    // These tools answer in JSON and the whole answer does not fit the recorded frame, so the
+    // demo prints picked fields. Every string below is copied out of the response, never rebuilt.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Hold a client deposit, apply it to an invoice on top of what was already paid, be stopped from paying out more than is held.\n");
+    await sleep(STEP_DELAY_MS);
+    const recordArgs = { client: "Acme GmbH", amount_minor: 50000, currency: "EUR", kind: "security", received_date: "2026-09-01", reference: "SEPA ref 88213" };
+    toolLine("deposit_record", recordArgs);
+    const recorded = pick(await c.call("deposit_record", recordArgs));
+    resultLine(`${recorded.recorded.id} ${recorded.recorded.kind} from ${recorded.recorded.client}, received ${recorded.recorded.received_date}: ${recorded.recorded.received}, held ${recorded.recorded.held}`);
+    await sleep(STEP_DELAY_MS);
+
+    const before = JSON.parse(readFileSync(join(invoiceDir, "invoices.json"), "utf8"))[0];
+    say(`  INV-2026-0042 already shows a EUR 200.00 bank transfer (paid_minor ${before.paid_minor}).\n`);
+    const applyArgs = { id: "DEP-2026-0001", invoice: "INV-2026-0042", amount_minor: 30000, date: "2026-09-05" };
+    toolLine("deposit_apply", applyArgs);
+    const applied = pick(await c.call("deposit_apply", applyArgs));
+    resultLine(`${applied.applied.amount} of ${applied.applied.deposit} to ${applied.applied.invoice}: paid ${applied.invoice.paid} of ${applied.invoice.total}, balance due ${applied.invoice.balance_due}, ${applied.invoice.status}`);
+    const after = JSON.parse(readFileSync(join(invoiceDir, "invoices.json"), "utf8"))[0];
+    resultLine(`  paid_minor ${before.paid_minor} + 30000 = ${after.paid_minor}. The transfer was added to, not replaced.`);
+    resultLine(`  ${applied.deposit.id} now holds ${applied.deposit.held}`);
+    await sleep(STEP_DELAY_MS);
+
+    const tooMuchArgs = { id: "DEP-2026-0001", invoice: "INV-2026-0042", amount_minor: 40000, date: "2026-09-05" };
+    toolLine("deposit_apply", tooMuchArgs);
+    resultLine(await c.call("deposit_apply", tooMuchArgs));
+    await sleep(STEP_DELAY_MS);
+
+    const refundArgs = { id: "DEP-2026-0001", amount_minor: 20000, date: "2026-09-05", method: "bank transfer" };
+    toolLine("deposit_refund", refundArgs);
+    const refunded = pick(await c.call("deposit_refund", refundArgs));
+    resultLine(`${refunded.refunded.amount} back to the client by ${refunded.refunded.method}: ${refunded.deposit.id} is ${refunded.deposit.status}, held ${refunded.deposit.held}`);
   }
   await sleep(STEP_DELAY_MS);
   c.close();
