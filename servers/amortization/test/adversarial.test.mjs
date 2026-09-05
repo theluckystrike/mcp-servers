@@ -221,3 +221,59 @@ test("the rate arithmetic on the edges", () => {
   assert.ok(m < 0.01, `monthly equivalent of an annual 12 percent must be under 1 percent, got ${m}`);
   assert.equal(Math.round(Math.pow(1 + m, 12) * 1e10), Math.round(1.12 * 1e10));
 });
+
+test("fees never move the effective annual rate, only the cost of credit", async (t) => {
+  // The effective annual rate prices the compounding of the interest alone. A fee paid at
+  // drawdown is not interest, so it must not change the 12.68 percent this loan reports
+  // with no fee at all; it only widens cost_of_credit_minor, which is interest plus fee.
+  const { c } = open(t);
+  await c.init();
+  const bare = await c.json("loan_create", { ...WORKED, name: "No fee" });
+  const feed = await c.json("loan_create", { ...WORKED, name: "With fee", fees_minor: 50000 });
+  assert.equal(bare.created.effective_annual_rate_pct, "12.68");
+  assert.equal(feed.created.effective_annual_rate_pct, "12.68",
+    "a fee at drawdown must not move the effective annual rate");
+  assert.equal(feed.cost_of_credit_minor, bare.total_interest_minor + 50000);
+  assert.equal(feed.total_interest_minor, bare.total_interest_minor);
+});
+
+test("daily compounding is not a supported clock and is refused at the schema, not silently rounded to another one", async (t) => {
+  // PERIODS_PER_YEAR names weekly, fortnightly, monthly, quarterly, semiannual and annual
+  // only. "daily" is not among them, so the tool must refuse it outright rather than
+  // coerce it to the nearest frequency it does understand.
+  const { c } = open(t);
+  await c.init();
+  const r = await c.call("loan_create", { ...WORKED, compounding: "daily" });
+  assert.equal(r.isError, true, "a daily compounding clock was silently accepted");
+  const r2 = await c.call("loan_create", { ...WORKED, payment_frequency: "daily" });
+  assert.equal(r2.isError, true, "a daily payment clock was silently accepted");
+  assert.equal((await c.json("loan_list", {})).count, 0, "nothing was written for either");
+});
+
+test("a term of 720 periods is over the 600 period ceiling and is refused, in the engine and at the tool", async (t) => {
+  assert.throws(() => validateTerms(terms({ term_periods: 720 })), /term 720 is over the 600 period ceiling/);
+  const { c } = open(t);
+  await c.init();
+  const r = await c.call("loan_create", { ...WORKED, term_periods: 720 });
+  assert.equal(r.isError, true);
+  assert.equal((await c.json("loan_list", {})).count, 0, "nothing was written");
+});
+
+test("a kept payment that cannot cover the interest on what is left is refused, not amortised into a growing balance", async (t) => {
+  // keep_payment holds the original level payment and shortens the term. If the interest
+  // on the remaining balance is bigger than that payment, there is no term, short or long,
+  // that clears it: the debt would grow every period. That must be refused by name, never
+  // silently answered with a negative or ever-lengthening schedule.
+  const t2 = terms({ rate_bps: 4999, term_periods: 24 });
+  const s = buildSchedule(t2);
+  // A huge extra payment leaves only a sliver of principal, but ask to keep a payment that
+  // cannot even cover interest on a much larger deliberately-mismatched remaining balance
+  // by driving the rate high relative to the stored (lower-rate) payment.
+  const lowRateTerms = terms({ rate_bps: 100, term_periods: 24 });
+  const lowRateSchedule = buildSchedule(lowRateTerms);
+  const highRateTerms = { ...lowRateTerms, rate_bps: 900000 };
+  assert.throws(
+    () => repayEarly(highRateTerms, lowRateSchedule, 1, { extra_minor: 1000, keep_payment: true }),
+    /does not cover the interest on .*: the term cannot be shortened/,
+  );
+});
