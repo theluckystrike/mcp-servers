@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-one endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-two endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -31,6 +31,7 @@ import { createServer as createBarcode } from "./vendor/barcode/index.js";
 import { createServer as createZip } from "./vendor/zip/index.js";
 import { createServer as createBillingDocs } from "./vendor/billing-docs/index.js";
 import { createServer as createDeposits } from "./vendor/deposits/index.js";
+import { createServer as createPerDiem } from "./vendor/per-diem/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -58,7 +59,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-05.2";
+const BUILD_VERSION = "2026-09-05.3";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -292,6 +293,21 @@ const SERVERS: Record<string, ServerCfg> = {
     publish: (p) => p.startsWith("/out/"),
     strip: ["/out/"],
     sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
+  },
+  "per-diem": {
+    // The plainest endpoint since /mcp/invoice, and deliberately so. The saved trips and
+    // their per-year counter are this endpoint's own document (under the homedir shim,
+    // tmp + rename) and are the only thing it writes: no out_path, no download, no
+    // sibling store. trip_export hands back the expense_add ARGUMENTS rather than
+    // appending a row to the expense ledger - the stdio server's D-P1 decision, and the
+    // reason there is no sharedDoc here even though this endpoint talks about invoices
+    // and expenses. So no publish(), no strip and the default 512 KB tenant cap.
+    //
+    // The five rate tables are read-only bundled JSON. Over stdio they are files beside
+    // the module; here remote/build-vendor.mjs inlines their exact bytes into
+    // vendor/per-diem/tables-data.ts, so the same number comes out of the same shipped
+    // table and nothing is fetched.
+    factory: createPerDiem as () => McpServer,
   },
 };
 
@@ -670,6 +686,7 @@ const TOOLS: Record<string, string[]> = {
   "quotes": ["quote_create", "quote_list", "quote_get", "quote_update", "quote_send_text", "quote_accept", "quote_decline", "quote_pdf", "quote_report", "license_status", "license_activate"],
   "zip": ["zip_upload", "zip_files", "zip_delete_upload", "zip_create", "zip_list", "zip_extract", "zip_extract_text", "zip_add", "zip_bundle_month", "zip_history", "license_status", "license_activate"],
   "billing-docs": ["credit_note_create", "credit_note_list", "credit_note_get", "credit_note_pdf", "credit_note_text", "purchase_order_create", "purchase_order_list", "purchase_order_get", "purchase_order_pdf", "purchase_order_text", "purchase_order_receive", "billing_docs_report", "license_status", "license_activate"],
+  "per-diem": ["perdiem_rates", "perdiem_calc", "trip_record", "trip_list", "trip_export", "perdiem_report", "license_status", "license_activate"],
   "deposits": ["deposit_record", "deposit_list", "deposit_apply", "deposit_refund", "deposit_balance", "deposit_statement_text", "deposit_statement_pdf", "deposits_report", "license_status", "license_activate"],
 };
 
@@ -849,6 +866,14 @@ function indexDoc(base: string) {
         outputs: "deposit_statement_pdf returns a print-ready HTML statement behind a one-hour download link (there is no PDF renderer on Workers, so it is the same A4 layout the credit note uses, titled DEPOSIT STATEMENT). deposit_statement_text returns the pasteable text in the answer and the same text as a .txt download link.",
         free_limits: "5 deposits recorded per calendar month; deposit_apply, deposit_refund, deposit_list, deposit_balance and deposit_statement_text are free and unlimited on every tier, because money already held has to be able to leave the book. deposit_statement_pdf and deposits_report are Pro",
         notes: "deposit_apply writes the payment onto the invoice the way the invoice server's own invoice_mark_paid writes one - paid_minor, paid_date and status - but ADDS to paid_minor rather than replacing it, so a deposit applied after a bank transfer does not erase that transfer. It can never pay out more than the deposit still holds or more than the invoice still owes, and a deposit is applied at its own currency and never converted. A refund never touches the invoice: giving a client their own money back is not a payment of a bill",
+      },
+      {
+        name: "per-diem", url: `${base}/mcp/per-diem`, tools: TOOLS["per-diem"],
+        mode: "bundled rate tables",
+        how: "perdiem_rates lists a scheme's rates with the authority, instrument, source URL and effective date they came from; perdiem_calc prices one trip; trip_record saves it. Start and end are instants: either ISO 8601 carrying its own offset, or a local datetime plus an IANA timezone, so a trip across a clock change is 23 or 25 hours and not 24. The traveller's name comes from the shared business profile (business_set on /mcp/invoice).",
+        outputs: "JSON only. There is no document to render and nothing is written outside your own trip store. trip_export returns the exact expense_add ARGUMENTS for a trip, one payload per currency, to pass to /mcp/expense-tracker yourself: this endpoint never appends to that ledger, because the expense server's id counter, category rules and VAT split all live inside its own expense_add handler.",
+        free_limits: "5 trips recorded per calendar month; perdiem_rates, perdiem_calc and trip_list are free and unlimited on every tier, because a per diem rate is public information published by a tax authority. trip_export and perdiem_report are Pro",
+        notes: "the rates are BUNDLED tables, not a feed: pl (Dz.U. 2022 poz. 2302), uk (HMRC benchmark scale rates) and us (GSA CONUS). Nothing is fetched, so the same trip prices the same way on every run, and every answer carries the header saying which instrument the figure came from and when it was read. A rate that could not be stated with confidence from the published text was OMITTED rather than guessed, so a destination that is not bundled is REFUSED by name and sent to the source instead of being priced from a near-match. Currencies are never added together: there is no exchange rate in this endpoint",
       },
     ],
     limits: {

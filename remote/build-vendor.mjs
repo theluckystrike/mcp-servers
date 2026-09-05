@@ -10,7 +10,7 @@
 // because the local code reaches a real filesystem for something that is not the
 // server's own state.
 // Run: node remote/build-vendor.mjs
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -62,6 +62,17 @@ const SERVERS = {
   // vendored for the same reason billing-docs' is: it is the deposits store as a public
   // API, so the next server that reads these deposits resolves here.
   "deposits": ["index.ts", "version.ts", "lib.ts", "store.ts"],
+  // Every source file. The five bundled JSON rate tables under servers/per-diem/src/tables
+  // are NOT files here: src/tables.ts reads them with readFileSync of a path derived from
+  // import.meta.url, which resolves to nothing on a Worker, so the build INLINES their bytes
+  // into a generated vendor/per-diem/tables-data.ts and patches table() to parse from there.
+  // The assertion below re-reads the generated file and checks all five ids and the
+  // provenance header travelled with them. index.ts imports
+  // @theluckystrike/mcp-timezone/lib (readJsonFile) and schemes.ts imports the same module
+  // for the DST-aware resolver; timezone's lib.ts is vendored above and VENDORED_LIBS
+  // asserts it. lib.ts is vendored for the same reason deposits' is: it is this engine as a
+  // public API, so the next server that prices a trip resolves here.
+  "per-diem": ["index.ts", "version.ts", "lib.ts", "schemes.ts", "store.ts", "tables.ts"],
 };
 
 /**
@@ -70,7 +81,7 @@ const SERVERS = {
  * module-not-found on a deployed worker.
  */
 for (const [name, files] of Object.entries(SERVERS)) {
-  const src = readFileSync(join(ROOT, "servers", name, "src", "index.ts"), "utf8");
+  const src = files.map((f) => readFileSync(join(ROOT, "servers", name, "src", f), "utf8")).join("\n");
   for (const m of src.matchAll(/@theluckystrike\/mcp-([a-z-]+)\/lib/g)) {
     const dep = m[1];
     if (!SERVERS[dep]?.includes("lib.ts")) {
@@ -2136,6 +2147,64 @@ function patchDepositsIndex(src) {
   return src;
 }
 
+/**
+ * The rate tables. Over stdio they are five JSON files next to the module, read with
+ * readFileSync of fileURLToPath(new URL("./tables/<f>", import.meta.url)). There is no
+ * filesystem here and import.meta.url resolves to a bundled module, so that path would be
+ * a read of nothing: the tables are inlined into a generated tables-data.ts (below, in the
+ * build loop) as their exact bytes, and table() parses from there. The bytes are the
+ * shipped file's, so the provenance header, the effective date and every omitted row
+ * travel unchanged: a per diem figure has to be reproducible from the file the build
+ * shipped, hosted or not.
+ */
+function patchPerDiemTables(src) {
+  src = must(src,
+    'import { readFileSync } from "node:fs";\nimport { fileURLToPath } from "node:url";\n',
+    'import { TABLE_DATA } from "./tables-data.js";\n',
+    "per-diem tables imports");
+  src = must(src,
+    '  const path = fileURLToPath(new URL(`./tables/${FILES[id]}`, import.meta.url));\n' +
+    '  const t = JSON.parse(readFileSync(path, "utf8")) as Table;',
+    '  const raw = TABLE_DATA[FILES[id]];\n' +
+    '  if (!raw) throw new Error(`per diem table ${id} was not inlined into tables-data.ts`);\n' +
+    '  const t = JSON.parse(raw) as Table;',
+    "per-diem table() reads the inlined bytes");
+  // The prose above table() said "read from disk once at first use", which is no longer
+  // true of this copy and would have been the only sentence in the file that lied.
+  src = must(src,
+    " * The rate tables are BUNDLED JSON, read from disk once at first use and never fetched.",
+    " * The rate tables are BUNDLED JSON, inlined into this build by remote/build-vendor.mjs\n"
+    + " * as the exact bytes of servers/per-diem/src/tables/*.json, and never fetched.",
+    "per-diem tables doc comment");
+  return src;
+}
+
+/** The same sentence, in the public lib entry point. */
+function patchPerDiemLib(src) {
+  return must(src,
+    " * Nothing in this module touches the network. The tables are read from disk on first use.",
+    " * Nothing in this module touches the network. The tables are the bundled JSON, inlined\n"
+    + " * into this build rather than read from a disk this endpoint does not have.",
+    "per-diem lib doc comment");
+}
+
+/**
+ * Two response strings named a local install. Nothing else changes: this server writes no
+ * output file, takes no out_path and reaches into no sibling store, so there is no path to
+ * rewrite and no download to publish.
+ */
+function patchPerDiemIndex(src) {
+  src = must(src,
+    'Run business_set {name} in the invoice server once and every later trip carries it.',
+    'Run business_set {name} on your https://mcp.zovo.one/mcp/invoice endpoint once and every later trip carries it.',
+    "per-diem traveller note");
+  src = must(src,
+    'how: "Pass each payload\'s `arguments` to the expense-tracker server\'s expense_add tool, one call per payload.',
+    'how: "Pass each payload\'s `arguments` to expense_add on your https://mcp.zovo.one/mcp/expense-tracker endpoint, one call per payload.',
+    "per-diem export how");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2203,6 +2272,8 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "barcode" && f === "render.ts") src = patchBarcodeRender(src);
       if (name === "barcode" && f === "payloads.ts") src = 'import { Buffer } from "node:buffer";\n' + src;
       if (name === "zip" && f === "paths.ts") src = patchZipPaths(src);
+      if (name === "per-diem" && f === "tables.ts") src = patchPerDiemTables(src);
+      if (name === "per-diem" && f === "lib.ts") src = patchPerDiemLib(src);
       if (name === "zip" && f === "zipfile.ts") src = 'import { Buffer } from "node:buffer";\n' + src;
       writeFileSync(join(dir, f), rewriteImports(src, 2));
       continue;
@@ -2227,6 +2298,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "zip") src = patchZipIndex(src);
     if (name === "billing-docs") src = patchBillingDocsIndex(src);
     if (name === "deposits") src = patchDepositsIndex(src);
+    if (name === "per-diem") src = patchPerDiemIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -2243,6 +2315,17 @@ for (const [name, files] of Object.entries(SERVERS)) {
       `// GENERATED by remote/build-vendor.mjs from servers/${name}/src/index.ts. Do not edit.\n` +
       imports.join("\n") + "\n\n" +
       `export function createServer() {\n${body}\n\nreturn server;\n}\n`);
+  }
+  if (name === "per-diem") {
+    const dirTables = join(ROOT, "servers", name, "src", "tables");
+    const names = readdirSync(dirTables).filter((f) => f.endsWith(".json")).sort();
+    const body = names.map((f) => `  ${JSON.stringify(f)}: ${JSON.stringify(readFileSync(join(dirTables, f), "utf8"))},`).join("\n");
+    writeFileSync(join(dir, "tables-data.ts"),
+      "// GENERATED by remote/build-vendor.mjs from servers/per-diem/src/tables/*.json. Do not edit.\n" +
+      "// The exact bytes of the bundled tables, inlined because a Worker has no filesystem to\n" +
+      "// read them from. tables.ts parses these; nothing here is fetched, now or ever.\n" +
+      "export const TABLE_DATA: Record<string, string> = {\n" + body + "\n};\n");
+    console.log(`vendored ${name} tables: ${names.join(", ")}`);
   }
   console.log(`vendored ${name}: ${files.join(", ")}`);
 }
@@ -2268,4 +2351,28 @@ if (!/from "\.\.\/billing-docs\/lib\.js"/.test(depositsIndex)) {
 }
 if (!/export \{ renderDocPdf \} from "\.\.\/\.\.\/shims\/pdf\.js";/.test(readFileSync(join(OUT, "billing-docs", "lib.ts"), "utf8"))) {
   throw new Error("billing-docs/lib.ts does not re-export renderDocPdf from the shim");
+}
+
+/**
+ * The per diem tables are the one vendored asset that is not a .ts file over stdio, so the
+ * checks are on the bytes that were written rather than on the intent of the patch: the
+ * vendored tables.ts must not still read a file, every table id FILES names must be present
+ * in the generated data, and each one must still carry the provenance header that makes the
+ * number checkable.
+ */
+{
+  const t = readFileSync(join(OUT, "per-diem", "tables.ts"), "utf8");
+  if (/readFileSync|import\.meta\.url/.test(t)) {
+    throw new Error("vendored per-diem/tables.ts still reads the tables from a filesystem");
+  }
+  const data = readFileSync(join(OUT, "per-diem", "tables-data.ts"), "utf8");
+  const mod = JSON.parse("{" + data.slice(data.indexOf("{") + 1, data.lastIndexOf("}")).replace(/,\s*$/, "") + "}");
+  for (const id of ["pl-domestic", "pl-foreign", "uk-domestic", "uk-overseas", "us-gsa"]) {
+    const raw = mod[`${id}.json`];
+    if (!raw) throw new Error(`per-diem table ${id}.json was not inlined`);
+    const parsed = JSON.parse(raw);
+    if (!parsed.header?.source_url || !parsed.header?.effective_date || !Array.isArray(parsed.rates)) {
+      throw new Error(`per-diem table ${id}.json lost its provenance header in the inline`);
+    }
+  }
 }

@@ -2947,3 +2947,198 @@ shape than the one it asserts on fails the code instead of the claim.
 - `invoice business_set`'s success message lists the servers that read the shared profile
   and does not yet name deposits. That string lives in `servers/invoice/src/index.ts`,
   outside this unit's write scope.
+
+# Extension 13 2026-09-05 - per-diem
+
+status: DONE
+
+A twenty-second endpoint, `POST /mcp/per-diem`. Worker `mcp-remote`, version ID
+`82c7bbe4-c2ce-471d-8eed-ed9f7a3437d7`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-two.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/per-diem | 8 | the five bundled JSON rate tables travel INTO the worker bundle as inlined bytes, so the hosted figure comes from the same shipped file the stdio server reads. No download, no shared store, no network |
+
+### Vendoring: six files, and the first asset that is not TypeScript
+
+`SERVERS["per-diem"]` is `index.ts, version.ts, lib.ts, schemes.ts, store.ts, tables.ts`.
+Every source file, `lib.ts` included, for the reason `deposits`' is vendored: it is this
+engine as a public API, so the next server that prices a trip resolves here rather than to
+a module that cannot load.
+
+The new problem is `src/tables/*.json`. Every server vendored so far was TypeScript all the
+way down; this one ships five JSON files and reads them with
+
+```
+const path = fileURLToPath(new URL(`./tables/${FILES[id]}`, import.meta.url));
+JSON.parse(readFileSync(path, "utf8"))
+```
+
+which is a read of nothing on a Worker: `node:fs` is redirected to the in-memory shim,
+whose `readFileSync` sees an empty virtual filesystem, and `import.meta.url` points at a
+bundled module rather than a directory. The failure would have been at call time, not build
+time, and it would have been a per diem tool that could not name a rate.
+
+So `build-vendor.mjs` generates `vendor/per-diem/tables-data.ts`: the **exact bytes** of
+each `servers/per-diem/src/tables/*.json`, as string literals, and `table()` is patched to
+`JSON.parse` from that map instead of from a path. Bytes rather than a re-serialised
+object, because the whole design decision behind these tables is that the number is
+reproducible from the file the build shipped - the authority, the instrument, the source
+URL, the effective date, the retrieved date and every deliberately omitted row travel
+unchanged, and a hosted answer and a stdio answer cite the same document. Inlining is
+10,947 bytes; the alternative, a static `import x from "./x.json"`, would have left the
+resolution to the bundler's JSON loader, which is one more thing that can differ between
+`wrangler dev` and a deploy.
+
+Two prose comments were patched with it. `tables.ts` opened with "read from disk once at
+first use" and `lib.ts` with "The tables are read from disk on first use"; both would have
+been the only sentences in the vendored copy that lied about what it does. The `must()`
+discipline applies to a claim as much as to a call.
+
+**A build assertion, on the bytes that were written.** Three of them, after the copy:
+the vendored `tables.ts` must no longer contain `readFileSync` or `import.meta.url`; all
+five ids `FILES` names must be present in the generated data; and each parsed table must
+still carry `header.source_url`, `header.effective_date` and a `rates` array. The last one
+is the one that matters - an inline that silently produced `{}` would pass a name check and
+fail a taxpayer.
+
+**The lib assertion got wider.** Extension 11's rule (every `@theluckystrike/mcp-<x>/lib`
+import in a vendored server must have `x`'s `lib.ts` in `SERVERS`) scanned `index.ts` only.
+per-diem imports `readJsonFile` from `@theluckystrike/mcp-timezone/lib` in **`store.ts`**
+and `isValidZone`, `resolveZone`, `wallIn`, `offsetMinutes` and `zonedToUtc` from the same
+module in **`schemes.ts`**; `index.ts` imports it nowhere. The assertion would have passed
+by not looking. It now scans every file in the server's own `SERVERS` list, which is the
+set that actually gets rewritten. Rechecked against all twenty-two: nothing new fails, and
+the timezone engine's `lib.ts` was already vendored, so the resolution to `../timezone/lib.js`
+holds.
+
+### The plainest endpoint since /mcp/invoice, and that is the finding
+
+`{ factory: createPerDiem }` and nothing else. No `publish`, no `strip`, no
+`persistPublished`, no `sharedDoc`, no raised `maxBytes`. Every previous extension needed at
+least one, and it is worth saying why this one needs none:
+
+- **No output file.** No tool takes an `out_path` and none writes a document. The answers
+  are JSON. So there is no `expandPath` rewrite, no D-R8 species to catch (the bug where a
+  `/\.html?$/` test on an output path calls an HTML file a PDF once the path becomes a URL),
+  and no one-hour download to publish.
+- **No sibling store.** `trip_export` returns the exact `expense_add` **arguments** for a
+  trip, one payload per currency, and writes nothing into the expense ledger - the stdio
+  server's D-P1 decision, taken because `servers/expense-tracker` publishes no `./lib` and
+  its id counter, category-rule matching, VAT split and currency defaulting all live inside
+  its own `expense_add` handler under its own lock. That decision is what removes the
+  `sharedDoc` here: an endpoint that talks about invoices and expenses and hydrates neither.
+- **The saved trips and the per-year counter are the whole tenant document**, written tmp +
+  rename under the homedir shim, inside the default 512 KB cap.
+
+Two response strings named a local install and were patched, the only edits to `index.ts`:
+"Run business_set {name} in the invoice server" and "Pass each payload's `arguments` to the
+expense-tracker server's expense_add tool" now name the caller's own
+`https://mcp.zovo.one/mcp/invoice` and `https://mcp.zovo.one/mcp/expense-tracker`
+endpoints. The shared business profile really is shared across endpoints per token, and the
+transcript below proves it: `business_set` on `/mcp/invoice`, and the trip recorded on
+`/mcp/per-diem` carries `"traveller": "Probe Studio"`.
+
+Caps and hardening are unchanged: the default 512 KB tenant document, the 256 KB request
+body, the JSON-RPC batch rejection, the free/Pro rate limits and the 35-day orphan sweep.
+The free cap is five trips RECORDED per calendar month; `perdiem_rates`, `perdiem_calc` and
+`trip_list` are free and unlimited on every tier, because a per diem rate is public
+information published by a tax authority.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP).
+One POST per call.
+
+```
+$ GET /mcp
+  22 endpoints: ..., billing-docs, deposits, per-diem
+$ GET /mcp/connect                       -> /mcp/per-diem/t/<token> listed, twenty-two rows
+
+$ per-diem tools/list
+  8 tools: perdiem_rates, perdiem_calc, trip_record, trip_list, trip_export,
+  perdiem_report, license_status, license_activate
+
+$ per-diem perdiem_rates {scheme: "pl", country: "Poland"}
+  pl-domestic header: Minister Pracy i Polityki Spolecznej, Poland,
+  "Rozporzadzenie z 29 stycznia 2013 r. ... (Dz.U. 2013 poz. 167), as amended by
+   Dz.U. 2022 poz. 2302",
+  source_url https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20220002302,
+  effective_date 2023-01-01, diet_minor 4500      <- the BUNDLED table, inlined, not fetched
+
+$ per-diem perdiem_calc {scheme: "pl", destination: "Poland",
+      start: "2026-05-04T08:00", end: "2026-05-06T18:00", timezone: "Europe/Warsaw",
+      meals_provided: [["breakfast"], [], []], lodging_nights: 2}
+  total_hours 58, days [3375, 4500, 4500]     <- day 1 less breakfast at 25% (11.25)
+  subsistence PLN 123.75, lodging_minor 13500 (2 x ryczalt 67.50)
+  total PLN 258.75, total_minor 25875
+  source.instrument "... Dz.U. 2022 poz. 2302"
+  the unit test's PL domestic worked example, to the cent
+
+$ per-diem perdiem_calc {scheme: "pl", destination: "Oman", ...}
+  Error: "Oman" is not in the bundled Polish table. Bundled: Poland (domestic) and 34
+  countries abroad. The annex covers more; only the rows that could be stated with
+  confidence are shipped, so a missing country means "not verified here", not "no rate
+  exists". Run perdiem_rates {scheme:"pl"} for the list.
+                          <- NOT Romania's 42.00 EUR via "romania".includes("oman")
+
+$ invoice business_set {name: "Probe Studio", default_currency: "PLN",
+                        default_tax_rate: 23}          (the OTHER endpoint, same token)
+$ per-diem trip_record {name: "Krakow probe ...", scheme: "pl", destination: "Poland",
+      start: "2026-05-04T08:00", end: "2026-05-06T18:00", timezone: "Europe/Warsaw",
+      meals_provided: [["breakfast"], [], []], lodging_nights: 2,
+      project: "acme", purpose: "Client workshop"}
+  TRIP-2026-0001, traveller "Probe Studio", total PLN 258.75
+                          <- the traveller came from the shared profile set on /mcp/invoice
+
+$ per-diem trip_list {}
+  count 1, totals [PLN 258.75], TRIP-2026-0001 PLN 258.75
+
+$ per-diem trip_export {trip: "TRIP-2026-0001"}
+  2 payloads, both {tool: "expense_add", server: "expense-tracker"}:
+    amount 123.75 PLN, category "travel", merchant "Poland", project "acme",
+      note "TRIP-2026-0001 ... | Client workshop | PL per diem, 3 day(s), domestic | ..."
+    amount 135.00 PLN, category "travel/lodging",
+      note "... | 2 night(s), ryczalt za nocleg, 150 percent of the diet per night"
+  how: "Pass each payload's `arguments` to expense_add on your
+        https://mcp.zovo.one/mcp/expense-tracker endpoint, one call per payload."
+  no vat_rate on either payload: an allowance is not a purchase
+
+$ per-diem perdiem_report {}
+  trips 1, by_scheme_and_month [{pl, 2026-05, PLN, trips 1, days 3,
+    subsistence PLN 123.75, lodging PLN 135.00, total PLN 258.75, ids [TRIP-2026-0001]}]
+```
+
+`scripts/validate.mjs` gained `per-diem` to the tools/list sweep plus three real calls
+(`perdiem_rates` on the bundled Polish table, asserted on the instrument, the ISAP source
+url, the effective date and the 45.00 PLN diet, which is the check that the inlined tables
+reached the worker; `perdiem_calc` on the unit-test worked example to the cent with the
+Oman refusal beside it; `trip_record` -> `trip_list` -> `perdiem_report` on the trip id, the
+per-currency total and the pl/2026-05 row), and the index assertion moved from 21 endpoints
+to 22: **remote 80/80, whole run 555/555.**
+
+### Limitations
+
+- The rate tables are as complete as the bundle, and no more: a destination that is not in
+  the shipped file is REFUSED by name rather than priced from a near-match, hosted exactly
+  as over stdio. `perdiem_rates` with no filter is the list of what exists here.
+- The tables are frozen into the deployed bundle, so a rate change is a redeploy, not a
+  cache expiry. That is the design (a figure that changed under the caller between two runs
+  of the same trip is worse than one that is visibly stale) but on a hosted endpoint the
+  caller cannot see the build date, only `header.retrieved_date` and `effective_date` in
+  every answer.
+- The free tier counts five trips RECORDED per calendar month. The probes ran on a Pro key,
+  so the hosted cap refusal and the Pro gate on `trip_export` and `perdiem_report` are
+  asserted only by the stdio suite, as are the concurrency and corrupt-store rows.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Concurrent requests on one token remain last-write-wins on the tenant
+  document, unchanged since Extension 1. The trip-id counter is written before the row on
+  each request, so a lost write burns an id rather than reusing one.
+- `trip_export` deliberately writes nothing into `/mcp/expense-tracker`: the caller makes
+  those `expense_add` calls. Hosted, that is two endpoints and two POSTs rather than one
+  tool, and it is the same trade the stdio server makes for the same reason.
+- `invoice business_set`'s success message lists the servers that read the shared profile
+  and does not yet name per-diem. That string lives in `servers/invoice/src/index.ts`,
+  outside this unit's write scope.

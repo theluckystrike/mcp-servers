@@ -75,6 +75,105 @@ function storedZip(entries) {
 }
 
 const PROBES = {
+  "per-diem": async (c, tmp, tier, ok) => {
+    // The shared business profile is seeded directly rather than by spawning
+    // servers/invoice: a failure here has to mean per-diem failed. The numbers asserted
+    // below are the ones servers/per-diem/test/unit.test.mjs works out by hand, so this
+    // probe fails if the arithmetic moves, not only if the shape does.
+    const profDir = join(tmp, "data", "mcp-servers", "profile");
+    mkdirSync(profDir, { recursive: true });
+    writeFileSync(join(profDir, "business.json"), JSON.stringify({ name: "Nova Studio", address: "1 Main St\nWarsaw", default_currency: "PLN" }, null, 2));
+
+    // 1. The rates are free on both tiers and carry their provenance. Poland, filtered.
+    const rates = await c.tool("perdiem_rates", { scheme: "pl", country: "Poland" });
+    ok(`${tier}: perdiem_rates carries the authority, instrument, source URL and effective date`,
+      !rates.isError && /Dz\.U\. 2022 poz\. 2302/.test(rates.text) && /https:\/\/isap\.sejm\.gov\.pl/.test(rates.text) && /"effective_date": "2023-01-01"/.test(rates.text) && /"currency": "PLN"/.test(rates.text),
+      rates.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 2. The worked example from the unit tests: 58 hours to Poland, breakfast free on
+    // the first day, two nights. 33.75 + 45.00 + 45.00 = PLN 123.75 of diets, plus the
+    // ryczalt 2 x 67.50 = PLN 135.00, total PLN 258.75. The third day is a 10-hour
+    // remainder, which is over 8 hours, so it pays a WHOLE diet rather than half.
+    const pl = await c.tool("perdiem_calc", { scheme: "pl", destination: "Poland", start: "2026-06-02T08:00:00+02:00", end: "2026-06-04T18:00:00+02:00", meals_provided: [["breakfast"]], lodging_nights: 2 });
+    const plDoc = pl.isError ? {} : JSON.parse(pl.text);
+    ok(`${tier}: perdiem_calc prices 58 h in Poland at PLN 258.75 (123.75 diets + 135.00 lodging)`,
+      !pl.isError && plDoc.total === "PLN 258.75" && plDoc.total_minor === 25875 && plDoc.subsistence_minor === 12375 && plDoc.lodging_minor === 13500 && plDoc.total_hours === 58,
+      `${plDoc.total} in ${plDoc.total_hours} h`);
+    ok(`${tier}: the free breakfast takes 25 percent off day 1 and the 10-hour remainder pays a whole diet`,
+      !pl.isError && plDoc.days?.length === 3 && plDoc.days[0].amount_minor === 3375 && plDoc.days[0].meal_deduction_minor === 1125 && plDoc.days[2].amount_minor === 4500 && /over 8 hours/.test(plDoc.days[2].basis),
+      `day1 ${plDoc.days?.[0]?.amount_minor} day3 ${plDoc.days?.[2]?.basis}`);
+
+    // 3. The UK band, and the pro rata deduction this server states as its own reading.
+    // 16 hours ongoing at 8pm is the GBP 25.00 band, one free lunch is a third of it.
+    const uk = await c.tool("perdiem_calc", { scheme: "uk", destination: "United Kingdom", start: "2026-06-02T07:00:00+01:00", end: "2026-06-02T23:00:00+01:00", meals_provided: [["lunch"]] });
+    const ukDoc = uk.isError ? {} : JSON.parse(uk.text);
+    ok(`${tier}: the UK 15-hour band pays GBP 25.00 less GBP 8.33 for a provided lunch = GBP 16.67`,
+      !uk.isError && ukDoc.total === "GBP 16.67" && ukDoc.total_minor === 1667 && ukDoc.days?.[0]?.meal_deduction_minor === 833,
+      `${ukDoc.total}`);
+
+    // 4. THE ONE THAT MATTERS. Oman is not one of the 34 bundled countries, and
+    // "romania".includes("oman") is true: the first build priced this trip at Romania's
+    // EUR 42.00. It must be refused by name, and it must say "not verified here" rather
+    // than claim no rate exists.
+    const oman = await c.tool("perdiem_calc", { scheme: "pl", destination: "Oman", start: "2026-06-02T08:00:00+02:00", end: "2026-06-03T18:00:00+02:00" });
+    ok(`${tier}: a country outside the 34 bundled rows is refused by name, not matched by substring`,
+      oman.isError && /"Oman" is not in the bundled Polish table/.test(oman.text) && /not verified here/.test(oman.text) && !/42\.00/.test(oman.text) && !/EUR/.test(oman.text),
+      oman.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 5. The other honest gap: the HMRC overseas per-city table is not bundled at all, so
+    // a foreign destination under the uk scheme is refused and points at the source.
+    const paris = await c.tool("perdiem_calc", { scheme: "uk", destination: "Paris", start: "2026-06-02T07:00:00+01:00", end: "2026-06-02T23:00:00+01:00" });
+    ok(`${tier}: the unbundled HMRC overseas table is refused by name rather than guessed`,
+      paris.isError && /NOT BUNDLED/.test(paris.text) && /overseas scale rates/.test(paris.text),
+      paris.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 6. A trip is saved with a TRIP-YYYY-NNNN id and the traveller from the profile.
+    const rec = await c.tool("trip_record", { name: "Krakow audit", scheme: "pl", destination: "Poland", start: "2026-06-02T08:00:00+02:00", end: "2026-06-04T18:00:00+02:00", meals_provided: [["breakfast"]], lodging_nights: 2 });
+    const recDoc = rec.isError ? {} : JSON.parse(rec.text);
+    ok(`${tier}: trip_record saves TRIP-2026-0001 at PLN 258.75 with the traveller from the shared profile`,
+      !rec.isError && /^TRIP-\d{4}-0001$/.test(recDoc.recorded?.id || "") && recDoc.recorded?.total === "PLN 258.75" && recDoc.recorded?.traveller === "Nova Studio",
+      `${recDoc.recorded?.id} ${recDoc.recorded?.traveller}`);
+    ok(`${tier}: trip_record ${tier === "pro" ? "carries no free-tier counter" : "names the count of the month's five free trips"}`,
+      tier === "pro" ? !/Free tier/.test(rec.text) : /Free tier: 1 of 5 trips recorded in 2026-06/.test(rec.text),
+      rec.text.replace(/\s+/g, " ").slice(0, 110));
+
+    // 7. trip_list is free on both tiers and totals per currency, never across them.
+    const list = await c.tool("trip_list", {});
+    ok(`${tier}: trip_list is free on both tiers and totals per currency`,
+      !list.isError && /PLN 258\.75/.test(list.text) && !/mcp\.zovo\.one\/buy/.test(list.text),
+      list.text.replace(/\s+/g, " ").slice(0, 110));
+
+    // 8. The two Pro gates. trip_export hands back expense_add arguments in MAJOR units
+    // and writes nothing; perdiem_report totals per scheme and per month.
+    const exp = await c.tool("trip_export", { trip: "TRIP-2026-0001" });
+    ok(`${tier}: trip_export is ${tier === "pro" ? "allowed and returns expense_add payloads in major units" : "Pro and names the buy link"}`,
+      tier === "pro" ? !exp.isError && /expense_add/.test(exp.text) && /258\.75/.test(exp.text) && !/vat_rate/.test(exp.text) : exp.isError && /mcp\.zovo\.one\/buy\/per-diem/.test(exp.text),
+      exp.text.replace(/\s+/g, " ").slice(0, 130));
+    const rep = await c.tool("perdiem_report", {});
+    ok(`${tier}: perdiem_report is ${tier === "pro" ? "allowed and totals per scheme" : "Pro and names the buy link"}`,
+      tier === "pro" ? !rep.isError && /PLN/.test(rep.text) && /"pl"/.test(rep.text) : rep.isError && /mcp\.zovo\.one\/buy\/per-diem/.test(rep.text),
+      rep.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 9. The free cap counts SAVED trips only, never calculations. One is stored, so the
+    // fifth lands and the sixth is refused naming the count and the buy link.
+    let lastTrip = null;
+    for (let n = 2; n <= 6; n++) {
+      lastTrip = await c.tool("trip_record", { name: `Trip ${n}`, scheme: "pl", destination: "Poland", start: "2026-06-10T08:00:00+02:00", end: "2026-06-10T20:00:00+02:00" });
+    }
+    ok(`${tier}: the 6th trip started in one month is ${tier === "pro" ? "allowed" : "refused, naming the count and the buy link"}`,
+      tier === "pro" ? !lastTrip.isError && /TRIP-\d{4}-0006/.test(lastTrip.text) : lastTrip.isError && /mcp\.zovo\.one\/buy\/per-diem/.test(lastTrip.text) && /5/.test(lastTrip.text),
+      lastTrip.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // A trip starting in another month is not blocked by this month's five, and pricing
+    // one is never blocked at all: the tables are public regulation.
+    const nextMonth = await c.tool("trip_record", { name: "July trip", scheme: "pl", destination: "Poland", start: "2026-07-02T08:00:00+02:00", end: "2026-07-02T20:00:00+02:00" });
+    ok(`${tier}: a trip starting in another month is not blocked by this month's count`,
+      !nextMonth.isError && /TRIP-\d{4}-\d{4}/.test(nextMonth.text), nextMonth.text.replace(/\s+/g, " ").slice(0, 110));
+    const stillFree = await c.tool("perdiem_calc", { scheme: "pl", destination: "Poland", start: "2026-06-20T08:00:00+02:00", end: "2026-06-20T20:00:00+02:00" });
+    ok(`${tier}: pricing a trip is never capped, even with the month's five already saved`,
+      !stillFree.isError && /"total"/.test(stillFree.text) && !/mcp\.zovo\.one\/buy/.test(stillFree.text),
+      stillFree.text.replace(/\s+/g, " ").slice(0, 110));
+  },
   deposits: async (c, tmp, tier, ok) => {
     // Same reasoning as billing-docs: the invoice store is seeded directly rather than by
     // spawning servers/invoice, so a failure here means deposits failed. INV-2026-0001 is
@@ -522,12 +621,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 21 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 21 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 22 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 22 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -710,6 +809,35 @@ async function remote() {
     ok("hosted deposit_statement_pdf download is the HTML statement served text/html, titled DEPOSIT STATEMENT, closing on what is still held",
       dbody.startsWith("<!doctype html") && dbody.includes("<h1>DEPOSIT STATEMENT") && dbody.includes(dclient) && /EUR 150\.00 is still held/.test(dbody) && (dres?.headers.get("content-type") || "").startsWith("text/html"),
       `${ddl ? "link" : "no link"} ${dres?.headers.get("content-type")}`);
+    // Extension 13: /mcp/per-diem. The three calls are the ones that could only pass if
+    // the five bundled JSON rate tables travelled into the worker bundle: over stdio they
+    // are files beside the module, and build-vendor.mjs inlines their bytes instead.
+    const prat = await rpc("per-diem", { jsonrpc: "2.0", id: 78, method: "tools/call", params: { name: "perdiem_rates", arguments: { scheme: "pl", country: "Poland" } } });
+    const pratTxt = JSON.stringify(prat).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    ok("hosted perdiem_rates returns the BUNDLED Polish table with its provenance (Dz.U. 2022 poz. 2302, the ISAP source url, the 45.00 PLN domestic diet)",
+      /Dz\.U\. 2022 poz\. 2302/.test(pratTxt) && /isap\.sejm\.gov\.pl/.test(pratTxt) && /"diet_minor": 4500/.test(pratTxt) && /"effective_date": "20\d\d-\d\d-\d\d"/.test(pratTxt),
+      pratTxt.slice(0, 110));
+    // The unit-test worked example, to the cent: 2026-05-04 08:00 -> 05-06 18:00 Warsaw is
+    // 58 hours = two 24-hour doby plus a 10-hour remainder, one free breakfast on day 1
+    // (-25%), 2 nights of ryczalt. 33.75 + 45.00 + 45.00 = 123.75, plus 135.00 = 258.75.
+    const pcalc = await rpc("per-diem", { jsonrpc: "2.0", id: 79, method: "tools/call", params: { name: "perdiem_calc", arguments: { scheme: "pl", destination: "Poland", start: "2026-05-04T08:00", end: "2026-05-06T18:00", timezone: "Europe/Warsaw", meals_provided: [["breakfast"], [], []], lodging_nights: 2 } } });
+    let pc = {}; try { pc = JSON.parse(pcalc.result.content[0].text); } catch { pc = {}; }
+    const pom = await rpc("per-diem", { jsonrpc: "2.0", id: 80, method: "tools/call", params: { name: "perdiem_calc", arguments: { scheme: "pl", destination: "Oman", start: "2026-05-04T08:00", end: "2026-05-05T08:00", timezone: "Europe/Warsaw" } } });
+    ok("hosted perdiem_calc matches the unit-test worked example to the cent (58 h, days 33.75/45.00/45.00, PLN 258.75) and refuses a country that is not bundled rather than pricing a near-match",
+      pc.total === "PLN 258.75" && pc.total_minor === 25875 && pc.total_hours === 58 && JSON.stringify(pc.days?.map((d) => d.amount_minor)) === "[3375,4500,4500]" && pc.subsistence === "PLN 123.75" && pc.lodging_minor === 13500 &&
+      pom.result?.isError === true && /not in the bundled Polish table/.test(JSON.stringify(pom)) && /not verified here/.test(JSON.stringify(pom)),
+      `${pc.total} ${JSON.stringify(pom).slice(0, 80)}`);
+    const ptrip = `Krakow probe ${Date.now()}`;
+    const prec = await rpc("per-diem", { jsonrpc: "2.0", id: 81, method: "tools/call", params: { name: "trip_record", arguments: { name: ptrip, scheme: "pl", destination: "Poland", start: "2026-05-04T08:00", end: "2026-05-06T18:00", timezone: "Europe/Warsaw", meals_provided: [["breakfast"], [], []], lodging_nights: 2, project: "acme", purpose: "Client workshop" } } });
+    const ptid = (JSON.stringify(prec).match(/TRIP-\d{4}-\d{4}/) || [])[0];
+    const plist = await rpc("per-diem", { jsonrpc: "2.0", id: 82, method: "tools/call", params: { name: "trip_list", arguments: { destination: "Poland" } } });
+    const prep = await rpc("per-diem", { jsonrpc: "2.0", id: 83, method: "tools/call", params: { name: "perdiem_report", arguments: { from: "2026-05", to: "2026-05" } } });
+    const plistTxt = JSON.stringify(plist).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const prepTxt = JSON.stringify(prep).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    ok("hosted trip_record persists the trip (traveller from the shared business profile), trip_list totals it per currency and perdiem_report names it under pl/2026-05",
+      !!ptid && new RegExp(`"id": "${ptid}"`).test(plistTxt) && /"total": "PLN 258\.75"/.test(plistTxt) && /"currency": "PLN"/.test(plistTxt) &&
+      new RegExp(`"${ptid}"`).test(prepTxt) && /"scheme": "pl",\s*"month": "2026-05"/.test(prepTxt) && /"days": \d+/.test(prepTxt),
+      `${ptid} ${prepTxt.slice(0, 90)}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
@@ -753,7 +881,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
