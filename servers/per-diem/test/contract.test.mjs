@@ -55,7 +55,7 @@ test("the version is one number: package.json, src/version.ts, serverInfo and ev
       assert.equal(p.version, pkg.version, `${file} package entry version`);
       assert.equal(p.transport.type, "stdio", `${file} is stdio only: this server is not hosted`);
       if (p.registryType === "mcpb") {
-        assert.equal(p.fileSha256, "TBD", `${file} carries a real fileSha256 before the bundle exists`);
+        assert.ok(p.fileSha256 === "TBD" || /^[0-9a-f]{64}$/.test(p.fileSha256), `${file} fileSha256 must be TBD before the first release or a sha256 hex after`);
       }
     }
     if (file === "server.mcpb.json") {

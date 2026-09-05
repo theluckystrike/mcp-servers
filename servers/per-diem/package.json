@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-per-diem",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Daily travel allowances on bundled public rate tables: Poland, HMRC and GSA.",
   "type": "module",
   "bin": {
@@ -52,8 +52,8 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/per-diem",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.12.0",
-    "@theluckystrike/mcp-timezone": "^0.12.0",
+    "@theluckystrike/mcp-license": "^0.13.0",
+    "@theluckystrike/mcp-timezone": "^0.13.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

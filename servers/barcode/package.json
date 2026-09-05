@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-barcode",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "QR codes and barcodes from chat: URLs, WiFi joins, vCards, SEPA payment QR that a banking app can scan, Code 128 and EAN-13, as SVG or PNG. No network, no account.",
   "type": "module",
   "bin": {
@@ -52,7 +52,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/barcode",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.12.0",
+    "@theluckystrike/mcp-license": "^0.13.0",
     "jimp": "^1.6.1",
     "qrcode": "^1.5.4",
     "zod": "^3.25.0"
