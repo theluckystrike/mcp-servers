@@ -1,0 +1,166 @@
+{
+  "at": "2026-09-05T20:00:00Z",
+  "round": 23,
+  "compares_to": "data/user_value_r22.json (per-diem, stdio, 17/18), same six prompts",
+  "scope": "hosted single-lane re-run of per-diem with the round 22 stdio prompts, per-diem and expense-tracker registered on one anonymous token per docs/REMOTE_RESULT.md Extension 13 (per-diem hosted at /mcp/per-diem, tables inlined into the worker bundle; trip_export returns an expense_add-ready payload but writes nothing itself, so expense-tracker is registered to verify no expense record was ever created). No code was changed as part of this round; it is measurement only.",
+  "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -m 15 -> 200 text/html, minted anon_4b150a6acefb572f9ff413e89f590d18. Registration: one mcp.json, two http entries, both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header anywhere: per-diem (the lane under test) and expense-tracker (registered only to verify trip_export's Pro gate never lands a write there). Seed: one curl tools/call, business_set on /mcp/invoice under the same token (Nova Studio, Europe/Warsaw, EUR), the profile per-diem's trip_record and perdiem_rates read for the traveller and the home-scheme hint; this deliberately differs from round 22's stdio seed, which used PLN as default_currency so the home scheme resolved to pl -- here it resolves to none, surfaced verbatim in p4. The per-diem trip store itself started empty. Allowlist: 21 explicit mcp__per-diem__<tool> and mcp__expense-tracker__<tool> entries read from a live tools/list of each endpoint (per-diem 8, expense-tracker 14, both hosted lists add license_status and license_activate over the 6 stdio round 22 counted), no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the two http entries above, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation. Each of the six prompts run as its own isolated shell invocation, one bounded request per prompt under timeout 240, each transcript read back in full before the next prompt ran. The CLI's own filesystem and search tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r23pd/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME, XDG_STATE_HOME under /private/tmp/uv-r23pd/xdg set in the server environment block only, never CLAUDE_CONFIG_DIR; the servers are hosted so this only guards the CLI's own local footprint, not the store, which lives in the worker per Extension 13 (the rate tables are inlined bytes, no download, no network, no shared store for those; trip_record/trip_list/trip_export do use the token's KV-backed trip store). npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Tool-call counts are calls that reached the server; they exclude the client's own ToolSearch schema lookups. Host machine day 2026-09-05 (Saturday). Verification: every figure the model reported was re-derived by calling the same tools directly over curl on the same token afterwards -- perdiem_calc for all four scenarios, trip_list, perdiem_report and expense_list.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, minted anon_4b150a6acefb572f9ff413e89f590d18",
+    "registration": "one lane, two http entries (per-diem, expense-tracker), both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; connected first try",
+    "tools_list": {
+      "per-diem": 8,
+      "expense-tracker": 14
+    },
+    "seed": "business_set on /mcp/invoice under the token (Nova Studio, Europe/Warsaw, EUR default_currency) before any prompt ran, per the task recipe; the per-diem trip store and the expense-tracker store both started empty"
+  },
+  "scenarios": [
+    {
+      "server": "per-diem",
+      "surface": "hosted/per-diem",
+      "id": "p1",
+      "prompt": "I left Warsaw on Tuesday 5 May 2026 at 8am and got back on Thursday 7 May at 6pm. The trip was to Krakow, I stayed two hotel nights, and breakfast was provided on the first day. What per diem am I owed?",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 20.2,
+      "tools": [
+        "perdiem_calc",
+        "perdiem_calc"
+      ],
+      "note": "First perdiem_calc {destination: Krakow} came back isError, 'Krakow' is not in the bundled Polish table; the model read the message, said Krakow is domestic and retried with destination Poland, which returned total_hours 58, subsistence PLN 123.75 and lodging PLN 135.00 for PLN 258.75. Direct curl on the same token afterwards returns identical day lines and total_minor 25875. The model closed the loop itself in one extra turn rather than asking the user anything, then relayed the ryczalt-is-receipt-alternative caveat from the tool's own notes. Round 22 stdio needed only one call because it passed Poland directly; the destination mismatch and self-correction are new here, the final number and every caveat are unchanged."
+    },
+    {
+      "server": "per-diem",
+      "surface": "hosted/per-diem",
+      "id": "p2",
+      "prompt": "Different question, UK now. On 12 May 2026 one of our people left at 7am and was still travelling at 11pm, so 16 hours, a UK domestic journey. Lunch was free that day. What does the HMRC benchmark scale rate give?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.4,
+      "tools": [
+        "perdiem_calc"
+      ],
+      "note": "One perdiem_calc returned GBP 16.67, the GBP 25.00 fifteen-hour band less GBP 8.33 for the free lunch. Identical to round 22 stdio: one call, right number, and the closing line about a possible late-evening supplement is the model's own suggestion (offered, not asserted, and correctly conditioned on a meal purchase the user never mentioned), not something perdiem_calc would add to a fewer-than-three-meal band."
+    },
+    {
+      "server": "per-diem",
+      "surface": "hosted/per-diem",
+      "id": "p3",
+      "prompt": "Now a US one on the GSA standard rate. Arrived 1 June 2026 at 10am Eastern, flew home 3 June at 4pm, so three calendar days and two nights in a hotel, no meals provided. What can we claim?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.4,
+      "tools": [
+        "perdiem_calc"
+      ],
+      "note": "One perdiem_calc returned USD 170.00 of M&IE (51 + 68 + 51 at 75/100/75 percent) and lodging described correctly as a USD 115.00-a-night receipted cap, USD 230.00 at most, not a payment. timezone America/New_York passed unprompted, which is what makes the three calendar-day split land. Identical to round 22 stdio in call count, number and framing."
+    },
+    {
+      "server": "per-diem",
+      "surface": "hosted/per-diem",
+      "id": "p4",
+      "prompt": "Back to the Polish rules. We are sending someone to Oman, out 1 June 2026 at 8am Warsaw time and back on 3 June at 6pm. What is the foreign dieta for that?",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 14.2,
+      "tools": [
+        "perdiem_calc",
+        "perdiem_rates"
+      ],
+      "note": "perdiem_calc on Oman came back isError naming the same gap as round 22: 34 of roughly 120 annex countries bundled, Oman not among them. perdiem_rates {scheme:pl} confirmed the coverage, and its header now also reads 'the shared profile's default_currency EUR matches no bundled scheme (pl, uk, us), so there is no home scheme' -- a genuine hosted-only difference from round 22, which seeded PLN and got a pl home hint, caused by this round's task-specified EUR profile rather than by anything server-side. The refusal itself was relayed in the server's own terms, no rate invented, and the model offered to run the day-and-hour math once a rate is supplied, same as round 22."
+    },
+    {
+      "server": "per-diem",
+      "surface": "hosted/per-diem",
+      "id": "p5",
+      "prompt": "Please save the Krakow one as \"Krakow client visit\", and then tell me what trips we have on file now.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 12.1,
+      "tools": [
+        "trip_record",
+        "trip_list"
+      ],
+      "note": "trip_record saved TRIP-2026-0001 at PLN 258.75, traveller Nova Studio resolved from the shared profile; trip_list read back count 1, PLN 258.75. curl on the same token afterwards agrees exactly. The model rebuilt the p1 arguments from the conversation and correctly told the user the UK and US turns were not saved because they were only calculations. One regression from round 22: the raw trip_record result carried the free-tier note 'Free tier: 1 of 5 trips recorded in 2026-05' verbatim, and this time the model's final answer dropped it, where round 22 relayed it. The core ask, save and list, is fully and correctly answered either way, so this stays a 3 with the omission noted rather than scored down."
+    },
+    {
+      "server": "per-diem",
+      "surface": "hosted/per-diem",
+      "id": "p6",
+      "prompt": "Last thing: give me the report of totals per scheme and month so I can put it in the month end pack.",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 11.6,
+      "tools": [
+        "license_status"
+      ],
+      "note": "Unlike round 22, license_status was allowlisted this round and the model called it instead of perdiem_report: tier free, upgradeUrl https://mcp.zovo.one/buy/per-diem?tenant=... . It never called perdiem_report at all, so it never saw that tool's own refusal text or its src-tagged buy link (curl on the same token afterwards returns 'the per diem report is a Pro feature ... Buy at https://mcp.zovo.one/buy/per-diem?tenant=anon_...&src=per-diem.perdiem_report'). It then built the report itself from the p5 trip_list, one row, pl 2026-05, PLN 258.75, correctly declined to purchase Pro unasked, and offered to save the UK/US trips or point at the Pro tool -- but its own final text names no URL at all, worse on that count than round 22, which at least relayed a price. The figure is right only because one trip in one currency exists; expense-tracker's expense_list on the same token reads count 0 afterwards, confirming trip_export (also Pro) was never called and nothing was fabricated into the expense store. Same family as D-R90: a free, allowed tool (license_status) answered a question the Pro tool (perdiem_report) exists to gate, and the report was reconstructed client-side rather than bought or refused in the tool's own words."
+    }
+  ],
+  "totals": {
+    "score": 17,
+    "max": 18,
+    "pct": 94,
+    "tool_calls": 9,
+    "seconds": 78.9,
+    "tool_errors": 2,
+    "denied_calls": 0,
+    "clarifying_turns": 0,
+    "per_server": {
+      "per-diem": {
+        "score": 17,
+        "max": 18,
+        "tool_calls": 9,
+        "seconds": 78.9,
+        "score_r22": 17
+      }
+    }
+  },
+  "verification": [
+    {
+      "claim": "The Polish domestic figure the model reported after its self-correction is what the server computes",
+      "evidence": "perdiem_calc {scheme:pl, destination:Poland, start:2026-05-05T08:00, end:2026-05-07T18:00, timezone:Europe/Warsaw, meals_provided:[[breakfast],[],[]], lodging_nights:2} over curl on the same token returns total_hours 58, subsistence PLN 123.75, lodging PLN 135.00, total_minor 25875 (PLN 258.75), matching the model's turn 1 answer",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "GBP 16.67 and USD 170.00/USD 230.00-cap are the server's numbers, unchanged from stdio",
+      "evidence": "perdiem_calc {scheme:uk, ...} returns amount_minor 1667; perdiem_calc {scheme:us, timezone:America/New_York, lodging_nights:2} returns subsistence_minor 17000, lodging_minor 23000, lodging_basis a receipted cap -- both identical to the round 22 stdio verification",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Oman is genuinely outside the bundled annex, and the home-scheme note is a real, EUR-caused difference from round 22's PLN seed",
+      "evidence": "perdiem_calc {scheme:pl, destination:Oman, ...} returns isError naming 34 bundled countries; perdiem_rates {scheme:pl} on this token's profile (default_currency EUR) returns home: 'the shared profile's default_currency EUR matches no bundled scheme (pl, uk, us), so there is no home scheme', where round 22's PLN-seeded profile resolved to pl",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "TRIP-2026-0001 is in the store with the traveller from the shared profile",
+      "evidence": "trip_list {} over curl on the same token after the run: count 1, PLN 258.75, TRIP-2026-0001 'Krakow client visit', traveller Nova Studio, scheme pl, part domestic, 3 days, total_minor 25875",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "perdiem_report is Pro-gated with a src-tagged buy link the model never surfaced because it never called the tool",
+      "evidence": "perdiem_report {} over curl on the model's own store: isError, 'the per diem report is a Pro feature ... Buy at https://mcp.zovo.one/buy/per-diem?tenant=anon_4b150a6acefb572f9ff413e89f590d18&src=per-diem.perdiem_report'; the model's p6 transcript shows only a license_status call, never a perdiem_report call, and its final text names no URL",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "trip_export was never called and no expense record exists on the paired expense-tracker token",
+      "evidence": "expense_list {} over curl on the same token after the run: count 0, totals_per_currency [], confirming no expense_add landed from a fabricated trip_export payload",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R90",
+      "server": "per-diem",
+      "status": "open, client-side, reproduces hosted with a new shape",
+      "note": "Round 22 stdio: the model called perdiem_report, got the Pro refusal, relayed the price but dropped the buy URL, then reconstructed the report client-side from trip_list. This round: the model never called perdiem_report at all, calling license_status instead (now allowlisted) and reconstructing the report from the same trip_list without ever seeing perdiem_report's own src-tagged refusal text. The end state for the user is the same or slightly worse: a right-by-luck one-row table (right only because a single trip in a single currency exists) and zero working links to actually buy the tool that would compute it correctly at any scale. Not a new defect: same family, same root cause (a free tool answering a question the Pro tool exists to gate), one call further from the gate than round 22."
+    },
+    {
+      "id": "D-R92",
+      "server": "per-diem",
+      "status": "open, client-side, first seen this round",
+      "note": "p5's trip_record response carries 'Free tier: 1 of 5 trips recorded in 2026-05' in the same place round 22's did, and this time the model's final answer dropped it where round 22 relayed it verbatim. Low severity -- the user got the save and the list correctly -- but it is the same class of loss as D-R90: a server-supplied line that would help the user plan ahead (here, the free-tier ceiling) reached the model and did not reach the user."
+    }
+  ],
+  "bottom_line": "17 of 18 hosted, matching round 22's 17 of 18 over stdio on the identical six prompts, now reached through https://mcp.zovo.one/mcp/per-diem/t/<token> with the tables travelling as inlined bytes in the worker per REMOTE_RESULT.md Extension 13. Five clean 3s: the Polish domestic diet still lands at PLN 258.75 (this time after the model self-corrected a Krakow-vs-Poland destination miss inside the same turn, without asking the user), the HMRC 15-hour band still GBP 16.67, the GSA CONUS standard still USD 170.00 of M&IE with the lodging cap correctly described as a ceiling, the Oman gap still refused in the server's own terms, and TRIP-2026-0001 saved and read back correctly, with the free-tier counter dropped from the final answer this time though present in the tool result. The single 2 is p6, the same shape defect as round 22 (D-R90) one call further from the gate: the model reached for the free license_status tool instead of perdiem_report itself, so it never saw that tool's own src-tagged buy link, and it built the report client-side from trip_list, right only because there is exactly one trip in one currency. expense-tracker's expense_list on the same token reads count 0 afterwards, confirming trip_export was never invoked and nothing leaked into the paired server. The one substantive hosted-vs-stdio difference that is not a defect is p4's home-scheme note, a direct, expected consequence of this round's EUR business profile (as specified) rather than round 22's PLN one."
+}
