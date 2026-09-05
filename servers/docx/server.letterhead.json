@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/letterhead",
+  "description": "Print your business letterhead on Word docs, proposals and contracts from chat.",
+  "version": "0.9.4",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/docx"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/docx",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.4/docx.mcpb",
+      "version": "0.9.4",
+      "fileSha256": "223ccbb38332eda855130ac88e68e4055f3e08c1230b98564e20734c331fdded",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

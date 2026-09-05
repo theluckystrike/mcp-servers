@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-09-05",
+  "cap_minutes": 30,
+  "source": "docs/INTEL_R9.md variant-candidates table (12 uncapped tokens under 100 results, each pre-mapped to an existing server)",
+  "method": {
+    "registry_probe": "Single bounded GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, curl -s -m 15, first page only, sequential, no background loops.",
+    "selection_rule": "Confirmed each honest candidate's token count < 100 and no theluckystrike match on page 1 before publishing. Applied the honesty rule from the brief: publish only where the server's actual tools genuinely do the thing; signature/e-sign skipped outright (no server signs anything); escrow skipped unless invoice truly tracks escrow (it does not). Enforced max one new variant per server this round.",
+    "publish": "server.<token>.json per server, name io.github.theluckystrike/<token>, version 0.9.4, stdio-only mcpb package reusing the SAME GitHub release asset URL and fileSha256 as that server's existing server.mcpb.json at v0.9.4 (no remotes[]). Login via `mcp-publisher login github -token \"$(gh auth token)\"`, publish via `yes y | mcp-publisher publish <file>`.",
+    "findable_share_formula": "p = min(1, 10/our_rank) if matched on page 1, else 0. This round's 100-token set = the NAMING_R4 97-token set plus the 3 new tokens published this round. The R4 per-token p-values were not individually persisted, only the aggregate share (49.77% over 97 tokens); the pre-existing sum of p is reconstructed from that published aggregate (49.77% x 97 = ~48.28) and the 3 new tokens' p-values are added on exactly, so the 97-token portion is a reconstruction, not a re-probe, while the 3 new tokens are exact."
+  },
+  "candidates_from_intel_r9": [
+    { "token": "letterhead", "count": 28, "mapped_server": "docx", "decision": "PUBLISH", "reason": "docx's own doc_create/business_set tools literally print a business letterhead (name, email, logo, brand colour) on every proposal, contract and letter -- the word 'letterhead' appears verbatim in the tool descriptions." },
+    { "token": "label", "count": 29, "mapped_server": "barcode", "decision": "PUBLISH", "reason": "barcode_create and qr_create generate scannable labels (barcodes/QR codes) for products and packages -- a literal fit, no stretch." },
+    { "token": "appointment", "count": 5, "mapped_server": "calendar", "decision": "PUBLISH", "reason": "events_list, free_busy, conflicts and next_event operate on calendar appointments read from .ics -- genuine fit." },
+    { "token": "inventory", "count": 13, "mapped_server": "price-tracker", "decision": "SKIP", "reason": "price-tracker only watches prices (price_check, watch_add/list/remove, price_history) -- no stock/quantity/SKU tracking tool exists. Calling it 'inventory' would be dishonest." },
+    { "token": "depreciation", "count": 1, "mapped_server": "expense-tracker", "decision": "SKIP", "reason": "expense-tracker logs expenses, receipts and mileage -- no asset depreciation schedule tool. Depreciation belongs to the separate asset-register server proposed (not yet built) in INTEL_R9, not to expense-tracker." },
+    { "token": "signature", "count": 6, "mapped_server": "docx / clauses", "decision": "SKIP", "reason": "explicit honesty rule from the brief: no server actually signs or e-signs anything." },
+    { "token": "e-sign", "count": 14, "mapped_server": "docx / clauses", "decision": "SKIP", "reason": "same as signature -- no server performs e-signature; explicitly excluded by the brief." },
+    { "token": "followup", "count": 7, "mapped_server": "recurring", "decision": "SKIP", "reason": "recurring only generates invoices on schedule and forecasts revenue (schedule_upcoming, invoice_generate_due, forecast) -- it does not chase or nudge clients about outstanding items. 'followup' implies an active nudge the server does not perform." },
+    { "token": "shipping", "count": 15, "mapped_server": "barcode", "decision": "SKIP", "reason": "barcode already used its one new name this round on 'label' (higher score, more literal fit); shipping would also overstate barcode as a shipping/logistics tool, which it is not." },
+    { "token": "envelope", "count": 3, "mapped_server": "docx", "decision": "SKIP", "reason": "docx already used its one new name this round on 'letterhead'; docx also has no envelope-printing template or capability distinct from its document generator." },
+    { "token": "escrow", "count": 10, "mapped_server": "recurring / invoice", "decision": "SKIP", "reason": "explicit brief instruction: skip escrow unless invoice truly tracks escrow. invoice only has client_add/invoice_create/invoice_mark_paid/overdue_report -- no held-funds or milestone-release tracking. Dishonest to claim." },
+    { "token": "refund", "count": 4, "mapped_server": "invoice", "decision": "SKIP", "reason": "invoice_mark_paid records payments (full or partial) but has no refund/credit-note tool. That capability lives in the separate credit-note server proposed in INTEL_R9, not yet built. Claiming refund on invoice would be dishonest." }
+  ],
+  "published_this_round": [
+    {
+      "server": "docx",
+      "token": "letterhead",
+      "registry_name": "io.github.theluckystrike/letterhead",
+      "description": "Print your business letterhead on Word docs, proposals and contracts from chat.",
+      "count_before": 28,
+      "rank_before": null,
+      "count_after": 29,
+      "rank_after": 29,
+      "p_after": 0.3448
+    },
+    {
+      "server": "barcode",
+      "token": "label",
+      "registry_name": "io.github.theluckystrike/label",
+      "description": "Generate barcode and QR labels offline for products, packages and assets.",
+      "count_before": 29,
+      "rank_before": null,
+      "count_after": 30,
+      "rank_after": 30,
+      "p_after": 0.3333
+    },
+    {
+      "server": "calendar",
+      "token": "appointment",
+      "registry_name": "io.github.theluckystrike/appointment",
+      "description": "Read your .ics calendar for appointments, free-busy windows and conflicts.",
+      "count_before": 5,
+      "rank_before": null,
+      "count_after": 6,
+      "rank_after": 6,
+      "p_after": 1.0
+    }
+  ],
+  "findable_share": {
+    "n_tokens_before": 97,
+    "n_tokens_after": 100,
+    "share_before_pct": 49.77,
+    "sum_p_before_reconstructed": 48.28,
+    "sum_p_new_tokens": 1.68,
+    "sum_p_after": 49.96,
+    "share_after_pct": 49.96,
+    "note": "97-token baseline share (49.77%) carried unchanged from NAMING_R4; only the 3 new tokens were freshly probed this round. sum_p_before is a reconstruction (49.77% x 97), not a re-probe of all 97, to stay inside the 30-minute cap and the request budget."
+  },
+  "registry_requests_used": 17,
+  "wall_minutes_used_estimate": 18
+}
