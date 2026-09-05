@@ -75,6 +75,112 @@ function storedZip(entries) {
 }
 
 const PROBES = {
+  deposits: async (c, tmp, tier, ok) => {
+    // Same reasoning as billing-docs: the invoice store is seeded directly rather than by
+    // spawning servers/invoice, so a failure here means deposits failed. INV-2026-0001 is
+    // seeded with paid_minor ALREADY at 20000 (a EUR 200.00 transfer) on purpose: that is
+    // the only way to prove deposit_apply adds to the field instead of assigning it.
+    const dInvDir = join(tmp, "data", "mcp-servers", "invoice");
+    mkdirSync(dInvDir, { recursive: true });
+    const dLine = (description, unit, rate) => ({ description, quantity: 1, unit_price_minor: unit, tax_rate: rate, gross_minor: unit, discount_minor: 0, net_minor: unit, tax_minor: Math.round(unit * rate / 100), exact_gross_minor: unit, round_total: false });
+    const dInvoice = (number, currency, lines, paid = 0) => {
+      const net = lines.reduce((n, l) => n + l.net_minor, 0);
+      const tax = lines.reduce((n, l) => n + l.tax_minor, 0);
+      return { number, client_id: "c1", client: { name: "Acme Ltd" }, issue_date: "2026-09-01", due_date: "2026-09-15", currency, decimals: 2, lines, subtotal_minor: net, discount_percent: 0, discount_minor: 0, net_minor: net, tax_lines: tax ? [{ rate: lines[0].tax_rate, base_minor: net, tax_minor: tax }] : [], tax_minor: tax, total_minor: net + tax, status: paid ? "partial" : "unpaid", paid_minor: paid, created: "2026-09-01T00:00:00.000Z", branded: true };
+    };
+    const dInvPath = join(dInvDir, "invoices.json");
+    writeFileSync(dInvPath, JSON.stringify([
+      dInvoice("INV-2026-0001", "EUR", [dLine("Consulting", 100000, 23)], 20000),
+      dInvoice("INV-2026-0002", "USD", [dLine("Support", 40000, 0)]),
+      dInvoice("INV-2026-0003", "EUR", [dLine("Retainer month", 10000, 0)]),
+    ], null, 2));
+    writeFileSync(join(dInvDir, "clients.json"), JSON.stringify([{ id: "c1", name: "Acme Ltd", address: "12 Dame St\nDublin", email: "ap@acme.example", created: "2026-09-01" }], null, 2));
+
+    // 1. Record. EUR 500.00 in minor units, held in full, id shape asserted.
+    const rec = await c.tool("deposit_record", { client: "Acme Ltd", amount_minor: 50000, currency: "EUR", kind: "security", received_date: "2026-09-01", reference: "SEPA 88213" });
+    ok(`${tier}: deposit_record holds EUR 500.00 as DEP-YYYY-NNNN`,
+      !rec.isError && /"id": "DEP-\d{4}-0001"/.test(rec.text) && /"received": "EUR 500\.00"/.test(rec.text) && /"held": "EUR 500\.00"/.test(rec.text) && /"status": "held"/.test(rec.text),
+      rec.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 2. THE measured one: applying on top of a payment that is already on the invoice.
+    // 20000 + 30000 = 50000. An assigning write path would leave 30000 and pass every
+    // schema check, so the store is read back rather than trusting the reply.
+    const app = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0001", amount_minor: 30000, date: "2026-09-05" });
+    const paidAfter = JSON.parse(readFileSync(dInvPath, "utf8")).find((i) => i.number === "INV-2026-0001").paid_minor;
+    ok(`${tier}: deposit_apply ADDS to the invoice's paid_minor (20000 + 30000 = 50000)`,
+      !app.isError && paidAfter === 50000 && /"paid": "EUR 500\.00"/.test(app.text) && /"balance_due": "EUR 730\.00"/.test(app.text) && /"held": "EUR 200\.00"/.test(app.text),
+      `paid_minor ${paidAfter}; ${app.text.replace(/\s+/g, " ").slice(0, 110)}`);
+
+    // 3. Over-apply: more than is HELD. Named in the refusal, and nothing written.
+    const over = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0001", amount_minor: 20001, date: "2026-09-05" });
+    const paidStill = JSON.parse(readFileSync(dInvPath, "utf8")).find((i) => i.number === "INV-2026-0001").paid_minor;
+    ok(`${tier}: one cent past what is held is refused and nothing is written`,
+      over.isError && /holds EUR 200\.00/.test(over.text) && /EUR 200\.01/.test(over.text) && /Nothing was changed/.test(over.text) && paidStill === 50000,
+      over.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 4. Over-apply the OTHER way: more than the invoice still owes. INV-2026-0003 is
+    // EUR 100.00, the deposit holds EUR 200.00, so the cap that bites is the invoice's.
+    const overInv = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0003", amount_minor: 20000, date: "2026-09-05" });
+    ok(`${tier}: more than the invoice still owes is refused, naming the invoice's balance`,
+      overInv.isError && /EUR 100\.00/.test(overInv.text) && /overpaid|owes/.test(overInv.text),
+      overInv.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 5. Currency: never converted, both currencies named, nothing written on either side.
+    const cross = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0002", amount_minor: 10000, date: "2026-09-05" });
+    ok(`${tier}: a EUR deposit against a USD invoice is refused, never converted`,
+      cross.isError && /EUR/.test(cross.text) && /USD/.test(cross.text) && /never converted/.test(cross.text) && /Nothing was changed/.test(cross.text),
+      cross.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 6. Refund: over-refund refused naming what is held, then a real refund closes it out.
+    const badRef = await c.tool("deposit_refund", { id: "DEP-2026-0001", amount_minor: 20001, date: "2026-09-05", method: "bank transfer" });
+    ok(`${tier}: refunding more than is held is refused, naming what is held`,
+      badRef.isError && /EUR 200\.00/.test(badRef.text), badRef.text.replace(/\s+/g, " ").slice(0, 130));
+    const ref = await c.tool("deposit_refund", { id: "DEP-2026-0001", amount_minor: 20000, date: "2026-09-05", method: "bank transfer" });
+    const paidAfterRefund = JSON.parse(readFileSync(dInvPath, "utf8")).find((i) => i.number === "INV-2026-0001").paid_minor;
+    ok(`${tier}: a refund closes the deposit and does NOT touch the invoice`,
+      !ref.isError && /"refunded": "EUR 200\.00"/.test(ref.text) && /"held": "EUR 0\.00"/.test(ref.text) && paidAfterRefund === 50000,
+      `paid_minor ${paidAfterRefund}; ${ref.text.replace(/\s+/g, " ").slice(0, 110)}`);
+
+    // 7. Balance: one row per currency, never summed across them, and the basis is stated.
+    const bal = await c.tool("deposit_balance", { client: "Acme Ltd" });
+    ok(`${tier}: deposit_balance reports received, applied, refunded and held`,
+      !bal.isError && /"received": "EUR 500\.00"/.test(bal.text) && /"applied": "EUR 300\.00"/.test(bal.text) && /"refunded": "EUR 200\.00"/.test(bal.text) && /"held": "EUR 0\.00"/.test(bal.text) && /"currency": "EUR"/.test(bal.text),
+      bal.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 8. The text statement is free on BOTH tiers and carries no buy link.
+    const st = await c.tool("deposit_statement_text", { client: "Acme Ltd", currency: "EUR" });
+    ok(`${tier}: deposit_statement_text is free on both tiers and carries no buy link`,
+      !st.isError && /DEP-\d{4}-0001/.test(st.text) && /EUR 500\.00/.test(st.text) && !/mcp\.zovo\.one\/buy/.test(st.text),
+      st.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 9. Report gate, written per tier so a gate that stopped working fails on free.
+    const rep = await c.tool("deposits_report", {});
+    ok(`${tier}: deposits_report is ${tier === "pro" ? "allowed and reports held per currency" : "Pro and names the buy link"}`,
+      tier === "pro" ? !rep.isError && /held|EUR/.test(rep.text) : rep.isError && /mcp\.zovo\.one\/buy\/deposits/.test(rep.text),
+      rep.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // Same shape for the PDF: Pro writes a real file, free names the link and writes nothing.
+    const pdfPath = join(tmp, "dep.pdf");
+    const spdf = await c.tool("deposit_statement_pdf", { client: "Acme Ltd", currency: "EUR", out_path: pdfPath });
+    ok(`${tier}: deposit_statement_pdf ${tier === "pro" ? "writes an A4 file over 1 KB" : "is refused and writes no file"}`,
+      tier === "pro" ? !spdf.isError && existsSync(pdfPath) && statSync(pdfPath).size > 1000 : spdf.isError && /mcp\.zovo\.one\/buy\/deposits/.test(spdf.text) && !existsSync(pdfPath),
+      spdf.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 10. The free cap counts RECORDS only. One exists, so the fifth lands and the sixth
+    // is refused naming the count and the buy link; Pro gets DEP-2026-0006.
+    let lastRec = null;
+    for (let n = 2; n <= 6; n++) {
+      lastRec = await c.tool("deposit_record", { client: "Acme Ltd", amount_minor: 1000, currency: "EUR", kind: "retainer", received_date: "2026-09-10" });
+    }
+    ok(`${tier}: the 6th deposit in a month is ${tier === "pro" ? "allowed" : "refused, naming the count and the buy link"}`,
+      tier === "pro" ? !lastRec.isError && /DEP-\d{4}-0006/.test(lastRec.text) : lastRec.isError && /mcp\.zovo\.one\/buy\/deposits/.test(lastRec.text) && /5/.test(lastRec.text),
+      lastRec.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // A deposit received in another month is not blocked by this month's five.
+    const nextMonth = await c.tool("deposit_record", { client: "Acme Ltd", amount_minor: 1000, currency: "EUR", kind: "retainer", received_date: "2026-10-02" });
+    ok(`${tier}: a deposit received in another month is not blocked by this month's count`,
+      !nextMonth.isError && /DEP-\d{4}-\d{4}/.test(nextMonth.text), nextMonth.text.replace(/\s+/g, " ").slice(0, 110));
+  },
   "billing-docs": async (c, tmp, tier, ok) => {
     // The invoice store is seeded directly rather than by spawning servers/invoice: this
     // probe is about billing-docs, and a failure here has to mean billing-docs failed.
@@ -647,7 +753,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);

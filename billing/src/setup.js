@@ -529,7 +529,7 @@ export const SETUP_SERVERS = {
     ],
     free: "5 deposits recorded a calendar month, counted by received date. Applying to invoices, refunds, lists, balances and the text statement are unlimited on every tier: a cap that trapped a client's deposit would be a limit on their money rather than on yours.",
     pro: "Unlimited deposits recorded, the A4 statement PDF with your logo and no footer credit, and the held, oldest-held and unapplied report.",
-    measured: "The invoice server's own invoice_mark_paid SETS the amount paid rather than adding to it: on a EUR 1,000.00 invoice, a EUR 200.00 bank transfer followed by a EUR 300.00 deposit leaves paid_minor at 30000 and the reply reads balance due EUR 700.00, with the EUR 200.00 that actually arrived gone from the record. deposit_apply writes the same three fields on the same record but adds, so the same two payments leave EUR 500.00 due.",
+    measured: "deposit_apply ADDS to the invoice's amount paid rather than setting it. Measured through a real client on 2026-09-05: an invoice already carrying a EUR 200.00 bank transfer ended at paid_minor 50000 after a EUR 300.00 deposit was applied, reported as paid EUR 500.00 of EUR 1,230.00 with EUR 730.00 due. Writing this server against the same field is what surfaced that invoice_mark_paid was assigning rather than adding, which silently lost the earlier payment; the invoice server was fixed the same day and now adds too.",
   },
   zip: {
     title: "MCP Zip",

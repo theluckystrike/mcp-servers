@@ -2105,7 +2105,7 @@ ${FOOT}`,
 
   "client-deposits-and-retainers-from-chat": {
     title: "Client deposits and retainers from chat, applied to your real invoices",
-    description: "Record a security deposit or retainer when the money arrives, apply it to an invoice as a real payment, refund what is left, and answer how much of theirs you hold. Why applying a deposit through the invoice server's own mark-paid tool silently erases the payment that came before.",
+    description: "Record a security deposit or retainer when the money arrives, apply it to an invoice as a real payment, refund what is left, and answer how much of theirs you hold. How writing a second server against the invoice store surfaced a payment field that was being overwritten rather than added to.",
     html: `<h1>Client deposits and retainers from chat, applied to your real invoices</h1>
 <p>A deposit is the client's money sitting on your account. A landlord holds one against damage, an agency
 takes one before it starts, a trade asks for half up front. It is not revenue and it is not a payment on an
@@ -2132,25 +2132,30 @@ and <code>setInvoices</code> from the invoice engine, and the A4 page from
 <a href="/s/billing-docs">MCP Billing Docs</a>, which is why a deposit statement agrees with the invoice and
 the credit note beside it to the minor unit.</p>
 
-<h2>The measured thing: routing a deposit through invoice_mark_paid erases the payment before it</h2>
+<h2>The measured thing: the deposit write path found a silent bug in the invoice server</h2>
 <p>The invoice server exports no payment function. Its own <code>invoice_mark_paid</code> tool sets three
-fields under the invoice lock, and the important word is <em>sets</em>. Measured against
-<code>servers/invoice/dist/index.js</code> on a EUR 1,000.00 invoice:</p>
+fields under the invoice lock, and on 2026-09-05, when this server was built against it, the important word
+was <em>sets</em>. Measured against <code>servers/invoice/dist/index.js</code> as it stood that morning, on a
+EUR 1,000.00 invoice:</p>
 <pre><code>invoice_mark_paid { invoice: "INV-2026-0001", amount: 200 }   -&gt; "balance due EUR 800.00"
 invoice_mark_paid { invoice: "INV-2026-0001", amount: 300 }   -&gt; "balance due EUR 700.00"
 paid_minor: 30000</code></pre>
-<p>The EUR 200.00 bank transfer that actually arrived is gone from the record. Nothing errors and nothing
-warns; the only visible trace is a number that is EUR 200.00 too high, on the line the client gets chased
-for. That is the correct behaviour for the tool it is, a human correcting a total they can see, and the
-wrong behaviour for a deposit being applied on top of money that came in separately.</p>
-<p><code>deposit_apply</code> writes the same three fields on the same record, under the same lock, because
-there is no <code>recordPayment</code> to call. It adds to <code>paid_minor</code> instead of assigning it,
-so the same two payments leave <code>paid_minor</code> at <code>50000</code> and EUR 500.00 due. That
-difference is asserted in the server's own test suite, in a case named "a second application ADDS to
-paid_minor, it does not replace it".</p>
-<p>The general form is worth carrying to any two servers that share a store: matching field names is not the
-contract. The arithmetic on those fields is, and it is only visible by reading the owning server's write
-path. A review that checked the schema would have passed the version that assigns.</p>
+<p>The EUR 200.00 bank transfer that actually arrived was gone from the record. Nothing errored and nothing
+warned; the only visible trace was a number EUR 200.00 too high, on the line the client gets chased for.</p>
+<p><code>deposit_apply</code> writes the same three fields on the same record, because there is no
+<code>recordPayment</code> to call, but it adds to <code>paid_minor</code> instead of assigning it. On a real
+client run the same day, an invoice seeded with a EUR 200.00 transfer already on it ended at
+<code>paid_minor</code> 50000 after a EUR 300.00 deposit was applied, and the tool reported paid EUR 500.00
+of EUR 1,230.00 with EUR 730.00 due.</p>
+<p><strong>The invoice server was fixed the same day.</strong> <code>invoice_mark_paid</code> now adds too,
+refuses a payment that would overpay the open balance, and appends to a <code>payments</code> list, so the
+sequence above leaves EUR 500.00 received. That is the better outcome and it is recorded here rather than
+quietly dropped: the paragraph above is a dated measurement of how the tool behaved before the fix, not a
+claim about it now.</p>
+<p>The general form is what survives, and it is worth carrying to any two servers that share a store:
+matching field names is not the contract. The arithmetic on them is, and it is only visible by reading the
+owning server's write path. A review that checked the schema would have passed the version that assigns.
+Nothing found this except writing a second server against the same field.</p>
 
 <h2>What you say, and which tool runs</h2>
 <table>
