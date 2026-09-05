@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.11.0/spreadsheet.mcpb",
       "version": "0.11.0",
-      "fileSha256": "f46f581317f0c70dc95c008ac3c96611db048f06400f1ab2b7b555ce6690e300",
+      "fileSha256": "a36a7c14b590a3ed0524192db1ab5a6e7cefb31d7457f2257313fae49b5c7aab",
       "transport": {
         "type": "stdio"
       },

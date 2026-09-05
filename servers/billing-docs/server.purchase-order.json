@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.11.0/billing-docs.mcpb",
       "version": "0.11.0",
-      "fileSha256": "568d906821430324407889efd1ed9e0e3c544703383864451a8c78e233e53ec1",
+      "fileSha256": "56f73deaf9a07cf9dac72a624a094838760111f32dc0c31178a66c19678fc0f2",
       "transport": {
         "type": "stdio"
       },
