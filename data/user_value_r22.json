@@ -1,0 +1,163 @@
+{
+  "at": "2026-09-05T16:30:00Z",
+  "round": 22,
+  "compares_to": "data/user_value_r21_deposits.json (deposits, hosted, 16/18). First user-value coverage of per-diem; there is no earlier per-diem round to compare against.",
+  "scope": "STDIO single-lane first-five-minutes measurement of the NEW per-diem server, six prompts covering the Polish domestic diet, the HMRC benchmark scale rates, the US GSA CONUS standard, a country outside the bundled Polish annex, saving and listing a trip, and the Pro-gated perdiem_report on the FREE tier. The server was run unmodified from servers/per-diem/dist/index.js; no code was changed as part of this round, it is measurement only.",
+  "method": "Arrival: no connect page and no token, the server is spawned locally over stdio as node /Users/mike/mcp-servers/servers/per-diem/dist/index.js from one mcp.json with a single stdio entry, MCP_LICENSE_KEY set to the empty string in that entry's env block so the whole run measures the FREE tier. Seed, written directly before any prompt ran, the way servers/per-diem/test/_client.mjs seedProfile does it: the shared business profile at $XDG_DATA_HOME/mcp-servers/profile/business.json with name Nova Studio, address ul. Krucza 1 Warszawa and default_currency PLN, so trip_record can resolve a traveller and home() can derive the pl home scheme from the currency. The trip store itself started empty. Allowlist: six explicit mcp__per-diem__<tool> entries (perdiem_rates, perdiem_calc, trip_record, trip_list, trip_export, perdiem_report), no mcp__* wildcard; license_status and license_activate were deliberately NOT allowlisted, which cost one denied call on p6. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the single stdio entry, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation. Each of the six prompts run as its own isolated shell invocation (never a loop), one bounded request per prompt under timeout 240, each transcript read back in full before the next prompt ran. The CLI's own filesystem and search tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r22pd/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r22pd/xdg, set in the server's env block so the store is a scratch directory owned by this round alone, never CLAUDE_CONFIG_DIR. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Tool-call counts are calls that reached the server; they exclude the client's own ToolSearch schema lookups and the one permission-denied license_status attempt on p6. Host machine day 2026-09-05 (Saturday). Verification: every figure the model reported was re-derived by calling the same tool directly over stdio from a second JSON-RPC client built on servers/per-diem/test/_client.mjs, the four perdiem_calc scenarios in a throwaway data dir and trip_list, perdiem_report and trip_export against the model's own store afterwards, and the on-disk trips.json read back byte for byte.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "none; this is the stdio lane, the server is spawned as a child process and there is no endpoint, no token and no network hop",
+    "registration": "one mcp.json, one stdio entry, command node with the single argument /Users/mike/mcp-servers/servers/per-diem/dist/index.js, MCP_LICENSE_KEY empty; the server printed 'mcp-per-diem ready' on stderr and connected first try",
+    "tools_list": {
+      "per-diem": 6
+    },
+    "seed": "the shared business profile written directly to $XDG_DATA_HOME/mcp-servers/profile/business.json (Nova Studio, ul. Krucza 1 Warszawa, default_currency PLN) exactly as test/_client.mjs seedProfile writes it, before any prompt ran; the per-diem trip store itself started empty"
+  },
+  "scenarios": [
+    {
+      "server": "per-diem",
+      "surface": "stdio/per-diem",
+      "id": "p1",
+      "prompt": "I left Warsaw on Tuesday 5 May 2026 at 8am and got back on Thursday 7 May at 6pm. The trip was to Krakow, I stayed two hotel nights, and breakfast was provided on the first day. What per diem am I owed?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 32.6,
+      "tools": [
+        "perdiem_calc"
+      ],
+      "note": "One perdiem_calc returned PLN 123.75 of diet over three days, 33.75 plus 45.00 plus 45.00, and PLN 135.00 of lodging ryczalt at PLN 67.50 a night, PLN 258.75 in all. I re-ran the identical call myself over stdio afterwards and got the same total_hours 58, the same day lines and the same total_minor 25875. The model turned the prose into the right arguments unprompted: it mapped Krakow to the pl domestic table's destination Poland, read the 58 hours as two full 24-hour periods plus a 10-hour remainder that still pays a whole diet under par. 7(2)(2)(b), and passed meals_provided [[breakfast],[],[]] so only day one lost the 25 percent breakfast share. It also relayed the server's own note that the ryczalt is only due when no receipt is presented, rather than presenting PLN 135.00 as money owed on top of a hotel invoice."
+    },
+    {
+      "server": "per-diem",
+      "surface": "stdio/per-diem",
+      "id": "p2",
+      "prompt": "Different question, UK now. On 12 May 2026 one of our people left at 7am and was still travelling at 11pm, so 16 hours, a UK domestic journey. Lunch was free that day. What does the HMRC benchmark scale rate give?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 20.9,
+      "tools": [
+        "perdiem_calc"
+      ],
+      "note": "One perdiem_calc returned GBP 16.67: the GBP 25.00 fifteen-hour band, ongoing at 8pm, less GBP 8.33 for the free lunch. My own stdio call with the same arguments returns amount_minor 1667, and so does the same call with late_evening [true] added, because the server only pays the GBP 10.00 late-evening supplement on a band that covers fewer than three meals. The model got the number and the pro-rata one-third split right off a single call, but its closing advice that buying a meal after 8pm would make it GBP 26.67 is its own reasoning, not this server's: perdiem_calc will not add that supplement to the 15-hour band however late_evening is set, so the user is left holding a figure the tool would refuse to produce."
+    },
+    {
+      "server": "per-diem",
+      "surface": "stdio/per-diem",
+      "id": "p3",
+      "prompt": "Now a US one on the GSA standard rate. Arrived 1 June 2026 at 10am Eastern, flew home 3 June at 4pm, so three calendar days and two nights in a hotel, no meals provided. What can we claim?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 15.0,
+      "tools": [
+        "perdiem_calc"
+      ],
+      "note": "One perdiem_calc returned USD 170.00 of M&IE on the FY2026 CONUS standard, USD 51.00 plus USD 68.00 plus USD 51.00, with the first and last day at 75 percent per FTR 301-11.101. My own stdio call returns subsistence_minor 17000, lodging_minor 23000 and lodging_basis 'GSA lodging CAP USD 115.00 per night, receipted', identical figures. The distinction the scenario was built to test came through intact: the model said in its own words that the USD 230.00 is a ceiling on receipted hotel cost rather than an allowance paid out, so USD 170.00 is owed outright and the hotel is reimbursed at the real invoice up to USD 115.00 a night. It passed timezone America/New_York without being told to, which is what makes the three calendar-day split come out right."
+    },
+    {
+      "server": "per-diem",
+      "surface": "stdio/per-diem",
+      "id": "p4",
+      "prompt": "Back to the Polish rules. We are sending someone to Oman, out 1 June 2026 at 8am Warsaw time and back on 3 June at 6pm. What is the foreign dieta for that?",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 18.5,
+      "tools": [
+        "perdiem_calc",
+        "perdiem_rates"
+      ],
+      "note": "perdiem_calc on Oman came back isError naming the gap exactly: Poland domestic plus 34 countries abroad are bundled out of roughly 120 in the annex, so a missing country means not verified here rather than no rate exists. My own stdio call returns the same isError string character for character, and perdiem_rates {scheme:pl} confirms the foreign table holds 34 rows with no Oman among them. The model tried the call rather than reasoning about it, then called perdiem_rates to see the coverage for itself, then refused in the server's own terms and said plainly that it would not guess a number, offering instead to run the day and hour splitting once the user supplies the rate from the Dz.U. annex. No rate was invented at any point."
+    },
+    {
+      "server": "per-diem",
+      "surface": "stdio/per-diem",
+      "id": "p5",
+      "prompt": "Please save the Krakow one as \"Krakow client visit\", and then tell me what trips we have on file now.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 18.7,
+      "tools": [
+        "trip_record",
+        "trip_list"
+      ],
+      "note": "trip_record saved TRIP-2026-0001 at PLN 258.75 with traveller Nova Studio resolved from the shared business profile, and trip_list read back count 1 with a PLN total of 258.75. My own stdio trip_list against the same store returns the identical row, and the on-disk trips.json carries traveller_source 'shared profile', which is the seed doing its job. The model rebuilt the p1 arguments from the conversation rather than asking for them again, and then relayed two things the server told it and a naive answer would have dropped: that only this trip was saved because the UK and US turns were calculations and not records, and the free-tier counter 1 of 5 trips recorded in 2026-05."
+    },
+    {
+      "server": "per-diem",
+      "surface": "stdio/per-diem",
+      "id": "p6",
+      "prompt": "Last thing: give me the report of totals per scheme and month so I can put it in the month end pack.",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 17.9,
+      "tools": [
+        "perdiem_report"
+      ],
+      "note": "perdiem_report refused as Pro and the model relayed the one-time $19 price and the license_activate step, but never surfaced the buy URL the refusal actually returned, https://mcp.zovo.one/buy/per-diem?src=per-diem.perdiem_report . My own stdio call on the same store returns that refusal verbatim, so the URL was in front of the model and was dropped. Worse for the score, it then built the report itself from the p5 trip_list, printing a pl 2026-05 row of PLN 258.75 and offering to fold the unsaved UK and US figures into the same table, which is the Pro feature computed client-side rather than bought. The figure it produced happens to be right, because there is exactly one saved trip, and it would stop being right the moment a currency the session had not just calculated entered the store. It also spent a turn on license_status, which this round did not allowlist, so that attempt was denied by the client and never reached the server."
+    }
+  ],
+  "totals": {
+    "score": 17,
+    "max": 18,
+    "pct": 94,
+    "tool_calls": 8,
+    "seconds": 123.6,
+    "tool_errors": 2,
+    "denied_calls": 1,
+    "clarifying_turns": 0,
+    "per_server": {
+      "per-diem": {
+        "score": 17,
+        "max": 18,
+        "tool_calls": 8,
+        "seconds": 123.6
+      }
+    }
+  },
+  "verification": [
+    {
+      "claim": "The Polish domestic figures the model reported are what the server computes",
+      "evidence": "perdiem_calc {scheme:pl, destination:Poland, start:2026-05-05T08:00, end:2026-05-07T18:00, timezone:Europe/Warsaw, meals_provided:[[breakfast]], lodging_nights:2} called directly over stdio returns total_hours 58, day amounts 3375, 4500, 4500 minor, subsistence PLN 123.75, lodging PLN 135.00 at PLN 67.50 a night, total_minor 25875 (PLN 258.75)",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "GBP 16.67 is the server's number, and the GBP 10.00 late-evening supplement is NOT added to the 15-hour band",
+      "evidence": "perdiem_calc {scheme:uk, destination:United Kingdom, start:2026-05-12T07:00, end:2026-05-12T23:00, timezone:Europe/London, meals_provided:[[lunch]]} returns full_rate_minor 2500, meal_deduction_minor 833, amount_minor 1667; the same call with late_evening:[true] returns amount_minor 1667 again, because src/schemes.ts only pays the supplement when the band's meals_covered is below 3",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "US lodging is a cap on receipted cost, not an allowance",
+      "evidence": "perdiem_calc {scheme:us, destination:United States, start:2026-06-01T10:00, end:2026-06-03T16:00, timezone:America/New_York, lodging_nights:2} returns subsistence_minor 17000, lodging_minor 23000, lodging_basis 'GSA lodging CAP USD 115.00 per night, receipted' and the note 'Lodging is a CAP, not an allowance: USD 115.00 a night is the most that may be reimbursed against receipts, and the figure here is that ceiling times 2 night(s), not a payment'",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Oman is genuinely outside the bundled Polish annex and the refusal is the server's own words",
+      "evidence": "perdiem_calc {scheme:pl, destination:Oman, ...} returns isError with '\"Oman\" is not in the bundled Polish table. Bundled: Poland (domestic) and 34 countries abroad ... a missing country means \"not verified here\", not \"no rate exists\"'; dist/tables/pl-foreign.json holds 34 rates, Albania through United States, with no Oman row and a header coverage line saying 34 of roughly 120 countries in the annex",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The trip the model saved is in the store with the traveller from the shared profile",
+      "evidence": "trip_list {} called directly over stdio against /private/tmp/uv-r22pd/xdg/data after the run: count 1, totals PLN 258.75, TRIP-2026-0001 'Krakow client visit', traveller Nova Studio, scheme pl, part domestic, 3 days, total_minor 25875; the on-disk trips.json carries traveller_source 'shared profile' and the id counter file reads {\"TRIP-2026\": 1}",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "perdiem_report and trip_export are both Pro-gated on this install and the buy URL is in the refusal",
+      "evidence": "perdiem_report {} over stdio on the model's own store: 'Error: \"the per diem report\" is a Pro feature. Pro is a one-time $19 (or $39 for every server, lifetime). Buy at https://mcp.zovo.one/buy/per-diem?src=per-diem.perdiem_report , then run license_activate with the key shown after checkout.' trip_export {trip: TRIP-2026-0001} refuses the same way with src=per-diem.trip_export",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R90",
+      "server": "per-diem",
+      "status": "open, client-side, first seen this round",
+      "note": "On p6 the model relayed the Pro refusal and then computed the withheld report itself from the free trip_list, printing pl 2026-05 PLN 258.75 as the month-end figure and offering to add the unsaved UK and US amounts to the same table. It also dropped the buy URL the refusal handed it and paraphrased the price instead, so the one line that would let the user act on the gate never reached them. Both halves are on the client side of the boundary: the server refused correctly, named the price, named the URL and stored nothing. The report was reconstructible here only because a single saved trip in a single currency existed and the session had just calculated the rest in the same conversation; perdiem_report's own basis line refuses to add currencies together, and a client-side reconstruction has no such rule. Same family as D-R88 in round 21 (the model answering from its own arithmetic rather than from the tool), with the aggravating difference that here the tool did not merely go uncalled, it was called and it said no."
+    },
+    {
+      "id": "D-R91",
+      "server": "per-diem",
+      "status": "open, harness-side, low severity",
+      "note": "The allowlist for this round named the six functional tools and omitted license_status and license_activate, which the license gate registers on every server. On p6 the model reached for license_status before perdiem_report and the client denied it, costing one turn. It is a measurement-harness gap rather than a server defect, but any real client that allowlists per-diem tool by tool will hit exactly the same edge, so the two license tools belong in the documented allowlist."
+    }
+  ],
+  "bottom_line": "17 of 18 over stdio on the free tier, the first user-value coverage of per-diem and the best score of any round so far. Five clean 3s: the Polish domestic diet came out at PLN 123.75 plus a PLN 135.00 ryczalt for PLN 258.75 with the receipt caveat relayed, the HMRC 15-hour band at GBP 16.67 after the one-third lunch deduction, the GSA CONUS standard at USD 170.00 of M&IE with the USD 230.00 lodging correctly described as a receipted cap and not a payment, the Oman gap refused in the server's own terms with no rate invented, and TRIP-2026-0001 saved and read back with the traveller resolved from the shared profile. Every one of those figures was re-derived by calling the same tool directly over stdio afterwards and matches to the minor unit. The single 2 is p6: perdiem_report refused as Pro, the model relayed the refusal but dropped the buy URL and then reconstructed the report client-side from the free trip_list, which was accidentally right at one trip in one currency and is exactly the shape of answer the tool's own basis line exists to prevent. The model's argument construction was the strong part throughout, mapping Krakow to the pl domestic table, splitting 58 hours into two full periods and a paying remainder, and passing America/New_York so the US calendar-day split landed, all without a single clarifying question across six prompts."
+}

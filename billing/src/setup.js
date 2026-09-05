@@ -547,7 +547,7 @@ export const SETUP_SERVERS = {
     ],
     free: "Rate lookups and calculations are unlimited on every tier, on all three schemes: the tables are public regulation, and metering the reading of a regulation would be charging for the tax authority's work rather than for this server's. 5 trips saved a calendar month, counted by start date, and unlimited trip lists.",
     pro: "Unlimited trips saved, the expense-tracker export payloads (one per currency, ready for expense_add), and the report of totals per scheme and per calendar month.",
-    measured: "MEASURED_PLACEHOLDER",
+    measured: "A destination that is not in the bundled table is refused by name rather than priced at a neighbour's rate. Measured through a real client on 2026-09-05: asked for a Polish per diem for Oman, the model called perdiem_calc, got back the server's own refusal (Poland domestic plus 34 countries abroad are bundled, so a missing country means not verified here rather than no rate exists), called perdiem_rates to check the coverage for itself, and then said plainly that it would not guess a number. An earlier build of this server answered that same trip with Romania's EUR 42.00 diet, because \"romania\".includes(\"oman\") is true; the fallback is a prefix match now. In the same session a 58-hour Krakow trip came back at PLN 258.75, PLN 123.75 of diets plus PLN 135.00 of lodging ryczalt, with the arguments assembled from the prose unprompted.",
   },
   zip: {
     title: "MCP Zip",
