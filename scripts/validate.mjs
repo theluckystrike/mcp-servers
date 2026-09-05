@@ -75,6 +75,121 @@ function storedZip(entries) {
 }
 
 const PROBES = {
+  "asset-register": async (c, tmp, tier, ok) => {
+    // The shared business profile is seeded directly rather than by spawning
+    // servers/invoice, so a failure here has to mean asset-register failed. Every figure
+    // below is one servers/asset-register/test/unit.test.mjs works out by hand, so this
+    // probe fails if the arithmetic moves, not only if the shape does.
+    const profDir = join(tmp, "data", "mcp-servers", "profile");
+    mkdirSync(profDir, { recursive: true });
+    writeFileSync(join(profDir, "business.json"), JSON.stringify({ name: "Nova Studio", address: "1 Main St\nWarsaw", default_currency: "PLN" }, null, 2));
+
+    // 1. asset_add on a Polish computer: the id, the annex rate, the derived life, the
+    // convention, and the provenance of the rate rather than only the number.
+    const add = await c.tool("asset_add", { name: "Dell workstation", category: "Computers and computer sets", cost_minor: 849900, currency: "PLN", purchase_date: "2026-03-15", scheme: "pl" });
+    ok(`${tier}: asset_add allocates ASSET-2026-0001 at the KST 487 annex rate with its provenance`,
+      !add.isError && /"id": "ASSET-2026-0001"/.test(add.text) && /"category": "487"/.test(add.text) && /"rate_pct": 30/.test(add.text)
+      && /https:\/\/isap\.sejm\.gov\.pl/.test(add.text) && /"effective_date": "2018-01-01"/.test(add.text),
+      add.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 2. The Polish month-following convention, which is the single rule most likely to be
+    // got wrong: an asset in service on 15 March starts on 1 APRIL, not in March.
+    ok(`${tier}: the first charge month is 2026-04, not the March the asset went into service`,
+      /"first_charge_month": "2026-04"/.test(add.text) && /art\. 16h ust\. 1 pkt 1/.test(add.text),
+      add.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 3. The worked example from the unit tests, yearly. Nine twelfths in year one.
+    const sched = await c.tool("asset_schedule", { asset: "ASSET-2026-0001" });
+    ok(`${tier}: the schedule is 1912.28 / 2549.70 / 2549.70 / 1487.32 over four periods`,
+      !sched.isError && /"amount": "PLN 1,912\.28"/.test(sched.text) && /"amount": "PLN 2,549\.70"/.test(sched.text)
+      && /"amount": "PLN 1,487\.32"/.test(sched.text) && /"total": "PLN 8,499\.00"/.test(sched.text)
+      && /for 9 of 12 months/.test(sched.text),
+      sched.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 4. The identity that matters, checked as arithmetic rather than as a claim: the
+    // MONTHLY rows are the ones that go in a ledger, and they must sum to their own year
+    // AND to the depreciable base. This is the defect class the server was built against.
+    const months = await c.tool("asset_schedule", { asset: "ASSET-2026-0001", granularity: "month" });
+    let monthsSum = null, first2026 = null, monthCount = null;
+    try {
+      const doc = JSON.parse(months.text);
+      monthCount = doc.months.length;
+      monthsSum = doc.months.reduce((n, m) => n + m.amount_minor, 0);
+      first2026 = doc.months.filter((m) => m.month.startsWith("2026")).reduce((n, m) => n + m.amount_minor, 0);
+    } catch { /* left null: the assertion below fails loudly rather than silently passing */ }
+    ok(`${tier}: 45 monthly rows sum to 849900 and 2026's nine months sum to their own year, 191228`,
+      monthCount === 45 && monthsSum === 849900 && first2026 === 191228,
+      `months=${monthCount} sum=${monthsSum} y2026=${first2026}`);
+    ok(`${tier}: the first monthly charge is 2026-04 at PLN 212.48, never March`,
+      /"month": "2026-04"/.test(months.text) && /"amount": "PLN 212\.48"/.test(months.text) && !/"month": "2026-03"/.test(months.text),
+      months.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 5. MACRS 5-year reproduces IRS Pub 946 Table A-1 exactly, and runs SIX periods for a
+    // five-year class because the half-year convention is already inside the percentages.
+    const macrs = await c.tool("asset_schedule", { scheme: "us", category: "5-year", cost_minor: 1000000, currency: "USD", purchase_date: "2026-01-01" });
+    ok(`${tier}: MACRS 5-year is 2000 / 3200 / 1920 / 1152 / 1152 / 576, six periods on a five-year class`,
+      !macrs.isError && /"amount": "USD 2,000\.00"/.test(macrs.text) && /"amount": "USD 3,200\.00"/.test(macrs.text)
+      && /"amount": "USD 1,920\.00"/.test(macrs.text) && /"amount": "USD 1,152\.00"/.test(macrs.text)
+      && /"amount": "USD 576\.00"/.test(macrs.text) && /"total": "USD 10,000\.00"/.test(macrs.text)
+      && /half-year convention is already inside the published GDS percentages/.test(macrs.text),
+      macrs.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 6. A class the table does not carry is refused BY NAME and never approximated to the
+    // neighbouring one. The assertion also requires that no 7-year percentage leaked into
+    // the answer, so the exact wrong behaviour cannot come back and pass.
+    const tenYear = await c.tool("asset_schedule", { scheme: "us", category: "10-year", cost_minor: 1000000, currency: "USD", purchase_date: "2026-01-01" });
+    ok(`${tier}: a US 10-year class is refused by name, not approximated to the 7-year one`,
+      tenYear.isError && /NOT bundled/.test(tenYear.text) && /10, 15 and 20 year classes/.test(tenYear.text)
+      && !/14\.29/.test(tenYear.text) && !/1,429/.test(tenYear.text),
+      tenYear.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 7. A residual over cost is refused and NOTHING is written. The second half of that
+    // sentence is the one worth asserting: a refusal that still allocated an id is a leak.
+    const bad = await c.tool("asset_add", { name: "Impossible", category: "Computers and computer sets", cost_minor: 100000, residual_minor: 200000, currency: "PLN", purchase_date: "2026-01-01", scheme: "pl" });
+    ok(`${tier}: a residual over cost is refused and says nothing was written`,
+      bad.isError && /residual 200000 is not less than cost 100000/.test(bad.text) && /nothing was written/.test(bad.text),
+      bad.text.replace(/\s+/g, " ").slice(0, 130));
+    const afterBad = await c.tool("asset_list", {});
+    ok(`${tier}: the refused asset never reached the register, which still holds one asset`,
+      !afterBad.isError && /ASSET-2026-0001/.test(afterBad.text) && !/ASSET-2026-0002/.test(afterBad.text) && !/Impossible/.test(afterBad.text),
+      afterBad.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 8. asset_schedule is free and unlimited on EVERY tier and carries no buy link: the
+    // rates are public regulation, and this server does not meter reading one.
+    ok(`${tier}: asset_schedule is free on both tiers and carries no buy link`,
+      !sched.isError && !/mcp\.zovo\.one\/buy/.test(sched.text), "no buy link in the schedule");
+
+    // 9. Both Pro gates. Free must name the tool, the price and BOTH buy URLs (the round-22
+    // defect was a model relaying a gate without the URL, so the URL is asserted here).
+    const journal = await c.tool("asset_journal", { month: "2026-04" });
+    ok(`${tier}: asset_journal ${tier === "pro" ? "returns a balanced entry with an expense_add payload" : "is refused naming the price and the buy link"}`,
+      tier === "pro"
+        ? !journal.isError && /"tool": "expense_add"/.test(journal.text) && /No vat_rate is set/.test(journal.text) && /"billable": false/.test(journal.text)
+        : journal.isError && /the depreciation journal/.test(journal.text) && /\$19/.test(journal.text)
+          && /mcp\.zovo\.one\/buy\/asset-register\?src=asset-register\.asset_journal/.test(journal.text)
+          && /mcp\.zovo\.one\/buy\/bundle/.test(journal.text) && /license_activate/.test(journal.text),
+      journal.text.replace(/\s+/g, " ").slice(0, 170));
+    const report = await c.tool("asset_report", {});
+    ok(`${tier}: asset_report ${tier === "pro" ? "totals net book value per currency" : "is refused with the buy link"}`,
+      tier === "pro" ? !report.isError && /PLN/.test(report.text) : report.isError && /mcp\.zovo\.one\/buy\/asset-register/.test(report.text),
+      report.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 10. The free cap is on the SIZE of the register, not on the arithmetic. Ten assets
+    // fit; the eleventh is refused naming the count; and pricing an asset that is not in
+    // the register still works with the register already full, which is the tier boundary
+    // this server chose.
+    let last = null;
+    for (let n = 2; n <= 11; n++) {
+      last = await c.tool("asset_add", { name: `Asset ${n}`, category: "Computers and computer sets", cost_minor: 100000, currency: "PLN", purchase_date: "2026-01-10", scheme: "pl" });
+    }
+    ok(`${tier}: the 11th asset is ${tier === "pro" ? "allowed" : "refused, naming the ten-asset cap and the buy link"}`,
+      tier === "pro" ? !last.isError && /ASSET-\d{4}-0011/.test(last.text) : last.isError && /10/.test(last.text) && /mcp\.zovo\.one\/buy\/asset-register/.test(last.text),
+      last.text.replace(/\s+/g, " ").slice(0, 140));
+    const stillFree = await c.tool("asset_schedule", { scheme: "pl", category: "Computers and computer sets", cost_minor: 849900, currency: "PLN", purchase_date: "2026-03-15" });
+    ok(`${tier}: pricing an unstored asset is never capped, even with the register already full`,
+      !stillFree.isError && /"total": "PLN 8,499\.00"/.test(stillFree.text) && !/mcp\.zovo\.one\/buy/.test(stillFree.text),
+      stillFree.text.replace(/\s+/g, " ").slice(0, 120));
+  },
   "per-diem": async (c, tmp, tier, ok) => {
     // The shared business profile is seeded directly rather than by spawning
     // servers/invoice: a failure here has to mean per-diem failed. The numbers asserted
@@ -621,12 +736,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 22 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 22 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 23 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 23 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -838,6 +953,45 @@ async function remote() {
       !!ptid && new RegExp(`"id": "${ptid}"`).test(plistTxt) && /"total": "PLN 258\.75"/.test(plistTxt) && /"currency": "PLN"/.test(plistTxt) &&
       new RegExp(`"${ptid}"`).test(prepTxt) && /"scheme": "pl",\s*"month": "2026-05"/.test(prepTxt) && /"days": \d+/.test(prepTxt),
       `${ptid} ${prepTxt.slice(0, 90)}`);
+    // Extension 14: /mcp/asset-register. The three calls are the ones that could only pass
+    // if the three bundled JSON depreciation tables travelled into the worker bundle: over
+    // stdio they are files beside the module, and build-vendor.mjs inlines their bytes
+    // through the same server-keyed inliner per-diem uses.
+    const aadd = await rpc("asset-register", { jsonrpc: "2.0", id: 84, method: "tools/call", params: { name: "asset_add", arguments: { name: `Probe workstation ${Date.now()}`, scheme: "pl", category: "487", cost_minor: 600000, currency: "PLN", residual_minor: 50000, purchase_date: "2026-03-12", project: "acme" } } });
+    const aaddTxt = JSON.stringify(aadd).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const aid = (aaddTxt.match(/ASSET-\d{4}-\d{4}/) || [])[0];
+    const abad = await rpc("asset-register", { jsonrpc: "2.0", id: 85, method: "tools/call", params: { name: "asset_add", arguments: { name: "not a category", scheme: "pl", category: "491", cost_minor: 100000, currency: "PLN", purchase_date: "2026-03-12" } } });
+    ok("hosted asset_add prices a Polish computer off the BUNDLED KST annex (30 percent, KST 487, the ISAP source url, charge from the month after) and refuses an unbundled position rather than matching a near-name",
+      !!aid && /"rate_pct": 30/.test(aaddTxt) && /Computers and computer sets/.test(aaddTxt) && /isap\.sejm\.gov\.pl/.test(aaddTxt) && /"first_charge_month": "2026-04"/.test(aaddTxt) && /"depreciable_base_minor": 550000/.test(aaddTxt) &&
+      abad.result?.isError === true && /is not a category in the bundled PL table/.test(JSON.stringify(abad)),
+      `${aid} ${aaddTxt.slice(0, 90)}`);
+    // The schedule has to close on the depreciable base EXACTLY: 600000 cost less 50000
+    // residual is 550000 minor units, and the periods sum to it to the minor unit with the
+    // rounding remainder carried onto the last one rather than dropped.
+    const asch = await rpc("asset-register", { jsonrpc: "2.0", id: 86, method: "tools/call", params: { name: "asset_schedule", arguments: { asset: aid } } });
+    let asc2 = {}; try { asc2 = JSON.parse(asch.result.content[0].text); } catch { asc2 = {}; }
+    const schSum = (asc2.periods || []).reduce((t, r) => t + r.amount_minor, 0);
+    const aresid = await rpc("asset-register", { jsonrpc: "2.0", id: 87, method: "tools/call", params: { name: "asset_schedule", arguments: { scheme: "pl", category: "487", cost_minor: 600000, currency: "PLN", residual_minor: 700000, purchase_date: "2026-03-12" } } });
+    ok("hosted asset_schedule sums to cost less residual to the minor unit (550000 = 600000 - 50000) and refuses a residual over cost",
+      schSum === 550000 && asc2.depreciable_base_minor === 550000 && asc2.cost_minor === 600000 && asc2.residual_applied_minor === 50000 && (asc2.periods || []).length > 0 &&
+      aresid.result?.isError === true && /is not less than cost/.test(JSON.stringify(aresid)),
+      `${schSum} ${JSON.stringify(aresid).slice(0, 70)}`);
+    // One month's journal, then a disposal above net book value. 550000 over 40 months is
+    // 13750 a month; April through September is 82500, so NBV at 2026-09-30 is 517500 and
+    // proceeds of 600000 are a gain of 82500. asset_journal writes nothing: it hands back
+    // the expense_add ARGUMENTS, with no vat_rate on them, because a book charge is not a
+    // purchase.
+    const ajrn = await rpc("asset-register", { jsonrpc: "2.0", id: 88, method: "tools/call", params: { name: "asset_journal", arguments: { month: "2026-06" } } });
+    const ajrnTxt = JSON.stringify(ajrn).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const adis = await rpc("asset-register", { jsonrpc: "2.0", id: 89, method: "tools/call", params: { name: "asset_dispose", arguments: { asset: aid, date: "2026-09-30", proceeds_minor: 600000, note: "sold above book value" } } });
+    let di = {}; try { di = JSON.parse(adis.result.content[0].text); } catch { di = {}; }
+    const arep = await rpc("asset-register", { jsonrpc: "2.0", id: 90, method: "tools/call", params: { name: "asset_report", arguments: { year: 2026 } } });
+    const arepTxt = JSON.stringify(arep).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    ok("hosted asset_journal balances one month (PLN 137.50, expense_add payload with no vat_rate, nothing written), asset_dispose books a gain of PLN 825.00 against NBV and asset_report names the disposal",
+      new RegExp(`"asset": "${aid}"[\\s\\S]{0,400}?"debit_minor": 13750`).test(ajrnTxt) && /"balanced": true/.test(ajrnTxt) && /"tool": "expense_add"/.test(ajrnTxt) && /"no_vat": "No vat_rate is set on the payload/.test(ajrnTxt) && !/"vat_rate":/.test(ajrnTxt) && /does not write into the expense ledger/.test(ajrnTxt) &&
+      di.result === "gain" && di.result_minor === 82500 && di.nbv_minor === 517500 && di.accumulated_minor === 82500 &&
+      new RegExp(`"asset": "${aid}"`).test(arepTxt) && /"result": "gain"/.test(arepTxt),
+      `${di.result} ${di.result_minor} ${arepTxt.slice(0, 70)}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
@@ -881,7 +1035,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);

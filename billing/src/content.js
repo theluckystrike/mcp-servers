@@ -2212,6 +2212,141 @@ cap and adds the A4 statement PDF with your logo and the held, oldest-held and u
     ],
   },
 
+  "fixed-assets-and-depreciation-from-chat": {
+    title: "Fixed assets and depreciation from chat, on the rates the tax authorities publish",
+    description: "Keep a fixed asset register and depreciate it under the Polish KST annex rates, the UK capital allowance pools or US MACRS GDS, with the convention, the journal entry and the gain on disposal. Why the monthly split, not the yearly one, is where the rounding error is, and why the UK pool rate is applied to one asset with a caveat.",
+    html: `<h1>Fixed assets and depreciation from chat, on the rates the tax authorities publish</h1>
+<p>Depreciation is somebody else's arithmetic. A tax authority publishes a rate, a life and a convention, and
+your job is to apply their rule to your purchase and put the answer in a ledger or on a return. Nothing in
+that is a judgement call once the category is settled, which makes it exactly the kind of thing worth handing
+to a tool. The <a href="/s/asset-register">MCP Asset Register</a> server holds three of those rate tables as
+files inside the package, keeps a register of what you bought, and returns the schedule, the monthly journal
+entry and the gain or loss when you sell. There is no network call anywhere in it.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add asset-register -- npx -y @theluckystrike/mcp-asset-register</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "asset-register": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-asset-register"]
+    }
+  }
+}</code></pre>
+<p>It reads the same shared business profile as the invoice and expense servers, so your default currency is
+set once. The scheme is derived from that currency rather than guessed from an address line, and every answer
+that uses a derived scheme says in words that it derived it.</p>
+
+<h2>The three tables, and what each one leaves out</h2>
+<p>Every table carries a header with the authority, the instrument, the source URL, the date the rates took
+effect and the date they were read, and the <code>assets://categories</code> resource returns those headers
+with the rates, so the provenance travels with the number. The rule the tables were built under is that a
+value that could not be stated with confidence from the public text was left out rather than guessed, because
+a depreciation rate ends up on a return and a wrong one that looks authoritative is worse than an absent one.</p>
+<table>
+<tr><th>table</th><th>bundled</th><th>deliberately not bundled</th></tr>
+<tr><td>Poland, KST</td><td>33 rows at the group and subgroup level: 0 percent (land, art. 16c), 1.5, 2.5, 4.5, 7, 10, 14, 20 and 30 percent, each with its declining-balance eligibility</td><td>The 18 and 25 percent positions of the annex, whose KST membership could not be stated with confidence; and every individual six-digit code, because a taxpayer classifies the asset and the table carries the rate</td></tr>
+<tr><td>UK, capital allowances</td><td>The main rate pool at 18 percent, the special rate pool at 6 percent, and the annual investment allowance as a 100 percent first-year row with its GBP 1,000,000 cap</td><td>First-year and full-expensing rules, the structures and buildings allowance, the small pools allowance, the CO2 thresholds that decide which pool a car enters, and every balancing charge</td></tr>
+<tr><td>US, MACRS</td><td>The 3, 5 and 7 year GDS classes under the half-year convention, as the published Pub 946 Table A-1 percentages</td><td>Mid-quarter and mid-month conventions, the 27.5 and 39 year real property classes, the 10, 15 and 20 year classes, ADS, section 179 and bonus depreciation</td></tr>
+</table>
+<p>A category outside a table is refused by name. A US 10-year class is not quietly approximated to the
+7-year one, and a Polish asset in one of the two missing annex positions is told the table is partial rather
+than told no rate exists.</p>
+
+<h2>The convention belongs to the table, not to you</h2>
+<p>The same purchase gives three different first-year figures under the three schemes, and all three are
+right. Poland charges from the month <strong>after</strong> the asset enters the register (art. 16h ust. 1
+pkt 1), so a computer in service on 15 March starts on 1 April, year one is nine twelfths of the annual rate
+and the schedule runs one calendar year longer than the life suggests. The MACRS percentages already carry
+the half-year convention inside them, which is why a 5-year class runs six periods rather than five. A UK
+writing down allowance is a full-period allowance on a pool and is not prorated by month at all.</p>
+<p>The Polish declining-balance method switches, and the answer says which year it switched in. Art. 16k
+multiplies the rate by a coefficient of up to 2.0 on the written-down value, and from the first year the
+declining amount would fall below the straight-line amount, the rest of the schedule is straight line. A
+truck at 20 percent times 2 on 10,000.00 gives 4000.00, 2400.00, 2000.00, 1600.00, and the third period's
+<code>basis</code> field names the article, because year three's declining amount would have been 1440.00,
+below the 2000.00 straight-line amount. Passenger cars and buildings are excluded from the method by the
+annex and are refused rather than computed anyway.</p>
+
+<h2>The measured thing: the rounding error is in the monthly split, not the yearly one</h2>
+<p>Take one test asset, cost 12,345.67 with a 45.67 residual, in service 12 March 2026, and put it through
+every schedule these three tables can produce: 67 of them across the schemes, categories and methods. The
+yearly rows come out clean under almost any rounding rule you like, because an annual amount is a percentage
+of a base and lands on or near a whole cent.</p>
+<p>Now split those same years into months by rounding each month independently. <strong>35 of the 67 no
+longer sum to the depreciable base</strong>, off by up to <strong>390 minor units, 3.90 on a 12,345.67
+asset</strong>. The worst offenders are the longest-lived rows: a building at 1.5 percent spreads its base
+over 800 months, and 800 half-cent roundings is where the 3.90 comes from.</p>
+<table>
+<tr><th></th><th>Yearly rows</th><th>Monthly rows, rounded per month</th></tr>
+<tr><td>Schedules that sum to the base</td><td>67 of 67</td><td>32 of 67</td></tr>
+<tr><td>Worst error</td><td>0</td><td>390 minor units</td></tr>
+</table>
+<p>That is the wrong way round from the intuition, and the reason is worth stating plainly. The monthly split
+feels like the harmless presentational step, the one that happens after the real arithmetic is done, so it is
+the step that gets a bare <code>Math.round</code> and no test. It is also the <strong>only</strong> step whose
+output anybody posts: nobody journals a year, they journal a month, so the number that reaches the ledger
+comes from the step that was not checked.</p>
+<p>The fix is that the allocator rounds the <strong>cumulative</strong> total at each step and takes each
+period as the difference between two rounded cumulatives, with the last period set to whatever is left. That
+makes <code>sum(periods) == cost - residual</code> hold by construction rather than by luck, and the same
+rule is applied to the monthly split, so the months sum to their year and the years sum to the base. The
+contract suite then asserts the identity for all 67 schedules rather than for the two or three a unit test
+would have picked.</p>
+
+<h2>The UK caveat, stated in every answer rather than in a footnote</h2>
+<p>A UK writing down allowance is not a per-asset charge at all. It is a percentage of a <strong>pool</strong>:
+you put qualifying expenditure into the main rate pool or the special rate pool, claim 18 or 6 percent of the
+pool balance for the period, and carry the rest forward. There is no "this van's depreciation" in the
+legislation, only the pool the van went into.</p>
+<p>This server applies the pool rate to one asset so that a per-asset figure exists at all, which is what a
+book ledger needs, and it says so in the answer every time rather than once in the documentation. Two
+consequences follow and both are on the record in the output. A pure reducing balance never reaches zero, so
+the schedule is cut at 25 periods and the last one writes off what is left, with a <code>basis</code> line
+saying that is what happened. And a real capital allowances computation nets disposals against the pool
+rather than against the asset, so the per-asset figure here is a book number, not the figure that goes on the
+return. The annual investment allowance is bundled as a single 100 percent first-year row with its
+GBP 1,000,000 cap, and the note that cars never qualify for it travels with the row.</p>
+
+<h2>The journal, and why it writes nothing</h2>
+<p><code>asset_journal</code> returns one month's entry: debit depreciation expense, credit accumulated
+depreciation, per asset and in total, balancing to zero on every line and in aggregate. Depreciation is
+charged up to and including the month of disposal and then stops, so the month you sold in is charged and
+the month after is not. A month with nothing to charge returns no lines rather than a zero line.</p>
+<p>It also returns the exact <code>expense_add</code> arguments for the
+<a href="/s/expense-tracker">expense tracker</a>, one payload per currency, and writes nothing itself. That is
+deliberate. The expense server publishes no library entry point, and its id counter, its category rules, its
+VAT split and its currency defaults all live inside its own <code>expense_add</code> handler under its own
+lock; appending a row to its data file directly would create an entry with none of those applied, one that
+looks native and is not. No <code>vat_rate</code> is set on the payload either, because depreciation is a book
+charge rather than a purchase, so there is no input VAT to reclaim on it.</p>
+<p>Currencies are never added together anywhere in this server. A PLN register and a USD one stay two
+figures, in <code>asset_list</code>, <code>asset_journal</code> and <code>asset_report</code> alike, because
+there is no exchange rate here and inventing one would be inventing the total.</p>
+
+<h2>Free and Pro</h2>
+<p>Depreciation schedules are free and unlimited on every tier, on all three tables. That is deliberate, and
+it is the same rule the per diem server uses: the rates are public information a tax authority published, and
+metering the reading of a regulation would be charging for the government's work rather than for this
+server's. What the free tier limits is the <strong>size of the register</strong>, at 10 assets, with
+<code>asset_list</code> and <code>asset_dispose</code> unlimited. Pro
+(<a href="/buy/asset-register?src=store.guide.fixed-assets-and-depreciation-from-chat">$19 one-time</a>, or
+<a href="/bundle">$39 for the bundle</a>) removes that cap and adds the monthly journal and the net book value
+and disposal report.</p>`,
+    faq: [
+      { q: "Where do the rates come from, and how do I know they are current?", a: "Each table is a file inside the package carrying the authority, the instrument, the source URL, the date the rates took effect and the date they were read, and the assets://categories resource returns that header with the rates. There is no live feed, deliberately: a depreciation rate that changed under you between two runs of the same register is worse than one that is visibly stale, because the stale one is checkable against the file the build shipped. Read the effective_date in any answer before you rely on it." },
+      { q: "Why does my Polish asset start depreciating the month after I bought it?", a: "Because art. 16h ust. 1 pkt 1 says so. Depreciation is charged from the first month AFTER the month the asset entered the register, so an asset in service on 15 March starts on 1 April, year one is nine twelfths of the annual rate and the schedule runs one calendar year longer than the useful life suggests. Every answer names the first charge month rather than leaving you to infer it." },
+      { q: "Do the monthly amounts actually add up to the yearly ones?", a: "Yes, by construction rather than by luck. The allocator rounds the cumulative total at each step and takes each period as the difference between two rounded cumulatives, with the last period set to the remainder, and the same rule splits a year into months. So the months sum to their year and the periods sum to cost less residual, to the minor unit, for every input. The contract suite asserts that identity for all 67 schedules these tables can produce, not for a sample." },
+      { q: "Can I use the UK figures on my capital allowances return?", a: "No, and the answer says so every time rather than once in the documentation. A writing down allowance is a percentage of a pool, not of an asset: there is no per-asset depreciation in the legislation. This server applies the pool rate to one asset so a book figure exists, cuts the schedule at 25 periods because a reducing balance never reaches zero, and nets nothing against the pool. Use it for the ledger; compute the return on the pool." },
+      { q: "What happens to a residual value under MACRS?", a: "It is reported back as ignored and kept on the record for book purposes. The published percentages recover the whole cost, so applying a residual under them would either break the published row or silently rebase it. Saying in the answer that the number was not used is better than either." },
+      { q: "What if my category is not in the table?", a: "It is refused by name, with the gap named. A US 10-year property class is refused rather than approximated to the 7-year one, and a Polish asset in the annex's 18 or 25 percent positions is told the table is partial. Matching is exact or by a prefix of four characters or more, never a substring, because \"land\".includes(\"and\") is true and a substring fallback would price a delivery van at the land row's 0 percent and say nothing." },
+      { q: "What does the free tier actually limit?", a: "Only the size of the register, at 10 assets. asset_schedule, asset_list and asset_dispose are unlimited on every tier, and asset_schedule works on an asset you are only pricing and have not stored. asset_journal and asset_report are Pro." },
+      { q: "Where is the data kept?", a: "Plain JSON under ~/.local/share/mcp-servers/asset-register/, or $XDG_DATA_HOME if you set it. The rate tables are files inside the package. There is no network call anywhere in this server, no account and no API key, and license keys are verified offline." },
+    ],
+  },
+
   "per-diem-and-travel-allowances-from-chat": {
     title: "Per diem and travel allowances from chat, on the rate tables the tax authorities publish",
     description: "Price a business trip under the Polish delegation regulation, the HMRC benchmark scale rates or the US GSA standard, with the partial-day ladder and every meal deduction shown. Why a substring match on a country name priced a trip to Oman at Romania's rate, and why the HMRC overseas table is deliberately not bundled.",
@@ -2588,5 +2723,5 @@ ${FOOT}`,
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, and the one-install office-suite bundle.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, travel allowances, fixed assets and depreciation, and the one-install office-suite bundle.",
 };

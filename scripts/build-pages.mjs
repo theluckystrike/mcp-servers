@@ -2,7 +2,7 @@
 // Renders servers/*/README.md into billing/src/pages.js so mcp.zovo.one serves a product page per server.
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { marked } from "marked";
-const ids = ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem"];
+const ids = ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register"];
 const facts = JSON.parse(readFileSync("data/facts.json", "utf8"));
 const out = {};
 

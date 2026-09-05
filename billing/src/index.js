@@ -27,6 +27,7 @@ export const PRODUCTS = {
   "billing-docs": { desc: "Credit notes and purchase orders on the same engine as your invoices: the VAT unwound at the rate you charged, and never more credited than the invoice billed.", free: "Free: 5 documents a calendar month, credit notes and purchase orders together, plus unlimited text exports.", pro: "Pro: unlimited documents, both PDFs, your logo, and the credited and on-order report.", name: "MCP Billing Docs Pro", price: "price_1UCCo9JKCamubEm1TyBUQdzO", usd: 19, pkg: "@theluckystrike/mcp-billing-docs", bin: "mcp-billing-docs", payload: "billing-docs" },
   deposits: { desc: "Security and retainer deposits held per client, applied to invoices as a real payment that adds to what was already paid rather than replacing it.", free: "Free: 5 deposits recorded a calendar month, plus unlimited applying, refunds, balances and text statements.", pro: "Pro: unlimited deposits recorded, the A4 statement PDF with your logo, and the held and unapplied report.", name: "MCP Deposits Pro", price: "price_1UCEbNJKCamubEm1kOnmQOiE", usd: 19, pkg: "@theluckystrike/mcp-deposits", bin: "mcp-deposits", payload: "deposits" },
   "per-diem": { desc: "Statutory travel allowances on three bundled rate tables: the Polish delegation regulation at home and per country, the HMRC benchmark scale rates inside the UK, and the US GSA CONUS standard. The HMRC overseas per city rates are not bundled and are refused by name rather than guessed.", free: "Free: unlimited rate lookups and calculations on every scheme, 5 trips saved a calendar month, unlimited trip lists.", pro: "Pro: unlimited trips saved, the expense-tracker export payloads, and the per scheme and per month report.", name: "MCP Per Diem Pro", price: "price_1UCH5MJKCamubEm1wSrTiopx", usd: 19, pkg: "@theluckystrike/mcp-per-diem", bin: "mcp-per-diem", payload: "per-diem" },
+  "asset-register": { desc: "A fixed asset register that depreciates on the rates the tax authorities publish: the Polish KST annex rates from the CIT and PIT acts, the UK capital allowance pools with the annual investment allowance, and the US MACRS GDS half-year tables for 3, 5 and 7 year property. The tables are bundled files rather than a feed, and the annex positions that could not be stated with confidence are refused by name rather than guessed.", free: "Free: 10 assets in the register, unlimited depreciation schedules on every table, unlimited register listing and disposals.", pro: "Pro: unlimited assets, the monthly journal with its expense-tracker payload, and the net book value, yearly charge and disposal report.", name: "MCP Asset Register Pro", price: "price_1UCJDmJKCamubEm1lXBcAaEQ", usd: 19, pkg: "@theluckystrike/mcp-asset-register", bin: "mcp-asset-register", payload: "asset-register" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
@@ -40,7 +41,7 @@ export const SERVER_COUNT = SINGLE_PRODUCT_IDS.length;
 export const BUNDLE_SAVING_USD =
   SINGLE_PRODUCT_IDS.reduce((n, id) => n + PRODUCTS[id].usd, 0) - PRODUCTS.bundle.usd;
 
-const NUMBER_WORD = { 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two" };
+const NUMBER_WORD = { 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three" };
 
 /** The server count as a capitalised English word, e.g. "Twenty". Exported so the copy
  * tests can assert the rendered sentence without pinning a number that a new server moves. */
@@ -285,6 +286,7 @@ const FREE_FIVE_WORDS = {
   "billing-docs": "Five documents a month, unlimited text",
   deposits: "Five deposits a month, unlimited applying",
   "per-diem": "Five trips a month, unlimited rate lookups",
+  "asset-register": "Ten assets, unlimited depreciation schedules",
 };
 
 const BUNDLE_DESCRIPTION =
@@ -423,6 +425,8 @@ export function validSrc(src) {
 }
 
 const CLICK_DAY_TTL = 60 * 60 * 24 * 120; // 120 days of daily buckets is enough for any 7/30d KPI
+/** Probe Checkout Sessions are reused for 23h; Stripe expires a Session after 24h. */
+const PROBE_SESSION_TTL = 23 * 60 * 60;
 
 /**
  * Count one human click on an upgrade link, before the redirect to Stripe. Two counters
@@ -779,13 +783,29 @@ ${faqHtml}
       if (!PRODUCTS[id]) return new Response(page("Not found", `<h1>Unknown product</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
       const tenantParam = url.searchParams.get("tenant") || "";
       const tenant = validTenant(tenantParam) ? tenantParam : "";
+      // 2026-09-05 (Stripe audit): 2,498 Sessions in 4 days, 0 paid. 1,598 were tagged
+      // probes (validate.mjs mints 23 per run), 900 were crawlers with a scripted UA and
+      // no probe header. Every one of them is a Stripe object that inflates the funnel.
+      // Scripted UAs without the explicit probe header never reach Stripe: a crawler
+      // cannot pay. Explicit probes reuse one Session per product for 23 hours (Sessions
+      // live 24h), so a validation run costs at most one new Session per product per day.
+      const explicitProbe = request.headers.get("x-mcp-probe") === "1";
+      if (scripted && !explicitProbe) {
+        return new Response(null, { status: 303, headers: { Location: `https://${host}/s/${encodeURIComponent(id)}`, "cache-control": "no-store", "x-mcp-buy": "scripted-ua-no-session" } });
+      }
       // Conversion instrument: count the click before the redirect, skipping the same
       // probe-tagged and scripted requests the Stripe metadata already excludes.
       const srcParam = url.searchParams.get("src") || "";
       const src = validSrc(srcParam) ? srcParam : `${id}.unknown`;
       if (!probeTag) ctx.waitUntil(recordClick(env, src));
       try {
+        const probeKey = probeTag && !tenant ? `probe-session:${id}` : "";
+        if (probeKey) {
+          const cached = await env.REMOTE_DATA.get(probeKey);
+          if (cached) return new Response(null, { status: 303, headers: { Location: cached, "cache-control": "no-store", "x-mcp-buy": "probe-session-reused" } });
+        }
         const session = await createCheckout(env, host, id, probeTag, tenant);
+        if (probeKey) ctx.waitUntil(env.REMOTE_DATA.put(probeKey, session.url, { expirationTtl: PROBE_SESSION_TTL }));
         return new Response(null, { status: 303, headers: { Location: session.url, "cache-control": "no-store" } });
       } catch (e) {
         return new Response(page("Checkout error", `<h1>Checkout could not start</h1><p>${esc(e.message)}</p><p><a href="/">Back</a></p>`), { status: 502, headers: { "content-type": "text/html; charset=utf-8" } });

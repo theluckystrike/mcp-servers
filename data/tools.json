@@ -862,5 +862,31 @@
       "name": "perdiem_report",
       "description": "Total the saved trips per scheme and per calendar month, in each scheme's own currency, with the day count and the trips behind every figure. Pro."
     }
+  ],
+  "asset-register": [
+    {
+      "name": "asset_add",
+      "description": "Add one fixed asset to the register and return its id with the rate, useful life and convention taken from the bundled tax table. Cost and residual are whole minor units. Free tier holds ten assets."
+    },
+    {
+      "name": "asset_list",
+      "description": "List the assets in the register with cost, method, rate and net book value at a date, filtered by scheme, category, project, currency or disposal state. Free and unlimited."
+    },
+    {
+      "name": "asset_schedule",
+      "description": "Build the depreciation schedule for a stored asset, or price one not yet in the register, per year or per month, to zero or residual, with the table convention applied and the periods summing exactly to the base. Free."
+    },
+    {
+      "name": "asset_journal",
+      "description": "Return the depreciation journal for one month: debit depreciation expense and credit accumulated depreciation, per asset and in total, plus an expense_add-ready payload per currency. It writes nothing itself. Pro."
+    },
+    {
+      "name": "asset_dispose",
+      "description": "Record the sale, scrapping or write-off of an asset on a date for a proceeds amount, and return the gain or loss against net book value at that date. Free."
+    },
+    {
+      "name": "asset_report",
+      "description": "Report net book value by category and currency at a date, the year's depreciation charge, and every disposal in the year with its gain or loss. Pro."
+    }
   ]
 }

@@ -439,6 +439,16 @@
       "free": "Rate lookups and calculations are unlimited on every tier: the tables are public regulation, and metering the reading of a regulation would be charging for the tax authority's work. 5 trips saved per calendar month, counted by start date, and unlimited trip lists.",
       "pro": "Unlimited trips saved, the expense-tracker export payloads (one per currency, ready for expense_add), and the report of totals per scheme and per calendar month.",
       "storage": "~/.local/share/mcp-servers/per-diem/"
+    },
+    "asset-register": {
+      "title": "MCP Asset Register",
+      "tagline": "A fixed asset register that depreciates on the rates the tax authorities actually publish, with the schedule, the journal and the gain on sale.",
+      "does": "Keeps a register of what you bought, what it cost, when it went into use and which category it falls in, and returns the rate, the useful life, the convention, the full schedule year by year or month by month, one month's journal entry, and the gain or loss when you sell. Three tables ship with it: the Polish annual rates from the annex to the CIT and PIT acts keyed to the KST classification (33 rows, with declining-balance eligibility and the art. 16k switch to straight line), the UK capital allowance pools at 18 and 6 percent with the annual investment allowance, and the US MACRS GDS half-year percentages for 3, 5 and 7 year property exactly as IRS Pub 946 Table A-1 publishes them. The convention is the table's, not the caller's: Poland charges from the month AFTER the asset enters the register, so an asset in service on 15 March starts on 1 April and year one is nine twelfths, while the MACRS percentages already carry the half-year convention and a UK writing down allowance is not prorated by month at all. The same asset gives three different year-one figures under the three schemes and all three are right. Money is integer minor units end to end and the schedule is allocated by cumulative rounding, so the periods sum to cost less residual to the minor unit and the months sum to their year. The tables are files inside the package, not a feed, and every rate carries its authority, instrument, source URL and effective date.",
+      "for": "Anyone who has to put a depreciation figure on a return or in a ledger: Polish companies and sole traders on the KST annex rates, UK businesses claiming capital allowances on the main and special rate pools, and US filers on MACRS GDS.",
+      "example": "\"Add the Dell workstation, 8,499 zloty, in service 15 March 2026, computers.\" ... \"Show me the schedule month by month.\" ... \"Depreciate the same truck under declining balance.\" ... \"What is April's journal entry?\" ... \"We sold the van for 12,000 in September, what is the gain?\"",
+      "free": "Depreciation schedules are unlimited on every tier: the rates are public information a tax authority published, and metering the reading of a regulation would be charging for the government's work. The cap is on the SIZE of the register, 10 assets, plus unlimited asset_list and asset_dispose.",
+      "pro": "Unlimited assets in the register, the monthly journal entry with its ready-made expense_add payload (one per currency, no vat_rate because depreciation is a book charge), and the report of net book value by category and currency with the year's charge and every disposal in it.",
+      "storage": "~/.local/share/mcp-servers/asset-register/"
     }
   },
   "version": "0.1.1",
@@ -505,6 +515,24 @@
       ],
       "note": "Searched the official MCP registry search API for each token on 2026-09-05; nothing found holds a client's money on a ledger and applies it to an invoice. deposit, deposits, security deposit, client funds and trust account return 0 results each. retainer returns 12 rows that are all one server, io.github.theluckystrike/retainer, which is this estate's own mcp-recurring (recurring retainer BILLING, a schedule that raises invoices, not money held). escrow returns 10 rows, all agent-to-agent crypto settlement on Base, Robinhood Chain or USDC (0xdirectping/escrow, jdhart81/agent-escrow, kustodia-escrow, hive-mcp-escrow, Evozim's cross-chain bridge readers), which hold tokens between two agents rather than a client deposit against an invoice. Nothing to compare against honestly. See docs/DIST_R14_RESULT.md.",
       "guide": "client-deposits-and-retainers-from-chat",
+      "ttl_days": 30
+    },
+    "asset-register": {
+      "date": "2026-09-05",
+      "tokens": [
+        "asset-register",
+        "asset register",
+        "depreciation",
+        "fixed-assets",
+        "fixed assets",
+        "capital-allowances",
+        "capital allowances",
+        "macrs",
+        "amortization",
+        "book value"
+      ],
+      "note": "Searched the official MCP registry search API for each token on 2026-09-05; nine of the ten return 0 results and nothing found keeps a register of assets and depreciates it on a published rate table. depreciation returns exactly one row, io.github.Evozim/depreciation-value-calculator-mcp, and it is not a server this estate can write a comparison page against: it is a remote SSE endpoint on api.m2mcent.com behind an x402 payment header that charges $0.30 USDC on Base per call, its own description says only \"Premium agentic endpoint for depreciation-value-calculator-mcp\", and it is one of the same publisher's generated calculator wrappers rather than a register. It holds no asset, no scheme, no KST, capital allowance or MACRS table, no convention, no journal and no disposal, and it was NOT called: paying per invocation to probe a competitor is a paid API call. A comparison page would be setting a metered arithmetic endpoint against a bundled statutory rate table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R16_RESULT.md.",
+      "guide": "fixed-assets-and-depreciation-from-chat",
       "ttl_days": 30
     }
   }
