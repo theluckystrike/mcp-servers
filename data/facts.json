@@ -544,6 +544,22 @@
       "note": "Searched the official MCP registry search API for each token on 2026-09-05; nine of the ten return 0 results and nothing found keeps a register of assets and depreciates it on a published rate table. depreciation returns exactly one row, io.github.Evozim/depreciation-value-calculator-mcp, and it is not a server this estate can write a comparison page against: it is a remote SSE endpoint on api.m2mcent.com behind an x402 payment header that charges $0.30 USDC on Base per call, its own description says only \"Premium agentic endpoint for depreciation-value-calculator-mcp\", and it is one of the same publisher's generated calculator wrappers rather than a register. It holds no asset, no scheme, no KST, capital allowance or MACRS table, no convention, no journal and no disposal, and it was NOT called: paying per invocation to probe a competitor is a paid API call. A comparison page would be setting a metered arithmetic endpoint against a bundled statutory rate table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R16_RESULT.md.",
       "guide": "fixed-assets-and-depreciation-from-chat",
       "ttl_days": 30
+    },
+    "statement-of-account": {
+      "date": "2026-09-05",
+      "tokens": [
+        "statement-of-account",
+        "statement of account",
+        "aging",
+        "dunning",
+        "receivables",
+        "accounts receivable",
+        "debt collection",
+        "payment reminder"
+      ],
+      "note": "Searched the official MCP registry search API for each token on 2026-09-05. Seven of the eight return 0 results: statement-of-account, statement of account, dunning, receivables, accounts receivable, debt collection and payment reminder. The eighth, aging, returns 20 rows and every one of them is a substring match on another word rather than a match on the concept: imaging (CAST Imaging, a DICOM analyser), staging (three placeholder staging endpoints), messaging (WhatsApp, SMS and private-agent messaging servers), paging (an on-call pager) and one healthy-aging supplement atlas. Nothing in the registry reads an invoice ledger, computes what is outstanding as at a date, buckets it by days past due or drafts a chaser. There is no honest comparison page to write, so this note stands in place of one and expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R17_RESULT.md.",
+      "guide": "client-statements-and-dunning-from-chat",
+      "ttl_days": 30
     }
   }
 }

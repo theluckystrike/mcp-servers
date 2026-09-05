@@ -2465,6 +2465,139 @@ adds the expense-tracker export payloads and the report of totals per scheme and
     ],
   },
 
+  "client-statements-and-dunning-from-chat": {
+    title: "Client statements and payment chasers from chat, aged as at any date you name",
+    description: "Turn the invoices, credit notes and deposits you already keep into a statement of account for a period, age what is open into 0-30, 31-60, 61-90 and over 90 days AS AT a date, and draft the chaser. Why aging a past date with today's payment figures reports zero overdue on a day when a third of the book was late, and why paid_minor rather than the payment rows is the authority.",
+    html: `<h1>Client statements and payment chasers from chat, aged as at any date you name</h1>
+<p>A client asks what they owe you. The honest answer is not one invoice, and it is not five invoices
+forwarded in a row: it is a statement of account. The balance they were carrying at the start of the period,
+every invoice you issued in it, every payment that came in, every credit note you gave, and the balance at the
+end. The <a href="/s/statement-of-account">MCP Statement of Account</a> server builds that document out of
+books you already keep, ages what is still open, and drafts the chaser when it is late. It reads three stores
+and writes into none of them.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add statement-of-account -- npx -y @theluckystrike/mcp-statement-of-account</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "statement-of-account": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-statement-of-account"]
+    }
+  }
+}</code></pre>
+<p>It reads the invoice ledger from <a href="/s/invoice">mcp-invoice</a>, the credit notes from
+<a href="/s/billing-docs">mcp-billing-docs</a> and the deposits from <a href="/s/deposits">mcp-deposits</a>,
+plus the shared business profile for the bank details a chaser prints. Only the first of those is required:
+with no deposits installed the statement simply has no deposit line and says so.</p>
+
+<h2>A statement is a view, never a second copy of a balance</h2>
+<p>This server writes exactly one file of its own, a register of the statements it built, and it never reads a
+balance back out of it. Every figure in every answer is recomputed from the invoices, the credit notes and the
+deposits at the moment you ask. A stored balance is a second number that can be wrong, and the moment it
+disagrees with the ledger there is no way to tell from the document which one to believe. The test suite
+asserts the bytes <em>and</em> the mtimes of five sibling files are unchanged across all six tools, the PDF
+path included.</p>
+<p>The same rule decides what an unreadable sibling store means. A store that is not there at all is normal:
+you never installed the deposits server, the statement is still correct and it reports <code>rows: 0</code>. A
+store that is on disk and did not parse is a different thing entirely: money exists that could not be read, so
+the answer carries the error and a sentence naming which figure is therefore incomplete. Turning a balance
+that could not be computed into a balance of nothing owed is the one failure that would be invisible in the
+document and expensive in the world.</p>
+
+<h2>The measured part: aging is as at a date, in both directions</h2>
+<p>Almost every aging report in the wild is written the same way. Take each invoice, subtract what is marked
+paid, subtract the credit notes, bucket the remainder by the due date. That rule has a bug that does not
+announce itself: the subtraction is not dated. When you ask what was outstanding last month, you get last
+month's invoices with this month's payments already taken off them.</p>
+<p>Here is what that costs, measured on one worked month with four invoices, two credit notes and one deposit
+application, aged at 2026-06-10:</p>
+<pre><code>{
+  "as_of": "2026-06-10",
+  "as_at_rule": { "outstanding": 250000, "overdue": 50000 },
+  "naive_rule":  { "outstanding": 170000, "overdue": 0 }
+}</code></pre>
+<p>The naive rule understates what was owed on that day by 800.00 of 2,500.00, and it reports <strong>nothing
+overdue</strong> on a date when 500.00 was 31 days late, because one payment arrived on 12 June and it has
+already been subtracted on the 10th. A third of the balance and all of the overdue vanish. The buckets still
+add up, so nothing looks broken, and the answer cannot be reproduced next month because the input keeps
+moving. This server dates the subtraction: an invoice issued after the date is not on the books, a payment
+made after it has not happened, and a credit note issued after it has not been given.</p>
+<p>The other half of the same rule: <strong>due today is not overdue</strong>. An invoice enters the 0-30
+bucket on the first day past its due date, so that bucket holds days one to thirty and day zero sits in a
+<code>not_yet_due</code> line reported beside the four buckets. It is real money and it is shown; it is simply
+not late, and putting it in a bucket labelled overdue would send a chaser to a client who has done nothing
+wrong.</p>
+
+<h2>paid_minor is the authority, the payment rows are only the attribution</h2>
+<p>On a real machine these two do not agree, and the disagreement is normal rather than corrupt.
+<code>invoice_mark_paid</code> writes both. <code>deposit_apply</code> in the deposits server raises
+<code>paid_minor</code> and appends <strong>nothing</strong> to <code>payments[]</code>, because the movement
+lives on the deposit as an application. An invoice created before the payments array existed carries a
+<code>paid_minor</code> and a single paid date and no rows at all.</p>
+<p>So the payment rows on a statement are assembled as every row in <code>payments[]</code>, plus every
+deposit application naming that invoice, plus one residual row at the paid date for whatever
+<code>paid_minor</code> still exceeds those two. They sum to <code>paid_minor</code> exactly, and the closing
+balance reconciles per invoice. Reconstructing receipts from <code>payments[]</code> alone would have lost
+300.00 of the worked month's 900.00 of cash, a third of the receipts, with no error raised anywhere. When the
+attribution sums to <em>more</em> than <code>paid_minor</code>, nothing is scaled and nothing is dropped in
+silence: the whole attribution is discarded, one row for <code>paid_minor</code> is shown, and a note names
+the invoice and the difference.</p>
+
+<h2>A deposit applied is money that moves once</h2>
+<p>This is the trap worth stating out loud, because the first build of this server fell into it. A deposit
+applied to an invoice has already raised that invoice's <code>paid_minor</code>, so it is <em>inside</em>
+payments received. It is broken out as <code>of_which_deposits_applied</code>, which is a breakdown and not a
+fourth column. Treating it as a fourth credit paid every deposited invoice twice, and the only reason it was
+caught is that the worked month has a deposit in it. Deposit money still held is a memo line and is never in
+the balance: it is the client's money until it is applied.</p>
+
+<h2>The chaser escalates in tone and never in figures</h2>
+<p><code>dunning_text</code> has three levels: friendly, firm and final demand. The amounts, the invoice list
+and the bank details are identical at all three, because a chase whose numbers grow between letters was wrong
+at level one. No level states a late fee, an interest rate or a legal cost. This server holds no contract
+terms, no statutory rate and no jurisdiction, and a demand for money is the last place to put an invented
+number. Bank details print only when the shared profile actually carries them, and when it does not the answer
+tells you the letter asks for payment without saying where to send it, rather than sending it anyway. A chaser
+for a client with nothing past due is refused, and the refusal names what is outstanding but not yet due.</p>
+
+<h2>Currencies are never added together</h2>
+<p>One statement is one currency, and a client billed in two is asked which. Aging and the all-clients report
+total per currency and no line anywhere holds the sum. There is no exchange rate in this server, so there is
+no rate to be silently wrong.</p>
+
+<h2>A credit note reduces the invoice it names, and no other</h2>
+<p>An open balance floors at zero and the excess comes back as <code>unapplied_credit</code>. Letting a
+1,500.00 credit note on a paid invoice quietly cancel an unrelated 400.00 invoice would be inventing an
+agreement the client never made. The statement, which is a balance rather than an aging, does carry the whole
+credit, so a client who is genuinely owed money sees a negative closing balance and the text says it is in
+their favour.</p>
+
+<h2>Free and Pro</h2>
+<p><code>statement_aging</code> is free and unlimited on every tier, for one client or for all of them. That
+is deliberate: who owes me money is the question this server exists for, and a free tier that hides it is a
+demo rather than a tool. The meter is on the document that actually goes to a client, five distinct statements
+a calendar month, counted by client, period and currency, so rebuilding one already in the register is free
+forever in all three renderings. Plain text statements and dunning at levels 1 and 2 are free. Pro
+(<a href="/buy/statement-of-account?src=store.guide.client-statements-and-dunning-from-chat">$19 one-time</a>,
+or <a href="/bundle">$39 for the bundle</a>) removes the cap and adds the A4 PDF with your logo, the level 3
+final demand, and <code>statements_report</code>: every client at once, per currency, ranked by what is
+overdue rather than by what is large.</p>`,
+    faq: [
+      { q: "Does it change my invoices?", a: "No. It reads the invoice ledger, the credit notes and the deposits and writes into none of them. The only file it owns is a register of the statements it built, and no balance is ever read back out of that register: every figure is recomputed from the books when you ask. The contract suite asserts the bytes and the mtimes of five sibling files are unchanged across all six tools, including the PDF path." },
+      { q: "Why does aging as at a past date give different numbers from my accounting software?", a: "Because most aging reports do not date the subtraction. They take today's paid figure off an invoice and bucket the remainder by the due date, so a payment that arrived after the date you asked about has already been deducted. Measured on one worked month at 2026-06-10, that rule reports 1,700.00 outstanding and zero overdue where the dated rule reports 2,500.00 outstanding of which 500.00 is 31 days late. The buckets still add up under both, which is why the error is easy to miss." },
+      { q: "An invoice is due today. Which bucket is it in?", a: "None of the four. It sits in not_yet_due, which is reported beside the buckets rather than inside them or hidden. The 0-30 bucket holds days one to thirty past the due date. Money that is outstanding and not yet late is real and is shown, but it is not aged, because it is not late." },
+      { q: "I applied a deposit to an invoice. Is that counted twice?", a: "No. deposit_apply already raised that invoice's paid_minor, so the money is inside payments received and is broken out as of_which_deposits_applied. It is a breakdown, not a fourth column. The first build of this server did treat it as a fourth credit and paid every deposited invoice twice; the worked month is the test that caught it. Deposit money still held is a memo line and is never in the balance." },
+      { q: "What happens when the deposit book and the invoice ledger disagree?", a: "paid_minor on the invoice wins, because it is the field every server writes and the balance is computed from it. If the attribution sums to more than paid_minor the whole attribution is discarded, one row for paid_minor is shown at the paid date, and a note names the invoice and the difference. Nothing is scaled to fit and nothing is dropped in silence." },
+      { q: "Does the chaser add interest or a late fee?", a: "Never, at any level. This server holds no contract terms, no statutory rate and no jurisdiction, so any figure it invented would be a number in a demand for money with nothing behind it. The three levels change the tone and the deadline; the amounts, the invoice list and the bank details are identical across all three. Bank details print only if your shared profile carries them, and the answer tells you when it could not." },
+      { q: "Can one statement cover a client billed in two currencies?", a: "No, and it asks you which rather than picking one. There is no exchange rate anywhere in this server, so a combined total would be an invented rate. Aging and the all-clients report state each currency separately and no line holds the sum." },
+      { q: "What does the free tier actually limit?", a: "Only the statements you build: five distinct ones a calendar month, counted by client, period and currency, so rebuilding one already in the register is free forever. statement_aging is free and unlimited for one client or for everyone, statement_text is free, and dunning at levels 1 and 2 is free. The PDF, the level 3 final demand and statements_report are Pro." },
+      { q: "Where is the data kept?", a: "The statement register is plain JSON under ~/.local/share/mcp-servers/statement-of-account/, or $XDG_DATA_HOME if you set it. The invoices, credit notes and deposits stay in their own servers' directories and are only read. There is no network call anywhere in this server, no account and no API key, and license keys are verified offline." },
+    ],
+  },
+
   "credit-notes-and-purchase-orders-from-chat": {
     title: "Credit notes and purchase orders from chat, against your real invoices",
     description: "Reverse an invoice in full, by amount or by line, with the VAT unwound at the rates it actually charged, and raise and receive supplier purchase orders. Why a single-rate credit note on a mixed-VAT invoice is wrong by 22.6 percent.",
@@ -2723,5 +2856,5 @@ ${FOOT}`,
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, travel allowances, fixed assets and depreciation, and the one-install office-suite bundle.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, travel allowances, fixed assets and depreciation, client statements and dunning, and the one-install office-suite bundle.",
 };

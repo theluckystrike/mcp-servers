@@ -2267,6 +2267,138 @@ function patchAssetRegisterIndex(src) {
   return src;
 }
 
+/**
+ * statement-of-account. The hosted endpoint has no disk. What moves:
+ *   1. renderDocPdf is the one billing-docs uses, reached through
+ *      @theluckystrike/mcp-billing-docs/lib -> ../billing-docs/lib.js -> ../../shims/pdf.js,
+ *      the same two hops /mcp/deposits takes. Nothing about the call changes: the statement
+ *      was already expressed as a title, a reference line, a party label, meta rows and a
+ *      footer block.
+ *   2. out_path is a NAME, not a path: it only decides what the downloaded file is called.
+ *   3. statement_text AND dunning_text keep returning the pasteable text inline and also
+ *      write it under /out/, so the same call hands back a .txt download link. A chaser is
+ *      the one document here most likely to be sent on as a file rather than pasted.
+ * The store needs no patch: statements.json and its counter are one document per token
+ * under the homedir shim. The three books this server reports on - the invoice ledger, the
+ * credit note store and the deposit store - are the tenant's OWN documents on
+ * /mcp/invoice, /mcp/billing-docs and /mcp/deposits, hydrated read-ONLY
+ * (SERVERS["statement-of-account"].sharedDoc, three entries, each readOnly) and never
+ * flushed: this server writes into no book it reports on, and the hosted copy says that
+ * structurally rather than by convention.
+ */
+function patchStatementIndex(src) {
+  // The only path this server ever took was out_path, and here it is a name.
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.[A-Za-z0-9]{1,8}$/, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the name the downloaded file carries, 1-64 characters of letters, digits, \` +
+      \`underscore or dash.\`);
+  }
+  return m[1];
+}
+`, "statement expandPath");
+
+  // The statement PDF: the name is decided first, the renderer returns the link.
+  src = must(src,
+    "    const out = a.out_path ? expandPath(a.out_path) : join(dataDir(), \"pdf\", `statement-${slug}-${st.currency}-${st.from}-${st.to}.pdf`);",
+    "    const name = `${expandPath(a.out_path ?? `statement-${slug}-${st.currency}-${st.from}-${st.to}`)}.html`;",
+    "statement out name");
+  src = must(src, "    await renderDocPdf({", "    const out = await renderDocPdf({",
+    "statement renderDocPdf call");
+  src = must(src,
+    "    }, issuer(), out, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "    }, issuer(), name, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "statement renderDocPdf filename");
+  src = must(src,
+    'out_path: z.string().optional().describe("Where to write the PDF; defaults to this server\'s data directory under pdf/. Use a .pdf path: the bytes written are always PDF"),',
+    'out_path: z.string().optional().describe("Name for the downloaded file, e.g. acme-statement. Defaults to the client, currency and period; the statement comes back as a download link valid for one hour"),',
+    "statement out_path description");
+  src = must(src,
+    "      period: { from: st.from, to: st.to }, path: out,\n" +
+    "      document: /\\.html?$/i.test(out) ? \"HTML statement of account (print to PDF)\" : \"PDF statement of account\",",
+    '      period: { from: st.from, to: st.to }, download: out,\n' +
+    '      document: "HTML statement of account, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",',
+    "statement pdf result");
+  src = must(src,
+    'description: "Call this tool to write one client\'s A4 statement of account and return the file path. Titled STATEMENT OF ACCOUNT, every movement in date order, closing with the balance outstanding. Pro.",',
+    'description: "Call this tool to render one client\'s A4 statement of account and return a download link valid for one hour. Titled STATEMENT OF ACCOUNT, every movement in date order, closing with the balance outstanding. Pro.",',
+    "statement pdf description");
+
+  // The plain-text statement stays inline (it is meant to be pasted) AND is published.
+  src = must(src,
+    '    const text = statementLines(st, day, a.greeting, a.sign_off).join("\\n");\n' +
+    '    return ok(extra.length ? `${text}\\n\\n---\\n${extra.join("\\n")}` : text);',
+    '    const text = statementLines(st, day, a.greeting, a.sign_off).join("\\n");\n' +
+    '    const file = `/out/statement-${slugOf(st.client.name)}-${st.currency}-${st.from}-${st.to}.txt`;\n' +
+    '    writeFileSync(file, text, "utf8");\n' +
+    '    const link = publishFile(file);\n' +
+    '    if (link) extra.unshift(`Download (.txt, valid 1 hour): ${link}`);\n' +
+    '    return ok(extra.length ? `${text}\\n\\n---\\n${extra.join("\\n")}` : text);',
+    "statement text download");
+  src = must(src,
+    'ready to paste into an email.",',
+    'ready to paste into an email. The same text also comes back as a .txt download link valid for one hour.",',
+    "statement text description");
+
+  // The dunning letter, the same way.
+  src = must(src,
+    '    const text = out.join("\\n");\n' +
+    '    return ok(`${text}\\n\\n---\\n${extra.join("\\n")}`);',
+    '    const text = out.join("\\n");\n' +
+    '    const file = `/out/dunning-${slugOf(scope.name)}-${currency}-level-${level}.txt`;\n' +
+    '    writeFileSync(file, text, "utf8");\n' +
+    '    const link = publishFile(file);\n' +
+    '    if (link) extra.unshift(`Download (.txt, valid 1 hour): ${link}`);\n' +
+    '    return ok(`${text}\\n\\n---\\n${extra.join("\\n")}`);',
+    "dunning text download");
+  src = must(src,
+    'plus your bank details when the profile has them. Level 3 is Pro.",',
+    'plus your bank details when the profile has them. The letter also comes back as a .txt download link valid for one hour. Level 3 is Pro.",',
+    "dunning text description");
+
+  // One slug rule for both download names, beside the two helpers that already live there.
+  src = must(src, "function expandPath(p: string): string {",
+`function slugOf(name: string): string {
+  return name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") || "client";
+}
+
+function expandPath(p: string): string {`,
+    "statement slugOf helper");
+
+  // Two response strings named a local install rather than the caller's own endpoints.
+  src = must(src,
+    '        "Run business_set {iban, bank} in the invoice server (mcp-invoice) and write it again.",',
+    '        "Run business_set {iban, bank} on your https://mcp.zovo.one/mcp/invoice endpoint and write it again.",',
+    "dunning bank details note");
+  return src;
+}
+
+/** The same sentence in sources.ts: the profile is set on an endpoint, not in a local install. */
+function patchStatementSources(src) {
+  return must(src,
+    '  "Run business_set {name, address, vat_id, iban, bank} in the invoice server (mcp-invoice) and render again.";',
+    '  "Run business_set {name, address, vat_id, iban, bank} on your https://mcp.zovo.one/mcp/invoice endpoint and render again.";',
+    "statement sources business note");
+}
+
+/**
+ * "on this machine" is the D-R60 species: hosted, the books are the tenant's own documents
+ * on three sibling endpoints, and the caller has no machine to look at.
+ */
+function patchStatementStatement(src) {
+  return must(src,
+    '        : `There are no invoices, credit notes or deposits on this machine yet, so there is nothing to state.`),',
+    '        : `Nothing is stored for your token yet on your https://mcp.zovo.one/mcp/invoice, /mcp/billing-docs or ` +\n' +
+    '          `/mcp/deposits endpoints, so there is nothing to state. Run business_set and invoice_create on the ` +\n' +
+    '          `invoice endpoint first.`),',
+    "statement no-books note");
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2412,9 +2544,25 @@ for (const [name, files] of Object.entries(SERVERS)) {
     throw new Error(`vendored ${name}/lib.ts still re-exports ./pdf.js, which is not vendored`);
   }
 }
-const depositsIndex = readFileSync(join(OUT, "deposits", "index.ts"), "utf8");
-if (!/from "\.\.\/billing-docs\/lib\.js"/.test(depositsIndex)) {
-  throw new Error("deposits/index.ts does not import ../billing-docs/lib.js");
+/**
+ * And this one checks the resolution ARRIVED. VENDORED_LIBS at the top of the file runs on
+ * the stdio sources and says a dependency's lib.ts is in SERVERS; this runs on the vendored
+ * bytes and says the rewritten import is actually there, across every file the server
+ * vendored rather than index.ts alone - statement-of-account reaches the deposit engine
+ * from sources.ts and statement.ts and never from index.ts, so an index-only check would
+ * have passed a build that could not resolve it.
+ */
+const LIB_RESOLUTIONS = {
+  deposits: ["billing-docs"],
+  "statement-of-account": ["invoice", "billing-docs", "deposits"],
+};
+for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
+  const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");
+  for (const dep of deps) {
+    if (!new RegExp(`from "\\.\\./${dep}/lib\\.js"`).test(src)) {
+      throw new Error(`vendored ${name} does not import ../${dep}/lib.js`);
+    }
+  }
 }
 if (!/export \{ renderDocPdf \} from "\.\.\/\.\.\/shims\/pdf\.js";/.test(readFileSync(join(OUT, "billing-docs", "lib.ts"), "utf8"))) {
   throw new Error("billing-docs/lib.ts does not re-export renderDocPdf from the shim");

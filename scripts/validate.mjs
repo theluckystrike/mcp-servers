@@ -736,12 +736,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 23 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 23 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 24 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 24 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -992,6 +992,50 @@ async function remote() {
       di.result === "gain" && di.result_minor === 82500 && di.nbv_minor === 517500 && di.accumulated_minor === 82500 &&
       new RegExp(`"asset": "${aid}"`).test(arepTxt) && /"result": "gain"/.test(arepTxt),
       `${di.result} ${di.result_minor} ${arepTxt.slice(0, 70)}`);
+    // Extension 15: /mcp/statement-of-account. Three books, one balance, and the whole
+    // point is that the closing figure cannot come from any one of them: the invoice is on
+    // /mcp/invoice, the credit note on /mcp/billing-docs and the deposit on /mcp/deposits,
+    // all hydrated read-ONLY here. 1000.00 invoiced, less 400.00 marked paid, less 150.00
+    // of deposit applied, less a 100.00 credit note, closes at 350.00.
+    const sclient = `Statement Probe ${Date.now()}`;
+    await rpc("invoice", { jsonrpc: "2.0", id: 91, method: "tools/call", params: { name: "client_add", arguments: { name: sclient, address: "1 Probe Street, Warsaw", email: "ap@example.com" } } });
+    const sinvc = await rpc("invoice", { jsonrpc: "2.0", id: 92, method: "tools/call", params: { name: "invoice_create", arguments: { client: sclient, currency: "EUR", issue_date: "2026-06-05", due_days: 10, items: [{ description: "Consulting", quantity: 10, unit_price_minor: 10000, tax_rate: 0 }] } } });
+    const sinv = (JSON.stringify(sinvc).match(/INV-\d{4}-\d{4}/) || [])[0];
+    await rpc("invoice", { jsonrpc: "2.0", id: 93, method: "tools/call", params: { name: "invoice_mark_paid", arguments: { number: sinv, amount: 400, paid_date: "2026-06-20", method: "bank transfer" } } });
+    await rpc("billing-docs", { jsonrpc: "2.0", id: 94, method: "tools/call", params: { name: "credit_note_create", arguments: { invoice: sinv, amount_minor: 10000, reason: "One day descoped" } } });
+    const sdep = await rpc("deposits", { jsonrpc: "2.0", id: 95, method: "tools/call", params: { name: "deposit_record", arguments: { client: sclient, amount_minor: 25000, currency: "EUR", kind: "retainer", received_date: "2026-06-18" } } });
+    const sdid = (JSON.stringify(sdep).match(/DEP-\d{4}-\d{4}/) || [])[0];
+    await rpc("deposits", { jsonrpc: "2.0", id: 96, method: "tools/call", params: { name: "deposit_apply", arguments: { id: sdid, invoice: sinv, amount_minor: 15000, note: "retainer drawn down" } } });
+    const sbld = await rpc("statement-of-account", { jsonrpc: "2.0", id: 97, method: "tools/call", params: { name: "statement_build", arguments: { client: sclient, from: "2026-06-01", to: "2026-12-31", currency: "EUR" } } });
+    let sb = {}; try { sb = JSON.parse(sbld.result.content[0].text); } catch { sb = {}; }
+    ok("hosted statement_build closes on the arithmetic of THREE stores it never writes: 1000.00 invoiced (/mcp/invoice) less 400.00 paid less 150.00 of deposit applied (/mcp/deposits) less a 100.00 credit note (/mcp/billing-docs) is EUR 350.00",
+      sb.opening_minor === 0 && sb.invoiced_minor === 100000 && sb.paid_minor === 55000 && sb.credited_minor === 10000 && sb.closing_minor === 35000 && sb.closing_balance === "EUR 350.00" &&
+      sb.deposits_applied_minor === 15000 && sb.held_deposit_minor === 10000 &&
+      (sb.sources || []).length === 3 && JSON.stringify(sb.sources).includes('"read": true'),
+      `${sinv} ${sdid} ${JSON.stringify(sb).slice(0, 90)}`);
+    // Aging is as at the date asked for in BOTH directions: at 2026-06-30 the 100.00 credit
+    // note and the 150.00 deposit application, both dated today, have not happened, so the
+    // invoice is open at 600.00 and 15 days past its 2026-06-15 due date. The naive rule -
+    // subtract paid_minor and the credit notes, then bucket by the due date - would report
+    // 350.00 here, which is the balance of a different day.
+    const sage = await rpc("statement-of-account", { jsonrpc: "2.0", id: 98, method: "tools/call", params: { name: "statement_aging", arguments: { client: sclient, currency: "EUR", as_of: "2026-06-30" } } });
+    const sageTxt = JSON.stringify(sage).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    ok("hosted statement_aging ages AS AT a past date: at 2026-06-30 the invoice is open at EUR 600.00 and 15 days late, and neither the credit note nor the deposit application dated after it has happened",
+      new RegExp(`"number": "${sinv}"[\\s\\S]{0,400}?"open_minor": 60000`).test(sageTxt) && /"days_overdue": 15/.test(sageTxt) && /"0-30": 60000/.test(sageTxt) && /"61-90": 0/.test(sageTxt),
+      sageTxt.slice(0, 110));
+    // The chaser prints the bank details of the SHARED profile business_set wrote on
+    // /mcp/invoice, and states no fee, interest or cost anywhere.
+    const sdun = await rpc("statement-of-account", { jsonrpc: "2.0", id: 99, method: "tools/call", params: { name: "dunning_text", arguments: { client: sclient, level: 1, currency: "EUR", as_of: "2026-06-30" } } });
+    const sdunTxt = JSON.stringify(sdun).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const spdf = await rpc("statement-of-account", { jsonrpc: "2.0", id: 100, method: "tools/call", params: { name: "statement_pdf", arguments: { client: sclient, from: "2026-06-01", to: "2026-12-31", currency: "EUR", out_path: "probe-statement" } } });
+    const sdl = (JSON.stringify(spdf).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const sres = sdl ? await fetch(sdl) : null;
+    const sbody = sres ? await sres.text() : "";
+    const sid = (JSON.stringify(spdf).match(/STMT-\d{4}-\d{4}/) || [])[0];
+    ok("hosted dunning_text level 1 chases EUR 600.00 with the shared profile's IBAN and no invented fee, and statement_pdf downloads the HTML statement served text/html, titled STATEMENT OF ACCOUNT",
+      /friendly reminder/.test(sdunTxt) && /EUR 600\.00/.test(sdunTxt) && /DE89370400440532013000/.test(sdunTxt) && /No late fee, interest or cost is stated/.test(sdunTxt) &&
+      !!sid && sbody.startsWith("<!doctype html") && sbody.includes(`<title>Statement of account ${sid}`) && sbody.includes(`<h1>STATEMENT OF ACCOUNT ${sid}`) && sbody.includes(sclient) && (sres?.headers.get("content-type") || "").startsWith("text/html"),
+      `${sid} ${sdl ? "link" : "no link"} ${sres?.headers.get("content-type")}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
