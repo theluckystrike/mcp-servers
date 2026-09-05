@@ -6,11 +6,12 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, statSy
 import { tmpdir } from "node:os";
 import { createServer } from "node:http";
 import { join } from "node:path";
-// Probe dates in the profile's home zone (every probe sets Europe/Warsaw), so a receipt is never "before" an order dated by the server.
-const warsawDay = (offsetDays = 0) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Warsaw", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(Date.now() + offsetDays * 86400000));
-const TODAY_ISO = warsawDay(0);
-const IN_14_DAYS_ISO = warsawDay(14);
-const TOMORROW_ISO = warsawDay(1);
+// Probe dates on the host's local calendar: with no shared profile the stdio servers stamp records with the
+// host's local date (today() falls back to the process zone), so the receipt must never be earlier than that.
+const localDay = (offsetDays = 0) => { const d = new Date(Date.now() + offsetDays * 86400000); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const TODAY_ISO = localDay(0);
+const IN_14_DAYS_ISO = localDay(14);
+const TOMORROW_ISO = localDay(1);
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const DB = join(ROOT, "data/validation.json");
