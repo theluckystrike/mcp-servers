@@ -32,7 +32,20 @@ export function formatFromExt(path: string): Fmt | null {
   return EXT_TO_FMT[extname(path).toLowerCase()] ?? null;
 }
 
+/** A leading `<scheme>://` means the caller has a URL, not a local path. Checked BEFORE
+ * any resolution, so a URL is never joined against the server's cwd and the refusal
+ * never has a path in it, let alone one that leaks the cwd. */
+const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
+
+// D-R83: a URL handed to `path` used to be silently resolved as a relative filesystem
+// path ("no file at /server/cwd/http:/host/file") instead of being refused by name.
 export function expandPath(p: string): string {
+  if (URL_SCHEME_RE.test(p)) {
+    throw new Error(
+      `"${p}" is a URL, not a file path; this tool reads local files. On the hosted route, ` +
+      `use the url argument of image_upload. Locally, download it first and pass the path it was saved to.`,
+    );
+  }
   const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
   return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
 }

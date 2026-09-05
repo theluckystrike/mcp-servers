@@ -33,6 +33,13 @@ export function formatFromExt(path: string): Fmt | null {
   return EXT_TO_FMT[extname(path).toLowerCase()] ?? null;
 }
 
+/** A leading `<scheme>://` means the caller has a URL, not a local path. Checked BEFORE
+ * any resolution, so a URL is never joined against the server's cwd and the refusal
+ * never has a path in it, let alone one that leaks the cwd. */
+const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
+
+// D-R83: a URL handed to `path` used to be silently resolved as a relative filesystem
+// path ("no file at /server/cwd/http:/host/file") instead of being refused by name.
 export const UPLOAD_ROOT = "/uploads/";
 export const OUT_ROOT = "/out/";
 const KNOWN_EXTS = [".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tif", ".tiff"];
