@@ -280,7 +280,15 @@ server.registerTool("client_list", {
   inputSchema: {},
 }, async () => {
   const clients = getClients();
-  if (!clients.length) return ok("No clients yet. Add one with client_add.");
+  // D-R85: an empty list reads as "nothing exists, ask before writing". invoice_from_hours
+  // already creates a client on the fly from the name it is given, so nothing here should
+  // buy a confirmation question for a fact the caller already stated.
+  if (!clients.length) {
+    return ok(
+      "No clients yet. client_add creates one explicitly, or invoice_from_hours and " +
+      "invoice_create make one automatically from the client name you pass - no setup needed.",
+    );
+  }
   return json(clients);
 });
 

@@ -270,3 +270,33 @@ insight:
   searched, that the thing it was handed is a URL, that the empty list it just returned is not a
   wall. Adding eight children did not make selection harder. It made eight more places to be silent.
 ```
+
+## Fixes (post-round)
+
+**D-R83 fixed** in `servers/bank-statement/src/index.ts` and `servers/image/src/imageio.ts`:
+`expandPath` now checks for a leading `<scheme>://` BEFORE any resolution against the server's
+cwd, and throws `"<url>" is a URL, not a file path; this tool reads local files. On the hosted
+route, use the url argument of bank_upload / image_upload. Locally, download it first and pass
+the path it was saved to.` — the cwd is never touched, so it can never be leaked. Tests:
+`servers/bank-statement/test/path-url.test.mjs`, `servers/image/test/path-url.test.mjs`. The
+hosted route needed no change: `remote/build-vendor.mjs` replaces `expandPath` wholesale on both
+servers with an upload-name resolver that never touches a real filesystem path, so the local
+guard and the hosted rewrite do not overlap. Other servers with the same copy-pasted
+`expandPath` (pdf, docx, spreadsheet, zip, resume, clauses, calendar, barcode) carry the same
+class of defect and were not in this round's commit scope — flagged for a follow-up round.
+
+**D-R84 fixed** in `servers/timezone/src/index.ts`: `find_meeting_slots` now always appends
+`Searched <searched_from> to <searched_to> (<days> calendar day(s) forward from earliest_date/
+today, <zone> local; weekends skipped).` to both the "no slot fits" and the normal payload, and
+when the window runs past the anchor zone's Sunday it adds a one-sentence rollover warning
+naming the weekday and date it actually landed on. Test: `servers/timezone/test/round17.test.mjs`.
+
+**D-R85 fixed** for `entry_list` (`servers/time-tracker/src/index.ts`) and `client_list`
+(`servers/invoice/src/index.ts`): a truly empty store now says "no entries/clients yet" plus
+which tool creates one automatically from the fact the caller already gave (`entry_add` for a
+project, `invoice_from_hours`/`invoice_create` for a client), and is worded differently from a
+filtered-but-non-empty query returning zero rows. `contacts_list` (timezone) already carried this
+pattern from an earlier round and needed no change. Tests: `servers/time-tracker/test/
+round17.test.mjs`, `servers/invoice/test/round17.test.mjs`. Note: the round's own probe named
+`project_list`, but no such tool exists on time-tracker or invoice — the empty-list state that
+actually bit was `entry_list`; `project_list` is a kanban tool, out of this round's commit scope.
