@@ -1,0 +1,437 @@
+{
+  "at": "2026-09-05T01:40:00Z",
+  "round": 17,
+  "compares_to": "data/user_value_r8.json",
+  "scope": "SINGLE-INSTALL round: office-suite as ONE stdio server with all 19 children and 186 tools on one tools/list, which is what a user installing the one .mcpb gets. Six cross-server prompts, each needing two or more children in one sentence. The question is whether the client still finds the right tool among 186. Round 8 measured the same bundle at 108 tools across 11 children.",
+  "method": "Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with one stdio entry named office pointing at servers/office-suite/dist/index.js v0.9.3, --output-format stream-json --verbose --max-turns 12, one bounded request per prompt under timeout 240. Allowlist: 186 explicit mcp__office__<tool> entries written out by name from a live tools/list, because --allowedTools mcp__* grants nothing (D-E4). The CLI own tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn in an empty working directory, per r11 D-R57. Fresh XDG_DATA_HOME / XDG_CONFIG_HOME and MCP_LICENSE_KEY empty (free tier) set in the server own env block inside mcp.json, not the CLI environment. One conversation: --session-id then --resume. Seeded once before the run: the shared business profile (Nova Studio, ul. Prosta 51 Warszawa, PL1234567890, IBAN PL61109010140000071219812874, EUR, 23 percent, 14-day terms, Europe/Warsaw) and two expenses (Figma EUR 45.00 on 2026-09-01, Adobe EUR 22.99 on 2026-09-03) by direct JSON-RPC. Two URL fixtures over python3 -m http.server 8794 on 127.0.0.1: bank.csv (6 rows, 4 subscriptions) and a real 64x64 RGBA logo.png. Host UTC+07, run start 08:29 local = 01:29 UTC, Saturday 2026-09-05. Tool-call counts exclude the client ToolSearch schema lookups.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "namespace": {
+    "children": 19,
+    "tools_on_bundle": 186,
+    "sum_of_child_tools_lists": 222,
+    "collapsed_by_bundle": 36,
+    "collapsed_what": "18 duplicate license_status / license_activate pairs; 222 - 36 = 186 exactly",
+    "names_needing_a_child_prefix": 2,
+    "prefixed_names": [
+      "invoice_business_set",
+      "docx_business_set"
+    ],
+    "round_8_children": 11,
+    "round_8_tools": 108,
+    "per_child_tools": {
+      "time-tracker": 14,
+      "price-tracker": 10,
+      "spreadsheet": 10,
+      "invoice": 12,
+      "expense-tracker": 14,
+      "currency": 10,
+      "docx": 11,
+      "timezone": 11,
+      "resume": 10,
+      "recurring": 14,
+      "clauses": 12,
+      "pdf": 12,
+      "calendar": 12,
+      "kanban": 16,
+      "image": 12,
+      "bank-statement": 12,
+      "quotes": 11,
+      "barcode": 10,
+      "zip": 9
+    }
+  },
+  "reach": {
+    "definition": "R6 sense: was the tool that does the work called, in the prompt own turn, with no user hint",
+    "hits": 5,
+    "of": 6,
+    "pct": 83,
+    "strict_definition": "was the FIRST bundle call the working tool",
+    "strict_hits": 3,
+    "strict_of": 6,
+    "strict_pct": 50,
+    "strict_misses": [
+      "p1 project_list before entry_add",
+      "p2 client_list before quote_create",
+      "p4 contacts_list before find_meeting_slots"
+    ],
+    "misses_are": "all three are read-the-entity-list-before-writing. None went to the wrong child, none wrote anything. D-R85.",
+    "wrong_child_picks": 0,
+    "calls_outside_the_bundle": 0,
+    "tool_selection_correct": "20 of 20 at 186 tools, against 50 of 51 at 108 tools in round 8",
+    "grouping_proposed": false,
+    "grouping_reason": "reach 83 percent did not fall below the 80 percent threshold; the contingency cut is recorded in docs/USER_VALUE_R17.md and nothing in this round's data forces it"
+  },
+  "scenarios": [
+    {
+      "id": "p1",
+      "server": "invoice",
+      "children": [
+        "time-tracker",
+        "invoice"
+      ],
+      "prompt": "Log 3 hours today on Nova design and invoice them at EUR 90",
+      "score": 2,
+      "tool_calls": 7,
+      "seconds": 54.2,
+      "turns": 2,
+      "first_call": "project_list",
+      "reach": false,
+      "tools": [
+        "project_list",
+        "now",
+        "client_list",
+        "client_add",
+        "entry_add",
+        "invoice_from_hours",
+        "entry_mark_billed"
+      ],
+      "note": "Turn 1 spent three lookups, found no client called Nova and asked instead of writing. On 'Yes, go ahead' the whole chain ran and closed itself: INV-2026-0001, EUR 270.00 + 23 percent = EUR 332.10, due 2026-09-19 (issue + the profile's 14 days), entry_mark_billed unprompted. entry_add creates a project on the fly, so nothing in the sentence needed confirming. D-R85."
+    },
+    {
+      "id": "p2",
+      "server": "quotes",
+      "children": [
+        "quotes",
+        "barcode"
+      ],
+      "prompt": "Quote Acme 2 days consulting at PLN 1200, then make the payment QR for it",
+      "score": 2,
+      "tool_calls": 2,
+      "seconds": 27.2,
+      "turns": 1,
+      "first_call": "client_list",
+      "reach": true,
+      "tools": [
+        "client_list",
+        "quote_create"
+      ],
+      "note": "Q-2026-0001, PLN 2,400 + 23 percent = PLN 2,952.00, valid to 2026-10-05. Then it stopped and explained that both payment-QR tools are EPC069-12, which is euro only, and offered an FX conversion or a plain data QR. Correct, and confirmed by probe: invoice_payment_qr on a PLN invoice refuses by name. But it was inferred from descriptions rather than a call, and the user got a question rather than either alternative done."
+    },
+    {
+      "id": "p3",
+      "server": "bank-statement",
+      "children": [
+        "bank-statement",
+        "expense-tracker"
+      ],
+      "prompt": "Import this bank CSV http://127.0.0.1:8794/bank.csv and tell me which subscriptions are not in my expense log",
+      "score": 2,
+      "tool_calls": 4,
+      "seconds": 55.8,
+      "turns": 2,
+      "first_call": "statement_import",
+      "reach": true,
+      "tools": [
+        "statement_import (URL, failed)",
+        "statement_import",
+        "transactions_list",
+        "expense_list"
+      ],
+      "note": "Right tool first, and it failed on the URL: the server resolved http:// as a relative filesystem path. The model searched for Bash and WebFetch, found neither allowed, and asked for a local path rather than inventing one. Given the path: 6 rows imported, then Notion EUR 10.00 and Slack EUR 8.75 named as the two subscriptions with no expense row, EUR 18.75 untracked, with the groceries and the incoming payment correctly excluded. D-R83."
+    },
+    {
+      "id": "p4",
+      "server": "timezone",
+      "children": [
+        "timezone"
+      ],
+      "prompt": "Find a 45-minute slot with Ann in New York this week and export it as .ics",
+      "score": 2,
+      "tool_calls": 3,
+      "seconds": 37.5,
+      "turns": 1,
+      "first_call": "contacts_list",
+      "reach": true,
+      "tools": [
+        "contacts_list",
+        "find_meeting_slots",
+        "ics_create"
+      ],
+      "note": "The instant is right to the second: DTSTART 20260907T133000Z / DTEND 20260907T141500Z = 15:30-16:15 Europe/Warsaw = 09:30-10:15 America/New_York, 45 minutes, and 'me' resolved to Warsaw from the shared profile with no question (D-R82 holding). But the run day is Saturday 2026-09-05 and the slot is Monday 2026-09-07, next week, and neither the tool nor the answer said the requested week had run out. D-R84."
+    },
+    {
+      "id": "p5",
+      "server": "pdf",
+      "children": [
+        "image",
+        "invoice",
+        "pdf"
+      ],
+      "prompt": "Resize http://127.0.0.1:8794/logo.png to 512 px and put it on a PAID stamp on invoice INV-2026-0001's PDF",
+      "score": 2,
+      "tool_calls": 3,
+      "seconds": 36.7,
+      "turns": 1,
+      "first_call": "image_resize",
+      "reach": true,
+      "tools": [
+        "image_resize",
+        "invoice_pdf",
+        "pdf_stamp"
+      ],
+      "note": "Three children, one sentence, all three right: a real 512x512 PNG, INV-2026-0001.pdf rendered, INV-2026-0001-paid.pdf carrying <50414944> Tj (PAID) at 45 degrees in green. It declined to pretend the logo was on the stamp: no tool composites an arbitrary image onto a page, and it said so and offered the Pro letterhead slot. It reached the URL fixture only by guessing the local path from prompt 3's answer, the same D-R83 gap silently worked around."
+    },
+    {
+      "id": "p6",
+      "server": "zip",
+      "children": [
+        "zip",
+        "invoice",
+        "quotes"
+      ],
+      "prompt": "Zip this month's invoices and quotes",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 15.1,
+      "turns": 1,
+      "first_call": "zip_bundle_month",
+      "reach": true,
+      "tools": [
+        "zip_bundle_month"
+      ],
+      "note": "One call. 2026-09.zip, 2 entries, both invoice PDFs. And it volunteered the reason the quote is absent: Q-2026-0001 was never rendered, because quote_pdf is Pro. The cleanest prompt in the round."
+    }
+  ],
+  "totals": {
+    "score": 13,
+    "max": 18,
+    "pct": 72,
+    "tool_calls": 20,
+    "seconds": 226.5,
+    "turns": 8,
+    "tool_errors": 1,
+    "calls_outside_bundle": 0,
+    "per_server": {
+      "invoice": {
+        "score": 2,
+        "max": 3
+      },
+      "quotes": {
+        "score": 2,
+        "max": 3
+      },
+      "bank-statement": {
+        "score": 2,
+        "max": 3
+      },
+      "timezone": {
+        "score": 2,
+        "max": 3
+      },
+      "pdf": {
+        "score": 2,
+        "max": 3
+      },
+      "zip": {
+        "score": 3,
+        "max": 3
+      }
+    },
+    "calls_per_child": {
+      "invoice": 5,
+      "timezone": 4,
+      "time-tracker": 3,
+      "bank-statement": 3,
+      "image": 1,
+      "pdf": 1,
+      "quotes": 1,
+      "expense-tracker": 1,
+      "zip": 1,
+      "price-tracker": 0,
+      "spreadsheet": 0,
+      "currency": 0,
+      "docx": 0,
+      "resume": 0,
+      "recurring": 0,
+      "clauses": 0,
+      "calendar": 0,
+      "kanban": 0,
+      "barcode": 0
+    }
+  },
+  "comparison_with_round_8": {
+    "round_8": {
+      "children": 11,
+      "tools": 108,
+      "scenarios": 12,
+      "score": "27/36 (75%)",
+      "tool_calls": 51,
+      "seconds": 468.0,
+      "tool_selection": "50 of 51 correct",
+      "calls_outside_bundle": "3 (CLI memory writes)"
+    },
+    "round_17": {
+      "children": 19,
+      "tools": 186,
+      "scenarios": 6,
+      "score": "13/18 (72%)",
+      "tool_calls": 20,
+      "seconds": 226.5,
+      "tool_selection": "20 of 20 correct",
+      "calls_outside_bundle": 0
+    },
+    "reading": "1.7x the namespace and 1.7x the children cost nothing in selection accuracy: 20 of 20 against 50 of 51. The score per scenario is flat (2.17 vs 2.25 out of 3) and the defects that remain are not selection defects at all."
+  },
+  "verification": [
+    {
+      "claim": "186 tools, live, and the count reconciles",
+      "evidence": "tools/list against dist/index.js -> 186; per-child tools/list sums to 222; 222 - 36 (18 duplicate license_status/license_activate pairs) = 186",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Nineteen children still need only two prefixed names",
+      "evidence": "the 186 names contain invoice_business_set and docx_business_set and no other <child>_ prefix",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The invoice arithmetic reproduces",
+      "evidence": "invoice/invoices.json: quantity 3, unit_price_minor 9000, gross_minor 27000, tax_minor 6210, total_minor 33210 -> EUR 332.10; 3 x 90 = 270, 23% of 270 = 62.10",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Payment terms came from the shared profile, not a default",
+      "evidence": "issue_date 2026-09-05, due_date 2026-09-19 = +14, the profile payment_terms_days",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A time entry lands in Warsaw's day, not the host's",
+      "evidence": "time-tracker/data.json 3948c01e: start 2026-09-05T07:00:00.000Z = 09:00 Europe/Warsaw on a UTC+07 host, which would otherwise have stored 02:00Z. Round 8 D-R35(b) fixed and exercised",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The hours are closed against the invoice",
+      "evidence": "same entry: billed_at set, billed_invoice INV-2026-0001",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The quote arithmetic reproduces",
+      "evidence": "quotes/quotes.json Q-2026-0001: 2 x 120000 minor, net_minor 240000, tax_minor 55200, total_minor 295200 -> PLN 2,952.00, valid_until 2026-10-05",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A PLN payment QR really is refused, so the model's prompt-2 answer was right",
+      "evidence": "direct probe on a scratch store: invoice_payment_qr {invoice_id} on a PLN invoice -> 'invoice INV-2026-0001 is in PLN, and an EPC payment QR code is euro only. A PLN invoice is paid by bank transfer with the details on the PDF; no code was created.'",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The bank CSV imported in full",
+      "evidence": "bank-statement/data.json: account bank, 6 transactions, Figma -4500, Notion -1000, Adobe -2299, Slack -875, groceries -3120, Acme +123000, all EUR",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The subscription diff is the right diff",
+      "evidence": "the expense log holds Figma 45.00 and Adobe 22.99 only; the bank subscriptions with no expense row are Notion 10.00 and Slack 8.75 = 18.75, exactly what was reported",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A URL is refused as a URL",
+      "evidence": "probe: statement_import {path: 'http://127.0.0.1:8794/bank.csv'} -> 'Error: no file at /Users/mike/mcp-servers/http:/127.0.0.1:8794/bank.csv'; image_resize with the same URL -> '/Users/mike/mcp-servers/http:/127.0.0.1:8794/logo.png does not exist'",
+      "verdict": "FAIL, D-R83"
+    },
+    {
+      "claim": "The meeting instant is right in both zones",
+      "evidence": "timezone/meeting.ics: DTSTART 20260907T133000Z / DTEND 20260907T141500Z, 45 minutes, 15:30 Europe/Warsaw, 09:30 America/New_York (EDT, still on DST on 7 September)",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The ICS invents no identity",
+      "evidence": "DESCRIPTION 'Also attending (no email address was given, so they are not invited by the file): Ann'; no bogus ATTENDEE, no ORGANIZER email at all. D-R40 holding",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "'This week' means this week",
+      "evidence": "run day Saturday 2026-09-05, slot Monday 2026-09-07; neither find_meeting_slots nor the answer said the requested week had ended",
+      "verdict": "FAIL, D-R84"
+    },
+    {
+      "claim": "The image was really resized",
+      "evidence": "image/operations.json: image_resize, detail '64x64 -> 512x512'; the output PNG IHDR reads 512 x 512",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The PAID stamp is really on the page",
+      "evidence": "INV-2026-0001-paid.pdf, 3,480 bytes, %PDF-1.7; content stream 3 inflates to BT / 0.106 0.498 0.231 rg / Helvetica-Bold 72 Tf with a 45-degree matrix and <50414944> Tj, hex for PAID",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The original PDF survived the stamp",
+      "evidence": "invoice/pdf/INV-2026-0001.pdf (2,516 B) still present alongside the stamped copy; pdf/operations.json records input and output separately",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The ZIP holds exactly what the answer said",
+      "evidence": "unzip -l 2026-09.zip -> invoice/INV-2026-0001-paid.pdf (3,480) and invoice/INV-2026-0001.pdf (2,516), nothing else; no quote, because none was rendered, which the answer stated",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The model never routed around the bundle",
+      "evidence": "8 turns, 20 bundle calls, 0 calls to any non-office tool; in prompt 3 it searched for Bash/WebFetch, found them denied, and asked the user rather than guessing",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R83",
+      "severity": "medium",
+      "servers": [
+        "bank-statement",
+        "image"
+      ],
+      "status": "open",
+      "title": "A URL handed to a path argument is silently resolved as a relative filesystem path, and the error prints a path that never existed while leaking the server's cwd",
+      "repro": "/private/tmp/uv-r17/probe.mjs cases C and D: statement_import {path: 'http://127.0.0.1:8794/bank.csv'} -> 'no file at /Users/mike/mcp-servers/http:/127.0.0.1:8794/bank.csv'; image_resize the same",
+      "cost": "prompt 3 lost a whole turn; prompt 5 worked around it by guessing the local path from prompt 3's answer, which happened to be right and did not have to be",
+      "fix": "two lines in the shared path helper both servers use: detect a leading <scheme>:// and refuse by name ('that is a URL, not a file path; this tool reads local files. Download it first, or pass the path it was saved to') rather than resolving it. Separately consider a url argument on statement_import (banks hand out signed download links) and image_resize; the refusal is the cheap half and should ship regardless"
+    },
+    {
+      "id": "D-R84",
+      "severity": "medium",
+      "servers": [
+        "timezone"
+      ],
+      "status": "open",
+      "title": "find_meeting_slots never reports the window it searched, so 'this week' asked on a Saturday quietly returned next Monday",
+      "repro": "/private/tmp/uv-r17/out/s4.jsonl against timezone/meeting.ics on a run day of Saturday 2026-09-05: days 5 searched forward from the run day, first slot Monday 2026-09-07, no flag anywhere",
+      "fix": "return searched_from / searched_to in the payload and say in the description that days counts calendar days forward from earliest_date regardless of week boundaries. Better, accept within: 'this_week' | 'next_week' resolved in the profile timezone, and when the answer falls outside the window asked for say so in one sentence"
+    },
+    {
+      "id": "D-R85",
+      "severity": "low",
+      "servers": [
+        "time-tracker",
+        "invoice"
+      ],
+      "status": "open",
+      "title": "An empty project_list / client_list reads as 'this does not exist', so a first sentence carrying every fact buys a confirmation question",
+      "repro": "/private/tmp/uv-r17/out/s1.jsonl on a fresh XDG_DATA_HOME: three read calls and a question for a sentence that named the project, the duration, the day, the task and the rate. entry_add and invoice_from_hours both create on the fly, and both did one turn later",
+      "fix": "have project_list and client_list say what happens next when they are empty: 'no projects yet; entry_add creates one from its project argument, no setup needed'. The same one-sentence-forward pattern that made expense_add and invoice_summary reliable in rounds 8 and 15. An empty list is the state every new install is in, and the one state these tools say nothing about"
+    }
+  ],
+  "round_8_retested": [
+    {
+      "id": "D-R31",
+      "was": "one business, three business profiles, and the user only fills one",
+      "now": "holding - one seeded profile/business.json supplied the VAT rate to invoice and quotes, the payment terms to the invoice due date, and the timezone to time-tracker and timezone. Nothing was asked twice"
+    },
+    {
+      "id": "D-R35a",
+      "was": "a stopped timer leaves a USD 0.00 row",
+      "now": "not exercised, no timer this round"
+    },
+    {
+      "id": "D-R35b",
+      "was": "entries stamped in the machine's zone, not the user's",
+      "now": "fixed and exercised - 09:00 Warsaw stored as 07:00:00Z on a UTC+07 host"
+    },
+    {
+      "id": "D-R40",
+      "was": "an invented email printed on a client-facing document",
+      "now": "holding - the .ics has no ORGANIZER email at all and says why, and the answer asked for one rather than improvising"
+    },
+    {
+      "id": "D-R82",
+      "was": "the caller's own timezone was asked for instead of read",
+      "now": "holding - find_meeting_slots resolved 'me' to Europe/Warsaw from the shared profile with no question"
+    }
+  ]
+}
