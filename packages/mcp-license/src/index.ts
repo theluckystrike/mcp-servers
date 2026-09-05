@@ -10,6 +10,32 @@ export const PUBLIC_KEY_B64 = "VZXpvTpJn2XzaEn9ijFXk1vjPjtZvzAHZazC0Z+0pHU=";
 export const CHECKOUT_BASE = "https://mcp.zovo.one";
 export const PRICE_SINGLE_USD = 19;
 export const PRICE_BUNDLE_USD = 39;
+/**
+ * How many single-server products the bundle covers. The published package cannot see
+ * servers/ at runtime, so this is a constant - but it is the only one in the repo that
+ * cap messages read, and packages/mcp-license/test/bundle-link.test.mjs compares it to
+ * the number of sellable servers on disk, so adding a server fails the suite rather than
+ * leaving "all 22 servers" stale in every cap message on every server.
+ */
+export const SERVER_COUNT = 22;
+
+/** The bundle checkout URL for a cap message, tagged `<product>.<tool>.bundle`. */
+export function bundleLink(src: string, tenant?: string): string {
+  const params = [];
+  if (tenant) params.push(`tenant=${encodeURIComponent(tenant)}`);
+  params.push(`src=${encodeURIComponent(`${src}.bundle`)}`);
+  return `${CHECKOUT_BASE}/buy/bundle?${params.join("&")}`;
+}
+
+/**
+ * The one sentence every cap message ends with, on every transport. Measured 2026-09-05:
+ * 65 upgrade-link clicks in 7 days, none of them through any bundle source, because no
+ * cap message carried a bundle link at all - the $39 option was named in prose with
+ * nothing to click. See docs/CONVERSION_INSTRUMENT.md.
+ */
+export function bundleSentence(src: string, tenant?: string): string {
+  return `Or all ${SERVER_COUNT} servers for $${PRICE_BUNDLE_USD}: ${bundleLink(src, tenant)}`;
+}
 
 export interface LicensePayload {
   v: 1;
@@ -106,8 +132,9 @@ export function slugifySrc(s: string): string {
 export function hostedUpgradeText(feature: string, product: string, tenant: string, toolName?: string): string {
   const src = `${product}.${slugifySrc(toolName ?? feature)}`;
   const url = `${CHECKOUT_BASE}/buy/${product}?tenant=${encodeURIComponent(tenant)}&src=${encodeURIComponent(src)}`;
-  return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime). ` +
-    `Buy at ${url} , and this hosted connection is Pro automatically once payment completes - no key to paste.`;
+  return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} for this server, lifetime. ` +
+    `Buy at ${url} , and this hosted connection is Pro automatically once payment completes - no key to paste. ` +
+    bundleSentence(src, tenant);
 }
 
 export interface LicenseGate {
@@ -168,8 +195,9 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
     upgradeText(feature: string, toolName?: string) {
       const src = `${product}.${slugifySrc(toolName ?? feature)}`;
       const taggedUrl = `${upgradeUrl}?src=${encodeURIComponent(src)}`;
-      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime). ` +
-        `Buy at ${taggedUrl} , then run license_activate with the key shown after checkout. Keys verify offline; nothing is sent anywhere.`;
+      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} for this server, lifetime. ` +
+        `Buy at ${taggedUrl} , then run license_activate with the key shown after checkout. Keys verify offline; nothing is sent anywhere. ` +
+        bundleSentence(src);
     },
     registerTools(server) {
       server.registerTool("license_status",

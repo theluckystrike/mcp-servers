@@ -11,6 +11,8 @@ import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileS
 export const CHECKOUT_BASE = "https://mcp.zovo.one";
 export const PRICE_SINGLE_USD = 19;
 export const PRICE_BUNDLE_USD = 39;
+/** Mirrors packages/mcp-license/src/index.ts. One number, asserted equal by its test. */
+export const SERVER_COUNT = 22;
 export const STALE_MS = 30_000;
 export const GUIDE_URL = "https://mcp.zovo.one/guides/mcp-server-free-vs-pro";
 
@@ -236,10 +238,14 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
     upgradeText: (feature: string, toolName?: string) => {
       const src = `${product}.${slugifySrc(toolName ?? feature)}`;
       const url = buyUrl(product, src);
-      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} (or $${PRICE_BUNDLE_USD} for every server, lifetime: ${bundleUrl(src)}). ` +
+      return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} for this server, lifetime. ` +
         (ctx().anonToken
-          ? `Buy at ${url} - that link carries your token, so Pro switches on for this same connection right after payment, with nothing to paste and no data to move.`
-          : `Buy at ${url} , then send the key as "Authorization: Bearer <key>" to this endpoint.`);
+          ? `Buy at ${url} - that link carries your token, so Pro switches on for this same connection right after payment, with nothing to paste and no data to move. `
+          : `Buy at ${url} , then send the key as "Authorization: Bearer <key>" to this endpoint. `) +
+        // The bundle sentence every cap message ends with, on every transport. Its src is
+        // the same tag plus ".bundle", so /stats/clicks separates the two offers on the
+        // same message. See docs/CONVERSION_INSTRUMENT.md.
+        `Or all ${SERVER_COUNT} servers for $${PRICE_BUNDLE_USD}: ${bundleUrl(`${src}.bundle`)}`;
     },
     registerTools(server) {
       server.registerTool("license_status",

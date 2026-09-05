@@ -138,6 +138,11 @@ test("cap: the free monthly count is the row cap on this server, and it writes n
   const wantSrc = "https://mcp.zovo.one/buy/zip?src=zip.zip_create";
   assert.ok(r.text.includes(wantSrc),
     `the zip_create cap message must carry ${wantSrc}, got: ` + r.text.slice(0, 400));
+  // The same message must also carry the bundle offer, tagged with the same src plus
+  // ".bundle" so a click on the $39 option is never counted as a click on the $19 one.
+  const wantBundle = wantSrc.replace(/\/buy\/[^?]+\?src=/, "/buy/bundle?src=") + ".bundle";
+  assert.ok(r.text.includes(wantBundle),
+    `the same cap message must carry ${wantBundle}, got: ` + r.text.slice(0, 600));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {

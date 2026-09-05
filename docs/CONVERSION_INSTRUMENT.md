@@ -180,3 +180,74 @@ codemod changed and stopped applying. Both are re-anchored on the prose they rew
 Verified live after deploying billing and remote: `store.home`, `store.s.pdf`,
 `store.setup.claude-desktop`, `store.guide.invoice-pdf-from-chat` and `store.compare.pdf`
 all render on the live site, and `node scripts/validate.mjs` is 471/471.
+
+## Update 2026-09-05: every cap message now carries the bundle link
+
+**The measurement.** 65 upgrade-link clicks in the 7 days to 2026-09-05, and not one of
+them through any bundle source. `/stats/clicks` had no `*.bundle` row at all, because no
+cap message contained a bundle link: every one of them linked only to the $19
+single-server checkout. The $39 offer was named in prose ("or $39 for every server,
+lifetime") with nothing to click, so a reader who wanted it had to leave the message,
+find the storefront and start again. Two of the servers whose caps fire most (`pdf`,
+`time-tracker`) are worth $19 to a buyer who owns one and $39 to a buyer who has hit two,
+and the second buyer had no path.
+
+**The fix.** Every cap message, on every transport, now ends with one plain sentence:
+
+```
+Or all 22 servers for $39: https://mcp.zovo.one/buy/bundle?src=<product>.<tool>.bundle
+```
+
+- The bundle link's `src` is the single-server link's `src` plus `.bundle`, so the two
+  offers on one message are counted apart on `/stats/clicks` and a bundle click is never
+  attributed to the $19 link that sits above it. `.bundle` passes the billing worker's
+  existing `validSrc` unchanged (dots were already legal), so nothing on the counting side
+  moved.
+- On the hosted endpoint the bundle link carries `?tenant=<anon token>` exactly as the
+  single-server link does, so a bundle bought from a cap message binds to the same
+  anonymous token and that connection is Pro for every server with nothing to paste.
+- The prose parenthetical was removed rather than kept beside the new sentence: it named
+  the same price twice, and one link per offer is the point.
+
+**Where the count lives.** `packages/mcp-license/src/index.ts` exports `SERVER_COUNT`
+(22), `bundleLink(src, tenant?)` and `bundleSentence(src, tenant?)`; `upgradeText` and
+`hostedUpgradeText` both end with `bundleSentence(...)`. The published package cannot see
+`servers/` at runtime, so `SERVER_COUNT` is a constant, and
+`packages/mcp-license/test/bundle-link.test.mjs` is the alarm on it: it counts the
+directories under `servers/` whose `src/index.ts` builds a `createLicenseGate`, which is
+exactly the set of servers that sell Pro, and fails if that is not `SERVER_COUNT`.
+`servers/office-suite` is the one directory with a `package.json` and no gate - it proxies
+the others and sells nothing of its own, which is why a raw count of `servers/*/package.json`
+(23) is the wrong number. `remote/src/shims/license.ts` mirrors the constant for the
+worker's own bundled copy, and the same test pins the two together by value.
+
+**The 429.** `remote/src/index.ts` `rateLimit` appends the same sentence to its `note` and
+its `bundleUrl` field is now tagged `<product>.rate_limit.bundle` rather than sharing
+`<product>.rate_limit` with the single-server link.
+
+**Contract.** The ten per-server contract suites that already assert the single-server
+`src` on a real cap now derive the bundle link from it and assert that too, at no extra
+server spawn: `bank-statement`, `barcode`, `billing-docs`, `calendar`, `expense-tracker`,
+`image`, `kanban`, `pdf`, `spreadsheet`, `zip`.
+
+### Verified live, 2026-09-05
+
+1. Deployed `remote` (`npm run deploy`, `node remote/build-vendor.mjs` zero DRIFT).
+2. Fresh anonymous token `GET /mcp/token` -> `anon_7ba6cfc85231944a4630cc23a19fb66b`.
+3. `POST /mcp/time-tracker` `tools/call` `entry_list` `{from: "2020-01-01"}` tripped the
+   free-window cap and returned, verbatim at the tail:
+   > ... `"full history" is a Pro feature. Pro is a one-time $19 for this server, lifetime.
+   > Buy at https://mcp.zovo.one/buy/time-tracker?tenant=anon_7ba6cfc85231944a4630cc23a19fb66b&src=time-tracker.full_history
+   > - that link carries your token, so Pro switches on for this same connection right
+   > after payment, with nothing to paste and no data to move. Or all 22 servers for $39:
+   > https://mcp.zovo.one/buy/bundle?tenant=anon_7ba6cfc85231944a4630cc23a19fb66b&src=time-tracker.full_history.bundle`
+4. Baseline `GET /stats/clicks`: 67 total, 67 in 7d, no `*.bundle` row.
+5. `GET` that bundle link once with a Chrome `User-Agent` -> `303` to a live
+   `checkout.stripe.com/f/pay/cs_live_a1RhcSEyyEes00NrqSjfm8hy...` session ($39, unpaid).
+6. `GET /stats/clicks` at t+20s: 68 total, and
+   `"time-tracker.full_history.bundle": {"total": 1, "last7d": 1}` - the first bundle-sourced
+   click the instrument has ever recorded.
+7. `node scripts/validate.mjs`: 594/594.
+
+One caveat on the funnel read: that single click is attributable and can be subtracted,
+the same way the four `src=audit` sessions in docs/CHECKOUT_AUDIT.md can.

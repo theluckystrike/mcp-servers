@@ -144,6 +144,9 @@ test("cap: the free document cap refuses without writing a partial document", as
   // Conversion instrument (docs/CONVERSION_INSTRUMENT.md): the /buy link on a cap
   // message names the tool that produced it, not the prose of the feature.
   assert.ok(over.text.includes("https://mcp.zovo.one/buy/billing-docs?src=billing-docs.purchase_order_create"), over.text.slice(0, 400));
+  // The same message must also carry the bundle offer, tagged with the same src plus
+  // ".bundle" so a click on the $39 option is never counted as a click on the $19 one.
+  assert.ok(over.text.includes("https://mcp.zovo.one/buy/bundle?src=billing-docs.purchase_order_create.bundle"), over.text.slice(0, 600));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {

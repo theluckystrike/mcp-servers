@@ -156,6 +156,11 @@ test("cap: the third calendar is refused and nothing is added to the store", asy
   const wantSrc = `https://mcp.zovo.one/buy/${PRODUCT}?src=${PRODUCT}.ics_import`;
   assert.ok(third.text.includes(wantSrc),
     `the ics_import cap message must carry ${wantSrc}, got: ` + third.text.slice(0, 400));
+  // The same message must also carry the bundle offer, tagged with the same src plus
+  // ".bundle" so a click on the $39 option is never counted as a click on the $19 one.
+  const wantBundle = wantSrc.replace(/\/buy\/[^?]+\?src=/, "/buy/bundle?src=") + ".bundle";
+  assert.ok(third.text.includes(wantBundle),
+    `the same cap message must carry ${wantBundle}, got: ` + third.text.slice(0, 600));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {

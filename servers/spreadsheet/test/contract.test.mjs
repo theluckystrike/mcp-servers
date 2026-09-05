@@ -175,6 +175,11 @@ test("cap: a write over the free 500-row cap writes no file at all", async (t) =
   const wantSrc = `https://mcp.zovo.one/buy/${PRODUCT}?src=${PRODUCT}.sheet_write`;
   assert.ok(r.text.includes(wantSrc),
     `the sheet_write cap message must carry ${wantSrc}, got: ` + r.text.slice(0, 400));
+  // The same message must also carry the bundle offer, tagged with the same src plus
+  // ".bundle" so a click on the $39 option is never counted as a click on the $19 one.
+  const wantBundle = wantSrc.replace(/\/buy\/[^?]+\?src=/, "/buy/bundle?src=") + ".bundle";
+  assert.ok(r.text.includes(wantBundle),
+    `the same cap message must carry ${wantBundle}, got: ` + r.text.slice(0, 600));
 });
 
 test("license_status reports free with no key and pro with a signed key", async (t) => {

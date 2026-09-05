@@ -9,6 +9,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { STORE, type RequestCtx, type Download } from "./shims/ctx.js";
+import { PRICE_BUNDLE_USD, SERVER_COUNT } from "./shims/license.js";
 import { TMP_RE, recount } from "./shims/fs.js";
 import { createServer as createTimeTracker } from "./vendor/time-tracker/index.js";
 import { createServer as createPriceTracker } from "./vendor/price-tracker/index.js";
@@ -484,12 +485,15 @@ async function rateLimit(env: Env, auth: Auth, ctx: ExecutionContext, product?: 
       retry_after_seconds: retryAfter,
       note: auth.isPro
         ? `This token has made ${auth.limit} calls in the current hour. The counter resets at ${resetsAt}.`
-        : `This token has made ${auth.limit} calls in the current hour, which is the free-tier ceiling. The counter resets at ${resetsAt}; a Pro token gets ${RATE_LIMIT_PRO} calls an hour. Note that a client which re-handshakes every registered endpoint on every turn spends several calls per turn before any tool runs.`,
+        : `This token has made ${auth.limit} calls in the current hour, which is the free-tier ceiling. The counter resets at ${resetsAt}; a Pro token gets ${RATE_LIMIT_PRO} calls an hour. Note that a client which re-handshakes every registered endpoint on every turn spends several calls per turn before any tool runs. ` +
+          `Or all ${SERVER_COUNT} servers for $${PRICE_BUNDLE_USD}: https://mcp.zovo.one/buy/bundle${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit.bundle`,
       // src tags this cap message for the click instrument (docs/CONVERSION_INSTRUMENT.md).
       // The tool has not been parsed off the request body yet at this gate, so the tag is
       // product-level: "<product>.rate_limit".
       upgradeUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/${product ?? "bundle"}${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit`,
-      bundleUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/bundle${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit`,
+      // The bundle link is its own src tag, `<product>.rate_limit.bundle`, so a click on
+      // the $39 offer is never counted as a click on the $19 one.
+      bundleUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/bundle${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit.bundle`,
       guide: GUIDE,
     }, 429, { "retry-after": String(retryAfter) });
   }
