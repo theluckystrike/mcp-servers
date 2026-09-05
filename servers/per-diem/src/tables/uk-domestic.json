@@ -1,0 +1,27 @@
+{
+  "header": {
+    "scheme": "uk",
+    "part": "domestic",
+    "authority": "HM Revenue and Customs, United Kingdom",
+    "instrument": "Benchmark scale rates for subsistence, Income Tax (Earnings and Pensions) Act 2003 s.289A, published at EIM05231",
+    "source_url": "https://www.gov.uk/hmrc-internal-manuals/employment-income-manual/eim05231",
+    "effective_date": "2019-04-06",
+    "retrieved_date": "2026-09-05",
+    "currency": "GBP",
+    "note": "The benchmark rates are the maximum that may be paid free of tax without receipts. They are payable only for a meal the traveller actually buys while on a qualifying journey, and only when a checking system is in place. They are not a lodging allowance."
+  },
+  "rates": [
+    {
+      "country": "United Kingdom",
+      "code": "GB",
+      "currency": "GBP",
+      "bands": [
+        { "min_hours": 5, "amount_minor": 500, "meals_covered": 1, "label": "5 hours or more (one meal rate)" },
+        { "min_hours": 10, "amount_minor": 1000, "meals_covered": 2, "label": "10 hours or more (two meal rate)" },
+        { "min_hours": 15, "amount_minor": 2500, "meals_covered": 3, "label": "15 hours or more and ongoing at 8pm" }
+      ],
+      "late_evening_supplement_minor": 1000,
+      "note": "A supplementary late-evening rate of 10.00 GBP may be paid on top of the 5-hour or 10-hour rate when the journey is ongoing at 8pm and the traveller had to buy a meal after that time. This server does not add it automatically: whether a meal was bought after 8pm is a fact the caller has to supply, so it is exposed as late_evening on perdiem_calc."
+    }
+  ]
+}

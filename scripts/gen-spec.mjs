@@ -25,7 +25,7 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
   "bank-statement", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
-  "expense-tracker", "image", "invoice", "kanban", "pdf", "price-tracker", "recurring",
+  "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "price-tracker", "recurring",
   "resume", "spreadsheet", "time-tracker", "timezone",
 ].sort();
 
@@ -46,6 +46,32 @@ const COMMON_INVARIANTS = [
  * common list. `caps` documents the enforced limits that a contract test can assert.
  */
 const CURATED = {
+  "per-diem": {
+    summary: "Daily travel allowances on bundled public rate tables: the Polish delegation regulation (domestic and per country), the HMRC benchmark scale rates, and the GSA CONUS standard M&IE and lodging. Prices one trip from a start and end instant, saves it, totals it per scheme and month, and hands back expense_add arguments for the expense tracker.",
+    storageFiles: [
+      ["trips.json", "saved trips, each carrying the whole calculation it was priced with"],
+      ["counter.json", "the TRIP number series, per year"],
+    ],
+    primaryFile: "trips.json",
+    caps: [
+      "`FREE_TRIPS_PER_MONTH` = 5 trips saved per calendar month on free, counted by the trip's start date. `perdiem_rates` and `perdiem_calc` are free and unlimited on every tier.",
+      "`trip_export` and `perdiem_report` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_TRIP_DAYS` = 366. A longer trip is refused: past a year a posting is a relocation and none of these schemes price it as travel subsistence.",
+      "`MAX_ROWS` = 2000 rows returned by one `trip_list` or `perdiem_rates` answer.",
+    ],
+    extra: [
+      "The rate tables are BUNDLED JSON under `src/tables/`, read from disk on first use. There is no network call anywhere in this server: a per diem figure that changed under the user between two runs of the same trip is worse than one that is visibly stale.",
+      "Every table carries a `header` naming the authority, the instrument, the source URL, the date the rates took effect and the date they were read, and `perdiem_rates` returns that header with the rates, so the provenance travels with the number.",
+      "A value that could not be stated with confidence from public regulation text is OMITTED, and the header's `coverage` field says what was left out and why. The HMRC overseas per-city scale rates are not bundled at all for this reason; the Polish annex ships 34 of its roughly 120 countries; the US table ships the CONUS standard rate only.",
+      "A destination is matched by exact country name, then ISO code, then exact locality, then a PREFIX. Never a substring: `\"romania\".includes(\"oman\")` is true, so a substring fallback prices a trip to a country this build deliberately does not bundle at another country's rate and says nothing.",
+      "Start and end are INSTANTS, not wall clocks: either ISO 8601 carrying its own offset, or a local datetime plus an IANA `timezone` resolved through `@theluckystrike/mcp-timezone/lib`. Elapsed hours are an epoch difference, so a trip across a clock change is 23 or 25 hours, not 24.",
+      "The day model differs by scheme and is stated in every answer: `pl` and `uk` count 24-hour periods from departure (the Polish `doba`, and the shape HMRC's hour bands assume), `us` counts calendar days in the destination zone (FTR 301-11.101).",
+      "Meal deductions are the scheme's own: Poland domestic 25/50/25 percent of the day, Poland foreign 15/30/30, US the published breakfast/lunch/dinner amounts of the M&IE tier, UK a pro rata share of the band. A day is floored at zero, never negative.",
+      "Currencies are never added together. `trip_list` and `perdiem_report` total per currency, because this server holds no exchange rate and one number over two currencies would be an invented one.",
+      "`trip_export` writes NOTHING into the expense ledger. servers/expense-tracker publishes no library entry point and its id counter, category rules, VAT split and currency defaults all live inside its own `expense_add` handler; the export returns the exact `expense_add` arguments instead, one payload per currency, the same contract servers/kanban uses for time-tracker's `timer_start`.",
+      "The shared business profile has no country field, so the home scheme is derived from `default_currency` and the derivation is always reported as a derivation, never presented as a stored fact.",
+    ],
+  },
   "deposits": {
     summary: "Security and retainer deposits per client: record what was received, apply part or all of it to an invoice in the invoice server's store as a payment on that invoice, refund the rest, and answer what is still held per client and per currency.",
     storageFiles: [

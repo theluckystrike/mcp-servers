@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/delegacja",
+  "description": "Policz diete za delegacje krajowa i zagraniczna wedlug rozporzadzenia oraz stawek HMRC i GSA.",
+  "version": "0.11.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/per-diem"
+  },
+  "websiteUrl": "https://mcp.zovo.one/buy/per-diem",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.11.0/per-diem.mcpb",
+      "version": "0.11.0",
+      "fileSha256": "TBD",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

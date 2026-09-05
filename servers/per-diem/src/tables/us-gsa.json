@@ -1,0 +1,38 @@
+{
+  "header": {
+    "scheme": "us",
+    "part": "conus",
+    "authority": "U.S. General Services Administration",
+    "instrument": "Per diem rates for the continental United States (CONUS), standard rate, 41 CFR Chapters 300-304. Meal breakdown per the GSA M&IE breakdown table; first and last day of travel at 75 percent per FTR 301-11.101",
+    "source_url": "https://www.gsa.gov/travel/plan-book/per-diem-rates",
+    "effective_date": "2025-10-01",
+    "retrieved_date": "2026-09-05",
+    "currency": "USD",
+    "coverage": "The STANDARD CONUS rate only. The roughly 300 non-standard localities (New York City, San Francisco, Seattle and the rest) are omitted: each is a separate lodging figure that changes every fiscal year and could not be stated with confidence here. A destination that is not a listed non-standard locality takes the standard rate anyway, which is what this table gives.",
+    "note": "Lodging is a CAP on what may be reimbursed against receipts, not an allowance that is paid out. M&IE is the allowance."
+  },
+  "fiscal_years": [
+    {
+      "fiscal_year": "FY2025",
+      "from": "2024-10-01",
+      "to": "2025-09-30",
+      "lodging_cap_minor": 11000,
+      "mie_minor": 6800,
+      "meals": { "breakfast_minor": 1600, "lunch_minor": 1900, "dinner_minor": 2800, "incidentals_minor": 500 },
+      "first_last_day_minor": 5100
+    },
+    {
+      "fiscal_year": "FY2026",
+      "from": "2025-10-01",
+      "to": "2026-09-30",
+      "lodging_cap_minor": 11500,
+      "mie_minor": 6800,
+      "meals": { "breakfast_minor": 1600, "lunch_minor": 1900, "dinner_minor": 2800, "incidentals_minor": 500 },
+      "first_last_day_minor": 5100
+    }
+  ],
+  "current_fiscal_year": "FY2026",
+  "rates": [
+    { "country": "United States", "code": "US", "currency": "USD", "locality": "CONUS standard" }
+  ]
+}

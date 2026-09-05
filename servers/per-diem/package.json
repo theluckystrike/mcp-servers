@@ -1,0 +1,63 @@
+{
+  "name": "@theluckystrike/mcp-per-diem",
+  "version": "0.11.0",
+  "description": "Daily travel allowances on bundled public rate tables: Poland, HMRC and GSA.",
+  "type": "module",
+  "bin": {
+    "mcp-per-diem": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --declaration && node -e \"const f=require('node:fs');f.cpSync('src/tables','dist/tables',{recursive:true});f.chmodSync('dist/index.js',0o755)\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "per-diem",
+    "travel",
+    "allowance",
+    "delegacja",
+    "hmrc",
+    "gsa",
+    "expenses"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/per-diem"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/per-diem",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-license": "^0.11.0",
+    "@theluckystrike/mcp-timezone": "^0.11.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}

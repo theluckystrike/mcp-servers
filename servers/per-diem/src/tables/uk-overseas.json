@@ -1,0 +1,16 @@
+{
+  "header": {
+    "scheme": "uk",
+    "part": "overseas",
+    "authority": "HM Revenue and Customs, United Kingdom",
+    "instrument": "Worldwide subsistence rates (overseas scale rates) for employees travelling outside the UK, EIM05250 and the accompanying country and city table",
+    "source_url": "https://www.gov.uk/guidance/expenses-rates-for-employees-travelling-outside-the-uk",
+    "effective_date": "unknown",
+    "retrieved_date": "2026-09-05",
+    "currency": "per city",
+    "bundled": false,
+    "coverage": "NOT BUNDLED. The HMRC overseas table gives, per city, a room rate plus separate breakfast, lunch, dinner, other and drinks figures and a 24-hour and over-5-hour and over-10-hour total, all in the destination currency. Those are roughly 250 cities times 8 figures. This build could not state them with confidence from public regulation text alone, so under the project rule none of them is bundled: an invented per-city figure would be a tax-relief number that is wrong and looks authoritative. Use scheme \"uk\" for the domestic benchmark scale rates, and for an overseas UK claim read the live table at the source URL.",
+    "note": "The file is kept, with an empty rates array, so the scheme shape is stable and a later build can fill it in without a schema change. perdiem_rates {scheme:\"uk\", part:\"overseas\"} says this in the answer rather than returning an empty list with no explanation."
+  },
+  "rates": []
+}
