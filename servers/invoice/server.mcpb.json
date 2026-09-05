@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.12.0/invoice.mcpb",
       "version": "0.12.0",
-      "fileSha256": "e299fe9e8661e8955937e4349b9ef7b5f90a9f76753263f19f4e7dba25405dd5",
+      "fileSha256": "ab71e925d8c40102e3d832fbd708e9939a7569c36be34ed167a2eeaa1cb23181",
       "transport": {
         "type": "stdio"
       },
