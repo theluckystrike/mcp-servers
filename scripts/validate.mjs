@@ -6,6 +6,9 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, statSy
 import { tmpdir } from "node:os";
 import { createServer } from "node:http";
 import { join } from "node:path";
+const TODAY_ISO = new Date().toISOString().slice(0, 10);
+const IN_14_DAYS_ISO = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+const TOMORROW_ISO = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const DB = join(ROOT, "data/validation.json");
@@ -472,14 +475,14 @@ const PROBES = {
     // 2. THE measured one: applying on top of a payment that is already on the invoice.
     // 20000 + 30000 = 50000. An assigning write path would leave 30000 and pass every
     // schema check, so the store is read back rather than trusting the reply.
-    const app = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0001", amount_minor: 30000, date: "2026-09-05" });
+    const app = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0001", amount_minor: 30000, date: TODAY_ISO });
     const paidAfter = JSON.parse(readFileSync(dInvPath, "utf8")).find((i) => i.number === "INV-2026-0001").paid_minor;
     ok(`${tier}: deposit_apply ADDS to the invoice's paid_minor (20000 + 30000 = 50000)`,
       !app.isError && paidAfter === 50000 && /"paid": "EUR 500\.00"/.test(app.text) && /"balance_due": "EUR 730\.00"/.test(app.text) && /"held": "EUR 200\.00"/.test(app.text),
       `paid_minor ${paidAfter}; ${app.text.replace(/\s+/g, " ").slice(0, 110)}`);
 
     // 3. Over-apply: more than is HELD. Named in the refusal, and nothing written.
-    const over = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0001", amount_minor: 20001, date: "2026-09-05" });
+    const over = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0001", amount_minor: 20001, date: TODAY_ISO });
     const paidStill = JSON.parse(readFileSync(dInvPath, "utf8")).find((i) => i.number === "INV-2026-0001").paid_minor;
     ok(`${tier}: one cent past what is held is refused and nothing is written`,
       over.isError && /holds EUR 200\.00/.test(over.text) && /EUR 200\.01/.test(over.text) && /Nothing was changed/.test(over.text) && paidStill === 50000,
@@ -487,22 +490,22 @@ const PROBES = {
 
     // 4. Over-apply the OTHER way: more than the invoice still owes. INV-2026-0003 is
     // EUR 100.00, the deposit holds EUR 200.00, so the cap that bites is the invoice's.
-    const overInv = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0003", amount_minor: 20000, date: "2026-09-05" });
+    const overInv = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0003", amount_minor: 20000, date: TODAY_ISO });
     ok(`${tier}: more than the invoice still owes is refused, naming the invoice's balance`,
       overInv.isError && /EUR 100\.00/.test(overInv.text) && /overpaid|owes/.test(overInv.text),
       overInv.text.replace(/\s+/g, " ").slice(0, 130));
 
     // 5. Currency: never converted, both currencies named, nothing written on either side.
-    const cross = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0002", amount_minor: 10000, date: "2026-09-05" });
+    const cross = await c.tool("deposit_apply", { id: "DEP-2026-0001", invoice: "INV-2026-0002", amount_minor: 10000, date: TODAY_ISO });
     ok(`${tier}: a EUR deposit against a USD invoice is refused, never converted`,
       cross.isError && /EUR/.test(cross.text) && /USD/.test(cross.text) && /never converted/.test(cross.text) && /Nothing was changed/.test(cross.text),
       cross.text.replace(/\s+/g, " ").slice(0, 130));
 
     // 6. Refund: over-refund refused naming what is held, then a real refund closes it out.
-    const badRef = await c.tool("deposit_refund", { id: "DEP-2026-0001", amount_minor: 20001, date: "2026-09-05", method: "bank transfer" });
+    const badRef = await c.tool("deposit_refund", { id: "DEP-2026-0001", amount_minor: 20001, date: TODAY_ISO, method: "bank transfer" });
     ok(`${tier}: refunding more than is held is refused, naming what is held`,
       badRef.isError && /EUR 200\.00/.test(badRef.text), badRef.text.replace(/\s+/g, " ").slice(0, 130));
-    const ref = await c.tool("deposit_refund", { id: "DEP-2026-0001", amount_minor: 20000, date: "2026-09-05", method: "bank transfer" });
+    const ref = await c.tool("deposit_refund", { id: "DEP-2026-0001", amount_minor: 20000, date: TODAY_ISO, method: "bank transfer" });
     const paidAfterRefund = JSON.parse(readFileSync(dInvPath, "utf8")).find((i) => i.number === "INV-2026-0001").paid_minor;
     ok(`${tier}: a refund closes the deposit and does NOT touch the invoice`,
       !ref.isError && /"refunded": "EUR 200\.00"/.test(ref.text) && /"held": "EUR 0\.00"/.test(ref.text) && paidAfterRefund === 50000,
@@ -598,16 +601,16 @@ const PROBES = {
       !cnTxt.isError && cnTxt.text.includes("INV-2026-0001") && !/mcp\.zovo\.one\/buy/.test(cnTxt.text), cnTxt.text.replace(/\s+/g, " ").slice(0, 100));
 
     // 4. Purchase order: 40 reams at EUR 4.90 plus 8 toners at EUR 42.00, 23% VAT.
-    const po = await c.tool("purchase_order_create", { supplier: "Nordpapier GmbH", currency: "EUR", tax_rate: 23, expected_delivery_date: "2026-09-20", items: [{ description: "A4 paper, 500 sheets", quantity: 40, unit_price_minor: 490 }, { description: "Toner cartridge", quantity: 8, unit_price_minor: 4200 }] });
+    const po = await c.tool("purchase_order_create", { supplier: "Nordpapier GmbH", currency: "EUR", tax_rate: 23, expected_delivery_date: IN_14_DAYS_ISO, items: [{ description: "A4 paper, 500 sheets", quantity: 40, unit_price_minor: 490 }, { description: "Toner cartridge", quantity: 8, unit_price_minor: 4200 }] });
     const poId = (po.text.match(/PO-\d{4}-\d{4}/) || [])[0];
     ok(`${tier}: purchase_order_create totals EUR 532.00 net, EUR 654.36 gross`,
       !po.isError && !!poId && /"net": "EUR 532\.00"/.test(po.text) && /"total": "EUR 654\.36"/.test(po.text) && /23% on EUR 532\.00 = EUR 122\.36/.test(po.text), `${poId} ${po.text.replace(/\s+/g, " ").slice(0, 110)}`);
 
     // 5. Receiving in part keeps the order open; receiving it in full twice does not.
-    const rec = await c.tool("purchase_order_receive", { id: poId, partial: true, date: "2026-09-05", note: "25 of 40 reams, toner back-ordered" });
+    const rec = await c.tool("purchase_order_receive", { id: poId, partial: true, date: TODAY_ISO, note: "25 of 40 reams, toner back-ordered" });
     ok(`${tier}: a partial receipt leaves the order open and is on the record`,
       !rec.isError && /partially_received/.test(rec.text) && /25 of 40 reams/.test(rec.text), rec.text.replace(/\s+/g, " ").slice(0, 120));
-    await c.tool("purchase_order_receive", { id: poId, date: "2026-09-06", note: "the rest" });
+    await c.tool("purchase_order_receive", { id: poId, date: TOMORROW_ISO, note: "the rest" });
     const recTwice = await c.tool("purchase_order_receive", { id: poId, date: "2026-09-07", note: "again" });
     ok(`${tier}: receiving an order in full twice is refused by date`,
       recTwice.isError && /already received in full/i.test(recTwice.text) && /2026-09-06/.test(recTwice.text), recTwice.text.replace(/\s+/g, " ").slice(0, 120));
