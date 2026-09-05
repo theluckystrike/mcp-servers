@@ -888,5 +888,39 @@
       "name": "asset_report",
       "description": "Report net book value by category and currency at a date, the year's depreciation charge, and every disposal in the year with its gain or loss. Pro."
     }
+  ],
+  "statement-of-account": [
+    {
+      "name": "statement_build",
+      "description": "Build one client's statement of account for a period: opening balance, invoices issued, payments received, credit notes, deposits applied and closing balance, in minor units and formatted."
+    },
+    {
+      "name": "statement_aging",
+      "description": "Break what is owed into 0-30, 31-60, 61-90 and over 90 days past the invoice due date as at a chosen date, for one client or for every client, per currency. Free and unlimited."
+    },
+    {
+      "name": "statement_text",
+      "description": "Turn one client's statement into a plain-text ledger with every movement in date order, the opening and closing balances and a sign-off, ready to paste into an email."
+    },
+    {
+      "name": "statement_pdf",
+      "description": "Call this tool to write one client's A4 statement of account and return the file path. Titled STATEMENT OF ACCOUNT, every movement in date order, closing with the balance outstanding. Pro."
+    },
+    {
+      "name": "dunning_text",
+      "description": "Write a payment chaser for one client at level 1 friendly, 2 firm or 3 final demand, listing every overdue invoice with its age and total, plus your bank details when the profile has them. Level 3 is Pro."
+    },
+    {
+      "name": "statements_report",
+      "description": "Show what is outstanding across every client, totalled per currency and aged, with the oldest overdue invoice and the clients carrying it. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
   ]
 }

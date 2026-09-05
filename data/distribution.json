@@ -159,7 +159,7 @@
   "yuzehao2023-awesome-mcp-servers": {
    "status": "submitted",
    "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
-   "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name \u2014 url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
+   "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name — url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
   },
   "mcpstar-awesome-dxt-mcp": {
    "status": "skipped: no populated list to append to",
@@ -557,6 +557,19 @@
    "mcpb": "pending: bundles/asset-register.mcpb not built, server.mcpb.json fileSha256 is TBD",
    "github-mirror": "pending",
    "registry-name": "pending 0.13.0 (io.github.theluckystrike/fixed-assets, io.github.theluckystrike/depreciation)"
+  },
+  "statement-of-account": {
+   "github": "published",
+   "registry": "pending",
+   "hosted": "published https://mcp.zovo.one/mcp/statement-of-account",
+   "npm": "missing",
+   "smithery": "pending",
+   "glama": "pending",
+   "docker-mcp-catalog": "submitted",
+   "cline-marketplace": "submitted",
+   "mcpb": "pending: bundles/statement-of-account.mcpb not built, server.mcpb.json fileSha256 is TBD",
+   "github-mirror": "pending",
+   "registry-name": "pending 0.13.0 (io.github.theluckystrike/statements, io.github.theluckystrike/dunning)"
   }
  }
 }

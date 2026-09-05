@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-three endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-four endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -34,6 +34,7 @@ import { createServer as createBillingDocs } from "./vendor/billing-docs/index.j
 import { createServer as createDeposits } from "./vendor/deposits/index.js";
 import { createServer as createPerDiem } from "./vendor/per-diem/index.js";
 import { createServer as createAssetRegister } from "./vendor/asset-register/index.js";
+import { createServer as createStatementOfAccount } from "./vendor/statement-of-account/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -80,12 +81,31 @@ interface ServerCfg {
    */
   strip?: string[];
   /**
-   * A second tenant document this endpoint reads and writes. /mcp/recurring creates
-   * invoices in the SAME invoice store /mcp/invoice serves, so it hydrates both keys
-   * and flushes each path back to the document that owns it.
+   * Sibling tenant documents this endpoint reads. /mcp/recurring creates invoices in the
+   * SAME invoice store /mcp/invoice serves, so it hydrates both keys and flushes each
+   * path back to the document that owns it.
+   *
+   * One entry or a list of them: /mcp/statement-of-account reads THREE sibling stores
+   * (invoice, billing-docs, deposits) to state one account, and a statement is a view
+   * over books other servers own. `readOnly` says so structurally rather than by
+   * convention: that document is hydrated and never flushed, so an accidental write
+   * inside a handler cannot reach another server's KV document. The read-WRITE form
+   * (/mcp/quotes, /mcp/recurring, /mcp/billing-docs, /mcp/deposits) leaves it off.
    */
-  sharedDoc?: { server: string; owns: (path: string) => boolean };
+  sharedDoc?: SharedDoc | SharedDoc[];
 }
+
+/** One sibling tenant document, hydrated on top of this endpoint's own. */
+interface SharedDoc {
+  server: string;
+  owns: (path: string) => boolean;
+  /** Hydrate it, never flush it: this endpoint reports on that book and does not write it. */
+  readOnly?: boolean;
+}
+
+/** cfg.sharedDoc in its list form. The single form is kept for every server that had one. */
+const sharedDocs = (cfg: ServerCfg): SharedDoc[] =>
+  cfg.sharedDoc ? (Array.isArray(cfg.sharedDoc) ? cfg.sharedDoc : [cfg.sharedDoc]) : [];
 
 /** The invoice server's data directory inside the virtual filesystem (homedir shim). */
 const INVOICE_DIR = "/home/mcp/.local/share/mcp-servers/invoice/";
@@ -93,6 +113,10 @@ const INVOICE_DIR = "/home/mcp/.local/share/mcp-servers/invoice/";
 const EXPENSE_DIR = "/home/mcp/.local/share/mcp-servers/expense-tracker/";
 /** The bank ledger /mcp/bank-statement owns; /mcp/expense-tracker's bankLedgerLine (D-B4) reads it. */
 const BANK_DIR = "/home/mcp/.local/share/mcp-servers/bank-statement/";
+/** The credit note and purchase order store /mcp/billing-docs owns; /mcp/statement-of-account reads it. */
+const BILLING_DOCS_DIR = "/home/mcp/.local/share/mcp-servers/billing-docs/";
+/** The deposit store /mcp/deposits owns; /mcp/statement-of-account reads it. */
+const DEPOSITS_DIR = "/home/mcp/.local/share/mcp-servers/deposits/";
 
 const SERVERS: Record<string, ServerCfg> = {
   "time-tracker": {
@@ -328,6 +352,33 @@ const SERVERS: Record<string, ServerCfg> = {
     // vendor/asset-register/tables-data.ts through the same server-keyed inliner per-diem
     // uses, so the same rate comes out of the same shipped annex and nothing is fetched.
     factory: createAssetRegister as () => McpServer,
+  },
+  "statement-of-account": {
+    // The first endpoint that hydrates THREE sibling documents, and the first that
+    // hydrates any of them READ-ONLY by declaration rather than by habit. A statement of
+    // account is a view over books other servers own: the invoice ledger (/mcp/invoice),
+    // the credit note store (/mcp/billing-docs) and the deposit store (/mcp/deposits) are
+    // all read and none is written, so each entry carries readOnly: true and its document
+    // is never flushed. /mcp/bank-statement's and /mcp/expense-tracker's hydrations are
+    // read-only in PRACTICE - the flush finds them byte-identical and writes nothing -
+    // which is a property of the handlers; this is a property of the endpoint.
+    //
+    // What this endpoint does own is one small register of the statements that were built
+    // (statements.json and its per-year counter, under the homedir shim, tmp + rename),
+    // metered for the free cap. No balance is ever read back out of it.
+    //
+    // statement_pdf renders through remote/src/shims/pdf.ts by way of the vendored
+    // @theluckystrike/mcp-billing-docs/lib, the /mcp/deposits route, and pushes its own
+    // download, so publish() only has to catch the .txt statement_text and dunning_text
+    // write under /out/.
+    factory: createStatementOfAccount as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+    sharedDoc: [
+      { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR), readOnly: true },
+      { server: "billing-docs", owns: (p) => p.startsWith(BILLING_DOCS_DIR), readOnly: true },
+      { server: "deposits", owns: (p) => p.startsWith(DEPOSITS_DIR), readOnly: true },
+    ],
   },
 };
 
@@ -712,6 +763,7 @@ const TOOLS: Record<string, string[]> = {
   "per-diem": ["perdiem_rates", "perdiem_calc", "trip_record", "trip_list", "trip_export", "perdiem_report", "license_status", "license_activate"],
   "deposits": ["deposit_record", "deposit_list", "deposit_apply", "deposit_refund", "deposit_balance", "deposit_statement_text", "deposit_statement_pdf", "deposits_report", "license_status", "license_activate"],
   "asset-register": ["asset_add", "asset_list", "asset_schedule", "asset_journal", "asset_dispose", "asset_report", "license_status", "license_activate"],
+  "statement-of-account": ["statement_build", "statement_aging", "statement_text", "statement_pdf", "dunning_text", "statements_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -906,6 +958,14 @@ function indexDoc(base: string) {
         outputs: "JSON only. There is no document to render and nothing is written outside your own register. asset_journal returns the expense_add ARGUMENTS for the month, one payload per currency, to pass to /mcp/expense-tracker yourself: this endpoint never appends to that ledger, because the expense server's id counter, category rules and VAT split all live inside its own expense_add handler.",
         free_limits: "10 assets in the register; asset_list, asset_schedule and asset_dispose are free and unlimited on every tier, because a depreciation rate is published by a tax authority and an asset already on the register has to be able to leave it. asset_journal and asset_report are Pro",
         notes: "the rates are BUNDLED tables, not a feed: pl (the annual depreciation rate annex to the CIT act of 15 February 1992, keyed to the KST 2016), uk (Capital Allowances Act 2001 writing down allowances) and us (IRS Publication 946 MACRS GDS). Nothing is fetched, so the same asset depreciates the same way on every run, and every answer carries the header saying which instrument the rate came from and when it was read. A category that could not be stated with confidence from the published text was OMITTED rather than guessed, so an unbundled category is REFUSED by name rather than matched to a near neighbour - and never by substring, because \"land\".includes(\"and\") would have priced equipment at the land row's 0 percent in silence. The schedule periods sum EXACTLY to cost less residual to the minor unit, with the rounding remainder placed on the last period rather than dropped, and a residual over cost is refused. Currencies are never added together: there is no exchange rate in this endpoint",
+      },
+      {
+        name: "statement-of-account", url: `${base}/mcp/statement-of-account`, tools: TOOLS["statement-of-account"],
+        mode: "reads three stores, writes none of them",
+        how: "statement_build states one client's account for a period (opening balance, invoices issued, payments received, credit notes, deposits applied, closing balance), statement_aging breaks what is owed into 0-30, 31-60, 61-90 and over 90 days past the due date AS AT a date you choose, and dunning_text writes the chaser at level 1 friendly, 2 firm or 3 final demand. Every figure is read from the same per-token data your /mcp/invoice, /mcp/billing-docs and /mcp/deposits endpoints serve; the issuer and the bank details a chaser prints come from the shared business profile (business_set on /mcp/invoice).",
+        outputs: "statement_pdf returns a print-ready HTML statement behind a one-hour download link (there is no PDF renderer on Workers, so it is the same A4 layout the credit note and the deposit statement use, titled STATEMENT OF ACCOUNT). statement_text and dunning_text return the pasteable text in the answer and the same text as a .txt download link.",
+        free_limits: "5 distinct statements per calendar month, counted by client, period and currency, so re-rendering one you already built is free forever in all three renderings; statement_aging is free and unlimited on every tier, because 'who owes me money' is the question this endpoint exists for. statement_pdf, dunning_text level 3 and statements_report are Pro",
+        notes: "the three sibling stores are hydrated READ-ONLY and never written: this endpoint reports on books it does not own. A store that is missing is not an error and reads as zero rows; a store that is present and did not parse is reported as unreadable with a sentence naming which figure is incomplete, rather than being read as an empty book, and an unreadable invoice ledger refuses every tool by name. paid_minor on the invoice is the authority and the payment rows are only the attribution, so a deposit already applied is broken out rather than counted twice, and deposit money still HELD is a memo line and never in the balance. Aging is as at the date asked for in both directions - an invoice issued after it is not on the books, a payment made after it has not happened - and due today is not overdue. Currencies are never added together, and no dunning level states a late fee, an interest rate or a legal cost, because this endpoint holds no contract terms and no jurisdiction",
       },
     ],
     limits: {
@@ -1387,8 +1447,11 @@ export default {
     const files = dataless ? new Map<string, string>() : await hydrate(env, auth.tenant, product);
     // /mcp/recurring works inside the invoice store: its document is hydrated on top of
     // this endpoint's, and every path is flushed back to whichever document owns it.
-    if (!dataless && cfg.sharedDoc) {
-      for (const [k, v] of await hydrate(env, auth.tenant, cfg.sharedDoc.server)) files.set(k, v);
+    const shares = sharedDocs(cfg);
+    if (!dataless) {
+      for (const sd of shares) {
+        for (const [k, v] of await hydrate(env, auth.tenant, sd.server)) files.set(k, v);
+      }
     }
     // The shared business profile (D-R31) is hydrated on top of every endpoint, the same
     // way: business_set on /mcp/invoice must be visible to /mcp/docx, /mcp/expense-tracker,
@@ -1397,7 +1460,7 @@ export default {
     if (!dataless) {
       for (const [k, v] of await hydrate(env, auth.tenant, PROFILE_SERVER)) files.set(k, v);
     }
-    const ownPaths = (p2: string) => !isProfilePath(p2) && (!cfg.sharedDoc || !cfg.sharedDoc.owns(p2));
+    const ownPaths = (p2: string) => !isProfilePath(p2) && !shares.some((sd) => sd.owns(p2));
     const maxBytes = cfg.maxBytes ?? DEFAULT_MAX_BYTES;
     const counted = recount(files);
 
@@ -1420,9 +1483,11 @@ export default {
       fds: new Map(), nextFd: 100,
     };
     const before = JSON.stringify(persistable(files, cfg, rctx.published, ownPaths));
-    const sharedBefore = cfg.sharedDoc
-      ? JSON.stringify(persistable(files, cfg, rctx.published, cfg.sharedDoc.owns))
-      : "";
+    // Only the read-write shares need a before-image: a read-only share is never flushed.
+    const sharedBefore = new Map<string, string>();
+    for (const sd of shares) {
+      if (!sd.readOnly) sharedBefore.set(sd.server, JSON.stringify(persistable(files, cfg, rctx.published, sd.owns)));
+    }
     const profileBefore = JSON.stringify(persistableProfile(files, rctx.published));
 
     return await STORE.run(rctx, async () => {
@@ -1456,9 +1521,10 @@ export default {
         // move: a dataless method leaves KV exactly as it found it.
         if (!dataless) {
           await flush(env, auth.tenant, product, JSON.stringify(persistable(files, cfg, rctx.published, ownPaths)), before);
-          if (cfg.sharedDoc) {
-            await flush(env, auth.tenant, cfg.sharedDoc.server,
-              JSON.stringify(persistable(files, cfg, rctx.published, cfg.sharedDoc.owns)), sharedBefore);
+          for (const sd of shares) {
+            if (sd.readOnly) continue;
+            await flush(env, auth.tenant, sd.server,
+              JSON.stringify(persistable(files, cfg, rctx.published, sd.owns)), sharedBefore.get(sd.server) ?? "");
           }
           await flush(env, auth.tenant, PROFILE_SERVER, JSON.stringify(persistableProfile(files, rctx.published)), profileBefore);
           // Sweep stamp and token TTL refresh are bookkeeping, not the answer: deferred,

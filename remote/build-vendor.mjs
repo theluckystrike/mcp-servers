@@ -82,6 +82,17 @@ const SERVERS = {
   // lib.ts is vendored for the reason per-diem's and deposits' are: it is this engine as a
   // public API, so the next server that depreciates an asset resolves here.
   "asset-register": ["index.ts", "version.ts", "lib.ts", "depreciation.ts", "store.ts", "tables.ts"],
+  // Every source file. The first server to consume three sibling engines it never writes:
+  // @theluckystrike/mcp-invoice/lib (the money, the client list and the invoice ledger),
+  // @theluckystrike/mcp-billing-docs/lib (the credit note store AND renderDocPdf, which the
+  // vendored billing-docs/lib.ts re-exports from ../../shims/pdf.js rather than from the
+  // pdfkit module that is deliberately not vendored) and @theluckystrike/mcp-deposits/lib
+  // (the deposit store and its movement ledger), plus @theluckystrike/mcp-quotes/lib for
+  // today() and isIsoDate(). All four lib.ts files are vendored above; VENDORED_LIBS below
+  // asserts that by name and LIB_RESOLUTIONS asserts the resolution on the bytes that were
+  // written. lib.ts is vendored for the reason deposits' and per-diem's are: it is this
+  // engine as a public API, so the next server that states an account resolves here.
+  "statement-of-account": ["index.ts", "version.ts", "lib.ts", "sources.ts", "statement.ts", "store.ts"],
 };
 
 /**
@@ -2287,6 +2298,7 @@ const EXTRA_IMPORTS = {
   barcode: ['import { Buffer } from "node:buffer";'],
   "billing-docs": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   deposits: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
+  "statement-of-account": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   zip: [
     'import { Buffer } from "node:buffer";',
     'import { registerZipUpload } from "../../shims/zip-upload.js";',
@@ -2313,6 +2325,8 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "invoice" && f === "lib.ts") src = patchInvoiceLib(src);
       if (name === "quotes" && f === "lib.ts") src = patchQuotesLib(src);
       if (name === "billing-docs" && f === "lib.ts") src = patchBillingDocsLib(src);
+      if (name === "statement-of-account" && f === "sources.ts") src = patchStatementSources(src);
+      if (name === "statement-of-account" && f === "statement.ts") src = patchStatementStatement(src);
       if (name === "pdf" && f === "pdfio.ts") src = patchPdfIo(src);
       if (name === "pdf" && f === "store.ts") src = patchPdfStore(src);
       if (name === "pdf" && f === "text.ts") src = patchPdfText(src);
@@ -2351,6 +2365,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "deposits") src = patchDepositsIndex(src);
     if (name === "per-diem") src = patchPerDiemIndex(src);
     if (name === "asset-register") src = patchAssetRegisterIndex(src);
+    if (name === "statement-of-account") src = patchStatementIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
