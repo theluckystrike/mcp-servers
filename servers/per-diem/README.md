@@ -52,7 +52,7 @@ Cursor (`~/.cursor/mcp.json` or `.cursor/mcp.json`): the same entry as Claude De
 | `trip_export` | No | Yes |
 | `perdiem_report` | No | Yes |
 
-[Get Pro](https://mcp.zovo.one/buy/per-diem) — $19 one-time, or $39 for the bundle.
+[Get Pro](https://mcp.zovo.one/buy/per-diem): $19 one-time, or $39 for the bundle.
 
 ## What is in the tables, and what is deliberately not
 
@@ -80,7 +80,7 @@ Rates change. Check the `effective_date` in any answer before you rely on it, an
 
 ## Exporting to the expense tracker
 
-`trip_export` returns the exact `expense_add` arguments for the [expense-tracker](../expense-tracker) server, one payload per currency, and writes nothing itself. That is deliberate: expense-tracker publishes no library entry point, and its id counter, its category rules, its VAT split and its currency defaults all live inside its own `expense_add` handler under its own lock. Appending a row to its `data.json` directly would produce an expense with none of those applied — one that looks native and is not. Handing back the arguments is the same contract [kanban](../kanban) uses for time-tracker's `timer_start`.
+`trip_export` returns the exact `expense_add` arguments for the [expense-tracker](../expense-tracker) server, one payload per currency, and writes nothing itself. That is deliberate: expense-tracker publishes no library entry point, and its id counter, its category rules, its VAT split and its currency defaults all live inside its own `expense_add` handler under its own lock. Appending a row to its `data.json` directly would produce an expense with none of those applied: one that looks native and is not. Handing back the arguments is the same contract [kanban](../kanban) uses for time-tracker's `timer_start`.
 
 No `vat_rate` is set on the payload. A statutory per diem is an allowance, not a purchase, so there is no input VAT to reclaim on it.
 
@@ -90,7 +90,7 @@ No `vat_rate` is set on the payload. A statutory per diem is an allowance, not a
 
 The first build resolved a destination by exact name, then ISO code, then `country.includes(destination)`. A trip to Oman came back priced, in EUR, with no warning: `"romania".includes("oman")` is `true`, so it took Romania's 42.00 EUR diet. Oman is not one of the 34 countries this build bundles, so the correct answer was a refusal naming the gap. Instead the caller got a confident number, in the wrong currency, from a country 3,000 km away.
 
-The fix is one line — the fallback is a **prefix** match, four characters or more — and it is asserted in `test/adversarial.test.mjs`. The general form is worth more than the fix: a fuzzy match is safe when a miss is cheap and expensive when a miss is silent. Here a miss produces a tax figure, so the fallback has to fail closed. The table being deliberately partial is exactly what makes the substring fallback dangerous: with a complete table the wrong row is a near miss, and with a partial one it is a row that should never have matched at all.
+The fix is one line, the fallback is a **prefix** match of four characters or more, and it is asserted in `test/adversarial.test.mjs`. The general form is worth more than the fix: a fuzzy match is safe when a miss is cheap and expensive when a miss is silent. Here a miss produces a tax figure, so the fallback has to fail closed. The table being deliberately partial is exactly what makes the substring fallback dangerous: with a complete table the wrong row is a near miss, and with a partial one it is a row that should never have matched at all.
 
 ## Privacy
 
