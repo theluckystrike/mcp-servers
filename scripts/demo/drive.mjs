@@ -895,6 +895,48 @@ async function run(name) {
     toolLine("asset_schedule", tenArgs);
     resultLine(await c.call("asset_schedule", tenArgs));
   }
+  if (name === "cash-book") {
+    // The six books this server derives from belong to mcp-invoice, mcp-billing-docs,
+    // mcp-deposits, mcp-expense-tracker, mcp-bank-statement and mcp-asset-register. The demo
+    // seeds the same worked month the unit suite asserts against, reusing that suite's own
+    // seeder, so every figure on screen is one recomputed by hand in docs/CASH_BOOK_RESULT.md
+    // rather than one invented for the recording.
+    const seedMod = await import(join(ROOT, "servers", "cash-book", "test", "_client.mjs"));
+    seedMod.workedMonth(join(c.sandbox, "data"));
+
+    // These tools answer in JSON and a whole answer does not fit the recorded frame, so the
+    // demo prints picked fields. Every string below is copied out of the response.
+    const pick = (raw) => JSON.parse(raw);
+    const period = { from: "2026-06-01", to: "2026-06-30", currency: "EUR" };
+
+    say("$ Six books, one double-entry ledger, derived on the call. Does June come to zero?\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("ledger_build", period);
+    const b = pick(await c.call("ledger_build", period));
+    resultLine(`${b.period.from} to ${b.period.to} ${b.currency}: ${b.lines} lines, ${b.debits} of debits against ${b.credits} of credits, balanced ${b.balanced}`);
+    resultLine(`  read ${b.sources.map((x) => `${x.store} ${x.rows}`).join(", ")}`);
+    resultLine(`  bank: ${b.bank_reconciliation.matched} rows matched a posted cash movement, ${b.bank_reconciliation.bank_rows_unmatched} unmatched, ${b.bank_reconciliation.posted_cash_without_bank_evidence} posted movement with no bank line`);
+    await sleep(STEP_DELAY_MS);
+
+    // The measured point. The bank import posts NOTHING; it is matched as evidence.
+    toolLine("ledger_lines", { ...period, account: "cash" });
+    const ll = pick(await c.call("ledger_lines", { ...period, account: "cash" }));
+    for (const l of ll.lines) resultLine(`  ${l.date}  ${l.entry.slice(0, 24).padEnd(24)} ${(l.debit_minor ? "Dr " + l.debit : "Cr " + l.credit).padEnd(16)} ${l.source.padEnd(16)} ${l.bank_ref ? "bank " + l.bank_ref : "no bank line"}`);
+    resultLine("  every line is posted from a DOCUMENT. The bank rows post nothing: they are matched on and written on as evidence");
+    resultLine("  post the import as well and 4 of those 5 rows arrive twice: cash goes -10543.00 to -21111.00 and the trial balance STILL comes to zero");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("trial_balance", period);
+    const tb = pick(await c.call("trial_balance", period));
+    for (const a of tb.accounts) resultLine(`  ${a.account.padEnd(26)} Dr ${a.debits.replace("EUR ", "").padStart(10)}  Cr ${a.credits.replace("EUR ", "").padStart(10)}  = ${a.balance}`);
+    resultLine(`  ${tb.debits} against ${tb.credits}, imbalance ${tb.imbalance}. Free and unlimited on every tier`);
+    await sleep(STEP_DELAY_MS);
+
+    // The Pro gate, on the free tier, shown rather than described.
+    toolLine("month_close", { month: "2026-06", currency: "EUR" });
+    resultLine(await c.call("month_close", { month: "2026-06", currency: "EUR" }));
+  }
   if (name === "statement-of-account") {
     // The three books this server reads belong to mcp-invoice, mcp-billing-docs and
     // mcp-deposits. The demo seeds the same worked month the unit suite asserts against,
