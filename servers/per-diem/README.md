@@ -4,6 +4,8 @@ Work out the daily travel allowance for a business trip on the rate tables the t
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
+![per-diem demo](../../assets/demo-per-diem.gif)
+
 ## Install
 
 Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json`):
