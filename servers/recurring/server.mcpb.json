@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.5/recurring.mcpb",
       "version": "0.9.5",
-      "fileSha256": "6398b7234c9d2fc7f69af72b470be5b725b03b317da5d2e00179928010fdbb3e",
+      "fileSha256": "0dfc39e8931035dabec8a7c6b3ac922b1564c23c5272c37ddc15d23a6d3432f4",
       "transport": {
         "type": "stdio"
       },
