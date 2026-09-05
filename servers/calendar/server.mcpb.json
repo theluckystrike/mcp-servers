@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts",
   "description": "Read the .ics your calendar exports: events in a window, free-busy, double bookings, export.",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.4/calendar.mcpb",
-      "version": "0.9.4",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.5/calendar.mcpb",
+      "version": "0.9.5",
       "fileSha256": "932eba7b8004eb4481994c0a1106bee60085a3d6564b4753e24188116d58eb2b",
       "transport": {
         "type": "stdio"
