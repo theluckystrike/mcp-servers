@@ -35,6 +35,41 @@ export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
 
 SERVERS="${*:-$ALL_SERVERS}"
 SHA="$(git -C "$ROOT" rev-parse HEAD)"
+FAILED_MIRRORS=()
+
+# A transient network error (the class that killed the whole v0.13.0 run at mcp-barcode,
+# leaving seven mirrors stale because `set -e` took down the rest of the loop) is worth
+# retrying; anything else -- a bad credential, a real 4xx, a missing repo -- is not, and
+# retrying it would just burn three sleeps before failing anyway.
+is_retryable_error() {
+  printf '%s' "$1" | grep -qiE \
+    'unexpected eof|connection reset|HTTP[ /][0-9.]*"? ?5[0-9]{2}|gh: .*\b5[0-9]{2}\b|"status"\s*:\s*"?5[0-9]{2}|(^|[^0-9])5(0[0-9]|1[0-9])([^0-9]|$).*(error|unavailable|gateway|timeout)|(error|unavailable|gateway|timeout).*(^|[^0-9])5(0[0-9]|1[0-9])([^0-9]|$)'
+}
+
+# Run "$@", retrying up to 3 times (waits of 5s, 15s, 45s between attempts) when the
+# failure looks retryable. $1 is a short label for the log line. Returns the wrapped
+# command's final exit code; stdout/stderr of a successful attempt is discarded (callers
+# that need output should not send it through here), a failed attempt's combined output is
+# printed to stderr so the failure is diagnosable.
+with_retry() {
+  local desc="$1"; shift
+  local delays=(5 15 45)
+  local i=0 out rc
+  while true; do
+    out="$("$@" 2>&1)"; rc=$?
+    if [ $rc -eq 0 ]; then
+      return 0
+    fi
+    if [ $i -lt ${#delays[@]} ] && is_retryable_error "$out"; then
+      echo "  $desc: attempt $((i + 1)) failed (retryable), waiting ${delays[$i]}s: $(printf '%s' "$out" | tail -1)" >&2
+      sleep "${delays[$i]}"
+      i=$((i + 1))
+      continue
+    fi
+    echo "  $desc: failed: $out" >&2
+    return $rc
+  done
+}
 
 # Repo-specific topics, appended to the five shared ones.
 topics_for() {
@@ -421,13 +456,29 @@ PYTESTS
       --homepage "https://mcp.zovo.one/s/$NAME"
   fi
   git -C "$MIRROR" remote add origin "https://github.com/$OWNER/$REPO.git"
-  git -C "$MIRROR" push -q --force origin main
+  if ! with_retry "git push $REPO" git -C "$MIRROR" push -q --force origin main; then
+    echo "FAILED $REPO: git push failed after retries" >&2
+    FAILED_MIRRORS+=("$REPO: git push failed after retries")
+    continue
+  fi
   gh repo edit "$OWNER/$REPO" --description "$DESC" \
     --homepage "https://mcp.zovo.one/s/$NAME" --default-branch main >/dev/null
   TOPIC_ARGS=()
   for t in mcp mcp-server model-context-protocol claude cursor $(topics_for "$NAME"); do
     TOPIC_ARGS+=(-f "names[]=$t")
   done
-  gh api -X PUT "repos/$OWNER/$REPO/topics" "${TOPIC_ARGS[@]}" >/dev/null
+  if ! with_retry "topics $REPO" gh api -X PUT "repos/$OWNER/$REPO/topics" "${TOPIC_ARGS[@]}"; then
+    echo "FAILED $REPO: topics PUT failed after retries" >&2
+    FAILED_MIRRORS+=("$REPO: topics PUT failed after retries")
+    continue
+  fi
   echo "pushed https://github.com/$OWNER/$REPO"
 done
+
+echo ""
+if [ ${#FAILED_MIRRORS[@]} -gt 0 ]; then
+  echo "=== sync-mirrors summary: ${#FAILED_MIRRORS[@]} mirror(s) failed after retries"
+  for f in "${FAILED_MIRRORS[@]}"; do echo "  FAILED: $f"; done
+  exit 1
+fi
+echo "=== sync-mirrors summary: all mirrors synced"

@@ -54,6 +54,32 @@ const tools = readJson(join(ROOT, "data", "tools.json"));
 const distribution = readJson(join(ROOT, "data", "distribution.json"));
 const assets = readdirSync(join(ROOT, "assets"));
 
+// D-R60's PROFILE_READERS in servers/invoice/src/index.ts is the hand-maintained half of
+// a grep test (servers/invoice/test/profile-readers.test.mjs); this check reads the same
+// two sides so a server that starts (or stops) importing readSharedProfile without the
+// list being updated fails here too, not just in that one test file.
+const invoiceIndexTs = read(join(SERVERS_DIR, "invoice", "src", "index.ts"));
+const profileReadersMatch = /export const PROFILE_READERS = \[([\s\S]*?)\];/.exec(invoiceIndexTs);
+if (!profileReadersMatch) throw new Error("release-check: PROFILE_READERS not found in servers/invoice/src/index.ts");
+const PROFILE_READERS = profileReadersMatch[1]
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean)
+  .map((s) => s.replace(/^["']|["']$/g, ""));
+
+function dirImportsReadSharedProfile(dir) {
+  if (!has(dir)) return false;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (dirImportsReadSharedProfile(p)) return true;
+    } else if (entry.name.endsWith(".ts") && read(p).includes("readSharedProfile")) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const billing = await import(join(ROOT, "billing", "src", "index.js"));
 const setup = await import(join(ROOT, "billing", "src", "setup.js"));
 const content = await import(join(ROOT, "billing", "src", "content.js"));
@@ -144,6 +170,19 @@ check("version", "version == release", (s) => {
     }
   }
   return bad.length ? `ranges: ${bad.join(", ")}` : true;
+});
+
+check("profile-reader", "PROFILE_READERS wiring", (s) => {
+  if (s === "invoice") return true; // invoice writes the shared profile, it is not a reader
+  const imports = dirImportsReadSharedProfile(join(SERVERS_DIR, s, "src"));
+  const listed = PROFILE_READERS.includes(s);
+  if (imports && !listed) {
+    return `servers/${s}/src imports readSharedProfile; add "${s}" to PROFILE_READERS in servers/invoice/src/index.ts`;
+  }
+  if (!imports && listed) {
+    return `PROFILE_READERS in servers/invoice/src/index.ts lists "${s}" but nothing in servers/${s}/src imports readSharedProfile; remove "${s}" from PROFILE_READERS`;
+  }
+  return true;
 });
 
 check("manifests", "server.json + mcpb", (s) => {

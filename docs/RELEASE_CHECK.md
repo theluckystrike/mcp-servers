@@ -48,6 +48,7 @@ bundle rather than a product: no Stripe price, no comparison page, no second nam
 | id | assertion |
 | --- | --- |
 | `version` | `package.json` version equals the release version, and every `@theluckystrike/*` range is `^<release>` |
+| `profile-reader` | if any `.ts` file under `servers/<x>/src` imports `readSharedProfile`, `<x>` is listed in `PROFILE_READERS` in `servers/invoice/src/index.ts`, and vice versa |
 | `manifests` | `server.json` and `server.mcpb.json` both exist |
 | `desc` | every manifest description is under 100 characters (the registry 422s above it) and does not end in a machine truncation (`,.`, `..`, a trailing comma) |
 | `names` | at least one additional registry name manifest (`server.variant.json` or `server.<token>.json`), and it does not repeat the primary name |
@@ -163,6 +164,30 @@ Everything else in the wiring was already correct: all nineteen servers were in
 `CHILDREN`, all three `build-mcpb` lists, `build-pages` ids, `facts.json`, `tools.json`,
 `PRODUCTS`, `SETUP_SERVERS` with six angles each, and every hosted server had both its
 `/mcp/<x>` route and its claude-web page.
+
+`profile-reader` reads the same two sides as `servers/invoice/test/profile-readers.test.mjs`
+(the source array `PROFILE_READERS` in `servers/invoice/src/index.ts`, and a recursive
+grep of `servers/<x>/src` for `readSharedProfile`), so a server that starts or stops
+reading the shared profile fails release-check too, not only that one test. Its failure
+message names the exact fix: add or remove `"<x>"` in `PROFILE_READERS`.
+
+## sync-mirrors.sh network retry
+
+`scripts/sync-mirrors.sh` pushes each mirror and sets its GitHub topics over the network.
+A transient failure there used to take the whole run down under `set -e`: in v0.13.0 a
+network EOF at `mcp-barcode` killed the run and left seven later mirrors stale.
+
+Both the `git push` and the `gh api ... /topics` PUT are now wrapped in `with_retry`,
+which retries up to 3 times (waiting 5s, then 15s, then 45s between attempts) when the
+failure looks transient -- `is_retryable_error` matches "unexpected EOF", "Connection
+reset", and HTTP 5xx. Anything else (auth failure, a real 4xx) fails immediately without
+waiting.
+
+If a mirror still fails after retries, its name and the failing step are recorded and the
+script moves on to the next mirror instead of exiting. At the end it prints a one-line
+summary (`sync-mirrors summary: N mirror(s) failed after retries`, with each `FAILED:`
+line, or `all mirrors synced`) and exits non-zero only if at least one mirror failed after
+retries.
 
 ## Adding a server
 
