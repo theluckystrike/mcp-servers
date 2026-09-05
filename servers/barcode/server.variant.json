@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.10.0/barcode.mcpb",
       "version": "0.10.0",
-      "fileSha256": "b9f0bdd7d4e6db38697595acf20f9a1a197904e3f4f27b3c49281e38e09106d8",
+      "fileSha256": "218c08477314bd9d719a0031e97dda2206b188c250be4393330b9a7491638de8",
       "transport": {
         "type": "stdio"
       },
