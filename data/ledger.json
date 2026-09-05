@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T09:41:22.052Z",
+  "generated_at": "2026-09-05T11:57:59.954Z",
   "session": {
-    "count": 47,
+    "count": 48,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -190,6 +190,10 @@
       {
         "at": "2026-09-05T09:41:21.138Z",
         "note": "loop 19 closed: v0.11.0 with deposits (security and retainer deposits applied to invoices through the engine; audit 18/18 no defects; the twenty-first server and hosted endpoint), 56 registry entries verified, 983 tests, validation 551/551, 22 bundles; invoice_mark_paid now ADDS payments instead of overwriting earlier partials (D-R87, found by the deposits build); office-suite guide rewritten to twenty-one/198 with a 301 (four prefixed tools, not two); round 20 49/54 (billing-docs hosted 17/18, bank 16/18, deposits 16/18); downloads 2284; sales 0; GSC 0 indexed"
+      },
+      {
+        "at": "2026-09-05T11:57:59.851Z",
+        "note": "loop 20 closed: v0.12.0 with per-diem (Polish, UK domestic and US GSA tables bundled byte-exact; UK overseas honestly omitted; audit 18/18; the twenty-second server and hosted endpoint), 59 registry entries verified, 1016 tests, validation 594/594, 23 bundles; invoice profile-reader list gained per-diem (D-R89); storefront /changelog generated from the release records; release-check hosted-row check; KPI readers keep the last good value when wrangler times out; round 21 deposits hosted 16/18; AIAnytime list merged the bundle entry; downloads 2478; sales 0; GSC key dataless again"
       }
     ]
   },
@@ -197,7 +201,7 @@
     {
       "id": "bank-statement",
       "npm_name": "@theluckystrike/mcp-bank-statement",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/bank-statement",
       "tools": [
         "statement_import",
@@ -236,7 +240,7 @@
     {
       "id": "barcode",
       "npm_name": "@theluckystrike/mcp-barcode",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/barcode",
       "tools": [
         "qr_create",
@@ -273,7 +277,7 @@
     {
       "id": "billing-docs",
       "npm_name": "@theluckystrike/mcp-billing-docs",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/billing-docs",
       "tools": [
         "credit_note_create",
@@ -314,7 +318,7 @@
     {
       "id": "calendar",
       "npm_name": "@theluckystrike/mcp-calendar",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/calendar",
       "tools": [
         "ics_import",
@@ -353,7 +357,7 @@
     {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/clauses",
       "tools": [
         "clause_add",
@@ -392,7 +396,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -429,7 +433,7 @@
     {
       "id": "deposits",
       "npm_name": "@theluckystrike/mcp-deposits",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/deposits",
       "tools": [
         "deposit_record",
@@ -466,7 +470,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -504,7 +508,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -545,7 +549,7 @@
     {
       "id": "image",
       "npm_name": "@theluckystrike/mcp-image",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/image",
       "tools": [
         "image_info",
@@ -584,7 +588,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -623,7 +627,7 @@
     {
       "id": "kanban",
       "npm_name": "@theluckystrike/mcp-kanban",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/kanban",
       "tools": [
         "task_add",
@@ -666,7 +670,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -675,7 +679,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 425,
+      "loc": 426,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -694,7 +698,7 @@
     {
       "id": "pdf",
       "npm_name": "@theluckystrike/mcp-pdf",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/pdf",
       "tools": [
         "pdf_info",
@@ -731,9 +735,44 @@
       }
     },
     {
+      "id": "per-diem",
+      "npm_name": "@theluckystrike/mcp-per-diem",
+      "version": "0.12.0",
+      "dir": "servers/per-diem",
+      "tools": [
+        "perdiem_rates",
+        "perdiem_calc",
+        "trip_record",
+        "trip_list",
+        "trip_export",
+        "perdiem_report"
+      ],
+      "tool_count": 6,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "- npm test -w servers/per-diem: # tests 33 / # pass 33 / # fail 0 / # skipped 0",
+      "result_status": "PARTIAL",
+      "loc": 1077,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -770,7 +809,7 @@
     {
       "id": "quotes",
       "npm_name": "@theluckystrike/mcp-quotes",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/quotes",
       "tools": [
         "quote_create",
@@ -808,7 +847,7 @@
     {
       "id": "recurring",
       "npm_name": "@theluckystrike/mcp-recurring",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/recurring",
       "tools": [
         "schedule_create",
@@ -849,7 +888,7 @@
     {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/resume",
       "tools": [
         "profile_set",
@@ -886,7 +925,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -923,7 +962,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -964,7 +1003,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -1002,7 +1041,7 @@
     {
       "id": "zip",
       "npm_name": "@theluckystrike/mcp-zip",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "dir": "servers/zip",
       "tools": [
         "zip_create",
@@ -1124,6 +1163,11 @@
         "id": "pdf",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/pdf"
+      },
+      {
+        "id": "per-diem",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/per-diem"
       },
       {
         "id": "price-tracker",
@@ -1281,6 +1325,10 @@
       "first_line": "Content round 17: version-free office-suite guide slug, redirect the old one - 2026-09-05"
     },
     {
+      "file": "docs/CONTENT_R18_RESULT.md",
+      "first_line": "Content round 18: GET /changelog generated from docs/RELEASE_V*.md - 2026-09-05"
+    },
+    {
       "file": "docs/CONTENT_R3_RESULT.md",
       "first_line": "Content round 3: guides, setup and compare pages for currency, docx, timezone - 2026-09-03"
     },
@@ -1363,6 +1411,10 @@
     {
       "file": "docs/DIST_R14_RESULT.md",
       "first_line": "Round 14: wire mcp-deposits into the estate, guide, demo GIF, logo, Docker + Cline"
+    },
+    {
+      "file": "docs/DIST_R15_RESULT.md",
+      "first_line": "Round 15: wire mcp-per-diem into the estate, guide, demo GIF, logo, Docker + Cline"
     },
     {
       "file": "docs/DIST_R3_RESULT.md",
@@ -1521,6 +1573,14 @@
       "first_line": "mcp-pdf: adversarial audit and user-value run"
     },
     {
+      "file": "docs/PER_DIEM_AUDIT.md",
+      "first_line": "mcp-per-diem: Part 2 CLI run and the remaining Part 1 gaps"
+    },
+    {
+      "file": "docs/PER_DIEM_RESULT.md",
+      "first_line": "mcp-per-diem: build"
+    },
+    {
       "file": "docs/PLAN_V10.md",
       "first_line": "Plan v10 (2026-09-04, loop 13): measure what cannot be seen yet"
     },
@@ -1547,6 +1607,10 @@
     {
       "file": "docs/PLAN_V16.md",
       "first_line": "Plan v16 (2026-09-05 afternoon, loop 19): content debt, server 21, weakest lanes"
+    },
+    {
+      "file": "docs/PLAN_V17.md",
+      "first_line": "Plan v17 (2026-09-05 evening, loop 20): server 22, drift fixes, changelog"
     },
     {
       "file": "docs/PLAN_V2.md",
@@ -1611,6 +1675,10 @@
     {
       "file": "docs/RELEASE_V0110.md",
       "first_line": "Release v0.11.0 (2026-09-05)"
+    },
+    {
+      "file": "docs/RELEASE_V0120.md",
+      "first_line": "Release v0.12.0 (2026-09-05)"
     },
     {
       "file": "docs/RELEASE_V060.md",
@@ -1747,6 +1815,10 @@
     {
       "file": "docs/USER_VALUE_R20_BILLING_DOCS.md",
       "first_line": "User value audit, round 20 (billing-docs, hosted) - 2026-09-05"
+    },
+    {
+      "file": "docs/USER_VALUE_R21_DEPOSITS.md",
+      "first_line": "User value audit, round 21 (deposits, hosted) - 2026-09-05"
     },
     {
       "file": "docs/USER_VALUE_R3.md",

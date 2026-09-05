@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T09:42:22.023Z",
-  "total_commits": 453,
-  "sessions": 47,
+  "generated_at": "2026-09-05T11:58:00.007Z",
+  "total_commits": 477,
+  "sessions": 48,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -96,7 +96,12 @@
     {
       "name": "Loop 19: deposits, the twenty-first server, invoice payment fix, v0.11.0",
       "sessions": 1,
-      "commits": 88
+      "commits": 36
+    },
+    {
+      "name": "Loop 20: per-diem, changelog, drift checks, v0.12.0",
+      "sessions": 1,
+      "commits": 76
     }
   ],
   "rows": [
@@ -597,7 +602,7 @@
       "at": "2026-09-05T09:41:21.138Z",
       "note": "loop 19 closed: v0.11.0 with deposits (security and retainer deposits applied to invoices through the engine; audit 18/18 no defects; the twenty-first server and hosted endpoint), 56 registry entries verified, 983 tests, validation 551/551, 22 bundles; invoice_mark_paid now ADDS payments instead of overwriting earlier partials (D-R87, found by the deposits build); office-suite guide rewritten to twenty-one/198 with a 301 (four prefixed tools, not two); round 20 49/54 (billing-docs hosted 17/18, bank 16/18, deposits 16/18); downloads 2284; sales 0; GSC 0 indexed",
       "loop": "Loop 19: deposits, the twenty-first server, invoice payment fix, v0.11.0",
-      "commits": 63,
+      "commits": 25,
       "subjects": [
         "Plan v13: the first five minutes",
         "billing: home table buy links carry the server in their src slot",
@@ -611,6 +616,27 @@
         "Loop 16 close: dashboard, sprint log loop 16",
         "Sprint log: loop 16 row",
         "Plan v14; TensorBlock entry merged"
+      ]
+    },
+    {
+      "n": 48,
+      "at": "2026-09-05T11:57:59.851Z",
+      "note": "loop 20 closed: v0.12.0 with per-diem (Polish, UK domestic and US GSA tables bundled byte-exact; UK overseas honestly omitted; audit 18/18; the twenty-second server and hosted endpoint), 59 registry entries verified, 1016 tests, validation 594/594, 23 bundles; invoice profile-reader list gained per-diem (D-R89); storefront /changelog generated from the release records; release-check hosted-row check; KPI readers keep the last good value when wrangler times out; round 21 deposits hosted 16/18; AIAnytime list merged the bundle entry; downloads 2478; sales 0; GSC key dataless again",
+      "loop": "Loop 20: per-diem, changelog, drift checks, v0.12.0",
+      "commits": 62,
+      "subjects": [
+        "Record release v0.9.5",
+        "Loop 17 close: v0.9.5 dashboard, digest, sprint log loop 17",
+        "Sprint log: loop 17 row",
+        "Plan v15: the twentieth server",
+        "pages: regenerate first-five sections after round 18",
+        "Round 18 pdf prompt records the real fixture url; pages regenerated",
+        "Round 12 distribution: 3 office-suite bundle PRs (MobinX, AIAnytime, mctrinh), 2 lists skipped for emoji tags",
+        "Add servers/billing-docs: credit notes and purchase orders on the invoice engine",
+        "billing-docs: Part 2 CLI run and Part 1 gap-fill probes, no defects found",
+        "Wire billing-docs into the estate: gen-spec, office-suite, build scripts, pages, facts, tools, Stripe product, setup, guide, logo, demo GIF",
+        "remote: twentieth endpoint /mcp/billing-docs, credit notes and purchase orders on the shared invoice store",
+        "billing-docs: validate.mjs probes (34 checks), buy list, distribution.json, deploy mcp.zovo.one"
       ]
     }
   ]
