@@ -337,6 +337,27 @@ server.registerTool("find_meeting_slots", {
     : "";
   const first = a.earliest_date ? parseTimeIn(a.earliest_date, parts[0].zone) : new Date();
   const all = findSlots(parts, duration, days, first);
+  // D-R84: `days` counts calendar days forward from `earliest_date` (or now) regardless
+  // of week boundaries, so "this week" asked for on a Friday or Saturday can quietly
+  // become next week. searched_from/searched_to are reported every time, and when the
+  // window runs past the anchor zone's Sunday, that is said in one sentence rather than
+  // left for the caller to notice from the dates in the slot list.
+  const anchorZone = parts[0].zone;
+  const w0 = wallIn(first, anchorZone);
+  const lastDay = new Date(Date.UTC(w0.y, w0.m - 1, w0.d + (days - 1), 12));
+  const wLast = { y: lastDay.getUTCFullYear(), m: lastDay.getUTCMonth() + 1, d: lastDay.getUTCDate(), h: 0, mi: 0, s: 0 };
+  const searchedFrom = dateKey(w0);
+  const searchedTo = dateKey(wLast);
+  const startDow = new Date(Date.UTC(w0.y, w0.m - 1, w0.d)).getUTCDay();      // 0=Sun..6=Sat
+  const daysToSunday = startDow === 0 ? 0 : 7 - startDow;                     // days from start to that week's Sunday
+  const rolledToNextWeek = (days - 1) > daysToSunday;
+  const weekNote = rolledToNextWeek
+    ? `\n\nThis search runs from ${searchedFrom} (${weekdayIn(first, anchorZone)}) through ${searchedTo} ` +
+      `(${weekdayIn(lastDay, anchorZone)}) in ${anchorZone} local, which is past this calendar week's end - ` +
+      `"this week" asked for ${daysToSunday <= 0 ? "today" : `${daysToSunday} day(s) left`} may have already run out.`
+    : "";
+  const windowLine = `\n\nSearched ${searchedFrom} to ${searchedTo} (${days} calendar day(s) forward from ` +
+    `${a.earliest_date ? `earliest_date ${a.earliest_date}` : "today"}, ${anchorZone} local; weekends skipped).`;
   if (!all.length) {
     const rows = parts.map(p => `  ${p.name} (${p.zone}): ${timeKey({ y: 0, m: 0, d: 0, h: Math.floor(p.startMin / 60), mi: p.startMin % 60, s: 0 })} - ${timeKey({ y: 0, m: 0, d: 0, h: Math.floor(p.endMin / 60), mi: p.endMin % 60, s: 0 })}`).join("\n");
     const near = findNearMissSlots(parts, duration, days, first, 30, 3);
@@ -355,7 +376,7 @@ server.registerTool("find_meeting_slots", {
       `No slot fits everyone's working hours in the next ${days} day(s) for ${duration} minutes.\n${rows}` +
       nearText +
       `\n\nTry a shorter duration, widen someone's work_start/work_end, or use overlap to see how far apart the days are.` +
-      zoneSources + capped,
+      zoneSources + capped + windowLine + weekNote,
     );
   }
   const limit = Math.max(1, Math.min(a.limit ?? 8, pro ? 50 : 10));
@@ -380,7 +401,7 @@ server.registerTool("find_meeting_slots", {
     `${all.length} slot(s) fit all ${parts.length} participants (${duration} min, ${days} day(s)). ` +
     `Best first, ranked by fairness: the score is the worst participant's distance in hours from 13:00 local, ` +
     `so a slot that suits everybody outranks one that is 07:00 for someone. Weekends in ${parts[0].zone} are skipped.\n` +
-    lines.join("\n") + zoneSources + extra + note,
+    lines.join("\n") + zoneSources + extra + note + windowLine + weekNote,
   );
 }));
 
