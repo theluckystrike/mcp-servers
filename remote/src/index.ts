@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-four endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-five endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -35,6 +35,7 @@ import { createServer as createDeposits } from "./vendor/deposits/index.js";
 import { createServer as createPerDiem } from "./vendor/per-diem/index.js";
 import { createServer as createAssetRegister } from "./vendor/asset-register/index.js";
 import { createServer as createStatementOfAccount } from "./vendor/statement-of-account/index.js";
+import { createServer as createCashBook } from "./vendor/cash-book/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -53,6 +54,16 @@ const IMAGE_MAX_BYTES = 2 * 1024 * 1024;         // uploaded and generated image
 const BANK_MAX_BYTES = 2 * 1024 * 1024;           // uploaded statements and the ledger, per token
 const ZIP_MAX_BYTES = 2 * 1024 * 1024;            // uploaded archives and files, per token
 const DEFAULT_MAX_BYTES = 512 * 1024;            // stored document per token per endpoint
+/**
+ * /mcp/cash-book hydrates SIX sibling documents to derive one ledger, and the cap is
+ * charged on everything hydrated, not on what this endpoint writes. Its own register
+ * (periods.json and closes.json) is a few kilobytes and never grows with the books, but
+ * the six it reads are each legal up to their own endpoint's ceiling - /mcp/bank-statement
+ * alone is 2 MB - so a 512 KB cap here would refuse to READ books that are perfectly
+ * within limits on the endpoints that own them, and the refusal would name the wrong
+ * endpoint. 2 MB is the same ceiling the largest of the six carries.
+ */
+const CASH_BOOK_MAX_BYTES = 2 * 1024 * 1024;
 const MAX_BODY_BYTES = 256 * 1024;               // request body ceiling
 const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour per client IP
 
@@ -117,6 +128,8 @@ const BANK_DIR = "/home/mcp/.local/share/mcp-servers/bank-statement/";
 const BILLING_DOCS_DIR = "/home/mcp/.local/share/mcp-servers/billing-docs/";
 /** The deposit store /mcp/deposits owns; /mcp/statement-of-account reads it. */
 const DEPOSITS_DIR = "/home/mcp/.local/share/mcp-servers/deposits/";
+/** The fixed asset register /mcp/asset-register owns; /mcp/cash-book depreciates from it. */
+const ASSET_REGISTER_DIR = "/home/mcp/.local/share/mcp-servers/asset-register/";
 
 const SERVERS: Record<string, ServerCfg> = {
   "time-tracker": {
@@ -378,6 +391,43 @@ const SERVERS: Record<string, ServerCfg> = {
       { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR), readOnly: true },
       { server: "billing-docs", owns: (p) => p.startsWith(BILLING_DOCS_DIR), readOnly: true },
       { server: "deposits", owns: (p) => p.startsWith(DEPOSITS_DIR), readOnly: true },
+    ],
+  },
+  "cash-book": {
+    // SIX sibling documents, every one of them read-only, and none of them written: this
+    // is a double-entry ledger DERIVED from books other servers own, and a ledger that
+    // also wrote would be posting entries against itself. Four are reached through their
+    // published engines (invoice, billing-docs, deposits, asset-register); the other two,
+    // expense-tracker and bank-statement, publish no ./lib, so servers/cash-book/src/
+    // sources.ts opens their data.json BY PATH off the same XDG root every store here
+    // derives - process.env.XDG_DATA_HOME || join(homedir(), ".local", "share") - which
+    // under the os shim is /home/mcp/.local/share. Those two paths therefore resolve
+    // INSIDE the virtual filesystem, onto the documents hydrated by the two entries below,
+    // and that is the whole reason both are in this list: a by-path read is exactly as
+    // dependent on hydration as an engine call, and it fails silently as `rows: 0` rather
+    // than loudly if the document is missing.
+    //
+    // What this endpoint owns is periods.json (the register the free cap is metered on)
+    // and closes.json (a trial balance snapshot per closed month), under the homedir shim.
+    // No balance is ever read back out of either: every debit and every credit is derived
+    // on the call.
+    //
+    // ledger_export_csv writes the CSV under /out/ and publishes it, so publish() only has
+    // to catch that; the cap is raised because six hydrated books are charged to this
+    // endpoint (see CASH_BOOK_MAX_BYTES).
+    factory: createCashBook as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+    maxBytes: CASH_BOOK_MAX_BYTES,
+    sharedDoc: [
+      { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR), readOnly: true },
+      { server: "billing-docs", owns: (p) => p.startsWith(BILLING_DOCS_DIR), readOnly: true },
+      { server: "deposits", owns: (p) => p.startsWith(DEPOSITS_DIR), readOnly: true },
+      { server: "asset-register", owns: (p) => p.startsWith(ASSET_REGISTER_DIR), readOnly: true },
+      // The two that publish no ./lib and are read by path. Same hydration, same
+      // read-only guarantee; the difference is only how sources.ts opens them.
+      { server: "expense-tracker", owns: (p) => p.startsWith(EXPENSE_DIR), readOnly: true },
+      { server: "bank-statement", owns: (p) => p.startsWith(BANK_DIR), readOnly: true },
     ],
   },
 };
@@ -764,6 +814,7 @@ const TOOLS: Record<string, string[]> = {
   "deposits": ["deposit_record", "deposit_list", "deposit_apply", "deposit_refund", "deposit_balance", "deposit_statement_text", "deposit_statement_pdf", "deposits_report", "license_status", "license_activate"],
   "asset-register": ["asset_add", "asset_list", "asset_schedule", "asset_journal", "asset_dispose", "asset_report", "license_status", "license_activate"],
   "statement-of-account": ["statement_build", "statement_aging", "statement_text", "statement_pdf", "dunning_text", "statements_report", "license_status", "license_activate"],
+  "cash-book": ["ledger_build", "trial_balance", "ledger_lines", "month_close", "ledger_export_csv", "ledger_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -967,11 +1018,19 @@ function indexDoc(base: string) {
         free_limits: "5 distinct statements per calendar month, counted by client, period and currency, so re-rendering one you already built is free forever in all three renderings; statement_aging is free and unlimited on every tier, because 'who owes me money' is the question this endpoint exists for. statement_pdf, dunning_text level 3 and statements_report are Pro",
         notes: "the three sibling stores are hydrated READ-ONLY and never written: this endpoint reports on books it does not own. A store that is missing is not an error and reads as zero rows; a store that is present and did not parse is reported as unreadable with a sentence naming which figure is incomplete, rather than being read as an empty book, and an unreadable invoice ledger refuses every tool by name. paid_minor on the invoice is the authority and the payment rows are only the attribution, so a deposit already applied is broken out rather than counted twice, and deposit money still HELD is a memo line and never in the balance. Aging is as at the date asked for in both directions - an invoice issued after it is not on the books, a payment made after it has not happened - and due today is not overdue. Currencies are never added together, and no dunning level states a late fee, an interest rate or a legal cost, because this endpoint holds no contract terms and no jurisdiction",
       },
+      {
+        name: "cash-book", url: `${base}/mcp/cash-book`, tools: TOOLS["cash-book"],
+        mode: "reads six stores, writes none of them",
+        how: "ledger_build derives one double-entry ledger for one period in one currency from the same per-token data your /mcp/invoice, /mcp/billing-docs, /mcp/deposits, /mcp/expense-tracker, /mcp/bank-statement and /mcp/asset-register endpoints serve; trial_balance proves the debits equal the credits to the minor unit; ledger_lines lists the legs, filtered by account, source server, source document or date; month_close names what the month leaves unposted and records a trial balance snapshot. Every line carries the server, the document id and the document date it came from.",
+        outputs: "JSON, plus ledger_export_csv, which returns the period's legs as RFC 4180 CSV behind a one-hour download link (text/csv, one row per leg). Nothing is ever written into any of the six books: no payment, no status, no counter.",
+        free_limits: "3 distinct periods per calendar month, metered by from, to and currency, so rebuilding a period already in the register is free forever; trial_balance and ledger_lines are free and unlimited on every tier, because whether the books add up is the question this endpoint exists for and a free tier that hides the answer is a demo. month_close, ledger_export_csv and ledger_report are Pro",
+        notes: "the bank import posts NOTHING. A bank line and a payment record are one movement seen twice, so cash is posted from the DOCUMENTS, which are the only rows carrying a second leg, and each bank row is matched to a posted cash movement of the same amount, the same direction and a date within three days, as evidence written onto the line as bank_ref. On the worked month that is 99.6 percent duplication: posting the import as well moves cash from -10,543.00 to -21,111.00 EUR and the trial balance still comes to zero, because every duplicated receipt arrives with its own contra. What is left after matching - a bank debit with no expense behind it, a posted movement with no bank line - is the entire reason to import a statement. Nothing is ever balanced with a plug: an entry whose own legs do not add up is posted as the document states it and the difference is raised by name. A deposit applied to an invoice never touches cash, because the cash arrived when the deposit did. Expense VAT comes OUT of a VAT-inclusive gross, never on top of it. An open purchase order is a memo and is never posted. This ledger opens at nothing: a balance here is the period's MOVEMENT, because an opening figure nobody can walk back to a document is the first invented number in a set of books. Currencies are never added together. A store that is missing reads as zero rows and says so; a store that is present and did not parse is reported as unreadable, distinctly, because a figure that could not be computed is not a figure of zero and a ledger short one whole store still balances perfectly",
+      },
     ],
     limits: {
       request_body_bytes: MAX_BODY_BYTES,
       jsonrpc_batching: "not accepted - send one request object per POST",
-      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, image: IMAGE_MAX_BYTES, "bank-statement": BANK_MAX_BYTES, zip: ZIP_MAX_BYTES, currency: "no per-token storage" },
+      stored_bytes_per_token_per_endpoint: { default: DEFAULT_MAX_BYTES, spreadsheet: SPREADSHEET_MAX_BYTES, docx: DOCX_MAX_BYTES, resume: DOCX_MAX_BYTES, pdf: PDF_MAX_BYTES, calendar: CALENDAR_MAX_BYTES, image: IMAGE_MAX_BYTES, "bank-statement": BANK_MAX_BYTES, zip: ZIP_MAX_BYTES, "cash-book": CASH_BOOK_MAX_BYTES, currency: "no per-token storage" },
       download_ttl_seconds: DOWNLOAD_TTL,
       idle_data_retention_days: SWEEP_AFTER_DAYS,
     },

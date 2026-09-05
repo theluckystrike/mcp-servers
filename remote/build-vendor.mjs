@@ -93,6 +93,23 @@ const SERVERS = {
   // written. lib.ts is vendored for the reason deposits' and per-diem's are: it is this
   // engine as a public API, so the next server that states an account resolves here.
   "statement-of-account": ["index.ts", "version.ts", "lib.ts", "sources.ts", "statement.ts", "store.ts"],
+  // Every source file. The server that reads the most siblings and writes none of them:
+  // SIX books feed one double-entry ledger. Four are reached through their published
+  // engines - @theluckystrike/mcp-invoice/lib (formatMoney, getInvoices, readJsonFile),
+  // @theluckystrike/mcp-billing-docs/lib (credit notes and purchase orders),
+  // @theluckystrike/mcp-deposits/lib and @theluckystrike/mcp-asset-register/lib
+  // (buildSchedule, chargeForMonth) - plus @theluckystrike/mcp-statement-of-account/lib
+  // for paymentRows, the payment reconstruction that is deliberately not copied here, and
+  // @theluckystrike/mcp-quotes/lib for today() and isIsoDate(). The other two,
+  // expense-tracker and bank-statement, publish no ./lib at all, so sources.ts reads their
+  // data.json BY PATH off the same XDG root every store here derives; hosted, that path
+  // resolves inside the virtual filesystem to the hydrated sibling documents, which is why
+  // SERVERS["cash-book"].sharedDoc in remote/src/index.ts carries all SIX and not just the
+  // four with an engine. LIB_RESOLUTIONS asserts every one of the six lib rewrites on the
+  // bytes that were written, and ledger.ts and sources.ts - never index.ts - are where
+  // four of them live. lib.ts is vendored for the reason the others' are: it is this
+  // engine as a public API.
+  "cash-book": ["index.ts", "version.ts", "lib.ts", "ledger.ts", "sources.ts", "store.ts"],
 };
 
 /**
@@ -2399,6 +2416,76 @@ function patchStatementStatement(src) {
     "statement no-books note");
 }
 
+/**
+ * cash-book. The hosted endpoint has no disk and the ledger writes nothing anywhere, so
+ * there is very little to move. What does move:
+ *   1. ledger_export_csv returned the whole CSV inline. Up to 5,000 rows of quoted text is
+ *      not an answer, it is a file, so it is written under /out/ and published: the caller
+ *      gets a text/csv download link valid for one hour, with the row count beside it.
+ *   2. The ledger://accounts resource reported dataDir(), which hosted is the worker's
+ *      virtual homedir - a path no caller has and none can reach, the D-R60 species.
+ * The six books this server derives from are the tenant's OWN documents on /mcp/invoice,
+ * /mcp/billing-docs, /mcp/deposits, /mcp/expense-tracker, /mcp/bank-statement and
+ * /mcp/asset-register, all hydrated read-ONLY (SERVERS["cash-book"].sharedDoc, six
+ * entries, each readOnly) and never flushed. store.ts needs no patch: periods.json,
+ * closes.json and the lock are one document per token under the homedir shim.
+ */
+function patchCashBookIndex(src) {
+  // The CSV is a file, not an answer: written under /out/ and handed back as a link.
+  src = must(src,
+    "    const rows = filterLines(led, { account: a.account, source: a.source });\n" +
+    "    return ok(toCsv(rows));",
+    "    const rows = filterLines(led, { account: a.account, source: a.source });\n" +
+    "    const csv = toCsv(rows);\n" +
+    "    const file = `/out/cash-book-${led.currency}-${led.from}-${led.to}.csv`;\n" +
+    "    writeFileSync(file, csv, \"utf8\");\n" +
+    "    const link = publishFile(file);\n" +
+    "    if (!link) return ok(csv);\n" +
+    "    return ok(\n" +
+    "      `${rows.length} ledger line${rows.length === 1 ? \"\" : \"s\"}, ${led.currency}, ${led.from} to ${led.to}, ` +\n" +
+    "      `one row per leg with its date, entry, account, debit, credit, currency, source server, source id, ` +\n" +
+    "      `bank reference and description.\\n\\nDownload (.csv, valid 1 hour): ${link}`);",
+    "cash-book csv download");
+  src = must(src,
+    "description: \"Return the period's ledger lines as RFC 4180 CSV, one row per leg with its date, entry, account, debit, credit, currency, source server, source id and description. No file is written. Pro.\",",
+    "description: \"Return the period's ledger lines as RFC 4180 CSV, one row per leg with its date, entry, account, debit, credit, currency, source server, source id and description, as a download link valid for one hour. Nothing is written into any book. Pro.\",",
+    "cash-book csv description");
+
+  // The register is a document per token, not a directory the caller can open.
+  src = must(src,
+    "        writes: [{ store: \"cash-book\", dir: dataDir(), files: [\"periods.json\", \"closes.json\"] }],",
+    "        writes: [{ store: \"cash-book\", dir: \"not a directory on this endpoint: the register of built periods and \" +\n" +
+    "          \"month closes is one document held per token, and no balance is ever read back out of it\",\n" +
+    "          files: [\"periods.json\", \"closes.json\"] }],",
+    "cash-book accounts resource writes dir");
+  src = must(src,
+    "description: \"The accounts this ledger posts to, which sibling store feeds each one, and the one directory this server writes.\",",
+    "description: \"The accounts this ledger posts to, which sibling endpoint feeds each one, and the one document this server writes.\",",
+    "cash-book accounts resource description");
+  return src;
+}
+
+/**
+ * sources.ts names the two stores that publish no ./lib by their absolute data.json path
+ * when one of them fails to parse. Hosted that is a path under the worker's virtual
+ * homedir, so the refusal names the caller's own endpoint instead - the D-R60 species.
+ * The read itself is unchanged: the same path, resolved inside the virtual filesystem to
+ * the hydrated sibling document.
+ */
+function patchCashBookSources(src) {
+  src = must(src,
+    "    return { rows: [], ok: false, error: `${file} did not parse (${(e as Error).message}); it was left untouched` };",
+    "    return { rows: [], ok: false, error: `your https://mcp.zovo.one/mcp/${server} book did not parse ` +\n" +
+    "      `(${(e as Error).message}); it was left untouched` };",
+    "cash-book sources parse error");
+  src = must(src,
+    "    return { rows: [], ok: false, error: `${file} carries no ${key} array; it was left untouched` };",
+    "    return { rows: [], ok: false, error: `your https://mcp.zovo.one/mcp/${server} book carries no ${key} array; ` +\n" +
+    "      `it was left untouched` };",
+    "cash-book sources shape error");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2431,6 +2518,7 @@ const EXTRA_IMPORTS = {
   "billing-docs": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   deposits: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   "statement-of-account": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
+  "cash-book": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   zip: [
     'import { Buffer } from "node:buffer";',
     'import { registerZipUpload } from "../../shims/zip-upload.js";',
@@ -2459,6 +2547,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "billing-docs" && f === "lib.ts") src = patchBillingDocsLib(src);
       if (name === "statement-of-account" && f === "sources.ts") src = patchStatementSources(src);
       if (name === "statement-of-account" && f === "statement.ts") src = patchStatementStatement(src);
+      if (name === "cash-book" && f === "sources.ts") src = patchCashBookSources(src);
       if (name === "pdf" && f === "pdfio.ts") src = patchPdfIo(src);
       if (name === "pdf" && f === "store.ts") src = patchPdfStore(src);
       if (name === "pdf" && f === "text.ts") src = patchPdfText(src);
@@ -2498,6 +2587,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "per-diem") src = patchPerDiemIndex(src);
     if (name === "asset-register") src = patchAssetRegisterIndex(src);
     if (name === "statement-of-account") src = patchStatementIndex(src);
+    if (name === "cash-book") src = patchCashBookIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -2555,6 +2645,11 @@ for (const [name, files] of Object.entries(SERVERS)) {
 const LIB_RESOLUTIONS = {
   deposits: ["billing-docs"],
   "statement-of-account": ["invoice", "billing-docs", "deposits"],
+  // Six, and only ONE of them is reachable from index.ts (quotes). invoice, billing-docs,
+  // deposits and asset-register are imported by sources.ts, and invoice, asset-register
+  // and statement-of-account by ledger.ts, so an index-only check would have passed a
+  // build that could not resolve five of the six engines this ledger is derived from.
+  "cash-book": ["invoice", "billing-docs", "deposits", "asset-register", "statement-of-account", "quotes"],
 };
 for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
   const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");
