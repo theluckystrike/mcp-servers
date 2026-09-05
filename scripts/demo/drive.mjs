@@ -937,6 +937,45 @@ async function run(name) {
     toolLine("month_close", { month: "2026-06", currency: "EUR" });
     resultLine(await c.call("month_close", { month: "2026-06", currency: "EUR" }));
   }
+  if (name === "amortization") {
+    // This server reads no sibling store, so there is nothing to seed. Every figure recorded
+    // below is one the unit suite asserts and docs/AMORTIZATION_RESULT.md recomputes by hand:
+    // the reference loan is 1,000,000 minor units at a nominal 12 percent compounded monthly
+    // over 12 monthly payments, drawn 2026-01-15, payment 88,849, total interest 66,188.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ The terms of a credit agreement, and what it actually costs. Free tier.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const createArgs = { name: "Van finance", kind: "loan", principal_minor: 1000000, currency: "EUR", rate_bps: 1200, compounding: "monthly", payment_frequency: "monthly", term_periods: 12, method: "annuity", start_date: "2026-01-15" };
+    toolLine("loan_create", createArgs);
+    const cr = pick(await c.call("loan_create", createArgs));
+    resultLine(`${cr.created.id} ${cr.created.name}: ${cr.created.principal} at a nominal ${cr.created.nominal_annual_rate_pct}% compounded ${cr.created.compounding}, ${cr.created.term_periods} ${cr.created.payment_frequency} payments`);
+    resultLine(`  payment ${cr.created.payment}, effective annual rate ${cr.created.effective_annual_rate_pct}% against the nominal ${cr.created.nominal_annual_rate_pct}%, periodic rate ${cr.periodic_rate_pct}%`);
+    resultLine(`  total paid ${cr.total_payments}, total interest ${cr.total_interest}. First payment ${cr.first_payment_date}, last ${cr.final_payment_date}`);
+    await sleep(STEP_DELAY_MS);
+
+    // The measured point. The payment never varies and the LAST period absorbs the rounding
+    // residual in its interest and principal split, so the closing balance is exactly zero.
+    toolLine("loan_schedule", { loan: "LOAN-2026-0001" });
+    const sc = pick(await c.call("loan_schedule", { loan: "LOAN-2026-0001" }));
+    for (const r of sc.rows) resultLine(`  ${String(r.period).padStart(2)}  ${r.date}  open ${r.opening.replace("EUR ", "").padStart(9)}  pay ${r.payment.replace("EUR ", "").padStart(7)}  int ${r.interest.replace("EUR ", "").padStart(6)}  prin ${r.principal.replace("EUR ", "").padStart(7)}  close ${r.closing.replace("EUR ", "").padStart(9)}`);
+    resultLine(`  ${sc.periods} periods, total interest ${sc.total_interest}, closing balance ${sc.closing_balance} exactly`);
+    resultLine("  period 12 charges 882 rather than the 880 an unrounded balance carries: the residual goes in the SPLIT, never in the payment");
+    resultLine("  putting it in the payment instead would make the last payment 888.47, an amount that is on no agreement");
+    await sleep(STEP_DELAY_MS);
+
+    // Free and unlimited: the balance outstanding at a date is the other question this server
+    // exists to answer, so it is not metered either.
+    toolLine("loan_list", { as_of: "2026-06-30" });
+    const ls = pick(await c.call("loan_list", { as_of: "2026-06-30" }));
+    for (const r of ls.loans) resultLine(`  ${r.id}  ${r.name.padEnd(14)} ${r.payment.padStart(11)} / ${r.payment_frequency.padEnd(9)} outstanding at 2026-06-30 ${r.outstanding}`);
+    await sleep(STEP_DELAY_MS);
+
+    // The Pro gate, on the free tier, shown rather than described.
+    toolLine("loan_repay_early", { loan: "LOAN-2026-0001", as_of_period: 6, penalty_minor: 5000 });
+    resultLine(await c.call("loan_repay_early", { loan: "LOAN-2026-0001", as_of_period: 6, penalty_minor: 5000 }));
+  }
   if (name === "statement-of-account") {
     // The three books this server reads belong to mcp-invoice, mcp-billing-docs and
     // mcp-deposits. The demo seeds the same worked month the unit suite asserts against,
