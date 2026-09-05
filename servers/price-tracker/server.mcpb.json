@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.16.0/price-tracker.mcpb",
       "version": "0.16.0",
-      "fileSha256": "9b936868c3da400392038cedfcd391ef1cd466cce246d2f7a0f94409a4cc7b60",
+      "fileSha256": "71d83b0fda7ad5b519ce2e51eeae4807ef3a2b124ccfe2bbba15911aa7ee7c2f",
       "transport": {
         "type": "stdio"
       },
