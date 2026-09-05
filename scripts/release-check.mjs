@@ -372,7 +372,7 @@ global_("PRODUCTS.bundle names the right count and saving", () => {
   const saving = n * PRODUCTS[SERVERS[0]].usd - b.usd;
   const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
     "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
-    "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five"];
+    "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six"];
   const bad = [];
   const prices = new Set(SERVERS.map((s) => PRODUCTS[s]?.usd));
   if (prices.size !== 1) bad.push(`per-server prices are not uniform: ${[...prices].join(", ")}`);
