@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-two endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-three endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -33,6 +33,7 @@ import { createServer as createZip } from "./vendor/zip/index.js";
 import { createServer as createBillingDocs } from "./vendor/billing-docs/index.js";
 import { createServer as createDeposits } from "./vendor/deposits/index.js";
 import { createServer as createPerDiem } from "./vendor/per-diem/index.js";
+import { createServer as createAssetRegister } from "./vendor/asset-register/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -60,7 +61,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-05.3";
+const BUILD_VERSION = "2026-09-05.4";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -309,6 +310,24 @@ const SERVERS: Record<string, ServerCfg> = {
     // vendor/per-diem/tables-data.ts, so the same number comes out of the same shipped
     // table and nothing is fetched.
     factory: createPerDiem as () => McpServer,
+  },
+  "asset-register": {
+    // The per-diem arrangement again, and for the same reasons. The register (assets.json
+    // and its per-year id counter, under the homedir shim, tmp + rename) is this
+    // endpoint's own document and the only thing it writes: no out_path, no download, no
+    // sibling store. asset_journal returns an expense_add PAYLOAD rather than appending a
+    // row to the expense ledger - the stdio server's D-J1 decision, taken because
+    // servers/expense-tracker publishes no library entry point and its id counter,
+    // category rules, VAT split and currency defaults all live inside its own expense_add
+    // handler - so there is no sharedDoc even though this endpoint talks about expenses.
+    // No publish(), no strip and the default 512 KB tenant cap.
+    //
+    // The three depreciation tables (Polish KST, HMRC capital allowances, IRS MACRS) are
+    // read-only bundled JSON. Over stdio they are files beside the module; here
+    // remote/build-vendor.mjs inlines their exact bytes into
+    // vendor/asset-register/tables-data.ts through the same server-keyed inliner per-diem
+    // uses, so the same rate comes out of the same shipped annex and nothing is fetched.
+    factory: createAssetRegister as () => McpServer,
   },
 };
 
@@ -692,6 +711,7 @@ const TOOLS: Record<string, string[]> = {
   "billing-docs": ["credit_note_create", "credit_note_list", "credit_note_get", "credit_note_pdf", "credit_note_text", "purchase_order_create", "purchase_order_list", "purchase_order_get", "purchase_order_pdf", "purchase_order_text", "purchase_order_receive", "billing_docs_report", "license_status", "license_activate"],
   "per-diem": ["perdiem_rates", "perdiem_calc", "trip_record", "trip_list", "trip_export", "perdiem_report", "license_status", "license_activate"],
   "deposits": ["deposit_record", "deposit_list", "deposit_apply", "deposit_refund", "deposit_balance", "deposit_statement_text", "deposit_statement_pdf", "deposits_report", "license_status", "license_activate"],
+  "asset-register": ["asset_add", "asset_list", "asset_schedule", "asset_journal", "asset_dispose", "asset_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -878,6 +898,14 @@ function indexDoc(base: string) {
         outputs: "JSON only. There is no document to render and nothing is written outside your own trip store. trip_export returns the exact expense_add ARGUMENTS for a trip, one payload per currency, to pass to /mcp/expense-tracker yourself: this endpoint never appends to that ledger, because the expense server's id counter, category rules and VAT split all live inside its own expense_add handler.",
         free_limits: "5 trips recorded per calendar month; perdiem_rates, perdiem_calc and trip_list are free and unlimited on every tier, because a per diem rate is public information published by a tax authority. trip_export and perdiem_report are Pro",
         notes: "the rates are BUNDLED tables, not a feed: pl (Dz.U. 2022 poz. 2302), uk (HMRC benchmark scale rates) and us (GSA CONUS). Nothing is fetched, so the same trip prices the same way on every run, and every answer carries the header saying which instrument the figure came from and when it was read. A rate that could not be stated with confidence from the published text was OMITTED rather than guessed, so a destination that is not bundled is REFUSED by name and sent to the source instead of being priced from a near-match. Currencies are never added together: there is no exchange rate in this endpoint",
+      },
+      {
+        name: "asset-register", url: `${base}/mcp/asset-register`, tools: TOOLS["asset-register"],
+        mode: "bundled rate tables",
+        how: "asset_add puts one fixed asset on the register with the rate, useful life and convention read off the bundled tax table (cost and residual in MINOR units: 600000 is 6,000.00 PLN), asset_schedule builds its depreciation schedule per year or per month, asset_journal gives one month's debit and credit lines, asset_dispose books a sale or a write-off against net book value, and asset_report values the register. The scheme is derived from the shared business profile currency (business_set on /mcp/invoice) when you leave it out, and every answer says so in words rather than pretending it is a stored fact.",
+        outputs: "JSON only. There is no document to render and nothing is written outside your own register. asset_journal returns the expense_add ARGUMENTS for the month, one payload per currency, to pass to /mcp/expense-tracker yourself: this endpoint never appends to that ledger, because the expense server's id counter, category rules and VAT split all live inside its own expense_add handler.",
+        free_limits: "10 assets in the register; asset_list, asset_schedule and asset_dispose are free and unlimited on every tier, because a depreciation rate is published by a tax authority and an asset already on the register has to be able to leave it. asset_journal and asset_report are Pro",
+        notes: "the rates are BUNDLED tables, not a feed: pl (the annual depreciation rate annex to the CIT act of 15 February 1992, keyed to the KST 2016), uk (Capital Allowances Act 2001 writing down allowances) and us (IRS Publication 946 MACRS GDS). Nothing is fetched, so the same asset depreciates the same way on every run, and every answer carries the header saying which instrument the rate came from and when it was read. A category that could not be stated with confidence from the published text was OMITTED rather than guessed, so an unbundled category is REFUSED by name rather than matched to a near neighbour - and never by substring, because \"land\".includes(\"and\") would have priced equipment at the land row's 0 percent in silence. The schedule periods sum EXACTLY to cost less residual to the minor unit, with the rounding remainder placed on the last period rather than dropped, and a residual over cost is refused. Currencies are never added together: there is no exchange rate in this endpoint",
       },
     ],
     limits: {

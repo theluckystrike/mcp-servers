@@ -3142,3 +3142,206 @@ to 22: **remote 80/80, whole run 555/555.**
 - `invoice business_set`'s success message lists the servers that read the shared profile
   and does not yet name per-diem. That string lives in `servers/invoice/src/index.ts`,
   outside this unit's write scope.
+
+# Extension 14 2026-09-05 - asset-register
+
+status: DONE
+
+A twenty-third endpoint, `POST /mcp/asset-register`. Worker `mcp-remote`, version ID
+`3c363a7a-d1c9-4a73-a7ef-f0b5da1458f5`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-three.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/asset-register | 8 | the three bundled JSON depreciation tables travel INTO the worker bundle as inlined bytes, through the inliner Extension 13 wrote for per-diem, now keyed by server. No download, no shared store, no network |
+
+### The finding: Extension 13's inliner was already general, and this proves it
+
+`SERVERS["asset-register"]` is `index.ts, version.ts, lib.ts, depreciation.ts, store.ts,
+tables.ts`. Every source file, `lib.ts` included, for the reason per-diem's and deposits'
+are: it is this engine as a public API, so the next server that depreciates an asset
+resolves here rather than to a module that cannot load.
+
+The table problem is Extension 13's, verbatim. `servers/asset-register/src/tables/` holds
+`pl-kst.json`, `uk-capital-allowances.json` and `us-macrs.json`, and `tables.ts` reads them
+with the same
+
+```
+const path = fileURLToPath(new URL(`./tables/${FILES[id]}`, import.meta.url));
+JSON.parse(readFileSync(path, "utf8"))
+```
+
+which is a read of nothing on a Worker. What is worth recording is that the three patch
+anchors are **byte for byte** the same in both servers: the two-line `node:fs` /`node:url`
+import pair, the two-line `table()` body, and the doc sentence "The rate tables are BUNDLED
+JSON, read from disk once at first use and never fetched." (plus, in `lib.ts`, "Nothing in
+this module touches the network. The tables are read from disk on first use."). Two servers
+written weeks apart converged on the same lines because the same decision produced them.
+
+So the inliner is now one function keyed by server rather than a copy per server. A new
+`TABLES` map holds the whole of the per-server difference:
+
+```
+const TABLES = {
+  "per-diem":       { label: "per diem",     ids: [pl-domestic, pl-foreign, uk-domestic, uk-overseas, us-gsa] },
+  "asset-register": { label: "depreciation", ids: [pl-kst, uk-capital-allowances, us-macrs] },
+};
+```
+
+`patchTablesModule(src, name)` and `patchLibTablesDoc(src, name)` replace
+`patchPerDiemTables` and `patchPerDiemLib`; `label` only names the thing in the runtime
+error a missing inline would throw, and `ids` is what the post-build assertion insists
+actually arrived. The generation block and the assertion block are both `for
+(...Object.entries(TABLES))` now, so a third table server is a `TABLES` entry and nothing
+else, and it cannot be inlined without being checked. `must()` still fails the build if any
+anchor drifts in either server, which is the whole reason generalising is safe: sharing a
+patch does not weaken it, because the patch was never a search-and-replace that could miss.
+
+**The post-build assertions, on the bytes that were written**, now run per table server:
+the vendored `tables.ts` must no longer contain `readFileSync` or `import.meta.url`; every
+id in `TABLES[name].ids` must be present in the generated `tables-data.ts`; and each parsed
+table must still carry `header.source_url`, `header.effective_date` and a `rates` array.
+The generated `tables-data.ts` is 13,919 bytes, holding 12,410 bytes of JSON.
+
+**The lib assertion needed nothing.** Extension 13 widened it to scan every file in a
+server's own `SERVERS` list rather than `index.ts` only, and that is exactly what this
+server needed: `store.ts` imports `readJsonFile` from `@theluckystrike/mcp-timezone/lib`
+and `index.ts` imports it nowhere - per-diem's shape again. The timezone engine's `lib.ts`
+is vendored, so the resolution to `../timezone/lib.js` holds. Extension 13's widening paid
+for itself one extension later.
+
+### `{ factory: createAssetRegister }` and nothing else
+
+No `publish`, no `strip`, no `persistPublished`, no `sharedDoc`, no raised `maxBytes` - the
+second endpoint after per-diem to need none, and for the same three reasons:
+
+- **No output file.** No tool takes an `out_path` and none writes a document. The answers
+  are JSON.
+- **No sibling store.** `asset_journal` returns the `expense_add` **arguments** for a
+  month, one payload per currency, and writes nothing into the expense ledger. That is the
+  stdio server's D-J1 decision, taken because `servers/expense-tracker` publishes no
+  `./lib` and its id counter, category-rule matching, VAT split and currency defaulting all
+  live inside its own `expense_add` handler under its own lock. It is what removes the
+  `sharedDoc` here.
+- **The register and its per-year id counter are the whole tenant document**, written tmp +
+  rename under the homedir shim, inside the default 512 KB cap.
+
+Two response strings named a local install and were patched, the only edits to `index.ts`:
+`asset_journal`'s `how` now names the caller's own
+`https://mcp.zovo.one/mcp/expense-tracker` endpoint, and the `assets://categories` resource
+reported `dataDir()`, which hosted is the worker's virtual homedir (`/home/mcp/...`) - a
+path no caller has and none can reach, the D-R60 species - and now says the register is one
+document held per token that `asset_list` reads back.
+
+Caps and hardening are unchanged: the default 512 KB tenant document, the 256 KB request
+body, the JSON-RPC batch rejection, the free/Pro rate limits and the 35-day orphan sweep.
+The free cap is ten assets in the register; `asset_list`, `asset_schedule` and
+`asset_dispose` are free and unlimited on every tier, because a depreciation rate is
+published by a tax authority and an asset already on the register has to be able to leave
+it. `asset_journal` and `asset_report` are Pro.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP).
+One POST per call.
+
+```
+$ GET /mcp
+  23 endpoints: ..., deposits, per-diem, asset-register
+$ GET /mcp/connect                       -> 23 rows, /mcp/asset-register/t/<token> listed
+
+$ asset-register tools/list
+  8 tools: asset_add, asset_list, asset_schedule, asset_journal, asset_dispose,
+  asset_report, license_status, license_activate
+
+$ asset_add {name: "Probe workstation", scheme: "pl", category: "491",
+             cost_minor: 600000, currency: "PLN", purchase_date: "2026-03-12"}
+  Error: "491" is not a category in the bundled PL table. The annex positions this build
+  could state with confidence: 0 percent (land), 1.5, 2.5, 4.5, 7, 10, 14, 20 and 30
+  percent. The 18 and 25 percent positions of the annex are NOT bundled ...
+                          <- the BUNDLED table refusing by name, inlined, not fetched
+
+$ asset_add {name: "Probe workstation", scheme: "pl", category: "487",
+             cost_minor: 600000, currency: "PLN", residual_minor: 50000,
+             purchase_date: "2026-03-12", project: "acme"}
+  ASSET-2026-0001, category_name "Computers and computer sets", rate_pct 30,
+  life_years 3.3333, life_source "100 divided by the annex rate of 30 percent for KST 487",
+  convention pl-month-following, first_charge_month 2026-04, periods 4,
+  depreciable_base_minor 550000 (PLN 5,500.00)
+  source.instrument "Wykaz rocznych stawek amortyzacyjnych, Zalacznik nr 1 do ustawy z
+    dnia 15 lutego 1992 r. ... rates keyed to the Klasyfikacja Srodkow Trwalych 2016",
+  source_url https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19920210086,
+  effective_date 2018-01-01
+  note: "Poland charges from the month AFTER the asset enters the register (art. 16h ust.
+    1 pkt 1), so the first charge is 2026-04, not 2026-03."
+
+$ asset_schedule {asset: "ASSET-2026-0001"}
+  cost_minor 600000, residual_applied_minor 50000, depreciable_base_minor 550000
+  periods: 2026 123750 (9 of 12 months), 2027 165000, 2028 165000, 2029 96250
+  SUM of amount_minor = 550000 = 600000 - 50000, to the minor unit
+
+$ asset_schedule {..., residual_minor: 700000}
+  Error: residual 700000 is not less than cost 600000 minor units. There would be nothing
+  to depreciate, so nothing was written.
+
+$ asset_journal {month: "2026-06"}
+  line ASSET-2026-0001: debit Depreciation expense 13750, credit Accumulated depreciation
+    13750, PLN 137.50, memo "... | PL 487 Computers and computer sets | straight-line 30
+    percent | 2026-06", project acme
+  balanced true
+  payload {tool: "expense_add", server: "expense-tracker", arguments: {amount: 137.5,
+    currency: "PLN", category: "depreciation", date: "2026-06-30", billable: false,
+    merchant: "Depreciation 2026-06"}}          <- MAJOR units, and no vat_rate
+  how: "Pass each payload's `arguments` to expense_add on your
+        https://mcp.zovo.one/mcp/expense-tracker endpoint, one call per payload."
+
+$ asset_dispose {asset: "<a second probe asset>", date: "2026-09-30",
+                 proceeds_minor: 600000, note: "sold above book value"}
+  accumulated_minor 90000, nbv_minor 510000, proceeds 600000
+  -> gain, result_minor 90000, PLN 900.00
+  journal: debit Cash or receivable 600000, debit Accumulated depreciation 90000,
+           credit Fixed assets at cost 600000, credit Gain on disposal 90000
+
+$ asset_report {year: 2026}
+  charge_by_currency [PLN 825.00], disposals [{asset, date 2026-09-30, cost 600000,
+  accumulated, nbv, proceeds, result gain/loss}], disposal_result_by_currency per currency
+  note: "Currencies are never added together: this server holds no exchange rate."
+```
+
+`scripts/validate.mjs` gained `asset-register` to the tools/list sweep plus three real
+calls (`asset_add` on the bundled KST annex, asserted on the 30 percent rate, the KST 487
+name, the ISAP source url, the 2026-04 first charge month and the 550000 base - which is
+the check that the inlined tables reached the worker - with the unbundled-position refusal
+beside it; `asset_schedule` summing to 550000 exactly with the residual-over-cost refusal
+beside it; `asset_journal` -> `asset_dispose` -> `asset_report` on the balanced 13750
+month, the no-`vat_rate` `expense_add` payload, and a gain of 82500 against an NBV of
+517500), and the index assertion moved from 22 endpoints to 23: **remote 84/84, whole run
+598/598.**
+
+### Limitations
+
+- The tables are as complete as the bundle. The Polish annex's 18 and 25 percent positions
+  are NOT bundled, because their KST membership could not be stated with confidence from
+  the public text, and a category that is not shipped is REFUSED by name with the list of
+  what is - never matched by substring, because `"land".includes("and")` would have priced
+  equipment at the land row's 0 percent in silence. `assets://categories` is the full list.
+- The tables are frozen into the deployed bundle, so a rate change is a redeploy, not a
+  cache expiry. Hosted, the caller cannot see the build date, only `header.retrieved_date`
+  and `effective_date` in every answer.
+- The free tier holds ten assets. The probes ran on a Pro key, so the hosted cap refusal
+  and the Pro gate on `asset_journal` and `asset_report` are asserted only by the stdio
+  suite, as are the concurrency and corrupt-store rows.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Concurrent requests on one token remain last-write-wins on the tenant
+  document, unchanged since Extension 1. The asset-id counter is written before the row on
+  each request, so a lost write burns an id rather than reusing one.
+- The scheme is derived from the shared business profile's `default_currency`, and the
+  profile has no country field, so a token with no profile gets no default scheme and has
+  to pass `scheme` on every call. The probe transcript above shows that note verbatim.
+- `asset_journal` deliberately writes nothing into `/mcp/expense-tracker`: the caller makes
+  those `expense_add` calls. Hosted, that is two endpoints and two POSTs rather than one
+  tool, and it is the same trade the stdio server makes for the same reason.
+- `invoice business_set`'s success message lists the servers that read the shared profile
+  and names neither per-diem nor asset-register. That string lives in
+  `servers/invoice/src/index.ts`, outside this unit's write scope.
