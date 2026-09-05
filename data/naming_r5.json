@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-09-05",
+  "cap_minutes": 35,
+  "goal": "Measure whether a new registry name can reach page 1 for the 14 capped tokens named in this round's brief (time, excel, pdf, watermark, ics, vat, cv, contract, markdown, email, crm, board, dst, nda), publish only where the measurement says it can, and report the numbers either way.",
+  "method": {
+    "registry_probe": "Single bounded GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, curl -s -m 15, first page only, sequential, no background loops. count = servers.length on page 1 (includes multiple version records per server name). our_rank = 1-based index of the first row whose name matches /theluckystrike/i on page 1 (null if none).",
+    "ordering_mechanism_measured": "The registry sorts and paginates by the full server name string (\"<namespace>/<local-name>\"), ASCII/case-sensitive (uppercase A-Z sorts before lowercase a-z), not by relevance or recency. Pagination is cursor-based: metadata.nextCursor is the last returned \"<name>:<version>\" and the next page starts immediately after it. Confirmed by paginating the pdf token fully (100+100+100+23 = 323 records across 4 pages) and observing the theluckystrike entries fall in a contiguous block at ranks 261-300, ordered exactly where their name strings sort.",
+    "search_field_measured": "search= matches a substring anywhere in the server NAME field only (namespace+local-name), not the description. Confirmed with two positive/negative controls: search=hellobasestation (a namespace-only substring, not in any local name) returned exactly the 3 com.hellobasestation/pdfkit records; search=offline (a word present in the pdf server's own description text but not in its registry name) returned 3 unrelated servers and did not surface our pdf server. This means a description mentioning a word (e.g. invoice/quotes servers both say \"VAT\" in prose) does not make that server findable for that token -- only a registry NAME containing the substring does.",
+    "page1_reach_test": "For every capped token (page1 count == 100, metadata.nextCursor present, meaning more than 100 total records exist), read the last (100th) entry's name and compare it against our fixed namespace prefix \"io.github.theluckystrike/\". Since only the local name after the slash is ours to choose, and the namespace is fixed, a new entry can only land on page 1 if \"io.github.theluckystrike/\" would sort BEFORE that 100th entry's name -- i.e. if fewer than 100 competing records currently sort ahead of our namespace for that specific search token. If the 100th entry already sorts before our namespace, at least 100 records precede us regardless of local name, and no local name can change that.",
+    "hypothetical_a_name_test": "Tested directly: an invented local name starting with \"a\" only changes ordering WITHIN our own namespace's cluster (since \"io.github.theluckystrike/a...\" vs \"io.github.theluckystrike/z...\" only differ after the fixed, already-late-sorting namespace prefix). It cannot move us ahead of any other namespace, because the namespace segment (\"io.github.theluckystrike\") is compared before the local-name segment is ever reached, and that segment is fixed. Evidence: pdf's first 10 results span namespaces ai.*, app.*, com.* -- all of which sort before \"io.github.theluckystrike\" as a whole string no matter what local name follows the slash."
+  },
+  "capped_token_probe": [
+    { "token": "time", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "io.github.I4cTime/q-ring", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "excel", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "io.github.sbroenne/mcp-server-excel", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "pdf", "count_page1": 100, "capped": true, "total_measured": 323, "our_first_rank_full_corpus": 261, "our_rank_page1": null, "last_name_on_page1": "io.github.Nizoka/pdfnative-mcp", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "watermark", "count_page1": 35, "capped": false, "our_rank": 28, "note": "already matched from an earlier round (image server variant); total pool is only 35, not capped", "page1_reachable_by_new_name": "already on page 1, no gain from a new name" },
+    { "token": "ics", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "com.olympus-bets/olympus-bets-analytics", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "vat", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "io.github.privatelawattorneys/wiki-private-law", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false, "note": "invoice and quotes servers both say VAT in their description but neither NAME contains 'vat', and search only matches the name field" },
+    { "token": "cv", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "io.github.musharna/plantcv-mcp", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "contract", "count_page1": 100, "capped": true, "our_rank": 93, "note": "already matched from an earlier round (clauses server variant); we already sit inside the 100-cap for this specific token even though it is capped overall", "page1_reachable_by_new_name": "already on page 1, no gain from a new name" },
+    { "token": "markdown", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "io.github.pvliesdonk/markdown-vault-mcp", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "email", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "io.github.blipemail/email", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "crm", "count_page1": 75, "capped": false, "our_rank": null, "total_measured": 75, "computed_insertion_rank_if_published": 72, "computed_p_if_published": 0.139, "page1_reachable_by_new_name": true, "not_published_reason": "no server we ship honestly is a CRM (contact/relationship pipeline management); invoice/quotes/bank-statement only bill and track existing named clients, they do not manage relationships or a sales pipeline -- naming one 'crm' would be a false claim" },
+    { "token": "board", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "co.pipeboard/meta-ads-mcp", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "dst", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "io.github.mindstone/mcp-server-google-workspace", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false },
+    { "token": "nda", "count_page1": 100, "capped": true, "our_rank": null, "last_name_on_page1": "dev.futur-panda/laguarde", "our_prefix_would_beat_last": false, "page1_reachable_by_new_name": false }
+  ],
+  "published_this_round": [],
+  "findable_share_over_14_capped_tokens": {
+    "formula": "NAMING_R4: p = min(1, 10/our_rank) if matched on page 1 else 0, mean over the token set.",
+    "before": {
+      "matched": 2,
+      "of": 14,
+      "share": 0.0332
+    },
+    "after": {
+      "matched": 2,
+      "of": 14,
+      "share": 0.0332,
+      "unchanged_because": "measurement showed 11 of 14 tokens structurally unreachable (100+ names already sort before io.github.theluckystrike/* for that token regardless of local name), 1 (crm) reachable only at a marginal, dishonest rank with no honest server to attach it to, and 2 (watermark, contract) already had a match from an earlier round"
+    }
+  },
+  "overall_100_token_findable_share_unchanged": {
+    "value": 0.5126,
+    "source": "data/registry_rank.json variants_r4_full_probe, 2026-09-04, unchanged this round since nothing was published"
+  }
+}
