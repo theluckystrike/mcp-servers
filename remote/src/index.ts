@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-one endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -30,6 +30,7 @@ import { createServer as createQuotes } from "./vendor/quotes/index.js";
 import { createServer as createBarcode } from "./vendor/barcode/index.js";
 import { createServer as createZip } from "./vendor/zip/index.js";
 import { createServer as createBillingDocs } from "./vendor/billing-docs/index.js";
+import { createServer as createDeposits } from "./vendor/deposits/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -57,7 +58,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-05.1";
+const BUILD_VERSION = "2026-09-05.2";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -270,6 +271,24 @@ const SERVERS: Record<string, ServerCfg> = {
     // push their own download, so publish() only has to catch the .txt both text tools
     // write under /out/.
     factory: createBillingDocs as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+    sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
+  },
+  "deposits": {
+    // The deposits themselves and their per-year counter are this endpoint's own document
+    // (under the homedir shim, tmp + rename). The invoices deposit_apply pays are NOT:
+    // they are the same store /mcp/invoice serves for the same token, hydrated on top of
+    // this request and flushed back to the document that owns it - read AND write, the
+    // /mcp/quotes and /mcp/billing-docs arrangement, and here the write is the COMMON
+    // path rather than a future one: deposit_apply sets paid_minor, paid_date and status
+    // on the invoice record through the shared engine on every successful call, so a
+    // dropped flush would report a payment that never reached the invoice.
+    //
+    // deposit_statement_pdf renders through remote/src/shims/pdf.ts by way of the
+    // vendored @theluckystrike/mcp-billing-docs/lib and pushes its own download, so
+    // publish() only has to catch the .txt deposit_statement_text writes under /out/.
+    factory: createDeposits as () => McpServer,
     publish: (p) => p.startsWith("/out/"),
     strip: ["/out/"],
     sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
@@ -651,6 +670,7 @@ const TOOLS: Record<string, string[]> = {
   "quotes": ["quote_create", "quote_list", "quote_get", "quote_update", "quote_send_text", "quote_accept", "quote_decline", "quote_pdf", "quote_report", "license_status", "license_activate"],
   "zip": ["zip_upload", "zip_files", "zip_delete_upload", "zip_create", "zip_list", "zip_extract", "zip_extract_text", "zip_add", "zip_bundle_month", "zip_history", "license_status", "license_activate"],
   "billing-docs": ["credit_note_create", "credit_note_list", "credit_note_get", "credit_note_pdf", "credit_note_text", "purchase_order_create", "purchase_order_list", "purchase_order_get", "purchase_order_pdf", "purchase_order_text", "purchase_order_receive", "billing_docs_report", "license_status", "license_activate"],
+  "deposits": ["deposit_record", "deposit_list", "deposit_apply", "deposit_refund", "deposit_balance", "deposit_statement_text", "deposit_statement_pdf", "deposits_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -821,6 +841,14 @@ function indexDoc(base: string) {
         outputs: "credit_note_pdf and purchase_order_pdf return a print-ready HTML document behind a one-hour download link (there is no PDF renderer on Workers, so it is the invoice layout titled CREDIT NOTE or PURCHASE ORDER). credit_note_text and purchase_order_text return the pasteable text in the answer and the same text as a .txt download link.",
         free_limits: "5 documents per calendar month, credit notes and purchase orders together; both text exports are free, and credit_note_pdf, purchase_order_pdf and billing_docs_report are Pro",
         notes: "a credit note can never take back more than the invoice's remaining creditable amount, which is the invoice total less everything already credited against it. Crediting a whole invoice or a whole line copies the stored numbers rather than recomputing them; a partial amount is split across the invoice's own VAT rates, in proportion to each rate's share of the total, so a mixed-rate invoice is never credited at one rate. Every money field on a credit note is stored negative, the unit price included",
+      },
+      {
+        name: "deposits", url: `${base}/mcp/deposits`, tools: TOOLS["deposits"],
+        mode: "shares the invoice store",
+        how: "Record the money a client paid up front with deposit_record (amounts in MINOR units: 50000 is 500.00 EUR), then deposit_apply puts part or all of it on an invoice in the same per-token invoice data the /mcp/invoice endpoint serves, and deposit_refund gives the rest back. deposit_balance and deposits_report say what is still held. Set the issuer once with business_set on /mcp/invoice; the shared business profile is the same for all of them.",
+        outputs: "deposit_statement_pdf returns a print-ready HTML statement behind a one-hour download link (there is no PDF renderer on Workers, so it is the same A4 layout the credit note uses, titled DEPOSIT STATEMENT). deposit_statement_text returns the pasteable text in the answer and the same text as a .txt download link.",
+        free_limits: "5 deposits recorded per calendar month; deposit_apply, deposit_refund, deposit_list, deposit_balance and deposit_statement_text are free and unlimited on every tier, because money already held has to be able to leave the book. deposit_statement_pdf and deposits_report are Pro",
+        notes: "deposit_apply writes the payment onto the invoice the way the invoice server's own invoice_mark_paid writes one - paid_minor, paid_date and status - but ADDS to paid_minor rather than replacing it, so a deposit applied after a bank transfer does not erase that transfer. It can never pay out more than the deposit still holds or more than the invoice still owes, and a deposit is applied at its own currency and never converted. A refund never touches the invoice: giving a client their own money back is not a payment of a bill",
       },
     ],
     limits: {

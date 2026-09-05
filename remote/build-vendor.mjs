@@ -53,6 +53,15 @@ const SERVERS = {
   // imports @theluckystrike/mcp-invoice/lib AND @theluckystrike/mcp-quotes/lib, both of
   // which are vendored above; VENDORED_LIBS below asserts that rather than assuming it.
   "billing-docs": ["index.ts", "version.ts", "lib.ts", "store.ts", "text.ts"],
+  // Every source file. index.ts consumes THREE sibling engines -
+  // @theluckystrike/mcp-invoice/lib, @theluckystrike/mcp-quotes/lib and
+  // @theluckystrike/mcp-billing-docs/lib - and rewriteSpec resolves the last one to
+  // ../billing-docs/lib.js, whose vendored copy re-exports renderDocPdf from
+  // ../../shims/pdf.js rather than from the pdfkit module that is not vendored. The
+  // VENDORED_LIBS assertion below checks all three rather than assuming them. lib.ts is
+  // vendored for the same reason billing-docs' is: it is the deposits store as a public
+  // API, so the next server that reads these deposits resolves here.
+  "deposits": ["index.ts", "version.ts", "lib.ts", "store.ts"],
 };
 
 /**
@@ -2041,6 +2050,92 @@ function patchDocText(src, tool, idExpr) {
   return src.slice(0, at) + patched;
 }
 
+/* ---------------------------------------------------------------- deposits */
+
+/**
+ * The hosted deposits endpoint has no disk. What moves:
+ *   1. renderDocPdf is the one billing-docs uses, reached through
+ *      @theluckystrike/mcp-billing-docs/lib -> ../billing-docs/lib.js -> ../../shims/pdf.js.
+ *      Nothing about the call changes: the statement was already expressed as a title, a
+ *      reference line, a party label, meta rows and a footer block.
+ *   2. out_path is a NAME, not a path: it only decides what the downloaded file is called.
+ *   3. deposit_statement_text keeps returning the pasteable text inline and also writes it
+ *      under /out/ so the same call hands back a .txt download link.
+ * The store needs no patch: deposits.json and counter.json are one document per token
+ * under the homedir shim. The invoices deposit_apply pays are NOT: they are the tenant's
+ * invoice document, hydrated read-WRITE (ENDPOINTS["deposits"].sharedDoc), because
+ * deposit_apply writes paid_minor, paid_date and status on the invoice record through the
+ * shared engine and that write has to reach KV rather than be dropped with the request.
+ */
+function patchDepositsIndex(src) {
+  // The only path this server ever took was out_path, and here it is a name.
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.[A-Za-z0-9]{1,8}$/, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the name the downloaded file carries, 1-64 characters of letters, digits, \` +
+      \`underscore or dash.\`);
+  }
+  return m[1];
+}
+`, "deposits expandPath");
+
+  // The statement PDF: the name is decided first, the renderer returns the link.
+  src = must(src,
+    "    const out = a.out_path ? expandPath(a.out_path) : join(dataDir(), \"pdf\", `deposits-${slug}-${s.currency}.pdf`);",
+    "    const name = `${expandPath(a.out_path ?? `deposits-${slug}-${s.currency}`)}.html`;",
+    "deposits statement out name");
+  src = must(src, "    await renderDocPdf({", "    const out = await renderDocPdf({",
+    "deposits renderDocPdf call");
+  src = must(src,
+    "    }, issuer(), out, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "    }, issuer(), name, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "deposits renderDocPdf filename");
+  src = must(src,
+    'out_path: z.string().optional().describe("Where to write the PDF; defaults to the deposits data directory under pdf/. Use a .pdf path: the bytes written are always PDF"),',
+    'out_path: z.string().optional().describe("Name for the downloaded file, e.g. acme-deposits. Defaults to the client and currency; the statement comes back as a download link valid for one hour"),',
+    "deposits out_path description");
+  src = must(src,
+    "      client: s.who, currency: s.currency, path: out,\n      document: /\\.html?$/i.test(out) ? \"HTML deposit statement (print to PDF)\" : \"PDF deposit statement\",",
+    '      client: s.who, currency: s.currency, download: out,\n      document: "HTML deposit statement, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",',
+    "deposits statement result");
+  src = must(src,
+    'description: "Call this tool to write one client\'s A4 deposit statement and return the file path. Titled DEPOSIT STATEMENT, every movement in date order, closing with what is still held. Pro.",',
+    'description: "Call this tool to render one client\'s A4 deposit statement and return a download link valid for one hour. Titled DEPOSIT STATEMENT, every movement in date order, closing with what is still held. Pro.",',
+    "deposits statement pdf description");
+
+  // The text statement stays inline (it is meant to be pasted) AND is published.
+  src = must(src,
+    '    const text = out.join("\\n");\n' +
+    '    return ok(businessMissing() ? `${text}\\n\\n---\\n${NO_BUSINESS_NOTE}` : text);',
+    '    const text = out.join("\\n");\n' +
+    '    const file = `/out/deposits-${s.who.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") || "client"}-${s.currency}.txt`;\n' +
+    '    writeFileSync(file, text, "utf8");\n' +
+    '    const link = publishFile(file);\n' +
+    '    const tail =\n' +
+    '      (link ? `\\n\\n---\\nDownload (.txt, valid 1 hour): ${link}` : "") +\n' +
+    '      (businessMissing() ? `\\n\\n---\\n${NO_BUSINESS_NOTE}` : "");\n' +
+    '    return ok(`${text}${tail}`);',
+    "deposits statement text download");
+  src = must(src,
+    'ready to paste into an email. Free on every tier.",',
+    'ready to paste into an email. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    "deposits statement text description");
+
+  // A response string that named a machine no caller has.
+  src = must(src,
+    '          `no invoice numbered "${a.invoice}" is in the invoice server\'s store. ` +\n' +
+    '          (known.length ? `The most recent are ${known.join(", ")}. ` : "That store is empty on this machine. ") +',
+    '          `no invoice numbered "${a.invoice}" is in the invoice data your https://mcp.zovo.one/mcp/invoice endpoint serves for this token. ` +\n' +
+    '          (known.length ? `The most recent are ${known.join(", ")}. ` : "Nothing is stored there yet for your token: run business_set and invoice_create on that endpoint first. ") +',
+    "deposits missing invoice note");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2071,6 +2166,7 @@ const EXTRA_IMPORTS = {
   quotes: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   barcode: ['import { Buffer } from "node:buffer";'],
   "billing-docs": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
+  deposits: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   zip: [
     'import { Buffer } from "node:buffer";',
     'import { registerZipUpload } from "../../shims/zip-upload.js";',
@@ -2130,6 +2226,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "barcode") src = patchBarcodeIndex(src);
     if (name === "zip") src = patchZipIndex(src);
     if (name === "billing-docs") src = patchBillingDocsIndex(src);
+    if (name === "deposits") src = patchDepositsIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -2148,4 +2245,27 @@ for (const [name, files] of Object.entries(SERVERS)) {
       `export function createServer() {\n${body}\n\nreturn server;\n}\n`);
   }
   console.log(`vendored ${name}: ${files.join(", ")}`);
+}
+
+/**
+ * The lib assertion at the top of this file checks that a sibling engine's lib.ts is
+ * VENDORED. This one checks that what it re-exports can actually load here: a lib.ts that
+ * still points at its own "./pdf.js" is pdfkit, which is deliberately not vendored, so the
+ * import would be a module-not-found on a deployed worker rather than the shim. The
+ * patched copies point at ../../shims/pdf.js instead, and that is asserted on the bytes
+ * that were written, not on the intent of the patch.
+ */
+for (const [name, files] of Object.entries(SERVERS)) {
+  if (!files.includes("lib.ts")) continue;
+  const lib = readFileSync(join(OUT, name, "lib.ts"), "utf8");
+  if (/from "\.\/pdf\.js"/.test(lib)) {
+    throw new Error(`vendored ${name}/lib.ts still re-exports ./pdf.js, which is not vendored`);
+  }
+}
+const depositsIndex = readFileSync(join(OUT, "deposits", "index.ts"), "utf8");
+if (!/from "\.\.\/billing-docs\/lib\.js"/.test(depositsIndex)) {
+  throw new Error("deposits/index.ts does not import ../billing-docs/lib.js");
+}
+if (!/export \{ renderDocPdf \} from "\.\.\/\.\.\/shims\/pdf\.js";/.test(readFileSync(join(OUT, "billing-docs", "lib.ts"), "utf8"))) {
+  throw new Error("billing-docs/lib.ts does not re-export renderDocPdf from the shim");
 }

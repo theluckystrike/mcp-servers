@@ -2769,3 +2769,181 @@ and the invoice it names; `purchase_order_create` -> `purchase_order_receive` ->
   shows.
 - The free tier counts five documents per calendar month across both kinds. The probes ran
   on a Pro key, so the hosted cap refusal is asserted only by the stdio suite.
+
+# Extension 12 2026-09-05 - deposits
+
+status: DONE
+
+A twenty-first endpoint, `POST /mcp/deposits`. Worker `mcp-remote`, version ID
+`f704b524-28fc-4a41-83e7-089b5db46496`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-one.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/deposits | 10 | shares the invoice store read-write, and here the WRITE is the ordinary path: `deposit_apply` records the payment on an invoice `/mcp/invoice` holds for the same token. The A4 statement and the plain-text statement both come back as one-hour download links |
+
+### Vendoring: four files, and the first consumer of three sibling engines
+
+`SERVERS["deposits"]` is `index.ts, version.ts, lib.ts, store.ts`. There is no `pdf.ts` to
+leave behind this time, because this server never had one: it imports `renderDocPdf` from
+`@theluckystrike/mcp-billing-docs/lib`, which `rewriteSpec` resolves to
+`../billing-docs/lib.js`, whose vendored copy re-exports that name from `../../shims/pdf.js`
+rather than from the pdfkit module that is deliberately not vendored. So the hosted
+statement is rendered by the same shim the credit note and the purchase order use, through
+one more hop, and nothing in `servers/deposits/src/index.ts` had to change for it.
+
+It is the first vendored server consuming **three** sibling engines:
+`@theluckystrike/mcp-invoice/lib` (money, VAT, the currency-decimal table, the client list,
+the invoice store and its lock), `@theluckystrike/mcp-quotes/lib` (`today`, `isIsoDate`) and
+`@theluckystrike/mcp-billing-docs/lib` (the page). Extension 11's assertion - every
+`@theluckystrike/mcp-<x>/lib` import in a vendored `index.ts` must have `x`'s `lib.ts` in
+`SERVERS` - covered all three unchanged. Two assertions were added beside it, and they run
+on the bytes that were written rather than on the intent of a patch:
+
+1. every vendored `lib.ts` is re-read after the build and rejected if it still says
+   `from "./pdf.js"`. That import is pdfkit, which is not vendored, so it would be a
+   module-not-found on a deployed worker rather than the shim. The name-level check says
+   the file is present; this one says what it re-exports can load.
+2. `deposits/index.ts` must import `../billing-docs/lib.js`, and `billing-docs/lib.ts` must
+   carry `export { renderDocPdf } from "../../shims/pdf.js"`. The resolution this endpoint
+   depends on is two hops long, and neither hop was previously checked end to end.
+
+### The invoice store is hydrated read-write, and the write is the common path
+
+`SERVERS["deposits"].sharedDoc = { server: "invoice", owns: p => p.startsWith(INVOICE_DIR) }`,
+the `/mcp/quotes` and `/mcp/billing-docs` arrangement. The difference is how often the write
+runs. `/mcp/billing-docs` writes the invoice document only if a future engine record carries
+`credited_minor`; `deposit_apply` writes on **every** successful call - `paid_minor`,
+`paid_date` and `status` on the invoice record, under the invoice lock, exactly as
+`invoice_mark_paid` writes them, and adding to `paid_minor` rather than assigning it. A
+flush that dropped that write would answer "the payment is on INV-... in the invoice
+server's store" while the invoice stayed unpaid. The transcript reads it back on the other
+endpoint with the same token.
+
+### Names, not paths; downloads, not files
+
+- `expandPath` is the quotes and billing-docs rewrite verbatim: `out_path` is not a path, it
+  is a bare 1-64 character name deciding only what the downloaded file is called (default:
+  the client slug and the currency). `deposit_statement_pdf` computes the name first and
+  lets the renderer return the link, so the response field is `download`, not `path`, and
+  `document` states plainly that this is an HTML document in the A4 print-to-PDF layout. The
+  stdio server's own `/\.html?$/` test on the output path would have called it "PDF deposit
+  statement" once the path became a URL - the D-R8 species again.
+- `deposit_statement_text` still returns the pasteable text inline, because that is what the
+  tool is for, and additionally writes it to `/out/deposits-<client>-<currency>.txt` and
+  publishes it. So `publish` is only `p.startsWith("/out/")`, with `strip: ["/out/"]` and no
+  `persistPublished`: an export is a fresh download every time.
+- `deposit_apply`'s "That store is empty on this machine." named a machine no caller has; it
+  now names the token's own `/mcp/invoice` endpoint and the two calls that fill it.
+
+Caps and hardening are unchanged: the default 512 KB tenant document (the hydrated invoice
+files count against it, the `/mcp/quotes` limitation), the 256 KB request body, the JSON-RPC
+batch rejection, the free/Pro rate limits, the 1-hour download TTL and the 35-day orphan
+sweep.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP).
+One POST per call.
+
+```
+$ GET /mcp
+  21 endpoints: ..., quotes, barcode, zip, billing-docs, deposits
+$ GET /mcp/connect                       -> deposits listed, twenty-one rows
+
+$ deposits tools/list
+  10 tools: deposit_record, deposit_list, deposit_apply, deposit_refund, deposit_balance,
+  deposit_statement_text, deposit_statement_pdf, deposits_report, license_status,
+  license_activate
+
+$ invoice business_set {name: "Probe Studio", default_currency: "EUR",
+                        default_tax_rate: 23, iban: "DE89370400440532013000"}
+$ invoice invoice_create {client: "Probe Deposits ...", items: [12 x Design sprint @ 90]}
+  INV-2026-0001, EUR 1328.40
+
+$ deposits deposit_record {client: "Probe Deposits ...", amount_minor: 50000,
+                           currency: "EUR", kind: "retainer", received_date: "2026-09-01",
+                           reference: "TRF-778"}
+  DEP-2026-0001, received EUR 500.00, held EUR 500.00, status held
+
+$ deposits deposit_apply {id: "DEP-2026-0001", invoice: "INV-2026-0001",
+                          amount_minor: 30000, note: "part payment"}
+  applied EUR 300.00 on 2026-09-05
+  deposit  {applied EUR 300.00, held EUR 200.00, status held}
+  invoice  {total EUR 1328.40, paid EUR 300.00, balance_due EUR 1028.40, status partial}
+
+$ invoice invoice_list {}      (the OTHER endpoint, same token)
+  INV-2026-0001 ... "status": "partial", "paid": "EUR 300.00",
+                    "balance_due": "EUR 1028.40"
+                                            <- the shared invoice store carries the payment
+
+$ deposits deposit_apply {id: "DEP-2026-0001", invoice: "INV-2026-0001", amount_minor: 40000}
+  Error: DEP-2026-0001 holds EUR 200.00 and this would apply EUR 400.00. A deposit cannot
+  pay out more than was received. Nothing was changed.
+
+$ deposits deposit_refund {id: "DEP-2026-0001", amount_minor: 5000, method: "bank transfer"}
+  refunded EUR 50.00, deposit now holds EUR 150.00
+$ deposits deposit_balance {client: "Probe Deposits ..."}
+  EUR: received 500.00, applied 300.00, refunded 50.00, held 150.00
+
+$ deposits deposit_statement_text {client: "Probe Deposits ..."}
+  the pasteable statement, movements in date order, closing HELD EUR 150.00
+  ---
+  Download (.txt, valid 1 hour): https://mcp.zovo.one/mcp/download/3c022c8e...
+  GET that URL -> 200, text/plain; charset=utf-8,
+  filename="deposits-Probe-Deposits-...-EUR.txt"
+
+$ deposits deposit_statement_pdf {client: "Probe Deposits ...", out_path: "probe-deposits"}
+  {"client": "Probe Deposits ...", "currency": "EUR",
+   "download": "https://mcp.zovo.one/mcp/download/8faf332a...",
+   "document": "HTML deposit statement, A4 print-to-PDF layout (there is no PDF renderer
+                on Workers), link valid 1 hour",
+   "held": "EUR 150.00"}
+  GET that URL -> 200, content-type text/html; charset=utf-8,
+  filename="probe-deposits.html", 2,476 bytes,
+  <title>Deposit statement Probe Deposits ... (EUR), <h1>DEPOSIT STATEMENT,
+  CLIENT block, HELD block, "EUR 150.00 is still held as at 2026-09-05."
+
+$ deposits deposits_report {}
+  as_of 2026-09-05, deposits 1, held_deposits 1, held_by_currency [EUR 150.00],
+  all_by_currency [received EUR 500.00, applied EUR 300.00, refunded EUR 50.00],
+  oldest_held [DEP-2026-0001, days_held 4], unapplied []
+```
+
+`scripts/validate.mjs` gained `deposits` to the tools/list sweep plus three real calls
+(`deposit_record` -> `deposit_apply` against the invoice `quote_accept` wrote earlier in the
+same run, read back on that invoice's own row in `/mcp/invoice`'s `invoice_list` and with a
+larger application refused; `deposit_refund` -> `deposit_balance` on the arithmetic;
+`deposit_statement_pdf`'s download content type, heading and closing figure), and the index
+assertion moved from 20 endpoints to 21: **remote 76/76, whole run 514/514.**
+
+One thing the first draft of that check got wrong, worth a line: it read the payment back
+with `invoice_get`, which returns the stored RECORD - `paid_minor: 30000`, no formatted
+money anywhere - so the assertion on `"EUR 300.00"` failed against an endpoint that was
+working correctly. `invoice_list` is the tool that formats. A probe that reads a different
+shape than the one it asserts on fails the code instead of the claim.
+
+### Limitations
+
+- **The download is HTML, not a PDF**, the same trade `invoice_pdf`, `quote_pdf` and
+  `credit_note_pdf` make: `text/html; charset=utf-8`, body starting `<!doctype html`, not
+  `%PDF-`. There is no PDF renderer on Workers. A caller who needs real PDF bytes runs the
+  server over stdio, where the 200-deposit statement is a multi-page A4 with running
+  headers; here it is one long HTML page, with no logo and no per-page footer.
+- deposits is charged the default 512 KB tenant cap and the invoice files it hydrates count
+  against it - the `/mcp/quotes` and `/mcp/billing-docs` limitation.
+- The free tier counts five deposits RECORDED per calendar month; applying, refunding,
+  listing, balances and the text statement are free and unlimited on every tier, because
+  money already held has to be able to leave the book. The probes ran on a Pro key, so the
+  hosted cap refusal is asserted only by the stdio suite, as are the concurrency rows.
+- Two locks are taken per `deposit_apply` (deposits, then invoice) and both are the
+  `withFileLock` no-op here: one request is one isolate with one in-memory filesystem, so
+  the ordering that matters over stdio is inert. Concurrent requests on one token remain
+  last-write-wins on the tenant document, unchanged since Extension 1.
+- `deposit_statement_text`'s download name is the client slug and the currency, so two
+  statements for the same client in one hour reuse the name on different links. Each link
+  carries its own body; nothing is overwritten.
+- `invoice business_set`'s success message lists the servers that read the shared profile
+  and does not yet name deposits. That string lives in `servers/invoice/src/index.ts`,
+  outside this unit's write scope.
