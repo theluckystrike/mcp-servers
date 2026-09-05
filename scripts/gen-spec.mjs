@@ -24,9 +24,9 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "bank-statement", "billing-docs", "calendar", "clauses", "currency", "docx", "expense-tracker",
-  "image", "invoice", "kanban", "pdf", "price-tracker", "recurring", "resume",
-  "spreadsheet", "time-tracker", "timezone",
+  "bank-statement", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
+  "expense-tracker", "image", "invoice", "kanban", "pdf", "price-tracker", "recurring",
+  "resume", "spreadsheet", "time-tracker", "timezone",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -46,6 +46,30 @@ const COMMON_INVARIANTS = [
  * common list. `caps` documents the enforced limits that a contract test can assert.
  */
 const CURATED = {
+  "deposits": {
+    summary: "Security and retainer deposits per client: record what was received, apply part or all of it to an invoice in the invoice server's store as a payment on that invoice, refund the rest, and answer what is still held per client and per currency.",
+    storageFiles: [
+      ["deposits.json", "deposits, with the applications and refunds on each"],
+      ["counter.json", "the DEP number series, per year"],
+    ],
+    primaryFile: "deposits.json",
+    caps: [
+      "`FREE_DEPOSITS_PER_MONTH` = 5 deposits recorded per calendar month on free, counted by received date. Applying, refunding, listing, balances and the text statement are free and unlimited on every tier.",
+      "`deposit_statement_pdf` and `deposits_report` are Pro. The refusal is an answer, not a protocol error, and no file is written.",
+      "`MAX_MINOR` = 1e12 per amount field. Amounts are whole minor units; a decimal is refused at the schema.",
+      "`MAX_ROWS` = 2000 deposit rows returned by one `deposit_list` answer.",
+    ],
+    extra: [
+      "A deposit pays out at most what it still holds: received less everything already applied to an invoice and everything already refunded. The check and the write are one critical section under both locks.",
+      "`deposit_apply` never applies more than the invoice's own open balance (`total_minor - paid_minor`), so an invoice cannot be shown overpaid and the difference owed back twice.",
+      "The payment is written onto the invoice record exactly as the invoice server's `invoice_mark_paid` writes one -- `paid_minor`, `paid_date`, `status` -- because the engine exports no `recordPayment`. The one deliberate difference: `invoice_mark_paid` SETS `paid_minor` from the amount it is given, `deposit_apply` ADDS to it, so a deposit applied after a part payment does not erase that payment.",
+      "A deposit is applied at its own currency and never converted: a deposit and an invoice in different currencies is refused by name.",
+      "The stored `status` is derived from the movements every time one is written, never taken from the caller: `held` while anything is still held, otherwise `applied` if any of it went to an invoice and `refunded` if it all went back.",
+      "One statement is in one currency. A client holding two currencies is asked which, rather than having the two added up.",
+      "Money and currency decimals come from `@theluckystrike/mcp-invoice/lib` and the A4 page from `@theluckystrike/mcp-billing-docs/lib` (`renderDocPdf`). This server holds no copy of either.",
+      "Locks are always taken deposits first, then invoice, the same order servers/billing-docs, servers/quotes and servers/recurring use, so no two processes in this repo can deadlock.",
+    ],
+  },
   "billing-docs": {
     summary: "Credit notes against the invoices in the invoice server's store and purchase orders to suppliers: negative line totals in minor units, the invoice's own VAT rates reused, an A4 PDF and a pasteable text version.",
     storageFiles: [
