@@ -419,6 +419,16 @@
       "free": "5 documents per calendar month, credit notes and purchase orders together, counted by issue date, with full, partial and per-line credit notes, VAT, multiple currencies and receiving orders all included, and both text exports never metered.",
       "pro": "Unlimited documents, both A4 PDFs with your logo and no footer credit, and the billing_docs_report of credited, on-order and overdue deliveries.",
       "storage": "~/.local/share/mcp-servers/billing-docs/"
+    },
+    "deposits": {
+      "title": "MCP Deposits",
+      "tagline": "Security and retainer deposits, held per client, on the same engine as your invoices.",
+      "does": "Records a security or retainer deposit when the money arrives, in minor units and in the currency it arrived in, and then answers for it: what is held per client and per currency, since when, and what has already gone. Applying a deposit to an invoice writes the payment onto that invoice under both locks, adding to what was already paid rather than replacing it, so a bank transfer that landed first is not erased; it can never pay out more than the deposit still holds or more than the invoice still owes, and a deposit is never converted between currencies. Refunds hand money back without touching the invoice, the stored status is derived from the movements every time one is written, and the statement is one client in one currency, as text or as an A4 PDF that matches the invoice and credit note next to it.",
+      "for": "Anyone who takes money before the work: landlords and letting agents on security deposits, agencies and consultants on retainers, trades on up-front payments.",
+      "example": "\"Record a 500 euro security deposit from Nordic Print, received today.\" ... \"Apply 300 of that deposit to INV-2026-0001.\" ... \"How much are we holding for Nordic Print?\" ... \"Refund the rest, paid back by bank transfer.\"",
+      "free": "5 deposits recorded per calendar month, counted by received date, with applying to invoices, refunds, lists, balances and the text statement all unlimited on every tier: a cap that trapped a client's deposit would be a limit on their money rather than on yours.",
+      "pro": "Unlimited deposits recorded, the A4 deposit statement PDF with your logo and no footer credit, and the deposits_report of held per currency, oldest held and what has sat unapplied.",
+      "storage": "~/.local/share/mcp-servers/deposits/"
     }
   },
   "version": "0.1.1",
@@ -467,6 +477,24 @@
       ],
       "note": "Searched the official MCP registry search API for each token; nothing found writes a credit note against an invoice or raises a purchase order (credit = credit-scoring and API-credit meters; purchase order = e-commerce order lookups; procurement = RFP text search). Per docs/INTEL_R9_RESULT.md the registry returns 0 results for the credit-note and purchase-order tokens. See docs/DIST_R13_RESULT.md.",
       "guide": "credit-notes-and-purchase-orders-from-chat",
+      "ttl_days": 30
+    },
+    "deposits": {
+      "date": "2026-09-05",
+      "tokens": [
+        "deposit",
+        "deposits",
+        "retainer",
+        "security deposit",
+        "escrow",
+        "client funds",
+        "trust account",
+        "damage deposit",
+        "advance payment",
+        "held funds"
+      ],
+      "note": "Searched the official MCP registry search API for each token on 2026-09-05; nothing found holds a client's money on a ledger and applies it to an invoice. deposit, deposits, security deposit, client funds and trust account return 0 results each. retainer returns 12 rows that are all one server, io.github.theluckystrike/retainer, which is this estate's own mcp-recurring (recurring retainer BILLING, a schedule that raises invoices, not money held). escrow returns 10 rows, all agent-to-agent crypto settlement on Base, Robinhood Chain or USDC (0xdirectping/escrow, jdhart81/agent-escrow, kustodia-escrow, hive-mcp-escrow, Evozim's cross-chain bridge readers), which hold tokens between two agents rather than a client deposit against an invoice. Nothing to compare against honestly. See docs/DIST_R14_RESULT.md.",
+      "guide": "client-deposits-and-retainers-from-chat",
       "ttl_days": 30
     }
   }

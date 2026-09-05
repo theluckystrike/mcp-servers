@@ -25,6 +25,7 @@ export const PRODUCTS = {
   barcode: { desc: "QR codes and barcodes from chat: SEPA payment QR for an invoice, vCard, WiFi, Code128, EAN-13 and UPC-A as SVG or PNG.", free: "Free: 20 codes a month, SVG.", pro: "Pro: unlimited codes, PNG at any size, batch.", name: "MCP Barcode Pro", price: "price_1UBoNQJKCamubEm1X6CTBLdP", usd: 19, pkg: "@theluckystrike/mcp-barcode", bin: "mcp-barcode", payload: "barcode" },
   zip: { desc: "Create, inspect and extract zip archives safely from chat: bomb and traversal guards decided from the central directory, CRC checked per entry, bundle a month of invoices and exports.", free: "Free: archives to 25 MB and 200 entries, 20 archives a month.", pro: "Pro: unlimited size, entries and archives.", name: "MCP Zip Pro", price: "price_1UBqGgJKCamubEm1SoQ76sXZ", usd: 19, pkg: "@theluckystrike/mcp-zip", bin: "mcp-zip", payload: "zip" },
   "billing-docs": { desc: "Credit notes and purchase orders on the same engine as your invoices: the VAT unwound at the rate you charged, and never more credited than the invoice billed.", free: "Free: 5 documents a calendar month, credit notes and purchase orders together, plus unlimited text exports.", pro: "Pro: unlimited documents, both PDFs, your logo, and the credited and on-order report.", name: "MCP Billing Docs Pro", price: "price_1UCCo9JKCamubEm1TyBUQdzO", usd: 19, pkg: "@theluckystrike/mcp-billing-docs", bin: "mcp-billing-docs", payload: "billing-docs" },
+  deposits: { desc: "Security and retainer deposits held per client, applied to invoices as a real payment that adds to what was already paid rather than replacing it.", free: "Free: 5 deposits recorded a calendar month, plus unlimited applying, refunds, balances and text statements.", pro: "Pro: unlimited deposits recorded, the A4 statement PDF with your logo, and the held and unapplied report.", name: "MCP Deposits Pro", price: "price_1UCEbNJKCamubEm1kOnmQOiE", usd: 19, pkg: "@theluckystrike/mcp-deposits", bin: "mcp-deposits", payload: "deposits" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
@@ -281,6 +282,7 @@ const FREE_FIVE_WORDS = {
   barcode: "Twenty codes a month, every symbology",
   zip: "Twenty archives a month, unlimited reading",
   "billing-docs": "Five documents a month, unlimited text",
+  deposits: "Five deposits a month, unlimited applying",
 };
 
 const BUNDLE_DESCRIPTION =

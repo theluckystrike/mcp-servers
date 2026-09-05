@@ -2103,6 +2103,110 @@ ${FOOT}`,
     ],
   },
 
+  "client-deposits-and-retainers-from-chat": {
+    title: "Client deposits and retainers from chat, applied to your real invoices",
+    description: "Record a security deposit or retainer when the money arrives, apply it to an invoice as a real payment, refund what is left, and answer how much of theirs you hold. Why applying a deposit through the invoice server's own mark-paid tool silently erases the payment that came before.",
+    html: `<h1>Client deposits and retainers from chat, applied to your real invoices</h1>
+<p>A deposit is the client's money sitting on your account. A landlord holds one against damage, an agency
+takes one before it starts, a trade asks for half up front. It is not revenue and it is not a payment on an
+invoice until you make it one, and in between somebody has to be able to answer a plain question: how much
+of theirs are you holding, in which currency, and since when. The MCP Deposits server answers that against
+the invoices and clients the <a href="/s/invoice">MCP Invoice</a> server already holds, on your machine,
+with no network call anywhere in it.</p>
+
+<h2>Install it beside the invoice server</h2>
+<pre><code>claude mcp add invoice -- npx -y @theluckystrike/mcp-invoice
+claude mcp add deposits -- npx -y @theluckystrike/mcp-deposits</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "invoice": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-invoice"] },
+    "deposits": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-deposits"] }
+  }
+}</code></pre>
+<p>Both read one data directory and one business profile, so your name, address, VAT id and default currency
+are set once. Deposits holds no copy of the money, currency or client code: it imports
+<code>currencyDecimals</code>, <code>formatMoney</code>, <code>findClient</code>, <code>getInvoices</code>
+and <code>setInvoices</code> from the invoice engine, and the A4 page from
+<a href="/s/billing-docs">MCP Billing Docs</a>, which is why a deposit statement agrees with the invoice and
+the credit note beside it to the minor unit.</p>
+
+<h2>The measured thing: routing a deposit through invoice_mark_paid erases the payment before it</h2>
+<p>The invoice server exports no payment function. Its own <code>invoice_mark_paid</code> tool sets three
+fields under the invoice lock, and the important word is <em>sets</em>. Measured against
+<code>servers/invoice/dist/index.js</code> on a EUR 1,000.00 invoice:</p>
+<pre><code>invoice_mark_paid { invoice: "INV-2026-0001", amount: 200 }   -&gt; "balance due EUR 800.00"
+invoice_mark_paid { invoice: "INV-2026-0001", amount: 300 }   -&gt; "balance due EUR 700.00"
+paid_minor: 30000</code></pre>
+<p>The EUR 200.00 bank transfer that actually arrived is gone from the record. Nothing errors and nothing
+warns; the only visible trace is a number that is EUR 200.00 too high, on the line the client gets chased
+for. That is the correct behaviour for the tool it is, a human correcting a total they can see, and the
+wrong behaviour for a deposit being applied on top of money that came in separately.</p>
+<p><code>deposit_apply</code> writes the same three fields on the same record, under the same lock, because
+there is no <code>recordPayment</code> to call. It adds to <code>paid_minor</code> instead of assigning it,
+so the same two payments leave <code>paid_minor</code> at <code>50000</code> and EUR 500.00 due. That
+difference is asserted in the server's own test suite, in a case named "a second application ADDS to
+paid_minor, it does not replace it".</p>
+<p>The general form is worth carrying to any two servers that share a store: matching field names is not the
+contract. The arithmetic on those fields is, and it is only visible by reading the owning server's write
+path. A review that checked the schema would have passed the version that assigns.</p>
+
+<h2>What you say, and which tool runs</h2>
+<table>
+<tr><th>What you say</th><th>Tool</th></tr>
+<tr><td>Record a 500 euro security deposit from Nordic Print, received today.</td><td><code>deposit_record</code></td></tr>
+<tr><td>Apply 300 of that deposit to INV-2026-0001.</td><td><code>deposit_apply</code></td></tr>
+<tr><td>How much are we holding for Nordic Print, and since when?</td><td><code>deposit_balance</code></td></tr>
+<tr><td>Refund the rest, sent back by bank transfer.</td><td><code>deposit_refund</code></td></tr>
+<tr><td>Send them a statement of their deposit.</td><td><code>deposit_statement_text</code></td></tr>
+<tr><td>What has sat unapplied for more than ninety days?</td><td><code>deposits_report</code></td></tr>
+</table>
+
+<h2>A deposit pays out at most what it still holds</h2>
+<p>Held is received, less everything already applied, less everything already refunded. Every application is
+also capped by the invoice's own open balance, <code>total_minor - paid_minor</code>. Both checks and the
+write happen in one critical section under both locks, deposits first and then invoice, the same order the
+quotes, recurring and billing-docs servers take, so no two processes in this estate can deadlock and no two
+can each see room and both take it. Ten concurrent EUR 200.00 applications against a EUR 500.00 deposit
+store exactly two and refuse exactly eight.</p>
+<p>The refusals name the number rather than the rule. Applying EUR 200.00 when EUR 100.00 is left says so;
+applying EUR 200.00 to an invoice that owes EUR 100.00 says the application "would show the invoice overpaid
+and leave the difference owed to the client twice"; and a EUR deposit against a USD invoice is refused with
+both currencies named and the way out, which is to refund it and record it again in the invoice's currency.
+There is no exchange rate anywhere in this server, so there is no rate to be silently wrong.</p>
+
+<h2>A refund is not a payment</h2>
+<p><code>deposit_refund</code> does not touch the invoice server at all. Giving a client their own money back
+is not the settlement of a bill, and writing it as one would show an invoice paid that nobody paid. The
+refund is a movement on the deposit, and the invoice stays exactly as it was.</p>
+<p>For the same reason the stored <code>status</code> is derived from the movement list every time a movement
+is written, never taken from the caller: <code>held</code> while anything is still held, otherwise
+<code>applied</code> if any of it went to an invoice and <code>refunded</code> if all of it went back. A
+stored status that is allowed to drift from the movements is how a deposit comes to look returned while the
+money is still on your books.</p>
+
+<h2>One statement, one currency</h2>
+<p>A client holding EUR and USD has two balances, and adding them would be a made-up number. So
+<code>deposit_balance</code> returns one row per currency and never a total across them, and
+<code>deposit_statement_text</code> asks which currency you mean, naming both, rather than guessing.</p>
+
+<h2>Free and Pro</h2>
+<p>Free records 5 deposits a calendar month, counted by the date the money arrived. Applying to invoices,
+refunds, lists, balances and the text statement are unlimited on every tier, deliberately: a cap that
+trapped a client's deposit would be a limit on their money rather than on yours. Pro
+(<a href="/buy/deposits">$19 one-time</a>, or <a href="/bundle">$39 for the bundle</a>) removes the recording
+cap and adds the A4 statement PDF with your logo and the held, oldest-held and unapplied report.</p>`,
+    faq: [
+      { q: "Does applying a deposit actually change the invoice?", a: "Yes. deposit_apply writes paid_minor, paid_date and status onto the invoice record through the invoice engine's own store, under the invoice lock, so invoice_list and overdue_report stop chasing money you already hold. The one difference from invoice_mark_paid is that it adds to paid_minor rather than setting it, so a payment that arrived earlier is not erased." },
+      { q: "Can a deposit in one currency pay an invoice in another?", a: "No, and it is refused by name rather than converted. The message gives both currencies and the way out: refund the deposit and record it again in the invoice's currency. There is no exchange rate anywhere in this server, so there is no rate that can be silently wrong." },
+      { q: "What stops a deposit being applied twice?", a: "Held is received less applied less refunded, and the check and the write are one critical section under both locks. Ten concurrent applications of EUR 200.00 against a EUR 500.00 deposit store exactly two and refuse the other eight; the invoice ends at EUR 400.00 paid, never more than was held." },
+      { q: "Is a refund recorded on the invoice?", a: "No. Giving a client their own money back is not a payment of a bill, so deposit_refund leaves the invoice untouched. It is a movement on the deposit, and it changes the deposit's derived status once nothing is left held." },
+      { q: "What does the free tier actually limit?", a: "Only deposit_record, at 5 a calendar month by received date. Applying, refunding, listing, balances and the text statement are unlimited on every tier. A deposit received in a different month is not blocked by this month's five. The statement PDF and deposits_report are Pro." },
+      { q: "Where is the data kept?", a: "Plain JSON under ~/.local/share/mcp-servers/deposits/, or $XDG_DATA_HOME if you set it, with the invoices in the invoice server's own directory beside it. Writes are atomic and locked. A corrupt file is moved aside byte-for-byte rather than overwritten, and no fresh file is silently written in its place." },
+    ],
+  },
+
   "credit-notes-and-purchase-orders-from-chat": {
     title: "Credit notes and purchase orders from chat, against your real invoices",
     description: "Reverse an invoice in full, by amount or by line, with the VAT unwound at the rates it actually charged, and raise and receive supplier purchase orders. Why a single-rate credit note on a mixed-VAT invoice is wrong by 22.6 percent.",

@@ -146,7 +146,7 @@ export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
  * twenty child processes and has no single connector URL. */
-const WEB_EXCLUDED = ["office-suite"];
+const WEB_EXCLUDED = ["office-suite", "deposits"];
 export function serversFor(clientId) {
   return clientId === "claude-web" ? SERVER_ORDER.filter((id) => !WEB_EXCLUDED.includes(id)) : SERVER_ORDER;
 }
@@ -513,6 +513,24 @@ export const SETUP_SERVERS = {
     pro: "Unlimited documents, both A4 PDFs with your logo and no footer credit, and the credited, on-order and overdue-delivery report.",
     measured: "Crediting ten percent of a mixed-VAT invoice at a single rate and splitting it across the invoice's own rates give the same gross, EUR 177.00, and VAT lines that differ by EUR 6.10, 22.6 percent. The client's document and the payment are identical either way, so nothing downstream ever surfaces the error; only the VAT return does. The split is done at the point the document is written.",
   },
+  deposits: {
+    title: "MCP Deposits",
+    slug: "deposits",
+    toolCount: "10 tools",
+    pkg: "@theluckystrike/mcp-deposits",
+    sPage: "/s/deposits",
+    hosted: null,
+    tagline: "Security and retainer deposits held per client, applied to the invoices the invoice server already holds.",
+    does: "It records a deposit when the money arrives, in minor units and in the currency it arrived in, then answers for it: what is held per client and per currency, since when, and what has already gone. Applying a deposit to an invoice writes the payment onto that invoice under both locks, adding to what was already paid rather than replacing it, and it can never pay out more than the deposit still holds or more than the invoice still owes. Refunds hand the money back without touching the invoice, and the statement is one client in one currency, as text or as an A4 PDF that matches the invoice and credit note beside it.",
+    prompts: [
+      ["Record a 500 euro security deposit from Nordic Print, received today.", "deposit_record"],
+      ["Apply 300 of that deposit to INV-2026-0001.", "deposit_apply"],
+      ["How much are we holding for Nordic Print, and since when?", "deposit_balance"],
+    ],
+    free: "5 deposits recorded a calendar month, counted by received date. Applying to invoices, refunds, lists, balances and the text statement are unlimited on every tier: a cap that trapped a client's deposit would be a limit on their money rather than on yours.",
+    pro: "Unlimited deposits recorded, the A4 statement PDF with your logo and no footer credit, and the held, oldest-held and unapplied report.",
+    measured: "The invoice server's own invoice_mark_paid SETS the amount paid rather than adding to it: on a EUR 1,000.00 invoice, a EUR 200.00 bank transfer followed by a EUR 300.00 deposit leaves paid_minor at 30000 and the reply reads balance due EUR 700.00, with the EUR 200.00 that actually arrived gone from the record. deposit_apply writes the same three fields on the same record but adds, so the same two payments leave EUR 500.00 due.",
+  },
   zip: {
     title: "MCP Zip",
     slug: "zip",
@@ -699,6 +717,14 @@ const ANGLE = {
     vscode: "In agent mode the agent can raise the order and later receive it in part, and billing_docs_report is the read that tells it which deliveries are past their date, so chasing suppliers becomes a tool call rather than a spreadsheet somebody keeps.",
     windsurf: "Fourteen tools against Cascade's ceiling of 100, and this one is only useful with mcp-invoice enabled beside it, so budget the pair at roughly 30 tools when you decide what else fits.",
     cline: "credit_note_list, credit_note_get, purchase_order_list, purchase_order_get and billing_docs_report are reads and safe to auto-approve; keep credit_note_create, purchase_order_create and purchase_order_receive behind a click, since each writes a numbered document that spends one of the month's five free ones and burns an id that is never reused.",
+  },
+  deposits: {
+    "claude-desktop": "The invoice the deposit pays down was written by mcp-invoice in this same window, so \"apply 300 of Nordic Print's deposit to INV-2026-0001\" needs no invoice number looked up, and the PDF statement lands in the same Documents folder as the invoice and the credit note, in the same A4 layout.",
+    "claude-code": "Both servers read one XDG data directory per machine, so `claude mcp add deposits` beside `claude mcp add invoice` at any scope sees the same invoices, the same clients and the same business profile, and the five-deposit monthly allowance is counted once for the box rather than once per project.",
+    cursor: "The deposit and the invoice it settles are usually decided in the same chat as the work, so deposit_apply closes the loop without leaving the editor, and deposit_statement_text gives you the message to send the client without a second tool.",
+    vscode: "In agent mode deposit_balance and deposits_report are reads the agent can lean on before it decides anything: how much of theirs you hold, per currency, and what has sat unapplied for ninety days is the whole basis for \"who should we settle with first\".",
+    windsurf: "Ten tools against Cascade's ceiling of 100, and this one is only useful with mcp-invoice enabled beside it, so budget the pair at roughly 26 tools when you decide what else fits.",
+    cline: "deposit_list, deposit_balance, deposit_statement_text and deposits_report are reads and safe to auto-approve; keep deposit_record, deposit_apply and deposit_refund behind a click, since deposit_apply writes a payment onto an invoice in the other server and deposit_record spends one of the month's five free ones and burns a DEP id that is never reused.",
   },
   zip: {
     "claude-desktop": "This is the client where a zip somebody emailed you already sits in Downloads, so \"what's in this zip, is it safe to open\" is a question asked from the same window the file arrived in, and zip_list answers it without ever running the system Archive Utility on an archive you have not looked inside yet.",
