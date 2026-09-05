@@ -57,6 +57,7 @@ const CURATED = {
       "`FREE_PERIODS_PER_MONTH` = 3 DISTINCT periods a calendar month on free, counted per from, to and currency. Rebuilding a period already in the register is free forever, on every tier.",
       "`trial_balance` is free and unlimited on every tier, and so is `ledger_lines`: the question this server exists to answer is whether the books add up, and a free tier that hides the answer is a demo.",
       "`month_close`, `ledger_export_csv` and `ledger_report` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`ledger_export_csv` gates shape, not content: `ledger_lines` already returns every field, `bank_ref` included, free and unlimited. The export only lays the same fields out as RFC 4180 columns in a file.",
       "`MAX_ROWS` = 5000 lines returned by one `ledger_lines` answer.",
     ],
     extra: [

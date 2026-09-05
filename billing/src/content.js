@@ -2565,6 +2565,14 @@ change is visible.</p>
 first would be a coin toss written into a ledger, and two candidates for one bank line is exactly the case a
 human has to look at.</p>
 
+<p><code>ledger_lines</code> already returns every field <code>ledger_export_csv</code> does, <code>bank_ref</code>
+included, free and unlimited: the export just lays the same fields out as RFC 4180 columns in a file. A round
+of measured use (prompt 6 of <code>data/user_value_r29.json</code>) found a model take the Pro refusal on
+<code>ledger_export_csv</code> correctly, then hand-build a substitute CSV out of <code>ledger_lines</code> and
+drop <code>bank_ref</code> along the way, the one column this server exists to produce. The refusal text now
+says outright that <code>ledger_lines</code> already carries it, so the answer is to relay that tool's own
+output rather than reassemble one by hand.</p>
+
 <h2>Ask it</h2>
 <pre class="prompt"><code>Build the double-entry ledger for June and tell me whether the trial balance comes to zero.</code></pre>
 <pre class="prompt"><code>Show me every ledger line that hits receivables, with the invoice each one came from.</code></pre>

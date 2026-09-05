@@ -2447,8 +2447,8 @@ function patchCashBookIndex(src) {
     "      `bank reference and description.\\n\\nDownload (.csv, valid 1 hour): ${link}`);",
     "cash-book csv download");
   src = must(src,
-    "description: \"Return the period's ledger lines as RFC 4180 CSV, one row per leg with its date, entry, account, debit, credit, currency, source server, source id and description. No file is written. Pro.\",",
-    "description: \"Return the period's ledger lines as RFC 4180 CSV, one row per leg with its date, entry, account, debit, credit, currency, source server, source id and description, as a download link valid for one hour. Nothing is written into any book. Pro.\",",
+    "description: \"Return the period's ledger lines as RFC 4180 CSV, one row per leg including bank_ref. No file is written. Pro, but ledger_lines returns these same fields free and unlimited; this only lays them out as CSV columns.\",",
+    "description: \"Return the period's ledger lines as RFC 4180 CSV, one row per leg, as a download link valid for one hour. Pro, but ledger_lines returns these same fields free and unlimited; this only lays them out as CSV columns.\",",
     "cash-book csv description");
 
   // The register is a document per token, not a directory the caller can open.

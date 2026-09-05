@@ -168,9 +168,20 @@ async function register(led: Ledger, toolName: string): Promise<PeriodRecord> {
   });
 }
 
-function requirePro(feature: string, toolName: string): void {
-  if (!gate.isPro()) throw new Error(`${feature} is Pro. Nothing was written. ${gate.upgradeText(feature, toolName)}`);
+function requirePro(feature: string, toolName: string, note?: string): void {
+  if (!gate.isPro()) throw new Error(`${feature} is Pro. Nothing was written. ${note ? note + " " : ""}${gate.upgradeText(feature, toolName)}`);
 }
+
+/**
+ * ledger_lines already returns every leg free and unlimited, bank_ref included: round 29
+ * (data/user_value_r29.json, prompt 6) measured a model refused this tool correctly, then
+ * hand-built a substitute CSV from ledger_lines and dropped bank_ref anyway. The gate is on
+ * the CSV's shape, not on the bank evidence, so the refusal says that plainly.
+ */
+const LEDGER_EXPORT_CSV_NOTE =
+  "ledger_lines returns every leg free, including the bank_ref that evidences each cash line; " +
+  "the export only adds the RFC 4180 column layout and a file, not new data. Call ledger_lines and relay it " +
+  "rather than reassembling a CSV by hand: a hand-built copy is not this export's schema.";
 
 /* ------------------------------------------------------------------- server */
 
@@ -246,7 +257,7 @@ server.registerTool("trial_balance", {
 
 server.registerTool("ledger_lines", {
   title: "List ledger lines",
-  description: "List the ledger lines for a period, filtered by account, by source server or source document id, and by date. Each line carries its debit and its credit in minor units and the bank row that evidences it.",
+  description: "List the ledger lines for a period, filtered by account, source server or document id, and date. Each line carries its debit, credit and bank_ref, the same field the Pro CSV lays out as a column. Free and unlimited.",
   inputSchema: {
     from: fromArg, to: toArg, currency: currencyArg,
     account: str("account", MAX_NAME).optional().describe('Only this account, e.g. cash, receivables, vat_output, or a category prefix such as "expenses"'),
@@ -343,7 +354,7 @@ server.registerTool("month_close", {
 
 server.registerTool("ledger_export_csv", {
   title: "Export the ledger as CSV",
-  description: "Return the period's ledger lines as RFC 4180 CSV, one row per leg with its date, entry, account, debit, credit, currency, source server, source id and description, as a download link valid for one hour. Nothing is written into any book. Pro.",
+  description: "Return the period's ledger lines as RFC 4180 CSV, one row per leg, as a download link valid for one hour. Pro, but ledger_lines returns these same fields free and unlimited; this only lays them out as CSV columns.",
   inputSchema: {
     from: fromArg, to: toArg, currency: currencyArg,
     account: str("account", MAX_NAME).optional().describe("Only this account or category prefix"),
@@ -351,7 +362,7 @@ server.registerTool("ledger_export_csv", {
   },
 }, async (a) => {
   try {
-    requirePro("ledger_export_csv", "ledger_export_csv");
+    requirePro("ledger_export_csv", "ledger_export_csv", LEDGER_EXPORT_CSV_NOTE);
     const { led } = derive(a.from, a.to, a.currency);
     const rows = filterLines(led, { account: a.account, source: a.source });
     const csv = toCsv(rows);

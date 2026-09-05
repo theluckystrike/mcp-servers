@@ -56,6 +56,8 @@ Accounts: `cash`, `receivables`, `revenue`, `vat_output`, `vat_input`, `expenses
 
 The trial balance is free because it is the only question this server exists to answer. A bookkeeper who cannot check that the books add up has no reason to trust anything else here.
 
+`ledger_lines` already returns every field `ledger_export_csv` does, `bank_ref` included: the export is a formatting convenience, an RFC 4180 file with those same fields as columns, not new data. Round 29 (`data/user_value_r29.json`, prompt 6) measured a model take the Pro refusal on `ledger_export_csv` correctly, then hand-build a substitute CSV from `ledger_lines` and drop `bank_ref` anyway. The gate text now says this plainly, so a client relays `ledger_lines` instead of reassembling one.
+
 Get Pro: https://mcp.zovo.one/buy/cash-book (one-time, lifetime, verified offline).
 
 ## The measured insight
