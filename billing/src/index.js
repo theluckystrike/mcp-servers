@@ -189,7 +189,7 @@ function home() {
   }).join("\n");
   const rows = Object.entries(PRODUCTS).map(([id, p]) =>
     `<tr><td><strong>${p.pkg ? `<a href="/s/${esc(id)}">${esc(p.name)}</a>` : esc(p.name)}</strong><br>${esc(p.desc)}<br><span class="muted">${esc(p.free)} ${esc(p.pro)}</span>${p.pkg ? `<br><span class="muted">Install: <code>npx -y ${esc(p.pkg)}</code> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}#readme">docs</a></span>` : ""}</td>
-<td>$${p.usd}</td><td><a class="buy" href="/buy/${id}?src=store.home">Buy</a></td></tr>`).join("\n");
+<td>$${p.usd}</td><td><a class="buy" href="/buy/${id}?src=store.home.table.${id}">Buy</a></td></tr>`).join("\n");
   const ld = [
     {
       "@context": "https://schema.org",
