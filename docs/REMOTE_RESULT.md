@@ -3345,3 +3345,254 @@ month, the no-`vat_rate` `expense_add` payload, and a gain of 82500 against an N
 - `invoice business_set`'s success message lists the servers that read the shared profile
   and names neither per-diem nor asset-register. That string lives in
   `servers/invoice/src/index.ts`, outside this unit's write scope.
+
+# Extension 15 2026-09-05 - statement-of-account
+
+status: DONE
+
+A twenty-fourth endpoint, `POST /mcp/statement-of-account`. Worker `mcp-remote`, version ID
+`586c564e-ac9f-4975-a358-a9f3241f7008`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-four.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/statement-of-account | 8 | reads THREE sibling stores and writes none of them: the invoice ledger, the billing-docs credit notes and the deposits, all hydrated READ-ONLY by declaration. The statement, the dunning letter and the A4 statement all come back as one-hour download links |
+
+### The finding: `sharedDoc` was one document, and read-only was a habit
+
+`ServerCfg.sharedDoc` was `{ server, owns }`, a single sibling document, because every
+endpoint that had ever needed one needed exactly one: `/mcp/recurring`, `/mcp/quotes`,
+`/mcp/billing-docs` and `/mcp/deposits` all hydrate the invoice store, `/mcp/bank-statement`
+hydrates the expense ledger and `/mcp/expense-tracker` hydrates the bank ledger. A statement
+of account needs three at once, so the field became `SharedDoc | SharedDoc[]` with a
+`sharedDocs(cfg)` normaliser, and every existing server kept its single-object form
+untouched: the list is read in three places (the hydration loop, `ownPaths`, and the flush)
+and nowhere else.
+
+The second half of the change is the one worth recording. `/mcp/bank-statement`'s and
+`/mcp/expense-tracker`'s hydrations are described in their own comments as "read-only in
+practice": the handler never writes a path under the sibling's root, so the flush finds the
+document byte-identical to what it hydrated and writes nothing. That is a property of the
+HANDLER, re-derived every time somebody edits it. `SharedDoc` now takes `readOnly`, and a
+read-only share is hydrated and never flushed - no before-image is taken and `flush` is not
+called for it at all - so the guarantee is a property of the ENDPOINT. It is the right shape
+for this server specifically: `servers/statement-of-account` writes into no book it reports
+on, its stdio contract suite asserts the bytes AND the mtimes of five sibling files across
+all six tools, and the hosted copy should not have to be re-read to know the same thing. The
+three read-write shares were deliberately left as they are: `deposit_apply` MUST write the
+invoice, and turning that flush into an opt-in would have been the same class of silent
+failure the flag exists to prevent.
+
+### Vendoring: six files, four sibling engines, and the assertion that was index-only
+
+`SERVERS["statement-of-account"]` is `index.ts, version.ts, lib.ts, sources.ts,
+statement.ts, store.ts`. Every source file, `lib.ts` included, for the reason deposits' and
+per-diem's are: it is this engine as a public API.
+
+It consumes four sibling engines, one more than `/mcp/deposits`:
+`@theluckystrike/mcp-invoice/lib` (the money, the client list, the invoice ledger and
+`readJsonFile`), `@theluckystrike/mcp-billing-docs/lib` (the credit note store AND
+`renderDocPdf`, which the vendored `billing-docs/lib.ts` re-exports from
+`../../shims/pdf.js` rather than from the pdfkit module that is deliberately not vendored),
+`@theluckystrike/mcp-deposits/lib` (the deposit store and its movement ledger) and
+`@theluckystrike/mcp-quotes/lib` (`today`, `isIsoDate`). Extension 11's name-level assertion
+- every `@theluckystrike/mcp-<x>/lib` import must have `x`'s `lib.ts` in `SERVERS` - covered
+all four unchanged, because Extension 13 had already widened it to scan every file a server
+vendors rather than `index.ts` alone.
+
+The byte-level check needed the same widening, and this is the extension that proves why.
+Extension 12 added a one-off pair of lines: `deposits/index.ts` must import
+`../billing-docs/lib.js`. Written the same way here it would have PASSED a build that could
+not resolve the deposit engine, because `statement-of-account/index.ts` never imports
+`@theluckystrike/mcp-deposits/lib` at all - `sources.ts` and `statement.ts` do. So the
+one-off became a table:
+
+```
+const LIB_RESOLUTIONS = {
+  deposits:                ["billing-docs"],
+  "statement-of-account":  ["invoice", "billing-docs", "deposits"],
+};
+```
+
+checked against the concatenated bytes of every file the server vendored, after the build.
+The `renderDocPdf` re-export check stays beside it, because this endpoint's PDF is two hops
+long exactly as `/mcp/deposits`' is: `@theluckystrike/mcp-billing-docs/lib` ->
+`../billing-docs/lib.js` -> `../../shims/pdf.js`.
+
+### Names, not paths; downloads, not files
+
+- `expandPath` is the quotes, billing-docs and deposits rewrite verbatim: `out_path` is not
+  a path, it is a bare 1-64 character name deciding only what the downloaded file is called
+  (default: the client, the currency and the period). `statement_pdf` computes the name
+  first and lets the renderer return the link, so the response field is `download`, not
+  `path`, and `document` states plainly that this is an HTML document in the A4
+  print-to-PDF layout. The stdio server's own `/\.html?$/` test on the output path would
+  have called it "PDF statement of account" once the path became a URL - the D-R8 species
+  for the fourth time, caught the same way.
+- `statement_text` AND `dunning_text` still return the pasteable text inline, because that
+  is what the tools are for, and additionally write it under `/out/` and publish it. The
+  chaser is the document here most likely to be sent on as a file rather than pasted, so it
+  gets a link too. `publish` is only `p.startsWith("/out/")`, with `strip: ["/out/"]` and no
+  `persistPublished`: an export is a fresh download every time. One `slugOf` helper names
+  both files, rather than the two different inline slug expressions the stdio code had.
+- Three response strings named a machine no caller has, all three the D-R60 species:
+  `dunning_text`'s "Run business_set {iban, bank} in the invoice server (mcp-invoice)" and
+  `sources.ts`'s `NO_BUSINESS_NOTE` now name the token's own
+  `https://mcp.zovo.one/mcp/invoice` endpoint, and `statement.ts`'s "There are no invoices,
+  credit notes or deposits on this machine yet" now names the three endpoints the token's
+  own books live on and the two calls that fill the first one.
+
+Caps and hardening are unchanged: the default 512 KB tenant document (the three hydrated
+sibling documents count against it, the `/mcp/quotes` limitation, and here there are three
+of them), the 256 KB request body, the JSON-RPC batch rejection, the free/Pro rate limits,
+the 1-hour download TTL and the 35-day orphan sweep.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP).
+One POST per call, one token throughout, and the four endpoints below are four URLs over
+the same tenant.
+
+```
+$ GET /mcp
+  24 endpoints: ..., per-diem, asset-register, statement-of-account
+$ GET /mcp/connect                       -> 24 rows, /mcp/statement-of-account/t/<token> listed
+
+$ statement-of-account tools/list
+  8 tools: statement_build, statement_aging, statement_text, statement_pdf,
+  dunning_text, statements_report, license_status, license_activate
+
+$ invoice business_set {name: "Probe Studio", vat_id: "PL1234567890",
+                        default_currency: "EUR", default_tax_rate: 23,
+                        iban: "DE89370400440532013000", bank: "Probe Bank SA"}
+$ invoice client_add {name: "Live Probe ...", address: "1 Probe Street, Warsaw"}
+  Added client Live Probe ... (6b9fb08d)
+$ invoice invoice_create {client: "Live Probe ...", currency: "EUR",
+      issue_date: "2026-06-05", due_days: 10,
+      items: [10 x Consulting @ 100, tax_rate 0]}          -> INV-2026-0001, EUR 1000.00
+$ invoice invoice_mark_paid {number: "INV-2026-0001", amount: 400,
+                             paid_date: "2026-06-20", method: "bank transfer"}
+  marked partial, received EUR 400.00, balance due EUR 600.00
+
+$ billing-docs credit_note_create {invoice: "INV-2026-0001", amount_minor: 10000,
+                                   reason: "One day descoped"}
+  CN-2026-0001, EUR -100.00
+
+$ deposits deposit_record {client: "Live Probe ...", amount_minor: 25000, currency: "EUR",
+                           kind: "retainer", received_date: "2026-06-18"}   -> DEP-2026-0001
+$ deposits deposit_apply {id: "DEP-2026-0001", invoice: "INV-2026-0001", amount_minor: 15000}
+  applied EUR 150.00, deposit holds EUR 100.00
+
+$ statement-of-account statement_build {client: "Live Probe ...",
+      from: "2026-06-01", to: "2026-12-31", currency: "EUR"}
+  STMT-2026-0001
+  opening              EUR    0.00
+  invoices issued      EUR 1000.00       <- /mcp/invoice
+  payments received    EUR  550.00       <- 400.00 marked paid + 150.00 of deposit
+    of which deposits  EUR  150.00       <- /mcp/deposits
+  credit notes         EUR  100.00       <- /mcp/billing-docs
+  CLOSING BALANCE      EUR  350.00       = 1000.00 - 550.00 - 100.00
+  deposit still held   EUR  100.00       <- memo, never in the balance
+  movements: 4 rows, 2026-06-05 invoice, 2026-06-20 payment, 2026-09-05 credit note,
+             2026-09-05 deposit applied
+  sources: [invoice read 1 row, billing-docs credit notes read 1 row, deposits read 1 row]
+
+$ statement-of-account statement_aging {client: "...", currency: "EUR", as_of: "2026-06-30"}
+  INV-2026-0001  total 1000.00  paid 400.00  credited 0.00  open 600.00
+                 due 2026-06-15, 15 days late, bucket 0-30
+  buckets {0-30 EUR 600.00, 31-60 0, 61-90 0, over 90 0}, not_yet_due 0,
+  outstanding EUR 600.00, oldest_overdue INV-2026-0001
+                 <- the credit note and the deposit application are dated 2026-09-05, so on
+                    2026-06-30 neither has happened: aging is as at the date, both ways
+
+$ statement-of-account dunning_text {client: "...", level: 1, currency: "EUR",
+                                     as_of: "2026-06-30"}
+  "This is a friendly reminder that the invoices below are past their due date."
+    INV-2026-0001  issued 2026-06-05  due 2026-06-15   15 days late   EUR 600.00
+                                                       TOTAL OVERDUE  EUR 600.00
+  Payment details:
+    Bank:  Probe Bank SA
+    IBAN:  DE89370400440532013000     <- the shared profile business_set wrote on /mcp/invoice
+    VAT:   PL1234567890
+  ---
+  Download (.txt, valid 1 hour): https://mcp.zovo.one/mcp/download/...
+  "No late fee, interest or cost is stated: this server holds no contract terms ..."
+
+$ statement-of-account statement_text {client: "...", from: ..., to: ...}
+  the pasteable ledger, movements in date order, CLOSING BALANCE EUR 350.00,
+  the held-deposit memo, signed Probe Studio
+  ---
+  Download (.txt, valid 1 hour): https://mcp.zovo.one/mcp/download/...
+
+$ statement-of-account statement_pdf {client: "...", from: ..., to: ...,
+                                      out_path: "probe-statement"}
+  {"statement_id": "STMT-2026-0001",
+   "download": "https://mcp.zovo.one/mcp/download/2f0125ac...",
+   "document": "HTML statement of account, A4 print-to-PDF layout (there is no PDF renderer
+                on Workers), link valid 1 hour",
+   "closing_balance": "EUR 350.00"}
+  GET that URL -> 200, content-type text/html; charset=utf-8,
+  filename="probe-statement.html", 3,185 bytes,
+  <title>Statement of account STMT-2026-0001, <h1>STATEMENT OF ACCOUNT STMT-2026-0001,
+  CLIENT block, BALANCE OUTSTANDING block
+
+$ statement-of-account statements_report {}
+  as_of 2026-09-05, EUR outstanding 350.00, all of it overdue in 61-90,
+  oldest_overdue INV-2026-0001 82 days late, statements_built 1
+```
+
+`scripts/validate.mjs` gained `statement-of-account` to the tools/list sweep plus three real
+calls, and the first of them is the reason this endpoint exists: it seeds the whole worked
+example on THREE other endpoints in the same run (`client_add` -> `invoice_create` ->
+`invoice_mark_paid` on `/mcp/invoice`, `credit_note_create` on `/mcp/billing-docs`,
+`deposit_record` -> `deposit_apply` on `/mcp/deposits`) and then asserts every figure of
+`statement_build` on the arithmetic: 100000 invoiced, 55000 received of which 15000 is the
+deposit, 10000 credited, 35000 closing, 10000 still held, and all three `sources` rows
+reading true in the order the server states them. A closing balance that could be produced
+from one store would not have been worth a check. The second is `statement_aging` at
+2026-06-30, asserting the invoice open at 60000 and 15 days late with `credited_minor` zero,
+which is the as-at rule stated as a number: the naive rule reports 35000 there and nothing
+overdue. The third is `dunning_text` level 1 carrying the profile IBAN and the no-invented-fee
+sentence, beside `statement_pdf`'s download content type, `<title>`, `<h1>` and the client
+name in the body. The index assertion moved from 23 endpoints to 24:
+**remote 88/88, whole run 641/641.**
+
+### Limitations
+
+- **The download is HTML, not a PDF**, the same trade `invoice_pdf`, `quote_pdf`,
+  `credit_note_pdf` and `deposit_statement_pdf` make: `text/html; charset=utf-8`, body
+  starting `<!doctype html`, not `%PDF-`. There is no PDF renderer on Workers. A caller who
+  needs real PDF bytes runs the server over stdio, where a 200-movement statement is a
+  multi-page A4 with running headers; here it is one long HTML page, with no logo and no
+  per-page footer.
+- statement-of-account is charged the default 512 KB tenant cap and the THREE sibling
+  documents it hydrates count against it - the `/mcp/quotes` limitation, three times over. A
+  tenant with hundreds of invoices, credit notes and deposits will hit that before the free
+  statement cap, and the answer that names the cap will name this endpoint rather than the
+  one holding the bytes.
+- The free tier builds five distinct statements a calendar month, counted by client, period
+  and currency; `statement_aging` is free and unlimited, and a statement already in the
+  register rebuilds free in all three renderings. The probes ran on a Pro key, so the hosted
+  cap refusal and the Pro gates on `statement_pdf`, dunning level 3 and `statements_report`
+  are asserted only by the stdio suite, as are the concurrency and corrupt-store rows.
+- The corrupt-store behaviour cannot be reached through this endpoint at all. `readJsonFile`
+  quarantines a store that is not JSON, but a tenant document is written by this worker as
+  one JSON object and hydrated back into the shim filesystem, so a sibling store that is on
+  disk and unparseable - probes 29, 30 and 31 of docs/STATEMENT_RESULT.md, and the whole
+  reason the answer distinguishes `read: false` from `rows: 0` - is a local-install
+  condition. Hosted, a missing sibling reads as zero rows and says so, which is the common
+  case and the one the transcript exercises.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Concurrent requests on one token remain last-write-wins on the tenant
+  document, unchanged since Extension 1. The statement-id counter is written before the
+  record on each request, so a lost write burns an id rather than reusing one.
+- A read-only share is hydrated and never flushed, so a write into one of those three roots
+  inside a handler would be dropped silently rather than refused. That is the intended
+  behaviour for this server, which writes into no book it reports on, and it is why the flag
+  is opt-in per share rather than the default: the three read-write shares
+  (`/mcp/recurring`, `/mcp/quotes`, `/mcp/billing-docs`, `/mcp/deposits`) keep flushing.
+- `invoice business_set`'s success message lists the servers that read the shared profile.
+  It now names statement-of-account, but that string lives in `servers/invoice/src/index.ts`,
+  outside this unit's write scope; the profile itself is shared correctly, as the IBAN and
+  the bank name reaching the dunning letter above show.
