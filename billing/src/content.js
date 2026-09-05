@@ -2102,9 +2102,137 @@ ${FOOT}`,
       { q: "Is reading an archive limited on the free tier?", a: "No. zip_list, zip_extract and zip_extract_text are unlimited on both tiers. Only writing, zip_create and zip_add, counts against the free tier's 20 archives a month, 25 MB and 200 entries per archive." },
     ],
   },
+
+  "one-install-nineteen-servers-office-suite": {
+    title: "One install for all nineteen MCP servers: the office-suite bundle",
+    description: "One stdio server proxies all nineteen sibling servers as 186 tools in one tools/list. What it is, the .mcpb and the npx line, the two prefixed tool names, and the six-prompt cross-server audit that scored 13 of 18.",
+    html: `<h1>One install for all nineteen MCP servers: the office-suite bundle</h1>
+<p>Nineteen servers in this collection each do one job: time tracking, invoicing, quotes, expenses,
+spreadsheets, prices, currency, a Word proposal, contract clauses, a resume, PDF merges, an .ics
+calendar, a kanban board, image resize, bank CSV reconciliation, barcodes and SEPA payment QR codes,
+and safe zip archives. Adding all nineteen to a client one at a time is nineteen config entries,
+nineteen absolute paths, nineteen things to remember are running. <strong>office-suite</strong> is the
+same nineteen servers behind one config entry: it starts each one as its own child process over stdio,
+forwards every tool, resource and prompt call to whichever child owns the name, and merges their
+license state into one pair of tools, <code>license_status</code> and <code>license_activate</code>.
+Nothing is reimplemented. Each child keeps its own local JSON storage, exactly as it does standalone.</p>
+
+<h2>Install it</h2>
+<p>One command for Claude Code:</p>
+<pre><code>claude mcp add office-suite -- npx -y @theluckystrike/mcp-office-suite</code></pre>
+<p>Cursor, VS Code, Windsurf and Cline read the same shape of config. Add this block to the client's
+own MCP config file and restart it:</p>
+<pre><code>{
+  "mcpServers": {
+    "office-suite": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-office-suite"]
+    }
+  }
+}</code></pre>
+<p>Claude Desktop takes the same block in <code>claude_desktop_config.json</code>, or skips JSON
+entirely: <code>office-suite.mcpb</code> is a one-click bundle attached to
+<a href="https://github.com/theluckystrike/mcp-servers/releases/latest">the latest release</a>, and
+opening it shows an installation dialog. There is no account, no API key and no login step: every
+child runs locally over stdio and writes to its own folder under
+<code>~/.local/share/mcp-servers/&lt;name&gt;/</code>.</p>
+
+<h2>186 tools in one namespace, and the two names that collided</h2>
+<p>Read live off a built bundle: the nineteen children's own <code>tools/list</code> calls sum to 222
+tool names. Eighteen of them are the same <code>license_status</code> / <code>license_activate</code>
+pair repeated once per child, so the bundle collapses those 36 down to one pair, and 222 minus 36 is
+exactly 186, the number a client actually sees on its own <code>tools/list</code>. Out of 186
+names, exactly two needed disambiguating: invoice and docx both register a tool called
+<code>business_set</code>, so the bundle exposes both, prefixed with the server they came from,
+<code>invoice_business_set</code> and <code>docx_business_set</code>, and rewrites each child's own
+reply so a message that said "run business_set" says the name you can actually call. Every other tool
+keeps its bare name unchanged. Nineteen servers, and the bundle had to rename exactly one collision.</p>
+
+<h2>Six sentences that each need two or more children, measured</h2>
+<p>An audit ran the real Claude CLI against the built bundle with all 186 tools on an explicit
+allowlist, the CLI's own file and web tools denied, an empty working directory, and one running
+conversation. Six prompts, each written the way a person phrases a request, each needing two or more
+of the nineteen children in a single sentence. Quoted verbatim, with what happened:</p>
+<ol>
+<li><strong>"Log 3 hours today on Nova design and invoice them at EUR 90"</strong>: time-tracker
+plus invoice. The model checked for a client named Nova, found none, and asked before writing. Told to
+go ahead, it created the client, logged the entry, generated the invoice and marked the hours billed,
+unprompted: <code>INV-2026-0001</code>, EUR 270.00 plus 23% VAT is EUR 332.10, due in 14 days from the
+shared business profile. Scored 2 of 3 for the unnecessary question.</li>
+<li><strong>"Quote Acme 2 days consulting at PLN 1200, then make the payment QR for it"</strong>:
+quotes plus barcode. The quote came out right, PLN 2,952.00 with VAT. Then it stopped and explained,
+correctly, that the SEPA payment QR format is euro-only and a Polish-zloty invoice cannot carry one,
+offering an FX conversion or a plain data code instead of guessing. Scored 2 of 3: right answer, but a
+question rather than either alternative done.</li>
+<li><strong>"Import this bank CSV http://127.0.0.1:8794/bank.csv and tell me which subscriptions are
+not in my expense log"</strong>: bank-statement plus expense-tracker. The import tool treated
+the URL as a relative filesystem path and failed with a path that never existed on disk. Given a local
+path instead, it found the two subscriptions with no matching expense row, Notion EUR 10.00 and Slack
+EUR 8.75, EUR 18.75 untracked, exactly right. Scored 2 of 3 for the wasted turn. This URL-as-path
+defect is fixed; see below.</li>
+<li><strong>"Find a 45-minute slot with Ann in New York this week and export it as .ics"</strong>
+: timezone across contacts, slot-finding and calendar export. The instant produced was correct
+to the second, 09:30 to 10:15 America/New_York, translated from Warsaw with no timezone question
+asked. Scored 2 of 3 because the run day was a Saturday, the slot landed on the following Monday, and
+nothing in the answer said the week asked for had run out. Fixed; see below.</li>
+<li><strong>"Resize http://127.0.0.1:8794/logo.png to 512 px and put it on a PAID stamp on invoice
+INV-2026-0001's PDF"</strong>: image, invoice and pdf, three children in one sentence. All three
+tools ran correctly: a 512x512 PNG, a rendered invoice PDF, a PAID stamp at 45 degrees on a second
+copy. It also declined to pretend the logo was composited onto the stamp, since no tool does that, and
+said so rather than fabricating it.</li>
+<li><strong>"Zip this month's invoices and quotes"</strong>: zip, invoice and quotes. One tool
+call, <code>zip_bundle_month</code>, and it named the reason the quote PDF was missing from the
+archive: rendering a quote to PDF is a Pro feature and none had been rendered. Scored 3 of 3, the
+cleanest prompt of the six.</li>
+</ol>
+
+<h2>What the reach numbers actually say</h2>
+<p>Across the six prompts, 20 tool calls went to the bundle, and every single one landed in the
+correct child and the correct tool inside it: zero cross-child confusion, zero wrong-server picks.
+The "first tool called with no hint" reach was 5 of 6, 83%; the stricter "was the very first call the
+working tool" reading was 3 of 6, 50%, but all three misses were the same habit, reading an empty
+list of clients or contacts before writing to it, not a wrong pick. At 186 tools, 1.7x the 108 tools
+measured when this bundle held five children, tool selection did not get worse: 20 of 20 correct
+against 50 of 51 at the smaller count. The total score was 13 of 18 across six prompts, 226.5 seconds
+of wall clock.</p>
+<p>Three defects came out of the same round and are already fixed in the shipped server: a URL handed
+to a tool that expects a local file path used to be silently resolved against the server's own
+working directory and fail with a path that never existed; <code>find_meeting_slots</code> now always
+states the date range it searched and flags it by name when "this week" rolls into the following
+Monday; and an empty client or entry list now says which tool creates one automatically from the
+fact you already gave, instead of reading as a dead end that buys a confirmation question.</p>
+
+<h2>When to install single servers instead</h2>
+<p>The bundle is not always the right size. Windsurf's Cascade agent caps out at 100 tools across
+every enabled server, so 186 tools in one entry does not fit at all; installing only the two or three
+single servers you actually use, at 9 to 16 tools each, leaves room for the rest of that budget. The
+same logic applies anywhere the count matters more than the config-entry count: a project that only
+ever needs the time tracker and the invoice server gets the same free tier and the same tools either
+way, with fewer license checks and no fourteen dormant sibling processes started on every session.
+Ten of the nineteen children went untouched by this round's six sentences entirely, which is the
+concrete argument for installing single servers when you know in advance which two or three you will
+actually use, and the bundle when you do not, or when the client charges per config entry rather than
+per tool.</p>
+
+<h2>Free tier and Pro</h2>
+<p>Each child keeps its own free tier exactly as documented in its own guide; this bundle changes
+nothing about those limits, only how many config entries it takes to reach all of them. A single
+bundle Pro key, $39 once, lifetime, activates Pro on every child at once instead of buying each
+server's own $19 key separately; activation is all-or-nothing and prints a per-child OK/FAILED table
+so a bundle that is half Pro cannot look like a full success. Full detail on
+<a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "What exactly is office-suite?", a: "One MCP server, run over stdio, that starts all nineteen sibling servers as child processes and proxies their tools, resources and prompts under one connection. Each child stores its data exactly as it does standalone; the bundle adds no storage of its own." },
+      { q: "How many tools does it expose, and why not 222?", a: "186. The nineteen children's own tools/list calls sum to 222, but 18 of them are the same license_status/license_activate pair repeated once per child; the bundle collapses those 36 down to one pair, and 222 minus 36 is 186." },
+      { q: "Which tool names needed a prefix?", a: "Exactly two out of 186: invoice and docx both register business_set, so the bundle exposes invoice_business_set and docx_business_set and rewrites each child's own replies to match. Every other tool keeps its bare name." },
+      { q: "Does adding more children make tool selection worse?", a: "Not measured. A six-prompt audit needing two or more children per sentence put 20 of 20 tool calls in the correct child and the correct tool, against 50 of 51 at 108 tools with five children. Every remaining defect was a tool declining to say something it already knew, not a wrong pick." },
+      { q: "When should I install a single server instead of the whole bundle?", a: "When a client caps total tools, such as Windsurf's Cascade agent at 100, 186 tools does not fit in one entry at all. It is also the better choice when you already know you only need two or three of the nineteen: same free tier, fewer license checks, no dormant sibling processes started for children you never call." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes and safe zip archives.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, and the one-install office-suite bundle.",
 };

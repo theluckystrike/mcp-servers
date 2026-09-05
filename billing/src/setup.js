@@ -145,7 +145,7 @@ export const CLIENTS = {
 export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
- * five child processes and has no single connector URL. */
+ * nineteen child processes and has no single connector URL. */
 const WEB_EXCLUDED = ["office-suite"];
 export function serversFor(clientId) {
   return clientId === "claude-web" ? SERVER_ORDER.filter((id) => !WEB_EXCLUDED.includes(id)) : SERVER_ORDER;
@@ -354,20 +354,20 @@ export const SETUP_SERVERS = {
   "office-suite": {
     title: "MCP Office Suite",
     slug: "office-suite",
-    toolCount: "51 tools",
+    toolCount: "186 tools",
     pkg: "@theluckystrike/mcp-office-suite",
     sPage: null,
     hosted: null,
-    tagline: "One config entry that exposes every tool of the five servers.",
-    does: "It starts the time tracker, price tracker, spreadsheet, invoice and expense tracker as child processes and exposes every tool, resource and prompt under one server, with one license pair.",
+    tagline: "One config entry that exposes every tool of all nineteen servers.",
+    does: "It starts all nineteen sibling servers as child processes and exposes every tool, resource and prompt under one server, with one license pair. Only two of the 186 tool names collided and needed a server-name prefix: invoice_business_set and docx_business_set.",
     prompts: [
-      ["Start a timer for Acme.", "timer_start"],
-      ["Now invoice Acme for this week's hours and the rebillable expenses, 23% VAT, due in 14 days, PDF.", "six calls, entry_list through invoice_pdf"],
-      ["What did I spend this month and what is still unbilled?", "expense_list and entry_list"],
+      ["Log 3 hours today on Nova design and invoice them at EUR 90.", "entry_add then invoice_from_hours"],
+      ["Resize this logo to 512px and put it on a PAID stamp on invoice INV-2026-0001's PDF.", "image_resize, invoice_pdf, pdf_stamp: three children"],
+      ["Zip this month's invoices and quotes.", "zip_bundle_month, one call"],
     ],
     free: "each child keeps its own free tier.",
-    pro: "One $39 bundle key activates Pro on all five children at once.",
-    measured: "Its startup line reads: proxying [time-tracker, price-tracker, spreadsheet, invoice, expense-tracker], 49 tools. Those three sentences are consecutive turns of one audited conversation that scored 12 out of 12.",
+    pro: "One $39 bundle key activates Pro on all nineteen children at once.",
+    measured: "A six-prompt audit needing two or more children per sentence put 186 tools on one allowlist, the CLI's own file and web tools denied. Result: 20 of 20 tool calls landed in the correct child and the correct tool, zero wrong-server picks, 13 of 18 scored, against 50 of 51 correct at 108 tools when this bundle held five children.",
   },
   pdf: {
     title: "MCP PDF Tools",
@@ -611,12 +611,12 @@ const ANGLE = {
     cline: "Put clause_search, clause_list, clause_get and variables_list in autoApprove and keep clause_delete out of it: a deleted starter clause is not re-seeded on the next call.",
   },
   "office-suite": {
-    "claude-desktop": "One entry in claude_desktop_config.json instead of five, which matters more here than anywhere else: this is the client where each extra server is another absolute path to get right.",
-    "claude-code": "One `claude mcp add` instead of five, and one bundle key. The audited conversation that started a timer and finished with a rendered invoice ran entirely through this single server.",
-    cursor: "Five servers' worth of tools arrive as one entry, so mcp.json holds one object with one required type field instead of five, and the Customize page lists one server to enable or disable.",
-    vscode: "One entry under the servers key, one trust prompt to answer, and every tool arrives as one group in the tools picker, which is easier to switch on and off per chat than five separate ones.",
-    windsurf: "One entry rather than five, and the arithmetic is worth doing: 49 tools against Cascade's ceiling of 100 leaves room for roughly one more server of this size, not four.",
-    cline: "One entry with one autoApprove array covering 49 tools. Set that array deliberately rather than emptying it: it now spans tools that write invoices, spreadsheets and PDFs.",
+    "claude-desktop": "One entry in claude_desktop_config.json instead of nineteen, which matters more here than anywhere else: this is the client where each extra server is another absolute path to get right, and a six-prompt audit at 186 tools put all 20 tool calls in the correct child, zero wrong-server picks.",
+    "claude-code": "One `claude mcp add` instead of nineteen, and one bundle key. The audited round that asked for a logo resize, an invoice PDF and a PAID stamp in one sentence, three children at once, called the right tool in the right child every time.",
+    cursor: "Nineteen servers' worth of tools arrive as one entry, so mcp.json holds one object with one required type field instead of nineteen, and the Customize page lists one server to enable or disable. Only two of the 186 names needed a server-name prefix to stay unique: invoice_business_set, docx_business_set.",
+    vscode: "One entry under the servers key, one trust prompt to answer, and 186 tools arrive as one group in the tools picker, which is easier to switch on and off per chat than nineteen separate ones.",
+    windsurf: "One entry rather than nineteen does not mean one entry fits: 186 tools is past Cascade's ceiling of 100 on its own, so this bundle is the wrong shape here. Install the two or three single servers you actually use instead, 9 to 16 tools each.",
+    cline: "One entry with one autoApprove array covering 186 tools. Set that array deliberately rather than emptying it, ideally per child if the interface allows it: it now spans nineteen servers that write invoices, quotes, spreadsheets, PDFs, images, bank ledgers and calendars.",
   },
   pdf: {
     "claude-desktop": "Claude Desktop has no filesystem sandbox of its own restricting where pdf_stamp or pdf_merge can write, so the out_path you give is exactly where the file lands, absolute path required like every other entry in this config.",
@@ -685,7 +685,7 @@ const ANGLE = {
 };
 
 /** One sentence per server for the claude-web (claude.ai / Claude Desktop connector) client.
- * office-suite is excluded: it starts five child processes, not one URL. */
+ * office-suite is excluded: it starts nineteen child processes, not one URL. */
 const WEB_ANGLE = {
   "time-tracker": "This is the client with no terminal and no filesystem of its own, so the free tier's history window matters more here than anywhere else: a report is read in the chat, not exported to a file you would open elsewhere.",
   "price-tracker": "A watch runs server-side against a URL you gave it, which is exactly the shape a browser tab full of Claude.ai can hold without a local process: no install, no machine that has to stay on.",
@@ -737,7 +737,7 @@ const FAQ = {
       a: s.hosted
         ? "Yes: claude mcp add --transport http " + s.hosted + " https://mcp.zovo.one/mcp/" + s.hosted + " --header \"Authorization: Bearer <token>\". Mint a free token at https://mcp.zovo.one/mcp/token or use a Pro key. -t and -H are the short forms."
         : s.slug === "office-suite"
-          ? "Not this one; it starts five child processes, so it runs locally over stdio. Three of the servers behind it are hosted at https://mcp.zovo.one/mcp if you want a no-install route."
+          ? "Not this one; it starts nineteen child processes, so it runs locally over stdio. Three of the servers behind it (time-tracker, price-tracker, invoice) are hosted at https://mcp.zovo.one/mcp if you want a no-install route."
           : "Not yet. " + s.title + " runs locally over stdio, which is also how it reads and writes files on your disk. The hosted endpoints at https://mcp.zovo.one/mcp currently cover time-tracker, price-tracker and invoice.",
     },
   ],
@@ -870,7 +870,7 @@ function hostedBlock(clientId, s) {
     if (s.slug !== "office-suite") {
       return `<p>There is no hosted endpoint for this one yet. ${esc(s.title)} runs locally over stdio with the config above, which is also the only form in which it reads and writes files on your own disk. Three of the servers in this collection are served at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP: time-tracker, price-tracker and invoice.</p>`;
     }
-    return `<p>The suite starts five child processes, so it has no hosted form. Each of the five is served at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP instead: mint a free token with <code>curl ${BASE}/mcp/token</code>, or use a Pro key as the bearer.</p>`;
+    return `<p>The suite starts nineteen child processes, so it has no hosted form. Three of the nineteen (time-tracker, price-tracker, invoice) are served at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP instead: mint a free token with <code>curl ${BASE}/mcp/token</code>, or use a Pro key as the bearer.</p>`;
   }
   const url = `${BASE}/mcp/${s.hosted}`;
   const lead = `<p>The same server runs at <code>${url}</code> over MCP streamable HTTP, no install. Mint a free token with <code>curl ${BASE}/mcp/token</code>, or use a Pro key. It has no filesystem, so a file comes back as a one-hour download link.</p>`;
