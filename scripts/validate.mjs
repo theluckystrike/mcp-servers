@@ -190,6 +190,159 @@ const PROBES = {
       !stillFree.isError && /"total": "PLN 8,499\.00"/.test(stillFree.text) && !/mcp\.zovo\.one\/buy/.test(stillFree.text),
       stillFree.text.replace(/\s+/g, " ").slice(0, 120));
   },
+  "statement-of-account": async (c, tmp, tier, ok) => {
+    // The three books this server reports on belong to servers/invoice, servers/billing-docs
+    // and servers/deposits. They are seeded on disk directly, in the record shapes those
+    // servers' own store.ts files declare, rather than by spawning three more processes: a
+    // failure here has to mean statement-of-account failed. Every figure asserted below is
+    // one servers/statement-of-account/test/unit.test.mjs works out by hand from these rows,
+    // so this probe fails if the arithmetic moves and not only if the shape does.
+    const dataHome = join(tmp, "data");
+    const put = (server, file, value) => {
+      const dir = join(dataHome, "mcp-servers", server);
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, file), JSON.stringify(value, null, 2) + "\n");
+    };
+    const line = (description, netMinor) => ({
+      description, quantity: 1, unit_price_minor: netMinor, tax_rate: 0, gross_minor: netMinor,
+      discount_minor: 0, net_minor: netMinor, tax_minor: 0, exact_gross_minor: netMinor, round_total: false,
+    });
+    const inv = (o) => ({
+      number: o.number, client_id: "CL-1", client: { name: "Acme Ltd", address: "1 Road, Warsaw", email: "ap@acme.example" },
+      issue_date: o.issue_date, due_date: o.due_date, currency: "EUR", decimals: 2,
+      lines: [line("Consulting", o.net_minor)], subtotal_minor: o.net_minor, discount_percent: 0,
+      discount_minor: 0, net_minor: o.net_minor, tax_lines: [], tax_minor: 0, total_minor: o.net_minor,
+      status: !o.paid_minor ? "unpaid" : o.paid_minor >= o.net_minor ? "paid" : "partial",
+      paid_date: o.paid_date, paid_minor: o.paid_minor || 0, payments: o.payments,
+      created: `${o.issue_date}T09:00:00.000Z`, branded: true,
+    });
+    const cn = (o) => ({
+      id: o.id, invoice_number: o.invoice_number, invoice_total_minor: o.invoice_total_minor,
+      invoice_issue_date: o.issue_date, basis: "amount", client_id: "CL-1", client: { name: "Acme Ltd" },
+      issue_date: o.issue_date, currency: "EUR", decimals: 2, lines: [line("Credit", -o.amount_minor)],
+      subtotal_minor: -o.amount_minor, discount_percent: 0, discount_minor: 0, net_minor: -o.amount_minor,
+      tax_lines: [], tax_minor: 0, total_minor: -o.amount_minor, reason: "Goodwill",
+      created: `${o.issue_date}T09:00:00.000Z`, branded: true,
+    });
+
+    put("invoice", "clients.json", [
+      { id: "CL-1", name: "Acme Ltd", address: "1 Road, Warsaw", email: "ap@acme.example", created: "2026-01-01T00:00:00.000Z" },
+      { id: "CL-2", name: "Beta GmbH", created: "2026-01-01T00:00:00.000Z" },
+    ]);
+    // The worked month: an invoice carried in and paid in two instalments, one credit note
+    // before the period and one inside it, a new invoice part-paid BY A DEPOSIT rather than
+    // by a payment row, and a late invoice. Opening 500.00, closing 2,300.00.
+    put("invoice", "invoices.json", [
+      inv({ number: "INV-2026-0001", issue_date: "2026-04-10", due_date: "2026-05-10", net_minor: 100000, paid_minor: 100000, paid_date: "2026-06-12", payments: [{ date: "2026-05-02", amount_minor: 40000, method: "transfer" }, { date: "2026-06-12", amount_minor: 60000, method: "transfer" }] }),
+      inv({ number: "INV-2026-0002", issue_date: "2026-06-05", due_date: "2026-07-05", net_minor: 200000, paid_minor: 30000, paid_date: "2026-06-18" }),
+      inv({ number: "INV-2026-0003", issue_date: "2026-06-20", due_date: "2026-06-25", net_minor: 75000 }),
+    ]);
+    put("billing-docs", "credit-notes.json", [
+      cn({ id: "CN-2026-0001", invoice_number: "INV-2026-0001", issue_date: "2026-05-20", amount_minor: 10000, invoice_total_minor: 100000 }),
+      cn({ id: "CN-2026-0002", invoice_number: "INV-2026-0003", issue_date: "2026-06-28", amount_minor: 5000, invoice_total_minor: 75000 }),
+    ]);
+    put("deposits", "deposits.json", [{
+      id: "DEP-2026-0001", client_id: "CL-1", client: { name: "Acme Ltd" }, amount_minor: 50000,
+      currency: "EUR", decimals: 2, kind: "retainer", received_date: "2026-03-01",
+      applications: [{ date: "2026-06-18", invoice_number: "INV-2026-0002", amount_minor: 30000 }],
+      refunds: [], status: "held", created: "2026-03-01T09:00:00.000Z", updated: "2026-06-18T09:00:00.000Z", branded: true,
+    }]);
+    put("profile", "business.json", {
+      name: "Studio One", address: "5 Street, Warsaw", email: "me@studio.example", vat_id: "PL1234567890",
+      iban: "PL61109010140000071219812874", bank: "Bank Polski", default_currency: "EUR",
+      timezone: "Europe/Warsaw", updated: "2026-01-01T00:00:00.000Z",
+    });
+
+    // 1. The worked month. The closing balance is the assertion that fails if any of the
+    // five movement kinds is counted wrongly, and the deposit is the one that used to be
+    // counted twice: it raised paid_minor, so it is INSIDE payments received.
+    const st = await c.tool("statement_build", { client: "Acme Ltd", from: "2026-06-01", to: "2026-06-30", currency: "EUR" });
+    ok(`${tier}: statement_build closes the worked month at EUR 2300.00 from an opening 500.00`,
+      !st.isError && /"opening_balance_minor": 50000/.test(st.text) && /"invoices_issued_minor": 275000/.test(st.text)
+      && /"payments_received_minor": 90000/.test(st.text) && /"credit_notes_minor": 5000/.test(st.text)
+      && /"closing_balance_minor": 230000/.test(st.text) && /"closing_balance": "EUR 2300\.00"/.test(st.text),
+      st.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 2. The deposit moves once, and the money still held is a memo rather than a balance.
+    ok(`${tier}: the 300.00 deposit applied is broken out of the 900.00 received, not added to it`,
+      /"of_which_deposits_applied_minor": 30000/.test(st.text) && /"deposit_still_held_minor": 20000/.test(st.text)
+      && /"kind": "deposit-applied"/.test(st.text),
+      st.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 3. Five movements in date order, and opening plus their sum is the closing balance.
+    const stj = st.isError ? null : JSON.parse(st.text);
+    const moves = stj?.movements || [];
+    const sum = moves.reduce((n, m) => n + m.amount_minor, 0);
+    ok(`${tier}: the five movements are in date order and reconcile 50000 + ${sum} to the closing balance`,
+      moves.length === 5 && 50000 + sum === 230000
+      && moves.every((m, i) => i === 0 || m.date >= moves[i - 1].date),
+      `${moves.length} rows, sum ${sum}`);
+
+    // 4. Aging AS AT A PAST DATE, the one rule that changes the most numbers. On
+    // 2026-06-10 the payment of 2026-06-12 has NOT happened, so 500.00 of INV-2026-0001 is
+    // still open and 31 days late. The ordinary rule, subtract paid_minor and bucket by due
+    // date, reports 1,700.00 outstanding and ZERO overdue on the same books.
+    const past = await c.tool("statement_aging", { as_of: "2026-06-10", client: "Acme Ltd", currency: "EUR" });
+    ok(`${tier}: aging as at 2026-06-10 is 2500.00 outstanding with 500.00 31 days late, not 1700.00 and nothing overdue`,
+      !past.isError && /"outstanding_minor": 250000/.test(past.text) && /"overdue_minor": 50000/.test(past.text)
+      && /"31-60"[\s\S]{0,60}?"amount_minor": 50000/.test(past.text) && /"not_yet_due_minor": 200000/.test(past.text),
+      past.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 5. Aging at the period end: due today is not overdue, and a credit exceeding the
+    // invoice it names becomes unapplied credit rather than cancelling an unrelated one.
+    const now = await c.tool("statement_aging", { as_of: "2026-06-30", client: "Acme Ltd", currency: "EUR" });
+    ok(`${tier}: at 2026-06-30 the 0-30 bucket holds 700.00, 1700.00 is not yet due and 100.00 of credit is unapplied`,
+      !now.isError && /"0-30"[\s\S]{0,60}?"amount_minor": 70000/.test(now.text)
+      && /"not_yet_due_minor": 170000/.test(now.text) && /"unapplied_credit_minor": 10000/.test(now.text),
+      now.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 6. The dunning letter at level 1: the overdue list, the profile's real bank details,
+    // and no fee, interest or legal cost anywhere in it.
+    const dun = await c.tool("dunning_text", { client: "Acme Ltd", level: 1, currency: "EUR", as_of: "2026-06-30" });
+    ok(`${tier}: dunning level 1 names INV-2026-0003, totals EUR 700.00, prints the IBAN and states no fee`,
+      !dun.isError && /INV-2026-0003/.test(dun.text) && /TOTAL OVERDUE\s+EUR 700\.00/.test(dun.text)
+      && /PL61109010140000071219812874/.test(dun.text) && /No late fee, interest or cost is stated/.test(dun.text)
+      && !/interest at|late fee of|% per/i.test(dun.text),
+      dun.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 7. Aging is free and unlimited on every tier: it is the question this server exists
+    // for, so it must never carry a buy link.
+    ok(`${tier}: statement_aging is never metered and never carries a checkout link`,
+      !now.isError && !/mcp\.zovo\.one\/buy/.test(now.text),
+      now.text.replace(/\s+/g, " ").slice(0, 100));
+
+    // 8. The free cap is on the DOCUMENT, five distinct statements a calendar month, and a
+    // rebuild of one already in the register is free forever on every tier.
+    let sixth = null;
+    for (let n = 2; n <= 6; n++) {
+      sixth = await c.tool("statement_build", { client: "Acme Ltd", from: `2026-0${n}-01`, to: `2026-0${n}-28`, currency: "EUR" });
+    }
+    ok(`${tier}: the sixth distinct statement is ${tier === "pro" ? "allowed" : "refused, naming the tool and the $19 price"}`,
+      tier === "pro" ? !sixth.isError && /"statement_id": "STMT-\d{4}-000[56]"/.test(sixth.text)
+        : sixth.isError && /\$19/.test(sixth.text) && /mcp\.zovo\.one\/buy\/statement-of-account\?src=statement-of-account\.statement_build/.test(sixth.text),
+      sixth.text.replace(/\s+/g, " ").slice(0, 140));
+    const rebuild = await c.tool("statement_build", { client: "Acme Ltd", from: "2026-06-01", to: "2026-06-30", currency: "EUR" });
+    ok(`${tier}: rebuilding a statement already in the register is free and keeps its id`,
+      !rebuild.isError && /"statement_id": "STMT-2026-0001"/.test(rebuild.text) && /"closing_balance_minor": 230000/.test(rebuild.text),
+      rebuild.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 9. The Pro gate on the all-clients report, and the bundle link on the cap message.
+    const rep = await c.tool("statements_report", { as_of: "2026-06-30" });
+    ok(`${tier}: statements_report is ${tier === "pro" ? "answered per currency" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !rep.isError && /EUR/.test(rep.text)
+        : rep.isError && /mcp\.zovo\.one\/buy\/statement-of-account\?src=statement-of-account\.statements_report/.test(rep.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=statement-of-account\.statements_report\.bundle/.test(rep.text),
+      rep.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 10. No sibling store is ever written. A statement is a view over books this server
+    // does not own, and the one file it owns is its own register.
+    const invBytes = readFileSync(join(dataHome, "mcp-servers", "invoice", "invoices.json"), "utf8");
+    const depBytes = readFileSync(join(dataHome, "mcp-servers", "deposits", "deposits.json"), "utf8");
+    ok(`${tier}: not one byte of the invoice or deposit store changed across every tool above`,
+      /"paid_minor": 100000/.test(invBytes) && !/STMT-/.test(invBytes) && !/STMT-/.test(depBytes)
+      && JSON.parse(invBytes).length === 3 && JSON.parse(depBytes)[0].applications.length === 1,
+      `${invBytes.length} + ${depBytes.length} bytes`);
+  },
   "per-diem": async (c, tmp, tier, ok) => {
     // The shared business profile is seeded directly rather than by spawning
     // servers/invoice: a failure here has to mean per-diem failed. The numbers asserted
@@ -1083,7 +1236,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);

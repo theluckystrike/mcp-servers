@@ -1,0 +1,228 @@
+{
+ "at": "2026-09-05T16:25:00Z",
+ "round": 27,
+ "compares_to": "data/user_value_r17.json is the last office-suite bundle round (19 children, 186 tools, six cross-child prompts, 13/18). Round 27 runs the same one-stdio-server shape at 24 children and 224 tools, and asks nine prompts that are one worked month rather than six unrelated sentences.",
+ "scope": "One worked month for a single freelancer, driven end to end through the office-suite stdio bundle on the FREE tier. Nine prompts, in the order a month is actually closed: bill the client, credit the hour that was not billable, take the retainer in and set it against the invoice, import the bank export and reconcile it against the receipt log, log the receipts the reconciliation found missing, put a capital purchase on the fixed asset register and ask for its journal, price a two-day foreign trip, and finish with the client's statement of account and the aging on what is left. Eight of the twenty-four children carried the month: invoice, billing-docs, deposits, bank-statement, expense-tracker, asset-register, per-diem and statement-of-account, all reached through one bundle connection. No code was fixed as part of this round; it is measurement only. statement-of-account was wired into the bundle's CHILDREN list to make the twenty-fourth child, and that edit is the only source change the round required.",
+ "method": "Server: servers/office-suite/dist/index.js, built from source this round, registered as ONE stdio server named office, proxying all 24 children from servers/office-suite/src/index.ts CHILDREN. A live tools/list against the built bundle returns 224 tools. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config /private/tmp/uv-r27/mcp.json, --output-format stream-json --verbose --max-turns 14, one bounded request per prompt under timeout 240, each of the nine issued as its own isolated shell invocation with its transcript read back before the next prompt ran. One conversation: --session-id on prompt 1, --resume on the eight after it, so \"that invoice\", \"the retainer\" and \"that card\" point at something. Allowlist: 224 explicit mcp__office__<tool> entries written out by name from the live tools/list, because --allowedTools \"mcp__*\" grants nothing. The CLI's own tools are denied: Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,NotebookEdit,Task,TodoWrite,Agent, and every turn ran in an empty working directory /private/tmp/uv-r27/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r27/xdg and MCP_LICENSE_KEY=\"\" (free tier throughout) set in the server's own env block inside mcp.json, never in the CLI's environment and never CLAUDE_CONFIG_DIR. Shared profile seeded once before prompt 1 at xdg/data/mcp-servers/profile/business.json: Nova Studio, Europe/Warsaw, default_currency EUR, default_tax_rate 23, payment_terms_days 14, iban PL61109010140000071219812874. Every store started empty. Fixture: remote/fixtures/revolut-main.csv fetched over curl -o from raw.githubusercontent.com to /private/tmp/uv-r27/fix/revolut-main.csv and handed to the model as a local path, because the bundle resolves a bare http:// argument as a relative filesystem path (D-R83) and the model had no Bash or WebFetch to fetch it itself. Verification: after the nine prompts every figure was re-read off the stores on disk and off four direct tools/call probes on the same data directory, never off the model's prose. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Host machine day 2026-09-05. Zero paid API calls.",
+ "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed. Tool-call counts exclude the client's own ToolSearch schema lookups.",
+ "arrival": {
+  "build": "npm run build -w servers/office-suite, clean",
+  "children_connected": 24,
+  "tools_list": 224,
+  "renamed_tools": [
+   "invoice_business_set",
+   "docx_business_set",
+   "expense-tracker_category_rules",
+   "bank-statement_category_rules"
+  ],
+  "seed": "one shared business profile written before prompt 1: Nova Studio, Europe/Warsaw, EUR, 23 percent, 14-day terms, IBAN PL61109010140000071219812874. Every child store empty.",
+  "license": "MCP_LICENSE_KEY empty for all nine prompts. Free tier throughout."
+ },
+ "scenarios": [
+  {
+   "server": "invoice",
+   "surface": "stdio/office-suite",
+   "id": "p1",
+   "score": 3,
+   "tool_calls": 2,
+   "seconds": 12.6,
+   "tools": [
+    "client_list",
+    "invoice_from_hours"
+   ],
+   "prompt": "Invoice Acme for 10 hours of design work at 90 euros an hour, dated today.",
+   "note": "client_list found no Acme, then invoice_from_hours wrote INV-2026-0001 anyway rather than stopping to ask, which is where round 17's prompt 1 lost a point. 10 hours at EUR 90.00 is EUR 900.00 net, 23 percent VAT from the shared profile is EUR 207.00, total EUR 1,107.00, issue date 2026-09-05, due 2026-09-19 on the profile's 14-day terms. Read back off invoice/invoices.json: total_minor 110700, tax_lines rate 23 base_minor 90000 tax_minor 20700, due_date 2026-09-19. The model flagged both loose ends it had left, the auto-created client with no address and the VAT it applied on its own, without withholding the write to ask about either."
+  },
+  {
+   "server": "billing-docs",
+   "surface": "stdio/office-suite",
+   "id": "p2",
+   "score": 3,
+   "tool_calls": 1,
+   "seconds": 10.0,
+   "tools": [
+    "credit_note_create"
+   ],
+   "prompt": "One of those hours was mine, not billable. Credit Acme one hour on that invoice.",
+   "note": "One call. CN-2026-0001 against INV-2026-0001, one line of 1 hour at EUR 90.00, VAT unwound at the same 23 percent the invoice charged, EUR 20.70 of it: EUR -110.70. Read back off billing-docs/credit-notes.json: subtotal_minor -9000, tax_lines rate 23 tax_minor -2070, total_minor -11070, invoice_number INV-2026-0001, invoice_total_minor 110700. The credit is stored against the invoice it names and no other. The model also stated the net owed after it, EUR 996.30, which is 1,107.00 minus 110.70."
+  },
+  {
+   "server": "deposits",
+   "surface": "stdio/office-suite",
+   "id": "p3",
+   "score": 3,
+   "tool_calls": 1,
+   "seconds": 7.2,
+   "tools": [
+    "deposit_record"
+   ],
+   "prompt": "Acme just paid a 500 euro retainer, today, by bank transfer.",
+   "note": "One call. DEP-2026-0001, EUR 500.00 from Acme, received 2026-09-05, held. Read back off deposits/deposits.json: amount_minor 50000, currency EUR, client Acme. The model then offered the obvious next move, applying it to the open invoice, without doing it unasked, which is the right side of that line for money moving between two documents."
+  },
+  {
+   "server": "deposits",
+   "surface": "stdio/office-suite",
+   "id": "p4",
+   "score": 2,
+   "tool_calls": 1,
+   "seconds": 11.9,
+   "tools": [
+    "deposit_apply"
+   ],
+   "prompt": "Yes, apply the retainer to that invoice and tell me what is left to pay.",
+   "note": "deposit_apply did exactly what it promises: the EUR 500.00 is recorded as a payment on INV-2026-0001, which now reads status partial, paid_minor 50000 in invoice/invoices.json, so invoice_list and overdue_report stop chasing money already received. The point comes off the answer, not the write. The tool reported a balance_due of EUR 607.00, which is the invoice total less the payment and takes no account of CN-2026-0001 at all. The model caught it, said so, and composed the real figure by hand: 1,107.00 less 110.70 less 500.00 is EUR 496.30. It reached the right number, but only because it remembered a document the tool it called cannot see. D-R96."
+  },
+  {
+   "server": "bank-statement",
+   "surface": "stdio/office-suite",
+   "id": "p5",
+   "score": 3,
+   "tool_calls": 3,
+   "seconds": 22.5,
+   "tools": [
+    "statement_import",
+    "reconcile_expenses",
+    "transactions_list"
+   ],
+   "prompt": "Import my Revolut export at /private/tmp/uv-r27/fix/revolut-main.csv and reconcile it against my expense log for August 2026, so I can see which card payments have no receipt.",
+   "note": "statement_import read the Revolut export under the account name revolut-main and stored 41 transactions; the file holds 42 data rows and the one REVERTED line was not imported. Of those, 36 fall in August 2026, and 33 of the 36 are card debits. reconcile_expenses then matched them against an expense log that was still empty and returned all 33 as unreceipted, EUR 1,283.73 of card spend. The model did not dress that up as 33 individual failures: it said plainly that no receipts had been logged at all, which is the honest reading, then listed the 33 with dates and amounts and excluded the three credits, the EUR 4,000.00 from Acme, the EUR 500.00 from Beta Corp and the EUR 24.99 Allegro refund, as not expenses. Read back off bank-statement/data.json: 41 transactions, 36 dated 2026-08, 33 with a negative amount_minor summing to -128373."
+  },
+  {
+   "server": "expense-tracker",
+   "surface": "stdio/office-suite",
+   "id": "p6",
+   "score": 3,
+   "tool_calls": 3,
+   "seconds": 11.1,
+   "tools": [
+    "expense_add",
+    "expense_add",
+    "reconcile_expenses"
+   ],
+   "prompt": "Log two expenses I paid on that card: OpenAI 72.76 euros on 27 August, software; and Adobe Creative Cloud 61.50 euros on 7 August, software. Then tell me how many August card payments still have no receipt.",
+   "note": "Two writes and a re-reconcile in one turn. Both expenses landed with the profile's 23 percent VAT rate on them without being asked for one: expense-tracker/data.json holds amount_minor 7276 dated 2026-08-27 and amount_minor 6150 dated 2026-08-07, both category software, both vat_rate 23. The re-run of reconcile_expenses matched both against their bank debits and returned 31 of 33 still unreceipted, EUR 1,149.47, which is 1,283.73 less 72.76 less 61.50 exactly. The model also warned, unprompted, that the second Adobe Creative Cloud charge of EUR 61.50 on 21 August is a separate debit and is still unmatched, which is the one thing a person would have got wrong here."
+  },
+  {
+   "server": "asset-register",
+   "surface": "stdio/office-suite",
+   "id": "p7",
+   "score": 3,
+   "tool_calls": 3,
+   "seconds": 20.7,
+   "tools": [
+    "asset_add",
+    "asset_journal",
+    "asset_schedule"
+   ],
+   "prompt": "I bought a laptop for 6,000 zloty and put it into use on 1 September 2026. Add it to my fixed asset register and give me September's depreciation journal entry.",
+   "note": "asset_add wrote ASSET-2026-0001 at KST 487, computers and computer sets, 30 percent, useful life 3.33 years, cost_minor 600000, PLN 6,000.00, in service 2026-09-01, with the scheme derived as pl from the zloty amount rather than from the profile's EUR. asset_journal is Pro and refused on the free tier. The model did not stop there and did not pretend: it fell back to asset_schedule, which is free and unlimited, and answered the actual question, which is that September's charge is PLN 0.00 because the Polish convention starts depreciation the month after an asset enters use. First charge October 2026 at PLN 150.00 a month, debit depreciation expense and credit accumulated depreciation, holding at PLN 150.00 through 2029 and falling to PLN 12.50 a month in 2030. Probed directly afterwards on the same store: asset_schedule granularity month returns first_charge_month 2026-10 and 51 rows, 39 of them 15000 minor and 12 of them 1250 minor, summing to 600000 exactly; granularity year gives PLN 450.00 for 2026, PLN 1,800.00 for each of 2027, 2028 and 2029, and PLN 150.00 for 2030. The model's numbers are the tool's numbers. It named the Pro gate and its one-time 19 dollar price rather than hiding the refusal."
+  },
+  {
+   "server": "per-diem",
+   "surface": "stdio/office-suite",
+   "id": "p8",
+   "score": 3,
+   "tool_calls": 1,
+   "seconds": 13.5,
+   "tools": [
+    "perdiem_calc"
+   ],
+   "prompt": "I am going to Berlin for a client meeting, leaving 14 September 2026 at 8am and back on 15 September at 6pm. Breakfast is included at the hotel both days. What diet am I owed?",
+   "note": "One call, and it resolved four things from the sentence with no question: Berlin means Germany means the Polish foreign table, the timezone is Europe/Warsaw from the shared profile, breakfast on both days is two separate meal deductions rather than one, and one night away is one lodging night. Total elapsed 34 hours. Day 1 is a full 24-hour period at the German diet of EUR 55.00, less 15 percent for breakfast, EUR 46.75. Day 2 is 10 hours, over 8 and up to 12, so half the diet at EUR 27.50, less 15 percent, EUR 23.37. Diet owed EUR 70.12. Read straight off the tool payload: subsistence_minor 7012, day amounts 4675 and 2337, meal deductions 825 and 413. The rate is confirmed against the bundled table servers/per-diem/src/tables/pl-foreign.json, which carries Germany at diet_minor 5500 EUR. Lodging came back EUR 0.00 with the reason stated, that the foreign table bundles no per-country lodging limit, and the model passed that on rather than quietly dropping it."
+  },
+  {
+   "server": "statement-of-account",
+   "surface": "stdio/office-suite",
+   "id": "p9",
+   "score": 3,
+   "tool_calls": 2,
+   "seconds": 9.1,
+   "tools": [
+    "statement_build",
+    "statement_aging"
+   ],
+   "prompt": "Give me Acme's statement of account for September 2026 and show me the aging on what they still owe.",
+   "note": "Two calls, and this is the prompt that closes the month, because it is the only one that reads all three money stores at once. STMT-2026-0001 for 2026-09-01 to 2026-09-30: opening balance EUR 0.00, invoiced EUR 1,107.00, paid EUR 500.00, credited EUR 110.70, closing balance EUR 496.30, three movements. Read back off statement-of-account/statements.json: opening_minor 0, invoiced_minor 110700, paid_minor 50000, credited_minor 11070, closing_minor 49630. statement_aging as at 2026-09-30 puts the whole EUR 496.30 in the 0-30 bucket, EUR 0.00 in 31-60, 61-90 and over 90, with INV-2026-0001 11 days past its 2026-09-19 due date and unapplied credit EUR 0.00. Probed directly on the same store afterwards and the aging payload is identical. This is also the answer to D-R96: the aging tool nets the credit note that the invoice server's own balance does not, so the number a client is sent is right even though the number the invoice store carries is not."
+  }
+ ],
+ "totals": {
+  "score": 26,
+  "max": 27,
+  "pct": 96,
+  "tool_calls": 17,
+  "seconds": 118.6,
+  "resource_reads": 0,
+  "tool_errors": 0,
+  "denied_calls": 1,
+  "clarifying_turns": 0,
+  "children": 24,
+  "tools_on_bundle": 224,
+  "children_exercised": 8,
+  "per_server": {
+   "invoice": {
+    "score": 3,
+    "max": 3,
+    "tool_calls": 2,
+    "seconds": 12.6
+   },
+   "billing-docs": {
+    "score": 3,
+    "max": 3,
+    "tool_calls": 1,
+    "seconds": 10.0
+   },
+   "deposits": {
+    "score": 5,
+    "max": 6,
+    "tool_calls": 2,
+    "seconds": 19.1
+   },
+   "bank-statement": {
+    "score": 3,
+    "max": 3,
+    "tool_calls": 3,
+    "seconds": 22.5
+   },
+   "expense-tracker": {
+    "score": 3,
+    "max": 3,
+    "tool_calls": 3,
+    "seconds": 11.1
+   },
+   "asset-register": {
+    "score": 3,
+    "max": 3,
+    "tool_calls": 3,
+    "seconds": 20.7
+   },
+   "per-diem": {
+    "score": 3,
+    "max": 3,
+    "tool_calls": 1,
+    "seconds": 13.5
+   },
+   "statement-of-account": {
+    "score": 3,
+    "max": 3,
+    "tool_calls": 2,
+    "seconds": 9.1
+   }
+  }
+ },
+ "verification": "Every figure above was re-read off the stores on disk or off a direct tools/call probe against the same data directory, never off the model's prose. invoice/invoices.json: one invoice, total_minor 110700, paid_minor 50000, status partial, due_date 2026-09-19. billing-docs/credit-notes.json: CN-2026-0001, total_minor -11070, tax_minor -2070, invoice_number INV-2026-0001. deposits/deposits.json: DEP-2026-0001, amount_minor 50000, status applied. bank-statement/data.json: 41 transactions, 36 in August 2026, 33 negative summing to -128373 minor. expense-tracker/data.json: two expenses, 7276 and 6150 minor, both vat_rate 23. asset-register/assets.json: ASSET-2026-0001, cost_minor 600000 PLN, rate_pct 30, life_years 3.3333, scheme pl, category 487. statement-of-account/statements.json: STMT-2026-0001, closing_minor 49630. Direct probes on the same store: asset_schedule granularity month returns 51 rows summing to 600000 with first_charge_month 2026-10; statement_aging as_of 2026-09-30 returns open_minor 49630 in the 0-30 bucket and days_overdue 11; invoice_get returns no credit-note-aware balance at all, which is the evidence for D-R96. The Germany diet of EUR 55.00 is confirmed against servers/per-diem/src/tables/pl-foreign.json and the KST 487 rate of 30 percent against servers/asset-register/src/tables/pl-kst.json.",
+ "defects": [
+  {
+   "id": "D-R95",
+   "server": "invoice",
+   "status": "open, found and worked around before the scored run",
+   "note": "A hand-written shared business profile silently loses the VAT rate. The invoice server's business_set accepts vat_rate, tax_rate and vat as aliases for default_tax_rate, but the shared-profile reader in servers/invoice/src/store.ts getBusiness only maps the exact key default_tax_rate. A first attempt at this round seeded the profile with vat_rate: 23 and the very first invoice came back at EUR 900.00 with tax_rate 0 on the line and tax_minor 0 in the store, with nothing in the response saying a rate had been dropped. The scored run reseeded with default_tax_rate and got EUR 1,107.00. The fix is to accept the same aliases in the shared-profile reader that business_set already accepts, or to say in the response that the profile carried no default rate."
+  },
+  {
+   "id": "D-R96",
+   "server": "invoice, deposits",
+   "status": "open, client-side answer was correct anyway",
+   "note": "The invoice store has no idea a credit note exists. deposit_apply reported balance_due EUR 607.00 on INV-2026-0001 after the EUR 500.00 retainer, and a direct invoice_get probe carries only total_minor 110700 and paid_minor 50000 with no credited or open field at all. CN-2026-0001 for EUR 110.70 is invisible to both. statement-of-account does net it, returning open_minor 49630, so the document a client actually receives is right; the gap is in the two tools a user is most likely to ask mid-month. Cost this round: one point on p4, where the model had to build EUR 496.30 by hand from a document the tool it called cannot see."
+  }
+ ],
+ "bottom_line": "26 of 27 across nine prompts and eight of the twenty-four children, on the free tier, with one shared profile and one stdio connection. One worked month came out the other end with a client statement whose closing balance, EUR 496.30, agrees to the minor unit with the invoice, the credit note and the deposit that produced it. Seventeen bundle tool calls, 118.6 seconds of wall clock, every one of the seventeen landing in the correct child and the correct tool within it, at 224 tools on one tools/list. The single point lost is not a selection failure: the model picked the right tool, the tool answered with a balance that ignores credit notes, and the model noticed and corrected it in prose. The free tier covered the whole month except one thing, asset_journal, which is Pro and was refused by name; the model fell back to the free asset_schedule and answered the question anyway. Two open defects, both about one store not knowing what another store holds, neither of which produced a wrong number in front of the user."
+}

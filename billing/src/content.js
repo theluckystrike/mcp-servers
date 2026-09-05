@@ -2852,6 +2852,170 @@ ${FOOT}`,
       { q: "When should I install a single server instead of the whole bundle?", a: "When a client caps total tools, such as Windsurf's Cascade agent at 100, 198 tools does not fit in one entry at all. It is also the better choice when you already know you only need two or three of the twenty: same free tier, fewer license checks, no dormant sibling processes started for servers you never call." },
     ],
   },
+  "month-end-close-with-mcp-servers": {
+    title: "Close a month in chat: invoice, credit note, retainer, bank reconciliation, statement",
+    description: "One worked month run end to end through the office-suite MCP bundle on the free tier. Nine prompts, the exact figure each one produced, and the statement of account they all close into.",
+    html: `<h1>Close a month in chat: invoice, credit note, retainer, bank reconciliation, statement</h1>
+<p>Month end is not one job. It is an invoice, a credit note for the hour you should not have billed,
+a retainer sitting on account, a bank export nobody has looked at, two receipts you forgot to log, a
+laptop that has to go on the fixed asset register, a trip allowance, and at the end of it a statement
+you can send the client without checking it twice. Every one of those steps lives in a different
+place, and the reason month end takes a day is that the places disagree.</p>
+<p>This guide is one month, closed in nine sentences, through the <a href="/guides/one-install-office-suite-bundle">office-suite
+bundle</a>: one stdio server, twenty-four child servers, 224 tools on a single connection, one shared
+business profile. It is not a worked example written afterwards. Every prompt below is quoted exactly
+as it was typed, and every figure is the figure that run produced, read back off the stores on disk.
+The full measurement is in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md">the round 27 audit</a>:
+26 of 27, 17 tool calls, 118.6 seconds of wall clock, free tier throughout.</p>
+
+<h2>The setup</h2>
+<p>One config entry, and one shared business profile written once. The profile is what stops you
+repeating yourself: the VAT rate, the payment terms, the timezone and the IBAN are stated once and
+every child server reads them.</p>
+<pre><code>claude mcp add office -- npx -y @theluckystrike/mcp-office-suite</code></pre>
+<p>The profile used for this run: Nova Studio, Europe/Warsaw, EUR, 23 percent, 14 day payment terms,
+IBAN PL61109010140000071219812874. Set it once with "set my business details" and it lands in
+<code>mcp-servers/profile/business.json</code>, where every server in the bundle looks for it. One
+warning worth knowing if you hand write that file: the key the shared profile reads for VAT is
+<code>default_tax_rate</code>. Write <code>vat_rate</code> there instead and the rate is silently
+dropped, and your first invoice comes out with no VAT on it and nothing in the answer saying so.</p>
+
+<h2>Step 1. Bill the client</h2>
+<blockquote>Invoice Acme for 10 hours of design work at 90 euros an hour, dated today.</blockquote>
+<p><strong>invoice</strong>, <code>invoice_from_hours</code>. Two calls: it looked up the client list,
+found no Acme, and wrote the invoice anyway rather than stopping to ask. <strong>INV-2026-0001</strong>:
+10 hours at EUR 90.00 is EUR 900.00 net, 23 percent VAT from the profile is EUR 207.00, total
+<strong>EUR 1,107.00</strong>, issued 2026-09-05, due 2026-09-19 on the profile's 14 day terms.</p>
+<p>It also said, without being asked, that it had created the client with no address and applied a VAT
+rate on its own authority. Two loose ends named, neither of them a reason to withhold the write.</p>
+
+<h2>Step 2. Credit the hour that was not billable</h2>
+<blockquote>One of those hours was mine, not billable. Credit Acme one hour on that invoice.</blockquote>
+<p><strong>billing-docs</strong>, <code>credit_note_create</code>. One call.
+<strong>CN-2026-0001</strong> against INV-2026-0001: one hour at EUR 90.00 back, VAT unwound at the
+same 23 percent the invoice charged, EUR 20.70, total <strong>EUR -110.70</strong>. The credit note
+is stored against the invoice it names and no other, and it agrees with that invoice to the minor
+unit because both documents run on the same money code.</p>
+
+<h2>Step 3. Take the retainer in</h2>
+<blockquote>Acme just paid a 500 euro retainer, today, by bank transfer.</blockquote>
+<p><strong>deposits</strong>, <code>deposit_record</code>. One call. <strong>DEP-2026-0001</strong>,
+<strong>EUR 500.00</strong> from Acme, received 2026-09-05, held. Held is the point: it is their money
+on your account, not your income, until it is set against something. The server offered to apply it
+and did not do so unasked.</p>
+
+<h2>Step 4. Set it against the invoice</h2>
+<blockquote>Yes, apply the retainer to that invoice and tell me what is left to pay.</blockquote>
+<p><strong>deposits</strong>, <code>deposit_apply</code>. One call. The EUR 500.00 is now recorded as
+a payment on INV-2026-0001, which reads partial, so <code>invoice_list</code> and
+<code>overdue_report</code> stop chasing money you already have.</p>
+<p>This is also the one step of the nine that lost a point, and it is worth saying why. The tool
+reported a balance of EUR 607.00, which is the invoice total less the payment and takes no account of
+the credit note at all. The invoice store does not know credit notes exist. The right figure is
+1,107.00 less 110.70 less 500.00, which is <strong>EUR 496.30</strong>, and the model composed it by
+hand from a document the tool it called cannot see. Step 9 gets it right on its own; mid-month, check
+it.</p>
+
+<h2>Step 5. Import the bank and reconcile it</h2>
+<blockquote>Import my Revolut export at /path/to/revolut-main.csv and reconcile it against my expense
+log for August 2026, so I can see which card payments have no receipt.</blockquote>
+<p><strong>bank-statement</strong>, <code>statement_import</code> then
+<code>reconcile_expenses</code>. The export held 42 data rows; <strong>41</strong> transactions were
+stored, because the one reverted card payment in the file is not a transaction. Of those, 36 fall in
+August 2026 and <strong>33</strong> are card debits.</p>
+<p>The reconciliation ran against an empty receipt log, so it returned all 33 as unreceipted,
+<strong>EUR 1,283.73</strong> of card spend with nothing behind it. The answer said that plainly
+rather than dressing it up as 33 separate failures, and it excluded the three credits in the file, the
+EUR 4,000.00 from Acme, the EUR 500.00 from Beta Corp and the EUR 24.99 refund, as not being expenses
+at all.</p>
+<p>One practical note: pass a local file path. A bare <code>http://</code> URL is resolved as a
+relative filesystem path, so download the export first.</p>
+
+<h2>Step 6. Log the receipts the reconciliation found missing</h2>
+<blockquote>Log two expenses I paid on that card: OpenAI 72.76 euros on 27 August, software; and Adobe
+Creative Cloud 61.50 euros on 7 August, software. Then tell me how many August card payments still
+have no receipt.</blockquote>
+<p><strong>expense-tracker</strong>, <code>expense_add</code> twice, then
+<code>reconcile_expenses</code> again. Both expenses landed with the profile's 23 percent VAT rate on
+them without being asked for one. The re-run matched both against their bank debits and returned
+<strong>31</strong> of 33 still unreceipted, <strong>EUR 1,149.47</strong>, which is 1,283.73 less
+72.76 less 61.50 exactly.</p>
+<p>It also warned, unprompted, that the second Adobe Creative Cloud charge of EUR 61.50 on 21 August
+is a separate debit and is still unmatched. That is the one thing a person doing this by eye gets
+wrong.</p>
+
+<h2>Step 7. Put the laptop on the fixed asset register</h2>
+<blockquote>I bought a laptop for 6,000 zloty and put it into use on 1 September 2026. Add it to my
+fixed asset register and give me September's depreciation journal entry.</blockquote>
+<p><strong>asset-register</strong>, <code>asset_add</code> then <code>asset_schedule</code>.
+<strong>ASSET-2026-0001</strong>, KST 487, computers and computer sets, <strong>30 percent</strong>,
+useful life 3.33 years, PLN 6,000.00, in service 2026-09-01. The scheme was derived as Polish from the
+zloty amount rather than from the profile's EUR.</p>
+<p>The answer to the question asked is that <strong>September's charge is PLN 0.00</strong>, because
+the Polish convention starts depreciation the month after an asset enters use. The first charge is
+October 2026 at <strong>PLN 150.00</strong> a month, debit depreciation expense and credit accumulated
+depreciation, holding at PLN 150.00 through 2029 and falling to PLN 12.50 a month in 2030. Read
+directly off the schedule afterwards: 51 monthly rows summing to PLN 6,000.00 exactly.</p>
+<p><code>asset_journal</code>, which formats that as a ready debit and credit entry, is Pro and was
+refused by name on the free tier. Nothing was invented in its place: the free
+<code>asset_schedule</code> carries the same numbers and answered the question.</p>
+
+<h2>Step 8. Price the trip</h2>
+<blockquote>I am going to Berlin for a client meeting, leaving 14 September 2026 at 8am and back on 15
+September at 6pm. Breakfast is included at the hotel both days. What diet am I owed?</blockquote>
+<p><strong>per-diem</strong>, <code>perdiem_calc</code>. One call, and it resolved four things out of
+that sentence with no question asked: Berlin means Germany means the Polish foreign table, the
+timezone is Europe/Warsaw from the shared profile, breakfast on both days is two separate deductions,
+and one night away is one lodging night.</p>
+<p>The German diet is <strong>EUR 55.00</strong> a day. Day one is a full 24 hour period, less 15
+percent for the included breakfast: <strong>EUR 46.75</strong>. Day two is 10 hours, which is over 8
+and up to 12, so half the diet, less the same 15 percent: <strong>EUR 23.37</strong>. Diet owed
+<strong>EUR 70.12</strong>. Lodging came back EUR 0.00 with the reason stated, that the foreign table
+bundles no per country lodging limit for Germany, rather than the figure quietly going missing.</p>
+
+<h2>Step 9. Close the month</h2>
+<blockquote>Give me Acme's statement of account for September 2026 and show me the aging on what they
+still owe.</blockquote>
+<p><strong>statement-of-account</strong>, <code>statement_build</code> then
+<code>statement_aging</code>. This is the only prompt in the month that reads three separate money
+stores at once, which makes it the only one that can be wrong because two servers disagree.</p>
+<p><strong>STMT-2026-0001</strong>, 2026-09-01 to 2026-09-30:</p>
+<table>
+<tr><th>Movement</th><th>EUR</th></tr>
+<tr><td>Opening balance</td><td>0.00</td></tr>
+<tr><td>Invoiced</td><td>1,107.00</td></tr>
+<tr><td>Paid, including the retainer applied</td><td>500.00</td></tr>
+<tr><td>Credited</td><td>110.70</td></tr>
+<tr><td><strong>Closing balance</strong></td><td><strong>496.30</strong></td></tr>
+</table>
+<p><code>statement_aging</code> as at 2026-09-30 puts the whole <strong>EUR 496.30</strong> in the 0 to
+30 day bucket, EUR 0.00 in 31 to 60, 61 to 90 and over 90, with INV-2026-0001 sitting 11 days past its
+2026-09-19 due date and unapplied credit of EUR 0.00.</p>
+<p>Note what that closing balance is: it nets the credit note that step 4 could not see. The document
+the client receives is right even where the invoice store's own balance is not.</p>
+
+<h2>What the free tier covered</h2>
+<p>All nine steps ran with no license key set. Eight of them needed nothing paid at all: the invoice,
+the credit note, the retainer and its application, the bank import and both reconciliations, the two
+expenses, the asset and its schedule, the trip, the statement and the aging. One thing was refused by
+name, <code>asset_journal</code> in step 7, and the free <code>asset_schedule</code> answered the same
+question with the same numbers.</p>
+<p>The paid gates you would meet next are the PDFs and the portfolio reports: <code>statement_pdf</code>,
+<code>credit_note_pdf</code>, <code>deposit_statement_pdf</code>, <code>statements_report</code> and
+<code>asset_report</code>. A single bundle key at 39 dollars, once, activates Pro on every child at
+the same time. Full detail on <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>.</p>
+<p>Seventeen tool calls, 118.6 seconds, and a statement whose closing balance of EUR 496.30 reconciles
+to the minor unit with the invoice, the credit note and the deposit that produced it.</p>
+${FOOT}`,
+    faq: [
+      { q: "Do I need all twenty-four servers to close a month like this?", a: "No. Eight children did the whole month: invoice, billing-docs, deposits, bank-statement, expense-tracker, asset-register, per-diem and statement-of-account. The bundle is one config entry for all twenty-four, which is convenient when you do not know in advance which you will need; installing those eight singly gives the same free tier and the same answers." },
+      { q: "Does the order of the steps matter?", a: "Two places. The credit note has to name an invoice that exists, and the statement has to be built last, because it reads the invoice, credit note and deposit stores as they stand when you ask. Everything else is independent. Reconciling before you log receipts is fine and is what this run did: the reconciliation is what tells you which receipts are missing." },
+      { q: "What was the closing balance and how is it made up?", a: "EUR 496.30. Invoice INV-2026-0001 at EUR 1,107.00, less credit note CN-2026-0001 at EUR 110.70, less the EUR 500.00 retainer DEP-2026-0001 applied as a payment. Opening balance was EUR 0.00 because the stores started empty." },
+      { q: "Why did the retainer step report a different figure?", a: "Because the invoice store does not know credit notes exist. deposit_apply reported a balance of EUR 607.00, which is the invoice total less the payment only. statement-of-account nets the credit note and returns EUR 496.30, so the document you send a client is correct; it is the mid-month balance question that is not. This is recorded as an open defect in the round 27 audit." },
+      { q: "How much of this needs a Pro key?", a: "None of the nine steps, on the figures. One tool was refused, asset_journal, and the free asset_schedule carried the same numbers. Pro is what you buy for the PDFs and the cross-client reports: statement_pdf, credit_note_pdf, deposit_statement_pdf, statements_report and asset_report. One bundle key at 39 dollars covers every child." },
+      { q: "Are these figures reproducible?", a: "The prompts, the profile, the fixture and the full method are in docs/USER_VALUE_R27.md in the repository, and every figure quoted here was read back off the stores on disk or off a direct tool probe rather than off the model's prose. The run scored 26 of 27 across the nine prompts on 2026-09-05." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
