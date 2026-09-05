@@ -58,6 +58,14 @@ function newId(): string { return randomBytes(4).toString("hex"); }
 
 const text = (max = MAX_TEXT) => z.string().max(max, `must be ${max} characters or fewer`);
 
+/** A leading `<scheme>://` (http, https, s3, whatever) means the caller has a URL, not a
+ * local path. This is checked BEFORE any resolution: a URL is never joined against the
+ * server's cwd, so the refusal never has a path in it, let alone one that leaks the cwd. */
+const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
+
+// D-R83: a URL handed to `path` used to be silently resolved as a relative filesystem
+// path (`//` collapses into `/`), producing a "no file at ..." error that both implied
+// the file might exist somewhere and leaked the server's own cwd. Refused by name instead.
 const UPLOAD_ROOT = "/uploads/";
 const OUT_ROOT = "/out/";
 const STATEMENT_EXTS = [".csv", ".tsv", ".txt", ".ofx", ".qif"];
