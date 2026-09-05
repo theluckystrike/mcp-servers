@@ -159,12 +159,37 @@
   "yuzehao2023-awesome-mcp-servers": {
    "status": "submitted",
    "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
-   "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name \u2014 url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
+   "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name — url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
   },
   "mcpstar-awesome-dxt-mcp": {
    "status": "skipped: no populated list to append to",
    "url": "https://github.com/MCPStar/awesome-dxt-mcp",
    "note": "20 stars; Community Extensions section is a placeholder (\"Looking for contributions!\"), no existing per-entry format to match, only category descriptions with example bullet-point ideas, not real entries"
+  },
+  "mobinx-awesome-mcp-list": {
+   "status": "submitted",
+   "url": "https://github.com/MobinX/awesome-mcp-list/pull/420",
+   "note": "Round 12: plain bullet list, decorative emoji only on category headings (same convention as TensorBlock/YuzeHao2023). Forked to theluckystrike/awesome-mcp-list, branch add-office-suite, one entry added to Utilities next to Markgatcha/universal-mcp-toolkit. PR open."
+  },
+  "aianytime-awesome-mcp-server": {
+   "status": "submitted",
+   "url": "https://github.com/AIAnytime/Awesome-MCP-Server/pull/83",
+   "note": "Round 12: CONTRIBUTING.md requires one server per PR, exact bullet format, alphabetical order, no emoji. Forked to theluckystrike/Awesome-MCP-Server, branch add-office-suite, one entry added to Work & productivity between AI Applyd and Process Street. PR open."
+  },
+  "mctrinh-awesome-mcp-servers": {
+   "status": "submitted",
+   "url": "https://github.com/mctrinh/awesome-mcp-servers/pull/112",
+   "note": "Round 12: flat alphabetical Community Servers list, plain bullets, no emoji. Forked to theluckystrike/awesome-mcp-servers-5, branch add-office-suite, one entry Office Suite inserted alphabetically between Office-Visio-MCP-Server and Office-Word-MCP-Server. PR open."
+  },
+  "yzfly-awesome-mcp-zh": {
+   "status": "skipped: emoji tags",
+   "url": "https://github.com/yzfly/Awesome-MCP-ZH",
+   "note": "Round 12: per-entry emoji in the notes column on every row (medal/cloud/house/apple icons marking official/language/deployment/platform), not just category headings. Skipped per no-emoji rule."
+  },
+  "alexmili-awesome-mcp": {
+   "status": "skipped: emoji tags",
+   "url": "https://github.com/AlexMili/Awesome-MCP",
+   "note": "Round 12: table has a checkmark column and a colored-circle Activity column rendered per entry, not just headings. Skipped per no-emoji rule."
   }
  },
  "per_server": {
