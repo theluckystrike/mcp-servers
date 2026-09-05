@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T00:07:18.269Z",
+  "generated_at": "2026-09-05T02:26:29.315Z",
   "rounds": [
     {
       "round": 1,
@@ -359,6 +359,42 @@
       },
       "at": "2026-09-04T11:10:00Z",
       "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_fcafe20560c3d162ea9d4bbbb493081d, 8025-byte page) and reused for every lane. Register"
+    },
+    {
+      "round": 17,
+      "file": "user_value_r17.json",
+      "score": 13,
+      "max": 18,
+      "pct": 72,
+      "scenarios": 6,
+      "per_server": {
+        "invoice": {
+          "score": 2,
+          "max": 3
+        },
+        "quotes": {
+          "score": 2,
+          "max": 3
+        },
+        "bank-statement": {
+          "score": 2,
+          "max": 3
+        },
+        "timezone": {
+          "score": 2,
+          "max": 3
+        },
+        "pdf": {
+          "score": 2,
+          "max": 3
+        },
+        "zip": {
+          "score": 3,
+          "max": 3
+        }
+      },
+      "at": "2026-09-05T01:40:00Z",
+      "method": "Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with one stdio entry named office pointing at servers/office-suite/dist/index."
     }
   ],
   "servers": [
@@ -389,7 +425,8 @@
     "resume",
     "spreadsheet",
     "time-tracker",
-    "timezone"
+    "timezone",
+    "zip"
   ],
   "matrix": [
     {
@@ -409,10 +446,11 @@
         "",
         "",
         "",
-        ""
+        "",
+        "2/3"
       ],
       "best_pct": 78,
-      "last_round": 11
+      "last_round": 17
     },
     {
       "server": "barcode",
@@ -431,6 +469,7 @@
         "",
         "16/18",
         "",
+        "",
         ""
       ],
       "best_pct": 89,
@@ -444,6 +483,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -475,6 +515,7 @@
         "17/18",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 94,
@@ -497,7 +538,8 @@
         "",
         "",
         "",
-        "10/12"
+        "10/12",
+        ""
       ],
       "best_pct": 83,
       "last_round": 15
@@ -519,6 +561,7 @@
         "",
         "",
         "11/12",
+        "",
         ""
       ],
       "best_pct": 92,
@@ -541,6 +584,7 @@
         "",
         "",
         "11/12",
+        "",
         ""
       ],
       "best_pct": 92,
@@ -563,7 +607,8 @@
         "",
         "",
         "",
-        "10/12"
+        "10/12",
+        ""
       ],
       "best_pct": 100,
       "last_round": 15
@@ -581,6 +626,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         "",
         "",
@@ -607,6 +653,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -625,6 +672,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         "",
         "",
@@ -651,6 +699,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -669,6 +718,7 @@
         "",
         "",
         "2/3",
+        "",
         "",
         "",
         "",
@@ -695,6 +745,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -713,6 +764,7 @@
         "",
         "",
         "3/3",
+        "",
         "",
         "",
         "",
@@ -739,6 +791,7 @@
         "",
         "",
         "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -758,6 +811,7 @@
         "",
         "",
         "18/18",
+        "",
         "",
         "",
         "",
@@ -783,10 +837,11 @@
         "",
         "",
         "",
-        ""
+        "",
+        "2/3"
       ],
       "best_pct": 100,
-      "last_round": 5
+      "last_round": 17
     },
     {
       "server": "kanban",
@@ -805,6 +860,7 @@
         "",
         "17/18",
         "",
+        "",
         ""
       ],
       "best_pct": 94,
@@ -816,6 +872,7 @@
         "",
         "",
         "8/12",
+        "",
         "",
         "",
         "",
@@ -849,10 +906,11 @@
         "17/18",
         "",
         "",
-        ""
+        "",
+        "2/3"
       ],
       "best_pct": 94,
-      "last_round": 12
+      "last_round": 17
     },
     {
       "server": "price-tracker",
@@ -871,6 +929,7 @@
         "",
         "",
         "12/12",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -893,10 +952,11 @@
         "17/18",
         "",
         "",
-        ""
+        "",
+        "2/3"
       ],
       "best_pct": 94,
-      "last_round": 12
+      "last_round": 17
     },
     {
       "server": "recurring",
@@ -915,7 +975,8 @@
         "",
         "",
         "",
-        "10/12"
+        "10/12",
+        ""
       ],
       "best_pct": 83,
       "last_round": 15
@@ -937,6 +998,7 @@
         "",
         "",
         "11/12",
+        "",
         ""
       ],
       "best_pct": 92,
@@ -959,6 +1021,7 @@
         "",
         "",
         "12/12",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -980,6 +1043,7 @@
         "",
         "",
         "17/18",
+        "",
         "",
         ""
       ],
@@ -1003,10 +1067,34 @@
         "",
         "",
         "",
-        "9/12"
+        "9/12",
+        "2/3"
       ],
       "best_pct": 75,
-      "last_round": 15
+      "last_round": 17
+    },
+    {
+      "server": "zip",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "3/3"
+      ],
+      "best_pct": 100,
+      "last_round": 17
     }
   ],
   "ledger": [
@@ -1746,9 +1834,9 @@
     },
     {
       "id": "D-R40",
-      "first_seen": "USER_VALUE_R8.md",
+      "first_seen": "USER_VALUE_R17.md",
       "severity": "",
-      "title": "D-R40 |",
+      "title": "D-R40 holding) | PASS |",
       "status": "fixed"
     },
     {
@@ -2073,6 +2161,27 @@
       "status": "fixed"
     },
     {
+      "id": "D-R83",
+      "first_seen": "USER_VALUE_R17.md",
+      "severity": "",
+      "title": "D-R83. |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R84",
+      "first_seen": "USER_VALUE_R17.md",
+      "severity": "",
+      "title": "D-R84. |",
+      "status": "fixed"
+    },
+    {
+      "id": "D-R85",
+      "first_seen": "USER_VALUE_R17.md",
+      "severity": "low",
+      "title": "D-R85 (low, time-tracker + invoice; conversational) — a first sentence that names a new project",
+      "status": "fixed"
+    },
+    {
       "id": "D-T1",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
@@ -2101,13 +2210,13 @@
     }
   ],
   "counts": {
-    "defects": 141,
-    "fixed": 114,
+    "defects": 144,
+    "fixed": 117,
     "open": 20,
     "triaged": 34,
     "by_status": {
       "harness": 3,
-      "fixed": 114,
+      "fixed": 117,
       "client": 3,
       "open": 17,
       "open (client or accepted)": 3,

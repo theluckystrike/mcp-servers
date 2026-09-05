@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T00:16:50.990Z",
-  "total_commits": 364,
-  "sessions": 41,
+  "generated_at": "2026-09-05T02:32:46.973Z",
+  "total_commits": 388,
+  "sessions": 42,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -71,7 +71,12 @@
     {
       "name": "Loop 14: per-tool click sources, profile-first, backlinks, v0.9.3",
       "sessions": 2,
-      "commits": 79
+      "commits": 73
+    },
+    {
+      "name": "Loop 15: checkout audit, bundle page, round 17, URL guards, v0.9.4",
+      "sessions": 1,
+      "commits": 30
     }
   ],
   "rows": [
@@ -502,15 +507,30 @@
       "at": "2026-09-05T00:16:25.623Z",
       "note": "loop 14 closed: v0.9.3 (released by hand after two agents stalled under machine load), 47 registry entries verified, 20 mirrors, validation 471/471, 881 tests; upgrade links now carry per-tool src at 73 gate sites and every storefront buy link (18 human clicks in 7d, most from the store home); profile-first sweep made 12 arguments across six servers default to the shared business profile; worthmyclaim and dscrradar now link in via live-mirror deploys (11 estate sites); TensorBlock resubmitted as one bundle entry (PR 2164); registry KPI reader rewritten per name (46-47 of 47); round 16 deferred; GSC key still dataless; downloads 1503; sales 0",
       "loop": "Loop 14: per-tool click sources, profile-first, backlinks, v0.9.3",
-      "commits": 7,
+      "commits": 1,
       "subjects": [
-        "remote: a Revolut-shaped bank fixture for url uploads",
+        "remote: a Revolut-shaped bank fixture for url uploads"
+      ]
+    },
+    {
+      "n": 42,
+      "at": "2026-09-05T02:32:46.865Z",
+      "note": "loop 15 closed: v0.9.4 by hand (47 registry entries first pass, 20 mirrors, 966 tests, validation 471/471); checkout audit: buyers now see the bundle saving and how the key arrives, cross-sell on single-server sessions, 20 Stripe product descriptions rewritten; /bundle funnel page live and cross-sold from every product page; round 17 office-suite 186 tools 13/18 with every call hitting the right child (no split needed); URL-as-path refused by name in all 13 file servers; registry naming measured as exhausted (namespace sorts first); GSC key readable again: 208 submitted, 0 indexed, never crawled, 0 impressions; clicks 24/7d; downloads 1840; sales 0; round 16 deferred (agents stall under iCloud load)",
+      "loop": "Loop 15: checkout audit, bundle page, round 17, URL guards, v0.9.4",
+      "commits": 30,
+      "subjects": [
         "Record loop 14 metrics and validation data",
         "timezone: round 15 working-hours test spans a full week so a weekend start cannot empty the window",
         "Release v0.9.3: bump 21 packages, 38 internal ranges and 67 server manifests",
         "sha256 of the v0.9.3 bundles into every manifest that references one",
         "Record release v0.9.3",
-        "Loop 14 close: v0.9.3 dashboard, per-name registry KPI, sprint log loop 14"
+        "Loop 14 close: v0.9.3 dashboard, per-name registry KPI, sprint log loop 14",
+        "Sprint log: loop 14 row",
+        "Plan v12: finish the funnel, re-test the weakest lanes",
+        "Checkout audit: customer-visible descriptions, bundle cross-sell, key-delivery note",
+        "Checkout audit doc: before and after, session ids, what needs a human",
+        "naming r5: measure registry ordering mechanism, publish nothing (11/14 capped tokens structurally unreachable)",
+        "Bundle page: /bundle route, home hero link, per-server CTA cross-sell"
       ]
     }
   ]
