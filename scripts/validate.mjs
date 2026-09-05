@@ -2,7 +2,7 @@
 // Live validation of every server + billing, appended to data/validation.json (the validation database).
 // Each run: spawn dist/index.js over stdio, initialize, tools/list, real tool calls, free gate, pro gate, timing.
 import { spawn, execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, statSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, statSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { createServer } from "node:http";
 import { join } from "node:path";
@@ -196,6 +196,142 @@ const PROBES = {
     ok(`${tier}: pricing an unstored asset is never capped, even with the register already full`,
       !stillFree.isError && /"total": "PLN 8,499\.00"/.test(stillFree.text) && !/mcp\.zovo\.one\/buy/.test(stillFree.text),
       stillFree.text.replace(/\s+/g, " ").slice(0, 120));
+  },
+  amortization: async (c, tmp, tier, ok) => {
+    // This server reads no sibling store, so there is nothing to seed: the terms ARE the
+    // input. Every figure asserted below is one servers/amortization/test/unit.test.mjs
+    // works out by hand and docs/AMORTIZATION_RESULT.md recomputes, so this probe fails if
+    // the arithmetic moves and not only if the shape does.
+    const terms = { principal_minor: 1000000, currency: "EUR", rate_bps: 1200, compounding: "monthly", payment_frequency: "monthly", term_periods: 12, start_date: "2026-01-15" };
+
+    // 1. The worked annuity, to the minor unit: payment 88,849 and total interest 66,188.
+    const made = await c.tool("loan_create", { name: "Van finance", method: "annuity", ...terms });
+    ok(`${tier}: the 12-month annuity is LOAN-2026-0001 at a payment of 88,849 and 66,188 of interest`,
+      !made.isError && /"id": "LOAN-2026-0001"/.test(made.text) && /"payment_minor": 88849/.test(made.text)
+      && /"total_interest_minor": 66188/.test(made.text) && /"total_payments_minor": 1066188/.test(made.text),
+      made.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 2. The effective annual rate beside the nominal one. A nominal 12 percent compounded
+    // monthly is an effective 12.68, and that 0.68 is the part of the price the headline
+    // rate does not carry. The periodic rate is printed to six decimal places.
+    ok(`${tier}: nominal 12.00 percent compounded monthly is an effective 12.68 percent, periodic 1.000000`,
+      /"effective_annual_rate_bps": 1268/.test(made.text) && /"effective_annual_rate_pct": "12\.68"/.test(made.text)
+      && /"nominal_annual_rate_pct": "12\.00"/.test(made.text) && /"periodic_rate_pct": "1\.000000"/.test(made.text),
+      made.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 3. Every row of the schedule. Period 12 is the one to read: the balance left is 87,967,
+    // so the principal is exactly that and the interest is the rest of the SAME level
+    // payment, 882 rather than the 880 an unrounded balance carries. The payment never moves.
+    const sched = await c.tool("loan_schedule", { loan: "LOAN-2026-0001" });
+    ok(`${tier}: the schedule opens at 1,000,000, charges 10,000 of interest and closes exactly on zero`,
+      !sched.isError && /"opening_minor": 1000000/.test(sched.text) && /"interest_minor": 10000/.test(sched.text)
+      && /"principal_minor": 78849/.test(sched.text) && /"closing_minor": 921151/.test(sched.text)
+      && /"closing_balance_minor": 0/.test(sched.text) && /"periods": 12/.test(sched.text),
+      sched.text.replace(/\s+/g, " ").slice(0, 150));
+    ok(`${tier}: period 12 absorbs the residual in the SPLIT: interest 882 on a principal of 87,967, payment still 88,849`,
+      /"period": 12[\s\S]{0,400}?"payment_minor": 88849/.test(sched.text)
+      && /"period": 12[\s\S]{0,400}?"interest_minor": 882/.test(sched.text)
+      && /"period": 12[\s\S]{0,400}?"principal_minor": 87967/.test(sched.text)
+      && /"final_payment_minor": 88849/.test(sched.text) && /"total_interest_minor": 66188/.test(sched.text),
+      sched.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 4. Straight principal on the SAME terms: equal principal of 83,333, a payment falling
+    // from 93,333 to 84,166, and 65,000 of interest, 1,188 less than the annuity charges.
+    const straight = await c.tool("loan_create", { name: "Office fitout", method: "straight-principal", ...terms });
+    ok(`${tier}: straight principal on the same terms charges 65,000 of interest, 1,188 less than the annuity`,
+      !straight.isError && /"total_interest_minor": 65000/.test(straight.text)
+      && /"payment_minor": 93333/.test(straight.text) && /"final_payment_minor": 84166/.test(straight.text),
+      straight.text.replace(/\s+/g, " ").slice(0, 150));
+    const sSched = await c.tool("loan_schedule", { loan: "LOAN-2026-0002" });
+    ok(`${tier}: every straight-principal period repays exactly 83,333 and the last closes on zero`,
+      !sSched.isError && /"principal_minor": 83333/.test(sSched.text)
+      && /"period": 12[\s\S]{0,400}?"interest_minor": 833/.test(sSched.text)
+      && /"closing_balance_minor": 0/.test(sSched.text),
+      sSched.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 5. loan_schedule and loan_list are free and unlimited on EVERY tier: the payment and
+    // the interest are the question this server exists for, so neither may carry a buy link.
+    const list = await c.tool("loan_list", { as_of: "2026-06-30" });
+    ok(`${tier}: neither the schedule nor the register carries a checkout link, on any tier`,
+      !list.isError && !/mcp\.zovo\.one\/buy/.test(sched.text) && !/mcp\.zovo\.one\/buy/.test(list.text)
+      && /"outstanding_minor": 597791/.test(list.text),
+      list.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 6. The free cap is on the AGREEMENT HELD, not on the question asked. Three loans in the
+    // register; the fourth is refused on free, and the schedules stay free either way.
+    await c.tool("loan_create", { name: "Plant lease", kind: "lease", method: "annuity", ...terms });
+    const fourth = await c.tool("loan_create", { name: "Fourth", method: "annuity", ...terms });
+    ok(`${tier}: the fourth agreement is ${tier === "pro" ? "allowed" : "refused, naming the $19 price and saying every schedule stays free"}`,
+      tier === "pro" ? !fourth.isError && /"id": "LOAN-2026-0004"/.test(fourth.text)
+        : fourth.isError && /\$19/.test(fourth.text) && /Every schedule stays free and unlimited/.test(fourth.text)
+          && /mcp\.zovo\.one\/buy\/amortization\?src=amortization\.loan_create/.test(fourth.text),
+      fourth.text.replace(/\s+/g, " ").slice(0, 150));
+    const stillFree = await c.tool("loan_schedule", { loan: "LOAN-2026-0001" });
+    ok(`${tier}: the schedule of a loan already recorded answers with the same figures after the cap`,
+      !stillFree.isError && /"total_interest_minor": 66188/.test(stillFree.text)
+      && !/mcp\.zovo\.one\/buy/.test(stillFree.text),
+      stillFree.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 7. The repay-early gate. On Pro: outstanding 514,920 at period 6, 18,174 saved gross
+    // and 13,174 net of a 5,000 penalty. On free: refused with BOTH checkout links.
+    const early = await c.tool("loan_repay_early", { loan: "LOAN-2026-0001", as_of_period: 6, penalty_minor: 5000 });
+    ok(`${tier}: loan_repay_early is ${tier === "pro" ? "answered at 514,920 outstanding and 13,174 saved net of the penalty" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !early.isError && /"outstanding_minor": 514920/.test(early.text)
+        && /"interest_paid_minor": 48014/.test(early.text) && /"interest_saved_minor": 18174/.test(early.text)
+        && /"interest_saved_net_minor": 13174/.test(early.text) && /"worth_doing": true/.test(early.text)
+        : early.isError && /mcp\.zovo\.one\/buy\/amortization\?src=amortization\.loan_repay_early/.test(early.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=amortization\.loan_repay_early\.bundle/.test(early.text),
+      early.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 8. A penalty larger than the interest saved is a COST, not a smaller saving. At period
+    // 11 the saving is 882 against a 5,000 penalty.
+    const costs = await c.tool("loan_repay_early", { loan: "LOAN-2026-0001", as_of_period: 11, penalty_minor: 5000 });
+    ok(`${tier}: a penalty larger than the saving is ${tier === "pro" ? "reported as a COST rather than a smaller saving" : "refused as Pro"}`,
+      tier === "pro" ? !costs.isError && /"interest_saved_minor": 882/.test(costs.text)
+        && /"worth_doing": false/.test(costs.text) && /COSTS/.test(costs.text)
+        : costs.isError && /mcp\.zovo\.one\/buy\/amortization\?src=amortization\.loan_repay_early/.test(costs.text),
+      costs.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 9. The journal gate. Dr interest_expense 10,000, Dr loan_liability 78,849, Cr cash
+    // 88,849, in the cash book's own account ids, and the expense payload carries the
+    // INTEREST alone: 100.00, not 888.49. Booking the whole payment as an expense overstates
+    // the cost of the business by the principal, every period, and still reconciles.
+    const jrn = await c.tool("loan_journal", { loan: "LOAN-2026-0001", period: 1 });
+    ok(`${tier}: loan_journal is ${tier === "pro" ? "Dr interest_expense 10,000, Dr loan_liability 78,849, Cr cash 88,849" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !jrn.isError && /"account": "interest_expense"[\s\S]{0,200}?"debit_minor": 10000/.test(jrn.text)
+        && /"account": "loan_liability"[\s\S]{0,200}?"debit_minor": 78849/.test(jrn.text)
+        && /"account": "cash"[\s\S]{0,200}?"credit_minor": 88849/.test(jrn.text)
+        : jrn.isError && /mcp\.zovo\.one\/buy\/amortization\?src=amortization\.loan_journal/.test(jrn.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=amortization\.loan_journal\.bundle/.test(jrn.text),
+      jrn.text.replace(/\s+/g, " ").slice(0, 150));
+    ok(`${tier}: the expense payload ${tier === "pro" ? "carries 100.00 of interest and names the 788.49 of principal as excluded" : "is behind the same Pro gate"}`,
+      tier === "pro" ? /"amount": 100\b/.test(jrn.text) && /"category": "interest"/.test(jrn.text)
+        && /is NOT an expense/.test(jrn.text) && !/"amount": 888\.49/.test(jrn.text)
+        : jrn.isError,
+      jrn.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 10. loans_report, the third Pro tool.
+    const rep = await c.tool("loans_report", { as_of: "2026-06-30" });
+    ok(`${tier}: loans_report is ${tier === "pro" ? "answered per currency" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !rep.isError && /EUR/.test(rep.text)
+        : rep.isError && /mcp\.zovo\.one\/buy\/amortization\?src=amortization\.loans_report/.test(rep.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=amortization\.loans_report\.bundle/.test(rep.text),
+      rep.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 11. No schedule is stored. The register holds the TERMS and two derived figures, and
+    // every row is rebuilt on the call, because a stored schedule is a second copy of what
+    // the rate and the term already decide and the copy is the one believed after an edit.
+    const raw = readFileSync(join(tmp, "data", "mcp-servers", "amortization", "loans.json"), "utf8");
+    ok(`${tier}: the register stores the terms and no schedule: no opening_minor, closing_minor or rows`,
+      /"principal_minor": 1000000/.test(raw) && !/opening_minor/.test(raw)
+      && !/closing_minor/.test(raw) && !/"rows"/.test(raw),
+      raw.replace(/\s+/g, " ").slice(0, 120));
+
+    // 12. Nothing outside its own data directory. This server reads no sibling store at all.
+    ok(`${tier}: the data directory holds this server's two files and nothing belonging to anyone else`,
+      readdirSync(join(tmp, "data", "mcp-servers")).join(",") === "amortization"
+      && readdirSync(join(tmp, "data", "mcp-servers", "amortization")).sort().join(",") === "counter.json,loans.json",
+      readdirSync(join(tmp, "data", "mcp-servers")).join(","));
   },
   "cash-book": async (c, tmp, tier, ok) => {
     // The six books this server derives from belong to servers/invoice, servers/billing-docs,
@@ -1468,7 +1604,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
