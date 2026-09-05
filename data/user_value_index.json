@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T14:32:06.797Z",
+  "generated_at": "2026-09-05T17:07:06.181Z",
   "rounds": [
     {
       "round": 1,
@@ -547,6 +547,82 @@
       },
       "at": "2026-09-05T20:30:00Z",
       "method": "Arrival: no connect page and no token, the server is spawned locally over stdio as node /Users/mike/mcp-servers/servers/asset-register/dist/index.js from one mc"
+    },
+    {
+      "round": 25,
+      "file": "user_value_r25.json",
+      "score": 14,
+      "max": 18,
+      "pct": 78,
+      "scenarios": 6,
+      "per_server": {
+        "asset-register": {
+          "score": 14,
+          "max": 18
+        }
+      },
+      "at": "2026-09-05T15:55:36Z",
+      "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -m 15 -> 200 text/html, minting anon_8ed0b09784092ceae08d796629237f0c. One token, reused for the whole lane. Regis"
+    },
+    {
+      "round": 26,
+      "file": "user_value_r26.json",
+      "score": 18,
+      "max": 18,
+      "pct": 100,
+      "scenarios": 6,
+      "per_server": {
+        "statement-of-account": {
+          "score": 18,
+          "max": 18
+        }
+      },
+      "at": "2026-09-05T23:35:00Z",
+      "method": "Arrival: no connect page and no token, the server is spawned locally over stdio as node /Users/mike/mcp-servers/servers/statement-of-account/dist/index.js from "
+    },
+    {
+      "round": 27,
+      "file": "user_value_r27.json",
+      "score": 26,
+      "max": 27,
+      "pct": 96,
+      "scenarios": 9,
+      "per_server": {
+        "invoice": {
+          "score": 3,
+          "max": 3
+        },
+        "billing-docs": {
+          "score": 3,
+          "max": 3
+        },
+        "deposits": {
+          "score": 5,
+          "max": 6
+        },
+        "bank-statement": {
+          "score": 3,
+          "max": 3
+        },
+        "expense-tracker": {
+          "score": 3,
+          "max": 3
+        },
+        "asset-register": {
+          "score": 3,
+          "max": 3
+        },
+        "per-diem": {
+          "score": 3,
+          "max": 3
+        },
+        "statement-of-account": {
+          "score": 3,
+          "max": 3
+        }
+      },
+      "at": "2026-09-05T16:25:00Z",
+      "method": "Server: servers/office-suite/dist/index.js, built from source this round, registered as ONE stdio server named office, proxying all 24 children from servers/off"
     }
   ],
   "servers": [
@@ -580,6 +656,7 @@
     "recurring",
     "resume",
     "spreadsheet",
+    "statement-of-account",
     "time-tracker",
     "timezone",
     "zip"
@@ -611,10 +688,13 @@
         "",
         "",
         "",
-        "16/18"
+        "16/18",
+        "14/18",
+        "",
+        "3/3"
       ],
-      "best_pct": 89,
-      "last_round": 24
+      "best_pct": 100,
+      "last_round": 27
     },
     {
       "server": "bank-statement",
@@ -642,10 +722,13 @@
         "",
         "",
         "",
-        ""
+        "",
+        "",
+        "",
+        "3/3"
       ],
-      "best_pct": 89,
-      "last_round": 20
+      "best_pct": 100,
+      "last_round": 27
     },
     {
       "server": "barcode",
@@ -663,6 +746,9 @@
         "",
         "",
         "16/18",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -704,10 +790,13 @@
         "",
         "",
         "",
-        ""
+        "",
+        "",
+        "",
+        "3/3"
       ],
-      "best_pct": 94,
-      "last_round": 20
+      "best_pct": 100,
+      "last_round": 27
     },
     {
       "server": "bundle-licence",
@@ -717,6 +806,9 @@
         "",
         "",
         "3/3",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -766,6 +858,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -797,6 +892,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 83,
@@ -819,6 +917,9 @@
         "",
         "",
         "11/12",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -859,10 +960,13 @@
         "16/18",
         "",
         "",
-        ""
+        "",
+        "",
+        "",
+        "5/6"
       ],
       "best_pct": 89,
-      "last_round": 21
+      "last_round": 27
     },
     {
       "server": "docx",
@@ -881,6 +985,9 @@
         "",
         "",
         "11/12",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -921,10 +1028,13 @@
         "",
         "",
         "",
-        ""
+        "",
+        "",
+        "",
+        "3/3"
       ],
       "best_pct": 100,
-      "last_round": 16
+      "last_round": 27
     },
     {
       "server": "hosted/all six",
@@ -939,6 +1049,9 @@
         "",
         "",
         "2/3",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -983,6 +1096,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -1001,6 +1117,9 @@
         "",
         "",
         "2/3",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -1045,6 +1164,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 67,
@@ -1063,6 +1185,9 @@
         "",
         "",
         "2/3",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -1107,6 +1232,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -1125,6 +1253,9 @@
         "",
         "",
         "3/3",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -1169,6 +1300,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -1188,6 +1322,9 @@
         "",
         "",
         "18/18",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -1231,10 +1368,13 @@
         "",
         "",
         "",
-        ""
+        "",
+        "",
+        "",
+        "3/3"
       ],
       "best_pct": 100,
-      "last_round": 17
+      "last_round": 27
     },
     {
       "server": "kanban",
@@ -1262,6 +1402,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 94,
@@ -1273,6 +1416,9 @@
         "",
         "",
         "8/12",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -1324,6 +1470,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 94,
@@ -1355,10 +1504,13 @@
         "",
         "17/18",
         "17/18",
-        ""
+        "",
+        "",
+        "",
+        "3/3"
       ],
-      "best_pct": 94,
-      "last_round": 23
+      "best_pct": 100,
+      "last_round": 27
     },
     {
       "server": "price-tracker",
@@ -1377,6 +1529,9 @@
         "",
         "",
         "12/12",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -1417,6 +1572,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 100,
@@ -1448,6 +1606,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 83,
@@ -1470,6 +1631,9 @@
         "",
         "",
         "11/12",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -1510,10 +1674,47 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 100,
       "last_round": 14
+    },
+    {
+      "server": "statement-of-account",
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "18/18",
+        "3/3"
+      ],
+      "best_pct": 100,
+      "last_round": 27
     },
     {
       "server": "time-tracker",
@@ -1531,6 +1732,9 @@
         "",
         "",
         "17/18",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -1572,6 +1776,9 @@
         "",
         "",
         "",
+        "",
+        "",
+        "",
         ""
       ],
       "best_pct": 92,
@@ -1597,6 +1804,9 @@
         "",
         "",
         "3/3",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -2700,6 +2910,26 @@
       "status": "fixed"
     },
     {
+      "id": "D-R95",
+      "first_seen": "USER_VALUE_R27.md",
+      "severity": "",
+      "title": "D-R95, invoice, open.** *A hand-written shared business profile silently loses the VAT rate.*",
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "business_set accepts vat_rate, tax_rate and vat as aliases for default_tax_rate and resolves them before writing the shared profile, but getBusiness() in servers/invoice/src/store.ts mapped only the exact key default_tax_rate: a hand-written or hand-edited shared profile (mcp-servers/profile/business.json) that used vat_rate: 23 with no default_tax_rate at all silently produced 0% tax invoices, with nothing in the response saying a rate had been dropped (docs/USER_VALUE_R27.md). Fixed: getBusiness() now falls back to a best-effort raw read of the same file (rawSharedTaxRateAlias) accepting default_tax_rate, tax_rate, vat_rate and vat, in that order, when readSharedProfile's sanitized default_tax_rate is absent - this cannot be done by teaching readSharedProfile the aliases, because writeSharedProfile only ever persists the canonical PROFILE_FIELDS keys, so an alias can only ever reach the store through a file written outside that path. servers/invoice/src/store.ts (rawSharedTaxRateAlias, getBusiness); test servers/invoice/test/round27.test.mjs 'D-R95: a hand-written profile using vat_rate instead of default_tax_rate still carries the rate'.",
+      "triaged": true
+    },
+    {
+      "id": "D-R96",
+      "first_seen": "USER_VALUE_R27.md",
+      "severity": "",
+      "title": "D-R96 below.",
+      "status": "fixed",
+      "scraped_status": "open",
+      "note": "invoice_get and the balance invoice_mark_paid reported were computed from total_minor - paid_minor alone, with no idea a credit note existed against the invoice in the billing-docs store, while statement-of-account already nets credit notes correctly (ageClient in servers/statement-of-account/src/statement.ts): CN-2026-0001 was invisible to both, so deposit_apply could also apply a deposit past what the client actually still owed (docs/USER_VALUE_R27.md). Fixed with a read-only, best-effort peek at billing-docs' credit-notes.json (creditedMinorFor in servers/invoice/src/store.ts, exported from servers/invoice/src/lib.ts) rather than a static import of @theluckystrike/mcp-billing-docs/lib, which itself depends on @theluckystrike/mcp-invoice/lib and would be circular; a missing or unreadable billing-docs store degrades to zero credit, never an error. invoice_get now returns credited_minor/credited and open_minor/open alongside the raw fields; invoice_list's balance_due and invoice_mark_paid's reported balance are netted the same way, and both name 'credited' in the row only when it is non-zero; invoice status itself is untouched (a credit note is not a payment). deposit_apply's open-balance check, overpay refusal and the invoice block in its response are netted identically, so a deposit can no longer be applied past the credit-netted balance. servers/invoice/src/{store,index}.ts and servers/deposits/src/index.ts (deposit_apply); tests servers/invoice/test/round27.test.mjs 'D-R96: invoice_get and invoice_mark_paid net a credit note from the billing-docs store' and servers/deposits/test/round27.test.mjs 'deposit_apply caps at the invoice's open balance NET of a credit note in the billing-docs store'.",
+      "triaged": true
+    },
+    {
       "id": "D-T1",
       "first_seen": "TIMEZONE_AUDIT.md",
       "severity": "",
@@ -2728,13 +2958,13 @@
     }
   ],
   "counts": {
-    "defects": 144,
-    "fixed": 119,
+    "defects": 146,
+    "fixed": 121,
     "open": 18,
-    "triaged": 36,
+    "triaged": 38,
     "by_status": {
       "harness": 3,
-      "fixed": 119,
+      "fixed": 121,
       "client": 3,
       "open": 15,
       "open (client or accepted)": 3,

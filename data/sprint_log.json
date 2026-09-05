@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T14:36:47.157Z",
-  "total_commits": 494,
-  "sessions": 49,
+  "generated_at": "2026-09-05T18:03:30.779Z",
+  "total_commits": 520,
+  "sessions": 50,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -106,7 +106,12 @@
     {
       "name": "Loop 21: bundle in every cap message, asset-register, v0.13.0",
       "sessions": 1,
-      "commits": 76
+      "commits": 17
+    },
+    {
+      "name": "Loop 22: statement-of-account, month-end guide, v0.14.0",
+      "sessions": 1,
+      "commits": 85
     }
   ],
   "rows": [
@@ -649,7 +654,7 @@
       "at": "2026-09-05T14:33:49.149Z",
       "note": "loop 21 closed: v0.13.0 with asset-register (KST, UK capital allowance and MACRS tables; monthly schedules that sum to base to the minor unit; audit 18/18; the twenty-third server and hosted endpoint), 62 manifests published; every cap message now ends with the $39 bundle link with its own click source and the instrument recorded the first bundle click; per-diem real compare page against gsa-perdiem-mcp; per-diem hosted 17/18; intel R10 found five more empty slots (cash-book, petty-cash, amortization, statement-of-account, dunning); downloads 2665; clicks 71/7d; sales 0; GSC key dataless",
       "loop": "Loop 21: bundle in every cap message, asset-register, v0.13.0",
-      "commits": 59,
+      "commits": 25,
       "subjects": [
         "Plan v16: content debt, server 21, weakest lanes",
         "Rewrite office-suite guide under a version-free slug, redirect the old one",
@@ -663,6 +668,27 @@
         "Deposits: round 20 measurement, hosted web page, pages rebuild, buy tag",
         "remote: twenty-first endpoint /mcp/deposits, deposits on the shared invoice store",
         "Deposits validate.mjs probes, distribution row, guide correction for the invoice mark-paid fix"
+      ]
+    },
+    {
+      "n": 50,
+      "at": "2026-09-05T18:03:30.585Z",
+      "note": "loop 22 closed: v0.14.0 with statement-of-account (per-client statements from the invoice, credit-note and deposit stores, aging as at any date, dunning with bank details; audit 18/18; the twenty-fourth server and hosted endpoint), 65 manifests published and verified, 1119 tests, validation 674/674, 25 bundles; month-end guide generated from a real nine-prompt run through the 224-tool bundle (round 27, 26/27); invoice balances net credit notes and the profile reader accepts vat_rate (D-R95, D-R96); hosted worker takes read-only shared stores; sync-mirrors retries network drops; release-check enforces the profile-reader list; probe dates now derive from the host clock; INTEL_R10 variant tokens all failed the honesty rule; downloads 3517; clicks 82/7d with 2 bundle-sourced; sales 0; GSC key dataless",
+      "loop": "Loop 22: statement-of-account, month-end guide, v0.14.0",
+      "commits": 60,
+      "subjects": [
+        "Wire per-diem into the estate: product, setup, guide, facts, tools, build scripts, distribution row",
+        "per-diem demo GIF and logo",
+        "docs: per-diem Part 2 CLI audit and Part 1 gap re-verification",
+        "remote: add POST /mcp/per-diem, the 22nd endpoint",
+        "validate.mjs: per-diem probes, 19 checks a tier, and per-diem on the buy list",
+        "checkout test: the bundle line is Twenty-two servers now",
+        "per-diem: measured first-five round 22 (17/18), pages regenerated, billing deployed",
+        "validation run 50: 594/594, per-diem 38/38",
+        "Round 15 result: per-diem wired into the estate",
+        "READMEs: per-diem row and demo gif line",
+        "per-diem README: no em dashes, house punctuation",
+        "Round 15: Docker catalog entry and repin to c03d4f0, Cline issue 2444, distribution row"
       ]
     }
   ]
