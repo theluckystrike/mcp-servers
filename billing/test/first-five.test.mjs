@@ -41,7 +41,7 @@ function unesc(s) {
 /** The prompts a page actually shows, read back out of the rendered HTML, not the metadata. */
 function renderedPrompts(html) {
   const section = html.slice(html.indexOf("<h2>First five minutes</h2>"));
-  return [...section.matchAll(/<pre>([\s\S]*?)<\/pre>/g)].map((m) => unesc(m[1]));
+  return [...section.matchAll(/<pre class="prompt">([\s\S]*?)<\/pre>/g)].map((m) => unesc(m[1]));
 }
 
 test("every /s/<id> page has a First five minutes section", () => {

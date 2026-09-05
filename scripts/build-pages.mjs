@@ -128,7 +128,7 @@ function firstFiveMinutes(id, scenarios, free) {
   const blocks = sel.picked.map((r) => {
     const did = evidenceSentence(r.note);
     const score = sel.perfect ? "" : ` Score ${r.score} of 3.`;
-    return `<pre>${escHtml(r.prompt)}</pre>\n<p class="muted">What it did, ${source}: ${escHtml(did)}${score}</p>`;
+    return `<pre class="prompt">${escHtml(r.prompt)}</pre>\n<p class="muted">Paste this into Claude with the server connected.</p>\n<p class="muted">What it did, ${source}: ${escHtml(did)}${score}</p>`;
   }).join("\n");
   const freeLine = free ? `\n<p class="muted">On the free tier for this path: ${escHtml(free)}</p>` : "";
   return {

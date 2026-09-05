@@ -174,6 +174,55 @@ function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+/**
+ * Progressive copy button for every `<pre class="prompt">` block (guide pages, the
+ * bundle page and the /s/<id> "First five minutes" sections). No CSP header is set
+ * on this service (grepped: none), so a plain inline script is fine; if one is ever
+ * added, it needs a nonce or hash here rather than loosening the policy. Without
+ * JavaScript the `<pre class="prompt">` blocks render exactly as before, just without
+ * the button: this script only adds to the DOM, it never changes what is already
+ * there. One string, included once in the shared page shell below.
+ */
+const COPY_BUTTON_SCRIPT = `<script>(function(){
+function init(){
+  var blocks = document.querySelectorAll("pre.prompt");
+  for (var i = 0; i < blocks.length; i++) {
+    var pre = blocks[i];
+    if (pre.dataset.copyReady) continue;
+    pre.dataset.copyReady = "1";
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.addEventListener("click", (function(pre, btn){
+      return function(){
+        var text = pre.textContent;
+        var done = function(){
+          btn.textContent = "Copied";
+          setTimeout(function(){ btn.textContent = "Copy"; }, 2000);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, done);
+        } else {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); } catch (e) {}
+          document.body.removeChild(ta);
+          done();
+        }
+      };
+    })(pre, btn));
+    pre.insertAdjacentElement("afterend", btn);
+  }
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+})();</script>`;
+
 function page(title, body) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -190,8 +239,10 @@ pre{background:rgba(128,128,128,.12);padding:12px;border-radius:6px;overflow-x:a
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .key{font-size:15px;word-break:break-all;user-select:all}
 footer{margin-top:48px;font-size:14px;opacity:.7}
+.copy-btn{display:inline-block;margin:-8px 0 4px;padding:3px 10px;font-size:12px;line-height:1.6;border:1px solid currentColor;border-radius:4px;background:transparent;color:inherit;cursor:pointer;font-family:inherit}
 </style></head><body>${body}
 <footer>Built by <a href="${REPO}">theluckystrike</a>. Support: support@zovo.one &middot; <a href="/changelog">Changelog</a></footer>
+${COPY_BUTTON_SCRIPT}
 </body></html>`;
 }
 
