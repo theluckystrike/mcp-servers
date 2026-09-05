@@ -13,7 +13,7 @@ import {
 } from "./money.js";
 import { renderInvoicePdf } from "../../shims/pdf.js";
 import {
-  dataDir, findClient, getBusiness, getClients, getInvoices, hasBusiness,
+  creditedMinorFor, dataDir, findClient, getBusiness, getClients, getInvoices, hasBusiness,
   invoicesInMonth, nextNumber, setBusiness, setClients, setInvoices,
   type Business, type Client, type Invoice,
 } from "./store.js";
@@ -79,7 +79,21 @@ function documentLabel(pathOrLink: string, html?: boolean): string {
   return (html ?? /\.html?(\?|#|$)/i.test(pathOrLink)) ? "HTML invoice (print to PDF)" : "PDF invoice";
 }
 
+/**
+ * D-R96: total_minor - paid_minor alone ignores a credit note issued against this
+ * invoice in the billing-docs store; statement-of-account already nets them (see
+ * ageClient in servers/statement-of-account/src/statement.ts), this floors the same
+ * way it does - a credit note larger than what is still open cannot make the balance
+ * negative, it just clears it.
+ */
+function netBalance(inv: Invoice): { credited_minor: number; open_minor: number } {
+  const credited_minor = creditedMinorFor(inv.number, inv.currency);
+  const open_minor = Math.max(0, inv.total_minor - inv.paid_minor - credited_minor);
+  return { credited_minor, open_minor };
+}
+
 function summarize(inv: Invoice) {
+  const { credited_minor, open_minor } = netBalance(inv);
   return {
     number: inv.number,
     client: inv.client.name,
@@ -94,7 +108,8 @@ function summarize(inv: Invoice) {
     total_minor: inv.total_minor,
     status: inv.status,
     paid: inv.paid_minor ? formatMoney(inv.paid_minor, inv.currency) : undefined,
-    balance_due: formatMoney(inv.total_minor - inv.paid_minor, inv.currency),
+    credited: credited_minor ? formatMoney(credited_minor, inv.currency) : undefined,
+    balance_due: formatMoney(open_minor, inv.currency),
   };
 }
 
@@ -576,12 +591,22 @@ server.registerTool("invoice_list", {
 
 server.registerTool("invoice_get", {
   title: "Get one invoice",
-  description: "Return the full stored record for one invoice number, including every line and tax breakdown.",
+  description: "Return the full stored record for one invoice number, including every line, tax breakdown, and the balance still open after any credit note issued against it (see credited_minor).",
   inputSchema: { number: z.string() },
 }, async (a) => {
   const inv = getInvoices().find((i) => i.number === a.number);
   if (!inv) return fail(`no invoice numbered ${a.number}.`);
-  return json(inv);
+  // D-R96: total_minor and paid_minor alone say nothing about a credit note issued
+  // against this invoice in the billing-docs store. credited_minor and open_minor are
+  // the netted figures; open_minor is what is actually still owed.
+  const { credited_minor, open_minor } = netBalance(inv);
+  return json({
+    ...inv,
+    credited_minor,
+    credited: credited_minor ? formatMoney(credited_minor, inv.currency) : undefined,
+    open_minor,
+    open: formatMoney(open_minor, inv.currency),
+  });
 });
 
 server.registerTool("invoice_mark_paid", {
@@ -634,10 +659,16 @@ server.registerTool("invoice_mark_paid", {
     inv.payments.push({ date, amount_minor: addMinor, method: a.method, reference: a.reference });
     setInvoices(all);
 
-    const bal = inv.total_minor - inv.paid_minor;
+    // D-R96: the balance shown here nets any credit note issued against this invoice
+    // (billing-docs' credit-notes.json, read best-effort - see creditedMinorFor), the
+    // same way statement-of-account already does. inv.status above is unchanged: it
+    // still reflects paid_minor vs total_minor only, because a credit note is not a
+    // payment.
+    const { credited_minor, open_minor } = netBalance(inv);
     return ok(`${inv.number} marked ${inv.status} on ${inv.paid_date}. Added ${formatMoney(addMinor, inv.currency)} ` +
       `(total received ${formatMoney(inv.paid_minor, inv.currency)})` +
-      (bal > 0 ? `, balance due ${formatMoney(bal, inv.currency)}.` : "."));
+      (credited_minor ? `, credited ${formatMoney(credited_minor, inv.currency)}` : "") +
+      (open_minor > 0 ? `, balance due ${formatMoney(open_minor, inv.currency)}.` : "."));
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });

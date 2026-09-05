@@ -5,8 +5,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
 import {
-  currencyDecimals, findClient, formatMoney, getBusiness, getInvoices, hasBusiness,
-  invoiceLockPath, isoDate, setInvoices,
+  creditedMinorFor, currencyDecimals, findClient, formatMoney, getBusiness, getInvoices,
+  hasBusiness, invoiceLockPath, isoDate, setInvoices,
   type Business, type ComputedLine, type Invoice,
 } from "@theluckystrike/mcp-invoice/lib";
 import { renderDocPdf } from "@theluckystrike/mcp-billing-docs/lib";
@@ -322,14 +322,21 @@ server.registerTool("deposit_apply", {
       }
 
       const held = movements(d).held_minor;
-      const open = inv.total_minor - inv.paid_minor;
+      // D-R96: total_minor - paid_minor alone ignores a credit note issued against this
+      // invoice in the billing-docs store; statement-of-account already nets credit
+      // notes the same way (ageClient), this open balance did not, and a deposit could
+      // be applied past what the client actually still owes. Read-only, best-effort:
+      // no billing-docs store installed reads as zero credit, never an error here.
+      const creditedMinor = creditedMinorFor(inv.number, inv.currency);
+      const open = Math.max(0, inv.total_minor - inv.paid_minor - creditedMinor);
       if (held <= 0) {
         return fail(`${d.id} has nothing left held: ${formatMoney(d.amount_minor, d.currency)} was received and all of it is already applied or refunded. Nothing was changed.`);
       }
       if (open <= 0) {
         return fail(
-          `${inv.number} is already ${inv.status} in full: ${formatMoney(inv.paid_minor, inv.currency)} of ${formatMoney(inv.total_minor, inv.currency)} received, ` +
-          `so there is nothing to apply a deposit to. Nothing was changed.`,
+          `${inv.number} is already ${inv.status} in full: ${formatMoney(inv.paid_minor, inv.currency)} of ${formatMoney(inv.total_minor, inv.currency)} received` +
+          (creditedMinor ? ` and ${formatMoney(creditedMinor, inv.currency)} credited` : "") +
+          `, so there is nothing to apply a deposit to. Nothing was changed.`,
         );
       }
       const amount = a.amount_minor ?? Math.min(held, open);
@@ -341,7 +348,9 @@ server.registerTool("deposit_apply", {
       }
       if (amount > open) {
         return fail(
-          `${inv.number} still owes ${formatMoney(open, inv.currency)} and this would apply ${formatMoney(amount, inv.currency)}. ` +
+          `${inv.number} still owes ${formatMoney(open, inv.currency)}` +
+          (creditedMinor ? ` (after ${formatMoney(creditedMinor, inv.currency)} already credited)` : "") +
+          ` and this would apply ${formatMoney(amount, inv.currency)}. ` +
           `Applying more would show the invoice overpaid and leave the difference owed to the client twice. Nothing was changed.`,
         );
       }
@@ -364,7 +373,10 @@ server.registerTool("deposit_apply", {
       d.updated = new Date().toISOString();
       setDeposits(list);
 
-      const stillOpen = row.total_minor - row.paid_minor;
+      // D-R96: netted the same way `open` above was, so the balance shown here agrees
+      // with what invoice_get and invoice_list now show for the same invoice.
+      const stillCredited = creditedMinorFor(row.number, row.currency);
+      const stillOpen = Math.max(0, row.total_minor - row.paid_minor - stillCredited);
       return json({
         applied: { deposit: d.id, invoice: row.number, date: when, amount: formatMoney(amount, d.currency), amount_minor: amount },
         deposit: depositSummary(d),
@@ -372,6 +384,7 @@ server.registerTool("deposit_apply", {
           number: row.number,
           total: formatMoney(row.total_minor, row.currency),
           paid: formatMoney(row.paid_minor, row.currency),
+          credited: stillCredited ? formatMoney(stillCredited, row.currency) : undefined,
           balance_due: formatMoney(stillOpen, row.currency),
           balance_due_minor: stillOpen,
           status: row.status,

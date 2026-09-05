@@ -31,9 +31,9 @@ export { renderInvoicePdf } from "./pdf.js";
 /* ------------------------------------------------------------------- store */
 export type { Business, Client, Invoice, Payment } from "./store.js";
 export {
-  CorruptDataError, DEFAULT_BUSINESS, dataDir, findClient, getBusiness, getClients,
-  getInvoices, hasBusiness, invoicesInMonth, markerPath, nextNumber, readJsonFile,
-  setBusiness, setClients, setInvoices,
+  CorruptDataError, DEFAULT_BUSINESS, creditedMinorFor, dataDir, findClient, getBusiness,
+  getClients, getInvoices, hasBusiness, invoicesInMonth, markerPath, nextNumber,
+  readJsonFile, setBusiness, setClients, setInvoices,
 } from "./store.js";
 
 import { join } from "node:path";
