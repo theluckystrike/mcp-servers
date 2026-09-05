@@ -55,7 +55,12 @@ test("the version is one number: package.json, src/version.ts, serverInfo and ev
       assert.equal(p.version, pkg.version, `${file} package entry version`);
       assert.equal(p.transport.type, "stdio", `${file} is stdio only: this server is not hosted`);
     }
-    assert.equal(j.remotes, undefined, `${file} must not advertise a remote: this server is not hosted`);
+    if (file === "server.mcpb.json") {
+      const remotes = JSON.parse(readFileSync(join(HERE, "remotes.json"), "utf8"));
+      assert.deepEqual(j.remotes, remotes, `${file} remotes must equal remotes.json (hosted at /mcp/deposits)`);
+    } else {
+      assert.equal(j.remotes, undefined, `${file} is a stdio-only second name and must not advertise a remote`);
+    }
     assert.ok((j.description ?? "").length < 100, `${file} description is ${j.description.length} chars; the registry 422s at 100`);
     assert.ok(!/[,.]\.$|,$/.test(j.description), `${file} description ends in a machine truncation`);
   }

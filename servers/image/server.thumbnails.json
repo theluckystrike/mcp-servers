@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/thumbnails",
   "description": "Generate image thumbnails, resize, convert and compress photos from your AI chat. Local files.",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.10.0/image.mcpb",
-      "version": "0.10.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.11.0/image.mcpb",
+      "version": "0.11.0",
       "fileSha256": "fa533dc84b5100b2ae2cfc7ba98038eb4e8b1532aa7ba1e2eadfca8058f75c95",
       "transport": {
         "type": "stdio"

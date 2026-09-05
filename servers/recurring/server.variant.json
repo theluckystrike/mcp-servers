@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/retainer",
   "description": "Recurring retainer billing: schedule invoices once, generate due PDFs automatically.",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.10.0/recurring.mcpb",
-      "version": "0.10.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.11.0/recurring.mcpb",
+      "version": "0.11.0",
       "fileSha256": "27c6f1147f8bdf03b2c1f21cabac48c5926211ccf032b3e1a1a6b966d73275ec",
       "transport": {
         "type": "stdio"
