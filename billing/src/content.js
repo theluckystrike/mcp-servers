@@ -2222,19 +2222,20 @@ ${FOOT}`,
     ],
   },
 
-  "one-install-nineteen-servers-office-suite": {
-    title: "One install for all nineteen MCP servers: the office-suite bundle",
-    description: "One stdio server proxies all nineteen sibling servers as 186 tools in one tools/list. What it is, the .mcpb and the npx line, the two prefixed tool names, and the six-prompt cross-server audit that scored 13 of 18.",
-    html: `<h1>One install for all nineteen MCP servers: the office-suite bundle</h1>
-<p>Nineteen servers in this collection each do one job: time tracking, invoicing, quotes, expenses,
+  "one-install-office-suite": {
+    title: "One install, every server: the office-suite bundle",
+    description: "One stdio server proxies all twenty sibling servers as 198 tools in one tools/list. What it is, the .mcpb and the npx line, the four prefixed tool names, and the six-prompt cross-server audit that scored 13 of 18 against the earlier nineteen-server, 186-tool build.",
+    html: `<h1>One install, every server: the office-suite bundle</h1>
+<p>Twenty servers in this collection each do one job: time tracking, invoicing, quotes, expenses,
 spreadsheets, prices, currency, a Word proposal, contract clauses, a resume, PDF merges, an .ics
 calendar, a kanban board, image resize, bank CSV reconciliation, barcodes and SEPA payment QR codes,
-and safe zip archives. Adding all nineteen to a client one at a time is nineteen config entries,
-nineteen absolute paths, nineteen things to remember are running. <strong>office-suite</strong> is the
-same nineteen servers behind one config entry: it starts each one as its own child process over stdio,
-forwards every tool, resource and prompt call to whichever child owns the name, and merges their
-license state into one pair of tools, <code>license_status</code> and <code>license_activate</code>.
-Nothing is reimplemented. Each child keeps its own local JSON storage, exactly as it does standalone.</p>
+safe zip archives, and credit notes and purchase orders against those same invoices. Adding all
+twenty to a client one at a time is twenty config entries, twenty absolute paths, twenty things to
+remember are running. <strong>office-suite</strong> is the same twenty servers behind one config
+entry: it starts each one as its own child process over stdio, forwards every tool, resource and
+prompt call to whichever child owns the name, and merges their license state into one pair of tools,
+<code>license_status</code> and <code>license_activate</code>. Nothing is reimplemented. Each child
+keeps its own local JSON storage, exactly as it does standalone.</p>
 
 <h2>Install it</h2>
 <p>One command for Claude Code:</p>
@@ -2256,22 +2257,27 @@ opening it shows an installation dialog. There is no account, no API key and no 
 child runs locally over stdio and writes to its own folder under
 <code>~/.local/share/mcp-servers/&lt;name&gt;/</code>.</p>
 
-<h2>186 tools in one namespace, and the two names that collided</h2>
-<p>Read live off a built bundle: the nineteen children's own <code>tools/list</code> calls sum to 222
-tool names. Eighteen of them are the same <code>license_status</code> / <code>license_activate</code>
-pair repeated once per child, so the bundle collapses those 36 down to one pair, and 222 minus 36 is
-exactly 186, the number a client actually sees on its own <code>tools/list</code>. Out of 186
-names, exactly two needed disambiguating: invoice and docx both register a tool called
-<code>business_set</code>, so the bundle exposes both, prefixed with the server they came from,
-<code>invoice_business_set</code> and <code>docx_business_set</code>, and rewrites each child's own
-reply so a message that said "run business_set" says the name you can actually call. Every other tool
-keeps its bare name unchanged. Nineteen servers, and the bundle had to rename exactly one collision.</p>
+<h2>198 tools in one namespace, and the four names that collided</h2>
+<p>Read live off a built bundle on 2026-09-05: the twenty children's own <code>tools/list</code> calls
+sum to more names than a client ever sees, because each child also registers its own
+<code>license_status</code> and <code>license_activate</code> pair. The bundle merges those twenty
+pairs down to one, and what is left after that merge is <strong>198 tools</strong> on the bundle's
+own <code>tools/list</code>. Out of those 198 names, exactly four needed disambiguating: invoice and
+docx both register a tool called <code>business_set</code>, and expense-tracker and bank-statement
+both register one called <code>category_rules</code>. The bundle exposes all four, prefixed with the
+server they came from: <code>invoice_business_set</code>, <code>docx_business_set</code>,
+<code>expense-tracker_category_rules</code> and <code>bank-statement_category_rules</code>. It
+rewrites each child's own reply so a message that said "run business_set" or "run category_rules"
+says the name you can actually call. Every other tool keeps its bare name unchanged.
+Twenty servers, and the bundle had to rename exactly two collisions, four tool names in total.</p>
 
 <h2>Six sentences that each need two or more children, measured</h2>
 <p>An audit ran the real Claude CLI against the built bundle with all 186 tools on an explicit
 allowlist, the CLI's own file and web tools denied, an empty working directory, and one running
 conversation. Six prompts, each written the way a person phrases a request, each needing two or more
-of the nineteen children in a single sentence. Quoted verbatim, with what happened:</p>
+of the children in a single sentence. This was measured on 2026-09-04 against the nineteen-server
+build with 186 tools, before billing-docs joined the bundle; the sentences, scores and defects below
+are that measurement, unchanged. Quoted verbatim, with what happened:</p>
 <ol>
 <li><strong>"Log 3 hours today on Nova design and invoice them at EUR 90"</strong>: time-tracker
 plus invoice. The model checked for a client named Nova, found none, and asked before writing. Told to
@@ -2310,10 +2316,12 @@ cleanest prompt of the six.</li>
 correct child and the correct tool inside it: zero cross-child confusion, zero wrong-server picks.
 The "first tool called with no hint" reach was 5 of 6, 83%; the stricter "was the very first call the
 working tool" reading was 3 of 6, 50%, but all three misses were the same habit, reading an empty
-list of clients or contacts before writing to it, not a wrong pick. At 186 tools, 1.7x the 108 tools
-measured when this bundle held five children, tool selection did not get worse: 20 of 20 correct
-against 50 of 51 at the smaller count. The total score was 13 of 18 across six prompts, 226.5 seconds
-of wall clock.</p>
+list of clients or contacts before writing to it, not a wrong pick. This was measured on 2026-09-04
+against the nineteen-server build with 186 tools, 1.7x the 108 tools measured when this bundle held
+five children; tool selection did not get worse: 20 of 20 correct against 50 of 51 at the smaller
+count. The total score was 13 of 18 across six prompts, 226.5 seconds of wall clock. The bundle has
+since grown to twenty servers and 198 tools; that growth has not been re-measured against this
+six-prompt audit.</p>
 <p>Three defects came out of the same round and are already fixed in the shipped server: a URL handed
 to a tool that expects a local file path used to be silently resolved against the server's own
 working directory and fail with a path that never existed; <code>find_meeting_slots</code> now always
@@ -2323,15 +2331,15 @@ fact you already gave, instead of reading as a dead end that buys a confirmation
 
 <h2>When to install single servers instead</h2>
 <p>The bundle is not always the right size. Windsurf's Cascade agent caps out at 100 tools across
-every enabled server, so 186 tools in one entry does not fit at all; installing only the two or three
+every enabled server, so 198 tools in one entry does not fit at all; installing only the two or three
 single servers you actually use, at 9 to 16 tools each, leaves room for the rest of that budget. The
 same logic applies anywhere the count matters more than the config-entry count: a project that only
 ever needs the time tracker and the invoice server gets the same free tier and the same tools either
-way, with fewer license checks and no fourteen dormant sibling processes started on every session.
-Ten of the nineteen children went untouched by this round's six sentences entirely, which is the
-concrete argument for installing single servers when you know in advance which two or three you will
-actually use, and the bundle when you do not, or when the client charges per config entry rather than
-per tool.</p>
+way, with fewer license checks and no dormant sibling processes started for the servers it never
+calls. Ten of the nineteen children went untouched by the 2026-09-04 audit's six sentences entirely,
+which is the concrete argument for installing single servers when you know in advance which two or
+three you will actually use, and the bundle when you do not, or when the client charges per
+config entry rather than per tool.</p>
 
 <h2>Free tier and Pro</h2>
 <p>Each child keeps its own free tier exactly as documented in its own guide; this bundle changes
@@ -2342,11 +2350,11 @@ so a bundle that is half Pro cannot look like a full success. Full detail on
 <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>.</p>
 ${FOOT}`,
     faq: [
-      { q: "What exactly is office-suite?", a: "One MCP server, run over stdio, that starts all nineteen sibling servers as child processes and proxies their tools, resources and prompts under one connection. Each child stores its data exactly as it does standalone; the bundle adds no storage of its own." },
-      { q: "How many tools does it expose, and why not 222?", a: "186. The nineteen children's own tools/list calls sum to 222, but 18 of them are the same license_status/license_activate pair repeated once per child; the bundle collapses those 36 down to one pair, and 222 minus 36 is 186." },
-      { q: "Which tool names needed a prefix?", a: "Exactly two out of 186: invoice and docx both register business_set, so the bundle exposes invoice_business_set and docx_business_set and rewrites each child's own replies to match. Every other tool keeps its bare name." },
-      { q: "Does adding more children make tool selection worse?", a: "Not measured. A six-prompt audit needing two or more children per sentence put 20 of 20 tool calls in the correct child and the correct tool, against 50 of 51 at 108 tools with five children. Every remaining defect was a tool declining to say something it already knew, not a wrong pick." },
-      { q: "When should I install a single server instead of the whole bundle?", a: "When a client caps total tools, such as Windsurf's Cascade agent at 100, 186 tools does not fit in one entry at all. It is also the better choice when you already know you only need two or three of the nineteen: same free tier, fewer license checks, no dormant sibling processes started for children you never call." },
+      { q: "What exactly is office-suite?", a: "One MCP server, run over stdio, that starts all twenty sibling servers as child processes and proxies their tools, resources and prompts under one connection. Each child stores its data exactly as it does standalone; the bundle adds no storage of its own." },
+      { q: "How many tools does it expose?", a: "198, read live off the built bundle on 2026-09-05. Every child also registers its own license_status/license_activate pair; the bundle merges those twenty pairs down to one, and 198 is what is left on the bundle's own tools/list after that merge." },
+      { q: "Which tool names needed a prefix?", a: "Four out of 198: invoice and docx both register business_set, and expense-tracker and bank-statement both register category_rules. The bundle exposes invoice_business_set, docx_business_set, expense-tracker_category_rules and bank-statement_category_rules, and rewrites each child's own replies to match. Every other tool keeps its bare name." },
+      { q: "Does adding more children make tool selection worse?", a: "Not as of the last measurement. A six-prompt audit needing two or more children per sentence, run on 2026-09-04 against the nineteen-server build with 186 tools, put 20 of 20 tool calls in the correct child and the correct tool, against 50 of 51 at 108 tools with five children. Every remaining defect was a tool declining to say something it already knew, not a wrong pick. The bundle has since grown to twenty servers and 198 tools; that growth has not been re-measured against this audit." },
+      { q: "When should I install a single server instead of the whole bundle?", a: "When a client caps total tools, such as Windsurf's Cascade agent at 100, 198 tools does not fit in one entry at all. It is also the better choice when you already know you only need two or three of the twenty: same free tier, fewer license checks, no dormant sibling processes started for servers you never call." },
     ],
   },
 };

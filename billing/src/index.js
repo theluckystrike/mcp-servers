@@ -631,6 +631,18 @@ ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/$
       return new Response(page(GUIDE_INDEX.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
     }
 
+    // Old guide slugs that were renamed. The body and slug both aged out of date
+    // (nineteen servers, 186 tools) when the count moved on; redirect rather than 404.
+    const GUIDE_REDIRECTS = {
+      "one-install-nineteen-servers-office-suite": "one-install-office-suite",
+    };
+    if (path.startsWith("/guides/") && method === "GET") {
+      const oldSlug = path.slice("/guides/".length);
+      if (GUIDE_REDIRECTS[oldSlug]) {
+        return Response.redirect(`https://${host}/guides/${GUIDE_REDIRECTS[oldSlug]}`, 301);
+      }
+    }
+
     if (path.startsWith("/guides/") && method === "GET") {
       const slug = path.slice("/guides/".length);
       const g = GUIDES[slug];
