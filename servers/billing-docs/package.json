@@ -1,0 +1,65 @@
+{
+  "name": "@theluckystrike/mcp-billing-docs",
+  "version": "0.9.5",
+  "description": "Credit notes against your invoices and purchase orders to your suppliers, on the invoice engine.",
+  "type": "module",
+  "bin": {
+    "mcp-billing-docs": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --declaration && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "credit-note",
+    "purchase-order",
+    "invoice",
+    "vat",
+    "refund",
+    "procurement"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/billing-docs"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/billing-docs",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-invoice": "^0.9.5",
+    "@theluckystrike/mcp-license": "^0.9.5",
+    "@theluckystrike/mcp-quotes": "^0.9.5",
+    "pdfkit": "^0.15.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0",
+    "@types/pdfkit": "^0.13.4"
+  }
+}
