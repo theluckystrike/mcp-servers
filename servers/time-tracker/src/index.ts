@@ -565,7 +565,15 @@ server.registerTool("entry_list", {
   const all = select(db, w, f.project);
   const limit = a.limit ?? 50;
   const rows = all.slice(-limit).reverse();
-  if (rows.length === 0) return ok(`No entries found.${!pro && w.clamped ? FREE_WINDOW_NOTE : ""}`);
+  if (rows.length === 0) {
+    // D-R85: an empty store reads to a model as "nothing exists here yet, ask before writing".
+    // entry_add already creates the named project on the fly (see resolveProject), so a plain
+    // "no entries found" bought a confirmation question for facts the caller had already given.
+    const msg = db.entries.length === 0
+      ? "No time entries logged yet. entry_add creates the project from its project argument automatically - no setup needed."
+      : "No entries found for that filter.";
+    return ok(`${msg}${!pro && w.clamped ? FREE_WINDOW_NOTE : ""}`);
+  }
   const totalSec = rows.reduce((s, e) => s + e.seconds, 0);
   const body = table(
     ["id", "day", "start", "project", "task", "hours", "bill", "tags", "note"],
