@@ -1,0 +1,121 @@
+{
+  "at": "2026-09-05T03:00:00Z",
+  "round": 16,
+  "compares_to": "data/user_value_r15.json",
+  "scope": "HOSTED single-lane re-run of round 15's four timezone prompts only, after D-R82 (own zone never asked for) and D-R84 (find_meeting_slots reports its search window) landed. https://mcp.zovo.one/mcp/timezone/t/<token> as a claude.ai user arrives, free tier, one fresh anonymous token, business profile seeded via curl on /mcp/invoice under the same token.",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_89c4bbc1946adc374bbae2a142d31c1c, 200 text/html). Registered ONE lane, one mcp.json with two http entries (timezone and invoice, both /t/<token>, no --header). Seed: one curl tools/call business_set on /mcp/invoice under the token (Nova Studio, Europe/Warsaw) before any prompt ran, so the shared profile the timezone prompts are entitled to assume was in place. Client: claude CLI, --model sonnet, --strict-mcp-config, --mcp-config with the two http entries, explicit allowlist of 23 mcp__<server>__<tool> entries read from a live tools/list of each endpoint (timezone 11, invoice 12), --output-format stream-json --verbose --max-turns 12, one --session-id then three --resume, timeout 240 per prompt, each prompt's stream-json written to its own file (out/s1.jsonl..s4.jsonl) before the next prompt started. Per r11 D-R57 the lane ran in an EMPTY working directory with the CLI's own filesystem tools disallowed (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task). Environment used fresh XDG-style working/scratch dirs local to the run (/private/tmp/uv-r16tz), no reuse of any prior round's directory. Machine day 2026-09-05 (Saturday).",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, minted anon_89c4bbc1946adc374bbae2a142d31c1c",
+    "registration": "one lane, two http entries (timezone, invoice), both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; connected first try",
+    "tools_list": {
+      "timezone": 11,
+      "invoice": 12
+    },
+    "seed": "business_set on /mcp/invoice by curl under the token: Nova Studio, timezone Europe/Warsaw, before any prompt ran"
+  },
+  "scenarios": [
+    {
+      "server": "timezone",
+      "surface": "hosted/timezone",
+      "id": "tz1",
+      "prompt": "Save two contacts for me: Ann in New York and Kenji in Tokyo.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 15.5,
+      "tools": ["contacts_set x2"],
+      "note": "Bare place names resolved to America/New_York and Asia/Tokyo, default 09:00-17:00 hours named, and each reply gave the current local time there. Same result as round 15 tz1.",
+      "round15_score": 3
+    },
+    {
+      "server": "timezone",
+      "surface": "hosted/timezone",
+      "id": "tz2",
+      "prompt": "Find me a 60 minute meeting slot with Ann and Kenji in the next week that works for all three of us.",
+      "score": 2,
+      "tool_calls": 1,
+      "seconds": 22.3,
+      "tools": ["find_meeting_slots"],
+      "note": "D-R82 holds live: find_meeting_slots ran on the FIRST turn with no question asked, resolving Me from the shared business profile (Europe/Warsaw) and Ann/Kenji from their saved contacts, and the payload's own 'Zones you did not pass' block named all three sources. No slot exists inside standard 09:00-17:00 hours for all three (Warsaw/New York/Tokyo genuinely do not overlap on a 9-5 day), so the tool correctly reported no fit and ranked the three closest compromises. D-R84 also fired server-side: the payload appended 'Searched 2026-09-05 to 2026-09-09 (5 calendar day(s) forward ... weekends skipped)' plus a rollover sentence naming that the search window is past this calendar week's end because the run day is Saturday. Marked down because the model's final answer to the user relayed the free-tier 5-of-7-day cap but DROPPED the D-R84 rollover sentence entirely -- the user was never told 'this week' had already run out when the ask happened on a Saturday. Client-side gap, not a repeat of D-R82 or D-R84 server-side.",
+      "round15_score": 1,
+      "round15_note": "NO TOOL RAN. The model asked the user what timezone they are in."
+    },
+    {
+      "server": "timezone",
+      "surface": "hosted/timezone",
+      "id": "tz3",
+      "prompt": "What time is 2026-11-05 09:00 Warsaw for Ann in New York? I want to be sure the daylight saving changes are handled.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 14.4,
+      "tools": ["convert_time"],
+      "note": "09:00 Warsaw (GMT+1, UTC+01:00) -> 03:00 New York (EST, UTC-05:00), UTC instant 2026-11-05T08:00:00.000Z. Model named both DST transitions (EU 2026-10-25, US 2026-11-01) and said plainly both zones are on standard time with a steady 6-hour gap. Same result as round 15 tz3.",
+      "round15_score": 3
+    },
+    {
+      "server": "timezone",
+      "surface": "hosted/timezone",
+      "id": "tz4",
+      "prompt": "Book that November 5th call as a 60 minute meeting and give me an .ics file I can download.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 17.7,
+      "tools": ["ics_create"],
+      "note": "One ics_create on the FIRST turn (round 15 needed a second turn here). Download link served, 200, text/calendar; charset=utf-8, 415 bytes, filename call-with-ann-kenji-2026-11-05.ics, magic BEGIN:VCALENDAR; parses to DTSTART:20261105T080000Z / DTEND:20261105T090000Z (09:00-10:00 Warsaw, exactly the requested slot), SUMMARY:Call with Ann and Kenji, Ann and Kenji named in DESCRIPTION because neither has a stored email. The model still flagged that 03:00 is the middle of Ann's night, but as an offer to redo it rather than a blocking question, after already booking and handing over the link.",
+      "round15_score": 2,
+      "round15_note": "No tool ran on the first turn: the model asked whether to book anyway before 3am. On the second turn one ics_create."
+    }
+  ],
+  "totals": {
+    "score": 11,
+    "max": 12,
+    "tool_calls": 5,
+    "seconds": 69.9,
+    "compare_round15": {
+      "score": 9,
+      "max": 12
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "one lane, two /t/<token> entries, connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "D-R82 holds: own zone never asked for",
+      "evidence": "find_meeting_slots ran on the first turn of tz2 with no clarifying question; contacts_list by curl ends 'You: Europe/Warsaw ... from your shared business profile, so you never need to pass your own zone to find_meeting_slots'",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "D-R84 holds: find_meeting_slots reports the window it searched",
+      "evidence": "tz2 payload: 'Searched 2026-09-05 to 2026-09-09 (5 calendar day(s) forward from today, Europe/Warsaw local; weekends skipped)' plus a sentence naming that the window runs past this calendar week's end on a Saturday run day",
+      "verdict": "PASS, server-side"
+    },
+    {
+      "claim": "The rollover sentence reaches the user, not just the payload",
+      "evidence": "tz2 final assistant text mentions only the 5-of-7-day free-tier cap, never the 'this week has already run out' sentence the tool appended",
+      "verdict": "FAIL, client-side, quoted below"
+    },
+    {
+      "claim": "The .ics is a real calendar file",
+      "evidence": "GET -> 200, text/calendar; charset=utf-8, 415 bytes, filename=\"call-with-ann-kenji-2026-11-05.ics\"; BEGIN:VCALENDAR / VERSION:2.0 / BEGIN:VEVENT / DTSTART:20261105T080000Z / DTEND:20261105T090000Z / SUMMARY:Call with Ann and Kenji / END:VEVENT",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "tz4 books on the first turn now (was a second-turn fix in round 15)",
+      "evidence": "one ics_create tool call in s4.jsonl, no prior turn asking permission; download link handed over in the same reply",
+      "verdict": "PASS"
+    }
+  ],
+  "residual_defects": [
+    {
+      "id": "R16-tz2-client-gap",
+      "severity": "low",
+      "server": "timezone",
+      "kind": "client-side",
+      "note": "D-R84's rollover sentence ('this search runs ... which is past this calendar week's end - \"this week\" asked for 1 day(s) left may have already run out') is present in the tool payload but never reaches the user. The model's final answer for tz2 says only: 'Note: the search only covered 5 of the 7 days (Sep 5-9) since the tool's free tier caps lookahead at 5 days; the remaining days (through Sep 12) weren't checked.' It never says the request ('the next week') was made on a Saturday when the calendar week had almost no days left in it, which is the more useful fact for a caller who said 'the next week' meaning something calendar-shaped.",
+      "exact_model_turn": "No slot exists in the next week where all three of you are within standard 9:00-17:00 working hours -- Warsaw, New York, and Tokyo span too wide a range (Tokyo is ~7h ahead of Warsaw, which is ~6h ahead of New York) for a 9-5 overlap to exist for all three simultaneously.\n\nBest compromise options found (Mon, Sep 7):\n1. **09:00-10:00 Warsaw / 03:00-04:00 New York / 16:00-17:00 Tokyo** -- fits you and Kenji, very early for Ann (3am)\n2. **09:30-10:30 Warsaw / 03:30-04:30 New York / 16:30-17:30 Tokyo** -- similar, Kenji slightly over\n3. **10:00-11:00 Warsaw / 04:00-05:00 New York / 17:00-18:00 Tokyo** -- Ann still very early, Kenji slightly over\n\nNone of these are reasonable for Ann. Practical alternatives:\n- Ask Ann or Kenji to stretch their hours slightly (e.g., Ann starting at 7am or Kenji staying until 19:00) -- that could open a slot around Ann's morning/Kenji's evening.\n- Note: the search only covered 5 of the 7 days (Sep 5-9) since the tool's free tier caps lookahead at 5 days; the remaining days (through Sep 12) weren't checked.\n\nWant me to check specific extended hours for Ann or Kenji to find a real fit?"
+    }
+  ]
+}
