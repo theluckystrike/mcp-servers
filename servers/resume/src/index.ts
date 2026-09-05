@@ -33,7 +33,20 @@ const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
 const fail = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true as const });
 const json = (v: unknown) => ok(JSON.stringify(v, null, 2));
 
+/** A leading `<scheme>://` means the caller has a URL, not a local path. Checked BEFORE
+ * any resolution, so a URL is never joined against the server's cwd and the refusal
+ * never has a path in it, let alone one that leaks the cwd. */
+const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
+
+// D-R83: a URL handed to `path` used to be silently resolved as a relative filesystem
+// path, producing an error that leaked the server's own cwd. Refused by name instead.
 function expandPath(p: string): string {
+  if (URL_SCHEME_RE.test(p)) {
+    throw new Error(
+      `"${p}" is a URL, not a file path; this tool reads local files. On the hosted route, ` +
+      `use the url argument of doc_upload, or paste the document's text directly. Locally, download it first and pass the path it was saved to.`,
+    );
+  }
   const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
   return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
 }
