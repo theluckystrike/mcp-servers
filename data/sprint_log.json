@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T14:33:49.345Z",
-  "total_commits": 493,
+  "generated_at": "2026-09-05T14:36:47.157Z",
+  "total_commits": 494,
   "sessions": 49,
   "loops": [
     {
@@ -106,7 +106,7 @@
     {
       "name": "Loop 21: bundle in every cap message, asset-register, v0.13.0",
       "sessions": 1,
-      "commits": 75
+      "commits": 76
     }
   ],
   "rows": [
@@ -649,7 +649,7 @@
       "at": "2026-09-05T14:33:49.149Z",
       "note": "loop 21 closed: v0.13.0 with asset-register (KST, UK capital allowance and MACRS tables; monthly schedules that sum to base to the minor unit; audit 18/18; the twenty-third server and hosted endpoint), 62 manifests published; every cap message now ends with the $39 bundle link with its own click source and the instrument recorded the first bundle click; per-diem real compare page against gsa-perdiem-mcp; per-diem hosted 17/18; intel R10 found five more empty slots (cash-book, petty-cash, amortization, statement-of-account, dunning); downloads 2665; clicks 71/7d; sales 0; GSC key dataless",
       "loop": "Loop 21: bundle in every cap message, asset-register, v0.13.0",
-      "commits": 58,
+      "commits": 59,
       "subjects": [
         "Plan v16: content debt, server 21, weakest lanes",
         "Rewrite office-suite guide under a version-free slug, redirect the old one",
