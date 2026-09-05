@@ -111,7 +111,7 @@
       "server": "bank-statement",
       "surface": "hosted/bank-statement",
       "id": "b1",
-      "prompt": "Here is my bank export at <fixture URL> - import it as Main.",
+      "prompt": "Here is my bank export at https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/revolut-main.csv - import it as Main.",
       "score": 3,
       "tool_calls": 2,
       "seconds": 16.5,

@@ -8,7 +8,10 @@
   "arrival": {
     "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, 8152 bytes, minted anon_58a3975150b4346ced92ccffbd740588",
     "registration": "one lane, two http entries (bank-statement, expense-tracker), both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; connected first try",
-    "tools_list": { "bank-statement": 15, "expense-tracker": 14 },
+    "tools_list": {
+      "bank-statement": 15,
+      "expense-tracker": 14
+    },
     "seed": "expense_add on /mcp/expense-tracker by curl under the token: EUR 61.50 Adobe Creative Cloud dated 2026-08-07, matching one of the fixture's two Adobe Creative Cloud debits, before any prompt ran"
   },
   "scenarios": [
@@ -16,11 +19,14 @@
       "server": "bank-statement",
       "surface": "hosted/bank-statement",
       "id": "b1",
-      "prompt": "Here is my bank export at <fixture URL> - import it as Main.",
+      "prompt": "Here is my bank export at https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/revolut-main.csv - import it as Main.",
       "score": 3,
       "tool_calls": 2,
       "seconds": 16.5,
-      "tools": ["bank_upload", "statement_import"],
+      "tools": [
+        "bank_upload",
+        "statement_import"
+      ],
       "note": "bank_upload {url} fetched 4422 bytes / 43 lines from raw.githubusercontent.com; statement_import read it by name: 41 imported, the REVERTED line (line 39) skipped and named, Revolut auto-detected, date range 2026-07-28 to 2026-09-03. The model stopped after one sentence and made zero further tool calls this turn, unlike round 16's five-tool unrequested cascade (D-R16-1) -- not reproduced this round. date_order: ymd, date_order_inferred: false for the ISO Completed Date column, correct where round 16 reported dmy on the same shape of column (D-R54 fixed).",
       "r16_score": 2
     },
@@ -32,7 +38,13 @@
       "score": 3,
       "tool_calls": 5,
       "seconds": 19.0,
-      "tools": ["transactions_search", "transactions_search", "transactions_search", "transaction_categorize", "transaction_categorize"],
+      "tools": [
+        "transactions_search",
+        "transactions_search",
+        "transactions_search",
+        "transaction_categorize",
+        "transaction_categorize"
+      ],
       "note": "Three transactions_search calls confirmed the matches live (spotify 2/EUR 19.98, adobe 3/EUR 148.00 across Adobe Creative Cloud and Adobe Stock, coffee 7/EUR 31.30) then two transaction_categorize calls moved 5 rows to Software and 7 to Meals. Used transaction_categorize directly rather than category_rules, so no rule persists for future imports, narrower than round 16's approach, but right transactions, right totals, no clarification asked.",
       "r16_score": 3
     },
@@ -44,7 +56,9 @@
       "score": 3,
       "tool_calls": 1,
       "seconds": 22.5,
-      "tools": ["transactions_list"],
+      "tools": [
+        "transactions_list"
+      ],
       "note": "transactions_list {from: 2026-08-01, to: 2026-08-31} returned 36 rows and the model tallied categories itself: Software EUR 132.99, Meals EUR 21.30, uncategorised EUR 1129.44, money in EUR 4524.99. Independently re-read by curl statement_summary {group_by: category} on the same token: identical to the cent. Ended with an unprompted offer to categorise more groups, not a blocking question.",
       "r16_score": 3
     },
@@ -56,7 +70,9 @@
       "score": 3,
       "tool_calls": 1,
       "seconds": 16.0,
-      "tools": ["recurring_detect"],
+      "tools": [
+        "recurring_detect"
+      ],
       "note": "recurring_detect answered free with a cap (D-R55 fix holds): Spotify EUR 9.99 and Adobe Creative Cloud EUR 61.50, both cadence_confirmed false on 2 occurrences 14/31 days apart, annualised null. The model relayed the tool's own uncertainty and additionally checked Netflix and OpenAI by name, correctly excluding both for having only one occurrence each -- no invented cadence.",
       "r16_score": 3
     },
@@ -68,7 +84,11 @@
       "score": 3,
       "tool_calls": 3,
       "seconds": 60.3,
-      "tools": ["reconcile_expenses", "reconcile_expenses", "expense_list"],
+      "tools": [
+        "reconcile_expenses",
+        "reconcile_expenses",
+        "expense_list"
+      ],
       "note": "reconcile_expenses answered free with its 31-day cap (D-R55 fix holds) but the window (2026-08-04 to 2026-09-03, bank_debits 34, matched 1) did not cover the full asked range, so the model made a second reconcile_expenses call for the earlier week (2026-07-28 to 2026-08-05, bank_debits 6, matched 0) and a third call, expense_list, to confirm the ledger holds only the one seeded expense. Final answer: 0 expenses without a bank line, 37 of 38 bank debits without a receipt. csv.DictReader over the fixture independently counts exactly 38 COMPLETED debit rows, confirming 34 + 6 with 2 overlap days = 38, no double count.",
       "r16_score": 3
     },
@@ -80,7 +100,9 @@
       "score": 1,
       "tool_calls": 1,
       "seconds": 10.3,
-      "tools": ["statement_export"],
+      "tools": [
+        "statement_export"
+      ],
       "note": "statement_export is still Pro-refused, correctly not purchased. Unlike round 16, the model did not fall back to a free tool for the underlying data -- it stopped after the refusal, offered to list transactions only if asked, and volunteered a recap with a wrong count (5 so far) and no total. Independently re-read by curl, transactions_list {from: 2026-09-01, to: 2026-09-30}: count 4 (Spotify, Adobe Stock, 2x Coffee Republic), EUR 44.99 total. Regression from round 16's fallback, which gave the correct EUR 44.99 unprompted.",
       "r16_score": 2
     }
@@ -102,7 +124,10 @@
         "score_r16": 16
       }
     },
-    "compare_round16": { "score": 16, "max": 18 }
+    "compare_round16": {
+      "score": 16,
+      "max": 18
+    }
   },
   "verification": [
     {
