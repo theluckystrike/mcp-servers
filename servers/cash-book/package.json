@@ -1,0 +1,67 @@
+{
+  "name": "@theluckystrike/mcp-cash-book",
+  "version": "0.14.0",
+  "description": "One double-entry ledger derived from your invoices, bank, expenses, deposits and assets.",
+  "type": "module",
+  "bin": {
+    "mcp-cash-book": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --declaration && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cash-book",
+    "double-entry",
+    "general-ledger",
+    "trial-balance",
+    "bookkeeping",
+    "accounting"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/cash-book"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/cash-book",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-asset-register": "^0.14.0",
+    "@theluckystrike/mcp-billing-docs": "^0.14.0",
+    "@theluckystrike/mcp-deposits": "^0.14.0",
+    "@theluckystrike/mcp-invoice": "^0.14.0",
+    "@theluckystrike/mcp-license": "^0.14.0",
+    "@theluckystrike/mcp-quotes": "^0.14.0",
+    "@theluckystrike/mcp-statement-of-account": "^0.14.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}

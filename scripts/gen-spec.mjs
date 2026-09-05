@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "asset-register", "bank-statement", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
+  "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "price-tracker", "recurring",
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone",
 ].sort();
@@ -46,6 +46,35 @@ const COMMON_INVARIANTS = [
  * common list. `caps` documents the enforced limits that a contract test can assert.
  */
 const CURATED = {
+  "cash-book": {
+    summary: "One double-entry ledger derived from books this server does not own: the invoice ledger, the credit note and purchase order store, the deposit store, the expense ledger, the bank import and the fixed asset register, all read-only. Every line is derived on the call and carries the server, the document id and the date it came from; the trial balance is proved to the minor unit; a month closes with a snapshot and a list of what is unposted or inconsistent.",
+    storageFiles: [
+      ["periods.json", "the register of periods a ledger was built for, which is what the free tier meters"],
+      ["closes.json", "the months that were closed, each with the trial balance snapshot as it stood at the close"],
+    ],
+    primaryFile: "periods.json",
+    caps: [
+      "`FREE_PERIODS_PER_MONTH` = 3 DISTINCT periods a calendar month on free, counted per from, to and currency. Rebuilding a period already in the register is free forever, on every tier.",
+      "`trial_balance` is free and unlimited on every tier, and so is `ledger_lines`: the question this server exists to answer is whether the books add up, and a free tier that hides the answer is a demo.",
+      "`month_close`, `ledger_export_csv` and `ledger_report` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_ROWS` = 5000 lines returned by one `ledger_lines` answer.",
+    ],
+    extra: [
+      "This server WRITES NOTHING into any of the six stores it reads. It holds two files of its own, a register of built periods and a register of closed months, and no balance is ever read back out of them to compute another. Every debit and every credit is derived on the call: a ledger you can type into is a ledger that can disagree with the books it is made of.",
+      "The BANK IMPORT POSTS NOTHING. A bank line and a payment record are one transaction seen twice, so cash is posted from the DOCUMENTS, which are the only rows that carry a second leg, and a bank row is matched to a posted cash movement of the same amount, the same direction and a date within 3 days as EVIDENCE, written on the line as `bank_ref`. On the worked month 1,375,300 of the 1,380,300 minor units of cash movement, 99.6 percent, appear in both books; a union of the two would double them and would still balance.",
+      "A bank row that could match TWO postings is matched to NEITHER, and is reported. Picking the first would be a coin toss written into a ledger, and the two candidates are exactly the case a human has to look at.",
+      "A sibling store that is missing or empty is reported and never fatal, and there is no fatal store here at all, not even the invoice ledger: a business with only bank imports and expenses still has a cash book. An unreadable store is never read as an empty one, because a missing figure is not a zero, and a ledger short one whole store still balances perfectly, since both legs of every missing entry are missing.",
+      "An entry whose own legs do not add up is posted AS IT STANDS and reported, never balanced with a plug. The trial balance can only find a broken document if it is allowed to come out non-zero, and `offenders` names the entry, the source server and the source document behind every unit of the difference.",
+      "`paid_minor` on the invoice is the authority and `payments[]` only the attribution, so the payment rows come from `paymentRows` in servers/statement-of-account rather than from a second copy of that rule here. A payment made by APPLYING a deposit debits deposits held and not cash, because the cash arrived when the deposit was received.",
+      "servers/expense-tracker stores an expense amount VAT-INCLUSIVE, so the VAT is taken OUT of the gross (`round(gross * rate / (100 + rate))`) and is never added on top of it. Adding it on top would overstate both the expense and the VAT reclaim.",
+      "servers/billing-docs stores every money field on a credit note NEGATIVE, which is the sign a ledger wants, so no row here flips one. A credit note found stored POSITIVE is posted as it stands and flagged, because a silent flip would hide the fact that something other than that server wrote it.",
+      "An open PURCHASE ORDER is a memo and is never posted. An order is a commitment, not a transaction: nothing has been delivered and nothing is owed, and a ledger that posts it reports a liability the business does not have.",
+      "Currencies are never added together. One ledger is one currency, a period holding two is REFUSED by name until one is chosen, and the documents in the other are counted as excluded rather than silently dropped. This server holds no exchange rate, so a single trial balance over two currencies would be an invented number that balances.",
+      "Depreciation is charged by whole months from the fixed asset register, using that server's own `buildSchedule` and `chargeForMonth`, so the ledger cannot drift from the register's own schedule. A disposal inside the period is REPORTED and not posted: the removal of cost and accumulated depreciation lands in the bank and expense books in ways only a human can attribute.",
+      "A close records what the trial balance said at the MOMENT of closing. It does not freeze the sibling stores, which this server does not own; closing again after one of them moved reports the drift by name instead of quietly adopting the new figure.",
+      "This ledger opens at nothing. It derives only what the period itself contains, so an account balance here is the period's MOVEMENT and no opening figure is ever carried in from a book this server does not keep.",
+    ],
+  },
   "statement-of-account": {
     summary: "Per-client statements of account assembled from books this server does not own: the invoice ledger, the credit note store and the deposit store, all read-only. Builds a statement for a period with the opening balance, the invoices issued, the payments received, the credit notes and the closing balance; ages the open invoices into 0-30, 31-60, 61-90 and over 90 days past due; writes the plain-text statement, the A4 PDF and a dunning letter at three levels; and reports what every client owes, per currency.",
     storageFiles: [
