@@ -31,7 +31,37 @@ test("an invoice ledger on its own builds a correct ledger, and every absent sto
   assert.equal(bySource["deposits"].read, true);
   assert.equal(bySource["deposits"].rows, 0);
   assert.equal(bySource["expense-tracker"].rows, 0);
+  assert.equal(bySource["bank-statement"].read, true, "a bank-statement store that was never written is read, not failed");
+  assert.equal(bySource["bank-statement"].rows, 0);
   assert.deepEqual(r.notes, [], "an absent store is not a degraded one");
+});
+
+test("a missing bank store never blocks a build, and costs nothing but the reconciliation", async (t) => {
+  const { box, c } = open(t);
+  seed.business(box.dataHome, { name: "Nova Studio", default_currency: "EUR", default_tax_rate: 23 });
+  seed.invoices(box.dataHome, [invoice({ number: "INV-2026-0001", issue_date: "2026-06-03", net_minor: 100000, tax_rate: 23, paid_minor: 123000, payments: [{ date: "2026-06-20", amount_minor: 123000 }] })]);
+  await c.init();
+  const r = await c.json("trial_balance", PERIOD);
+  assert.equal(r.balanced, true, "cash is posted from the documents, never from the bank import, so a missing bank store cannot unbalance the ledger");
+  const bank = r.sources.find((s) => s.store === "bank-statement");
+  assert.equal(bank.read, true, "a bank-statement store that was never written is read, not failed");
+  assert.equal(bank.rows, 0);
+  const lines = (await c.json("ledger_lines", PERIOD)).lines;
+  assert.ok(!lines.some((l) => l.bank_ref), "with no bank rows to match, no line carries a bank_ref");
+});
+
+test("an expense with no VAT rate posts gross to the category account, no VAT input line at all", async (t) => {
+  const { box, c } = open(t);
+  seed.business(box.dataHome, { name: "Nova Studio", default_currency: "EUR", default_tax_rate: 23 });
+  seed.expenses(box.dataHome, [expense({ id: "exp_novat", date: "2026-06-12", amount_minor: 5000, category: "software" })]);
+  await c.init();
+  const r = await c.json("trial_balance", PERIOD);
+  assert.equal(r.balanced, true);
+  assert.equal(r.debits_minor, 5000);
+  const lines = (await c.json("ledger_lines", PERIOD)).lines.filter((l) => l.source_id === "exp_novat");
+  assert.ok(!lines.some((l) => l.account.startsWith("vat")), "no vat_rate stored on the expense means no VAT input line, even though the shared profile default_tax_rate is 23");
+  assert.ok(lines.some((l) => l.account.startsWith("expenses:") && l.debit_minor === 5000));
+  assert.ok(lines.some((l) => l.account === "cash" && l.credit_minor === 5000));
 });
 
 test("an unreadable expense ledger is never read as an empty one", async (t) => {
