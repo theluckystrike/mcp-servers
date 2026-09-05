@@ -1,0 +1,102 @@
+{
+  "at": "2026-09-05T03:06:00Z",
+  "round": 16,
+  "compares_to": "data/user_value_r15.json",
+  "scope": "HOSTED round, expense-tracker only, re-running round 15's four prompts to verify D-R76 and D-R77 and their D-R76 follow-up (the bank ledger is now hydrated read-only into the hosted expense-tracker, so bank_ledger is a real count, not an unconditional sentence). One anonymous token, one seed of 4 bank rows via bank_upload {url} + statement_import before the four prompts.",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_bb06830e155e4235c6f6b69e925a6577, 8025-byte page). Seed: bank_upload {name: revolut-main, url: https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/revolut-main.csv} then statement_import {path: revolut-main, account: 'Revolut EUR', bank: revolut} on /mcp/bank-statement/t/<token>, sent directly by JSON-RPC tools/call (no claude CLI involved in the seed): 41 of 43 lines imported (1 REVERTED row skipped), 4 of them fall in September 2026 (Spotify 9.99, Adobe Stock 25.00, two Coffee Republic 3.60 and 6.40), EUR 44.99 total, confirmed with statement_summary before the run. Registered ONLY /mcp/expense-tracker/t/<token> for the four prompts, one http entry, no --header. Allowlist: 14 mcp__expense-tracker__<tool> entries from a live tools/list (expense_add, expense_list, expense_update, expense_delete, receipt_attach, category_rules, expense_settings, expense_summary, mileage_add, expense_export, expense_to_invoice, expense_mark_rebilled, license_status, license_activate). Client: claude CLI 2.1.261, --model sonnet, --strict-mcp-config, --output-format stream-json --verbose --max-turns 12, one --session-id then three --resume. Per D-R57, ran in an empty working directory with the CLI's own filesystem and search tools disallowed (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite), and with fresh XDG_CONFIG_HOME/XDG_DATA_HOME/XDG_CACHE_HOME/XDG_STATE_HOME for the session so nothing carried over from a prior run. Each prompt's raw stream-json was written to disk before the next was sent. timeout 240 per prompt (all four finished well under that). No business profile was seeded this round (round 15 seeded default_tax_rate 23% on /mcp/invoice; this round did not), so VAT stays 0 by design and is not compared to r15's rate line.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, 8025 bytes, minted anon_bb06830e155e4235c6f6b69e925a6577",
+    "registration": "one lane, one http entry, https://mcp.zovo.one/mcp/expense-tracker/t/<token>, no --header; connected first try",
+    "tools_list": {
+      "expense-tracker": 14
+    },
+    "seed": "bank_upload {url} + statement_import on /mcp/bank-statement under the same token: 41 rows imported, 4 in September 2026, EUR 44.99, verified with statement_summary before the expense-tracker lane ran"
+  },
+  "scenarios": [
+    {
+      "server": "expense-tracker",
+      "surface": "hosted/expense-tracker",
+      "id": "ex1",
+      "prompt": "Log three expenses: 2026-09-01 Figma EUR 45 (software), 2026-09-02 taxi PLN 68 (travel), 2026-09-03 Adobe EUR 22.99 (software).",
+      "score": 3,
+      "score_r15": 3,
+      "tool_calls": 3,
+      "tools": ["expense_add x3"],
+      "note": "Three expense_add calls, one per line, two currencies never mixed. Each reply named the billable default unprompted (no project means billable: false, will not appear in expense_to_invoice unless billable: true is passed) and explained VAT stayed 0 because none was given or stored. No business profile was seeded this round, so unlike r15 there was no default_tax_rate to name; that is a seed difference, not a regression. Verified against a direct expense_list curl: ids 1e6e659c/6d20e77f/f95007d6, amounts and currencies exact.",
+      "evidence": "expense_list {from: 2026-09-01, to: 2026-09-05} by curl: count 3, EUR 45.00 Figma software, PLN 68.00 taxi travel, EUR 22.99 Adobe software, all billable false"
+    },
+    {
+      "server": "expense-tracker",
+      "surface": "hosted/expense-tracker",
+      "id": "ex2",
+      "prompt": "Give me a summary of September so far, grouped by category.",
+      "score": 3,
+      "score_r15": 2,
+      "tool_calls": 1,
+      "tools": ["expense_summary"],
+      "note": "One expense_summary. EUR software 67.99 and PLN travel 68.00, correct to the cent. The response carried a real bank_ledger field this time: \"The bank ledger (mcp-bank-statement) holds 4 transactions in this period that are not counted here; call that server's statement_summary for them.\" The model relayed the count and offered to pull the bank side in. D-R76 is fixed on the live endpoint: this is the one scenario that changed grade from round 15, exactly where the fix targeted.",
+      "evidence": "raw tool_result JSON carries \"bank_ledger\": \"The bank ledger (mcp-bank-statement) holds 4 transactions in this period that are not counted here; call that server's statement_summary for them.\"; independently, statement_summary {from: 2026-09-01, to: 2026-09-30} on /mcp/bank-statement returns count 4, money_out EUR 44.99 -- the number named matches the number present"
+    },
+    {
+      "server": "expense-tracker",
+      "surface": "hosted/expense-tracker",
+      "id": "ex3",
+      "prompt": "Export those September expenses as a CSV I can download.",
+      "score": 3,
+      "score_r15": 3,
+      "tool_calls": 1,
+      "tools": ["expense_export"],
+      "note": "One expense_export {format: csv}. GET the link: 200, text/csv; charset=utf-8, 309 bytes, filename=expenses-2026-09-01-to-2026-09-05.csv, 16-column header, exactly the three rows added in ex1, values byte-exact. The tool result also carried the same bank_ledger sentence naming 4 transactions not included, which the model relayed a second time.",
+      "evidence": "downloaded CSV bytes: id,date,currency,amount,gross,net,vat,vat_rate,category,merchant,project,billable,note,receipt_path,receipt_sha256,mileage / 1e6e659c,2026-09-01,EUR,45,45,45,0,0,software,Figma,,no,,,, / 6d20e77f,2026-09-02,PLN,68,68,68,0,0,travel,taxi,,no,,,, / f95007d6,2026-09-03,EUR,22.99,22.99,22.99,0,0,software,Adobe,,no,,,,"
+    },
+    {
+      "server": "expense-tracker",
+      "surface": "hosted/expense-tracker",
+      "id": "ex4",
+      "prompt": "Now show me everything I logged in June 2026.",
+      "score": 3,
+      "score_r15": 2,
+      "tool_calls": 1,
+      "tools": ["expense_list"],
+      "note": "One expense_list {from: 2026-06-01, to: 2026-06-30}. Response: from null, to 2026-06-30, count 0, nothing_read true, note opening 'Nothing was read' and naming the real cutoff (2026-08-06) and closing that this is not an empty result, the period was never opened. No impossible range (r15's from-after-to bug, D-R77) appeared. The model relayed it correctly on the first turn and did not offer to retry a date still outside the window. D-R77 is fixed on the live endpoint: this scenario also moved from a 2 in r15 (correct rescue of a self-contradictory payload) to a 3 (nothing to rescue).",
+      "evidence": "raw tool_result JSON: {\"from\": null, \"to\": \"2026-06-30\", \"count\": 0, \"totals_per_currency\": [], \"expenses\": [], \"nothing_read\": true, \"note\": \"Nothing was read. The free tier reads the last 30 days only, back to 2026-08-06, and every day you asked for (2026-06-01 to 2026-06-30) is older than that, so this is not an empty result - the period was never opened. ...\"}"
+    }
+  ],
+  "totals": {
+    "score": 12,
+    "max": 12,
+    "tool_calls": 6,
+    "per_server": {
+      "expense-tracker": {
+        "score": 12,
+        "max": 12,
+        "score_r15": 10
+      }
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "one lane, one /t/<token> entry, connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The CSV is a real CSV",
+      "evidence": "GET -> 200, text/csv; charset=utf-8, 309 bytes, expenses-2026-09-01-to-2026-09-05.csv, 16-column header, 3 data rows matching expense_add and expense_list byte for byte",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "D-R76 (bank ledger named in expense_summary): fixed",
+      "evidence": "expense_summary returned bank_ledger naming 4 transactions; statement_summary on the sibling endpoint for the same token and period independently returns count 4, EUR 44.99 -- the number matches",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "D-R77 (free window never returns from-after-to): fixed",
+      "evidence": "expense_list {2026-06-01 to 2026-06-30} on a token whose data starts 2026-09-01 returned from null, nothing_read true, and a note that opens 'Nothing was read' -- no range whose start is after its end, and the model did not need to catch a contradiction because there was none",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [],
+  "bottom_line": "12/12, up from 10/12 in round 15, entirely on the two prompts round 15 flagged: ex2 and ex4. Both defects (D-R76, D-R77) verified fixed live on the hosted expense-tracker endpoint with independent evidence -- a cross-endpoint curl for the bank count, and a raw tool_result showing no impossible date range. ex1 and ex3 held their round 15 score of 3. No new defects found; nothing was fixed in this session, only re-measured."
+}
