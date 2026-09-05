@@ -26,6 +26,7 @@ export const PRODUCTS = {
   zip: { desc: "Create, inspect and extract zip archives safely from chat: bomb and traversal guards decided from the central directory, CRC checked per entry, bundle a month of invoices and exports.", free: "Free: archives to 25 MB and 200 entries, 20 archives a month.", pro: "Pro: unlimited size, entries and archives.", name: "MCP Zip Pro", price: "price_1UBqGgJKCamubEm1SoQ76sXZ", usd: 19, pkg: "@theluckystrike/mcp-zip", bin: "mcp-zip", payload: "zip" },
   "billing-docs": { desc: "Credit notes and purchase orders on the same engine as your invoices: the VAT unwound at the rate you charged, and never more credited than the invoice billed.", free: "Free: 5 documents a calendar month, credit notes and purchase orders together, plus unlimited text exports.", pro: "Pro: unlimited documents, both PDFs, your logo, and the credited and on-order report.", name: "MCP Billing Docs Pro", price: "price_1UCCo9JKCamubEm1TyBUQdzO", usd: 19, pkg: "@theluckystrike/mcp-billing-docs", bin: "mcp-billing-docs", payload: "billing-docs" },
   deposits: { desc: "Security and retainer deposits held per client, applied to invoices as a real payment that adds to what was already paid rather than replacing it.", free: "Free: 5 deposits recorded a calendar month, plus unlimited applying, refunds, balances and text statements.", pro: "Pro: unlimited deposits recorded, the A4 statement PDF with your logo, and the held and unapplied report.", name: "MCP Deposits Pro", price: "price_1UCEbNJKCamubEm1kOnmQOiE", usd: 19, pkg: "@theluckystrike/mcp-deposits", bin: "mcp-deposits", payload: "deposits" },
+  "per-diem": { desc: "Statutory travel allowances on three bundled rate tables: the Polish delegation regulation at home and per country, the HMRC benchmark scale rates inside the UK, and the US GSA CONUS standard. The HMRC overseas per city rates are not bundled and are refused by name rather than guessed.", free: "Free: unlimited rate lookups and calculations on every scheme, 5 trips saved a calendar month, unlimited trip lists.", pro: "Pro: unlimited trips saved, the expense-tracker export payloads, and the per scheme and per month report.", name: "MCP Per Diem Pro", price: "price_1UCH5MJKCamubEm1wSrTiopx", usd: 19, pkg: "@theluckystrike/mcp-per-diem", bin: "mcp-per-diem", payload: "per-diem" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
@@ -283,6 +284,7 @@ const FREE_FIVE_WORDS = {
   zip: "Twenty archives a month, unlimited reading",
   "billing-docs": "Five documents a month, unlimited text",
   deposits: "Five deposits a month, unlimited applying",
+  "per-diem": "Five trips a month, unlimited rate lookups",
 };
 
 const BUNDLE_DESCRIPTION =

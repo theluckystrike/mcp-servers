@@ -429,6 +429,16 @@
       "free": "5 deposits recorded per calendar month, counted by received date, with applying to invoices, refunds, lists, balances and the text statement all unlimited on every tier: a cap that trapped a client's deposit would be a limit on their money rather than on yours.",
       "pro": "Unlimited deposits recorded, the A4 deposit statement PDF with your logo and no footer credit, and the deposits_report of held per currency, oldest held and what has sat unapplied.",
       "storage": "~/.local/share/mcp-servers/deposits/"
+    },
+    "per-diem": {
+      "title": "MCP Per Diem",
+      "tagline": "Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them.",
+      "does": "Prices one business trip against a bundled rate table and shows the arithmetic: the allowance per day, the partial-day fraction the scheme's own ladder produced, every deduction for a meal somebody else paid for, and the total in the scheme's own currency. Three schemes ship with it: the Polish delegation regulation at home and per country, the HMRC benchmark scale rates for travel inside the UK, and the US GSA CONUS standard M&IE with the lodging cap. Start and end are instants rather than wall clocks, so a trip across a clock change is 23 or 25 hours and the Polish 24-hour period and the US calendar day give different, correct answers to the same trip. Trips can be saved under a name with a TRIP-YYYY-NNNN id, listed with a total per currency, reported per scheme and per month, and handed to the expense tracker as ready-made expense_add arguments. The tables are files inside the package, not a feed, so the same trip priced twice gives the same answer, and every rate carries its authority, instrument, source URL and effective date.",
+      "for": "Anyone who claims or pays a statutory travel allowance: Polish contractors and employers on delegacja and diety, UK sole traders and companies on the HMRC benchmark rates, and US federal or corporate travellers on the GSA standard.",
+      "example": "\"What is the per diem for 58 hours in Krakow, leaving Tuesday 8am, with breakfast on the first day and two nights in a hotel?\" ... \"Same trip under the HMRC rates.\" ... \"Save it as the Krakow audit trip.\" ... \"Total my per diems this quarter per scheme.\"",
+      "free": "Rate lookups and calculations are unlimited on every tier: the tables are public regulation, and metering the reading of a regulation would be charging for the tax authority's work. 5 trips saved per calendar month, counted by start date, and unlimited trip lists.",
+      "pro": "Unlimited trips saved, the expense-tracker export payloads (one per currency, ready for expense_add), and the report of totals per scheme and per calendar month.",
+      "storage": "~/.local/share/mcp-servers/per-diem/"
     }
   },
   "version": "0.1.1",
@@ -495,6 +505,24 @@
       ],
       "note": "Searched the official MCP registry search API for each token on 2026-09-05; nothing found holds a client's money on a ledger and applies it to an invoice. deposit, deposits, security deposit, client funds and trust account return 0 results each. retainer returns 12 rows that are all one server, io.github.theluckystrike/retainer, which is this estate's own mcp-recurring (recurring retainer BILLING, a schedule that raises invoices, not money held). escrow returns 10 rows, all agent-to-agent crypto settlement on Base, Robinhood Chain or USDC (0xdirectping/escrow, jdhart81/agent-escrow, kustodia-escrow, hive-mcp-escrow, Evozim's cross-chain bridge readers), which hold tokens between two agents rather than a client deposit against an invoice. Nothing to compare against honestly. See docs/DIST_R14_RESULT.md.",
       "guide": "client-deposits-and-retainers-from-chat",
+      "ttl_days": 30
+    },
+    "per-diem": {
+      "date": "2026-09-05",
+      "tokens": [
+        "per-diem",
+        "per diem",
+        "travel allowance",
+        "travel expenses",
+        "delegacja",
+        "dieta",
+        "subsistence",
+        "hmrc",
+        "gsa",
+        "mileage"
+      ],
+      "note": "Searched the official MCP registry search API for each token on 2026-09-05. per-diem, per diem, travel allowance, travel expenses, delegacja, subsistence and hmrc return 0 results each. dieta returns one row, io.github.mcp-dir/dieta-mcp, which is nutrition tracking (the Polish word also means diet in the food sense) and prices nothing. mileage returns only this estate's own expense-tracker. gsa returns one adjacent server that is worth naming rather than hiding: com.1102tools/gsa-perdiem-mcp (pypi, stdio, 6 to 7 tools, version 1.0.8), a live reader of the GSA per diem API for US federal travel. It is not a competitor this page can quote against: it looks up a US rate over the network and returns it, with no Polish or UK scheme, no elapsed-hours or partial-day arithmetic, no meal deduction, no saved trip and no export, and it needs an api.data.gov key for any volume. A comparison page would be setting a rate lookup against a calculator. If it grows arithmetic or a second scheme it becomes a real comparison and this note expires in 30 days so it gets re-probed. See docs/DIST_R15_RESULT.md.",
+      "guide": "per-diem-and-travel-allowances-from-chat",
       "ttl_days": 30
     }
   }

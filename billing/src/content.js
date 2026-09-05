@@ -2212,6 +2212,124 @@ cap and adds the A4 statement PDF with your logo and the held, oldest-held and u
     ],
   },
 
+  "per-diem-and-travel-allowances-from-chat": {
+    title: "Per diem and travel allowances from chat, on the rate tables the tax authorities publish",
+    description: "Price a business trip under the Polish delegation regulation, the HMRC benchmark scale rates or the US GSA standard, with the partial-day ladder and every meal deduction shown. Why a substring match on a country name priced a trip to Oman at Romania's rate, and why the HMRC overseas table is deliberately not bundled.",
+    html: `<h1>Per diem and travel allowances from chat, on the rate tables the tax authorities publish</h1>
+<p>A per diem is a number somebody else decided. A tax authority publishes a daily amount, a ladder of
+partial days and a rule about the meals your host paid for, and your job is to apply their arithmetic to
+your trip and put the answer on a claim or a return. That is a calculation, not a judgement, which is
+exactly the kind of thing worth handing to a tool. The <a href="/s/per-diem">MCP Per Diem</a> server holds
+three of those schemes as files inside the package, prices a trip against one of them, and shows the ladder
+and every deduction next to the number that produced it. There is no network call anywhere in it.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add per-diem -- npx -y @theluckystrike/mcp-per-diem</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "per-diem": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-per-diem"] }
+  }
+}</code></pre>
+<p>It reads the same business profile as <a href="/s/invoice">MCP Invoice</a> and
+<a href="/s/expense-tracker">MCP Expense Tracker</a>, so the traveller's name and your default currency are
+set once, and it borrows its datetime and zone handling from <a href="/s/timezone">MCP Timezone</a> rather
+than carrying a second copy of it.</p>
+
+<h2>The three schemes, and what each one counts</h2>
+<table>
+<tr><th>Scheme</th><th>What a day is</th><th>What it pays</th></tr>
+<tr><td>Poland, domestic and per country</td><td>24-hour periods from departure (the <em>doba</em>)</td><td>PLN 45.00 a day at home plus a 150 percent lodging lump sum; abroad the annex diet in the country's own currency</td></tr>
+<tr><td>UK, inside the UK</td><td>Hours away, in bands</td><td>GBP 5.00 from 5 hours, GBP 10.00 from 10, GBP 25.00 from 15 when the journey is still going at 8pm, plus the late-evening supplement</td></tr>
+<tr><td>US, GSA CONUS standard</td><td>Calendar days in the destination zone</td><td>The standard M&amp;IE at 75 percent on the first and last day, with lodging as a receipted <strong>cap</strong> rather than an allowance paid out</td></tr>
+</table>
+<p>The same trip gives different answers under different schemes, and both are right. Noon to noon across
+Poland's spring clock change is 23 elapsed hours: one Polish <em>doba</em>, PLN 45.00, and two US calendar
+days, USD 102.00. The server counts elapsed hours as a difference between two instants, never as text, which
+is why it gets that trip right in March and October rather than only in the other ten months. Pass ISO 8601
+with an offset, or a local datetime plus an IANA zone.</p>
+
+<h2>What you say, and which tool runs</h2>
+<table>
+<tr><th>What you say</th><th>Tool</th></tr>
+<tr><td>What is the per diem for 58 hours in Krakow, with breakfast provided on the first day and two hotel nights?</td><td><code>perdiem_calc</code></td></tr>
+<tr><td>Show me the Polish foreign rates for Germany, and where they come from.</td><td><code>perdiem_rates</code></td></tr>
+<tr><td>Save that as the Krakow audit trip.</td><td><code>trip_record</code></td></tr>
+<tr><td>What have I claimed this quarter?</td><td><code>trip_list</code></td></tr>
+<tr><td>Give me the expense lines for that trip.</td><td><code>trip_export</code></td></tr>
+<tr><td>Total my per diems per scheme and per month.</td><td><code>perdiem_report</code></td></tr>
+</table>
+<p>A worked Polish domestic answer, 58 hours to Krakow with breakfast provided on the first day and two
+nights in a hotel:</p>
+<pre><code>day 1  45.00 less 25 percent breakfast   PLN 33.75
+day 2  full doba                         PLN 45.00
+day 3  10 h remainder, over 8 h          PLN 45.00
+diets                                    PLN 123.75
+lodging lump sum  2 x 67.50              PLN 135.00
+total                                    PLN 258.75</code></pre>
+
+<h2>The measured thing: a substring match priced a trip to Oman at Romania's rate</h2>
+<p>The first build resolved a destination by exact country name, then by ISO code, then by
+<code>country.includes(destination)</code> as a last resort. <code>"romania".includes("oman")</code> is
+<code>true</code>. A trip to Oman came back priced at Romania's EUR 42.00 diet, in the wrong currency, from a
+country three thousand kilometres away, with no note and no warning. It was caught by a test that expected a
+refusal and got a successful calculation instead.</p>
+<p>The fix is one line: the fallback is now a prefix match of four characters or more, so a destination that
+is genuinely absent is refused by name. The lesson is worth more than the fix. <strong>A fuzzy match is safe
+when a miss is cheap and dangerous when a miss is silent</strong>, and here a miss produces a tax figure. It
+is the table being <em>deliberately partial</em> that makes the substring fallback unsafe: with a complete
+table a wrong row is a near miss on a real country, and with a partial one it is a row that should never
+have matched at all, handed to the caller as a confident number in place of the refusal that would have sent
+them to the regulation.</p>
+
+<h2>The gap this server will not paper over: HMRC overseas</h2>
+<p>HMRC publishes worldwide subsistence scale rates per city, roughly 250 of them with eight figures each in
+the destination's own currency. <strong>None of them is bundled here.</strong> They could not be stated with
+confidence from the public text at build time, so the file ships with an empty rate list and a header that
+says why, <code>perdiem_rates</code> reports the gap in its notes, and
+<code>perdiem_calc {scheme: "uk", destination: "Paris"}</code> refuses by name and gives you the HMRC page.
+The UK domestic benchmark rates, all four of them, <em>are</em> bundled and complete.</p>
+<p>The same rule shapes the other tables. The Polish annex ships 34 countries rather than all of them, and a
+country outside those 34 is refused with the words "not verified here", never "no rate exists", because
+those are different statements and only one of them is true. The US table ships the CONUS <em>standard</em>
+rate rather than the roughly 300 non-standard localities, which is the rate a destination outside those
+localities takes anyway.</p>
+<p>A per diem ends up on a tax return. A wrong figure that looks authoritative is worse than an absent one,
+because an absent one is refused by name and you go and look it up. Every rate that is bundled carries its
+authority, its instrument, the source URL and the date it took effect, and <code>perdiem_rates</code> hands
+that header back with the numbers so the provenance travels with them.</p>
+
+<h2>Handing a trip to the expense tracker</h2>
+<p><code>trip_export</code> returns the exact <code>expense_add</code> arguments for the
+<a href="/s/expense-tracker">expense tracker</a>, one payload per currency, and writes nothing itself. That
+is deliberate: expense-tracker publishes no library entry point, and its id counter, category rules, VAT
+split and currency defaults all live inside its own handler under its own lock. Appending a row to its store
+directly would produce an expense with none of those applied, one that looks native and is not. No
+<code>vat_rate</code> is set either, because a statutory per diem is an allowance rather than a purchase and
+there is no input VAT to reclaim on it.</p>
+<p>Currencies are never added together anywhere in this server. A PLN diet and a EUR one stay two figures,
+in <code>trip_list</code> and in <code>perdiem_report</code> alike, because there is no exchange rate here
+and inventing one would be inventing the total.</p>
+
+<h2>Free and Pro</h2>
+<p>Rate lookups and calculations are free and unlimited on every tier, on all three schemes. That is
+deliberate: the tables are public regulation, and metering the reading of a regulation would be charging for
+the tax authority's work rather than for this server's. What the free tier limits is saving trips, at 5 a
+calendar month counted by start date, with trip lists unlimited. Pro
+(<a href="/buy/per-diem?src=store.guide.per-diem-and-travel-allowances-from-chat">$19 one-time</a>, or <a href="/bundle">$39 for the bundle</a>) removes that cap and
+adds the expense-tracker export payloads and the report of totals per scheme and per calendar month.</p>`,
+    faq: [
+      { q: "Where do the rates come from, and how do I know they are current?", a: "Each table is a file inside the package carrying the authority, the instrument, the source URL, the date the rates took effect and the date they were read, and perdiem_rates returns that header with the rates. There is no live feed, deliberately: a figure that changed under you between two runs of the same trip is worse than one that is visibly stale, because the stale one is checkable. Read the effective_date in any answer before you rely on it." },
+      { q: "Why are the HMRC overseas rates missing?", a: "Because they could not be stated with confidence from the public text at build time, and a wrong per diem that looks authoritative is worse than an absent one. The file ships with an empty rate list and a header saying so, and perdiem_calc with a foreign destination under the uk scheme refuses by name and points at the HMRC page. The four UK domestic benchmark scale rates are bundled and complete." },
+      { q: "What happens if my destination is not in the table?", a: "It is refused by name, with the words not verified here rather than no rate exists, and you are pointed at the regulation. It is never priced at a neighbouring country's rate. That is the fix for the Oman defect above: the name fallback is a prefix match of four characters or more, so an absent country fails closed." },
+      { q: "Does it handle a trip across a daylight saving change?", a: "Yes, and that is why start and end are instants rather than wall clocks. Noon to noon across Poland's spring change is 23 elapsed hours, one Polish 24-hour period at PLN 45.00, and the same trip under the US scheme is two calendar days at USD 102.00. A local time that falls inside the spring-forward gap resolves forward rather than being kept silently." },
+      { q: "How are provided meals deducted?", a: "By each scheme's own rule, and a day never goes below zero. Poland takes 25/50/25 percent of a domestic day and 15/30/30 of a foreign one; the US deducts the published breakfast, lunch and dinner amounts of the M&IE tier and never the incidentals; the UK removes a pro rata share of the band. The UK pro rata is this server's reading of HMRC's principle rather than a published figure, and the answer says so in its rule field." },
+      { q: "What does the free tier actually limit?", a: "Only saving a trip, at 5 a calendar month by start date. perdiem_rates, perdiem_calc and trip_list are unlimited on every tier. trip_export and perdiem_report are Pro. A trip starting in a different month is not blocked by this month's five." },
+      { q: "Where is the data kept?", a: "Plain JSON under ~/.local/share/mcp-servers/per-diem/, or $XDG_DATA_HOME if you set it. The rate tables are files inside the package. There is no network call anywhere in this server, no account and no API key, and license keys are verified offline." },
+    ],
+  },
+
   "credit-notes-and-purchase-orders-from-chat": {
     title: "Credit notes and purchase orders from chat, against your real invoices",
     description: "Reverse an invoice in full, by amount or by line, with the VAT unwound at the rates it actually charged, and raise and receive supplier purchase orders. Why a single-rate credit note on a mixed-VAT invoice is wrong by 22.6 percent.",
