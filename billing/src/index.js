@@ -220,7 +220,7 @@ function home() {
   ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
   const meta = `<meta name="description" content="${esc(HOME_DESCRIPTION).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/">${ld}`;
   const html = page("MCP servers for Claude: invoices, time tracking and freelance tools", `<h1>Seventeen local-first MCP servers for Claude, for freelancers and small businesses</h1>
-<p>Invoicing, time tracking, expenses, spreadsheets, quotes, contracts and more, each running as its own MCP server. The free tier works with no key and no account. Connect by URL in under a minute, or install a server locally. The full set is $39 once, for life; one server alone is $19 once, for life.</p>
+<p>Invoicing, time tracking, expenses, spreadsheets, quotes, contracts and more, each running as its own MCP server. The free tier works with no key and no account. Connect by URL in under a minute, or install a server locally. The full set is $39 once, for life; one server alone is $19 once, for life. See the full table and price math at <a href="/bundle">/bundle</a>.</p>
 <h2>Three ways to start</h2>
 <ol>
 <li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server. Paste that URL into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor, or VS Code. No header, no config file.</li>
@@ -242,6 +242,82 @@ function home() {
 <p>Setup and worked examples: ${GUIDE_LINKS}</p>
 <p>Source and docs: <a href="${REPO}">${REPO}</a></p>`);
   return html.replace("</title>", "</title>" + meta);
+}
+
+/** Free tier of each server in about five words, for the /bundle table. Hand-written from
+ * data/facts.json `servers.<id>.free`, not a truncation of that longer sentence. */
+const FREE_FIVE_WORDS = {
+  "time-tracker": "Unlimited timers, 7-day report window",
+  "price-tracker": "Unlimited checks, three tracked watches",
+  spreadsheet: "Reads and queries up to 5,000 rows",
+  invoice: "Three invoices a month, footer branding",
+  "expense-tracker": "Unlimited logging, 30-day history window",
+  currency: "Latest rates, 90-day history window",
+  docx: "Unlimited docs, three monthly contracts",
+  timezone: "Slots for three people, five contacts",
+  resume: "One profile, three cover letters",
+  recurring: "Three schedules, 30-day upcoming view",
+  clauses: "Starter set plus ten own clauses",
+  calendar: "Two calendars, 31-day windows",
+  pdf: "Merge five files, thirty pages",
+  kanban: "Three projects, 200 open tasks",
+  image: "Resize and compress, batches of five",
+  "bank-statement": "Two accounts, twelve months of history",
+  quotes: "Five open quotes at once",
+  barcode: "Twenty codes a month, every symbology",
+  zip: "Twenty archives a month, unlimited reading",
+};
+
+const BUNDLE_DESCRIPTION =
+  `${SERVER_COUNT} MCP servers for Claude, one $${PRODUCTS.bundle.usd} key, lifetime. Buying singly is $${SERVER_COUNT * PRODUCTS[SERVER_IDS[0]].usd}, so the bundle saves $${BUNDLE_SAVING_USD}.`;
+
+/**
+ * GET /bundle: the case for the $39 key on its own page, separate from the home price
+ * table. Every number here is computed from PRODUCTS (SERVER_COUNT, BUNDLE_SAVING_USD),
+ * never typed twice, so a twentieth server cannot leave this page's math stale.
+ */
+export function bundlePage() {
+  const singleTotal = SERVER_IDS.reduce((n, id) => n + PRODUCTS[id].usd, 0);
+  const rows = SERVER_IDS.map((id) => {
+    const tagline = PAGES[id]?.tagline || PRODUCTS[id].desc;
+    return `<tr><td><a href="/s/${esc(id)}">${esc(PRODUCTS[id].name.replace(/ Pro$/, ""))}</a></td><td>${esc(tagline)}</td><td>${esc(FREE_FIVE_WORDS[id] || "")}</td></tr>`;
+  }).join("\n");
+  const canonical = "https://mcp.zovo.one/bundle";
+  const ld = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: PRODUCTS.bundle.name,
+      description: BUNDLE_DESCRIPTION,
+      url: canonical,
+      brand: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" },
+      offers: {
+        "@type": "Offer",
+        price: String(PRODUCTS.bundle.usd),
+        priceCurrency: "USD",
+        url: `${canonical.replace("/bundle", "")}/buy/bundle?src=store.bundle`,
+        availability: "https://schema.org/InStock",
+      },
+    },
+  ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
+  const meta = `<meta name="description" content="${esc(BUNDLE_DESCRIPTION).slice(0, 155)}"><link rel="canonical" href="${canonical}">${ld}`;
+  const title = `${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT} MCP servers for Claude, one $${PRODUCTS.bundle.usd} key`;
+  const body = `<h1>${esc(title)}</h1>
+<p>One lifetime key unlocks Pro on every server below. Bought singly that is ${SERVER_COUNT} &times; $${PRODUCTS[SERVER_IDS[0]].usd} = $${singleTotal}; the bundle is $${PRODUCTS.bundle.usd}, a saving of $${BUNDLE_SAVING_USD}. One key, one payment, no per-server checkout.</p>
+<p><a class="buy" href="/buy/bundle?src=store.bundle">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
+<h2>The ${SERVER_COUNT} servers</h2>
+<table><tr><th>Server</th><th>What it does</th><th>Free tier</th></tr>${rows}</table>
+<h2>Three ways to start</h2>
+<ol>
+<li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server; paste it into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor or VS Code. The bundle key can replace that token on any of them to remove the free-tier limits.</li>
+<li><strong>Install the .mcpb:</strong> download each server's bundle from the <a href="${REPO}/releases/tag/v0.1.1">releases page</a> and open it; Claude Desktop installs the server.</li>
+<li><strong>Install locally with npx:</strong> run <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> for each one and point your client's config at it; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
+</ol>
+<h2>How the key arrives</h2>
+<p>Nothing is emailed. The key is rendered once, on the <code>/success</code> page right after payment; reloading that URL always shows the same key, and <code>/recover?session_id=...</code> gets it back from a lost tab. If you bought while connected through a hosted <code>mcp.zovo.one</code> endpoint, that endpoint's token is bound to Pro automatically, with nothing to paste there (docs/CHECKOUT_AUDIT.md).</p>
+<p><a class="buy" href="/buy/bundle?src=store.bundle">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
+<p><a href="/">All ${SERVER_COUNT} servers priced singly</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a></p>`;
+  return page(title, body).replace("</title>", "</title>" + meta);
 }
 
 async function stripe(env, path, params, method = "POST") {
@@ -508,6 +584,10 @@ export default {
       return new Response(home(), { headers: { "content-type": "text/html; charset=utf-8" } });
     }
 
+    if (path === "/bundle" && method === "GET") {
+      return new Response(bundlePage(), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
     if (path.startsWith("/s/") && method === "GET") {
       const id = path.slice(3);
       const pg = PAGES[id];
@@ -608,7 +688,7 @@ ${faqHtml}
     }
 
     if (path === "/sitemap.xml") {
-      const urls = ["/", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      const urls = ["/", "/bundle", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     if (path === "/22fad93b71a88e2e60acae203c4288ae.txt") {
@@ -625,7 +705,7 @@ ${faqHtml}
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file || "none, a connector URL"}, key ${CLIENTS[c].key || "none"}. ` +
         serversFor(c).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [Nineteen-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {

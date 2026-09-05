@@ -36,7 +36,9 @@ test("the pages generated from the READMEs are tagged with the product page that
   const hrefs = buyHrefs(Object.values(PAGES).map((p) => p.html).join("\n"));
   assert.ok(hrefs.length > 0, "expected the product pages to link to /buy at all");
   for (const href of hrefs) {
-    assert.match(href, /\?src=store\.s\.[a-z0-9-]+"$/, `untagged product-page link: ${href}`);
+    // store.s.<id> for the product's own buy link, store.s.<id>.bundle for the bundle
+    // cross-sell every generated page carries (scripts/build-pages.mjs addBundleCta).
+    assert.match(href, /\?src=store\.s\.[a-z0-9-]+(?:\.bundle)?"$/, `untagged product-page link: ${href}`);
   }
 });
 
