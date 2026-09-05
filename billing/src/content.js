@@ -2465,6 +2465,127 @@ adds the expense-tracker export payloads and the report of totals per scheme and
     ],
   },
 
+  "one-ledger-from-every-server": {
+    title: "One double-entry ledger out of every server you already run",
+    description: "Derive a real set of books from the invoices, credit notes, deposits, expenses, bank import and asset register you already keep, and prove the trial balance comes to zero to the minor unit. Why the bank statement is evidence rather than a source of postings, and why posting it as well double-counts 99.6 percent of your cash while the trial balance still balances perfectly.",
+    html: `<h1>One double-entry ledger out of every server you already run</h1>
+<p>By the time you have raised invoices, given a credit note, taken a deposit, logged expenses, imported a
+bank statement and put a laptop on a depreciation schedule, you have six books. What you do not have is a set
+of books. The <a href="/s/cash-book">MCP Cash Book</a> server derives one: a double-entry ledger over a period
+in one currency, built on the call from those six stores, with a debit and a credit for every movement and a
+trial balance proved to zero to the minor unit. It writes into none of them, and there is no tool for typing
+an entry into it.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add cash-book -- npx -y @theluckystrike/mcp-cash-book</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "cash-book": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-cash-book"]
+    }
+  }
+}</code></pre>
+<p>It reads <a href="/s/invoice">mcp-invoice</a>, <a href="/s/billing-docs">mcp-billing-docs</a>,
+<a href="/s/deposits">mcp-deposits</a>, <a href="/s/expense-tracker">mcp-expense-tracker</a>,
+<a href="/s/bank-statement">mcp-bank-statement</a> and <a href="/s/asset-register">mcp-asset-register</a>.
+Every one of them is optional. A store you never installed is simply absent from the ledger and reported as
+<code>rows: 0</code>; a store that is on disk and did not parse is a different thing, reported as
+<code>read: false</code> with the error and a sentence naming what is missing because of it.</p>
+
+<h2>The bank statement is evidence, not a source of postings</h2>
+<p>This is the decision the whole ledger rests on, and it is counter-intuitive, because the account is called
+cash and the bank statement is the record of cash. Import it and post it and you have built the obvious thing.
+It is also wrong.</p>
+<p>A bank line and a payment record are not two transactions. They are one transaction seen twice. When you
+marked an invoice paid, that receipt was recorded. When the statement is imported, the same receipt arrives
+again. So cash is posted from the <em>documents</em>, which are the only rows that carry a second leg (a
+receipt against receivables, a payment against an expense and its VAT), and each bank row is then matched to a
+posted cash movement of the same amount, the same direction and a date within three days. The match is written
+onto the ledger line as <code>bank_ref</code>: evidence that the movement cleared, attached to a posting that
+was derived from something else.</p>
+<p>Here is what that is worth, measured on one worked month of ten documents and five bank rows:</p>
+<pre><code>posted cash movement        1,380,300 minor units
+matched to a bank row       1,375,300   (99.6 percent)
+new information             7,500       (0.4 percent)
+
+cash balance, matched       -10,543.00 EUR
+cash balance, both posted   -21,111.00 EUR</code></pre>
+<p>Four of the five bank rows are money that a document already posted. Post the import as well and the cash
+balance moves by nearly a factor of two.</p>
+
+<h2>The part that makes it dangerous</h2>
+<p>The check does not catch it. Every duplicated receipt arrives with its own contra, so the trial balance
+still comes to zero. Debits equal credits, every individual line is plausible and names a real bank row, the
+document reconciles, and the only symptom is one account off by 10,568.00 in a direction nobody audits. A
+control that passes on a broken ledger is worse than no control, because it has been consulted.</p>
+<p>What is left after matching is the 0.4 percent: one withdrawal of 75.00 that no expense, refund or asset
+purchase explains. That leftover is the entire reason to import a statement at all. A bank debit with nothing
+behind it is a payment nobody entered; a posted cash movement with no bank line behind it either has not
+cleared or did not happen. A duplicate-heavy ledger buries both of them inside a number that looks fine.</p>
+
+<h2>Nothing is ever balanced with a plug</h2>
+<p>Every entry is posted exactly as its source document states it. When a document's own legs do not add up,
+the entry is still posted and the difference is raised by name: <code>offenders</code> lists the entry, the
+source server and the source document behind every unit of the imbalance. A trial balance can only find a
+broken document if it is allowed to come out non-zero. Forcing a balancing figure would turn the one check
+this server exists for into a formality that always passes, which is precisely the failure described above,
+manufactured on purpose.</p>
+<p>That is also why <code>trial_balance</code> and <code>ledger_lines</code> are free and unlimited on every
+tier. Whether the books add up is the question the server exists to answer, and a free tier that hides the
+answer is a demo. The meter is on the period instead: three distinct periods a calendar month, keyed by from,
+to and currency, so rebuilding one already in the register is free forever.</p>
+
+<h2>Four more rules that change the numbers</h2>
+<p><strong>VAT comes out of the gross, never on top of it.</strong> The expense tracker stores an amount
+VAT-inclusive, so 123.00 at 23 percent is 100.00 of expense and 23.00 of input VAT, not 123.00 and 28.29.
+Adding it on top overstates the expense and the reclaim together, and both figures look ordinary.</p>
+<p><strong>A deposit applied to an invoice never touches cash.</strong> The cash arrived earlier, when the
+deposit was received. Applying it debits deposits held and credits receivables. Posting it to cash receives
+the same money twice.</p>
+<p><strong>A purchase order is a memo and is never posted.</strong> An order is a commitment: nothing has been
+delivered and nothing is owed. It is carried as <code>purchase_commitments</code>, outside the trial balance.
+A ledger that posts an open order reports a liability the business does not have, and it is the kind of
+liability that gets believed because it came out of a computer.</p>
+<p><strong>Currencies are never added together.</strong> A period holding two is refused by name until you
+choose one, and the documents in the other are counted as excluded rather than quietly dropped. There is no
+exchange rate in this server, so a single trial balance over a EUR book and a USD one would be an invented
+number that balances.</p>
+
+<h2>What a month close actually tells you</h2>
+<p><code>month_close</code> is not a freeze. This server does not own the six stores and cannot lock them.
+What it does is record what the trial balance said at the moment of closing, alongside the list of what the
+month leaves unposted or inconsistent: an invoice with no VAT rate, a bank debit with no expense behind it, a
+deposit applied to an invoice that does not exist. Close the same month again after one of those stores has
+moved and the drift is reported by name rather than quietly adopted. The snapshot is the only place that
+change is visible.</p>
+<p>And a bank row that could match two postings is matched to neither, with both candidates named. Picking the
+first would be a coin toss written into a ledger, and two candidates for one bank line is exactly the case a
+human has to look at.</p>
+
+<h2>Ask it</h2>
+<pre class="prompt"><code>Build the double-entry ledger for June and tell me whether the trial balance comes to zero.</code></pre>
+<pre class="prompt"><code>Show me every ledger line that hits receivables, with the invoice each one came from.</code></pre>
+<pre class="prompt"><code>Close June. What does the month leave unposted or inconsistent?</code></pre>
+<p><code>ledger_build</code>, <code>trial_balance</code> and <code>ledger_lines</code> are free;
+<code>month_close</code>, <code>ledger_export_csv</code> and <code>ledger_report</code> are Pro
+(<a href="/buy/cash-book?src=store.guide.one-ledger-from-every-server">$19 one-time</a>, lifetime, verified
+offline, or <a href="/bundle?src=store.guide.one-ledger-from-every-server">every server in the bundle</a>).</p>`,
+    faq: [
+      { q: "Does it change my invoices, expenses or bank imports?", a: "No. It reads all six stores and writes into none of them. The only file it owns is a register of the periods it built, and no balance is ever read back out of that register: every line is derived from the source documents at the moment you ask. The contract suite asserts the bytes and the mtimes of nine sibling files are unchanged across all six tools." },
+      { q: "Why is the bank statement not posted?", a: "Because it is the same money as the documents. A bank line and a payment record are one transaction seen twice. On the worked month, four of five bank rows duplicate a posted movement: 1,375,300 of 1,380,300 minor units of cash, 99.6 percent. Posting both takes the cash balance from -10,543.00 to -21,111.00 EUR. The bank rows are matched to postings as evidence instead, and what fails to match is the output that matters." },
+      { q: "If the ledger were double-counting cash, would the trial balance catch it?", a: "No, and that is the point. Every duplicated receipt arrives with its own contra, so debits still equal credits and the trial balance still comes to zero. Every line is individually plausible. The only symptom is one account off by nearly a factor of two. A control that passes on a broken ledger is worse than no control." },
+      { q: "What happens when a document's own figures do not add up?", a: "The entry is posted exactly as the document states it and the imbalance is reported by name. offenders lists the entry, the source server and the source document behind every unit of the difference. Nothing is ever plugged to make the trial balance come to zero, because a trial balance that always passes cannot find a broken document." },
+      { q: "Is there an opening balance?", a: "No. This ledger opens at nothing and derives only what the period itself contains, so an account figure here is the period's movement. No opening balance is carried in from a book this server does not keep. An opening figure nobody can walk back to a document is the first invented number in a set of books." },
+      { q: "What if I only have some of the six servers installed?", a: "It still works. A store you never installed is absent and reported as read: true, rows: 0, which is a figure that is genuinely zero. A store that is on disk and did not parse is reported as read: false with the error and a sentence naming what is missing, which is a figure that could not be computed. The distinction matters because a ledger short one whole store still balances perfectly: both legs of every missing entry are missing." },
+      { q: "Can I mix currencies in one period?", a: "No. A period holding two currencies is refused by name until you choose one, and the documents in the other are counted as excluded rather than dropped. There is no exchange rate in this server, so a single trial balance across two currencies would be an invented number that happens to balance." },
+      { q: "What does the free tier actually give me?", a: "trial_balance and ledger_lines unlimited on every tier, plus three distinct periods a calendar month through ledger_build. Periods are keyed by from, to and currency, so rebuilding one you already built is free forever. Pro adds unlimited periods, month_close, ledger_export_csv and ledger_report." },
+      { q: "Where is the data kept?", a: "The period register is plain JSON under ~/.local/share/mcp-servers/cash-book/, or $XDG_DATA_HOME if you set it. The invoices, credit notes, purchase orders, deposits, expenses, bank imports and assets stay in their own servers' directories and are only read. There is no network call anywhere in this server, no account and no API key, and license keys are verified offline." },
+    ],
+  },
+
   "client-statements-and-dunning-from-chat": {
     title: "Client statements and payment chasers from chat, aged as at any date you name",
     description: "Turn the invoices, credit notes and deposits you already keep into a statement of account for a period, age what is open into 0-30, 31-60, 61-90 and over 90 days AS AT a date, and draft the chaser. Why aging a past date with today's payment figures reports zero overdue on a day when a third of the book was late, and why paid_minor rather than the payment rows is the authority.",
