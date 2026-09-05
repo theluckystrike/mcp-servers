@@ -922,5 +922,39 @@
       "name": "license_activate",
       "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
     }
+  ],
+  "cash-book": [
+    {
+      "name": "ledger_build",
+      "description": "Derive the double-entry ledger for one period in one currency from the invoice, credit note, deposit, expense, bank and asset stores. Every line names its source server, source id and date. Nothing is written back."
+    },
+    {
+      "name": "trial_balance",
+      "description": "Total the debits and the credits for a period and prove they are equal to the minor unit. When they are not, name the entries whose own legs do not add up and the source document behind each. Free and unlimited."
+    },
+    {
+      "name": "ledger_lines",
+      "description": "List the ledger lines for a period, filtered by account, by source server or source document id, and by date. Each line carries its debit and its credit in minor units and the bank row that evidences it."
+    },
+    {
+      "name": "month_close",
+      "description": "List what a month leaves unposted or inconsistent: invoices with no VAT rate, bank debits with no expense, deposits applied to unknown invoices. Then close it with a trial balance snapshot. Pro."
+    },
+    {
+      "name": "ledger_export_csv",
+      "description": "Return the period's ledger lines as RFC 4180 CSV, one row per leg with its date, entry, account, debit, credit, currency, source server, source id and description. No file is written. Pro."
+    },
+    {
+      "name": "ledger_report",
+      "description": "Report every account for a period with its debits, its credits, its movement and its closing balance, plus the purchase commitments held as a memo and the exceptions the period carries. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
   ]
 }

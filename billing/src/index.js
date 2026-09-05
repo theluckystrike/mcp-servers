@@ -29,6 +29,7 @@ export const PRODUCTS = {
   "per-diem": { desc: "Statutory travel allowances on three bundled rate tables: the Polish delegation regulation at home and per country, the HMRC benchmark scale rates inside the UK, and the US GSA CONUS standard. The HMRC overseas per city rates are not bundled and are refused by name rather than guessed.", free: "Free: unlimited rate lookups and calculations on every scheme, 5 trips saved a calendar month, unlimited trip lists.", pro: "Pro: unlimited trips saved, the expense-tracker export payloads, and the per scheme and per month report.", name: "MCP Per Diem Pro", price: "price_1UCH5MJKCamubEm1wSrTiopx", usd: 19, pkg: "@theluckystrike/mcp-per-diem", bin: "mcp-per-diem", payload: "per-diem" },
   "asset-register": { desc: "A fixed asset register that depreciates on the rates the tax authorities publish: the Polish KST annex rates from the CIT and PIT acts, the UK capital allowance pools with the annual investment allowance, and the US MACRS GDS half-year tables for 3, 5 and 7 year property. The tables are bundled files rather than a feed, and the annex positions that could not be stated with confidence are refused by name rather than guessed.", free: "Free: 10 assets in the register, unlimited depreciation schedules on every table, unlimited register listing and disposals.", pro: "Pro: unlimited assets, the monthly journal with its expense-tracker payload, and the net book value, yearly charge and disposal report.", name: "MCP Asset Register Pro", price: "price_1UCJDmJKCamubEm1lXBcAaEQ", usd: 19, pkg: "@theluckystrike/mcp-asset-register", bin: "mcp-asset-register", payload: "asset-register" },
   "statement-of-account": { desc: "Statements of account and payment chasers built from the invoices, credit notes and deposits you already keep: opening balance, every movement, closing balance, and aging into 0-30, 31-60, 61-90 and over 90 days as at any date you name. It writes into no book it reports on, and it never invents a late fee.", free: "Free: 5 statements a calendar month, unlimited aging on every client, plain-text statements, and dunning letters at the friendly and firm levels.", pro: "Pro: unlimited statements, the A4 PDF with your logo, the final-demand letter, and the all-clients report per currency.", name: "MCP Statement of Account Pro", price: "price_1UCLpbJKCamubEm1vvAD4jzZ", usd: 19, pkg: "@theluckystrike/mcp-statement-of-account", bin: "mcp-statement-of-account", payload: "statement-of-account" },
+  "cash-book": { desc: "One double-entry ledger over the books you already keep: invoices, credit notes, deposits, expenses, the bank import and the fixed asset register. Every line carries the server, the document id and the date it came from, and the trial balance is proved to the minor unit. It writes into none of those books, and there is no way to type an entry into it.", free: "Free: 3 periods a calendar month, and the trial balance and the ledger lines unlimited on every tier, because whether the books add up is the question this server exists for.", pro: "Pro: unlimited periods, the month close with its snapshot and exception list, the CSV export and the per-account report.", name: "MCP Cash Book Pro", price: "price_1UCOv4JKCamubEm15469I5YT", usd: 19, pkg: "@theluckystrike/mcp-cash-book", bin: "mcp-cash-book", payload: "cash-book" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
@@ -42,7 +43,7 @@ export const SERVER_COUNT = SINGLE_PRODUCT_IDS.length;
 export const BUNDLE_SAVING_USD =
   SINGLE_PRODUCT_IDS.reduce((n, id) => n + PRODUCTS[id].usd, 0) - PRODUCTS.bundle.usd;
 
-const NUMBER_WORD = { 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four" };
+const NUMBER_WORD = { 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four", 25: "Twenty-five" };
 
 /** The server count as a capitalised English word, e.g. "Twenty". Exported so the copy
  * tests can assert the rendered sentence without pinning a number that a new server moves. */
@@ -340,6 +341,7 @@ const FREE_FIVE_WORDS = {
   "per-diem": "Five trips a month, unlimited rate lookups",
   "asset-register": "Ten assets, unlimited depreciation schedules",
   "statement-of-account": "Five statements a month, unlimited aging",
+  "cash-book": "Three periods a month, unlimited trial balances",
 };
 
 const BUNDLE_DESCRIPTION =

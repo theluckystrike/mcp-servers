@@ -570,6 +570,19 @@
    "mcpb": "pending: bundles/statement-of-account.mcpb not built, server.mcpb.json fileSha256 is TBD",
    "github-mirror": "pending",
    "registry-name": "pending 0.14.0 (io.github.theluckystrike/statements, io.github.theluckystrike/dunning)"
+  },
+  "cash-book": {
+   "github": "published",
+   "registry": "pending",
+   "hosted": "published https://mcp.zovo.one/mcp/cash-book",
+   "npm": "missing",
+   "smithery": "pending",
+   "glama": "pending",
+   "docker-mcp-catalog": "submitted",
+   "cline-marketplace": "submitted",
+   "mcpb": "pending: bundles/cash-book.mcpb not built, server.mcpb.json fileSha256 is TBD",
+   "github-mirror": "pending",
+   "registry-name": "pending 0.14.0 (io.github.theluckystrike/ledger, io.github.theluckystrike/trial-balance)"
   }
  }
 }

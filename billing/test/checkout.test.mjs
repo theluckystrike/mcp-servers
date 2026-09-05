@@ -34,7 +34,7 @@ test("the bundle description names the count, the one key and the saving", () =>
     checkoutDescription("bundle"),
     `${countWord()} MCP servers for Claude, one lifetime key, saves $${BUNDLE_SAVING_USD} against buying singly`,
   );
-  assert.match(checkoutDescription("bundle"), /^Twenty-four MCP servers/);
+  assert.match(checkoutDescription("bundle"), /^Twenty-five MCP servers/);
 });
 
 test("every single-server description names the product and prices the bundle", () => {
