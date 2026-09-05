@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-amortization",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "Loan and lease schedules: payment, interest, early settlement and the journal, to the minor unit.",
   "type": "module",
   "bin": {
@@ -51,10 +51,10 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/amortization",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-asset-register": "^0.15.0",
-    "@theluckystrike/mcp-license": "^0.15.0",
-    "@theluckystrike/mcp-quotes": "^0.15.0",
-    "@theluckystrike/mcp-timezone": "^0.15.0",
+    "@theluckystrike/mcp-asset-register": "^0.16.0",
+    "@theluckystrike/mcp-license": "^0.16.0",
+    "@theluckystrike/mcp-quotes": "^0.16.0",
+    "@theluckystrike/mcp-timezone": "^0.16.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

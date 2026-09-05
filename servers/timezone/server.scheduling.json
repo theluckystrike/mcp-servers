@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/scheduling",
   "description": "Meeting scheduling across time zones: slot finding, DST checks, .ics invites.",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.15.0/timezone.mcpb",
-      "version": "0.15.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.16.0/timezone.mcpb",
+      "version": "0.16.0",
       "fileSha256": "8b1b06bd6058afc9284e9fe98f2f0f4a59656489e65ba5f279789484ead5d7f9",
       "transport": {
         "type": "stdio"

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/freelance",
   "description": "Freelance quotes and estimates: VAT line items, validity date, A4 PDF, win rate.",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.15.0/quotes.mcpb",
-      "version": "0.15.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.16.0/quotes.mcpb",
+      "version": "0.16.0",
       "fileSha256": "44508d114d812d57d6882b74269d7562fdefc59132eb3ef6d3823d74dbd9b4ab",
       "transport": {
         "type": "stdio"
