@@ -1433,6 +1433,75 @@ walkthrough for the payment code specifically is in
       { q: "Where can I read the competitor facts myself?", a: "qrcode's tools, gateway behaviour and meta-tool count come from its README at github.com/pipeworx-io/mcp-qrcode and its registry entry for io.github.pipeworx-io/qrcode. Barcode Generator API's tool, pricing and x402 details come from its README at github.com/Br0ski777/barcode-generator-x402 and its registry entry for io.github.Br0ski777/barcode-generator. Both read on 2026-09-04." },
     ],
   },
+
+  "per-diem": {
+    title: "MCP Per Diem vs gsa-perdiem-mcp: which MCP server to pick",
+    description: "Three bundled statutory rate tables against a live reader of the GSA Per Diem API. What each looks up, which schemes, network calls, install path, price and licence, read from each project's own README.",
+    html: `<h1>MCP Per Diem vs gsa-perdiem-mcp: which MCP server to pick</h1>
+<p>Both answer "what is the per diem for this trip" from a chat client. The difference is what data
+sits behind the answer and how many schemes it covers.
+<a href="https://github.com/1102tools-dev/federal-contracting-mcps/tree/main/servers/gsa-perdiem-mcp">gsa-perdiem-mcp</a>
+(<code>com.1102tools/gsa-perdiem-mcp</code> on the official registry) calls the live <code>api.gsa.gov</code>
+Per Diem API for US federal CONUS lodging and M&amp;IE rates, including the non-standard-area rates for
+specific cities that a bundled CONUS-standard table cannot carry. Ours ships three bundled rate tables,
+Polish, UK and US, and does the trip arithmetic: elapsed hours, the partial-day fraction, meal deductions
+and a saved trip record. It has no network call and no US non-standard-locality table.</p>
+
+<h2>The facts, read from each project</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>gsa-perdiem-mcp</th></tr></thead>
+<tbody>
+<tr><td>What it looks up</td><td>Prices one trip's allowance: amount per day and total, with the partial-day fraction and meal deductions the scheme applies</td><td>GSA Per Diem API rates by city, state or ZIP, an M&amp;IE meal-tier breakdown, a trip cost estimate and a multi-city comparison</td></tr>
+<tr><td>Schemes covered</td><td>Three: Polish delegation regulation (domestic and 34 countries), HMRC UK benchmark scale rates, US GSA CONUS standard</td><td>One: US GSA Per Diem (CONUS), including the non-standard-area rates by city/state/ZIP, not only the standard rate</td></tr>
+<tr><td>Network or bundled</td><td>Bundled JSON tables read from disk. No network call anywhere in the server</td><td>Network. Every lookup calls <code>api.gsa.gov</code> live over the api.data.gov gateway</td></tr>
+<tr><td>Install path</td><td><code>npx -y @theluckystrike/mcp-per-diem</code>, no account, no key</td><td><code>uvx gsa-perdiem-mcp</code>. Works with the shared DEMO_KEY (about 10 requests/hour across every user of it) or a free personal api.data.gov key (1,000 requests/hour)</td></tr>
+<tr><td>Price</td><td>Free tier unlimited on rate lookups and calculations, 5 trips saved a month; Pro $19 once, or $39 for the bundle</td><td>Free. No pricing tier in its README</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>MIT</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick gsa-perdiem-mcp</h2>
+<p>Pick it if the trip is US federal or federal-adjacent travel and the destination might be one of the
+roughly 300 non-standard-area localities the GSA prices above the CONUS standard rate: New York City,
+San Francisco and the rest. Its README states it hits the live GSA API for exactly that reason, so a
+mid-year rate change shows up on the next call. It also gives an IGCE-oriented workflow,
+<code>estimate_travel_cost</code> and <code>compare_locations</code> across several cities in one call,
+and names two companion servers, <code>bls-oews-mcp</code> and <code>gsa-calc-mcp</code>, for the wage and
+ceiling-rate side of a cost estimate.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours for a Polish delegacja or a UK HMRC domestic claim: gsa-perdiem-mcp has no scheme for
+either. Pick it too for a US CONUS-standard trip where the destination is not one of the non-standard
+localities, since the standard rate does not change between calls and a bundled table needs no network
+and no api.data.gov key at all. Ours also does the arithmetic a rate lookup does not: elapsed hours
+across a clock change, the partial-day ladder, meal deductions, and a saved trip record with a per-scheme,
+per-month report and ready-made expense-tracker export arguments.</p>
+
+<h2>What we measured</h2>
+<p>The per-diem package's adversarial suite includes the substring-match defect a country-name lookup can
+fall into: a naive fallback priced a trip to Oman at Romania's rate because <code>"romania".includes("oman")</code>
+is true. The fix is a prefix match of four characters or more that fails closed instead of guessing, and
+it is asserted in <code>test/adversarial.test.mjs</code>. gsa-perdiem-mcp's own README states it carries
+437 regression tests across seven rounds of testing against the live GSA API, including one P0
+path-traversal fix and 23 P1 silent-wrong-data fixes, and points to its own <code>testing.md</code> for
+the record.</p>
+
+<h2>Install lines</h2>
+<p>Ours, Claude Code:</p>
+<pre><code>claude mcp add per-diem -- npx -y @theluckystrike/mcp-per-diem</code></pre>
+<p>gsa-perdiem-mcp, with a personal api.data.gov key (recommended):</p>
+<pre><code>claude mcp add gsa-perdiem -e PERDIEM_API_KEY=your-key -- uvx gsa-perdiem-mcp</code></pre>
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer
+walkthrough is in <a href="/guides/per-diem-and-travel-allowances-from-chat">per diem and travel
+allowances from chat</a>.</p>`,
+    faq: [
+      { q: "Can I run mcp-per-diem alongside gsa-perdiem-mcp?", a: "Yes. Tool names do not collide: ours are perdiem_calc, trip_record and so on; gsa-perdiem-mcp uses lookup_city_perdiem, estimate_travel_cost and its own names. Nothing is shared between them." },
+      { q: "Which one covers Poland or the UK?", a: "Only ours. gsa-perdiem-mcp is US GSA CONUS only; its README names DoD-set OCONUS rates and State Department foreign rates as out of scope for the tool, and has no Polish or UK scheme at all." },
+      { q: "Which one needs a network call?", a: "gsa-perdiem-mcp does, every time: it reads live from api.gsa.gov. Ours reads bundled JSON tables on disk and makes no network call, so the same trip priced twice always gives the same answer." },
+      { q: "Which one is free?", a: "Both have a free tier. gsa-perdiem-mcp's README states no price at all, though the shared DEMO_KEY caps around 10 requests an hour and a free personal api.data.gov key raises that to 1,000. Ours is free and unlimited on rate lookups and calculations, with a 5-trips-a-month cap on saving; Pro is $19 once." },
+      { q: "Where can I read the competitor facts myself?", a: "gsa-perdiem-mcp's tools, pricing and network behaviour come from its README at github.com/1102tools-dev/federal-contracting-mcps/tree/main/servers/gsa-perdiem-mcp and its registry entry for com.1102tools/gsa-perdiem-mcp, read on 2026-09-05." },
+    ],
+  },
 };
 
 export const COMPARE_SLUGS = Object.keys(COMPARE);

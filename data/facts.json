@@ -506,24 +506,6 @@
       "note": "Searched the official MCP registry search API for each token on 2026-09-05; nothing found holds a client's money on a ledger and applies it to an invoice. deposit, deposits, security deposit, client funds and trust account return 0 results each. retainer returns 12 rows that are all one server, io.github.theluckystrike/retainer, which is this estate's own mcp-recurring (recurring retainer BILLING, a schedule that raises invoices, not money held). escrow returns 10 rows, all agent-to-agent crypto settlement on Base, Robinhood Chain or USDC (0xdirectping/escrow, jdhart81/agent-escrow, kustodia-escrow, hive-mcp-escrow, Evozim's cross-chain bridge readers), which hold tokens between two agents rather than a client deposit against an invoice. Nothing to compare against honestly. See docs/DIST_R14_RESULT.md.",
       "guide": "client-deposits-and-retainers-from-chat",
       "ttl_days": 30
-    },
-    "per-diem": {
-      "date": "2026-09-05",
-      "tokens": [
-        "per-diem",
-        "per diem",
-        "travel allowance",
-        "travel expenses",
-        "delegacja",
-        "dieta",
-        "subsistence",
-        "hmrc",
-        "gsa",
-        "mileage"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-05. per-diem, per diem, travel allowance, travel expenses, delegacja, subsistence and hmrc return 0 results each. dieta returns one row, io.github.mcp-dir/dieta-mcp, which is nutrition tracking (the Polish word also means diet in the food sense) and prices nothing. mileage returns only this estate's own expense-tracker. gsa returns one adjacent server that is worth naming rather than hiding: com.1102tools/gsa-perdiem-mcp (pypi, stdio, 6 to 7 tools, version 1.0.8), a live reader of the GSA per diem API for US federal travel. It is not a competitor this page can quote against: it looks up a US rate over the network and returns it, with no Polish or UK scheme, no elapsed-hours or partial-day arithmetic, no meal deduction, no saved trip and no export, and it needs an api.data.gov key for any volume. A comparison page would be setting a rate lookup against a calculator. If it grows arithmetic or a second scheme it becomes a real comparison and this note expires in 30 days so it gets re-probed. See docs/DIST_R15_RESULT.md.",
-      "guide": "per-diem-and-travel-allowances-from-chat",
-      "ttl_days": 30
     }
   }
 }
