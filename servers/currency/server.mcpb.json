@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.15.0/currency.mcpb",
       "version": "0.15.0",
-      "fileSha256": "305e8a9562a234d2ccc0d31c2cdd4d6806ad29861e2c9d587f907170f27bfdd3",
+      "fileSha256": "e2c7a127c92ee5e345ee8c8061673f570ae15eca6b87db758828c6f9da52cb72",
       "transport": {
         "type": "stdio"
       },

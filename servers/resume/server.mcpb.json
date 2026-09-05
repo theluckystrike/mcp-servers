@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.15.0/resume.mcpb",
       "version": "0.15.0",
-      "fileSha256": "d5386edbe584cf04fdf5023255ca09df807a3c137337fdeafd74d27e7766669f",
+      "fileSha256": "eddcf13d99c7d920ff39f3d6b27fd5c474561b3a219511a662f0c4f3d3c3d816",
       "transport": {
         "type": "stdio"
       },
