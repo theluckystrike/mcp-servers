@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-clauses",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "A personal library of reusable contract and proposal clauses: 25 generic freelance starters with {{variables}}, ranked search, and one-call assembly into a real Word .docx with every missing fact left as a bracketed prompt. Everything stays on your machine.",
   "type": "module",
   "bin": {
@@ -40,8 +40,8 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/clauses",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-docx": "^0.11.0",
-    "@theluckystrike/mcp-license": "^0.11.0",
+    "@theluckystrike/mcp-docx": "^0.12.0",
+    "@theluckystrike/mcp-license": "^0.12.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

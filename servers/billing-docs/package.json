@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-billing-docs",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Credit notes against your invoices and purchase orders to your suppliers, on the invoice engine.",
   "type": "module",
   "bin": {
@@ -51,9 +51,9 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/billing-docs",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-invoice": "^0.11.0",
-    "@theluckystrike/mcp-license": "^0.11.0",
-    "@theluckystrike/mcp-quotes": "^0.11.0",
+    "@theluckystrike/mcp-invoice": "^0.12.0",
+    "@theluckystrike/mcp-license": "^0.12.0",
+    "@theluckystrike/mcp-quotes": "^0.12.0",
     "pdfkit": "^0.15.0",
     "zod": "^3.25.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-expense-tracker",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "mcpName": "io.github.theluckystrike/expense-tracker-receipts-mileage",
   "description": "Local expenses, receipts and mileage ledger for freelancers: categorise, split VAT, summarise, export to CSV or xlsx and rebill straight into an invoice.",
   "type": "module",
@@ -40,7 +40,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/expense-tracker",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.11.0",
+    "@theluckystrike/mcp-license": "^0.12.0",
     "xlsx": "^0.18.5",
     "zod": "^3.25.0"
   },

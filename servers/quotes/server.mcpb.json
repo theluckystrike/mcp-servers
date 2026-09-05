@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/quotes-estimates-proposals-vat-win-rate",
   "description": "Quotes and estimates: VAT line items, a validity date, an A4 PDF, accept makes an invoice.",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.11.0/quotes.mcpb",
-      "version": "0.11.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.12.0/quotes.mcpb",
+      "version": "0.12.0",
       "fileSha256": "34d93f2a934e6d8d1aca1e3060a29562637786d51a3cf27487cc8f4c59f82a1d",
       "transport": {
         "type": "stdio"

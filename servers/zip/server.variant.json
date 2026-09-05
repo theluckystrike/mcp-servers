@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/archive",
   "description": "Zip and unzip archives from your AI chat: create, list, extract. Offline, with bomb guards.",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.11.0/zip.mcpb",
-      "version": "0.11.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.12.0/zip.mcpb",
+      "version": "0.12.0",
       "fileSha256": "c413b257a888c027a26be1fd916b43b1e08dcbcceb9de6372335b2e42eacd4cd",
       "transport": {
         "type": "stdio"

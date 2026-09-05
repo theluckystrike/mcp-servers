@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/documents",
   "description": "Generate real Word documents from your AI chat: proposals, quotes, contracts, SOWs.",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.11.0/docx.mcpb",
-      "version": "0.11.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.12.0/docx.mcpb",
+      "version": "0.12.0",
       "fileSha256": "cef7ef8f4f420ea3617218c51eaab77592afc1a170fddc0c6149fa6769f49a86",
       "transport": {
         "type": "stdio"
