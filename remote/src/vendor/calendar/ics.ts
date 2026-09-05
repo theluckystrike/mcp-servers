@@ -27,6 +27,8 @@ export interface Prop {
   name: string;
   params: Record<string, string[]>;
   value: string;
+  /** The unfolded logical source line this property was parsed from, verbatim. */
+  raw?: string;
 }
 
 /**
@@ -135,7 +137,7 @@ export function parseProp(line: string): Prop | null {
     const v = p.slice(eq + 1);
     params[k] = splitList(v).map(s => s.trim().replace(/^"(.*)"$/, "$1"));
   }
-  return { name, params, value };
+  return { name, params, value, raw: line };
 }
 
 /* ------------------------------------------------------------ date values */
@@ -273,7 +275,11 @@ export interface CalEvent {
   location?: string;
   status?: string;
   organizer?: string;
+  /** The unfolded ORGANIZER source line, verbatim, for byte-for-byte export. */
+  organizerLine?: string;
   attendees: string[];
+  /** The unfolded ATTENDEE source lines, verbatim, one per attendee, for byte-for-byte export. */
+  attendeeLines: string[];
   start: DateVal;
   /** Exclusive end, as RFC 5545 defines DTEND. */
   end: DateVal;
@@ -407,10 +413,12 @@ function buildEvent(props: Record<string, Prop[]>, warn: (w: string) => void): C
 
   const uid = one("UID") ? unescapeText(one("UID")!.value).trim() : "";
   const attendees: string[] = [];
+  const attendeeLines: string[] = [];
   for (const a of props.ATTENDEE ?? []) {
     const cn = a.params.CN?.[0];
     const addr = a.value.replace(/^mailto:/i, "").trim();
     attendees.push(cn && cn !== addr ? `${cn} <${addr}>` : addr);
+    if (a.raw) attendeeLines.push(a.raw);
   }
   const exdates: DateVal[] = [];
   for (const ex of props.EXDATE ?? []) {
@@ -441,7 +449,9 @@ function buildEvent(props: Record<string, Prop[]>, warn: (w: string) => void): C
     location: one("LOCATION") ? unescapeText(one("LOCATION")!.value).trim() : undefined,
     status: one("STATUS")?.value.trim().toUpperCase(),
     organizer: one("ORGANIZER")?.value.replace(/^mailto:/i, "").trim(),
+    organizerLine: one("ORGANIZER")?.raw,
     attendees,
+    attendeeLines,
     start, end, durationMs, rrule, exdates, rdates, recurrenceId,
     transparent: (one("TRANSP")?.value.trim().toUpperCase() ?? "OPAQUE") === "TRANSPARENT",
     sequence: Number.isFinite(seq) ? seq : 0,

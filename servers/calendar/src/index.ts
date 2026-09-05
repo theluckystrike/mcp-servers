@@ -285,9 +285,11 @@ function renderRows(rows: Row[], zone: string, showCal: boolean): string {
           // An event that ends on another day reads as a wrong one-line time range
           // unless the end date is spelled out: "05:00-05:00" for a three-year block.
           : `${fmtTime(r.occ.startUtc, zone)} to ${endDay} ${fmtTime(r.occ.endUtc, zone)}`;
+      const att = r.occ.event.attendees;
       const bits = [
         `  ${when.padEnd(13)} ${r.occ.event.summary}`,
         r.occ.event.location ? ` @ ${r.occ.event.location}` : "",
+        att.length ? ` with ${att.slice(0, 6).join(", ")}${att.length > 6 ? ` and ${att.length - 6} more` : ""}` : "",
         showCal ? ` [${r.cal}]` : "",
         `  id ${r.id}`,
       ];
@@ -711,14 +713,42 @@ function allDayVevent(occ: Occurrence, zone: string, uid: string, now: Date): st
   ];
   if (e.location) lines.push(`LOCATION:${icsText(e.location)}`);
   if (e.description) lines.push(`DESCRIPTION:${icsText(e.description.slice(0, 5000))}`);
+  lines.push(...attendeeOrganizerLines(e));
   lines.push("END:VEVENT");
   return lines.map(foldIcsLine).join("\r\n") + "\r\n";
+}
+
+/**
+ * ORGANIZER and ATTENDEE lines carried through exactly as parsed from the source
+ * .ics -- never re-derived from the display strings, and never invented -- so the
+ * export round-trips CN, ROLE, PARTSTAT, RSVP and the mailto value byte-for-byte.
+ * Folded at export time same as any other line; the source's own fold points do
+ * not need to match, only the unfolded content.
+ */
+function attendeeOrganizerLines(e: CalEvent): string[] {
+  const lines: string[] = [];
+  if (e.organizerLine) lines.push(e.organizerLine);
+  lines.push(...e.attendeeLines);
+  return lines;
 }
 
 function addDaysWallLocal(w: Wall, n: number): Wall {
   const t = new Date(Date.UTC(w.y, w.m - 1, w.d));
   t.setUTCDate(t.getUTCDate() + n);
   return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), h: 0, mi: 0, s: 0 };
+}
+
+/**
+ * Splice extra lines (already folded) into a VEVENT block written by the timezone
+ * server's writer, just before END:VEVENT. Used to add ORGANIZER/ATTENDEE without
+ * touching that shared writer, which knows nothing about either property.
+ */
+function insertBeforeEndVevent(text: string, extra: string[]): string {
+  if (!extra.length) return text;
+  const eol = text.includes("\r\n") ? "\r\n" : "\n";
+  const idx = text.lastIndexOf(`END:VEVENT`);
+  if (idx < 0) return text;
+  return text.slice(0, idx) + extra.join(eol) + eol + text.slice(idx);
 }
 
 function mergeVevents(parts: string[], count: number): string {
@@ -798,7 +828,7 @@ server.registerTool("event_export", {
       return allDayVevent(occ, zone, `${hashHex(e.uid)}-${occ.key}@mcp-calendar`, exportedAt);
     }
     const minutes = Math.max(1, Math.round((occ.endUtc.getTime() - occ.startUtc.getTime()) / 60000));
-    return icsCreateDetailed({
+    const text = icsCreateDetailed({
       title: e.summary || "(no title)",
       startUtc: occ.startUtc,
       durationMinutes: minutes,
@@ -809,6 +839,7 @@ server.registerTool("event_export", {
       uid: `${hashHex(e.uid)}-${occ.key}@mcp-calendar`,
       now: new Date(),
     }).text;
+    return insertBeforeEndVevent(text, attendeeOrganizerLines(e).map(foldIcsLine));
   });
   const path = outPathOf(a.out_path);
   writeFileSync(path, mergeVevents(parts, chosen.length), "utf8");

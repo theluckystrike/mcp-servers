@@ -144,5 +144,9 @@
   "D-R16-1": {
     "status": "client",
     "note": "round 16 b1: given the whole allowlist up front in one session with no instruction to stop after one action, the model answered a one-sentence import request ('import it as Main') and then, unasked, ran category_rules, statement_summary, recurring_detect, reconcile_expenses and attempted statement_export in the same turn - six unrequested tool calls, all individually correct (docs/USER_VALUE_R16_BANK.md D-R16-1). This is an agentic-client scoping choice under a single --strict-mcp-config session, not a server defect; no server change available."
+  },
+  "D-R61": {
+    "status": "fixed",
+    "note": "event_export dropped ATTENDEE and ORGANIZER on every VEVENT. Fixed: the parser keeps the raw unfolded ATTENDEE/ORGANIZER source lines (CN, ROLE, PARTSTAT, RSVP, the mailto value, param order) on the stored CalEvent, and the exporter (both the all-day writer and the timed icsCreateDetailed path via insertBeforeEndVevent) replays them verbatim before folding, so nothing is re-derived or invented; events_list now also shows attendees. servers/calendar/src/ics.ts (Prop.raw, CalEvent.organizerLine/attendeeLines) and servers/calendar/src/index.ts (attendeeOrganizerLines, insertBeforeEndVevent, renderRows); round-trip and no-attendee assertions added to servers/calendar/test/smoke.test.mjs, test 'initialize, tools/list, and the whole free-tier flow' (D-R61 section)."
   }
 }

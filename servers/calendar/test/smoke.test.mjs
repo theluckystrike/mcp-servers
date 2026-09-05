@@ -53,6 +53,7 @@ const FIXTURE = CRLF([
   "SUMMARY:Client call", "DESCRIPTION:Scope and rate\\nBring the estimate",
   "ORGANIZER;CN=\"Mike\":mailto:mike@example.com",
   "ATTENDEE;CN=Maria;RSVP=TRUE:mailto:maria@acme.com",
+  "ATTENDEE;CN=Tom Rivera;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=TRUE:mailto:tom@nova.example",
   "END:VEVENT",
   // 6: free/transparent, so it must not count as busy
   "BEGIN:VEVENT", "UID:fyi@fixture",
@@ -196,6 +197,36 @@ test("initialize, tools/list, and the whole free-tier flow", async () => {
     const first = round.events.find(e => e.summary.startsWith("Acme"));
     assert.equal(first.start.zone, "UTC");
     assert.equal(ics.expandEvent(first, { fromUtc: new Date("2026-03-01T00:00:00Z"), toUtc: new Date("2026-04-01T00:00:00Z"), defaultZone: "UTC" })[0].startUtc.toISOString(), "2026-03-09T09:00:00.000Z");
+
+    // D-R61: ORGANIZER and both ATTENDEE lines round-trip byte-for-byte after unfolding,
+    // and an event with no attendees (the kickoff) exports none.
+    const exportedLines = ics.unfold(readFileSync(out, "utf8"));
+    const clientCallIdx = exportedLines.findIndex(l => l === "SUMMARY:Client call");
+    assert.ok(clientCallIdx >= 0, exportedLines.join("\n"));
+    let veventStart = clientCallIdx;
+    while (exportedLines[veventStart] !== "BEGIN:VEVENT") veventStart--;
+    let veventEnd = clientCallIdx;
+    while (exportedLines[veventEnd] !== "END:VEVENT") veventEnd++;
+    const clientCallBlock = exportedLines.slice(veventStart, veventEnd + 1);
+    assert.ok(clientCallBlock.includes("ORGANIZER;CN=\"Mike\":mailto:mike@example.com"), clientCallBlock.join("\n"));
+    assert.ok(clientCallBlock.includes("ATTENDEE;CN=Maria;RSVP=TRUE:mailto:maria@acme.com"), clientCallBlock.join("\n"));
+    assert.ok(
+      clientCallBlock.includes("ATTENDEE;CN=Tom Rivera;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=TRUE:mailto:tom@nova.example"),
+      clientCallBlock.join("\n"),
+    );
+    assert.equal(clientCallBlock.filter(l => l.startsWith("ATTENDEE")).length, 2, clientCallBlock.join("\n"));
+
+    const kickoffIdx = exportedLines.findIndex(l => l.startsWith("SUMMARY:Acme"));
+    assert.ok(kickoffIdx >= 0);
+    let koStart = kickoffIdx;
+    while (exportedLines[koStart] !== "BEGIN:VEVENT") koStart--;
+    let koEnd = kickoffIdx;
+    while (exportedLines[koEnd] !== "END:VEVENT") koEnd++;
+    const kickoffBlock = exportedLines.slice(koStart, koEnd + 1);
+    assert.ok(!kickoffBlock.some(l => l.startsWith("ATTENDEE") || l.startsWith("ORGANIZER")), kickoffBlock.join("\n"));
+
+    // events_list shows the attendees too, not just the model's own prose about them
+    assert.match(ev.text, /Client call.*with Maria <maria@acme\.com>, Tom Rivera <tom@nova\.example>/);
 
     // export by id
     const byId = join(s.dir, "one.ics");
