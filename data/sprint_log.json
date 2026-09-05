@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T18:03:30.779Z",
-  "total_commits": 520,
+  "generated_at": "2026-09-05T18:03:44.959Z",
+  "total_commits": 521,
   "sessions": 50,
   "loops": [
     {
@@ -111,7 +111,7 @@
     {
       "name": "Loop 22: statement-of-account, month-end guide, v0.14.0",
       "sessions": 1,
-      "commits": 85
+      "commits": 86
     }
   ],
   "rows": [
@@ -675,7 +675,7 @@
       "at": "2026-09-05T18:03:30.585Z",
       "note": "loop 22 closed: v0.14.0 with statement-of-account (per-client statements from the invoice, credit-note and deposit stores, aging as at any date, dunning with bank details; audit 18/18; the twenty-fourth server and hosted endpoint), 65 manifests published and verified, 1119 tests, validation 674/674, 25 bundles; month-end guide generated from a real nine-prompt run through the 224-tool bundle (round 27, 26/27); invoice balances net credit notes and the profile reader accepts vat_rate (D-R95, D-R96); hosted worker takes read-only shared stores; sync-mirrors retries network drops; release-check enforces the profile-reader list; probe dates now derive from the host clock; INTEL_R10 variant tokens all failed the honesty rule; downloads 3517; clicks 82/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 22: statement-of-account, month-end guide, v0.14.0",
-      "commits": 60,
+      "commits": 61,
       "subjects": [
         "Wire per-diem into the estate: product, setup, guide, facts, tools, build scripts, distribution row",
         "per-diem demo GIF and logo",
