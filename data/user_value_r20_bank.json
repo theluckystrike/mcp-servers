@@ -1,0 +1,186 @@
+{
+  "at": "2026-09-05T08:20:00Z",
+  "round": 20,
+  "compares_to": "docs/USER_VALUE_R16_BANK.md (bank-statement, hosted, 16/18)",
+  "scope": "HOSTED single-lane re-run of round 16's six bank-statement prompts against https://mcp.zovo.one/mcp/bank-statement/t/<token> with https://mcp.zovo.one/mcp/expense-tracker/t/<token> registered alongside for the reconcile_expenses ledger, one fresh anonymous token, free tier, the same Revolut fixture fetched live from remote/fixtures/revolut-main.csv on raw.githubusercontent.com and the same one-expense seed. Checks whether D-R16-1 (a one-sentence import cascading into five unrequested tool calls) and D-R54 (date_order reported wrong for an ISO column) still reproduce, and whether the D-R55 fix on recurring_detect and reconcile_expenses still holds.",
+  "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -> 200 text/html, 8152 bytes, minting anon_58a3975150b4346ced92ccffbd740588. Registration: one mcp.json, two http entries, both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header anywhere: bank-statement and expense-tracker. Seed, by curl tools/call under the token before any prompt ran: expense_add on /mcp/expense-tracker for EUR 61.50 Adobe Creative Cloud dated 2026-08-07, matching one of the fixture's two Adobe Creative Cloud debits, so reconcile_expenses (b5) has something to reconcile. Allowlist: 29 explicit mcp__bank-statement__<tool> and mcp__expense-tracker__<tool> entries read from a live tools/list of each endpoint (bank-statement 15, expense-tracker 14), no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the two http entries above, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation, one bounded request per prompt run as its own isolated shell invocation, timeout 240. The CLI's own filesystem tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r20bank/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME, XDG_STATE_HOME under /private/tmp/uv-r20bank/xdg set only in each server's own env block in mcp.json. Fixture: remote/fixtures/revolut-main.csv fetched live by the hosted bank_upload {url} shim, confirmed 200/4422 bytes/43 lines, byte-identical to an independent curl of the same URL; 38 completed debit rows, one REVERTED row, recomputed independently with csv.DictReader before scoring. Host machine day 2026-09-05.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, 8152 bytes, minted anon_58a3975150b4346ced92ccffbd740588",
+    "registration": "one lane, two http entries (bank-statement, expense-tracker), both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; connected first try",
+    "tools_list": { "bank-statement": 15, "expense-tracker": 14 },
+    "seed": "expense_add on /mcp/expense-tracker by curl under the token: EUR 61.50 Adobe Creative Cloud dated 2026-08-07, matching one of the fixture's two Adobe Creative Cloud debits, before any prompt ran"
+  },
+  "scenarios": [
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b1",
+      "prompt": "Here is my bank export at <fixture URL> - import it as Main.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 16.5,
+      "tools": ["bank_upload", "statement_import"],
+      "note": "bank_upload {url} fetched 4422 bytes / 43 lines from raw.githubusercontent.com; statement_import read it by name: 41 imported, the REVERTED line (line 39) skipped and named, Revolut auto-detected, date range 2026-07-28 to 2026-09-03. The model stopped after one sentence and made zero further tool calls this turn, unlike round 16's five-tool unrequested cascade (D-R16-1) -- not reproduced this round. date_order: ymd, date_order_inferred: false for the ISO Completed Date column, correct where round 16 reported dmy on the same shape of column (D-R54 fixed).",
+      "r16_score": 2
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b2",
+      "prompt": "Categorise Spotify and Adobe as Software, coffee as Meals.",
+      "score": 3,
+      "tool_calls": 5,
+      "seconds": 19.0,
+      "tools": ["transactions_search", "transactions_search", "transactions_search", "transaction_categorize", "transaction_categorize"],
+      "note": "Three transactions_search calls confirmed the matches live (spotify 2/EUR 19.98, adobe 3/EUR 148.00 across Adobe Creative Cloud and Adobe Stock, coffee 7/EUR 31.30) then two transaction_categorize calls moved 5 rows to Software and 7 to Meals. Used transaction_categorize directly rather than category_rules, so no rule persists for future imports, narrower than round 16's approach, but right transactions, right totals, no clarification asked.",
+      "r16_score": 3
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b3",
+      "prompt": "What did I spend in August by category?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 22.5,
+      "tools": ["transactions_list"],
+      "note": "transactions_list {from: 2026-08-01, to: 2026-08-31} returned 36 rows and the model tallied categories itself: Software EUR 132.99, Meals EUR 21.30, uncategorised EUR 1129.44, money in EUR 4524.99. Independently re-read by curl statement_summary {group_by: category} on the same token: identical to the cent. Ended with an unprompted offer to categorise more groups, not a blocking question.",
+      "r16_score": 3
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b4",
+      "prompt": "Which subscriptions am I paying?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 16.0,
+      "tools": ["recurring_detect"],
+      "note": "recurring_detect answered free with a cap (D-R55 fix holds): Spotify EUR 9.99 and Adobe Creative Cloud EUR 61.50, both cadence_confirmed false on 2 occurrences 14/31 days apart, annualised null. The model relayed the tool's own uncertainty and additionally checked Netflix and OpenAI by name, correctly excluding both for having only one occurrence each -- no invented cadence.",
+      "r16_score": 3
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b5",
+      "prompt": "Which of my expenses have no bank line, and which bank lines have no receipt?",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 60.3,
+      "tools": ["reconcile_expenses", "reconcile_expenses", "expense_list"],
+      "note": "reconcile_expenses answered free with its 31-day cap (D-R55 fix holds) but the window (2026-08-04 to 2026-09-03, bank_debits 34, matched 1) did not cover the full asked range, so the model made a second reconcile_expenses call for the earlier week (2026-07-28 to 2026-08-05, bank_debits 6, matched 0) and a third call, expense_list, to confirm the ledger holds only the one seeded expense. Final answer: 0 expenses without a bank line, 37 of 38 bank debits without a receipt. csv.DictReader over the fixture independently counts exactly 38 COMPLETED debit rows, confirming 34 + 6 with 2 overlap days = 38, no double count.",
+      "r16_score": 3
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b6",
+      "prompt": "Export September to a file I can download.",
+      "score": 1,
+      "tool_calls": 1,
+      "seconds": 10.3,
+      "tools": ["statement_export"],
+      "note": "statement_export is still Pro-refused, correctly not purchased. Unlike round 16, the model did not fall back to a free tool for the underlying data -- it stopped after the refusal, offered to list transactions only if asked, and volunteered a recap with a wrong count (5 so far) and no total. Independently re-read by curl, transactions_list {from: 2026-09-01, to: 2026-09-30}: count 4 (Spotify, Adobe Stock, 2x Coffee Republic), EUR 44.99 total. Regression from round 16's fallback, which gave the correct EUR 44.99 unprompted.",
+      "r16_score": 2
+    }
+  ],
+  "totals": {
+    "score": 16,
+    "max": 18,
+    "pct": 89,
+    "tool_calls": 13,
+    "seconds": 144.5,
+    "tool_errors": 0,
+    "clarifying_turns": 0,
+    "per_server": {
+      "bank-statement": {
+        "score": 16,
+        "max": 18,
+        "tool_calls": 13,
+        "seconds": 144.5,
+        "score_r16": 16
+      }
+    },
+    "compare_round16": { "score": 16, "max": 18 }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "two /t/<token> entries, both connected first try, no Authorization header anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "bank_upload {url} fetches the fixture from raw.githubusercontent.com",
+      "evidence": "tool result: Fetched 4422 bytes from raw.githubusercontent.com; independent curl of the same URL returns 200, byte-identical, 43 lines",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "D-R54 is fixed: date_order is correct for an ISO date column",
+      "evidence": "statement_import returned date_order: ymd, date_order_inferred: false for a Completed Date column of 2026-07-28 10:00:00 values; round 16 logged dmy on the same shape of column",
+      "verdict": "FIXED"
+    },
+    {
+      "claim": "D-R16-1 does not reproduce: a one-sentence import gets an import-only answer",
+      "evidence": "b1's turn made exactly 2 tool calls (bank_upload, statement_import) and stopped; no category_rules, statement_summary, recurring_detect, reconcile_expenses or statement_export call appeared in that turn",
+      "verdict": "FIXED"
+    },
+    {
+      "claim": "August category totals are exact",
+      "evidence": "statement_summary {group_by: category} by curl: Software EUR 132.99 (3 rows), Meals EUR 21.30 (5 rows), uncategorised EUR 1129.44 (28 rows), money in EUR 4524.99, matching the model's b3 answer to the cent",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "recurring_detect still answers free with a cap (D-R55 fix holds)",
+      "evidence": "free_tier_note names 3 months / up to 5 recurring charges; cadence_confirmed false and annualised null on both Spotify and Adobe, no invented yearly figure",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "reconcile_expenses still answers free with a cap (D-R55 fix holds)",
+      "evidence": "two curl calls reproduce the model's own two calls exactly: bank_debits 34/matched 1 for the 31-day window, then bank_debits 6/matched 0 for the earlier week; csv.DictReader over the fixture counts 38 COMPLETED debit rows total, matching the model's 37 of 38",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "statement_export stays Pro",
+      "evidence": "Export is a Pro feature. with a tenant-carrying buy link, same shape as round 16",
+      "verdict": "PASS, unchanged by design"
+    },
+    {
+      "claim": "b6's free-tier fallback regressed from round 16",
+      "evidence": "curl transactions_list {from: 2026-09-01, to: 2026-09-30}: count 4, EUR 44.99 total; the model's own unprompted recap said 5 so far and gave no total",
+      "verdict": "REGRESSION"
+    },
+    {
+      "claim": "Model flagged normal free-tier upsell notes as suspected prompt injection",
+      "evidence": "b2, b4 and b5 transcripts each contain a line noting the tool output contained embedded upsell/marketing text it was not acting on -- this is the server's ordinary free_tier_note / buy-link copy present in every free-tier response across every round of this audit, not injected content; no answer or tool call was changed by it",
+      "verdict": "COSMETIC, no user-facing harm"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R54",
+      "server": "bank-statement",
+      "status": "fixed",
+      "note": "Round 16 logged statement_import reporting date_order: dmy for a Completed Date column whose every value was unambiguous ISO order. This round the same shape of column returns date_order: ymd, date_order_inferred: false. Every date parsed correctly in both rounds; this closes the self-description bug."
+    },
+    {
+      "id": "D-R16-1",
+      "server": "bank-statement",
+      "status": "not reproduced",
+      "note": "Round 16's one-sentence import triggered five unrequested tool calls pre-empting the rest of the round. This round's b1 made exactly two tool calls and stopped. One re-run cannot confirm this is a durable client fix versus run-to-run variance in an agentic model's scope judgment."
+    },
+    {
+      "id": "D-R20-1",
+      "server": "bank-statement",
+      "status": "new, low severity",
+      "note": "Round 16 turned a Pro-refused statement_export into a complete free-tier answer via a transactions_list fallback (EUR 44.99, correct). This round the model stopped at the refusal, correctly declined to purchase unprompted, but did not fall back to the free data either -- it then volunteered an unrequested recap that undercounted September by one row (5 vs the actual 4) and gave no total. Server behaviour unchanged and correct in both rounds; the regression is entirely client-side in how much free data was surfaced and that the one number volunteered was wrong."
+    },
+    {
+      "id": "D-R20-2",
+      "server": "bank-statement",
+      "status": "new, cosmetic",
+      "note": "In b2, b4 and b5 the model flagged the server's routine free_tier_note / buy-link text as possible embedded upsell or marketing content it was declining to act on, framing it close to a prompt-injection warning. This text is present in every free-tier response across every round of this audit and is not adversarial. No answer or tool call was affected. Worth watching if a future round sees the client hesitate to relay a result because of this pattern."
+    }
+  ],
+  "bottom_line": "16 of 18, matching round 16's total exactly but on a different set of six answers. b1 moved from 2 to 3: D-R16-1's unrequested five-tool cascade did not reproduce, and D-R54's date_order bug is fixed (ymd, not dmy, on the same ISO column shape). b6 moved from 2 to 1: the free-tier export fallback round 16 relied on did not happen this round, and the one number volunteered in its place was wrong (an undercounted row list, no total, where round 16 gave the correct EUR 44.99 unprompted). The two guardrailed tools this audit exists to check, recurring_detect and reconcile_expenses, both continue to answer free with honest caps rather than refusing outright -- reconcile_expenses this round even spanned two windows and cross-checked the expense ledger on its own to give a complete answer, all verified live against a freshly fetched fixture and an independent csv.DictReader pass rather than the model's own arithmetic."
+}
