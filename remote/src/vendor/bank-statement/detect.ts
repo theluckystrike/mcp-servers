@@ -129,21 +129,27 @@ function dateParts(raw: string): DateParts | null {
 
 /**
  * The order is a property of the COLUMN, not of a cell: a day above 12 anywhere in the
- * column proves day-first, a month-position value above 12 proves month-first. With no
- * evidence either way the hint is used, and the caller reports the assumption rather than
- * silently booking March as April.
+ * column proves day-first, a month-position value above 12 proves month-first. If every
+ * cell parses as ISO yyyy-mm-dd, the order is ymd and certain - no guess involved. With no
+ * evidence either way the hint is used as a guess, and `inferred: true` reports that a guess
+ * was made rather than silently booking March as April. `inferred` is only ever true when
+ * the column was genuinely ambiguous and a guess was needed; an unambiguous column (ISO, or
+ * settled by a day/month above 12) reports `inferred: false` because nothing was guessed.
  */
 export function inferDateOrder(cells: string[], hint: DateOrder = "dmy"): { order: DateOrder; inferred: boolean } {
-  let dayFirst = false, monthFirst = false;
+  let dayFirst = false, monthFirst = false, sawIso = false, sawNonIso = false;
   for (const c of cells) {
     const p = dateParts(c);
-    if (!p || p.iso) continue;
+    if (!p) continue;
+    if (p.iso) { sawIso = true; continue; }
+    sawNonIso = true;
     if (p.a > 12) dayFirst = true;
     if (p.b > 12) monthFirst = true;
   }
-  if (dayFirst && !monthFirst) return { order: "dmy", inferred: true };
-  if (monthFirst && !dayFirst) return { order: "mdy", inferred: true };
-  return { order: hint === "ymd" ? "dmy" : hint, inferred: false };
+  if (sawIso && !sawNonIso) return { order: "ymd", inferred: false };
+  if (dayFirst && !monthFirst) return { order: "dmy", inferred: false };
+  if (monthFirst && !dayFirst) return { order: "mdy", inferred: false };
+  return { order: hint === "ymd" ? "dmy" : hint, inferred: sawNonIso };
 }
 
 function pad(n: number): string { return String(n).padStart(2, "0"); }
@@ -337,7 +343,7 @@ export function readStatement(text: string, opts: ReadOpts = {}): ParsedStatemen
   const body = grid.slice(headerIdx + 1);
   const dateCells = body.map((r) => (r[iDate] ?? ""));
   const { order, inferred } = inferDateOrder(dateCells, profile?.dateOrder ?? "dmy");
-  if (!inferred && dateCells.some((c) => dateParts(c) && !dateParts(c)!.iso)) {
+  if (inferred && dateCells.some((c) => dateParts(c) && !dateParts(c)!.iso)) {
     notes.push(`the date column is ambiguous (no value above 12 in either position), so it was read as ${order === "dmy" ? "day/month/year" : "month/day/year"}${profile ? ` from the ${profile.label} profile` : ""}. Re-import with the right bank profile if that is wrong.`);
   }
 

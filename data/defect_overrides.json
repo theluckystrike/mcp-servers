@@ -136,5 +136,13 @@
   "D-R50": {
     "status": "open",
     "note": "whoami is an HTTP GET only, so 'what is my tier' costs one license_status per connected server. The per-endpoint half is closed in round 10; registering whoami as a tool on every endpoint is a vendored-server change."
+  },
+  "D-R54": {
+    "status": "fixed",
+    "note": "bank-statement inferDateOrder reported dmy/date_order_inferred:false for a column whose every value is unambiguous ISO yyyy-mm-dd, and reported inferred:false for a genuinely ambiguous guessed column while calling a day/month-over-12 settled column inferred:true - backwards. Fixed: a pure-ISO column now reports date_order:'ymd', date_order_inferred:false (certain, nothing guessed); a column settled by a day or month over 12 also reports inferred:false; inferred:true is now reserved for a column with no such evidence, where the profile/default hint was actually guessed. servers/bank-statement/src/detect.ts inferDateOrder and the ambiguous-note condition; tests servers/bank-statement/test/parse.test.mjs ('D-R54: a pure ISO date column...', 'a dd/mm file with a day over 12...') and adversarial.test.mjs ('an ambiguous date column says which order it assumed')."
+  },
+  "D-R16-1": {
+    "status": "client",
+    "note": "round 16 b1: given the whole allowlist up front in one session with no instruction to stop after one action, the model answered a one-sentence import request ('import it as Main') and then, unasked, ran category_rules, statement_summary, recurring_detect, reconcile_expenses and attempted statement_export in the same turn - six unrequested tool calls, all individually correct (docs/USER_VALUE_R16_BANK.md D-R16-1). This is an agentic-client scoping choice under a single --strict-mcp-config session, not a server defect; no server change available."
   }
 }

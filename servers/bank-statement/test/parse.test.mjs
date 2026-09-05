@@ -83,9 +83,9 @@ test("Wise: day-first dates, a merchant column, and the running balance", () => 
   const s = readStatement(WISE);
   assert.equal(s.bank, "Wise");
   assert.equal(s.rows.length, 3);
-  // 15-03-2026 has a day above 12, which settles the order for the whole column
+  // 15-03-2026 has a day above 12, which settles the order for the whole column: certain, not a guess
   assert.equal(s.date_order, "dmy");
-  assert.equal(s.date_order_inferred, true);
+  assert.equal(s.date_order_inferred, false);
   assert.equal(s.rows[0].date, "2026-03-03");
   assert.equal(s.rows[1].date, "2026-03-15");
   assert.equal(s.rows[0].amount_minor, -1250);
@@ -179,7 +179,7 @@ test("an ambiguous date column reports the assumption instead of hiding it", () 
     "03/04/2026,One,-1.00,EUR",
     "05/06/2026,Two,-2.00,EUR",
   ].join("\n"));
-  assert.equal(s.date_order_inferred, false);
+  assert.equal(s.date_order_inferred, true, "no value above 12 in either position: a guess was actually made");
   assert.equal(s.rows[0].date, "2026-04-03");
   assert.ok(s.notes.some((n) => /ambiguous/.test(n)), s.notes.join(" | "));
 });
@@ -187,9 +187,35 @@ test("an ambiguous date column reports the assumption instead of hiding it", () 
 test("month-first dates are recognised when a value above 12 sits in the second position", () => {
   const { order, inferred } = inferDateOrder(["03/14/2026", "04/02/2026"]);
   assert.equal(order, "mdy");
-  assert.equal(inferred, true);
+  assert.equal(inferred, false, "14 in the month position settles the column: certain, not a guess");
   assert.equal(parseDateCell("03/14/2026", "mdy"), "2026-03-14");
   assert.equal(parseDateCell("02/30/2026", "mdy"), null, "30 February is not a date");
+});
+
+test("D-R54: a pure ISO date column is reported as ymd, not dmy, and not a guess", () => {
+  const s = readStatement([
+    "Date,Description,Amount,Currency",
+    "2026-08-07 10:00:00,One,-1.00,EUR",
+    "2026-08-09 11:30:00,Two,-2.00,EUR",
+    "2026-09-01 00:00:00,Three,-3.00,EUR",
+  ].join("\n"));
+  assert.equal(s.date_order, "ymd", "every value is unambiguous ISO, not a dmy guess");
+  assert.equal(s.date_order_inferred, false, "ISO order is certain, nothing was guessed");
+  assert.equal(s.rows[0].date, "2026-08-07");
+  assert.equal(s.rows[2].date, "2026-09-01");
+  assert.ok(!s.notes.some((n) => /ambiguous/.test(n)), s.notes.join(" | "));
+});
+
+test("a dd/mm file with a day over 12 is unambiguous dmy, not a guess", () => {
+  const s = readStatement([
+    "Date,Description,Amount,Currency",
+    "13/04/2026,One,-1.00,EUR",
+    "05/06/2026,Two,-2.00,EUR",
+  ].join("\n"));
+  assert.equal(s.date_order, "dmy");
+  assert.equal(s.date_order_inferred, false, "13 in the day position settles the column");
+  assert.equal(s.rows[0].date, "2026-04-13");
+  assert.ok(!s.notes.some((n) => /ambiguous/.test(n)), s.notes.join(" | "));
 });
 
 test("a file with no usable header says so instead of importing nonsense", () => {

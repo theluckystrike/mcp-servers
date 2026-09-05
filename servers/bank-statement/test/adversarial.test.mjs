@@ -47,11 +47,11 @@ test("CR-only line endings, quoted commas and embedded newlines survive", () => 
 test("an ambiguous date column says which order it assumed", () => {
   const amb = readStatement("Date,Description,Amount\n03/04/2026,x,-1.00\n05/06/2026,y,-2.00\n");
   assert.equal(amb.date_order, "dmy");
-  assert.equal(amb.date_order_inferred, false);
+  assert.equal(amb.date_order_inferred, true, "no value above 12 in either position: a guess was actually made");
   assert.ok(amb.notes.some((n) => n.includes("ambiguous")), amb.notes.join(" | "));
   assert.equal(amb.rows[0].date, "2026-04-03");
   const day = readStatement("Date,Description,Amount\n13/04/2026,x,-1.00\n05/06/2026,y,-2.00\n");
-  assert.equal(day.date_order_inferred, true);
+  assert.equal(day.date_order_inferred, false, "13 in the day position settles the column: certain, not a guess");
   assert.equal(day.rows[0].date, "2026-04-13");
 });
 
