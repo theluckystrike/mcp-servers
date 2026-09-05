@@ -1,0 +1,112 @@
+{
+ "at": "2026-09-06T03:00:00Z",
+ "round": 29,
+ "compares_to": "data/user_value_r26.json (statement-of-account, stdio, first coverage, 18/18) and data/user_value_r28.json (statement-of-account, hosted, 18/18). First user-value coverage of cash-book; there is no earlier cash-book round to compare against.",
+ "scope": "STDIO single-lane first-run measurement of the NEW cash-book server on the FREE tier, six prompts in one conversation covering: building a double-entry ledger for a month out of six sibling stores and answering whether the books balance, walking the cash account line by line with the source of each leg and whether the bank statement backs it, being challenged on why the bank import is not posted, the full trial balance plus what the month leaves unposted or inconsistent with month_close Pro-gated, the three-periods-a-month free cap hit on a fourth distinct period with a rebuild of an already-built period still free, and the two remaining Pro gates on ledger_report and ledger_export_csv. The server was run unmodified from servers/cash-book/dist/index.js as it stood at the start of the round; no code was changed as part of this round, it is measurement only.",
+ "method": "Arrival: no connect page and no token, the server is spawned locally over stdio as node /Users/mike/mcp-servers/servers/cash-book/dist/index.js from one mcp.json with a single stdio entry, MCP_LICENSE_KEY set to the empty string in that entry's env block so the whole run measures the FREE tier. Seed: the six sibling stores were seeded on disk by importing servers/cash-book/test/_client.mjs's OWN workedMonth fixture and calling it against /private/tmp/uv-r29cb/data, rather than by reimplementing the seed helpers, so every figure the model could possibly see is one servers/cash-book/test/unit.test.mjs asserts and docs/CASH_BOOK_RESULT.md recomputes by hand. Eight files were written under mcp-servers/: invoice/{business,clients,invoices}.json, billing-docs/credit-notes.json, deposits/deposits.json, expense-tracker/data.json, bank-statement/data.json and asset-register/assets.json. The sibling servers were NOT registered on the config: only cash-book was, so a failure here has to mean cash-book failed. Allowlist: eight explicit mcp__cash-book__<tool> entries read from a live tools/list (ledger_build, trial_balance, ledger_lines, month_close, ledger_export_csv, ledger_report, license_status, license_activate), no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the single stdio entry, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation. Each prompt run as its own isolated shell invocation under timeout 300, each transcript read back in full before the next was judged. The CLI's own filesystem and search tools DENIED via --disallowedTools (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r29cb/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r29cb, set in the server's env block, never CLAUDE_CONFIG_DIR. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Tool-call counts are calls that reached the server; they exclude the client's own ToolSearch schema lookup. Verification: after the round, every figure the model reported was re-derived by calling the same tools directly over stdio on a fresh sandbox seeded with the same workedMonth, including the Pro-tier ledger_export_csv and the March, April and May periods the model could only partly reach on free.",
+ "rubric": "Three points per prompt, 18 total. 1 point: the model reached the right tool with the right arguments and did not invent one. 1 point: every figure it reported back is the figure the server returned, re-derived independently afterwards. 1 point: it framed the answer the way the server's own design intends, and when refused it relayed the refusal in the refusal's own terms rather than working around it or inventing a substitute.",
+ "arrival": "One mcp.json, one stdio entry, no token, no account, no network call. tools/list returned 8 tools. license_status was the model's own first call, unprompted, and reported free.",
+ "scenarios": [
+  {
+   "n": 1,
+   "prompt": "I run a small studio and I keep my invoices, credit notes, deposits, expenses, bank import and fixed assets in six separate places. Build me a proper double-entry ledger for June 2026 in EUR and tell me straight: do the books balance?",
+   "calls": [
+    "license_status",
+    "ledger_build",
+    "trial_balance",
+    "month_close (refused, Pro)",
+    "ledger_lines account=cash",
+    "ledger_lines limit=5000"
+   ],
+   "score": 3,
+   "reported": "22 lines over 11 entries from six systems, EUR 16,383.00 of debits against EUR 16,383.00 of credits exact to the cent, no offenders, all eleven account balances, and the note that these are June's MOVEMENTS because no opening balances are loaded.",
+   "verified": "Re-derived over stdio: lines 22, debits EUR 16383.00, credits EUR 16383.00, imbalance_minor 0, and all eleven balances identical (cash -10543.00, receivables 400.00, revenue -1400.00, vat_output -230.00, vat_input 23.00, expenses:travel 100.00, expenses:software 50.00, deposits_held -400.00, fixed_assets 12000.00, accumulated_depreciation -150.00, depreciation_expense 150.00).",
+   "note": "It volunteered the three things needing a human without being asked, and it correctly reported the opening-balance rule as a caveat on how to read the figures rather than as a defect.",
+   "server": "cash-book",
+   "id": "cb1"
+  },
+  {
+   "n": 2,
+   "prompt": "Walk me through the cash account. Show me every line that hits cash, where each one came from, and whether the bank statement backs it up.",
+   "calls": [],
+   "score": 3,
+   "reported": "The five cash legs with date, entry, debit or credit, source server, source id, description and bank evidence: DEP-2026-0001 +1,000.00 tx1, exp_1 -123.00 tx2, exp_2 -50.00 NONE, ASSET-2026-0002 -12,000.00 tx3, payment on INV-2026-0001 +630.00 tx4. Totals 1,630.00 / 12,173.00, net -10,543.00.",
+   "verified": "Identical to the ledger_lines account=cash answer re-derived over stdio, including which four legs carry a bank_ref and which one does not.",
+   "note": "Zero tool calls: it reused the account=cash result it had already fetched in prompt 1 and said so. Not a defect, and the figures are exact. It also named the fifth bank row as a separate thing not shown here because nothing posted is tied to it, which is the right distinction.",
+   "server": "cash-book",
+   "id": "cb2"
+  },
+  {
+   "n": 3,
+   "prompt": "I imported my bank statement for June. Why is none of it in the ledger? Surely the bank is the most reliable record I have.",
+   "calls": [],
+   "score": 3,
+   "reported": "That most of the statement IS in the ledger, as evidence rather than as postings, quoting the server's own build note verbatim; that a bank row on its own does not know what it is, so only the source document carries the classification for the second leg; that posting both would double-credit the same movement; and that the place it actually bites is the fifth row, whose fix is to create the missing business document rather than to post from the statement.",
+   "verified": "The quoted note is the server's own text. The reasoning matches the design decision recorded in docs/CASH_BOOK_RESULT.md.",
+   "note": "This is the prompt the whole server turns on and the model held the line under direct push-back, without hedging and without offering to post the import anyway.",
+   "server": "cash-book",
+   "id": "cb3"
+  },
+  {
+   "n": 4,
+   "prompt": "Something looks off. Show me the full trial balance account by account, and tell me what June leaves unposted or inconsistent.",
+   "calls": [],
+   "score": 3,
+   "reported": "The eleven-row trial balance with debits, credits and balance per account, totals 16,383.00 each way, the server's own verdict string, and no offenders. It then said plainly that the named exception list is what month_close does, that month_close is Pro-gated and it had already hit that wall, and gave three inferred candidates LABELLED as inference.",
+   "verified": "Every trial balance figure matches. The three inferred exceptions match month_close's real output on a Pro key exactly: invoice-no-vat-rate on INV-2026-0002, bank-debit-unexplained on tx5, cash-without-bank-evidence on exp_2.",
+   "note": "The inference was right and was marked as inference. The gate held: it did not call month_close again or claim the list came from the server.",
+   "server": "cash-book",
+   "id": "cb4"
+  },
+  {
+   "n": 5,
+   "prompt": "Now do the same for March, April and May 2026 so I have the whole quarter, then rebuild June because I want to double-check it.",
+   "calls": [
+    "ledger_build 2026-03",
+    "trial_balance 2026-03",
+    "ledger_build 2026-04",
+    "trial_balance 2026-04",
+    "ledger_build 2026-05 (refused, cap)",
+    "trial_balance 2026-05",
+    "ledger_build 2026-06 (rebuild, free)",
+    "trial_balance 2026-06"
+   ],
+   "score": 3,
+   "reported": "That the free tier caps ledger_build at three new periods a calendar month, that June from prompt 1 plus March plus April used all three, so May's build was blocked; that trial_balance has no such cap and stayed free for all four months so the May balances are still there, and only May's exceptions tally is missing. March 0 lines. April cash -6,000.00 against fixed assets 6,000.00, balanced, with 0 matched and 1 posted cash movement with no bank evidence, which it attributed to the Laptop asset. May depreciation 150.00 against accumulated depreciation 150.00 with a 0/0/0 reconciliation, correctly explained as a non-cash journal entry. June rebuilt identical.",
+   "verified": "Re-derived on a Pro key: March 0 lines; April 2 lines EUR 6000.00, bank matched 0 / unmatched 0 / posted-without-evidence 1, cash -6000.00 and fixed_assets 6000.00; May 2 lines EUR 150.00, reconciliation 0/0/0, accumulated_depreciation -150.00 and depreciation_expense 150.00. Every figure matches, and the asset it named is ASSET-2026-0001.",
+   "note": "The strongest evidence in the round that the free cap is on the PERIOD and not on the question: the cap fired at exactly the fourth distinct period, the rebuild of June cost nothing, and trial_balance answered for the month the build was refused, which is the design intent stated in the README.",
+   "server": "cash-book",
+   "id": "cb5"
+  },
+  {
+   "n": 6,
+   "prompt": "Give me the per-account report and export the June ledger as CSV so I can send it to my accountant.",
+   "calls": [
+    "ledger_report (refused, Pro)",
+    "ledger_export_csv (refused, Pro)"
+   ],
+   "score": 2,
+   "reported": "Both tools confirmed Pro-gated at the same $19 one-time or $39 for the 25-server bundle, that checkout is the user's to complete and the key theirs to hand over, and that it had not bought it. It then hand-assembled a per-account table and a CSV from figures it already had on the free tier.",
+   "verified": "Both refusals are the server's real ones and carry both checkout links. The per-account table matches ledger_report's real figures. The CSV does NOT match the real export: ledger_export_csv writes eleven columns with account_name and bank_ref and amounts in MINOR units, while the hand-built version has nine columns, no account_name, no bank_ref and amounts in major units.",
+   "note": "One point off. The refusals were relayed correctly and nothing was bought, but a hand-built CSV was offered as the substitute for the Pro export without saying that its schema differs from the real one. An accountant handed that file would be missing the bank evidence column, which is the column this server's whole design exists to produce.",
+   "server": "cash-book",
+   "id": "cb6"
+  }
+ ],
+ "totals": {
+  "score": 17,
+  "out_of": 18,
+  "tool_calls_to_server": 16,
+  "prompts": 6,
+  "tier": "free",
+  "pro_refusals_hit": 3,
+  "pro_refusals_relayed_correctly": 3,
+  "figures_reported": "every numeric figure across all six prompts was re-derived independently over stdio afterwards and matched"
+ },
+ "verification": "A fresh sandbox was seeded with the same workedMonth and every tool the round touched was called directly over stdio, on the free tier for the free tools and with a key from scripts/sign-license.mjs cash-book for month_close, ledger_report and ledger_export_csv. Checked: the 22-line June build and its 16,383.00 each way; all eleven account balances; the five cash legs and which four carry a bank_ref; the bank reconciliation counts 4 matched / 1 unmatched / 1 posted-without-evidence; month_close's three exceptions by kind and source id; the March, April and May periods including April's single unbacked 6,000.00 outflow; and the real CSV header, which is where the one lost point was found.",
+ "defects": [
+  "Prompt 6: after a correct Pro refusal on ledger_export_csv, the model hand-assembled a CSV from free-tier ledger_lines data and offered it as the substitute without stating that its schema differs from the real export. The real file carries account_name and bank_ref columns and minor units; the hand-built one carries neither and uses major units. The figures are right and the substitution is labelled as a substitute, but the difference in shape is not disclosed, and bank_ref is the column that carries this server's central output.",
+  "Not a server defect but worth recording for pricing: ledger_lines is free and unlimited by design, so the CONTENT of the Pro CSV export is derivable on the free tier by any client willing to reformat it. Only the exact file shape is behind the gate. The same is not true of month_close, whose exception list the model could only infer, and it got that inference right too. If the free tier is ever felt to be too generous, ledger_lines is the reason, and narrowing it would take the trial balance's evidence away with it."
+ ],
+ "bottom_line": "17 of 18 on first contact, on the free tier, with no account, no token and no network call. The server's central and least obvious design decision, that the bank import is evidence and never a posting, survived a direct challenge in prompt 3 without hedging, and the model reproduced the reasoning from the build note rather than from a guess. The free cap behaved exactly as designed under a request that deliberately crossed it: it fired on the fourth distinct period, the rebuild was free, and trial_balance kept answering for the period whose build was refused. The one lost point is a Pro export reconstructed by hand at a different shape from the real one, which is a disclosure failure rather than an arithmetic one."
+}
