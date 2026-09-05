@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T18:03:44.959Z",
-  "total_commits": 521,
-  "sessions": 50,
+  "generated_at": "2026-09-05T20:42:56.462Z",
+  "total_commits": 544,
+  "sessions": 51,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -111,7 +111,12 @@
     {
       "name": "Loop 22: statement-of-account, month-end guide, v0.14.0",
       "sessions": 1,
-      "commits": 86
+      "commits": 25
+    },
+    {
+      "name": "Loop 23: cash-book, copy buttons, v0.15.0",
+      "sessions": 1,
+      "commits": 84
     }
   ],
   "rows": [
@@ -675,7 +680,7 @@
       "at": "2026-09-05T18:03:30.585Z",
       "note": "loop 22 closed: v0.14.0 with statement-of-account (per-client statements from the invoice, credit-note and deposit stores, aging as at any date, dunning with bank details; audit 18/18; the twenty-fourth server and hosted endpoint), 65 manifests published and verified, 1119 tests, validation 674/674, 25 bundles; month-end guide generated from a real nine-prompt run through the 224-tool bundle (round 27, 26/27); invoice balances net credit notes and the profile reader accepts vat_rate (D-R95, D-R96); hosted worker takes read-only shared stores; sync-mirrors retries network drops; release-check enforces the profile-reader list; probe dates now derive from the host clock; INTEL_R10 variant tokens all failed the honesty rule; downloads 3517; clicks 82/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 22: statement-of-account, month-end guide, v0.14.0",
-      "commits": 61,
+      "commits": 29,
       "subjects": [
         "Wire per-diem into the estate: product, setup, guide, facts, tools, build scripts, distribution row",
         "per-diem demo GIF and logo",
@@ -689,6 +694,27 @@
         "READMEs: per-diem row and demo gif line",
         "per-diem README: no em dashes, house punctuation",
         "Round 15: Docker catalog entry and repin to c03d4f0, Cline issue 2444, distribution row"
+      ]
+    },
+    {
+      "n": 51,
+      "at": "2026-09-05T20:42:56.259Z",
+      "note": "loop 23 closed: v0.15.0 with cash-book (one double-entry ledger from six sibling stores, trial balance to zero, bank rows as evidence not postings; audit 18/18; the twenty-fifth server and hosted endpoint), 68 manifests verified, 1242 tests, validation 713/713, 26 bundles; copy buttons on every prompt block; statement-of-account hosted 18/18; findable share 50 percent tracked and 55 extended; downloads 3707; clicks 94/7d with 2 bundle-sourced; sales 0; GSC key dataless",
+      "loop": "Loop 23: cash-book, copy buttons, v0.15.0",
+      "commits": 55,
+      "subjects": [
+        "Distribution round 16 record",
+        "Release v0.13.0: asset-register joins; bump 25 packages, 49 internal ranges and 86 server manifests; invoice PROFILE_READERS gains asset-register; per-diem contract accepts a real sha",
+        "sha256 of the v0.13.0 bundles into every manifest that references one",
+        "Record release v0.13.0",
+        "Loop 21 close: v0.13.0 dashboard, sprint log loop 21",
+        "Loop 21: validation, KPIs, digest and sprint row",
+        "Release v0.13.0 record: registry 62 of 62, mirrors re-synced after a network drop",
+        "Plan v19: statements, month end, mirror retries",
+        "R7 naming: probe 6 uncapped INTEL_R10 variant candidates, 0 pass honesty rule",
+        "sync-mirrors.sh: retry network calls, continue past a failed mirror",
+        "Round 25 user-value audit: asset-register hosted (14/18 vs round 24's 16/18 stdio)",
+        "Add mcp-statement-of-account 0.13.0"
       ]
     }
   ]
