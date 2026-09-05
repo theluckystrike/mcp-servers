@@ -2881,7 +2881,8 @@ warning worth knowing if you hand write that file: the key the shared profile re
 dropped, and your first invoice comes out with no VAT on it and nothing in the answer saying so.</p>
 
 <h2>Step 1. Bill the client</h2>
-<blockquote>Invoice Acme for 10 hours of design work at 90 euros an hour, dated today.</blockquote>
+<pre class="prompt">Invoice Acme for 10 hours of design work at 90 euros an hour, dated today.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>invoice</strong>, <code>invoice_from_hours</code>. Two calls: it looked up the client list,
 found no Acme, and wrote the invoice anyway rather than stopping to ask. <strong>INV-2026-0001</strong>:
 10 hours at EUR 90.00 is EUR 900.00 net, 23 percent VAT from the profile is EUR 207.00, total
@@ -2890,7 +2891,8 @@ found no Acme, and wrote the invoice anyway rather than stopping to ask. <strong
 rate on its own authority. Two loose ends named, neither of them a reason to withhold the write.</p>
 
 <h2>Step 2. Credit the hour that was not billable</h2>
-<blockquote>One of those hours was mine, not billable. Credit Acme one hour on that invoice.</blockquote>
+<pre class="prompt">One of those hours was mine, not billable. Credit Acme one hour on that invoice.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>billing-docs</strong>, <code>credit_note_create</code>. One call.
 <strong>CN-2026-0001</strong> against INV-2026-0001: one hour at EUR 90.00 back, VAT unwound at the
 same 23 percent the invoice charged, EUR 20.70, total <strong>EUR -110.70</strong>. The credit note
@@ -2898,14 +2900,16 @@ is stored against the invoice it names and no other, and it agrees with that inv
 unit because both documents run on the same money code.</p>
 
 <h2>Step 3. Take the retainer in</h2>
-<blockquote>Acme just paid a 500 euro retainer, today, by bank transfer.</blockquote>
+<pre class="prompt">Acme just paid a 500 euro retainer, today, by bank transfer.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>deposits</strong>, <code>deposit_record</code>. One call. <strong>DEP-2026-0001</strong>,
 <strong>EUR 500.00</strong> from Acme, received 2026-09-05, held. Held is the point: it is their money
 on your account, not your income, until it is set against something. The server offered to apply it
 and did not do so unasked.</p>
 
 <h2>Step 4. Set it against the invoice</h2>
-<blockquote>Yes, apply the retainer to that invoice and tell me what is left to pay.</blockquote>
+<pre class="prompt">Yes, apply the retainer to that invoice and tell me what is left to pay.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>deposits</strong>, <code>deposit_apply</code>. One call. The EUR 500.00 is now recorded as
 a payment on INV-2026-0001, which reads partial, so <code>invoice_list</code> and
 <code>overdue_report</code> stop chasing money you already have.</p>
@@ -2917,8 +2921,8 @@ hand from a document the tool it called cannot see. Step 9 gets it right on its 
 it.</p>
 
 <h2>Step 5. Import the bank and reconcile it</h2>
-<blockquote>Import my Revolut export at /path/to/revolut-main.csv and reconcile it against my expense
-log for August 2026, so I can see which card payments have no receipt.</blockquote>
+<pre class="prompt">Import my Revolut export at /path/to/revolut-main.csv and reconcile it against my expense log for August 2026, so I can see which card payments have no receipt.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>bank-statement</strong>, <code>statement_import</code> then
 <code>reconcile_expenses</code>. The export held 42 data rows; <strong>41</strong> transactions were
 stored, because the one reverted card payment in the file is not a transaction. Of those, 36 fall in
@@ -2932,9 +2936,8 @@ at all.</p>
 relative filesystem path, so download the export first.</p>
 
 <h2>Step 6. Log the receipts the reconciliation found missing</h2>
-<blockquote>Log two expenses I paid on that card: OpenAI 72.76 euros on 27 August, software; and Adobe
-Creative Cloud 61.50 euros on 7 August, software. Then tell me how many August card payments still
-have no receipt.</blockquote>
+<pre class="prompt">Log two expenses I paid on that card: OpenAI 72.76 euros on 27 August, software; and Adobe Creative Cloud 61.50 euros on 7 August, software. Then tell me how many August card payments still have no receipt.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>expense-tracker</strong>, <code>expense_add</code> twice, then
 <code>reconcile_expenses</code> again. Both expenses landed with the profile's 23 percent VAT rate on
 them without being asked for one. The re-run matched both against their bank debits and returned
@@ -2945,8 +2948,8 @@ is a separate debit and is still unmatched. That is the one thing a person doing
 wrong.</p>
 
 <h2>Step 7. Put the laptop on the fixed asset register</h2>
-<blockquote>I bought a laptop for 6,000 zloty and put it into use on 1 September 2026. Add it to my
-fixed asset register and give me September's depreciation journal entry.</blockquote>
+<pre class="prompt">I bought a laptop for 6,000 zloty and put it into use on 1 September 2026. Add it to my fixed asset register and give me September's depreciation journal entry.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>asset-register</strong>, <code>asset_add</code> then <code>asset_schedule</code>.
 <strong>ASSET-2026-0001</strong>, KST 487, computers and computer sets, <strong>30 percent</strong>,
 useful life 3.33 years, PLN 6,000.00, in service 2026-09-01. The scheme was derived as Polish from the
@@ -2961,8 +2964,8 @@ refused by name on the free tier. Nothing was invented in its place: the free
 <code>asset_schedule</code> carries the same numbers and answered the question.</p>
 
 <h2>Step 8. Price the trip</h2>
-<blockquote>I am going to Berlin for a client meeting, leaving 14 September 2026 at 8am and back on 15
-September at 6pm. Breakfast is included at the hotel both days. What diet am I owed?</blockquote>
+<pre class="prompt">I am going to Berlin for a client meeting, leaving 14 September 2026 at 8am and back on 15 September at 6pm. Breakfast is included at the hotel both days. What diet am I owed?</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>per-diem</strong>, <code>perdiem_calc</code>. One call, and it resolved four things out of
 that sentence with no question asked: Berlin means Germany means the Polish foreign table, the
 timezone is Europe/Warsaw from the shared profile, breakfast on both days is two separate deductions,
@@ -2974,8 +2977,8 @@ and up to 12, so half the diet, less the same 15 percent: <strong>EUR 23.37</str
 bundles no per country lodging limit for Germany, rather than the figure quietly going missing.</p>
 
 <h2>Step 9. Close the month</h2>
-<blockquote>Give me Acme's statement of account for September 2026 and show me the aging on what they
-still owe.</blockquote>
+<pre class="prompt">Give me Acme's statement of account for September 2026 and show me the aging on what they still owe.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
 <p><strong>statement-of-account</strong>, <code>statement_build</code> then
 <code>statement_aging</code>. This is the only prompt in the month that reads three separate money
 stores at once, which makes it the only one that can be wrong because two servers disagree.</p>
