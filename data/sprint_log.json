@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T11:58:00.007Z",
-  "total_commits": 477,
+  "generated_at": "2026-09-05T11:58:28.417Z",
+  "total_commits": 478,
   "sessions": 48,
   "loops": [
     {
@@ -101,7 +101,7 @@
     {
       "name": "Loop 20: per-diem, changelog, drift checks, v0.12.0",
       "sessions": 1,
-      "commits": 76
+      "commits": 77
     }
   ],
   "rows": [
@@ -623,7 +623,7 @@
       "at": "2026-09-05T11:57:59.851Z",
       "note": "loop 20 closed: v0.12.0 with per-diem (Polish, UK domestic and US GSA tables bundled byte-exact; UK overseas honestly omitted; audit 18/18; the twenty-second server and hosted endpoint), 59 registry entries verified, 1016 tests, validation 594/594, 23 bundles; invoice profile-reader list gained per-diem (D-R89); storefront /changelog generated from the release records; release-check hosted-row check; KPI readers keep the last good value when wrangler times out; round 21 deposits hosted 16/18; AIAnytime list merged the bundle entry; downloads 2478; sales 0; GSC key dataless again",
       "loop": "Loop 20: per-diem, changelog, drift checks, v0.12.0",
-      "commits": 62,
+      "commits": 63,
       "subjects": [
         "Record release v0.9.5",
         "Loop 17 close: v0.9.5 dashboard, digest, sprint log loop 17",
