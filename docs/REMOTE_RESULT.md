@@ -3596,3 +3596,251 @@ name in the body. The index assertion moved from 23 endpoints to 24:
   It now names statement-of-account, but that string lives in `servers/invoice/src/index.ts`,
   outside this unit's write scope; the profile itself is shared correctly, as the IBAN and
   the bank name reaching the dunning letter above show.
+
+# Extension 16 2026-09-06 - cash-book
+
+status: DONE
+
+A twenty-fifth endpoint, `POST /mcp/cash-book`. Worker `mcp-remote`, version ID
+`a8a9d32a-27ac-4806-85a3-a7b1b3ebbff9`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-five.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/cash-book | 8 | reads SIX sibling stores and writes none of them, the most any endpoint has read. Four through their published engines, TWO by absolute path, all six hydrated READ-ONLY by declaration. The CSV export comes back as a one-hour `text/csv` download |
+
+### The finding: a by-path read is a hydration dependency, and nothing says so
+
+Extension 15 made `sharedDoc` a list and gave it `readOnly`. This endpoint needs six of
+them, which is the shape working as intended and not worth recording on its own. What is
+worth recording is that two of the six are not reached through a module at all.
+
+`servers/cash-book/src/sources.ts` reads four siblings through their `./lib` entry points
+(`getInvoices`, `getCreditNotes` and `getPurchaseOrders`, `getDeposits`, `getAssets`) and
+the other two through this:
+
+```
+function xdgFile(server: string, file: string): string {
+  const base = process.env.XDG_DATA_HOME || join(homedir(), ".local", "share");
+  return join(base, "mcp-servers", server, file);
+}
+```
+
+because `servers/expense-tracker` and `servers/bank-statement` publish no `./lib` - their
+`exports` map has only `.` - and the stdio server refuses to keep a second copy of a store
+shape it does not own. Over stdio that is a file on disk. Here it is
+`/home/mcp/.local/share/mcp-servers/expense-tracker/data.json` and
+`/home/mcp/.local/share/mcp-servers/bank-statement/data.json`, and those two strings resolve
+to something only if the two documents that own them were hydrated into this request's
+in-memory filesystem first. `homedir()` is the `remote/src/shims/os.js` shim and
+`XDG_DATA_HOME` is unset on a Worker, so the path the stdio server derives is exactly the
+path the shim's `existsSync` and `readFileSync` are asked for - it needed no patch, only the
+two `sharedDoc` entries that put the bytes there.
+
+The reason to state it is the failure mode. An engine call that cannot resolve is a
+module-not-found at build time and the build-vendor assertions catch it. A by-path read of a
+document nobody hydrated is `existsSync` returning false, which `readForeign` treats as the
+legitimate common case - the user never installed that server - and reports as
+`read: true, rows: 0`. So forgetting one of those two `sharedDoc` entries would not throw,
+would not warn, and would produce a ledger with no expenses and no VAT input in it that
+BALANCES PERFECTLY, because both legs of every missing entry are missing. That is the exact
+class of defect `servers/cash-book` was written to make visible in other people's books.
+Both entries carry a comment saying so; the validate probe asserts the expense legs by
+document id, which is the only thing that can tell the two states apart.
+
+### Vendoring: six lib rewrites, five of them invisible from `index.ts`
+
+`SERVERS["cash-book"]` is `index.ts, version.ts, lib.ts, ledger.ts, sources.ts, store.ts`.
+Every source file, `lib.ts` included, for the reason the last four servers' are: it is this
+engine as a public API.
+
+It consumes six sibling engines, the most of any endpoint:
+`@theluckystrike/mcp-invoice/lib` (`formatMoney`, `getInvoices`, `readJsonFile`),
+`@theluckystrike/mcp-billing-docs/lib` (credit notes and purchase orders),
+`@theluckystrike/mcp-deposits/lib`, `@theluckystrike/mcp-asset-register/lib`
+(`buildSchedule`, `chargeForMonth`, `monthKey`), `@theluckystrike/mcp-statement-of-account/lib`
+(`paymentRows`, the payment reconstruction this server deliberately does not copy) and
+`@theluckystrike/mcp-quotes/lib` (`today`, `isIsoDate`). Extension 11's name-level assertion
+covered all six unchanged.
+
+`LIB_RESOLUTIONS`, the byte-level table Extension 15 added, is where this server pays for
+that extension's decision twice over. Exactly ONE of the six imports is reachable from
+`index.ts`; `sources.ts` reaches four and `ledger.ts` reaches three. Extension 12's original
+one-off pair of lines checked `index.ts` alone and would have passed a build that could not
+resolve five of the six engines the entire ledger is derived from. The entry is
+
+```
+"cash-book": ["invoice", "billing-docs", "deposits", "asset-register",
+              "statement-of-account", "quotes"],
+```
+
+checked against the concatenated bytes of every file the server vendored, after the build.
+
+### Two patches, and a store that needed none
+
+- **`ledger_export_csv` returned the whole CSV inline.** Up to 5,000 rows of quoted text is
+  not an answer, it is a file. It is written under `/out/` and published, so the caller gets
+  a `text/csv; charset=utf-8` download link valid for one hour with the row count and the
+  column list beside it, and the tool description says so instead of "No file is written."
+  `publish` is only `p.startsWith("/out/")`, with `strip: ["/out/"]` and no
+  `persistPublished`: an export is a fresh download every time.
+- **The `ledger://accounts` resource reported `dataDir()`**, which hosted is the worker's
+  virtual homedir - a path no caller has and none can reach, the D-R60 species for the sixth
+  time - and now says the register is one document held per token that no balance is ever
+  read back out of. Its description said "the one directory this server writes" and now says
+  the one document.
+- **`sources.ts`'s two unreadable-store refusals named that absolute `data.json` path**, the
+  same species, and now name the caller's own `https://mcp.zovo.one/mcp/<server>` endpoint.
+  The read itself is unchanged.
+
+`store.ts` needed no patch at all: `periods.json`, `closes.json` and the lock are one
+document per token under the homedir shim, written tmp + rename. Nothing else in the server
+takes a path, writes a document or reaches the network, so there was nothing else to move.
+
+### The cap: six hydrated books charged to one endpoint
+
+This is the first endpoint whose cap is decided by what it READS. The tenant document is
+recounted after hydration, so all six sibling documents plus the profile are charged to
+`/mcp/cash-book`, and this endpoint's own writes - the period register and the close
+snapshots - are a few kilobytes that do not grow with the books.
+
+The worked month is nowhere near the ceiling: the probe tenant's six documents hold one
+invoice, one deposit with one application, one expense and three empty stores, and the whole
+ledger exports as 1,987 bytes of CSV. 512 KB would have held it many times over. The cap is
+raised to 2 MB anyway, and the reason is structural rather than measured: each of the six is
+legal up to its OWN endpoint's ceiling, and `/mcp/bank-statement` is 2 MB. Left at the
+default, a tenant with a perfectly legal bank ledger would find that `/mcp/cash-book` could
+not read books that every endpoint owning them accepts, and the refusal would name this
+endpoint rather than the one holding the bytes. 2 MB is the same ceiling the largest of the
+six carries, so the ledger can always read what the books are allowed to hold.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP).
+One POST per call, one token throughout, and the four endpoints below are four URLs over
+the same tenant.
+
+```
+$ GET /mcp
+  25 endpoints: ..., asset-register, statement-of-account, cash-book
+$ GET /mcp/connect                       -> 25 rows, /mcp/cash-book/t/<token> listed
+
+$ cash-book tools/list
+  8 tools: ledger_build, trial_balance, ledger_lines, month_close, ledger_export_csv,
+  ledger_report, license_status, license_activate
+
+$ invoice   client_add   {name: "Cash Book Probe ...", address: "1 Probe Street, Warsaw"}
+$ invoice   invoice_create {client: "...", currency: "EUR", issue_date: "2026-04-03",
+                            due_days: 14, items: [10 x Consulting @ 100, tax_rate 23]}
+  INV-2026-0001, EUR 1230.00 (net 1000.00 + 230.00 VAT)
+$ invoice   invoice_mark_paid {number: "INV-2026-0001", amount: 630,
+                               paid_date: "2026-04-20", method: "bank transfer"}
+  marked partial, received EUR 630.00, balance due EUR 600.00
+$ expense-tracker expense_add {amount: 123, currency: "EUR", category: "travel",
+                               merchant: "Probe Rail", date: "2026-04-05", vat_rate: 23}
+  Saved ea22282f: EUR 123.00. Net EUR 100.00, VAT EUR 23.00 at 23%
+$ deposits  deposit_record {client: "...", amount_minor: 100000, currency: "EUR",
+                            kind: "retainer", received_date: "2026-04-01"}  -> DEP-2026-0001
+$ deposits  deposit_apply {id: "DEP-2026-0001", invoice: "INV-2026-0001",
+                           amount_minor: 60000, date: "2026-04-18"}   -> applied EUR 600.00
+
+$ cash-book ledger_build {from: "2026-04-01", to: "2026-04-30", currency: "EUR"}
+  12 lines, debits EUR 3583.00, credits EUR 3583.00, balanced true, imbalance_minor 0
+  accounts:
+    cash                    EUR  1507.00     = 1000.00 deposit + 630.00 payment - 123.00
+    receivables             EUR     0.00     = 1230.00 - 600.00 applied - 630.00 received
+    revenue                 EUR -1000.00
+    vat_output              EUR  -230.00
+    vat_input               EUR    23.00     <- taken OUT of the 123.00 gross
+    expenses:travel         EUR   100.00
+    deposits_held           EUR  -400.00     = 1000.00 received less 600.00 applied
+  sources: 7 rows, all read true, in order: invoice, billing-docs credit notes,
+    billing-docs purchase orders, deposits, expense-tracker, bank-statement,
+    asset-register           <- the last three of those four read BY PATH or by engine
+                                against documents hydrated read-only for this request
+  bank_reconciliation: matched 0, bank_rows_unmatched 0,
+                       posted_cash_without_bank_evidence 3   <- no statement imported
+
+$ cash-book trial_balance {from: "2026-04-01", to: "2026-04-30", currency: "EUR"}
+  balanced true, debits EUR 3583.00, credits EUR 3583.00, imbalance EUR 0.00 (0 minor),
+  offenders [], verdict "The debits equal the credits to the minor unit."
+
+$ cash-book ledger_lines {..., account: "cash"}
+  3 lines, debits EUR 1630.00, credits EUR 123.00, three DIFFERENT source servers:
+    2026-04-01  deposit:DEP-2026-0001   Dr 100000  deposits         DEP-2026-0001
+    2026-04-05  expense:c36b8d88        Cr  12300  expense-tracker  c36b8d88
+    2026-04-20  payment:INV-...:63000   Dr  63000  invoice          INV-2026-0001
+  and none from bank-statement: the import posts nothing
+  note: "A filtered set of lines is one side of entries whose other side was filtered
+         out ... Only the whole period balances."
+
+$ cash-book ledger_export_csv {from: "2026-04-01", to: "2026-04-30", currency: "EUR"}
+  "12 ledger lines, EUR, 2026-04-01 to 2026-04-30, one row per leg with its date, entry,
+   account, debit, credit, currency, source server, source id, bank reference and
+   description.
+
+   Download (.csv, valid 1 hour): https://mcp.zovo.one/mcp/download/d35109ae..."
+  GET that URL -> 200, content-type text/csv; charset=utf-8,
+  filename="cash-book-EUR-2026-04-01-2026-04-30.csv", 1,987 bytes,
+  13 lines = 1 header + 12 legs, every field quoted, bank_ref column present
+```
+
+`scripts/validate.mjs` gained `cash-book` to the tools/list sweep plus three real calls, and
+the index assertion moved from 24 endpoints to 25. The probe seeds three OTHER endpoints in
+the same run (`client_add` -> `invoice_create` -> `invoice_mark_paid` on `/mcp/invoice`,
+`expense_add` on `/mcp/expense-tracker`, `deposit_record` -> `deposit_apply` on
+`/mcp/deposits`) and then derives April 2026 from all six books.
+
+The arithmetic is asserted per DOCUMENT rather than on the period totals, and that is a
+correction worth recording: the tenant behind the bundle key is not fresh between runs, so
+the first cut of the probe asserted `debits_minor === 358300` and passed once, then failed
+on the next run at 370600 because April already held the previous run's rows. Period totals
+are not a stable figure on a shared tenant; a document's own legs are. So the probe filters
+`ledger_lines` by `source_id` on ids this run minted and asserts each posting rule by name:
+the invoice's five legs (1,230.00 receivables against 1,000.00 revenue and 230.00 VAT
+output, then the 630.00 receipt into cash), the deposit's four (cash when it ARRIVED, and
+the 600.00 application debiting the LIABILITY and never cash - posting it to cash would
+receive the same money twice and the trial balance would still come to zero), and the
+expense's three (100.00 to the category and 23.00 to VAT input, taken OUT of the 123.00
+gross, 12,300 credited to cash). What is asserted on the whole period is the thing that must
+hold whatever else is in it: `balanced`, `imbalance_minor` zero, `imbalance` "EUR 0.00", no
+offenders, all seven source rows reading true in the order the server states them, and the
+CSV download carrying exactly `lines + 1` rows. **remote 92/92.**
+
+### Limitations
+
+- The bank reconciliation is only as good as what was imported. The transcript above shows
+  `posted_cash_without_bank_evidence: 3` and zero matches, because no statement was imported
+  on `/mcp/bank-statement` for that period; that is the honest reading of a book with no bank
+  evidence in it, not a defect. The matching rule itself - same amount, same direction, a
+  date within three days, and a row that could match two postings matched to neither - is
+  asserted only by the stdio suite.
+- The cap is 2 MB and six hydrated documents are charged to it, so a tenant whose books are
+  each near their own endpoint's ceiling will hit this endpoint's cap first, and the message
+  that names the cap will name `/mcp/cash-book` rather than the endpoint holding the bytes.
+  It is the `/mcp/quotes` limitation, six times over and with a ceiling raised to match the
+  largest of the six.
+- The free tier builds three distinct periods a calendar month, metered by from, to and
+  currency; `trial_balance` and `ledger_lines` are free and unlimited, because whether the
+  books add up is the question this endpoint exists for. The probes ran on a Pro key, so the
+  hosted cap refusal and the Pro gates on `month_close`, `ledger_export_csv` and
+  `ledger_report` are asserted only by the stdio suite, as are the concurrency rows.
+- The corrupt-store behaviour cannot be reached through this endpoint, the
+  statement-of-account limitation verbatim: a tenant document is written by this worker as
+  one JSON object and hydrated back, so a sibling store that is on disk and unparseable is a
+  local-install condition. Hosted, a missing sibling reads as zero rows and says so, which is
+  the common case and the one the transcript exercises. The distinction between `read: false`
+  and `rows: 0` is still carried in every answer, because it is the distinction that keeps a
+  figure nobody could compute from being reported as a figure of zero.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Concurrent requests on one token remain last-write-wins on the register,
+  unchanged since Extension 1. The free-period check and the register write are one critical
+  section over stdio; hosted, two simultaneous first-time builds of two different periods
+  could both pass a check that only one of them should.
+- A read-only share is hydrated and never flushed, so a write into any of those six roots
+  inside a handler would be dropped silently rather than refused. That is the intended
+  behaviour for a ledger that writes into no book it reports on, and here it covers all six.
+- `month_close` and `ledger_report` were not exercised against the live endpoint; the three
+  validate calls are `ledger_build`, `trial_balance` and `ledger_lines` with the CSV download
+  beside them.
