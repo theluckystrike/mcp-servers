@@ -27,6 +27,16 @@ export interface Client {
   created: string;
 }
 
+// D-R87: one row per invoice_mark_paid call that actually added money, so two
+// partial payments are both still visible after the second one lands, not just
+// the running total. amount_minor is what THAT call added, never the running sum.
+export interface Payment {
+  date: string;
+  amount_minor: number;
+  method?: string;
+  reference?: string;
+}
+
 export interface Invoice {
   number: string;
   client_id: string;
@@ -52,6 +62,8 @@ export interface Invoice {
   status: "unpaid" | "paid" | "partial";
   paid_date?: string;
   paid_minor: number;
+  // D-R87: absent on an invoice created before this field existed, or one never paid.
+  payments?: Payment[];
   created: string;
   branded: boolean;
 }

@@ -354,3 +354,64 @@ test("D-R6: the wording says PDF only when the file is a PDF", async (t) => {
   assert.match(b.text, /Wrote HTML invoice \(print to PDF\)/);
   assert.match(b.text, /holds PDF bytes despite the \.html name\. Use a \.pdf path\./);
 });
+
+test("D-R87: invoice_mark_paid ADDS to paid_minor, two partials sum instead of the second erasing the first", async (t) => {
+  const c = client();
+  t.after(() => c.close());
+  await init(c);
+  await c.call("business_set", { name: "Zovo Studio" });
+  await c.call("invoice_create", {
+    client: "Acme", items: [{ description: "Work", quantity: 1, unit_price: 1000 }], issue_date: "2026-09-02",
+  });
+  const number = "INV-2026-0001";
+
+  // First partial: EUR 200.00 of EUR 1,000.00.
+  let r = await c.call("invoice_mark_paid", { number, amount: 200, paid_date: "2026-09-03", method: "bank transfer", reference: "REF-1" });
+  assert.equal(r.isError, false);
+  assert.match(r.text, /marked partial on 2026-09-03/);
+  assert.match(r.text, /Added EUR 200\.00 \(total received EUR 200\.00\), balance due EUR 800\.00\./);
+  let inv = JSON.parse((await c.call("invoice_get", { number })).text);
+  assert.equal(inv.paid_minor, 20000, "first partial recorded");
+  assert.equal(inv.status, "partial");
+  assert.equal(inv.payments.length, 1);
+  assert.deepEqual(inv.payments[0], { date: "2026-09-03", amount_minor: 20000, method: "bank transfer", reference: "REF-1" });
+
+  // Second partial: EUR 300.00 more. Before the fix this SET paid_minor to 30000
+  // and silently lost the first EUR 200.00 (docs/DEPOSITS_RESULT.md).
+  r = await c.call("invoice_mark_paid", { number, amount: 300, paid_date: "2026-09-10" });
+  assert.equal(r.isError, false);
+  assert.match(r.text, /Added EUR 300\.00 \(total received EUR 500\.00\), balance due EUR 500\.00\./);
+  inv = JSON.parse((await c.call("invoice_get", { number })).text);
+  assert.equal(inv.paid_minor, 50000, "both partials summed, neither payment was lost");
+  assert.equal(inv.status, "partial");
+  assert.equal(inv.payments.length, 2);
+  assert.equal(inv.payments[1].amount_minor, 30000);
+
+  // Overpayment is refused by name, states the open balance, and changes nothing.
+  r = await c.call("invoice_mark_paid", { number, amount: 600 });
+  assert.equal(r.isError, true);
+  assert.match(r.text, /owes EUR 500\.00/);
+  assert.match(r.text, /EUR 500\.00 of EUR 1000\.00 already received/);
+  assert.match(r.text, /overpay it by EUR 100\.00/);
+  inv = JSON.parse((await c.call("invoice_get", { number })).text);
+  assert.equal(inv.paid_minor, 50000, "the refused overpayment changed nothing");
+  assert.equal(inv.payments.length, 2, "no payment row for a refused overpayment");
+
+  // No-amount call still means "paid in full": adds exactly the remaining balance.
+  r = await c.call("invoice_mark_paid", { number, paid_date: "2026-09-15" });
+  assert.equal(r.isError, false);
+  assert.match(r.text, /marked paid on 2026-09-15/);
+  assert.match(r.text, /Added EUR 500\.00 \(total received EUR 1000\.00\)\./);
+  inv = JSON.parse((await c.call("invoice_get", { number })).text);
+  assert.equal(inv.paid_minor, 100000);
+  assert.equal(inv.status, "paid");
+  assert.equal(inv.payments.length, 3);
+  assert.equal(inv.payments[2].amount_minor, 50000);
+
+  // Calling it again on a fully paid invoice adds nothing and says so.
+  r = await c.call("invoice_mark_paid", { number });
+  assert.equal(r.isError, false);
+  assert.match(r.text, /already paid in full: EUR 1000\.00 of EUR 1000\.00 received\. Nothing was added\./);
+  inv = JSON.parse((await c.call("invoice_get", { number })).text);
+  assert.equal(inv.payments.length, 3, "no extra payment row when nothing was added");
+});

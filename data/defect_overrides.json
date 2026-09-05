@@ -148,5 +148,9 @@
   "D-R61": {
     "status": "fixed",
     "note": "event_export dropped ATTENDEE and ORGANIZER on every VEVENT. Fixed: the parser keeps the raw unfolded ATTENDEE/ORGANIZER source lines (CN, ROLE, PARTSTAT, RSVP, the mailto value, param order) on the stored CalEvent, and the exporter (both the all-day writer and the timed icsCreateDetailed path via insertBeforeEndVevent) replays them verbatim before folding, so nothing is re-derived or invented; events_list now also shows attendees. servers/calendar/src/ics.ts (Prop.raw, CalEvent.organizerLine/attendeeLines) and servers/calendar/src/index.ts (attendeeOrganizerLines, insertBeforeEndVevent, renderRows); round-trip and no-attendee assertions added to servers/calendar/test/smoke.test.mjs, test 'initialize, tools/list, and the whole free-tier flow' (D-R61 section)."
+  },
+  "D-R87": {
+    "status": "fixed",
+    "note": "invoice_mark_paid SET paid_minor from the amount given instead of adding to it: two partial payments of 200 then 300 on a EUR 1,000 invoice left paid_minor 30000 and silently lost the first payment (docs/DEPOSITS_RESULT.md). Fixed: it now ADDS to paid_minor, the same way deposit_apply already does on this same field, refuses an amount that would push paid_minor past total_minor (naming the open balance and changing nothing), keeps the no-amount call meaning 'paid in full' (adds exactly the remaining balance), and records each payment as its own row in a new payments array (date, amount_minor, method, reference) on the invoice. servers/invoice/src/store.ts (Payment type, Invoice.payments) and servers/invoice/src/index.ts invoice_mark_paid; test servers/invoice/test/smoke.test.mjs 'D-R87: invoice_mark_paid ADDS to paid_minor, two partials sum instead of the second erasing the first'."
   }
 }

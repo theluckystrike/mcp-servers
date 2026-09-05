@@ -29,7 +29,7 @@ export type { RenderOptions } from "./pdf.js";
 export { renderInvoicePdf } from "./pdf.js";
 
 /* ------------------------------------------------------------------- store */
-export type { Business, Client, Invoice } from "./store.js";
+export type { Business, Client, Invoice, Payment } from "./store.js";
 export {
   CorruptDataError, DEFAULT_BUSINESS, dataDir, findClient, getBusiness, getClients,
   getInvoices, hasBusiness, invoicesInMonth, markerPath, nextNumber, readJsonFile,

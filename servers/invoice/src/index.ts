@@ -586,11 +586,14 @@ server.registerTool("invoice_get", {
 
 server.registerTool("invoice_mark_paid", {
   title: "Mark an invoice paid",
-  description: "Record a payment. Without an amount the invoice is marked fully paid; a smaller amount marks it partial and reports the remaining balance.",
+  description: "Record a payment. It ADDS to what is already paid (never replaces it) and refuses an amount that would overpay, naming the open balance. Omit amount to pay off the rest in full.",
   inputSchema: {
     number: z.string(),
     paid_date: z.string().optional().describe("YYYY-MM-DD, defaults to today"),
-    amount: z.number().optional().describe("Amount received in major units. Omit for the full total"),
+    amount: z.number().finite().positive().optional()
+      .describe("Amount received in major units, ADDED to what is already paid on this invoice. Omit to pay off the remaining balance in full"),
+    method: z.string().optional().describe("How it was paid, e.g. bank transfer, card. Stored on this payment's row"),
+    reference: z.string().optional().describe("Bank reference or transaction id for this payment. Stored on this payment's row"),
   },
 }, async (a) => {
   try {
@@ -599,13 +602,41 @@ server.registerTool("invoice_mark_paid", {
     const inv = all.find((i) => i.number === a.number);
     if (!inv) return fail(`no invoice numbered ${a.number}.`);
     const f = Math.pow(10, inv.decimals);
-    const paid = a.amount === undefined ? inv.total_minor : Math.round(a.amount * f);
-    inv.paid_minor = paid;
-    inv.paid_date = a.paid_date ?? isoDate();
-    inv.status = paid >= inv.total_minor ? "paid" : paid > 0 ? "partial" : "unpaid";
+    const already = inv.paid_minor ?? 0;
+    const open = inv.total_minor - already;
+    const date = a.paid_date ?? isoDate();
+
+    // D-R87: invoice_mark_paid used to SET paid_minor. Two partial payments of
+    // 200 then 300 on a EUR 1,000 invoice left paid_minor 30000 and silently lost
+    // the first payment (docs/DEPOSITS_RESULT.md). It now ADDS, the same way
+    // deposit_apply already does on this same field.
+    let addMinor: number;
+    if (a.amount === undefined) {
+      if (open <= 0) {
+        return ok(`${inv.number} is already ${inv.status} in full: ` +
+          `${formatMoney(already, inv.currency)} of ${formatMoney(inv.total_minor, inv.currency)} received. Nothing was added.`);
+      }
+      addMinor = open;
+    } else {
+      addMinor = Math.round(a.amount * f);
+      if (addMinor > open) {
+        return fail(`${inv.number} owes ${formatMoney(open, inv.currency)} ` +
+          `(${formatMoney(already, inv.currency)} of ${formatMoney(inv.total_minor, inv.currency)} already received); ` +
+          `a payment of ${formatMoney(addMinor, inv.currency)} would overpay it by ${formatMoney(addMinor - open, inv.currency)}. ` +
+          `Pass at most ${formatMoney(open, inv.currency)}, or record the extra separately (a new invoice, or a deposit). Nothing was changed.`);
+      }
+    }
+
+    inv.paid_minor = already + addMinor;
+    inv.paid_date = date;
+    inv.status = inv.paid_minor >= inv.total_minor ? "paid" : inv.paid_minor > 0 ? "partial" : "unpaid";
+    inv.payments = inv.payments ?? [];
+    inv.payments.push({ date, amount_minor: addMinor, method: a.method, reference: a.reference });
     setInvoices(all);
+
     const bal = inv.total_minor - inv.paid_minor;
-    return ok(`${inv.number} marked ${inv.status} on ${inv.paid_date}. Received ${formatMoney(inv.paid_minor, inv.currency)}` +
+    return ok(`${inv.number} marked ${inv.status} on ${inv.paid_date}. Added ${formatMoney(addMinor, inv.currency)} ` +
+      `(total received ${formatMoney(inv.paid_minor, inv.currency)})` +
       (bal > 0 ? `, balance due ${formatMoney(bal, inv.currency)}.` : "."));
     });
   } catch (e) { return fail(String((e as Error).message ?? e)); }
