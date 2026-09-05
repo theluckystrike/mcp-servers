@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T02:32:46.920Z",
+  "generated_at": "2026-09-05T03:20:34.117Z",
   "session": {
-    "count": 42,
+    "count": 43,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -170,6 +170,10 @@
       {
         "at": "2026-09-05T02:32:46.865Z",
         "note": "loop 15 closed: v0.9.4 by hand (47 registry entries first pass, 20 mirrors, 966 tests, validation 471/471); checkout audit: buyers now see the bundle saving and how the key arrives, cross-sell on single-server sessions, 20 Stripe product descriptions rewritten; /bundle funnel page live and cross-sold from every product page; round 17 office-suite 186 tools 13/18 with every call hitting the right child (no split needed); URL-as-path refused by name in all 13 file servers; registry naming measured as exhausted (namespace sorts first); GSC key readable again: 208 submitted, 0 indexed, never crawled, 0 impressions; clicks 24/7d; downloads 1840; sales 0; round 16 deferred (agents stall under iCloud load)"
+      },
+      {
+        "at": "2026-09-05T03:20:34.056Z",
+        "note": "loop 16 closed: round 16 as three single-lane agents 39/42 (timezone 11/12, bank 16/18, expense 12/12; all round 13 and 15 fixes hold live), every product page now carries up to three copy-paste prompts generated from the measured rounds (48 prompts, all scoring 3, test-traced to round files), office-suite one-install guide and refreshed setup pages, home table buy links slotted per server; no server sources changed so no release; validation 471/471; GSC still 0 indexed; downloads see metrics; clicks 24/7d; sales 0"
       }
     ]
   },
@@ -1153,6 +1157,14 @@
       "first_line": "Content round 14: a standalone /bundle page - 2026-09-05"
     },
     {
+      "file": "docs/CONTENT_R15_RESULT.md",
+      "first_line": "Content round 15: \"First five minutes\" on every /s/<id> page - 2026-09-05"
+    },
+    {
+      "file": "docs/CONTENT_R16_RESULT.md",
+      "first_line": "Content round 16: one-install office-suite guide, refresh setup pages - 2026-09-05"
+    },
+    {
       "file": "docs/CONTENT_R3_RESULT.md",
       "first_line": "Content round 3: guides, setup and compare pages for currency, docx, timezone - 2026-09-03"
     },
@@ -1377,6 +1389,10 @@
       "first_line": "Plan v12 (2026-09-05, loop 15): finish the funnel, re-test the weakest lanes"
     },
     {
+      "file": "docs/PLAN_V13.md",
+      "first_line": "Plan v13 (2026-09-05, loop 16): the first five minutes"
+    },
+    {
       "file": "docs/PLAN_V2.md",
       "first_line": "Plan v2 (2026-09-03, loop 5)"
     },
@@ -1523,6 +1539,18 @@
     {
       "file": "docs/USER_VALUE_R15.md",
       "first_line": "User value audit, round 15 - 2026-09-04"
+    },
+    {
+      "file": "docs/USER_VALUE_R16_BANK.md",
+      "first_line": "User value audit, round 16 - bank-statement re-run - 2026-09-05"
+    },
+    {
+      "file": "docs/USER_VALUE_R16_EXPENSE.md",
+      "first_line": "User value audit, round 16 - expense-tracker only - 2026-09-05"
+    },
+    {
+      "file": "docs/USER_VALUE_R16_TIMEZONE.md",
+      "first_line": "User value audit, round 16 (timezone re-run) — 2026-09-05"
     },
     {
       "file": "docs/USER_VALUE_R17.md",
