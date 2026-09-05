@@ -505,6 +505,19 @@
    "mcpb": "published v0.9.5 (zip.mcpb)",
    "github-mirror": "synced https://github.com/theluckystrike/mcp-zip",
    "registry-name": "published 0.9.5 (io.github.theluckystrike/archive)"
+  },
+  "billing-docs": {
+   "github": "published",
+   "registry": "pending",
+   "hosted": "not hosted: no remotes.json, and WEB_EXCLUDED in billing/src/setup.js until it is",
+   "npm": "missing",
+   "smithery": "pending",
+   "glama": "pending",
+   "docker-mcp-catalog": "submitted",
+   "cline-marketplace": "submitted",
+   "mcpb": "pending: bundles/billing-docs.mcpb not built, server.mcpb.json fileSha256 is TBD",
+   "github-mirror": "pending",
+   "registry-name": "pending 0.9.5 (io.github.theluckystrike/purchase-order)"
   }
  }
 }
