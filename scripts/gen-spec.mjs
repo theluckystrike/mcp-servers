@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "bank-statement", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
+  "asset-register", "bank-statement", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "price-tracker", "recurring",
   "resume", "spreadsheet", "time-tracker", "timezone",
 ].sort();
@@ -46,6 +46,35 @@ const COMMON_INVARIANTS = [
  * common list. `caps` documents the enforced limits that a contract test can assert.
  */
 const CURATED = {
+  "asset-register": {
+    summary: "A fixed asset register and its depreciation, on bundled public tax tables: the Polish annual rates from the annex to the CIT and PIT acts keyed to the KST classification, the UK capital allowance pools with the annual investment allowance, and the US MACRS GDS half-year tables for 3, 5 and 7 year property. Adds an asset, builds the schedule to zero or residual, journals a month, records a disposal with its gain or loss, and reports net book value per category and currency.",
+    storageFiles: [
+      ["assets.json", "the register, each asset carrying the rate, life and convention it was added with"],
+      ["counter.json", "the ASSET number series, per year"],
+    ],
+    primaryFile: "assets.json",
+    caps: [
+      "`FREE_ASSETS` = 10 assets in the register on free. `asset_schedule`, `asset_list` and `asset_dispose` are free and unlimited on every tier.",
+      "`asset_journal` and `asset_report` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_PERIODS` = 120 periods in one schedule; `UK_POOL_PERIODS` = 25 for a UK reducing-balance pool, whose last period writes off the balance a reducing rate can never close.",
+      "`MAX_MINOR` = 1e14 per amount field. Cost, residual and proceeds are whole minor units; a decimal is refused.",
+      "`MAX_ROWS` = 2000 rows returned by one `asset_list` answer.",
+    ],
+    extra: [
+      "The rate tables are BUNDLED JSON under `src/tables/`, read from disk on first use. There is no network call anywhere in this server: a depreciation rate that changed under the user between two runs of the same register is worse than one that is visibly stale, because the stale one is checkable against the file the build shipped.",
+      "Every table carries a `header` naming the authority, the instrument, the source URL, the date the rates took effect, the date they were read and the convention, and the `assets://categories` resource returns those headers with the rates, so the provenance travels with the number.",
+      "A value that could not be stated with confidence from the public text is OMITTED, and the header's `coverage` field says what was left out and why. The 18 and 25 percent positions of the Polish annex are not bundled; the UK table carries the two pools and the AIA only; the US table carries the half-year convention only, for the 3, 5 and 7 year classes.",
+      "A category is matched by exact code, then exact name, then a PREFIX of four characters or more. Never a substring: `\"land\".includes(\"and\")` is true, and a substring fallback would price a delivery van at the land row's 0 percent and say nothing about it.",
+      "The schedule sums to the depreciable base to the MINOR UNIT by construction. `allocate` rounds the cumulative total at each step and takes each period as the difference between two rounded cumulatives, with the last period set to the remainder, and the same rule splits a period into months, so the months sum to their year and the years sum to the base.",
+      "The convention is the table's, not the caller's. Poland charges from the month AFTER the asset enters the register (art. 16h ust. 1 pkt 1), the published US GDS percentages already carry the half-year convention, and a UK writing down allowance is a full-period allowance on a pool and is not prorated by month.",
+      "The Polish declining-balance method switches to straight line in the first year the declining amount would fall below the straight-line one (art. 16k), and rows the annex excludes from the method -- passenger cars, buildings, civil engineering works -- refuse it by name rather than computing it anyway.",
+      "MACRS ignores salvage value. A residual passed for a US asset is reported back as NOT applied and kept on the record for book purposes, rather than silently reducing the base below what the published percentages recover.",
+      "Depreciation is charged up to and including the month of disposal, then stops. A disposal dated before the in-service date is refused: an asset cannot leave the business before it joined it, and booking it would produce a result against a book value that never existed.",
+      "Currencies are never added together. `asset_list`, `asset_journal` and `asset_report` total per currency, because this server holds no exchange rate and one number over a PLN register and a USD one would be an invented one.",
+      "`asset_journal` writes NOTHING into the expense ledger. servers/expense-tracker publishes no library entry point and its id counter, category rules, VAT split and currency defaults all live inside its own `expense_add` handler; the journal returns the exact `expense_add` arguments instead, one payload per currency, the same contract servers/per-diem and servers/kanban use.",
+      "The shared business profile has no country field, so the scheme is derived from `default_currency` and the derivation is always reported as a derivation, never presented as a stored fact.",
+    ],
+  },
   "per-diem": {
     summary: "Daily travel allowances on bundled public rate tables: the Polish delegation regulation (domestic and per country), the HMRC benchmark scale rates, and the GSA CONUS standard M&IE and lodging. Prices one trip from a start and end instant, saves it, totals it per scheme and month, and hands back expense_add arguments for the expense tracker.",
     storageFiles: [
