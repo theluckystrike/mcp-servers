@@ -282,3 +282,43 @@ test("the free tier holds ten assets, schedules stay free, and the refusal names
   assert.equal((await c.call("asset_schedule", { asset: "A0" })).isError, false);
   assert.equal((await c.json("asset_list", {})).count, 10);
 });
+
+test("200 assets: the register scales, ids stay unique, and list/report totals still add up to the cent", async (t) => {
+  const { c } = open(t, { key: proKey("asset-register") });
+  await c.init();
+  const n = 200;
+  for (let i = 0; i < 150; i++) {
+    assert.equal((await c.call("asset_add", { ...ASSET, name: `PL-${i}`, purchase_date: "2026-01-05" })).isError, false, `pl asset ${i}`);
+  }
+  for (let i = 0; i < 50; i++) {
+    const r = await c.call("asset_add", {
+      name: `US-${i}`, scheme: "us", category: "5-year", cost_minor: 100000, currency: "USD",
+      purchase_date: "2026-01-05", method: "declining-balance",
+    });
+    assert.equal(r.isError, false, `us asset ${i}`);
+  }
+
+  const list = await c.json("asset_list", { limit: 2000 });
+  assert.equal(list.count, n);
+  assert.equal(list.returned, n);
+  assert.equal(new Set(list.assets.map((a) => a.id)).size, n, "an id was reused across the 200 assets");
+
+  const pln = list.totals_by_currency.find((t) => t.currency === "PLN");
+  const usd = list.totals_by_currency.find((t) => t.currency === "USD");
+  assert.equal(pln.cost_minor, 150 * ASSET.cost_minor);
+  assert.equal(usd.cost_minor, 50 * 100000);
+  // Currencies are never added together: each total is exactly its own group's cost, no cross-contamination.
+  assert.equal(pln.accumulated_minor + pln.nbv_minor, pln.cost_minor);
+  assert.equal(usd.accumulated_minor + usd.nbv_minor, usd.cost_minor);
+
+  const report = await c.json("asset_report", { year: 2026, as_of: "2026-12" });
+  assert.equal(report.assets, n);
+  const totalCount = report.by_category.reduce((a, r) => a + r.count, 0);
+  assert.equal(totalCount, n);
+  const plRow = report.by_category.find((r) => r.scheme === "pl");
+  const usRow = report.by_category.find((r) => r.scheme === "us");
+  assert.equal(plRow.count, 150);
+  assert.equal(usRow.count, 50);
+  assert.equal(plRow.nbv_minor + plRow.accumulated_minor, plRow.cost_minor);
+  assert.equal(usRow.nbv_minor + usRow.accumulated_minor, usRow.cost_minor);
+});
