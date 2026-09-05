@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
+  "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "price-tracker", "recurring",
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone",
 ].sort();
@@ -46,6 +46,36 @@ const COMMON_INVARIANTS = [
  * common list. `caps` documents the enforced limits that a contract test can assert.
  */
 const CURATED = {
+  "amortization": {
+    summary: "Loan and lease schedules derived from the terms of a credit agreement and nothing else: the level payment, the effective annual rate, the schedule period by period in integer minor units, what settling or overpaying early costs and saves, and the double entry for a payment in the cash book's own account names. No schedule is stored; every row is derived on the call.",
+    storageFiles: [
+      ["loans.json", "the register of agreements, each carrying the terms it was created with and nothing derived from them but the payment and the effective rate"],
+      ["counter.json", "the LOAN number series, per year of the start date"],
+    ],
+    primaryFile: "loans.json",
+    caps: [
+      "`FREE_LOANS` = 3 agreements in the register on free. `loan_schedule` and `loan_list` are free and unlimited on every tier.",
+      "`loan_repay_early`, `loan_journal` and `loans_report` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_PERIODS` = 600 payment periods in one schedule; `MAX_RATE_BPS` = 1,000,000 basis points; `MAX_MINOR` = 1e14 per amount field.",
+      "`MAX_ROWS` = 600 rows returned by one `loan_schedule` or `loan_list` answer.",
+    ],
+    extra: [
+      "THE PAYMENT NEVER VARIES AND THE LAST PERIOD ABSORBS THE ROUNDING RESIDUAL, in its interest and principal split rather than in the payment. Rounding each period's interest to the minor unit leaves the closing balance a few units off after a chain of subtractions, and there are only two places to put that: the final payment, which is the amount the borrower is contractually due to pay, or the final split, which is not. On the reference loan the final interest is 882 rather than the 880 an unrounded balance carries, the payment stays 88,849, and the closing balance is exactly zero.",
+      "A residual is only absorbed while it IS a residual. The drift from per-period rounding is about one minor unit a period, so a gap wider than the term is not drift, it is a final period that is genuinely short, and then the PAYMENT gives way and the interest stays what was actually charged. An interest figure is never negative and a closing balance never passes through zero.",
+      "A level payment rounded once, repeated, can clear the debt EARLY. At 250 basis points over 360 annual periods the schedule closes at period 356 and says so; it never runs on into a negative balance to fill out the term.",
+      "Compounding and payment frequency are two different clocks. The rate for one payment period is the EQUIVALENT rate through the compounding clock, (1 + r/m)^(m/p) - 1, never the nominal rate divided by the number of payments: on a nominal 12 percent compounded monthly with quarterly payments that is 3.0301 percent a quarter and not 3.0000, worth 1.0 percent of the whole interest bill on a one-year loan.",
+      "The nominal rate and the effective annual rate are reported side by side on every agreement. A nominal 12 percent compounded monthly is an effective 12.68 percent, and the 0.68 is the part of the price the headline rate does not carry.",
+      "NO SCHEDULE IS STORED. The register holds the terms and only two derived figures, the payment and the effective rate; every row is rebuilt on the call. A stored schedule is a second copy of what the rate and the term already decide, and the copy is the one that gets believed after somebody edits the rate.",
+      "ONLY THE INTEREST IS AN EXPENSE. `loan_journal` debits interest expense and loan liability and credits cash, and the `expense_add`-ready payload carries the INTEREST alone. Booking the whole payment as an expense overstates the cost of the business by the principal, every period, and still reconciles against the bank.",
+      "The three account ids are the cash book's. `cash` is `servers/cash-book`'s own `CASH` id character for character; `loan_liability` and `interest_expense` are new, because that server derives no loan entries yet, and they follow its id convention exactly so no journal produced here has to be re-mapped later.",
+      "A balloon is due WITH the last payment and is never inside it. The closing balance of the final period IS the balloon, and the answer says in words that the borrower owes it on top of the payment shown.",
+      "Fees are not interest. An arrangement fee is paid at drawdown, sits outside every payment row and outside the total interest, and the cost of credit is stated as the two added together.",
+      "An early settlement is stated GROSS and NET of the penalty, and the verdict says which way it goes. A penalty larger than the interest saved makes repaying early a loss, and that case is reported as a cost rather than as a smaller saving.",
+      "Nothing is written by `loan_repay_early`: the stored agreement keeps its original terms. It answers what would happen, and the agreement is amended by whoever signs it.",
+      "Currencies are never added together. This server holds no exchange rate, so one outstanding figure over a EUR loan and a USD one would be invented.",
+      "Month arithmetic CLAMPS to the end of the target month, so a loan drawn on the 31st pays on the 28th in February and on the 31st again in March. Rolling forward instead would move a payment into the next month and shift every date after it.",
+    ],
+  },
   "cash-book": {
     summary: "One double-entry ledger derived from books this server does not own: the invoice ledger, the credit note and purchase order store, the deposit store, the expense ledger, the bank import and the fixed asset register, all read-only. Every line is derived on the call and carries the server, the document id and the date it came from; the trial balance is proved to the minor unit; a month closes with a snapshot and a list of what is unposted or inconsistent.",
     storageFiles: [
