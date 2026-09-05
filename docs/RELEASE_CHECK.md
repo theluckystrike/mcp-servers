@@ -52,6 +52,7 @@ bundle rather than a product: no Stripe price, no comparison page, no second nam
 | `desc` | every manifest description is under 100 characters (the registry 422s above it) and does not end in a machine truncation (`,.`, `..`, a trailing comma) |
 | `names` | at least one additional registry name manifest (`server.variant.json` or `server.<token>.json`), and it does not repeat the primary name |
 | `remotes` | if `remotes.json` exists, `server.mcpb.json.remotes` equals it by value |
+| `hosted-row` | `data/distribution.json` `per_server.<x>.hosted` equals `published https://mcp.zovo.one/mcp/<x>` when `servers/<x>/remotes.json` exists, and is anything other than a `published ...` string when it does not |
 | `endpoint` | if hosted, `remote/src/index.ts` routes `/mcp/<x>` |
 | `web` | if hosted, `billing/src/setup.js` does not put it in `WEB_EXCLUDED` and it has a `WEB_ANGLE` entry |
 | `children` | `servers/office-suite/src/index.ts` `CHILDREN` lists it |
@@ -66,6 +67,16 @@ bundle rather than a product: no Stripe price, no comparison page, no second nam
 | `guide` | at least one `GUIDES` entry mentions the server |
 | `gif` `logo` | `assets/demo-<x>.gif` and `assets/<x>-logo.png` |
 | `docker` `smithery` `glama` `llms` `spec` `contract` | `Dockerfile`, `smithery.yaml`, `glama.json`, `llms-install.md`, `SPEC.md`, `test/contract.test.mjs` |
+
+`hosted-row` exists because `data/distribution.json` is hand-edited prose next to a
+machine fact: the exact string `published https://mcp.zovo.one/mcp/<x>` is the only value
+that means "this server is live at its own endpoint," and a round that lands hosting mid-flight
+(billing-docs, deposits) tends to leave that row with a narrative sentence instead
+("shipped by the remote agent during round 14; remotes.json merged...") that reads fine to a
+person but breaks the `hostedServers` count in `scripts/kpi.mjs` and any other reader doing a
+string match. The check reads truth from `servers/<x>/remotes.json` the same way `remotes`,
+`endpoint` and `web` do, and its failure message names the exact string to put in
+`data/distribution.json` rather than just flagging the mismatch.
 
 Estate-wide:
 

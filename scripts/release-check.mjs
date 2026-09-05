@@ -51,6 +51,7 @@ const src = {
 };
 const facts = readJson(join(ROOT, "data", "facts.json"));
 const tools = readJson(join(ROOT, "data", "tools.json"));
+const distribution = readJson(join(ROOT, "data", "distribution.json"));
 const assets = readdirSync(join(ROOT, "assets"));
 
 const billing = await import(join(ROOT, "billing", "src", "index.js"));
@@ -184,6 +185,20 @@ check("remotes", "remotes.json merged", (s) => {
   const mcpb = readJson(join(SERVERS_DIR, s, "server.mcpb.json"));
   if (!mcpb.remotes) return "server.mcpb.json has no remotes block";
   return deepEqual(mcpb.remotes, remotes) ? true : "server.mcpb.json remotes != remotes.json by value";
+});
+
+check("hosted-row", "distribution.json hosted", (s) => {
+  const hosted = distribution.per_server?.[s]?.hosted;
+  const expect = `published https://mcp.zovo.one/mcp/${s}`;
+  const isHosted = has(join(SERVERS_DIR, s, "remotes.json"));
+  if (isHosted) {
+    return hosted === expect
+      ? true
+      : `hosted is ${JSON.stringify(hosted)}, fix: set data/distribution.json per_server.${s}.hosted to ${JSON.stringify(expect)}`;
+  }
+  return !/^published\b/.test(String(hosted ?? ""))
+    ? true
+    : `hosted is ${JSON.stringify(hosted)} but ${s} has no remotes.json, fix: set data/distribution.json per_server.${s}.hosted to a non-published value (e.g. "not hosted")`;
 });
 
 check("endpoint", "remote /mcp/<x>", (s) => {

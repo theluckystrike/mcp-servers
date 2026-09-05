@@ -522,7 +522,7 @@
   "deposits": {
    "github": "published",
    "registry": "pending",
-   "hosted": "https://mcp.zovo.one/mcp/deposits, shipped by the remote agent during round 14; remotes.json merged into server.mcpb.json and a claude-web setup page generated",
+   "hosted": "published https://mcp.zovo.one/mcp/deposits",
    "npm": "missing",
    "smithery": "pending",
    "glama": "pending",

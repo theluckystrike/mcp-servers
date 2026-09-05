@@ -7,6 +7,39 @@ const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const js = (p, d) => { try { return JSON.parse(readFileSync(`${ROOT}/${p}`, "utf8")); } catch { return d; } };
 const sh = (cmd, args, opts = {}) => { try { return execFileSync(cmd, args, { encoding: "utf8", timeout: 180000, maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PATH: `/opt/homebrew/bin:${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH}` }, ...opts }); } catch (e) { if (process.env.KPI_DEBUG) console.error("sh fail", cmd, args.slice(0, 3).join(" "), String(e.stderr || e.message).slice(0, 200)); return ""; } };
 
+// wrangler is the only subprocess that talks to a remote KV store over the network, and it
+// is the one that has hung this script before (kv key list --remote with no timeout once
+// blocked the run and the row it fed landed in data/kpi.json as null). Every wrangler call
+// goes through this wrapper: a hard 60s timeout, and a `failed` flag instead of a caught
+// exception, so a KPI row can fall back to its previous value instead of going null.
+const WRANGLER_TIMEOUT_MS = 60000;
+const shWrangler = (args) => {
+  try {
+    const out = execFileSync("wrangler", args, {
+      encoding: "utf8",
+      timeout: WRANGLER_TIMEOUT_MS,
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env, PATH: `/opt/homebrew/bin:${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH}` },
+    });
+    return { out, failed: false };
+  } catch (e) {
+    if (process.env.KPI_DEBUG) console.error("wrangler fail", args.slice(0, 3).join(" "), String(e.stderr || e.message).slice(0, 200));
+    return { out: "", failed: true };
+  }
+};
+
+// Previous run's rows, keyed by name: the fallback source when a wrangler-backed row fails.
+const prevKpi = js("data/kpi.json", { kpis: [] });
+const prevByName = new Map((prevKpi.kpis || []).map((k) => [k.name, k]));
+const staleAt = new Date().toISOString();
+/** Replace a KPI row's value with its previous value, stale and noted, when a wrangler call failed. */
+function staleIfFailed(kpi, failed) {
+  if (!failed) return kpi;
+  const prev = prevByName.get(kpi.name);
+  return { ...kpi, value: prev ? prev.value : null, stale: true, how: `previous value; wrangler timed out at ${staleAt}` };
+}
+
 const metrics = js("data/metrics.json", { snapshots: [] }).snapshots.at(-1) || {};
 const val = js("data/validation.json", { runs: [] }).runs.at(-1) || {};
 const uvi = js("data/user_value_index.json", { rounds: [], counts: {} });
@@ -25,7 +58,17 @@ const bal = sh("stripe", ["balance_transactions", "list", "--live", "--limit", "
 let sales = null; if (bal) { try { const d = JSON.parse(bal).data; sales = d.filter((t) => t.type === "charge" && /MCP/i.test(t.description || "")).length; } catch {} }
 
 // KV populations (hosted usage): wrangler needs --remote
-const kvCount = (ns) => { const out = sh("wrangler", ["kv", "key", "list", "--namespace-id", ns, "--remote"]); try { const ks = JSON.parse(out).map((k) => k.name); const by = {}; for (const k of ks) { const p = k.includes(":") ? k.split(":")[0] : k.split("_")[0]; by[p] = (by[p] || 0) + 1; } return { total: ks.length, by, names: ks }; } catch { return { total: null, by: {}, names: null }; } };
+const kvCount = (ns) => {
+  const { out, failed } = shWrangler(["kv", "key", "list", "--namespace-id", ns, "--remote"]);
+  try {
+    const ks = JSON.parse(out).map((k) => k.name);
+    const by = {};
+    for (const k of ks) { const p = k.includes(":") ? k.split(":")[0] : k.split("_")[0]; by[p] = (by[p] || 0) + 1; }
+    return { total: ks.length, by, names: ks, failed };
+  } catch {
+    return { total: null, by: {}, names: null, failed: true };
+  }
+};
 const remoteKv = nsOf(remoteToml) ? kvCount(nsOf(remoteToml)) : { total: null, by: {}, names: null };
 const licKv = nsOf(licToml) ? kvCount(nsOf(licToml)) : { total: null, by: {}, names: null };
 
@@ -41,12 +84,16 @@ const licKv = nsOf(licToml) ? kvCount(nsOf(licToml)) : { total: null, by: {}, na
 //      here. Every other lic id was signed from keys/license-private.pem by validation.
 const licenseKeyId = (key) => { try { return JSON.parse(Buffer.from(String(key).split(".")[1], "base64url").toString("utf8")).id || null; } catch { return null; } };
 const mintedIds = new Set();
+let mintLookupFailed = false;
 if (licKv.names && nsOf(licToml)) {
   for (const name of licKv.names.filter((n) => n.startsWith("session:"))) {
-    const id = licenseKeyId(sh("wrangler", ["kv", "key", "get", name, "--namespace-id", nsOf(licToml), "--remote"]).trim());
+    const { out, failed } = shWrangler(["kv", "key", "get", name, "--namespace-id", nsOf(licToml), "--remote"]);
+    if (failed) mintLookupFailed = true;
+    const id = licenseKeyId(out.trim());
     if (id) mintedIds.add(id);
   }
 }
+const proTenantsFailed = remoteKv.failed || licKv.failed || mintLookupFailed;
 const licTenants = remoteKv.names ? [...new Set(remoteKv.names.filter((n) => n.startsWith("lic:")).map((n) => n.split(":")[1]))] : null;
 const boundTenants = remoteKv.names ? [...new Set(remoteKv.names.filter((n) => n.startsWith("bind:")).map((n) => n.slice(5)))] : null;
 const proTenants = licTenants === null ? null : new Set([...boundTenants, ...licTenants.filter((id) => mintedIds.has(id))]).size;
@@ -116,6 +163,20 @@ const kpis = [
   { cat: "Monetization", name: "Click to checkout-session ratio", value: clickToSession, target: 40, unit: "% (sessions per 100 clicks)", how: "100 * checkout sessions from humans (last 100, Stripe) / upgrade link clicks (7d, /stats/clicks) - the two windows differ (last 100 ever vs last 7 days), so this is an approximation, not the true window-matched ratio", why: "Separates whether people are seeing the link (clicks) from whether the checkout page itself converts (ratio); a link with clicks and no sessions points at the redirect or the Stripe page, not the message." },
   { cat: "Monetization", name: "Pro tenants on hosted endpoints", value: proTenants, target: 20, unit: "tenants", how: `Stripe-bound tenants (REMOTE_DATA bind: prefix, ${proTenantDetail.stripe_bound_tenants ?? "?"}) plus distinct lic: tenant ids whose key the billing worker minted (LICENSES session:*, ${proTenantDetail.minted_key_ids} keys). EXCLUDED: the ${proTenantDetail.lic_keys ?? "?"} raw lic: documents are per (key, server) pairs, not tenants (${proTenantDetail.lic_distinct_ids ?? "?"} distinct ids), and ${proTenantDetail.probe_ids_excluded ?? "?"} of those ids are validation probes signed locally by scripts/sign-license.mjs, never bought.`, why: "Real Pro usage on hosted. The old count read every lic: document, so one validation run over 16 servers looked like 16 paying tenants.", detail: proTenantDetail },
 ];
+// Rows fed entirely by a wrangler subprocess: on failure they fall back to their previous
+// value from data/kpi.json instead of going null (see staleIfFailed / shWrangler above).
+const WRANGLER_ROW_FAILURES = {
+  "Anonymous hosted tokens minted": remoteKv.failed,
+  "Hosted tenants with stored data": remoteKv.failed,
+  "Hosted downloads served": remoteKv.failed,
+  "License keys minted": licKv.failed,
+  "Pro tenants on hosted endpoints": proTenantsFailed,
+};
+for (let i = 0; i < kpis.length; i++) {
+  const failed = WRANGLER_ROW_FAILURES[kpis[i].name];
+  if (failed) kpis[i] = staleIfFailed(kpis[i], true);
+}
+
 const status = (k) => { if (k.value === null || k.value === undefined) return "unmeasured"; if (typeof k.target === "number" && typeof k.value === "number") { if (k.lower_is_better) return k.value <= k.target ? "met" : "progress"; return k.value >= k.target ? "met" : k.value > 0 ? "progress" : "zero"; } if (typeof k.value === "string" && /^(\d+)\/(\d+)$/.test(k.value)) { const [a, b] = k.value.split("/").map(Number); return a === b ? "met" : "progress"; } return "measured"; };
 for (const k of kpis) k.status = status(k);
 const out = { generated_at: new Date().toISOString(), kpis, raw: { stripe, sales_charges_seen: sales, remote_kv: remoteKv, license_kv: licKv, pro_tenants: proTenantDetail, latency, registry: registryLatest, sitemap_urls: sitemapUrls } };
