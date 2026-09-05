@@ -6,7 +6,21 @@ import { PDFDocument } from "pdf-lib";
 /** Nothing larger is read: a 100 MB PDF already needs more than a gigabyte of heap to rewrite. */
 export const MAX_BYTES = 100 * 1024 * 1024;
 
+/** A leading `<scheme>://` means the caller has a URL, not a local path. Checked BEFORE
+ * any resolution, so a URL is never joined against the server's cwd and the refusal
+ * never has a path in it, let alone one that leaks the cwd. */
+const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
+
+// D-R83: a URL handed to `path` used to be silently resolved as a relative filesystem
+// path, producing a "does not exist" error that leaked the server's own cwd. Refused by
+// name instead.
 export function expandPath(p: string): string {
+  if (URL_SCHEME_RE.test(p)) {
+    throw new Error(
+      `"${p}" is a URL, not a file path; this tool reads local files. On the hosted route, ` +
+      `use the url argument of pdf_upload. Locally, download it first and pass the path it was saved to.`,
+    );
+  }
   const s = p.startsWith("~") ? join(homedir(), p.slice(1)) : p;
   return isAbsolute(s) ? s : resolvePath(process.cwd(), s);
 }

@@ -189,7 +189,7 @@ function patchExpenseIndex(src) {
 function patchSpreadsheetSheet(src) {
   // The hosted endpoint has no disk: every `path` argument names a sheet loaded with
   // sheet_load, which lives under /sheets/ in the per-request virtual filesystem.
-  src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+  src = must(src, /\/\*\* A leading[\s\S]*?\nexport function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
     `export function expandPath(p: string): string {
   if (typeof p !== "string" || p.trim() === "") throw new UserError("path is required; it names a sheet loaded with sheet_load");
   let s = p.trim().replace(/^~\\/?/, "").replace(/^\\.\\//, "");
@@ -544,7 +544,7 @@ function patchDocxIndex(src) {
   // No disk: an existing .docx is uploaded (doc_upload, or a one-off docx_base64) and
   // lives under /uploads/; everything this server writes lands under /docs/ and comes
   // back as a one-hour download link.
-  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+  src = must(src, /\/\*\* A leading[\s\S]*?\nfunction expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
     `function expandPath(p: string): string {
   const raw = String(p ?? "").trim();
   if (!raw) throw new Error("path is required: it names a document uploaded with doc_upload");
@@ -682,7 +682,7 @@ const OUTPUT_PATH = `function outputPath(out: string | undefined, fallbackName: 
 function patchResumeIndex(src) {
   // No disk: an existing .docx is uploaded (doc_upload, or a one-off docx_base64) and
   // everything this server writes lands under /docs/ as a one-hour download link.
-  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/, NAME_PATH("document"), "resume expandPath");
+  src = must(src, /\/\*\* A leading[\s\S]*?\nfunction expandPath\(p: string\): string \{[\s\S]*?\n\}\n/, NAME_PATH("document"), "resume expandPath");
   src = must(src, /function outputPath\(out: string \| undefined[\s\S]*?\n\}\n/, OUTPUT_PATH, "resume outputPath");
 
   src = must(src, "    writeFileSync(path, buf);\n    return json({\n      path,\n      style,",
@@ -752,7 +752,7 @@ function patchRecurringIndex(src) {
 /* --------------------------------------------------------------- clauses */
 
 function patchClausesIndex(src) {
-  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/, NAME_PATH("document"), "clauses expandPath");
+  src = must(src, /\/\*\* A leading[\s\S]*?\nfunction expandPath\(p: string\): string \{[\s\S]*?\n\}\n/, NAME_PATH("document"), "clauses expandPath");
   src = must(src, /function outputPath\(out: string \| undefined[\s\S]*?\n\}\n/, OUTPUT_PATH, "clauses outputPath");
 
   // clause_import wants a file on the caller's disk; there is none here.
@@ -795,7 +795,7 @@ function patchClausesIndex(src) {
  * Outputs stay in the tenant document, so a merged file can be stamped by a later call.
  */
 function patchPdfIo(src) {
-  src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+  src = must(src, /\/\*\* A leading[\s\S]*?\nexport function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
 `export const UPLOAD_ROOT = "/uploads/";
 export const OUT_ROOT = "/out/";
 
@@ -979,7 +979,7 @@ function patchCalendarFetch(src) {
 function patchCalendarIndex(src) {
   // No disk: an export becomes a one-hour download link and out_path is only the name
   // that file carries.
-  src = must(src, /function outPathOf\(p: string\): string \{[\s\S]*?\n\}\n/,
+  src = must(src, /\/\*\* A leading[\s\S]*?\nfunction outPathOf\(p: string\): string \{[\s\S]*?\n\}\n/,
 `function outPathOf(p: string): string {
   const base = (String(p ?? "").split(/[\\\\/]/).pop() ?? "").replace(/\\.ics$/i, "");
   const name = base || "events";
@@ -1445,7 +1445,7 @@ function patchBarcodeRender(src) {
 `, "barcode linearPng text");
 
   // out_path is a name, and every file lands in the published root.
-  src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+  src = must(src, /\/\*\* A leading[\s\S]*?\nexport function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
 `export const OUT_ROOT = "/out/";
 
 /** The bare name a hosted out_path has to be, or a caller-facing refusal. */
@@ -1656,7 +1656,7 @@ function patchZipPaths(src) {
     "zip paths drop node:path");
   src = must(src, 'import { homedir } from "node:os";\n', "", "zip paths drop node:os");
 
-  src = must(src, /export function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+  src = must(src, /\/\*\* A leading[\s\S]*?\nexport function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
 `export const UPLOAD_ROOT = "/uploads/";
 export const OUT_ROOT = "/out/";
 
