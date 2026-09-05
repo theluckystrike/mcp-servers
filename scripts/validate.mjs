@@ -1004,12 +1004,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 25 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 25 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 26 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 26 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -1378,6 +1378,53 @@ async function remote() {
       (cbres?.headers.get("content-type") || "").startsWith("text/csv") && cbrows.length === cbk.lines + 1 &&
       cbrows[0].startsWith('"date","entry","account"') && cbrows[0].includes('"bank_ref"') && cbbody.includes(`"${cinv}"`),
       `${cbLi.slice(0, 60)} | ${cbres?.headers.get("content-type")} ${cbrows.length} rows`);
+    // Extension 17: /mcp/amortization. The three calls are the worked example the stdio
+    // suite asserts to the minor unit, run against the hosted handlers: if the vendored
+    // schedule resolved a different allocator, or the payment were re-derived per period
+    // rather than rounded once, or the residual were pushed into the last PAYMENT instead
+    // of into its interest and principal split, every figure below moves. This endpoint
+    // reads no sibling book and writes no file, so there is no download to check and
+    // nothing to hydrate: the loan register is its own document, per token.
+    const amName = `Worked annuity ${Date.now()}`;
+    const amc = await rpc("amortization", { jsonrpc: "2.0", id: 113, method: "tools/call", params: { name: "loan_create", arguments: { name: amName, principal_minor: 1000000, currency: "EUR", rate_bps: 1200, compounding: "monthly", payment_frequency: "monthly", term_periods: 12, method: "annuity", start_date: "2026-01-15" } } });
+    let amC = {}; try { amC = JSON.parse(amc.result.content[0].text); } catch { amC = {}; }
+    const amId = amC.created?.id;
+    ok("hosted loan_create prices the worked 12-month annuity exactly as the stdio suite does: level payment 88,849 minor units rounded ONCE, total paid 1,066,188, total interest 66,188, and a nominal 12 percent compounded monthly stated as an effective 12.68 percent",
+      amC.created?.payment_minor === 88849 && amC.total_payments_minor === 1066188 && amC.total_interest_minor === 66188 &&
+      amC.created?.effective_annual_rate_bps === 1268 && amC.periodic_rate_pct === "1.000000" &&
+      amC.first_payment_date === "2026-02-15" && amC.final_payment_date === "2027-01-15" && /^LOAN-\d{4}-\d{4}$/.test(amId || ""),
+      `${amId} ${amC.created?.payment} ${amC.total_interest}`);
+    const ams = await rpc("amortization", { jsonrpc: "2.0", id: 114, method: "tools/call", params: { name: "loan_schedule", arguments: { loan: amId } } });
+    let amS = {}; try { amS = JSON.parse(ams.result.content[0].text); } catch { amS = {}; }
+    const amLast = amS.rows?.[(amS.rows?.length ?? 1) - 1];
+    ok("hosted loan_schedule closes at exactly zero over 12 periods with 66,188 of interest, and period 12 carries the residual in its SPLIT and not in its payment: principal 87,967 is the whole balance left, interest 8.82 rather than the 8.80 an unrounded balance carries, payment still 88,849",
+      amS.periods === 12 && amS.total_interest_minor === 66188 && amS.closing_balance_minor === 0 &&
+      amS.rows?.[0]?.interest_minor === 10000 && amS.rows?.[0]?.principal_minor === 78849 && amS.rows?.[0]?.closing_minor === 921151 &&
+      amLast?.period === 12 && amLast?.opening_minor === 87967 && amLast?.payment_minor === 88849 && amLast?.interest_minor === 882 && amLast?.principal_minor === 87967 && amLast?.closing_minor === 0,
+      `${amS.periods} periods, closing ${amS.closing_balance_minor}, last ${amLast?.interest_minor}/${amLast?.principal_minor}`);
+    const ame = await rpc("amortization", { jsonrpc: "2.0", id: 115, method: "tools/call", params: { name: "loan_repay_early", arguments: { loan: amId, as_of_period: 6, penalty_minor: 5000 } } });
+    let amE = {}; try { amE = JSON.parse(ame.result.content[0].text); } catch { amE = {}; }
+    ok("hosted loan_repay_early settles at period 6 on the stdio figures - outstanding 514,920, interest paid to date 48,014, interest saved 18,174, and 13,174 net of a 5,000 penalty - and states the saving net of the penalty rather than gross",
+      amE.outstanding_minor === 514920 && amE.interest_paid_minor === 48014 && amE.interest_saved_minor === 18174 &&
+      amE.interest_saved_net_minor === 13174 && amE.worth_doing === true && /saves EUR 131\.74 after the penalty/.test(amE.verdict || "") &&
+      amE.interest_paid_minor + amE.interest_saved_minor === 66188 && /Nothing was written/.test(amE.note || ""),
+      `${amE.outstanding_minor} saved ${amE.interest_saved_minor} net ${amE.interest_saved_net_minor}`);
+    const amj = await rpc("amortization", { jsonrpc: "2.0", id: 116, method: "tools/call", params: { name: "loan_journal", arguments: { loan: amId, month: "2026-02" } } });
+    let amJ = {}; try { amJ = JSON.parse(amj.result.content[0].text); } catch { amJ = {}; }
+    const amLegs = (amJ.lines || []).map((l) => `${l.account}:${l.debit_minor}:${l.credit_minor}`).sort().join(" ");
+    ok("hosted loan_journal balances February in the CASH BOOK's own account names (Dr interest_expense 10,000, Dr loan_liability 78,849, Cr cash 88,849) and the expense_add payload carries the INTEREST alone, 100.00 and not 888.49, because the principal repays a liability and is not an expense",
+      amLegs === "cash:0:88849 interest_expense:10000:0 loan_liability:78849:0" && amJ.totals?.balanced === true &&
+      amJ.totals?.debits_minor === 88849 && amJ.date === "2026-02-15" &&
+      amJ.expense_add?.arguments?.amount === 100 && amJ.expense_add?.arguments?.currency === "EUR" && amJ.expense_add?.server === "expense-tracker" &&
+      /NOT an expense/.test(amJ.expense_add?.arguments?.note || ""),
+      `${amLegs} expense ${amJ.expense_add?.arguments?.amount}`);
+    const amr = await rpc("amortization", { jsonrpc: "2.0", id: 117, method: "tools/call", params: { name: "loans_report", arguments: { as_of: "2026-06-30", currency: "EUR" } } });
+    let amR = {}; try { amR = JSON.parse(amr.result.content[0].text); } catch { amR = {}; }
+    const amRow = (amR.per_loan || []).find((x) => x.id === amId);
+    ok("hosted loans_report values the same loan at 2026-06-30 exactly as the stdio suite does: outstanding 597,791, next payment 2026-07-15 of 88,849, 11 payments and 65,306 of interest in 2026, and no schedule was stored to get there",
+      amRow?.outstanding_minor === 597791 && amRow?.next_payment_date === "2026-07-15" && amRow?.next_payment_minor === 88849 &&
+      amRow?.payments_this_year === 11 && amRow?.interest_this_year_minor === 65306 && amRow?.settled === false && amR.year === "2026",
+      `${amRow?.outstanding_minor} next ${amRow?.next_payment_date} interest ${amRow?.interest_this_year_minor}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
