@@ -1,0 +1,8 @@
+# Release v0.16.0 (2026-09-06)
+
+status: done
+evidence: amortization joins as the twenty-sixth server (loan and lease schedules with effective interest, fees, early repayment and balloon; journal lines in the cash-book account names; worked examples asserted to the minor unit; audit 18/18; stdio round 31 15/18 with every server figure relayed exactly and the lost points on client-side totals over refused data); the cash-book free tier is documented and its gate text names the free evidence; cash-book hosted round 17/18; all twelve estate backlinks still serve; the release checker's number-word table extended to thirty-six; 28 package.json and 65 ranges at 0.16.0; 98 manifests bumped, 71 reference a bundle; release-check green on 26 servers; npm test 1207 tests, 1195 pass, 0 fail after the amortization contract stopped pinning the version string; 27 bundles, three boot-checked at 0.16.0; GitHub release, sha256, publish, mirrors and by-name verify recorded at loop close.
+artifacts: https://github.com/theluckystrike/mcp-servers/releases/tag/v0.16.0
+cost: by hand in bounded steps, about 45 minutes wall at load 20.
+failures: none open. GSC unmeasurable: key file iCloud-dataless. Open for loop 25: loan_create accepts a byte-identical agreement twice with no delete tool, so a duplicate on the free tier burns two of three slots.
+insight: three consecutive first releases broke on a contract that pinned a moment (TBD, a version string) instead of a rule; the rule form (a sha or TBD, a semver shape) is what the newest servers now assert, and the checker table that names counts in English must grow with the server count the same way.
