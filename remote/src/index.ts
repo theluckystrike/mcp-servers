@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-five endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-six endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -36,6 +36,7 @@ import { createServer as createPerDiem } from "./vendor/per-diem/index.js";
 import { createServer as createAssetRegister } from "./vendor/asset-register/index.js";
 import { createServer as createStatementOfAccount } from "./vendor/statement-of-account/index.js";
 import { createServer as createCashBook } from "./vendor/cash-book/index.js";
+import { createServer as createAmortization } from "./vendor/amortization/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -430,6 +431,23 @@ const SERVERS: Record<string, ServerCfg> = {
       { server: "bank-statement", owns: (p) => p.startsWith(BANK_DIR), readOnly: true },
     ],
   },
+  "amortization": {
+    // No sharedDoc, no publish(), no strip and the default 512 KB tenant cap: the simplest
+    // endpoint added since /mcp/asset-register, and for a reason worth stating rather than
+    // leaving to be re-derived. This server reads no sibling book, so there is nothing to
+    // hydrate; it writes nothing outside loans.json and counter.json, so there is nothing
+    // to flush anywhere else; and NO TOOL WRITES A FILE, so there is nothing to publish.
+    // Every one of the six tools answers in JSON, and the two that would be documents
+    // elsewhere are not: loan_schedule returns the rows in the answer under a row ceiling
+    // rather than a CSV, and loan_journal returns the double entry plus an expense_add-ready
+    // payload for /mcp/expense-tracker to post, exactly as asset_journal does, because that
+    // ledger's id counter, category rules and VAT split live inside its own handler.
+    //
+    // The register stays small by construction: NO SCHEDULE IS STORED. Only the terms and
+    // two derived figures are kept per loan, and every row of every schedule is rebuilt on
+    // the call, so the document does not grow with the term. 512 KB holds thousands of them.
+    factory: createAmortization as () => McpServer,
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -815,6 +833,7 @@ const TOOLS: Record<string, string[]> = {
   "asset-register": ["asset_add", "asset_list", "asset_schedule", "asset_journal", "asset_dispose", "asset_report", "license_status", "license_activate"],
   "statement-of-account": ["statement_build", "statement_aging", "statement_text", "statement_pdf", "dunning_text", "statements_report", "license_status", "license_activate"],
   "cash-book": ["ledger_build", "trial_balance", "ledger_lines", "month_close", "ledger_export_csv", "ledger_report", "license_status", "license_activate"],
+  "amortization": ["loan_create", "loan_schedule", "loan_repay_early", "loan_journal", "loan_list", "loans_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -1025,6 +1044,14 @@ function indexDoc(base: string) {
         outputs: "JSON, plus ledger_export_csv, which returns the period's legs as RFC 4180 CSV behind a one-hour download link (text/csv, one row per leg). Nothing is ever written into any of the six books: no payment, no status, no counter.",
         free_limits: "3 distinct periods per calendar month, metered by from, to and currency, so rebuilding a period already in the register is free forever; trial_balance and ledger_lines are free and unlimited on every tier, because whether the books add up is the question this endpoint exists for and a free tier that hides the answer is a demo. month_close, ledger_export_csv and ledger_report are Pro",
         notes: "the bank import posts NOTHING. A bank line and a payment record are one movement seen twice, so cash is posted from the DOCUMENTS, which are the only rows carrying a second leg, and each bank row is matched to a posted cash movement of the same amount, the same direction and a date within three days, as evidence written onto the line as bank_ref. On the worked month that is 99.6 percent duplication: posting the import as well moves cash from -10,543.00 to -21,111.00 EUR and the trial balance still comes to zero, because every duplicated receipt arrives with its own contra. What is left after matching - a bank debit with no expense behind it, a posted movement with no bank line - is the entire reason to import a statement. Nothing is ever balanced with a plug: an entry whose own legs do not add up is posted as the document states it and the difference is raised by name. A deposit applied to an invoice never touches cash, because the cash arrived when the deposit did. Expense VAT comes OUT of a VAT-inclusive gross, never on top of it. An open purchase order is a memo and is never posted. This ledger opens at nothing: a balance here is the period's MOVEMENT, because an opening figure nobody can walk back to a document is the first invented number in a set of books. Currencies are never added together. A store that is missing reads as zero rows and says so; a store that is present and did not parse is reported as unreadable, distinctly, because a figure that could not be computed is not a figure of zero and a ledger short one whole store still balances perfectly",
+      },
+      {
+        name: "amortization", url: `${base}/mcp/amortization`, tools: TOOLS["amortization"],
+        mode: "arithmetic on terms you record",
+        how: "loan_create records one loan or lease from its terms (principal, fees and balloon in MINOR units, the rate in nominal annual basis points) and returns its id, its level payment and its effective annual rate; loan_schedule builds every period - opening balance, payment, interest, principal, closing balance - with the total interest; loan_repay_early prices settling or overpaying at a period, gross and net of the lender's penalty; loan_journal gives the double entry for one period or one month; loans_report values the debt per currency and names the next payment due.",
+        outputs: "JSON only. NO tool here writes a file, so there is nothing to download and nothing is published. loan_journal returns the expense_add ARGUMENTS for the interest alone, to pass to /mcp/expense-tracker yourself: this endpoint posts to no ledger, because the expense server's id counter, category rules and VAT split live inside its own expense_add handler.",
+        free_limits: "3 loans in the register; loan_schedule and loan_list are free and unlimited on every tier, because what a payment is made of is the question this endpoint exists for and a free tier that hides it is a demo. loan_repay_early, loan_journal and loans_report are Pro",
+        notes: "the payment never varies and the last period absorbs the rounding residual in its interest and principal SPLIT, not in the payment, so every payment is the amount on the agreement and the closing balance reaches the balloon, or zero, exactly. Compounding and payment frequency are two different clocks: the rate for one payment period is the equivalent rate taken through the compounding clock, never the nominal rate divided by the number of payments, which is worth about 1 percent of the interest on a one-year loan in the lender's favour and is invisible in a quote. NO SCHEDULE IS STORED - only the terms are, and every row is derived on the call, because a stored schedule is a second copy of what the rate and the term already decide and the copy is the one that gets believed after somebody edits the rate. A level payment rounded once can clear the debt before the term ends, and the schedule STOPS where the debt does rather than filling out the term with rows the borrower does not owe. Fees are paid at drawdown and are not interest; a balloon is due WITH the last payment and never inside it. Only the interest is an expense: booking the whole payment overstates the cost of the business by the principal every period and still reconciles against the bank. Nothing is posted from here, and currencies are never added together",
       },
     ],
     limits: {

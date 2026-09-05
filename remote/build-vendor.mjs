@@ -110,6 +110,19 @@ const SERVERS = {
   // four of them live. lib.ts is vendored for the reason the others' are: it is this
   // engine as a public API.
   "cash-book": ["index.ts", "version.ts", "lib.ts", "ledger.ts", "sources.ts", "store.ts"],
+  // Every source file. The first endpoint since /mcp/asset-register that reads NO sibling
+  // book at all: it owns loans.json and counter.json and nothing else, so there is no
+  // sharedDoc entry for it in remote/src/index.ts. What it does consume is three sibling
+  // ENGINES rather than three sibling stores - @theluckystrike/mcp-asset-register/lib for
+  // formatMoney, currencyDecimals and the exact minor-unit allocator the straight-principal
+  // method splits with, @theluckystrike/mcp-timezone/lib for readJsonFile and its
+  // corrupt-store quarantine, and @theluckystrike/mcp-quotes/lib for today() and isIsoDate()
+  // - and only ONE of the three is reachable from index.ts. schedule.ts imports the
+  // allocator and store.ts imports readJsonFile, so LIB_RESOLUTIONS below carries all three
+  // and checks them on the bytes that were written. lib.ts is vendored for the reason the
+  // others' are: it is this engine as a public API, so the next server that amortises a
+  // loan resolves here rather than to a module that cannot load.
+  "amortization": ["index.ts", "version.ts", "lib.ts", "accounts.ts", "schedule.ts", "store.ts"],
 };
 
 /**
@@ -2486,6 +2499,30 @@ function patchCashBookSources(src) {
   return src;
 }
 
+/**
+ * amortization. NOTHING here writes a file a caller could ever want: every tool answers in
+ * JSON, no tool renders a document and no tool exports a CSV, so this endpoint publishes
+ * nothing and has no /out/ at all. The journal is a PAYLOAD for whoever owns the ledger
+ * and the expense book, exactly as asset_journal is, so it reaches no sibling store either.
+ * The one thing that has to move is the loan://accounts resource, which reported dataDir()
+ * - hosted, the worker's virtual homedir, a path no caller has and none can reach, the
+ * D-R60 species for the seventh time. store.ts needs no patch: loans.json, counter.json and
+ * the lock are one document per token under the homedir shim, written tmp + rename.
+ */
+function patchAmortizationIndex(src) {
+  src = must(src,
+    '      writes: [{ store: "amortization", dir: dataDir(), files: ["loans.json", "counter.json"] }],',
+    '      writes: [{ store: "amortization", dir: "not a directory on this endpoint: the loan register is one " +\n' +
+    '        "document held per token, and no schedule is ever stored in it",\n' +
+    '        files: ["loans.json", "counter.json"] }],',
+    "amortization accounts resource writes dir");
+  src = must(src,
+    'description: "The three account ids this server journals to, matching the cash book, and the one directory it writes.",',
+    'description: "The three account ids this server journals to, matching the cash book, and the one document it writes.",',
+    "amortization accounts resource description");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2588,6 +2625,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "asset-register") src = patchAssetRegisterIndex(src);
     if (name === "statement-of-account") src = patchStatementIndex(src);
     if (name === "cash-book") src = patchCashBookIndex(src);
+    if (name === "amortization") src = patchAmortizationIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -2650,6 +2688,11 @@ const LIB_RESOLUTIONS = {
   // and statement-of-account by ledger.ts, so an index-only check would have passed a
   // build that could not resolve five of the six engines this ledger is derived from.
   "cash-book": ["invoice", "billing-docs", "deposits", "asset-register", "statement-of-account", "quotes"],
+  // Three, and only ONE of them (quotes) is reachable from index.ts: schedule.ts imports
+  // the asset-register allocator and store.ts imports the timezone engine's readJsonFile,
+  // so an index-only check would have passed a build that could not resolve the split
+  // arithmetic or the corrupt-store quarantine the whole register depends on.
+  "amortization": ["asset-register", "quotes", "timezone"],
 };
 for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
   const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");
