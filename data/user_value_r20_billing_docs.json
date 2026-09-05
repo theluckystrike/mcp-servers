@@ -1,0 +1,159 @@
+{
+  "at": "2026-09-05T08:20:00Z",
+  "round": 20,
+  "compares_to": "data/user_value_r19.json (billing-docs, stdio, first coverage, 16/18)",
+  "scope": "HOSTED single-lane re-run of round 19's six billing-docs prompts (credit notes against invoices already in the shared store, plus purchase-order raise/partial-receive/late-check) against https://mcp.zovo.one/mcp/billing-docs/t/<token> and https://mcp.zovo.one/mcp/invoice/t/<token> as a claude.ai user arrives, one fresh anonymous token, free tier, business profile and the two seed invoices (a mixed-VAT INV-2026-0001 and a plain INV-2026-0002) recreated on the token exactly as round 19 built them locally. The invoice server is registered only for lookup and profile-seed; billing-docs is the lane under test. Round 19 was stdio; this round asks whether the same defect it logged (D-R86: an over-credit refused client-side with a fabricated total) still reproduces once the server is reached over the wire instead of a local process.",
+  "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -> 200 text/html, minted anon_4b628badb99564cd87d73d1c7d315cb7. Registration: one mcp.json, two http entries, both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header anywhere: billing-docs and invoice. Seed, all by curl tools/call under the token before any prompt ran: business_set (Nova Studio, Europe/Warsaw, EUR, 23 percent) on /mcp/invoice; client_add Acme Ltd (Dublin, IE9876543Q); invoice_create INV-2026-0001, EUR 1000.00 consulting at 23 percent plus EUR 500.00 print at 8 percent, tax lines 8% on EUR 500.00 = EUR 40.00 and 23% on EUR 1000.00 = EUR 230.00, total EUR 1770.00; invoice_create INV-2026-0002, EUR 400.00 services at 23 percent, total EUR 492.00 -- the same two-invoice shape round 19 used so the full-credit, proportional-credit and over-credit prompts each have the invoice they need. Allowlist: 26 explicit mcp__billing-docs__<tool> and mcp__invoice__<tool> entries read from a live tools/list of each endpoint (billing-docs 14, invoice 12), no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the two http entries above, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation, one bounded request per prompt, timeout 240. Each prompt run as its own isolated shell invocation (not a loop) after an earlier looped attempt on this same round mis-fired: --session-id turn 1 executed all six prompts' worth of tool calls at once because of a scripting fault upstream of the CLI, not a server or model defect; that run was discarded and redone prompt-by-prompt, verified by reading each transcript's own tool_use list before moving to the next prompt. The CLI's own filesystem tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r20bd2/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME, XDG_STATE_HOME under /private/tmp/uv-r20bd2 set in the shell environment the server ran in, never CLAUDE_CONFIG_DIR, so no earlier round's local state could leak in -- the servers are hosted so this only guards the CLI's own footprint. Two unscored direct JSON-RPC probes were run after the six prompts on the same token to check server behaviour the model chose not to reach, recorded under verification. Host machine day 2026-09-05 (Saturday).",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, minted anon_4b628badb99564cd87d73d1c7d315cb7",
+    "registration": "one lane, two http entries (billing-docs, invoice), both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; connected first try",
+    "tools_list": { "billing-docs": 14, "invoice": 12 },
+    "seed": "business_set on /mcp/invoice by curl under the token (Nova Studio, Europe/Warsaw, EUR, 23 percent), then client_add Acme Ltd and two invoice_create calls (INV-2026-0001 mixed-VAT EUR 1770.00, INV-2026-0002 EUR 492.00), all before any prompt ran"
+  },
+  "scenarios": [
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b1",
+      "prompt": "Acme cancelled the whole of invoice INV-2026-0002 after we had already billed it. Please credit that invoice in full.",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 13.8,
+      "tools": ["invoice_get", "credit_note_list", "credit_note_create"],
+      "note": "invoice_get confirmed the EUR 492.00 total, credit_note_list confirmed no prior credit, then one credit_note_create {invoice: INV-2026-0002, reason: Client cancelled the order in full} produced CN-2026-0001 for the full EUR 492.00 (EUR 400.00 net + EUR 92.00 VAT at 23%) on the first turn. The model volunteered, unprompted, that the invoice record itself keeps no credited flag and invoice_get will still read it as unpaid -- the same fact round 19 surfaced as still_creditable EUR 0.00. No clarification asked, no number invented.",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b2",
+      "prompt": "Different invoice: we are refunding Acme EUR 177.00 of INV-2026-0001 as a goodwill gesture. Raise a credit note for that amount.",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 10.8,
+      "tools": ["invoice_get", "credit_note_list", "credit_note_create"],
+      "note": "One credit_note_create {invoice: INV-2026-0001, amount_minor: 17700} produced CN-2026-0002 split across both of the invoice's VAT rates in exact proportion: EUR 50.00 net + EUR 4.00 VAT at 8% and EUR 100.00 net + EUR 23.00 VAT at 23%, summing to exactly EUR 177.00 with no rounding drift -- the same split round 19 measured (a tenth of each bucket, since EUR 177.00 is a tenth of the EUR 1,770.00 invoice). The model relayed both rates and both tax figures and stated the remaining EUR 1,593.00 creditable balance unprompted.",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b3",
+      "prompt": "Acme now want another EUR 1,700 credited on INV-2026-0001 on top of that. Do it.",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 4.6,
+      "tools": [],
+      "note": "D-R86 (round 19, stdio) does not reproduce here: the model again refused the over-credit itself instead of letting credit_note_create refuse it, but this time the arithmetic is right -- it correctly computed EUR 1,593.00 still creditable (EUR 1,770.00 total minus the EUR 177.00 already credited from b2) and correctly said EUR 1,700.00 exceeds that by EUR 107.00, with no fabricated running total. What is still open is the same client-side gap D-R86 named: no tool ran, so the server's own authoritative refusal text never reached the user, and the model ended by asking the user to choose between crediting the exact EUR 1,593.00 remainder or clarifying the amount rather than simply reporting the refusal and stopping. Probed separately by direct JSON-RPC on this same token, credit_note_create {invoice: INV-2026-0001, amount_minor: 170000} does refuse with 'Nothing was stored', naming EUR 1770.00, EUR 177.00 already credited and EUR 1593.00 still creditable -- the exact numbers the model worked out unaided this time. Scored 2, not 3, because the answer to 'do it' was a clarifying question rather than a completed action or a flat, tool-verified refusal.",
+      "r19_score": 1,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b4",
+      "prompt": "Raise a purchase order to Paperworks Sp. z o.o. for 500 brochures at EUR 1.20 each and 200 posters at EUR 3.50 each, 23% VAT, expected here on 2026-09-20.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.4,
+      "tools": ["purchase_order_create"],
+      "note": "One purchase_order_create call produced PO-2026-0001 with no clarification asked: 500 brochures at EUR 1.20 = EUR 600.00, 200 posters at EUR 3.50 = EUR 700.00, subtotal EUR 1,300.00, 23% VAT = EUR 299.00, total EUR 1,599.00, expected 2026-09-20, status open. The buyer block filled itself in from the shared business profile without being asked. The tool flagged that Paperworks has no stored address and the model passed that on, same as round 19.",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b5",
+      "prompt": "Only the brochures turned up today, the posters are still coming. Record that on the order.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.8,
+      "tools": ["purchase_order_receive"],
+      "note": "One purchase_order_receive {id: PO-2026-0001, partial: true, note: 500 brochures received; 200 posters still outstanding} moved the order to partially_received and kept it open. 'The order' resolved to PO-2026-0001 from the previous turn without asking, and partial was inferred correctly from 'still coming.'",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b6",
+      "prompt": "Which of my purchase orders are past their delivery date?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 6.7,
+      "tools": ["purchase_order_list"],
+      "note": "purchase_order_list {} answered the Pro-shaped question for free: one order on file, due 2026-09-20, not yet overdue against today 2026-09-05. No upgrade text shown, no gated tool touched. Probed separately, billing_docs_report on this same token does refuse on free tier with the upgrade text (buy link carrying the tenant token), recorded under verification.",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    }
+  ],
+  "totals": {
+    "score": 17,
+    "max": 18,
+    "pct": 94,
+    "tool_calls": 9,
+    "seconds": 55.1,
+    "tool_errors": 0,
+    "clarifying_turns": 1,
+    "per_server": {
+      "billing-docs": {
+        "score": 17,
+        "max": 18,
+        "tool_calls": 9,
+        "seconds": 55.1,
+        "score_r19": 16
+      }
+    },
+    "compare_round19": { "score": 16, "max": 18 }
+  },
+  "verification": [
+    {
+      "claim": "The store holds exactly the two credit notes and one purchase order the run created, and nothing else",
+      "evidence": "credit_note_list {} on the same token after the run: count 2, credited EUR -669.00, CN-2026-0002 EUR -177.00 against INV-2026-0001 and CN-2026-0001 EUR -492.00 against INV-2026-0002 (177.00 + 492.00 = 669.00); purchase_order_list {status: all}: count 1, PO-2026-0001, status partially_received, total EUR 1599.00; invoice_list {} on /mcp/invoice: the two seeded invoices unchanged, both still status unpaid, totals EUR 1770.00 and EUR 492.00",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A gross-amount credit against a mixed-VAT invoice splits across every rate the invoice used",
+      "evidence": "credit_note_list raw entry for CN-2026-0002 shows basis amount, total EUR -177.00; the credit_note_text download (below) shows the two lines EUR -50.00 at 8% and EUR -100.00 at 23%, VAT EUR -4.00 and EUR -23.00, summing to EUR -177.00 exactly",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The downloaded credit note text matches the numbers the model relayed, byte for byte",
+      "evidence": "credit_note_text CN-2026-0002 returned a download link; GET it -> HTTP 200, text/plain; charset=utf-8, content-disposition inline filename=\"CN-2026-0002.txt\", content-length 713, body opens 'Hello Acme Ltd,' and ends 'Best regards, Nova Studio' with the same EUR -50.00/-100.00/-4.00/-23.00/-177.00 figures the model's turn 2 answer gave",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The downloaded purchase order text matches the numbers the model relayed, byte for byte",
+      "evidence": "purchase_order_text PO-2026-0001 download -> HTTP 200, text/plain; charset=utf-8, filename=\"PO-2026-0001.txt\", content-length 498, body: Brochures 500 x EUR 1.20 = EUR 600.00, Posters 200 x EUR 3.50 = EUR 700.00, Subtotal EUR 1300.00, VAT 23% on EUR 1300.00 = EUR 299.00, TOTAL EUR 1599.00, deliver by 2026-09-20",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The server refuses a credit note larger than what is left on the invoice, and D-R86's fabricated-number failure mode is a client behaviour, not a server one, on the hosted endpoint too",
+      "evidence": "unscored direct JSON-RPC probe after the run, credit_note_create {invoice: INV-2026-0001, amount_minor: 170000}: isError true, 'INV-2026-0001 totals EUR 1770.00 and EUR 177.00 of it has already been credited, so at most EUR 1593.00 can still be credited; this credit note is for EUR 1700.00. A credit note that gives back more than was billed is a refund, not a credit note. Nothing was stored.' Same text and same numbers as round 19's stdio probe. A follow-up credit_note_list confirms the count is still 2 and the total is still EUR -669.00 -- nothing was written by the probe",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "billing_docs_report is Pro and refuses on the free tier, hosted",
+      "evidence": "unscored direct JSON-RPC probe, billing_docs_report {}: isError true, '\"the credited and open-orders report\" is a Pro feature', one-time $19 or $39 bundle, buy link https://mcp.zovo.one/buy/billing-docs?tenant=anon_4b628badb99564cd87d73d1c7d315cb7&src=billing-docs.billing_docs_report carrying the token so Pro switches on for the same connection after payment with nothing to paste",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "No filesystem path leaked into any of the six replies",
+      "evidence": "the only path-shaped strings across the six stream-json transcripts are the two download URLs the tools themselves returned (mcp.zovo.one/mcp/download/<token>) and the sandbox cwd printed on the CLI's own init line, which never enters a tool result or assistant message; no local disk path in any reply, consistent with a hosted server that has no caller filesystem to reach",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R86",
+      "server": "billing-docs",
+      "status": "reproduced-partial, client-side, improved",
+      "note": "The client-side pattern D-R86 named (a model refusing an over-credit itself, unverified, instead of letting the server refuse it) still occurs hosted: b3 ran zero tool calls. What changed is severity: round 19's hand-arithmetic doubled the requested amount into a fabricated EUR 3,400.00 running total; this round's hand-arithmetic is correct (EUR 1,593.00 remaining, EUR 107.00 over), matching the server's own authoritative refusal probed separately. The residual gap is unchanged in kind: the caller said 'do it' and got a question back rather than either a completed action or the server's own refusal text, so the fix direction from round 19 still applies -- let the write attempt fail and relay it, rather than reasoning ahead of the tool. Not re-opened as a new number since it is the same defect, measured lighter."
+    }
+  ],
+  "bottom_line": "17 of 18 hosted, up from 16 of 18 on round 19's stdio measurement of the same six prompts, over the wire on https://mcp.zovo.one/mcp/billing-docs/t/<token> with the invoice server registered alongside it for lookup only. Every scenario but the over-credit is an unchanged 3: full credit, proportional mixed-VAT credit, purchase order raise, partial receipt and the free-tier late-orders question all resolved in one tool call on the first turn with numbers that were verified byte-for-byte against credit_note_list, purchase_order_list, invoice_list and the downloaded .txt files on the same token. The one point still on the table is b3: D-R86's shape survives hosted (the model still refuses the over-credit itself rather than letting credit_note_create do it), but its severity does not -- the arithmetic this run is correct where round 19's was a fabricated doubled total, and a direct probe of the same call on this token confirms the server's own refusal names the identical, correct numbers the model worked out unaided. The fix direction logged in round 19 is unchanged: let the failing write run and relay its text, rather than pre-empting it."
+}
