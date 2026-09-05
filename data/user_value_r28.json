@@ -1,0 +1,118 @@
+{
+  "at": "2026-09-06T02:20:00Z",
+  "round": 28,
+  "compares_to": "data/user_value_r26.json (statement-of-account, stdio, first user-value coverage, 18/18). Round 28 is a single-lane hosted re-run of the identical six prompts against https://mcp.zovo.one/mcp/statement-of-account/t/<token> per docs/REMOTE_RESULT.md Extension 15. No code was changed as part of this round; it is measurement only.",
+  "scope": "HOSTED single-lane re-run of round 26's six statement-of-account prompts, reached through the worker endpoint that hydrates the invoice, billing-docs and deposits stores read-only from the same token. The worked-month fixture from servers/statement-of-account/test/_client.mjs (Acme Ltd and Beta GmbH, four invoices, two credit notes, one deposit with a partial application) was reproduced on the token by calling the real invoice, billing-docs and deposits tools directly over curl before the six prompts ran, because the hosted lane has no disk to seed directly the way the stdio round did. The business profile is Nova Studio per this task's recipe, not the stdio round's Studio One; prompt text was kept byte-identical to round 26 including its own reference to \"Studio One\", so the one open deviation is that the model reads back the real profile name from the resource rather than the name printed in the prompt.",
+  "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -m 15 -> 200 text/html, minting anon_0adfaba088693af532ac2c92dde50175. One token, reused for the whole lane. Registration: one mcp.json, four http entries, all https://mcp.zovo.one/mcp/<server>/t/<token>, no --header anywhere: statement-of-account (the lane under test), invoice, billing-docs and deposits (registered so the fixture could be seeded live and so the closing balance could be independently re-derived from the same three ledgers afterwards). Profile: business_set on /mcp/invoice before any prompt ran (Nova Studio, Europe/Warsaw, EUR, IBAN PL61109010140000071219812874). Seed: client_add x2 (Acme Ltd with address/email, Beta GmbH), invoice_create x4 reproducing the worked month's four invoices by issue_date/due_days (INV-2026-0001 EUR 1000 issued 2026-04-10 due 30d, INV-2026-0002 EUR 2000 issued 2026-06-05 due 30d, INV-2026-0003 EUR 750 issued 2026-06-20 due 5d, INV-2026-0004 Beta GmbH EUR 500 issued 2026-06-01 due 14d), invoice_mark_paid x2 on INV-2026-0001 (400.00 on 2026-05-02, 600.00 on 2026-06-12), credit_note_create x2 (100.00 against INV-2026-0001 issued 2026-05-20, 50.00 against INV-2026-0003 issued 2026-06-28), deposit_record (500.00 retainer received 2026-03-01) and deposit_apply (300.00 of it onto INV-2026-0002 on 2026-06-18). The live invoice numbers, due dates and balances the server assigned matched the fixture's own numbering exactly, and a direct statement_build call after seeding returned closing_balance_minor 230000, matching the README worked example and round 26's stdio figure to the cent before any CLI prompt ran. Allowlist: 44 explicit mcp__<server>__<tool> entries read from a live tools/list of all four endpoints (statement-of-account 8, invoice 12, billing-docs 14, deposits 10) -- no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the four-entry file above, --output-format stream-json --verbose --max-turns 12 (20 for prompt 5), one --session-id then five --resume so all six prompts are one conversation, one bounded request per prompt under timeout 240, each of the six issued as its own isolated shell invocation and its transcript read back before the next prompt ran. Every turn ran in an empty /private/tmp/uv-r28soa/wd, with Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent denied. Fresh XDG_DATA_HOME / XDG_CONFIG_HOME / XDG_CACHE_HOME / XDG_STATE_HOME under /private/tmp/uv-r28soa/xdg set for every claude invocation, guarding only the CLI's own local footprint since all four servers are hosted and hold no local store at all. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Host machine day 2026-09-06 (Sunday), one day after round 26's stdio run (2026-09-05), which is why every aging figure in this round is one day further overdue than round 26's. Verification: after the six prompts, invoice_list, credit_note_list and deposit_list were re-read directly by curl on the same token to recompute the closing balance and the aging totals from the ledgers, statement_aging was re-run for the same as-of dates, and statement_build for May 2026 was re-issued to confirm the register still holds 5 statements for 2026-09 rather than the transcript having miscounted. The level 1 dunning letter's one-hour download link was fetched and diffed byte-for-byte against the transcript's own printed letter.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "https://mcp.zovo.one/mcp/connect -m 15 -> 200 text/html, minted anon_0adfaba088693af532ac2c92dde50175, one token reused for the whole lane",
+    "registration": "one mcp.json, four http entries (statement-of-account, invoice, billing-docs, deposits), all https://mcp.zovo.one/mcp/<server>/t/<token>, no --header",
+    "tools_list": {
+      "statement-of-account": 8,
+      "invoice": 12,
+      "billing-docs": 14,
+      "deposits": 10
+    },
+    "seed": "business_set (Nova Studio, Europe/Warsaw, EUR, IBAN PL61109010140000071219812874) then the worked-month fixture reproduced live via invoice_create x4, invoice_mark_paid x2, credit_note_create x2, deposit_record and deposit_apply, all called directly by curl before any CLI prompt ran; a direct statement_build afterwards confirmed closing_balance_minor 230000, matching the README worked example to the cent"
+  },
+  "scenarios": [
+    {
+      "server": "statement-of-account",
+      "surface": "hosted/statement-of-account",
+      "id": "p1",
+      "prompt": "Look at the statement://sources resource first to confirm which of the three books (invoices, credit notes, deposits) this server can see for Studio One. Then build a statement of account for Acme Ltd for June 2026 (2026-06-01 to 2026-06-30) in EUR, and tell me the opening balance, everything that moved during the month, and the closing balance.",
+      "score": 3,
+      "score_r26_stdio": 3,
+      "tool_calls": 1,
+      "resource_reads": 1,
+      "seconds": 24.1,
+      "tools": ["statement_build"],
+      "note": "Read statement://sources first (reported the real profile name, Nova Studio, rather than the prompt's own \"Studio One\", which is correct behaviour, not a defect: it relayed what the resource actually said). One statement_build call returned STMT-2026-0001 with opening 500.00, invoiced 2,750.00, paid 900.00 (300.00 of which a deposit application), credited 50.00, closing 2,300.00, all five movements in date order, matching round 26 stdio and the README worked example to the cent. Independently re-derived afterwards from invoice_list/credit_note_list/deposit_list on the same token: identical."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "hosted/statement-of-account",
+      "id": "p2",
+      "prompt": "Now give me the aging as at today, for every client, across all currencies. Tell me who owes what and how overdue it is.",
+      "score": 3,
+      "score_r26_stdio": 3,
+      "tool_calls": 1,
+      "seconds": 12.0,
+      "tools": ["statement_aging"],
+      "note": "One statement_aging call with no client filter and no as_of resolved to the host day 2026-09-06 (one day later than round 26's 2026-09-05) and returned Acme Ltd 2,400.00 overdue (INV-2026-0002 1,700.00 at 63 days, INV-2026-0003 700.00 at 73 days) plus 100.00 unapplied credit, and Beta GmbH 500.00 overdue at 83 days. Totalled 2,900.00 across both clients, correctly reported nothing in 0-30/31-60/over-90. Re-derived afterwards over curl on the same token: identical."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "hosted/statement-of-account",
+      "id": "p3",
+      "prompt": "Now I need the aging as at 2026-06-10 specifically, not today, for Acme Ltd. INV-2026-0001 was paid in two instalments, one before 2026-06-10 and one after. Tell me exactly what was outstanding and what was overdue as at 2026-06-10, using only what was true on that date.",
+      "score": 3,
+      "score_r26_stdio": 3,
+      "tool_calls": 1,
+      "seconds": 12.8,
+      "tools": ["statement_aging"],
+      "note": "One statement_aging call with as_of 2026-06-10 returned outstanding 2,500.00 and overdue 500.00 (31 days late on INV-2026-0001), matching round 26 stdio and the README worked example to the cent. Named the mechanism exactly: only the 400.00 instalment paid before 2026-06-10 counts, the 600.00 instalment on 2026-06-12 is excluded because as at 2026-06-10 it had not happened yet, and INV-2026-0003 (issued 2026-06-20) is correctly absent. Re-run afterwards on the same token: identical."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "hosted/statement-of-account",
+      "id": "p4",
+      "prompt": "Draft a level 1, friendly dunning letter for Acme Ltd based on what is overdue today. Then also try to draft a level 3 final demand for Acme Ltd, and tell me exactly what happens on the free tier.",
+      "score": 3,
+      "score_r26_stdio": 3,
+      "tool_calls": 2,
+      "seconds": 15.7,
+      "tools": ["dunning_text", "dunning_text"],
+      "note": "Level 1 came back as a full letter with both overdue invoices, the 2,400.00 total, the IBAN, and the tool's own footer stating no late fee, interest or jurisdiction figure is invented; the model relayed it verbatim and did not invent a fee. Level 3 errored with the server's own Pro-feature text naming the $19 one-time price, the src-tagged buy URL, and the $39 bundle; the model relayed both prices and the mechanism without softening the refusal or reconstructing a final-demand letter itself. The level 1 download link was fetched afterwards and its bytes are byte-identical to the transcript's own printed letter."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "hosted/statement-of-account",
+      "id": "p5",
+      "prompt": "You already built one statement earlier in this conversation, for Acme Ltd, June 2026, EUR. Now build four more DISTINCT statements: Acme Ltd for January, February, March and April 2026, each in EUR (use each calendar month as its own from/to period). Then try to build a sixth distinct one: Acme Ltd, May 2026, EUR. Tell me exactly what happens on the sixth one. Then rebuild the very first statement from earlier in this conversation (Acme Ltd, June 2026, EUR) again and tell me whether that rebuild was accepted or blocked, and why.",
+      "score": 3,
+      "score_r26_stdio": 3,
+      "tool_calls": 6,
+      "seconds": 31.8,
+      "tools": ["statement_build", "statement_build", "statement_build", "statement_build", "statement_build", "statement_build"],
+      "note": "Jan through Apr built cleanly as STMT-2026-0002 through 0005 (Jan/Feb/Mar zero-activity, Apr 1,000.00 from INV-2026-0001's issue date), bringing the September count to five including the June statement built in p1. The sixth, May, errored by name and price: the free tier builds 5 statements a calendar month, naming statement_build, the $19 one-time and $39 bundle prices, and explicitly noting statement_aging stays free and unlimited and any already-built statement can be rebuilt at no cost. The model then rebuilt STMT-2026-0001 (June), confirmed identical figures, and correctly explained the cap counts distinct new statements built in the current calendar month (September), not the calendar month each statement's period covers. Re-issuing statement_build for May afterwards over curl on the same token still errors identically, confirming the register genuinely holds 5 for 2026-09."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "hosted/statement-of-account",
+      "id": "p6",
+      "prompt": "Now run the statements report to see every client outstanding at once, aged, with the oldest overdue invoice per client. Tell me exactly what happens on the free tier and do not make up any totals yourself if the tool refuses.",
+      "score": 3,
+      "score_r26_stdio": 3,
+      "tool_calls": 1,
+      "seconds": 11.2,
+      "tools": ["statements_report"],
+      "note": "statements_report errored outright with the server's own Pro-feature text, naming the $19 one-time price, the src-tagged buy URL, and the $39 bundle. The model relayed the refusal, explicitly declined to reconstruct a cross-client aged total from the statement_aging calls made earlier in the conversation, and offered the free per-client statement_aging calls as an alternative rather than inventing the report's shape. No total was stated."
+    }
+  ],
+  "totals": {
+    "score": 18,
+    "max": 18,
+    "pct": 100,
+    "tool_calls": 12,
+    "seconds": 107.6,
+    "resource_reads": 1,
+    "tool_errors": 3,
+    "denied_calls": 0,
+    "clarifying_turns": 0,
+    "per_server": {
+      "statement-of-account": {
+        "score": 18,
+        "max": 18,
+        "tool_calls": 12,
+        "seconds": 107.6,
+        "score_r26_stdio": 18
+      }
+    }
+  },
+  "verification": "Every figure reported by the model was independently re-derived after the run by direct curl tools/call on the same token. invoice_list shows INV-2026-0001 paid in full (1,000.00), INV-2026-0002 partial with balance_due 1,700.00, INV-2026-0003 unpaid 750.00, INV-2026-0004 unpaid 500.00. credit_note_list shows 150.00 credited total across CN-2026-0001 (100.00) and CN-2026-0002 (50.00). deposit_list shows DEP-2026-0001 received 500.00, applied 300.00, held 200.00. Hand recomputation of the June closing balance from these three ledgers: opening 500.00 (from INV-2026-0001's pre-period 400.00 paid and 100.00 credited against its 1,000.00 total) + invoiced 2,750.00 (INV-2026-0002 2,000.00 + INV-2026-0003 750.00, both issued in June) - paid 900.00 (600.00 direct on INV-2026-0001 in June + 300.00 deposit applied to INV-2026-0002) - credited 50.00 (CN-2026-0002 against INV-2026-0003) = 2,300.00, matching statement_build's own stored closing_balance_minor 230000 and the model's transcript exactly. statement_aging as_of 2026-06-10 re-run directly returns outstanding_minor 250000 and overdue_minor 50000 with INV-2026-0001 at 31 days overdue, matching both the transcript and round 26's stdio figure. dunning_text level 1's one-hour download link was fetched by curl and its bytes are identical to the transcript's own printed letter. Re-issuing statement_build for May 2026 after the run still errors with the 5-a-month cap text, confirming the register genuinely holds 5 statements for 2026-09. statements_report errors with the identical Pro-feature text and URL. All six prompts match the transcript to the minor unit or to the byte for error and letter text.",
+  "defects": [],
+  "bottom_line": "18 of 18 hosted, identical to round 26's 18 of 18 over stdio on the same six prompts. Because the hosted lane has no disk to seed directly, the worked-month fixture (Acme Ltd, Beta GmbH, four invoices, two credit notes, one deposit with a partial application) was reproduced live by calling the real invoice, billing-docs and deposits tools over curl before any CLI prompt ran, and the live server assigned the exact same invoice numbers and balances the fixture specifies, confirmed by a direct statement_build returning the identical closing_balance_minor 230000 before the conversation began. Every prompt then landed the same score as round 26's stdio run: p1 built the June statement with the closing balance verified three ways (transcript, the tool's own stored figure, and a hand recomputation from invoice_list/credit_note_list/deposit_list read back on the same token); p3 reproduced the as-at-2026-06-10 aging insight exactly, 2,500.00 outstanding and 500.00 overdue at 31 days, correctly excluding the second instalment that had not yet happened on that date; p4's dunning letter download was fetched and diffed byte-for-byte against the transcript with no divergence; p5 drove the free tier's five-a-month cap to its boundary and confirmed a rebuild of the first statement stays free, re-verified afterward against the same token; and p6 refused the Pro-gated statements_report outright with the model declining to reconstruct a cross-client total from prior free calls. The one deliberate deviation from round 26 is the business profile, Nova Studio per this task's recipe rather than the stdio round's Studio One, and the model correctly read that real name back from the resource rather than the name printed in the prompt text, which was kept identical to round 26 for a fair per-prompt comparison. No code was touched; this is a measurement-only report.",
+  "cap": "30 minutes, met"
+}
