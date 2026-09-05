@@ -1,5 +1,5 @@
 import { mintLicense, verifyLicenseKey, hex } from "./license.js";
-import { PAGES } from "./pages.js";
+import { PAGES, CHANGELOG } from "./pages.js";
 import { GUIDES, GUIDE_INDEX } from "./content.js";
 import { COMPARE, COMPARE_INDEX } from "./compare.js";
 import { setupPage, clientHub, setupIndex, setupUrls, serversFor, CLIENTS, CLIENT_ORDER, SETUP_SERVERS } from "./setup.js";
@@ -188,7 +188,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .key{font-size:15px;word-break:break-all;user-select:all}
 footer{margin-top:48px;font-size:14px;opacity:.7}
 </style></head><body>${body}
-<footer>Built by <a href="${REPO}">theluckystrike</a>. Support: support@zovo.one</footer>
+<footer>Built by <a href="${REPO}">theluckystrike</a>. Support: support@zovo.one &middot; <a href="/changelog">Changelog</a></footer>
 </body></html>`;
 }
 
@@ -334,6 +334,33 @@ export function bundlePage() {
 <p>Nothing is emailed. The key is rendered once, on the <code>/success</code> page right after payment; reloading that URL always shows the same key, and <code>/recover?session_id=...</code> gets it back from a lost tab. If you bought while connected through a hosted <code>mcp.zovo.one</code> endpoint, that endpoint's token is bound to Pro automatically, with nothing to paste there (docs/CHECKOUT_AUDIT.md).</p>
 <p><a class="buy" href="/buy/bundle?src=store.bundle">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
 <p><a href="/">All ${SERVER_COUNT} servers priced singly</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a></p>`;
+  return page(title, body).replace("</title>", "</title>" + meta);
+}
+
+/**
+ * GET /changelog: one section per docs/RELEASE_V*.md, newest first, built at
+ * scripts/build-pages.mjs time into CHANGELOG (billing/src/pages.js). Every sentence
+ * rendered here is copied from that release's own file, never composed: the evidence
+ * line as a short paragraph, the insight line as one quoted sentence, and the GitHub
+ * release link. A release whose header carried no date says so rather than guessing one.
+ */
+export function changelogPage() {
+  const title = `Changelog: v${CHANGELOG.currentVersion?.replace(/^v/, "")}, ${CHANGELOG.serverCount} servers`;
+  const description = `Every release from v${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version.replace(/^v/, "")} to ${CHANGELOG.currentVersion}, newest first: what shipped and one measured insight per release.`;
+  const sections = CHANGELOG.releases.map((r) => {
+    const dateLine = r.date ? ` (${esc(r.date)})` : " (date not recorded in the release file)";
+    const insight = r.insightSentence ? `<p><em>"${esc(r.insightSentence)}"</em></p>` : "";
+    const link = r.releaseUrl ? `<p><a href="${esc(r.releaseUrl)}">GitHub release ${esc(r.version)}</a></p>` : "";
+    return `<h2>${esc(r.version)}${dateLine}</h2>
+<p>${esc(r.evidence)}</p>
+${insight}${link}`;
+  }).join("\n");
+  const body = `<p class="muted"><a href="/">Home</a></p>
+<h1>Changelog</h1>
+<p>Current version ${esc(CHANGELOG.currentVersion)}, ${CHANGELOG.serverCount} servers. ${CHANGELOG.releases.length} releases below, newest first.</p>
+${sections}
+<p><a href="/">All ${CHANGELOG.serverCount} servers and prices</a> &middot; <a href="${REPO}">Source</a></p>`;
+  const meta = `<meta name="description" content="${esc(description).slice(0, 159)}"><link rel="canonical" href="https://mcp.zovo.one/changelog">`;
   return page(title, body).replace("</title>", "</title>" + meta);
 }
 
@@ -605,6 +632,10 @@ export default {
       return new Response(bundlePage(), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
     }
 
+    if (path === "/changelog" && method === "GET") {
+      return new Response(changelogPage(), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
     if (path.startsWith("/s/") && method === "GET") {
       const id = path.slice(3);
       const pg = PAGES[id];
@@ -717,7 +748,7 @@ ${faqHtml}
     }
 
     if (path === "/sitemap.xml") {
-      const urls = ["/", "/bundle", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      const urls = ["/", "/bundle", "/changelog", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     if (path === "/22fad93b71a88e2e60acae203c4288ae.txt") {
@@ -734,7 +765,7 @@ ${faqHtml}
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file || "none, a connector URL"}, key ${CLIENTS[c].key || "none"}. ` +
         serversFor(c).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {

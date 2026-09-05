@@ -32,7 +32,9 @@ test("every /buy href rendered by the billing worker carries a src=store.<page> 
 
 test("the pages generated from the READMEs are tagged with the product page that shows them", () => {
   const text = readFileSync(join(SRC, "pages.js"), "utf8");
-  const PAGES = JSON.parse(text.slice(text.indexOf("=") + 1).trim().replace(/;\s*$/, ""));
+  const pagesStart = text.indexOf("export const PAGES = ") + "export const PAGES = ".length;
+  const pagesEnd = text.indexOf(";\nexport const CHANGELOG", pagesStart);
+  const PAGES = JSON.parse(text.slice(pagesStart, pagesEnd === -1 ? undefined : pagesEnd).trim().replace(/;\s*$/, ""));
   const hrefs = buyHrefs(Object.values(PAGES).map((p) => p.html).join("\n"));
   assert.ok(hrefs.length > 0, "expected the product pages to link to /buy at all");
   for (const href of hrefs) {

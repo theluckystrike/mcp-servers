@@ -54,7 +54,7 @@ test("bundle page carries a Product/Offer JSON-LD block", () => {
 });
 
 test("sitemap.xml and llms.txt derivation both cover /bundle", () => {
-  assert.match(INDEX, /\["\/", "\/bundle", "\/guides", "\/compare"/, "sitemap urls array must include /bundle");
+  assert.match(INDEX, /\["\/", "\/bundle", "\/changelog", "\/guides", "\/compare"/, "sitemap urls array must include /bundle");
   assert.match(INDEX, /https:\/\/mcp\.zovo\.one\/bundle/, "llms.txt line must link https://mcp.zovo.one/bundle");
 });
 
