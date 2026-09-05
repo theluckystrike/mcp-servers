@@ -1,0 +1,154 @@
+{
+  "at": "2026-09-05T04:35:00Z",
+  "round": 18,
+  "compares_to": "docs/USER_VALUE_R12.md (quotes lane only)",
+  "scope": "HOSTED single-lane re-run of round 12's six quotes prompts, after docs/GUARDRAILS_RESULT.md reclassified quote_report from a bare Pro refusal to a free, capped guardrail answer. https://mcp.zovo.one/mcp/quotes/t/<token> as a claude.ai user arrives, free tier, one fresh anonymous token, business profile seeded via curl on /mcp/invoice under the same token.",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_c9ca31af8983ac149b15de284dc86025, 200 text/html). Registered ONE lane, one mcp.json with two http entries (quotes and invoice, both /t/<token>, no --header). Seed: one curl tools/call business_set on /mcp/invoice under the token (Nova Studio, Europe/Warsaw, EUR, 23 percent) before any prompt ran. Client: claude CLI, --model sonnet, --strict-mcp-config, --mcp-config with the two http entries, explicit allowlist of 23 mcp__<server>__<tool> entries read from a live tools/list of each endpoint (quotes 11, invoice 12), --output-format stream-json --verbose --max-turns 12, one --session-id (generated UUID) then five --resume, timeout 240 per prompt, each prompt's stream-json written to its own file (out/s1.jsonl..s6.jsonl) before the next prompt started. Per r11 D-R57 the lane ran in an EMPTY working directory with the CLI's own filesystem tools disallowed (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task). Fresh XDG_CONFIG_HOME/XDG_DATA_HOME/XDG_CACHE_HOME/XDG_STATE_HOME under /private/tmp/uv-r18q, no reuse of any prior round's directory. Machine day 2026-09-05 (Saturday).",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, minted anon_c9ca31af8983ac149b15de284dc86025",
+    "registration": "one lane, two http entries (quotes, invoice), both https://mcp.zovo.one/mcp/<server>/t/<token>, no --header; connected first try",
+    "tools_list": {
+      "quotes": 11,
+      "invoice": 12
+    },
+    "seed": "business_set on /mcp/invoice by curl under the token: Nova Studio, timezone Europe/Warsaw, default_currency EUR, default_tax_rate 23, before any prompt ran"
+  },
+  "scenarios": [
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q1",
+      "prompt": "Quote Nova Ltd for 12 hours of design at EUR 90 an hour and a EUR 300 logo, valid two weeks.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 13.0,
+      "tools": ["quote_create"],
+      "note": "One quote_create with validity_days: 14. Q-2026-0001, valid_until 2026-09-19, EUR 1080.00 + EUR 300.00, 23% on EUR 1380.00 = EUR 317.40, total_minor 169740. The 23% was named as coming from the business profile, and the model flagged unprompted that Nova Ltd is not a stored client. Same numbers as round 12, dates one day later because the run day shifted.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q2",
+      "prompt": "What quotes are open and when do they expire?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 4.4,
+      "tools": ["quote_list"],
+      "note": "One quote_list {state: open}, one row, EUR 1,697.40, 2026-09-19, 14 days left, nothing invented. Same as round 12.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q3",
+      "prompt": "Give me the text I can email to Nova for that quote.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.3,
+      "tools": ["quote_send_text"],
+      "note": "One quote_send_text. Full totals block reproduced verbatim, valid until 2026-09-19, signed Nova Studio. GET the returned download link: 200 text/plain; charset=utf-8, filename Q-2026-0001.txt, 455 bytes, opens Hello Nova Ltd, byte-identical to the model's relayed text. The model withheld the one-hour download link itself as an unauthenticated URL, offering it only on request, but the requested text was delivered complete and correct regardless.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q4",
+      "prompt": "Nova accepted. Invoice it, and then show me every invoice I have.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 10.9,
+      "tools": ["quote_accept", "invoice_list"],
+      "note": "quote_accept -> INV-2026-0001, due 2026-09-19, totals_check EUR 1697.40 both sides. Then invoice_list on the other hosted endpoint, same token: the invoice is there, EUR 1,697.40, unpaid. The shared invoice store still works read-write over the URL path.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q5",
+      "prompt": "Acme wanted 3 days of consulting at PLN 1200 a day, so quote them too - and they have just declined it.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 10.3,
+      "tools": ["quote_create", "quote_decline"],
+      "note": "quote_create inferred PLN from the price rather than the profile's EUR default, 23% on PLN 3600.00 = PLN 828.00, total PLN 4,428.00, default 30-day validity since this prompt did not ask for two weeks. Then quote_decline, open_quotes_now: 0.",
+      "round12_score": 3
+    },
+    {
+      "server": "quotes",
+      "surface": "hosted/quotes",
+      "id": "q6",
+      "prompt": "What is my win rate this quarter?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.3,
+      "tools": ["quote_report"],
+      "note": "One quote_report {from: 2026-07-01, to: 2026-09-30} call, no refusal. win_rate_percent 50, win_rate_basis named (accepted / (accepted + declined); a quote nobody answered is not a loss the client chose), full per-currency breakdown (1 EUR accepted at 1697.40, 1 PLN declined at 4428.00). The model relayed the number and both quotes straight from the report instead of hand-counting quote_list. Up from round 12's D-R55-shaped refusal.",
+      "round12_score": 2,
+      "round12_note": "quote_report was Pro and refused outright; the model computed win rate by hand from quote_list (1 accepted of 2 decided = 50%, correct) and named the tool it would have used."
+    }
+  ],
+  "totals": {
+    "score": 18,
+    "max": 18,
+    "tool_calls": 8,
+    "seconds": 58.2,
+    "per_server": {
+      "quotes": {
+        "score": 18,
+        "max": 18,
+        "score_r12": 17
+      }
+    },
+    "compare_round12": {
+      "score": 17,
+      "max": 18
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "one lane, two /t/<token> entries, connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The quote store",
+      "evidence": "quote_list by curl: Q-2026-0001 Nova Ltd accepted EUR 1697.40 with invoice_number INV-2026-0001, Q-2026-0002 Acme declined PLN 4428.00",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The accepted quote really became an invoice on the other endpoint",
+      "evidence": "invoice_list by curl on /mcp/invoice, same token: INV-2026-0001, EUR 1697.40, status unpaid, balance_due EUR 1697.40, tax line 23% on EUR 1380.00 = EUR 317.40",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The quote text download",
+      "evidence": "GET https://mcp.zovo.one/mcp/download/7fe2bb08... -> 200, text/plain; charset=utf-8, Q-2026-0001.txt, 455 bytes, opens Hello Nova Ltd,, byte-identical to the model's relayed text",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "quote_report now answers free instead of refusing",
+      "evidence": "curl tools/call quote_report {from:2026-07-01, to:2026-09-30} on the same token: 200, win_rate_percent 50, counts {accepted:1, declined:1}, full by_currency breakdown, no isError and no upgrade text anywhere in the payload",
+      "verdict": "PASS, server-side, matches docs/GUARDRAILS_RESULT.md's row for quotes"
+    },
+    {
+      "claim": "The 50% win rate is arithmetically right",
+      "evidence": "quote_list by curl: 2 quotes total, 1 accepted (Nova Ltd), 1 declined (Acme), 0 open/expired -> 1/(1+1) = 50%",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "quote_report's own counts match quote_list's raw rows",
+      "evidence": "report counts.accepted:1, counts.declined:1, counts.open:0, counts.expired:0 vs quote_list's two rows, one accepted, one declined",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [],
+  "observations": [
+    {
+      "note": "On q1, q3, q4 and q6 the model called ToolSearch with a select: query naming the exact mcp__quotes__* / mcp__invoice__* tools it was about to use, even though --strict-mcp-config plus the explicit 23-entry allowlist already exposed every one of those tools directly. Each ToolSearch call returned tool_reference stubs only, no error, and the real tool call that followed always succeeded first try, so no answer was affected. This step did not exist in round 12's transcripts and adds a small, roughly-one-extra-turn latency tax per affected prompt. Client-side to this Claude Code build, not a defect in the quotes or invoice server.",
+      "scored": false
+    }
+  ],
+  "bottom_line": "18/18, up from 17/18 in round 12. The one point on the table in round 12 (quote_report refusing outright, forcing a hand-tally from quote_list) is gone: the same prompt now returns one quote_report call with the exact win rate, its stated basis, and a full per-currency accepted/declined/open/expired breakdown, independently confirmed against quote_list by curl. Every other prompt reproduced round 12's numbers exactly, including both cross-endpoint checks (the invoice a quote turns into, and the plain-text email download), which still work over /t/<token> with no header. No new defect found; only a client-side ToolSearch habit logged as a non-scored observation."
+}
