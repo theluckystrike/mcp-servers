@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-pdf",
   "display_name": "PDF Tools",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Merge, split, extract, rotate, reorder and stamp PDF files from chat: mark an invoice PAID, pull pages out of a scan, join a set of documents into one. Everything stays on your machine.",
   "author": {
     "name": "theluckystrike",

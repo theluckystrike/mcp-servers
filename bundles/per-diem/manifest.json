@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-per-diem",
   "display_name": "Per Diem",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Daily travel allowances on bundled public rate tables: Poland, HMRC and GSA.",
   "author": {
     "name": "theluckystrike",

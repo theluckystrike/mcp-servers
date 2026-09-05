@@ -1,0 +1,83 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-asset-register",
+  "display_name": "Asset Register",
+  "version": "0.13.0",
+  "description": "Fixed assets and depreciation on bundled Polish KST, HMRC and IRS MACRS tables.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "asset_add",
+      "description": "Add one fixed asset to the register and return its id with the rate, useful life and convention taken from the bundled tax table. Cost and residual are whole minor units. Free tier holds ten assets."
+    },
+    {
+      "name": "asset_list",
+      "description": "List the assets in the register with cost, method, rate and net book value at a date, filtered by scheme, category, project, currency or disposal state. Free and unlimited."
+    },
+    {
+      "name": "asset_schedule",
+      "description": "Build the depreciation schedule for a stored asset, or price one not yet in the register, per year or per month, to zero or residual, with the table convention applied and the periods summing exactly to the base. Free."
+    },
+    {
+      "name": "asset_journal",
+      "description": "Return the depreciation journal for one month: debit depreciation expense and credit accumulated depreciation, per asset and in total, plus an expense_add-ready payload per currency. It writes nothing itself. Pro."
+    },
+    {
+      "name": "asset_dispose",
+      "description": "Record the sale, scrapping or write-off of an asset on a date for a proceeds amount, and return the gain or loss against net book value at that date. Free."
+    },
+    {
+      "name": "asset_report",
+      "description": "Report net book value by category and currency at a date, the year's depreciation charge, and every disposal in the year with its gain or loss. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "asset-register",
+    "depreciation",
+    "fixed-assets",
+    "capital-allowances",
+    "macrs",
+    "kst"
+  ]
+}

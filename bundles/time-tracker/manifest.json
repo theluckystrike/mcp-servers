@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-time-tracker",
   "display_name": "Time Tracker",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Track billable time without leaving your AI chat. Timers, entries, reports, CSV export and invoice line items, all stored locally.",
   "author": {
     "name": "theluckystrike",

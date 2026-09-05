@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-zip",
   "display_name": "Zip",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Create, inspect and extract zip archives from chat: glob a directory into a zip, list what is inside with a bomb and traversal check, extract safely, read one text entry without unpacking. No network.",
   "author": {
     "name": "theluckystrike",

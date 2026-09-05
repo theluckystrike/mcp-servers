@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-barcode",
   "display_name": "Barcode",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "QR codes and barcodes from chat: URLs, WiFi joins, vCards, SEPA payment QR that a banking app can scan, Code 128 and EAN-13, as SVG or PNG. No network, no account.",
   "author": {
     "name": "theluckystrike",

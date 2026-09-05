@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-deposits",
   "display_name": "Deposits",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Security and retainer deposits per client: hold them, apply them to invoices, refund them.",
   "author": {
     "name": "theluckystrike",

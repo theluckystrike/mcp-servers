@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-price-tracker",
   "display_name": "Price Tracker",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Ask your AI what something costs right now, track price drops and get told when a target price is hit. All data stays local.",
   "author": {
     "name": "theluckystrike",
