@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T09:41:22.170Z",
-  "total_commits": 452,
+  "generated_at": "2026-09-05T09:42:22.023Z",
+  "total_commits": 453,
   "sessions": 47,
   "loops": [
     {
@@ -96,7 +96,7 @@
     {
       "name": "Loop 19: deposits, the twenty-first server, invoice payment fix, v0.11.0",
       "sessions": 1,
-      "commits": 87
+      "commits": 88
     }
   ],
   "rows": [
@@ -597,7 +597,7 @@
       "at": "2026-09-05T09:41:21.138Z",
       "note": "loop 19 closed: v0.11.0 with deposits (security and retainer deposits applied to invoices through the engine; audit 18/18 no defects; the twenty-first server and hosted endpoint), 56 registry entries verified, 983 tests, validation 551/551, 22 bundles; invoice_mark_paid now ADDS payments instead of overwriting earlier partials (D-R87, found by the deposits build); office-suite guide rewritten to twenty-one/198 with a 301 (four prefixed tools, not two); round 20 49/54 (billing-docs hosted 17/18, bank 16/18, deposits 16/18); downloads 2284; sales 0; GSC 0 indexed",
       "loop": "Loop 19: deposits, the twenty-first server, invoice payment fix, v0.11.0",
-      "commits": 62,
+      "commits": 63,
       "subjects": [
         "Plan v13: the first five minutes",
         "billing: home table buy links carry the server in their src slot",
