@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.14.0/statement-of-account.mcpb",
       "version": "0.14.0",
-      "fileSha256": "TBD",
+      "fileSha256": "ce3db04bfbb6120860fe1bedddf209f57940299344a55fb255f332300b7743a0",
       "transport": {
         "type": "stdio"
       },

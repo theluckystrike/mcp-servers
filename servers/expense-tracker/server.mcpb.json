@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.14.0/expense-tracker.mcpb",
       "version": "0.14.0",
-      "fileSha256": "ec4a12a81ba6faee948b10f8e482fe8d82c2586bc08fa6ea97681854ec00defd",
+      "fileSha256": "fd846b098b6e17387741e4764355710d5d41775b71907c3529f5d4ddac5fcd5e",
       "transport": {
         "type": "stdio"
       },
