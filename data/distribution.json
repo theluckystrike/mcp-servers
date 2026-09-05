@@ -172,9 +172,9 @@
    "note": "Round 12: plain bullet list, decorative emoji only on category headings (same convention as TensorBlock/YuzeHao2023). Forked to theluckystrike/awesome-mcp-list, branch add-office-suite, one entry added to Utilities next to Markgatcha/universal-mcp-toolkit. PR open."
   },
   "aianytime-awesome-mcp-server": {
-   "status": "submitted",
+   "status": "live",
    "url": "https://github.com/AIAnytime/Awesome-MCP-Server/pull/83",
-   "note": "Round 12: CONTRIBUTING.md requires one server per PR, exact bullet format, alphabetical order, no emoji. Forked to theluckystrike/Awesome-MCP-Server, branch add-office-suite, one entry added to Work & productivity between AI Applyd and Process Street. PR open."
+   "note": "Round 12: CONTRIBUTING.md requires one server per PR, exact bullet format, alphabetical order, no emoji. Forked to theluckystrike/Awesome-MCP-Server, branch add-office-suite, one entry added to Work & productivity between AI Applyd and Process Street. PR open. PR 83 merged 2026-09-05."
   },
   "mctrinh-awesome-mcp-servers": {
    "status": "submitted",
