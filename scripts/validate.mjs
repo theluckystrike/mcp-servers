@@ -299,7 +299,7 @@ const PROBES = {
     // 10. No sibling store is ever written. This ledger is a view over six books it does not
     // own, and the only file it owns is its own register of periods.
     const invBytes = readFileSync(join(dataHome, "mcp-servers", "invoice", "invoices.json"), "utf8");
-    const bankBytes = readFileSync(join(dataHome, "mcp-servers", "bank-statement", "transactions.json"), "utf8");
+    const bankBytes = readFileSync(join(dataHome, "mcp-servers", "bank-statement", "data.json"), "utf8");
     ok(`${tier}: not one byte of the invoice or bank store changed across every tool above`,
       /"paid_minor": 123000/.test(invBytes) && !/ledger|entry|bank_ref/.test(invBytes)
       && /"id": "tx5"/.test(bankBytes) && !/bank_ref|matched/.test(bankBytes),
