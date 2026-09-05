@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, nineteen endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -29,6 +29,7 @@ import { createServer as createBankStatement } from "./vendor/bank-statement/ind
 import { createServer as createQuotes } from "./vendor/quotes/index.js";
 import { createServer as createBarcode } from "./vendor/barcode/index.js";
 import { createServer as createZip } from "./vendor/zip/index.js";
+import { createServer as createBillingDocs } from "./vendor/billing-docs/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -56,7 +57,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-04.3";
+const BUILD_VERSION = "2026-09-05.1";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -253,6 +254,25 @@ const SERVERS: Record<string, ServerCfg> = {
     publish: (p) => p.startsWith("/out/"),
     maxBytes: ZIP_MAX_BYTES,
     strip: ["/uploads/", "/out/"],
+  },
+  "billing-docs": {
+    // Credit notes, purchase orders and their per-year counter are this endpoint's own
+    // document (under the homedir shim, tmp + rename). The invoices a credit note is
+    // issued against are NOT: they are the same store /mcp/invoice serves for the same
+    // token, so the invoice data directory is hydrated on top of this request and flushed
+    // back to the document that owns it - read AND write, the /mcp/quotes arrangement.
+    // Read is the common path (an invoice is looked up, its stored numbers copied, and the
+    // credit-note link is held on the credit note), but syncInvoiceCredited calls
+    // setInvoices whenever the engine's record carries credited_minor, and that write has
+    // to reach KV rather than be dropped with the request.
+    //
+    // credit_note_pdf and purchase_order_pdf render through remote/src/shims/pdf.ts and
+    // push their own download, so publish() only has to catch the .txt both text tools
+    // write under /out/.
+    factory: createBillingDocs as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+    sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR) },
   },
 };
 
@@ -630,6 +650,7 @@ const TOOLS: Record<string, string[]> = {
   "barcode": ["qr_create", "qr_wifi", "qr_vcard", "qr_payment_sepa", "invoice_payment_qr", "barcode_create", "barcode_batch", "code_list", "license_status", "license_activate"],
   "quotes": ["quote_create", "quote_list", "quote_get", "quote_update", "quote_send_text", "quote_accept", "quote_decline", "quote_pdf", "quote_report", "license_status", "license_activate"],
   "zip": ["zip_upload", "zip_files", "zip_delete_upload", "zip_create", "zip_list", "zip_extract", "zip_extract_text", "zip_add", "zip_bundle_month", "zip_history", "license_status", "license_activate"],
+  "billing-docs": ["credit_note_create", "credit_note_list", "credit_note_get", "credit_note_pdf", "credit_note_text", "purchase_order_create", "purchase_order_list", "purchase_order_get", "purchase_order_pdf", "purchase_order_text", "purchase_order_receive", "billing_docs_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -792,6 +813,14 @@ function indexDoc(base: string) {
         free_limits: "20 archives per calendar month, 25 MB per archive, 200 entries per archive; zip_list, zip_extract and zip_extract_text are free on every tier, because the archive somebody sent you is the one that most needs checking",
         storage: `${ZIP_MAX_BYTES / 1048576} MB of uploaded files and the register per token, and at most 1 MB in one upload - the ${MAX_BODY_BYTES / 1024} KB request-body cap binds long first, which is roughly 190 KB of archive once base64-encoded`,
         notes: "every bomb, traversal, absolute-path and symlink guard is decided from the central directory before a byte is inflated, and each entry's CRC is checked against the data, exactly as over stdio. zip_bundle_month is a local (stdio) tool only: it bundles the output FOLDERS the sibling servers write on a disk, and every hosted endpoint hands its documents back as a download link instead, so there is no folder here to read",
+      },
+      {
+        name: "billing-docs", url: `${base}/mcp/billing-docs`, tools: TOOLS["billing-docs"],
+        mode: "shares the invoice store",
+        how: "Credit an invoice with credit_note_create (in full, by amount_minor, or line by line: prices in MINOR units, 9000 is 90.00 EUR) against an invoice in the same per-token invoice data the /mcp/invoice endpoint serves, and raise supplier orders with purchase_order_create. Set the issuer once with business_set on /mcp/invoice; the shared business profile is the same for both, and a supplier the invoice server already knows brings its address and VAT id onto the order.",
+        outputs: "credit_note_pdf and purchase_order_pdf return a print-ready HTML document behind a one-hour download link (there is no PDF renderer on Workers, so it is the invoice layout titled CREDIT NOTE or PURCHASE ORDER). credit_note_text and purchase_order_text return the pasteable text in the answer and the same text as a .txt download link.",
+        free_limits: "5 documents per calendar month, credit notes and purchase orders together; both text exports are free, and credit_note_pdf, purchase_order_pdf and billing_docs_report are Pro",
+        notes: "a credit note can never take back more than the invoice's remaining creditable amount, which is the invoice total less everything already credited against it. Crediting a whole invoice or a whole line copies the stored numbers rather than recomputing them; a partial amount is split across the invoice's own VAT rates, in proportion to each rate's share of the total, so a mixed-rate invoice is never credited at one rate. Every money field on a credit note is stored negative, the unit price included",
       },
     ],
     limits: {

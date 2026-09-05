@@ -2559,3 +2559,213 @@ is true of one path leaking into another.
    zip is stored as a workbook, which is what the caller wanted but not what they typed.
 7. **The 10 second timeout is the whole exchange**, redirects included, so a slow origin
    behind two redirects can time out where the same file fetched directly would not.
+
+---
+
+# Extension 11 2026-09-05 - billing-docs
+
+status: DONE
+
+A twentieth endpoint, `POST /mcp/billing-docs`. Worker `mcp-remote`, version ID
+`b94d8c2e-2bbb-4a06-885d-59bdfedfe95b`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/billing-docs | 14 | shares the invoice store read-write: a credit note is issued against an invoice `/mcp/invoice` holds for the same token, and can never take back more than that invoice's remaining creditable amount. Both PDFs and both text exports come back as one-hour download links |
+
+### Vendoring: five files, and one consumer of two sibling engines
+
+`SERVERS["billing-docs"]` is `index.ts, version.ts, lib.ts, store.ts, text.ts`. `src/pdf.ts`
+is deliberately **not** vendored, the quotes case for the third time: it is pdfkit, which
+needs a real filesystem for its AFM metrics. `patchBillingDocsLib` is `patchInvoiceLib`'s and
+`patchQuotesLib`'s twin - `servers/billing-docs/src/lib.ts` re-exports `RenderDoc`,
+`RenderOptions` and `renderDocPdf` from `./pdf.js`, and the vendored copy re-exports them
+from `../../shims/pdf.js` - so a later server importing
+`@theluckystrike/mcp-billing-docs/lib` here gets the hosted renderer rather than a module
+that cannot load.
+
+This is the first vendored server that consumes **two** sibling engines:
+`@theluckystrike/mcp-invoice/lib` (the money, VAT, currency-decimal and client code) and
+`@theluckystrike/mcp-quotes/lib` (`today`, `isIsoDate`). `rewriteSpec`'s
+`@theluckystrike/mcp-<x>/lib` rule resolved both to `../invoice/lib.js` and
+`../quotes/lib.js` with no change, because both of those `lib.ts` files are already
+vendored - but that was luck the first time and would be a module-not-found on a deployed
+worker the first time it was not. `build-vendor.mjs` now **asserts** it: every
+`@theluckystrike/mcp-<x>/lib` import found in any vendored `index.ts` is checked against
+`SERVERS[x]` containing `lib.ts`, and the build throws by name if it does not. That is the
+`must()` discipline applied to a resolution that was previously implicit.
+
+### One HTML renderer, not a third and a fourth
+
+`servers/billing-docs/src/pdf.ts` already takes the document-specific parts as arguments -
+the title, the reference line under the number, the party label, the meta rows on the right
+and the block that stands where the invoice prints PAYMENT DETAILS - because a credit note
+and a purchase order differ from an invoice in those five places and nowhere else. So the
+shim gained **one** `renderDocPdf(d: RenderDoc, biz, filename, opts)` that serves both
+titles, rather than a `renderCreditNotePdf` and a `renderPurchaseOrderPdf`. The split is
+the same one the stdio server made and for the same reason: `renderQuotePdf` is separate
+because a quote's validity line and acceptance block are different *content*, while CREDIT
+NOTE and PURCHASE ORDER are the same page with different *arguments*.
+
+`RenderOptions` did not need a second definition - the shim already exported the
+`{ branded, logo }` shape both servers use.
+
+### The invoice store is hydrated read-WRITE
+
+`SERVERS["billing-docs"].sharedDoc = { server: "invoice", owns: p => p.startsWith(INVOICE_DIR) }`,
+the `/mcp/quotes` and `/mcp/recurring` arrangement. Read is the common path: an invoice is
+looked up, its stored numbers are copied onto the credit note, and the link is held on the
+credit note rather than on the invoice. But `syncInvoiceCredited` calls `setInvoices`
+whenever the engine's record already carries a `credited_minor` field, and a write that
+happened inside the request and was then dropped with it would be the worst kind of silent
+failure - the answer would say the invoice was updated and nothing would have been. The
+flush compares the hydrated invoice document with the one at the end of the request and
+writes it back when it differs, so today (the field does not exist, nothing is written) and
+tomorrow (a newer engine carries it, the write lands) both behave as the response says.
+Verified below by reading the same invoices on `/mcp/invoice` with the same token.
+
+### Names, not paths; downloads, not files
+
+- `expandPath` is the quotes rewrite verbatim: `out_path` is not a path, it is a bare 1-64
+  character name deciding only what the downloaded file is called (default: the document
+  id). Both PDF tools now compute the name first and let the renderer return the link, so
+  the response field is `download`, not `path`, and `document` states plainly that this is
+  an HTML document in the A4 print-to-PDF layout. The stdio server's own `/\.html?$/` test
+  on the output path would have called it "PDF credit note" once the path became a URL -
+  the D-R8 species, caught the same way it was in `/mcp/invoice`.
+- `credit_note_text` and `purchase_order_text` still return the pasteable text inline,
+  because that is what the tools are for, and additionally write it to `/out/<id>.txt` and
+  publish it. So `publish` is only `p.startsWith("/out/")`, with `strip: ["/out/"]`.
+  `persistPublished` is left off: an export is a fresh download every time.
+- The two text tools end with byte-identical code, so `patchDocText` anchors on the
+  `server.registerTool("<tool>"` line above and patches the slice from there. A `mustAll`
+  would have applied the same document id to both.
+- One response string named a machine no caller has: `credit_note_create`'s "is in the
+  invoice server's store ... That store is empty on this machine" now names the token's
+  own `/mcp/invoice` endpoint and the two calls that fill it.
+
+Caps and hardening are unchanged: the default 512 KB tenant document (the hydrated invoice
+files count against it, the `/mcp/quotes` limitation), the 256 KB request body, the free/Pro
+rate limits, the 1-hour download TTL and the 35-day orphan sweep.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP).
+One POST per call.
+
+```
+$ GET /mcp
+  20 endpoints: ..., bank-statement, quotes, barcode, zip, billing-docs
+$ GET /mcp/connect                       -> billing-docs listed, twenty rows
+
+$ billing-docs tools/list
+  14 tools: credit_note_create, credit_note_list, credit_note_get, credit_note_pdf,
+  credit_note_text, purchase_order_create, purchase_order_list, purchase_order_get,
+  purchase_order_pdf, purchase_order_text, purchase_order_receive, billing_docs_report,
+  license_status, license_activate
+
+$ invoice business_set {name: "Probe Studio", vat_id: "PL1234567890",
+                        default_currency: "EUR", default_tax_rate: 23, timezone: "Europe/Warsaw"}
+$ invoice invoice_create {client: "Acme Ltd",  items: [12 x Design sprint @ 90]}  -> INV-2026-0001, EUR 1328.40
+$ invoice invoice_create {client: "Beta GmbH", items: [10 x Consulting   @ 100]}  -> INV-2026-0002, EUR 1230.00
+
+$ billing-docs credit_note_create {invoice: "INV-2026-0001", reason: "Project cancelled"}
+  CN-2026-0001, basis "full", total EUR -1328.40
+  invoice {total EUR 1328.40, credited_total EUR 1328.40, still_creditable EUR 0.00}
+  "The link is held on the credit note, not on the invoice: the invoice engine's record has
+   no credited_minor field ... credit_note_list {invoice: "INV-2026-0001"} is the query."
+
+$ billing-docs credit_note_create {invoice: "INV-2026-0002", amount_minor: 30000,
+                                   reason: "Two days descoped"}
+  CN-2026-0002, basis "amount", total EUR -300.00, one line at 23%,
+  still_creditable EUR 930.00                      <- the gross split across the invoice's rates
+
+$ billing-docs credit_note_create {invoice: "INV-2026-0002", amount_minor: 100000, ...}
+  Error: INV-2026-0002 totals EUR 1230.00 and EUR 300.00 of it has already been credited,
+  so at most EUR 930.00 can still be credited; this credit note is for EUR 1000.00.
+  A credit note that gives back more than was billed is a refund, not a credit note.
+  Nothing was stored.
+
+$ billing-docs credit_note_pdf {id: "CN-2026-0001", out_path: "acme-credit"}
+  {"credit_note": "CN-2026-0001",
+   "download": "https://mcp.zovo.one/mcp/download/52a752ea...",
+   "document": "HTML credit note, A4 print-to-PDF layout (there is no PDF renderer on
+                Workers), link valid 1 hour",
+   "total": "EUR -1328.40"}
+  GET that URL -> 200, content-type text/html; charset=utf-8,
+  filename="acme-credit.html", 2,139 bytes,
+  <title>Credit note CN-2026-0001, <h1>CREDIT NOTE CN-2026-0001,
+  "against invoice INV-2026-0001", CREDIT TO block, REASON block, issuer Probe Studio
+
+$ billing-docs purchase_order_create {supplier: "Nordic Paper AB",
+      supplier_address: "Storgatan 5, Stockholm", supplier_vat_id: "SE556000000001",
+      items: [20 x "Recycled A4 paper, box of 5 reams" @ 2450],
+      expected_delivery_date: "2026-09-20", notes: "Deliver to the studio entrance."}
+  PO-2026-0001, status open, EUR 602.70, buyer VAT PL1234567890, supplier VAT SE556000000001
+                                            <- an inline supplier, not a stored client
+
+$ billing-docs purchase_order_pdf {id: "PO-2026-0001"}
+  download -> 200, text/html; charset=utf-8, filename="PO-2026-0001.html", 2,217 bytes,
+  <title>Purchase order PO-2026-0001, <h1>PURCHASE ORDER PO-2026-0001,
+  SUPPLIER block, DELIVERY block
+
+$ billing-docs purchase_order_text {id: "PO-2026-0001"}
+  the pasteable email, totals column aligned, "Please deliver by 2026-09-20", signed Probe Studio
+  ---
+  Download (.txt, valid 1 hour): https://mcp.zovo.one/mcp/download/a5fbd2c4...
+  GET that URL -> 200, text/plain; charset=utf-8, filename="PO-2026-0001.txt"
+
+$ billing-docs purchase_order_receive {id: "PO-2026-0001", partial: true, note: "12 of 20 boxes"}
+  status partially_received, the receipt kept on the record
+$ billing-docs purchase_order_receive {id: "PO-2026-0001"}
+  status received
+
+$ billing-docs billing_docs_report {}
+  as_of 2026-09-05, credit_notes 2, credited EUR -1628.40 across 2 invoices,
+  purchase_orders 1, open 0, overdue_deliveries []
+
+$ invoice invoice_list {}      (the OTHER endpoint, same token)
+  count 2, INV-2026-0001 Acme Ltd EUR 1328.40, INV-2026-0002 Beta GmbH EUR 1230.00
+                                            <- the shared invoice store is what was credited
+$ billing-docs credit_note_list {invoice: "INV-2026-0002"}
+  count 1, CN-2026-0002, EUR -300.00
+```
+
+`scripts/validate.mjs` gained `billing-docs` to the tools/list sweep plus three real calls
+(`credit_note_create` in full against the invoice `quote_accept` wrote earlier in the same
+run, with the next cent refused; `credit_note_pdf`'s download content type, title, heading
+and the invoice it names; `purchase_order_create` -> `purchase_order_receive` ->
+`billing_docs_report`), and the index assertion moved from 19 endpoints to 20:
+**remote 72/72, whole run 475/475.**
+
+### Limitations
+
+- **The download is HTML, not a PDF**, the same trade `invoice_pdf` and `quote_pdf` make:
+  `text/html; charset=utf-8`, body starting `<!doctype html`, not `%PDF-`. There is no PDF
+  renderer on Workers. The browser prints the same A4 layout; a caller who needs real PDF
+  bytes runs the server over stdio.
+- The HTML document is faithful but not pixel-identical to the pdfkit layout: same content,
+  same order, same "every money value carries its currency code" rule, but no logo
+  (`opts.logo` is accepted and ignored: `biz.logo_path` is a path on a disk this endpoint
+  does not have) and no per-page running footer, because HTML pagination is the browser's
+  decision. The 200-line purchase order that renders as a multi-page A4 with running headers
+  over stdio is one long HTML page here.
+- billing-docs is charged the default 512 KB tenant cap and the invoice files it hydrates
+  count against it - the `/mcp/quotes` and `/mcp/recurring` limitation. A tenant with
+  hundreds of invoices will hit that before the billing-docs free cap.
+- **`credit_note_create` with no `amount_minor` and no `lines` means the WHOLE invoice**, so
+  it is refused once any part of that invoice is credited, even by a cent. That is the
+  stdio behaviour and it is deliberate (probe 2 in docs/BILLING_DOCS_RESULT.md), but the
+  refusal reads as an over-credit refusal, which is confusing when the caller asked for
+  "the rest": the remaining amount has to be passed as `amount_minor`.
+- The `/out/` root is transient: both `.txt` exports are published and not persisted, so two
+  calls in different requests cannot collide, and the link dies after an hour.
+- `invoice business_set`'s own success message lists the servers that read the shared
+  profile and does not yet name billing-docs. That string lives in
+  `servers/invoice/src/index.ts`, outside this unit's write scope; the profile itself is
+  shared correctly, as the transcript's `default_tax_rate: 23` reaching the purchase order
+  shows.
+- The free tier counts five documents per calendar month across both kinds. The probes ran
+  on a Pro key, so the hosted cap refusal is asserted only by the stdio suite.

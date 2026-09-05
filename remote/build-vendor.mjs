@@ -46,7 +46,29 @@ const SERVERS = {
   // untouched zipfile.ts, so @theluckystrike/mcp-zip/lib resolves here to the hosted
   // shapes rather than to a module that cannot load.
   "zip": ["index.ts", "version.ts", "lib.ts", "paths.ts", "store.ts", "zipfile.ts"],
+  // pdf.ts is deliberately NOT vendored, the quotes case for the third time: it is pdfkit,
+  // and remote/src/shims/pdf.ts carries the HTML renderer (renderDocPdf) in its place.
+  // lib.ts IS vendored and patched to re-export the shim's renderer, so a later server
+  // importing @theluckystrike/mcp-billing-docs/lib here gets the hosted shapes. index.ts
+  // imports @theluckystrike/mcp-invoice/lib AND @theluckystrike/mcp-quotes/lib, both of
+  // which are vendored above; VENDORED_LIBS below asserts that rather than assuming it.
+  "billing-docs": ["index.ts", "version.ts", "lib.ts", "store.ts", "text.ts"],
 };
+
+/**
+ * A "@theluckystrike/mcp-<x>/lib" import resolves to ../<x>/lib.js, which only exists if
+ * that server's lib.ts is itself vendored. Checked here rather than discovered as a
+ * module-not-found on a deployed worker.
+ */
+for (const [name, files] of Object.entries(SERVERS)) {
+  const src = readFileSync(join(ROOT, "servers", name, "src", "index.ts"), "utf8");
+  for (const m of src.matchAll(/@theluckystrike\/mcp-([a-z-]+)\/lib/g)) {
+    const dep = m[1];
+    if (!SERVERS[dep]?.includes("lib.ts")) {
+      throw new Error(`${name}/src/index.ts imports @theluckystrike/mcp-${dep}/lib, but ${dep}'s lib.ts is not vendored`);
+    }
+  }
+}
 
 const IMPORT_RE = /^import\b[^;]*?;/gms;
 
@@ -1891,6 +1913,134 @@ function collect(a: { paths?: string[]; dir?: string; patterns?: string[]; exclu
   return src;
 }
 
+/* ------------------------------------------------------------ billing-docs */
+
+function patchBillingDocsLib(src) {
+  // patchInvoiceLib / patchQuotesLib for the third time: servers/billing-docs/src/lib.ts
+  // re-exports the pdfkit renderer, which is not vendored. ../../shims/pdf.js exports the
+  // same three names (RenderDoc, RenderOptions, renderDocPdf).
+  src = must(src, 'export type { RenderDoc, RenderOptions } from "./pdf.js";\nexport { renderDocPdf } from "./pdf.js";',
+    'export type { RenderDoc, RenderOptions } from "../../shims/pdf.js";\nexport { renderDocPdf } from "../../shims/pdf.js";',
+    "billing-docs lib pdf re-export");
+  return src;
+}
+
+/**
+ * The hosted billing-docs endpoint has no disk. What moves:
+ *   1. renderDocPdf comes from ../../shims/pdf.js - one HTML renderer for both titles,
+ *      because the stdio renderer already takes the title, the reference line, the party
+ *      label, the meta rows and the footer block as arguments.
+ *   2. out_path is a NAME, not a path: it only decides what the downloaded file is called.
+ *   3. credit_note_text and purchase_order_text keep returning the pasteable text inline
+ *      and also write it under /out/ so the same call hands back a .txt download link.
+ * The store needs no patch: credit-notes.json, purchase-orders.json and counter.json are
+ * one document per token under the homedir shim. The invoices a credit note is issued
+ * against are the tenant's invoice document, hydrated read-WRITE
+ * (SERVERS["billing-docs"].sharedDoc): syncInvoiceCredited calls setInvoices whenever a
+ * future engine record carries credited_minor, and that write has to reach KV.
+ */
+function patchBillingDocsIndex(src) {
+  src = must(src, 'import { renderDocPdf } from "./pdf.js";',
+    'import { renderDocPdf } from "../../shims/pdf.js";', "billing-docs pdf import");
+
+  // The only path this server ever took was out_path, and here it is a name.
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.[A-Za-z0-9]{1,8}$/, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the name the downloaded file carries, 1-64 characters of letters, digits, \` +
+      \`underscore or dash.\`);
+  }
+  return m[1];
+}
+`, "billing-docs expandPath");
+
+  // Both PDF tools: the name is decided first, the renderer returns the link.
+  src = must(src,
+    "    const out = a.out_path ? expandPath(a.out_path) : join(dataDir(), \"pdf\", `${c.id}.pdf`);",
+    "    const name = `${expandPath(a.out_path ?? c.id)}.html`;",
+    "billing-docs credit_note_pdf out name");
+  src = must(src,
+    "    const out = a.out_path ? expandPath(a.out_path) : join(dataDir(), \"pdf\", `${p.id}.pdf`);",
+    "    const name = `${expandPath(a.out_path ?? p.id)}.html`;",
+    "billing-docs purchase_order_pdf out name");
+  src = mustAll(src, "    await renderDocPdf({", "    const out = await renderDocPdf({",
+    "billing-docs renderDocPdf call");
+  src = mustAll(src,
+    "    }, issuer(), out, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "    }, issuer(), name, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "billing-docs renderDocPdf filename");
+  src = mustAll(src,
+    'out_path: z.string().optional().describe("Where to write the file. Defaults to the billing-docs data directory under pdf/"),',
+    'out_path: z.string().optional().describe("Name for the downloaded file, e.g. acme-credit. Defaults to the document id; the document comes back as a download link valid for one hour"),',
+    "billing-docs out_path description");
+
+  src = must(src,
+    "      credit_note: c.id, path: out,\n      document: /\\.html?$/i.test(out) ? \"HTML credit note (print to PDF)\" : \"PDF credit note\",",
+    '      credit_note: c.id, download: out,\n      document: "HTML credit note, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",',
+    "billing-docs credit_note_pdf result");
+  src = must(src,
+    "      purchase_order: p.id, path: out,\n      document: /\\.html?$/i.test(out) ? \"HTML purchase order (print to PDF)\" : \"PDF purchase order\",",
+    '      purchase_order: p.id, download: out,\n      document: "HTML purchase order, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",',
+    "billing-docs purchase_order_pdf result");
+  src = must(src,
+    'description: "Call this tool to write the A4 PDF of one credit note and return the file path. The invoice layout, titled CREDIT NOTE and carrying the invoice number it reverses. Pro.",',
+    'description: "Call this tool to render one credit note as an A4 print-ready document and return a download link valid for one hour. The invoice layout, titled CREDIT NOTE and carrying the invoice number it reverses. Pro.",',
+    "billing-docs credit_note_pdf description");
+  src = must(src,
+    'description: "Call this tool to write the A4 PDF of one purchase order and return the file path. The invoice layout, titled PURCHASE ORDER, with the buyer, the supplier and the delivery date. Pro.",',
+    'description: "Call this tool to render one purchase order as an A4 print-ready document and return a download link valid for one hour. The invoice layout, titled PURCHASE ORDER, with the buyer, the supplier and the delivery date. Pro.",',
+    "billing-docs purchase_order_pdf description");
+
+  // Both text tools: the text stays inline (it is meant to be pasted) AND is published.
+  src = patchDocText(src, "credit_note_text", "c.id");
+  src = patchDocText(src, "purchase_order_text", "p.id");
+  src = mustAll(src,
+    'ready to paste into an email. Free on every tier.",',
+    'ready to paste into an email. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    "billing-docs text tool descriptions");
+  src = must(src,
+    'ready to paste into an email to the supplier. Free on every tier.",',
+    'ready to paste into an email to the supplier. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    "billing-docs purchase_order_text description");
+
+  // A response string that named a machine no caller has.
+  src = must(src,
+    '          `no invoice numbered "${a.invoice}" is in the invoice server\'s store. ` +\n' +
+    '          (known.length ? `The most recent are ${known.join(", ")}. ` : "That store is empty on this machine. ") +',
+    '          `no invoice numbered "${a.invoice}" is in the invoice data your https://mcp.zovo.one/mcp/invoice endpoint serves for this token. ` +\n' +
+    '          (known.length ? `The most recent are ${known.join(", ")}. ` : "Nothing is stored there yet for your token: run business_set and invoice_create on that endpoint first. ") +',
+    "billing-docs missing invoice note");
+  return src;
+}
+
+/**
+ * credit_note_text and purchase_order_text end with byte-identical code, so the anchor is
+ * the tool registration above it: must() replaces the first occurrence, which after the
+ * slice is the one inside the tool being patched.
+ */
+function patchDocText(src, tool, idExpr) {
+  const at = src.indexOf(`server.registerTool("${tool}"`);
+  if (at < 0) throw new Error(`patch did not apply: ${tool} not registered`);
+  const patched = must(src.slice(at),
+    '    const text = out.join("\\n");\n' +
+    '    return ok(businessMissing() ? `${text}\\n\\n---\\n${NO_BUSINESS_NOTE}` : text);',
+    '    const text = out.join("\\n");\n' +
+    `    const file = \`/out/\${${idExpr}}.txt\`;\n` +
+    '    writeFileSync(file, text, "utf8");\n' +
+    '    const link = publishFile(file);\n' +
+    '    const tail =\n' +
+    '      (link ? `\\n\\n---\\nDownload (.txt, valid 1 hour): ${link}` : "") +\n' +
+    '      (businessMissing() ? `\\n\\n---\\n${NO_BUSINESS_NOTE}` : "");\n' +
+    '    return ok(`${text}${tail}`);',
+    `billing-docs ${tool} download`);
+  return src.slice(0, at) + patched;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -1920,6 +2070,7 @@ const EXTRA_IMPORTS = {
   "bank-statement": ['import { registerBankUpload } from "../../shims/bank-upload.js";'],
   quotes: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   barcode: ['import { Buffer } from "node:buffer";'],
+  "billing-docs": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   zip: [
     'import { Buffer } from "node:buffer";',
     'import { registerZipUpload } from "../../shims/zip-upload.js";',
@@ -1945,6 +2096,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
       if (name === "docx" && f === "store.ts") src = patchDocxStore(src);
       if (name === "invoice" && f === "lib.ts") src = patchInvoiceLib(src);
       if (name === "quotes" && f === "lib.ts") src = patchQuotesLib(src);
+      if (name === "billing-docs" && f === "lib.ts") src = patchBillingDocsLib(src);
       if (name === "pdf" && f === "pdfio.ts") src = patchPdfIo(src);
       if (name === "pdf" && f === "store.ts") src = patchPdfStore(src);
       if (name === "pdf" && f === "text.ts") src = patchPdfText(src);
@@ -1977,6 +2129,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "quotes") src = patchQuotesIndex(src);
     if (name === "barcode") src = patchBarcodeIndex(src);
     if (name === "zip") src = patchZipIndex(src);
+    if (name === "billing-docs") src = patchBillingDocsIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {

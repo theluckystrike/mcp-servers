@@ -75,6 +75,96 @@ function storedZip(entries) {
 }
 
 const PROBES = {
+  "billing-docs": async (c, tmp, tier, ok) => {
+    // The invoice store is seeded directly rather than by spawning servers/invoice: this
+    // probe is about billing-docs, and a failure here has to mean billing-docs failed.
+    // Mixed VAT on purpose, EUR 1,000.00 consulting at 23% plus EUR 500.00 print at 8%,
+    // gross EUR 1,770.00, because a single-rate invoice cannot show the split at all.
+    const invDir = join(tmp, "data", "mcp-servers", "invoice");
+    mkdirSync(invDir, { recursive: true });
+    const line = (description, qty, unit, rate) => {
+      const gross = Math.round(qty * unit);
+      return { description, quantity: qty, unit_price_minor: unit, tax_rate: rate, gross_minor: gross, discount_minor: 0, net_minor: gross, tax_minor: Math.round(gross * rate / 100), exact_gross_minor: gross, round_total: false };
+    };
+    const invoice = (number, lines, date = "2026-09-01") => {
+      const net = lines.reduce((n, l) => n + l.net_minor, 0);
+      const tax = lines.reduce((n, l) => n + l.tax_minor, 0);
+      const rates = [...new Set(lines.map((l) => l.tax_rate))].sort((a, b) => a - b);
+      return { number, client_id: "c1", client: { name: "Acme Ltd" }, issue_date: date, due_date: date, currency: "EUR", decimals: 2, lines, subtotal_minor: net, discount_percent: 0, discount_minor: 0, net_minor: net, tax_lines: rates.map((r) => ({ rate: r, base_minor: lines.filter((l) => l.tax_rate === r).reduce((n, l) => n + l.net_minor, 0), tax_minor: lines.filter((l) => l.tax_rate === r).reduce((n, l) => n + l.tax_minor, 0) })), tax_minor: tax, total_minor: net + tax, status: "unpaid", paid_minor: 0, created: `${date}T00:00:00.000Z`, branded: true };
+    };
+    writeFileSync(join(invDir, "invoices.json"), JSON.stringify([
+      invoice("INV-2026-0001", [line("Consulting", 1, 100000, 23), line("Print run", 1, 50000, 8)]),
+      invoice("INV-2026-0002", [line("Development", 10, 9000, 23)]),
+    ], null, 2));
+
+    // 1. Partial credit by gross amount. The measured insight: EUR 177.00 of a mixed-VAT
+    // invoice must come back as EUR 23.00 at 23% AND EUR 4.00 at 8%, not EUR 33.10 at one
+    // blended rate. Both rate lines are asserted, so a single-rate regression fails here.
+    const part = await c.tool("credit_note_create", { invoice: "INV-2026-0001", reason: "Overcharged, ten percent back", amount_minor: 17700 });
+    const cn1 = (part.text.match(/CN-\d{4}-\d{4}/) || [])[0];
+    ok(`${tier}: credit_note_create by amount splits EUR 177.00 across 23% and 8%`,
+      !part.isError && !!cn1 && /EUR -177\.00/.test(part.text) && /8% on EUR -50\.00 = EUR -4\.00/.test(part.text) && /23% on EUR -100\.00 = EUR -23\.00/.test(part.text) && /"still_creditable": "EUR 1593\.00"/.test(part.text),
+      part.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 2. Over-credit. Remaining is 177000 - 17700 = 159300 minor; ask for one cent more.
+    const over = await c.tool("credit_note_create", { invoice: "INV-2026-0001", reason: "Too much", amount_minor: 159301 });
+    ok(`${tier}: crediting one cent past the remainder is refused, nothing stored`,
+      over.isError && /can still be credited/i.test(over.text) && /refund, not a credit note/i.test(over.text) && /Nothing was stored/.test(over.text),
+      over.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 3. Full credit of the second invoice: EUR 1,107.00, copied from the stored totals.
+    const full = await c.tool("credit_note_create", { invoice: "INV-2026-0002", reason: "Work returned in full" });
+    const cn2 = (full.text.match(/CN-\d{4}-\d{4}/) || [])[0];
+    ok(`${tier}: a full credit note copies the invoice's own EUR 1,107.00`,
+      !full.isError && !!cn2 && cn2 !== cn1 && /-?1107\.00/.test(full.text), full.text.replace(/\s+/g, " ").slice(0, 120));
+    const again = await c.tool("credit_note_create", { invoice: "INV-2026-0002", reason: "Twice" });
+    ok(`${tier}: crediting the same invoice in full twice is refused`,
+      again.isError && /already been credited|can still be credited/i.test(again.text), again.text.replace(/\s+/g, " ").slice(0, 130));
+    const cnTxt = await c.tool("credit_note_text", { id: cn1 });
+    ok(`${tier}: credit_note_text is free on both tiers and names the invoice`,
+      !cnTxt.isError && cnTxt.text.includes("INV-2026-0001") && !/mcp\.zovo\.one\/buy/.test(cnTxt.text), cnTxt.text.replace(/\s+/g, " ").slice(0, 100));
+
+    // 4. Purchase order: 40 reams at EUR 4.90 plus 8 toners at EUR 42.00, 23% VAT.
+    const po = await c.tool("purchase_order_create", { supplier: "Nordpapier GmbH", currency: "EUR", tax_rate: 23, expected_delivery_date: "2026-09-20", items: [{ description: "A4 paper, 500 sheets", quantity: 40, unit_price_minor: 490 }, { description: "Toner cartridge", quantity: 8, unit_price_minor: 4200 }] });
+    const poId = (po.text.match(/PO-\d{4}-\d{4}/) || [])[0];
+    ok(`${tier}: purchase_order_create totals EUR 532.00 net, EUR 654.36 gross`,
+      !po.isError && !!poId && /"net": "EUR 532\.00"/.test(po.text) && /"total": "EUR 654\.36"/.test(po.text) && /23% on EUR 532\.00 = EUR 122\.36/.test(po.text), `${poId} ${po.text.replace(/\s+/g, " ").slice(0, 110)}`);
+
+    // 5. Receiving in part keeps the order open; receiving it in full twice does not.
+    const rec = await c.tool("purchase_order_receive", { id: poId, partial: true, date: "2026-09-05", note: "25 of 40 reams, toner back-ordered" });
+    ok(`${tier}: a partial receipt leaves the order open and is on the record`,
+      !rec.isError && /partially_received/.test(rec.text) && /25 of 40 reams/.test(rec.text), rec.text.replace(/\s+/g, " ").slice(0, 120));
+    await c.tool("purchase_order_receive", { id: poId, date: "2026-09-06", note: "the rest" });
+    const recTwice = await c.tool("purchase_order_receive", { id: poId, date: "2026-09-07", note: "again" });
+    ok(`${tier}: receiving an order in full twice is refused by date`,
+      recTwice.isError && /already received in full/i.test(recTwice.text) && /2026-09-06/.test(recTwice.text), recTwice.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 6. Report gate. Free refuses with the buy link; Pro answers with the credited total.
+    const rep = await c.tool("billing_docs_report", {});
+    ok(`${tier}: billing_docs_report ${tier === "pro" ? "gives credited and on-order totals" : "is gated with the buy link"}`,
+      tier === "pro"
+        ? !rep.isError && /credited/i.test(rep.text) && /-?1284\.00|-?1107\.00/.test(rep.text)
+        : /mcp\.zovo\.one\/buy\/billing-docs/.test(rep.text) && !/"credited"/.test(rep.text),
+      rep.text.replace(/\s+/g, " ").slice(0, 120));
+    const pdf = await c.tool("credit_note_pdf", { id: cn1, out_path: join(tmp, "cn.pdf") });
+    ok(`${tier}: credit_note_pdf ${tier === "pro" ? "writes an A4 file" : "is gated and writes nothing"}`,
+      tier === "pro" ? !pdf.isError && existsSync(join(tmp, "cn.pdf")) && statSync(join(tmp, "cn.pdf")).size > 1000 : /mcp\.zovo\.one\/buy\/billing-docs/.test(pdf.text) && !existsSync(join(tmp, "cn.pdf")),
+      pdf.text.replace(/\s+/g, " ").slice(0, 110));
+
+    // 7. The free cap counts credit notes and purchase orders TOGETHER: three documents
+    // exist by now, so the fourth and fifth land and the sixth is refused by count.
+    let last;
+    for (let i = 4; i <= 6; i++) {
+      last = await c.tool("purchase_order_create", { supplier: `Supplier ${i}`, currency: "EUR", tax_rate: 23, items: [{ description: `Order ${i}`, quantity: 1, unit_price_minor: 10000 }] });
+    }
+    ok(`${tier}: the 6th document in a month is ${tier === "pro" ? "allowed" : "refused, naming the count and the buy link"}`,
+      tier === "pro" ? !last.isError && /PO-\d{4}-0004/.test(last.text) : /mcp\.zovo\.one\/buy\/billing-docs/.test(last.text) && /5/.test(last.text),
+      last.text.replace(/\s+/g, " ").slice(0, 130));
+    // A document dated in another month is not blocked by this month's five.
+    const other = await c.tool("purchase_order_create", { supplier: "Next month", currency: "EUR", tax_rate: 23, issue_date: "2026-10-02", items: [{ description: "Order in October", quantity: 1, unit_price_minor: 10000 }] });
+    ok(`${tier}: a document dated in another month is not blocked by this month's count`,
+      !other.isError && /PO-\d{4}-\d{4}/.test(other.text), other.text.replace(/\s+/g, " ").slice(0, 110));
+  },
   zip: async (c, tmp, tier, ok) => {
 
     const src = join(tmp, "src"); mkdirSync(src, { recursive: true });
@@ -326,12 +416,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 19 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 19 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 20 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 20 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -470,6 +560,22 @@ async function remote() {
     const zev = await rpc("zip", { jsonrpc: "2.0", id: 49, method: "tools/call", params: { name: "zip_upload", arguments: { name: "evil.zip", content_base64: evilTrav.toString("base64") } } });
     const zer = await rpc("zip", { jsonrpc: "2.0", id: 50, method: "tools/call", params: { name: "zip_extract", arguments: { path: "evil" } } });
     ok("hosted zip_extract refuses a traversal entry before anything is inflated", !zev.error && /parent traversal/.test(JSON.stringify(zer)) && /nothing was extracted/.test(JSON.stringify(zer)), JSON.stringify(zer).slice(0, 110));
+    // Extension 11: /mcp/billing-docs. The credit notes are issued against the invoice
+    // quote_accept wrote above, which is the shared invoice store read on this endpoint.
+    const bcn = await rpc("billing-docs", { jsonrpc: "2.0", id: 65, method: "tools/call", params: { name: "credit_note_create", arguments: { invoice: qinv, reason: "Project cancelled" } } });
+    const bover = await rpc("billing-docs", { jsonrpc: "2.0", id: 66, method: "tools/call", params: { name: "credit_note_create", arguments: { invoice: qinv, amount_minor: 100, reason: "one cent too many" } } });
+    const bid = (JSON.stringify(bcn).match(/CN-\d{4}-\d{4}/) || [])[0];
+    ok("hosted credit_note_create credits the invoice /mcp/invoice holds for the same token (EUR -1328.40), and the next cent is refused", /-1328\.40/.test(JSON.stringify(bcn)) && /at most EUR 0\.00 can still be credited/.test(JSON.stringify(bover)), `${bid} ${JSON.stringify(bover).slice(0, 90)}`);
+    const bpdf = await rpc("billing-docs", { jsonrpc: "2.0", id: 67, method: "tools/call", params: { name: "credit_note_pdf", arguments: { id: bid, out_path: "probe-credit" } } });
+    const bcdl = (JSON.stringify(bpdf).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const bcres = bcdl ? await fetch(bcdl) : null;
+    const bcbody = bcres ? await bcres.text() : "";
+    ok("hosted credit_note_pdf download is the HTML credit note served text/html, titled CREDIT NOTE and naming the invoice", bcbody.startsWith("<!doctype html") && bcbody.includes(`<title>Credit note ${bid}`) && bcbody.includes(`<h1>CREDIT NOTE ${bid}`) && bcbody.includes(`against invoice ${qinv}`) && (bcres?.headers.get("content-type") || "").startsWith("text/html"), `${bcdl ? "link" : "no link"} ${bcres?.headers.get("content-type")}`);
+    const bpo = await rpc("billing-docs", { jsonrpc: "2.0", id: 68, method: "tools/call", params: { name: "purchase_order_create", arguments: { supplier: "Nordic Paper AB", supplier_address: "Storgatan 5, Stockholm", supplier_vat_id: "SE556000000001", items: [{ description: "Recycled A4 paper, box of 5 reams", quantity: 20, unit_price_minor: 2450 }], expected_delivery_date: "2026-12-20" } } });
+    const bpid = (JSON.stringify(bpo).match(/PO-\d{4}-\d{4}/) || [])[0];
+    const bdrec = await rpc("billing-docs", { jsonrpc: "2.0", id: 69, method: "tools/call", params: { name: "purchase_order_receive", arguments: { id: bpid, note: "20 of 20 boxes" } } });
+    const bdrep = await rpc("billing-docs", { jsonrpc: "2.0", id: 70, method: "tools/call", params: { name: "billing_docs_report", arguments: {} } });
+    ok("hosted purchase_order_create (20 x EUR 24.50 + 23% = EUR 602.70) receives in full and billing_docs_report reads both documents", /602\.70/.test(JSON.stringify(bpo)) && /"status": "received"/.test(JSON.stringify(bdrec).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && /"purchase_orders": 1/.test(JSON.stringify(bdrep).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && /-1328\.40/.test(JSON.stringify(bdrep)), `${bpid} ${JSON.stringify(bdrep).slice(0, 90)}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
@@ -513,7 +619,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
