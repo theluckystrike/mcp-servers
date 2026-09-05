@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T20:42:56.462Z",
-  "total_commits": 544,
+  "generated_at": "2026-09-05T20:43:03.358Z",
+  "total_commits": 545,
   "sessions": 51,
   "loops": [
     {
@@ -116,7 +116,7 @@
     {
       "name": "Loop 23: cash-book, copy buttons, v0.15.0",
       "sessions": 1,
-      "commits": 84
+      "commits": 85
     }
   ],
   "rows": [
@@ -701,7 +701,7 @@
       "at": "2026-09-05T20:42:56.259Z",
       "note": "loop 23 closed: v0.15.0 with cash-book (one double-entry ledger from six sibling stores, trial balance to zero, bank rows as evidence not postings; audit 18/18; the twenty-fifth server and hosted endpoint), 68 manifests verified, 1242 tests, validation 713/713, 26 bundles; copy buttons on every prompt block; statement-of-account hosted 18/18; findable share 50 percent tracked and 55 extended; downloads 3707; clicks 94/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 23: cash-book, copy buttons, v0.15.0",
-      "commits": 55,
+      "commits": 56,
       "subjects": [
         "Distribution round 16 record",
         "Release v0.13.0: asset-register joins; bump 25 packages, 49 internal ranges and 86 server manifests; invoice PROFILE_READERS gains asset-register; per-diem contract accepts a real sha",
