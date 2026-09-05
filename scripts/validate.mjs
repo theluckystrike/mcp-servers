@@ -12,6 +12,7 @@ const localDay = (offsetDays = 0) => { const d = new Date(Date.now() + offsetDay
 const TODAY_ISO = localDay(0);
 const IN_14_DAYS_ISO = localDay(14);
 const TOMORROW_ISO = localDay(1);
+const IN_2_DAYS_ISO = localDay(2);
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const DB = join(ROOT, "data/validation.json");
@@ -614,9 +615,9 @@ const PROBES = {
     ok(`${tier}: a partial receipt leaves the order open and is on the record`,
       !rec.isError && /partially_received/.test(rec.text) && /25 of 40 reams/.test(rec.text), rec.text.replace(/\s+/g, " ").slice(0, 120));
     await c.tool("purchase_order_receive", { id: poId, date: TOMORROW_ISO, note: "the rest" });
-    const recTwice = await c.tool("purchase_order_receive", { id: poId, date: "2026-09-07", note: "again" });
+    const recTwice = await c.tool("purchase_order_receive", { id: poId, date: IN_2_DAYS_ISO, note: "again" });
     ok(`${tier}: receiving an order in full twice is refused by date`,
-      recTwice.isError && /already received in full/i.test(recTwice.text) && /2026-09-06/.test(recTwice.text), recTwice.text.replace(/\s+/g, " ").slice(0, 120));
+      recTwice.isError && /already received in full/i.test(recTwice.text) && recTwice.text.includes(TOMORROW_ISO), recTwice.text.replace(/\s+/g, " ").slice(0, 120));
 
     // 6. Report gate. Free refuses with the buy link; Pro answers with the credited total.
     const rep = await c.tool("billing_docs_report", {});
