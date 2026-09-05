@@ -2,30 +2,33 @@
   "at": "2026-09-05T13:35:00Z",
   "round": 20,
   "compares_to": "nothing; deposits is the twenty-first server and no previous round has ever covered it, so round 20 is its first measurement and there is no earlier score to move",
-  "scope": "FIRST-COVERAGE round for deposits as a local stdio install: six natural-language prompts over one conversation covering the whole life of one client deposit, recorded when the money arrives, applied to an invoice that ALREADY carries an earlier payment (the point of the round), refused when it would pay out more than is held, refused again across a currency boundary, asked for as a balance, then refunded and turned into the statement text you would email. The invoice server was registered alongside it because a deposit is meaningless without a real invoice to apply it to; invoice tools were available to the model but only for lookup.",
+  "scope": "deposits stdio (wiring round), plus hosted single-lane re-runs of billing-docs (round 19 prompts) and bank-statement (round 16 prompts)",
   "method": "Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config /private/tmp/uv-r20dep/mcp.json with two stdio entries, deposits -> node /Users/mike/mcp-servers/servers/deposits/dist/index.js (v0.10.0, 10 tools) and invoice -> node /Users/mike/mcp-servers/servers/invoice/dist/index.js, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation, one bounded request per prompt under timeout 240. Allowlist: 12 explicit mcp__deposits__<tool> and mcp__invoice__<tool> entries written out by name, because --allowedTools mcp__* grants nothing (D-E4). The CLI's own tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r20dep/cwd. Fresh XDG_DATA_HOME /private/tmp/uv-r20dep/data and XDG_CONFIG_HOME /private/tmp/uv-r20dep/config and MCP_LICENSE_KEY empty (free tier) set in each server's own env block inside mcp.json, so both servers share one store and neither can see any earlier round's data. Seeded once before the run by writing the invoice server's own field shapes directly: the shared business profile (Nova Studio, ul. Prosta 51 Warszawa, PL1234567890, EUR, 23 percent), one client (Acme Ltd, Dublin, IE9876543Q) and two invoices. INV-2026-0001 is the one the round turns on: EUR 1,230.00 with paid_minor ALREADY at 20000, a EUR 200.00 bank transfer dated 2026-09-03, so applying a deposit on top of it is the exact case where invoice_mark_paid would have overwritten. INV-2026-0002 is USD 400.00, added so the currency refusal has a real invoice to refuse against. Tool-call counts exclude the client's ToolSearch schema lookups. Host machine day Saturday 2026-09-05. One unscored direct read of the store after the run is recorded under verification.",
   "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
   "totals": {
-    "score": 16,
-    "max": 18,
-    "pct": 89,
-    "tool_calls": 6,
-    "seconds": 38.1,
-    "tool_errors": 0,
-    "clarifying_turns": 2,
+    "score": 49,
+    "max": 54,
     "per_server": {
       "deposits": {
         "score": 16,
         "max": 18,
         "tool_calls": 6,
         "seconds": 38.1
+      },
+      "bank-statement": {
+        "score": 16,
+        "max": 18,
+        "tool_calls": 13,
+        "seconds": 144.5,
+        "score_r16": 16
+      },
+      "billing-docs": {
+        "score": 17,
+        "max": 18,
+        "tool_calls": 9,
+        "seconds": 55.1,
+        "score_r19": 16
       }
-    },
-    "calls_per_tool": {
-      "deposit_record": 1,
-      "deposit_apply": 2,
-      "deposit_refund": 1,
-      "deposit_statement_text": 1
     }
   },
   "scenarios": [
@@ -103,6 +106,189 @@
         "deposit_statement_text"
       ],
       "note": "deposit_refund {id: DEP-2026-0001, method: bank transfer to the account it came from} with no amount refunded the whole EUR 200.00 still held, then deposit_statement_text returned the three movements in date order with Received EUR 500.00, Applied to invoices EUR -300.00, Refunded EUR -200.00 and HELD EUR 0.00, closing Nothing of yours is held any more. The model pasted the statement through unedited. The invoice was not touched by the refund, which is the intended split: giving a client their own money back is not a payment of a bill."
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b1",
+      "prompt": "Here is my bank export at <fixture URL> - import it as Main.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 16.5,
+      "tools": [
+        "bank_upload",
+        "statement_import"
+      ],
+      "note": "bank_upload {url} fetched 4422 bytes / 43 lines from raw.githubusercontent.com; statement_import read it by name: 41 imported, the REVERTED line (line 39) skipped and named, Revolut auto-detected, date range 2026-07-28 to 2026-09-03. The model stopped after one sentence and made zero further tool calls this turn, unlike round 16's five-tool unrequested cascade (D-R16-1) -- not reproduced this round. date_order: ymd, date_order_inferred: false for the ISO Completed Date column, correct where round 16 reported dmy on the same shape of column (D-R54 fixed).",
+      "r16_score": 2
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b2",
+      "prompt": "Categorise Spotify and Adobe as Software, coffee as Meals.",
+      "score": 3,
+      "tool_calls": 5,
+      "seconds": 19.0,
+      "tools": [
+        "transactions_search",
+        "transactions_search",
+        "transactions_search",
+        "transaction_categorize",
+        "transaction_categorize"
+      ],
+      "note": "Three transactions_search calls confirmed the matches live (spotify 2/EUR 19.98, adobe 3/EUR 148.00 across Adobe Creative Cloud and Adobe Stock, coffee 7/EUR 31.30) then two transaction_categorize calls moved 5 rows to Software and 7 to Meals. Used transaction_categorize directly rather than category_rules, so no rule persists for future imports, narrower than round 16's approach, but right transactions, right totals, no clarification asked.",
+      "r16_score": 3
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b3",
+      "prompt": "What did I spend in August by category?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 22.5,
+      "tools": [
+        "transactions_list"
+      ],
+      "note": "transactions_list {from: 2026-08-01, to: 2026-08-31} returned 36 rows and the model tallied categories itself: Software EUR 132.99, Meals EUR 21.30, uncategorised EUR 1129.44, money in EUR 4524.99. Independently re-read by curl statement_summary {group_by: category} on the same token: identical to the cent. Ended with an unprompted offer to categorise more groups, not a blocking question.",
+      "r16_score": 3
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b4",
+      "prompt": "Which subscriptions am I paying?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 16.0,
+      "tools": [
+        "recurring_detect"
+      ],
+      "note": "recurring_detect answered free with a cap (D-R55 fix holds): Spotify EUR 9.99 and Adobe Creative Cloud EUR 61.50, both cadence_confirmed false on 2 occurrences 14/31 days apart, annualised null. The model relayed the tool's own uncertainty and additionally checked Netflix and OpenAI by name, correctly excluding both for having only one occurrence each -- no invented cadence.",
+      "r16_score": 3
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b5",
+      "prompt": "Which of my expenses have no bank line, and which bank lines have no receipt?",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 60.3,
+      "tools": [
+        "reconcile_expenses",
+        "reconcile_expenses",
+        "expense_list"
+      ],
+      "note": "reconcile_expenses answered free with its 31-day cap (D-R55 fix holds) but the window (2026-08-04 to 2026-09-03, bank_debits 34, matched 1) did not cover the full asked range, so the model made a second reconcile_expenses call for the earlier week (2026-07-28 to 2026-08-05, bank_debits 6, matched 0) and a third call, expense_list, to confirm the ledger holds only the one seeded expense. Final answer: 0 expenses without a bank line, 37 of 38 bank debits without a receipt. csv.DictReader over the fixture independently counts exactly 38 COMPLETED debit rows, confirming 34 + 6 with 2 overlap days = 38, no double count.",
+      "r16_score": 3
+    },
+    {
+      "server": "bank-statement",
+      "surface": "hosted/bank-statement",
+      "id": "b6",
+      "prompt": "Export September to a file I can download.",
+      "score": 1,
+      "tool_calls": 1,
+      "seconds": 10.3,
+      "tools": [
+        "statement_export"
+      ],
+      "note": "statement_export is still Pro-refused, correctly not purchased. Unlike round 16, the model did not fall back to a free tool for the underlying data -- it stopped after the refusal, offered to list transactions only if asked, and volunteered a recap with a wrong count (5 so far) and no total. Independently re-read by curl, transactions_list {from: 2026-09-01, to: 2026-09-30}: count 4 (Spotify, Adobe Stock, 2x Coffee Republic), EUR 44.99 total. Regression from round 16's fallback, which gave the correct EUR 44.99 unprompted.",
+      "r16_score": 2
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b1",
+      "prompt": "Acme cancelled the whole of invoice INV-2026-0002 after we had already billed it. Please credit that invoice in full.",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 13.8,
+      "tools": [
+        "invoice_get",
+        "credit_note_list",
+        "credit_note_create"
+      ],
+      "note": "invoice_get confirmed the EUR 492.00 total, credit_note_list confirmed no prior credit, then one credit_note_create {invoice: INV-2026-0002, reason: Client cancelled the order in full} produced CN-2026-0001 for the full EUR 492.00 (EUR 400.00 net + EUR 92.00 VAT at 23%) on the first turn. The model volunteered, unprompted, that the invoice record itself keeps no credited flag and invoice_get will still read it as unpaid -- the same fact round 19 surfaced as still_creditable EUR 0.00. No clarification asked, no number invented.",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b2",
+      "prompt": "Different invoice: we are refunding Acme EUR 177.00 of INV-2026-0001 as a goodwill gesture. Raise a credit note for that amount.",
+      "score": 3,
+      "tool_calls": 3,
+      "seconds": 10.8,
+      "tools": [
+        "invoice_get",
+        "credit_note_list",
+        "credit_note_create"
+      ],
+      "note": "One credit_note_create {invoice: INV-2026-0001, amount_minor: 17700} produced CN-2026-0002 split across both of the invoice's VAT rates in exact proportion: EUR 50.00 net + EUR 4.00 VAT at 8% and EUR 100.00 net + EUR 23.00 VAT at 23%, summing to exactly EUR 177.00 with no rounding drift -- the same split round 19 measured (a tenth of each bucket, since EUR 177.00 is a tenth of the EUR 1,770.00 invoice). The model relayed both rates and both tax figures and stated the remaining EUR 1,593.00 creditable balance unprompted.",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b3",
+      "prompt": "Acme now want another EUR 1,700 credited on INV-2026-0001 on top of that. Do it.",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 4.6,
+      "tools": [],
+      "note": "D-R86 (round 19, stdio) does not reproduce here: the model again refused the over-credit itself instead of letting credit_note_create refuse it, but this time the arithmetic is right -- it correctly computed EUR 1,593.00 still creditable (EUR 1,770.00 total minus the EUR 177.00 already credited from b2) and correctly said EUR 1,700.00 exceeds that by EUR 107.00, with no fabricated running total. What is still open is the same client-side gap D-R86 named: no tool ran, so the server's own authoritative refusal text never reached the user, and the model ended by asking the user to choose between crediting the exact EUR 1,593.00 remainder or clarifying the amount rather than simply reporting the refusal and stopping. Probed separately by direct JSON-RPC on this same token, credit_note_create {invoice: INV-2026-0001, amount_minor: 170000} does refuse with 'Nothing was stored', naming EUR 1770.00, EUR 177.00 already credited and EUR 1593.00 still creditable -- the exact numbers the model worked out unaided this time. Scored 2, not 3, because the answer to 'do it' was a clarifying question rather than a completed action or a flat, tool-verified refusal.",
+      "r19_score": 1,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b4",
+      "prompt": "Raise a purchase order to Paperworks Sp. z o.o. for 500 brochures at EUR 1.20 each and 200 posters at EUR 3.50 each, 23% VAT, expected here on 2026-09-20.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.4,
+      "tools": [
+        "purchase_order_create"
+      ],
+      "note": "One purchase_order_create call produced PO-2026-0001 with no clarification asked: 500 brochures at EUR 1.20 = EUR 600.00, 200 posters at EUR 3.50 = EUR 700.00, subtotal EUR 1,300.00, 23% VAT = EUR 299.00, total EUR 1,599.00, expected 2026-09-20, status open. The buyer block filled itself in from the shared business profile without being asked. The tool flagged that Paperworks has no stored address and the model passed that on, same as round 19.",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b5",
+      "prompt": "Only the brochures turned up today, the posters are still coming. Record that on the order.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.8,
+      "tools": [
+        "purchase_order_receive"
+      ],
+      "note": "One purchase_order_receive {id: PO-2026-0001, partial: true, note: 500 brochures received; 200 posters still outstanding} moved the order to partially_received and kept it open. 'The order' resolved to PO-2026-0001 from the previous turn without asking, and partial was inferred correctly from 'still coming.'",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
+    },
+    {
+      "server": "billing-docs",
+      "surface": "hosted/billing-docs",
+      "id": "b6",
+      "prompt": "Which of my purchase orders are past their delivery date?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 6.7,
+      "tools": [
+        "purchase_order_list"
+      ],
+      "note": "purchase_order_list {} answered the Pro-shaped question for free: one order on file, due 2026-09-20, not yet overdue against today 2026-09-05. No upgrade text shown, no gated tool touched. Probed separately, billing_docs_report on this same token does refuse on free tier with the upgrade text (buy link carrying the tenant token), recorded under verification.",
+      "r19_score": 3,
+      "r19_surface": "stdio/billing-docs"
     }
   ],
   "verification": [
