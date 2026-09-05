@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.3/kanban.mcpb",
       "version": "0.9.3",
-      "fileSha256": "e3a527fcde66801d114d07eb2ba8af64b03cf6f9187b762289ee9e3002fae01c",
+      "fileSha256": "dd81814ae934bb70ecf0e541219a4b41350d30613601173f8d9e30bc84290b9c",
       "transport": {
         "type": "stdio"
       },
