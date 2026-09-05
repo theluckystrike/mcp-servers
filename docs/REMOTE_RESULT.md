@@ -3844,3 +3844,181 @@ CSV download carrying exactly `lines + 1` rows. **remote 92/92.**
 - `month_close` and `ledger_report` were not exercised against the live endpoint; the three
   validate calls are `ledger_build`, `trial_balance` and `ledger_lines` with the CSV download
   beside them.
+
+# Extension 17 2026-09-06 - amortization
+
+status: DONE
+
+A twenty-sixth endpoint, `POST /mcp/amortization`. Worker `mcp-remote`, version ID
+`b8549674-5cd7-42bd-852f-ad84d5bea772`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-six.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/amortization | 8 | reads NO sibling store and writes NO file. Three sibling ENGINES, only one of them reachable from `index.ts`. No `sharedDoc`, no `publish`, no `strip`, the default 512 KB cap, and nothing to download |
+
+### The finding: three sibling engines and not one sibling document
+
+Every endpoint added since Extension 11 has been a reader. `/mcp/statement-of-account`
+hydrates three sibling documents, `/mcp/cash-book` six. This one hydrates none, and it is
+worth recording because the two dependencies look the same from the outside and are not the
+same thing at all.
+
+`servers/amortization` imports `@theluckystrike/mcp-asset-register/lib` for `formatMoney`,
+`currencyDecimals` and `allocate` - the exact minor-unit allocator the straight-principal
+method splits with - `@theluckystrike/mcp-timezone/lib` for `readJsonFile` and its
+corrupt-store quarantine, and `@theluckystrike/mcp-quotes/lib` for `today` and `isIsoDate`.
+Three siblings. But it reads no asset, no quote and no timezone contact: it borrows CODE,
+not DATA. So `SERVERS["amortization"]` in `remote/src/index.ts` is one line, `factory`, with
+no `sharedDoc` at all, while `LIB_RESOLUTIONS` in `remote/build-vendor.mjs` carries all
+three. A `sharedDoc` entry here would hydrate three documents this endpoint never opens and
+charge their bytes to its cap; leaving one out of `LIB_RESOLUTIONS` would ship a worker that
+cannot resolve the arithmetic. The two tables answer different questions and this is the
+first server where the answers diverge completely.
+
+`LIB_RESOLUTIONS` earns its Extension 15 shape again. Exactly ONE of the three imports is
+reachable from `index.ts` (quotes); `schedule.ts` reaches the allocator and `store.ts`
+reaches `readJsonFile`. Extension 12's original index-only check would have passed a build
+that could not resolve the split arithmetic every figure in the server rests on, or the
+quarantine that keeps an unreadable register from being read as an empty one. The entry is
+
+```
+"amortization": ["asset-register", "quotes", "timezone"],
+```
+
+checked against the concatenated bytes of every file the server vendored, after the build.
+
+### Nothing to publish, and that was checked rather than assumed
+
+Extensions 13 through 16 each added a download: the per-diem export, the statement text,
+the cash-book CSV. The instruction here was to add CSV or schedule downloads *if a tool
+writes a file*, so the question was answered on the source rather than on the shape of the
+server. `grep -n "writeFileSync\|/out/\|out_path" servers/amortization/src/*.ts` finds
+exactly one writer, `store.ts`, writing `loans.json` and `counter.json` under the homedir
+shim by tmp + rename - the endpoint's own register, which is a tenant document and not a
+download. No tool takes an `out_path`, no tool renders a document, and there is no
+`*_export_csv`. `loan_schedule` returns its rows in the answer under a 600-row ceiling and
+`loan_journal` returns a double entry plus an `expense_add`-ready payload for
+`/mcp/expense-tracker` to post, exactly as `asset_journal` does. So this endpoint has no
+`publish`, no `strip`, no `/out/` and no `publishFile` import: `EXTRA_IMPORTS` gains no
+entry. Inventing a CSV export here would have been a hosted-only tool the stdio server does
+not have, which is the one thing the vendoring transform exists to avoid.
+
+### Vendoring: six files and one patch
+
+`SERVERS["amortization"]` is `index.ts, version.ts, lib.ts, accounts.ts, schedule.ts,
+store.ts`. Every source file, `lib.ts` included, for the reason the last five servers' are:
+it is this engine as a public API, so the next server that amortises a loan resolves here
+rather than to a module that cannot load.
+
+One patch, `patchAmortizationIndex`, and it is the D-R60 species for the seventh time. The
+`loan://accounts` resource reported `writes: [{ dir: dataDir() }]`, which hosted is the
+worker's virtual homedir - a path no caller has and none can reach - and now says the loan
+register is one document held per token that no schedule is ever stored in. Its description
+said "the one directory it writes" and now says the one document. `remote/test/vendor-paths.test.mjs`
+scans every vendored file for exactly this and stays at 30/30.
+
+`store.ts` needed no patch: `loans.json`, `counter.json` and the lock are one document per
+token under the homedir shim, written tmp + rename, and `readJsonFile` comes from the
+vendored timezone engine. `schedule.ts` and `accounts.ts` touch no path, no clock and no
+network. Caps and hardening are unchanged: the default 512 KB tenant document, the 256 KB
+body ceiling, the same rate limits and the same sweep.
+
+The cap is the default deliberately. NO SCHEDULE IS STORED - the register holds the terms
+plus two derived figures per loan and rebuilds every row on the call - so this document does
+not grow with the term, and 512 KB holds thousands of agreements. It is the first endpoint
+in four whose cap did not have to be reasoned about at all, because it is the first in four
+that does not carry somebody else's bytes.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP).
+One POST per call, one token throughout.
+
+```
+$ GET /mcp
+  26 endpoints: ..., statement-of-account, cash-book, amortization
+$ GET /mcp/connect                       -> 26 rows, /mcp/amortization listed
+
+$ amortization tools/list
+  8 tools: loan_create, loan_schedule, loan_repay_early, loan_journal, loan_list,
+  loans_report, license_status, license_activate
+
+$ amortization loan_create {name: "Worked annuity ...", principal_minor: 1000000,
+    currency: "EUR", rate_bps: 1200, compounding: "monthly", payment_frequency: "monthly",
+    term_periods: 12, method: "annuity", start_date: "2026-01-15"}
+  LOAN-2026-0001   payment EUR 888.49 (88,849 minor)   periodic_rate_pct "1.000000"
+  nominal 12.00 percent -> effective_annual_rate_bps 1268 ("12.68")
+  first payment 2026-02-15, final 2027-01-15
+  total_payments 1,066,188   total_interest 66,188   cost_of_credit 66,188
+
+$ amortization loan_schedule {loan: "LOAN-2026-0001"}
+  12 periods, total_interest EUR 661.88 (66,188), closing_balance_minor 0
+  period  1   opening 1,000,000  payment 88,849  interest 10,000  principal 78,849  closing 921,151
+  period 12   opening    87,967  payment 88,849  interest    882  principal 87,967  closing       0
+  period 12 is the row to read: the residual is in the SPLIT, not in the payment. An
+  unrounded balance carries 880; moving the 2 units into the payment would make the last
+  payment 88,847, an amount that is on no agreement
+
+$ amortization loan_repay_early {loan: "LOAN-2026-0001", as_of_period: 6,
+                                 penalty_minor: 5000}
+  outstanding_after_that_payment 514,920   interest_paid_to_date 48,014
+  interest_saved 18,174   penalty 5,000   interest_saved_net_of_penalty 13,174
+  worth_doing true
+  verdict "Repaying at period 6 saves EUR 131.74 after the penalty."
+  note   "Nothing was written: the stored loan still carries its original terms."
+  48,014 + 18,174 = 66,188, the schedule's whole interest charge
+
+$ amortization loan_journal {loan: "LOAN-2026-0001", month: "2026-02"}
+  journal_for 2026-02, date 2026-02-15, periods [1]
+    interest_expense  "Interest expense"  Dr 10,000
+    loan_liability    "Loan liability"    Dr 78,849
+    cash              "Cash"                          Cr 88,849
+  totals: debits 88,849, credits 88,849, balanced true
+  expense_add -> {server: "expense-tracker", tool: "expense_add",
+                  arguments: {amount: 100, currency: "EUR", category: "interest", ...}}
+  100.00 and not 888.49: the principal repays a liability and is named as excluded
+
+$ amortization loans_report {as_of: "2026-06-30", currency: "EUR"}
+  outstanding 597,791   next payment 2026-07-15 of 88,849
+  payments_this_year 11   interest_this_year 65,306   settled false
+```
+
+Every figure above is the figure `servers/amortization/test/unit.test.mjs` asserts to the
+minor unit over stdio, produced by the hosted handlers on a Worker with no filesystem.
+
+`scripts/validate.mjs` gained `amortization` to the tools/list sweep plus five real calls,
+and the index assertion moved from 25 endpoints to 26. The probe seeds nothing on any other
+endpoint - there is nothing to seed - and asserts `loan_create`, `loan_schedule`,
+`loan_repay_early`, `loan_journal` and `loans_report` on the worked example above.
+
+The report is asserted PER LOAN and not on the currency aggregate, which is the Extension 16
+correction applied before it could bite: the tenant behind the bundle key is not fresh
+between runs, so `outstanding_by_currency` sums every EUR loan a previous run left in the
+register and is not a stable figure. `per_loan.find(x => x.id === amId)` is. The same reason
+makes `loan_create` mint a uniquely named loan per run rather than reusing one.
+**remote 98/98, `node scripts/validate.mjs` run 50: 719/719.**
+
+### Limitations
+
+- The free cap is 3 loans; `loan_schedule` and `loan_list` are free and unlimited. The
+  probes ran on a Pro key, so the hosted cap refusal and the Pro gates on
+  `loan_repay_early`, `loan_journal` and `loans_report` are asserted only by the stdio
+  suite, as are the two concurrency rows.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Over stdio the free-loan check and the register write are one critical
+  section; hosted, two simultaneous fourth-loan creations on one free token could both pass
+  a check only one of them should. Unchanged since Extension 1.
+- The corrupt-store behaviour cannot be reached through this endpoint, the
+  statement-of-account limitation verbatim: a tenant document is written by this worker as
+  one JSON object and hydrated back, so a register that is on disk and unparseable is a
+  local-install condition. The quarantine code is vendored and resolves; it is the DISK
+  state it defends against that hosted callers cannot produce.
+- `loan_list` was not exercised against the live endpoint; the five validate calls are
+  `loan_create`, `loan_schedule`, `loan_repay_early`, `loan_journal` and `loans_report`.
+  `loan_list` is covered by the stdio suite and by the tools/list sweep.
+- Nothing is posted anywhere. `loan_journal` hands back an `expense_add` payload for
+  `/mcp/expense-tracker` and lines in `/mcp/cash-book`'s account ids, and the caller passes
+  them on. Hosted, that means two POSTs to two endpoints on the same token, exactly as
+  `asset_journal` has since Extension 14, and neither endpoint knows the other ran.
