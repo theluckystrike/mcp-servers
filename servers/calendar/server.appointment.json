@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/appointment",
   "description": "Read your .ics calendar for appointments, free-busy windows and conflicts.",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.5/calendar.mcpb",
-      "version": "0.9.5",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.10.0/calendar.mcpb",
+      "version": "0.10.0",
       "fileSha256": "0b828e2c427750a96b8d4a4708d2218726a54d93e08ea1b6771456371874cf8d",
       "transport": {
         "type": "stdio"

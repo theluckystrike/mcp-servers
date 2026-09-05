@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/label",
   "description": "Generate barcode and QR labels offline for products, packages and assets.",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.5/barcode.mcpb",
-      "version": "0.9.5",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.10.0/barcode.mcpb",
+      "version": "0.10.0",
       "fileSha256": "b9f0bdd7d4e6db38697595acf20f9a1a197904e3f4f27b3c49281e38e09106d8",
       "transport": {
         "type": "stdio"

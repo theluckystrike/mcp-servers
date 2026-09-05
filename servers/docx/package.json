@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-docx",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "description": "Turn a chat into a real Word document: proposals, quotes, contracts, statements of work and letters as .docx files, plus reading and filling existing .docx templates. Everything stays on your machine.",
   "type": "module",
   "bin": {
@@ -50,7 +50,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/docx",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.9.5",
+    "@theluckystrike/mcp-license": "^0.10.0",
     "docx": "^9.0.0",
     "zod": "^3.25.0"
   },

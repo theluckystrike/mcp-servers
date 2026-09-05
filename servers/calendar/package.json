@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-calendar",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "description": "Read the .ics your calendar already exports: what is on this week, when you are actually free, what is double-booked, and turn a meeting into billable time. All local.",
   "type": "module",
   "bin": {
@@ -41,8 +41,8 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/calendar",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.9.5",
-    "@theluckystrike/mcp-timezone": "^0.9.5",
+    "@theluckystrike/mcp-license": "^0.10.0",
+    "@theluckystrike/mcp-timezone": "^0.10.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {
