@@ -1,0 +1,161 @@
+{
+  "at": "2026-09-05T04:25:00Z",
+  "round": 18,
+  "compares_to": "docs/USER_VALUE_R12.md pdf section",
+  "scope": "HOSTED single-lane re-run of round 12's six pdf prompts, adapted to arrive via the Extension 10 url upload path (pdf_upload {url}) instead of a base64 paste. https://mcp.zovo.one/mcp/pdf/t/<token> as a claude.ai user arrives, free tier, one fresh anonymous token, no headers.",
+  "method": "One anonymous token minted with GET https://mcp.zovo.one/mcp/connect (anon_02c50e96aa9d19a4a25e3517797e3e72, 200 text/html, no cf challenge). Registered ONE lane: one mcp.json with a single http entry for pdf, https://mcp.zovo.one/mcp/pdf/t/<token>, no --header. Client: claude 2.1.261 -p, --model sonnet, --strict-mcp-config, --mcp-config with that one entry, explicit allowlist of all 15 mcp__pdf__<tool> entries read from a live tools/list (pdf_info, pdf_count, pdf_merge, pdf_split, pdf_pages, pdf_rotate, pdf_stamp, pdf_watermark_business, pdf_reorder, pdf_text, license_status, license_activate, pdf_upload, pdf_files, pdf_delete_upload), --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume, timeout 240 per prompt, each prompt's stream-json written to its own file (out/s1.jsonl..s6.jsonl) before the next prompt started. Per D-R57 the lane ran in an empty working directory (/private/tmp/uv-r18pdf/wd) with the CLI's own filesystem tools disallowed (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task). Fresh XDG scratch dirs local to the run, no reuse of any prior round's state; CLAUDE_CONFIG_DIR left at the operator's real config so the CLI stayed authenticated (a first attempt that pointed CLAUDE_CONFIG_DIR at an empty dir produced 'Not logged in' on every turn and was discarded before any prompt counted). Machine day 2026-09-05.",
+  "fixtures": "remote/fixtures/sample-doc.pdf is the ONLY pdf fixture committed under remote/fixtures (verified: find . -iname '*.pdf' in the repo and git log over remote/fixtures/*.pdf both return just this one file). Raw URL used: https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures/sample-doc.pdf -- fetched independently by curl, 200, 1074 bytes, identical bytes to the working tree copy. Decoded locally with pdf-lib: 2 pages, 400x300 pt, page 1 text 'fixture page 1', page 2 text 'fixture page 2', %PDF-1.7. Because Extension 10 only ever pushed one PDF fixture to remote/fixtures, the round-12 script 'here are two PDFs: <url1> <url2>' was run with the SAME url twice (doc-a and doc-b both point at sample-doc.pdf); this is a deviation from round 12's two content-distinct PDFs, logged below, not something this run's author fixed or hid.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap. 1 = partially wrong. 0 = failed.",
+  "arrival": {
+    "connect_page": "GET https://mcp.zovo.one/mcp/connect -> 200 text/html, minted anon_02c50e96aa9d19a4a25e3517797e3e72",
+    "registration": "one lane, one http entry (pdf), https://mcp.zovo.one/mcp/pdf/t/<token>, no --header; connected first try",
+    "tools_list": {
+      "pdf": 15
+    }
+  },
+  "scenarios": [
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p1",
+      "prompt": "Here are two PDFs: <fixture-url> <fixture-url>. Upload them as doc-a and doc-b.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 14.9,
+      "tools": ["pdf_upload x2"],
+      "note": "Two pdf_upload {name, url} calls, one per file, both against the same raw.githubusercontent.com URL because only one PDF fixture is committed. Each reply: 'Uploaded \"doc-a.pdf\" (1074 bytes). Fetched 1074 bytes from raw.githubusercontent.com. Pass path: \"doc-a\" to any pdf tool.' -- byte count matches the fixture exactly, the Extension 10 url-fetch shim worked first try, and the model told the user unprompted that both uploads came from the same source file rather than silently treating them as different documents.",
+      "round12_score": 3,
+      "round12_note": "Round 12 pasted two content-distinct base64 PDFs (1009/1011 bytes) in one turn costing 76.4s; this round's url path did the equivalent upload in 14.9s across two tool calls, consistent with Extension 10's stated purpose (move bytes off the model's output budget)."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p2",
+      "prompt": "Merge those two into one file.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.4,
+      "tools": ["pdf_merge"],
+      "note": "One pdf_merge {paths: [doc-a, doc-b], out_path: merged}. Reply: 'Merged 2 files into 4 pages' (2+2, since each source is the same 2-page fixture, not round 12's 1-page pair). Sources listed with their own page counts. GET the download: 200, application/pdf, filename=\"merged.pdf\", 2453 bytes, %PDF-1.7, 4 pages -- independently decoded to fixture page 1 / 2 / 1 / 2 in order.",
+      "round12_score": 3,
+      "round12_note": "Same tool, same first-turn success; page count differs (4 vs 2) purely because this round's fixture is 2 pages per file, not 1."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p3",
+      "prompt": "Stamp the merged file PAID and give me the file.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 11.9,
+      "tools": ["pdf_stamp"],
+      "note": "One pdf_stamp {path: merged, text: PAID, out_path: merged-paid}. Reply named all 4 pages, and volunteered that the stamp is drawn text (selectable, searchable) and the input file is unchanged. The echoed field is 'source': 'merged.pdf' -- no virtual root leak; D-R59 (fixed in round 12, /out/... path) still holds live on this build. GET the download: 200, application/pdf, filename=\"merged-paid.pdf\", 4259 bytes, %PDF-1.7. Independent decode: all 4 pages carry PAID, and the original 'fixture page 1'/'fixture page 2' text is still present underneath on every page.",
+      "round12_score": 3,
+      "round12_note": "Round 12 caught the D-R59 path leak on this exact prompt shape; this round's live source field is clean, confirming the fix shipped and has not regressed."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p4",
+      "prompt": "How many pages is that?",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 5.4,
+      "tools": [],
+      "note": "'The stamped file (merged-paid) has 4 pages.' No tool ran; the number was restated from pdf_stamp's own pages array one turn earlier rather than read fresh via pdf_count or pdf_info. The answer happens to be correct (the file was not changed between turns other than the stamp, which does not alter page count), but this is the identical client-side gap round 12 logged as D-R63 on the same prompt.",
+      "round12_score": 2,
+      "round12_note": "Round 12: identical shape -- 'correct' answer, zero tool calls, filed as D-R63 (client-side, a page count answered without reading the page). Recurs unchanged in this round."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p5",
+      "prompt": "What does page 2 say?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 9.7,
+      "tools": ["pdf_text"],
+      "note": "One pdf_text {path: merged-paid, pages: \"2\"}. Read 'fixture page 2' plus the PAID stamp overlaid on it, and the tool's own reply named its read method (FlateDecode content stream via node:zlib, Tj/TJ operators, no OCR). Matches the independently decoded page 2 text exactly.",
+      "round12_score": 3,
+      "round12_note": "Round 12 asked for a dollar total (fixture-specific); this fixture carries no invoice total, so the prompt was adapted to 'what does page 2 say' -- same tool, same one-call, no-clarification shape, same score."
+    },
+    {
+      "server": "pdf",
+      "surface": "hosted/pdf",
+      "id": "p6",
+      "prompt": "Split the stamped file back into single pages.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 15.5,
+      "tools": ["pdf_split"],
+      "note": "One pdf_split {path: merged-paid, ranges: \"1,2,3,4\", out_path_pattern}. Four single-page files, four links, echoed source 'merged-paid.pdf' (again no virtual root leak). GET all four: 200, application/pdf, filenames merged-paid-page1..4.pdf, 1832-1834 bytes each, %PDF-1.7, 1 page each. Independent decode: pages 1 and 3 carry 'fixture page 1' + PAID, pages 2 and 4 carry 'fixture page 2' + PAID -- exactly the interleaved order pdf_merge produced.",
+      "round12_score": 3,
+      "round12_note": "Round 12 split a 2-page file into 2 parts; this round's 4-page file split into 4 parts, same tool, same first-turn success, same score."
+    }
+  ],
+  "totals": {
+    "score": 17,
+    "max": 18,
+    "tool_calls": 6,
+    "seconds": 67.9,
+    "per_server": {
+      "pdf": {
+        "score": 17,
+        "max": 18
+      }
+    },
+    "compare_round12": {
+      "score": 17,
+      "max": 18
+    }
+  },
+  "verification": [
+    {
+      "claim": "Arrival needs no header",
+      "evidence": "one lane, one /t/<token> entry, connected first try, no Authorization anywhere",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "pdf_upload {url} fetches the fixture from raw.githubusercontent.com and stores the exact bytes",
+      "evidence": "s1 tool result: 'Uploaded \"doc-a.pdf\" (1074 bytes). Fetched 1074 bytes from raw.githubusercontent.com.' -- 1074 matches the fixture's own byte count exactly (verified by curl of the same raw URL)",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The downloads are real PDFs",
+      "evidence": "six GET /mcp/download/<id>: merged.pdf 2453B, merged-paid.pdf 4259B, merged-paid-page1..4.pdf 1832-1834B each -- all application/pdf, all %PDF-1.7, filenames matching the names the caller chose or the split naming pattern",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Page counts and page text are right, decoded locally, not taken from the model's prose",
+      "evidence": "pdf-lib + manual FlateDecode/Tj extraction: sample-doc.pdf 2 pages ('fixture page 1'/'fixture page 2'), merged.pdf 4 pages in order 1/2/1/2, merged-paid.pdf 4 pages each carrying PAID over the original text, all 4 split parts 1 page each with PAID and the correct original page text",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "D-R59 (echoed input path leaking the virtual /out/ root) stays fixed",
+      "evidence": "pdf_stamp echoed 'source': 'merged.pdf'; pdf_split echoed 'source': 'merged-paid.pdf' -- neither carries /uploads/ or /out/",
+      "verdict": "PASS, fix holds"
+    },
+    {
+      "claim": "D-R63 (a page-count question answered without a tool call) recurs",
+      "evidence": "p4 made zero tool calls; the number came from pdf_stamp's own pages array one turn earlier",
+      "verdict": "CONFIRMED RECURRING, client-side, same as round 12"
+    }
+  ],
+  "defects": [
+    {
+      "id": "R18-pdf-fixture-gap",
+      "severity": "low",
+      "server": "pdf",
+      "kind": "fixture, not code",
+      "note": "remote/fixtures/ carries exactly one committed PDF fixture (sample-doc.pdf). Round 12's 'here are two PDFs' prompt assumed two content-distinct files; this round had to point both pdf_upload {url} calls at the same file. The model itself noticed and said so ('doc-a and doc-b (1074 bytes each, same source file)'), so no defect in the server or the model -- but a second small PDF fixture (e.g. sample-doc-2.pdf) would let a future url-path pdf round reproduce round 12's two-distinct-invoices shape exactly."
+    },
+    {
+      "id": "R18-pdf-p4-recurs",
+      "severity": "low",
+      "server": "pdf",
+      "kind": "client-side, recurring",
+      "note": "D-R63 from round 12 recurs unchanged: 'How many pages is that?' is answered from the transcript rather than a fresh pdf_count/pdf_info call. Nothing server-side to fix -- pdf_count exists and costs one call -- this is a client behavior, not a pdf endpoint defect."
+    }
+  ],
+  "bottom_line": "17/18, unchanged from round 12's 17/18, with the same single point lost (p4, D-R63, a page count answered without a tool call). The Extension 10 url-upload path, which round 12 never used, moved the upload off the model's output budget exactly as intended: two pdf_upload {url} calls replaced round 12's one 76.4s base64-paste turn, and every download this round was independently fetched and decoded, matching the model's prose at every step -- merge, stamp, text and split all landed on the first try. D-R59's path-leak fix (merged.pdf / merged-paid.pdf, not /out/...) holds live. The only real deviation from round 12 is environmental, not a defect: only one PDF fixture is committed under remote/fixtures, so both uploaded files are the same bytes under two names instead of round 12's two distinct invoices."
+}
