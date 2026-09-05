@@ -197,6 +197,114 @@ const PROBES = {
       !stillFree.isError && /"total": "PLN 8,499\.00"/.test(stillFree.text) && !/mcp\.zovo\.one\/buy/.test(stillFree.text),
       stillFree.text.replace(/\s+/g, " ").slice(0, 120));
   },
+  "cash-book": async (c, tmp, tier, ok) => {
+    // The six books this server derives from belong to servers/invoice, servers/billing-docs,
+    // servers/deposits, servers/expense-tracker, servers/bank-statement and
+    // servers/asset-register. They are seeded on disk directly by the cash-book unit suite's
+    // OWN seeder rather than by spawning six more processes: a failure here has to mean
+    // cash-book failed, and reusing workedMonth means every figure asserted below is one
+    // servers/cash-book/test/unit.test.mjs works out by hand from the same rows, so this
+    // probe fails if the arithmetic moves and not only if the shape does.
+    const dataHome = join(tmp, "data");
+    const { workedMonth } = await import(join(ROOT, "servers", "cash-book", "test", "_client.mjs"));
+    workedMonth(dataHome);
+    const period = { from: "2026-06-01", to: "2026-06-30", currency: "EUR" };
+
+    // 1. The month builds: 22 lines over seven stores, 16,383.00 each way.
+    const built = await c.tool("ledger_build", period);
+    ok(`${tier}: June builds 22 lines from seven stores at EUR 16383.00 each way`,
+      !built.isError && /"lines": 22/.test(built.text) && /"debits_minor": 1638300/.test(built.text)
+      && /"credits_minor": 1638300/.test(built.text) && /"balanced": true/.test(built.text),
+      built.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 2. The trial balance is zero to the MINOR UNIT, not to two decimal places.
+    const tb = await c.tool("trial_balance", period);
+    ok(`${tier}: the trial balance comes to zero to the minor unit, with no offenders`,
+      !tb.isError && /"imbalance_minor": 0/.test(tb.text) && /"balanced": true/.test(tb.text)
+      && !/"offenders": \[\s*\{/.test(tb.text),
+      tb.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 3. Every hand-computed account balance. Cash at -10,543.00 is the figure the whole
+    // bank-import decision turns on: post the statement as well and it is -21,111.00.
+    ok(`${tier}: cash -10543.00, receivables 400.00, revenue -1400.00, VAT output -230.00, deposits held -400.00`,
+      /"account": "cash"[\s\S]{0,300}?"balance_minor": -1054300/.test(tb.text)
+      && /"account": "receivables"[\s\S]{0,300}?"balance_minor": 40000/.test(tb.text)
+      && /"account": "revenue"[\s\S]{0,300}?"balance_minor": -140000/.test(tb.text)
+      && /"account": "vat_output"[\s\S]{0,300}?"balance_minor": -23000/.test(tb.text)
+      && /"account": "deposits_held"[\s\S]{0,300}?"balance_minor": -40000/.test(tb.text),
+      tb.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 4. ledger_lines filtered by account. Five cash legs, all posted from DOCUMENTS: not
+    // one line has source "bank-statement", because the bank import posts nothing at all.
+    const cash = await c.tool("ledger_lines", { ...period, account: "cash" });
+    ok(`${tier}: ledger_lines account=cash returns 5 legs and not one is sourced from the bank import`,
+      !cash.isError && /"returned": 5/.test(cash.text) && !/"source": "bank-statement"/.test(cash.text)
+      && /"source": "deposits"/.test(cash.text) && /"source": "expense-tracker"/.test(cash.text),
+      cash.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 5. The bank rows are EVIDENCE, matched onto the postings rather than posted. Four of
+    // the five match; the fifth, an unexplained 75.00 withdrawal, is the 0.4 percent that is
+    // the entire reason to import a statement.
+    ok(`${tier}: 4 bank rows are matched onto cash legs as bank_ref, 1 is unmatched and 1 cash leg has no bank line`,
+      /"bank_ref": "tx1"/.test(cash.text) && /"bank_ref": "tx4"/.test(cash.text)
+      && /"matched": 4/.test(built.text) && /"bank_rows_unmatched": 1/.test(built.text)
+      && /"posted_cash_without_bank_evidence": 1/.test(built.text),
+      built.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 6. A filter by source document, and the note that a filtered set is not expected to
+    // balance: an honest subset, not a second ledger.
+    const byDoc = await c.tool("ledger_lines", { ...period, source_id: "INV-2026-0001" });
+    ok(`${tier}: ledger_lines filtered to INV-2026-0001 returns only that document's legs`,
+      !byDoc.isError && /INV-2026-0001/.test(byDoc.text) && !/ASSET-2026-0002/.test(byDoc.text),
+      byDoc.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 7. trial_balance and ledger_lines are free and unlimited on EVERY tier: whether the
+    // books add up is the question this server exists for, so neither may carry a buy link.
+    ok(`${tier}: neither the trial balance nor the ledger lines are ever metered or carry a checkout link`,
+      !/mcp\.zovo\.one\/buy/.test(tb.text) && !/mcp\.zovo\.one\/buy/.test(cash.text),
+      tb.text.replace(/\s+/g, " ").slice(0, 100));
+
+    // 8. The free cap is on the PERIOD. Three distinct periods a calendar month; the fourth
+    // is refused on free, and a rebuild of one already in the register is free forever.
+    let fourth = null;
+    for (const m of ["03", "04", "05"]) {
+      fourth = await c.tool("ledger_build", { from: `2026-${m}-01`, to: `2026-${m}-28`, currency: "EUR" });
+    }
+    ok(`${tier}: the fourth distinct period is ${tier === "pro" ? "allowed" : "refused, naming the tool and the $19 price"}`,
+      tier === "pro" ? !fourth.isError && /"balanced": true/.test(fourth.text)
+        : fourth.isError && /\$19/.test(fourth.text)
+          && /mcp\.zovo\.one\/buy\/cash-book\?src=cash-book\.ledger_build/.test(fourth.text),
+      fourth.text.replace(/\s+/g, " ").slice(0, 140));
+    const rebuild = await c.tool("ledger_build", period);
+    ok(`${tier}: rebuilding a period already in the register is free on every tier and keeps its figures`,
+      !rebuild.isError && /"debits_minor": 1638300/.test(rebuild.text) && /"first_built"/.test(rebuild.text),
+      rebuild.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 9. The two Pro gates, with the single and the bundle checkout links on the refusals.
+    const close = await c.tool("month_close", { month: "2026-06", currency: "EUR" });
+    ok(`${tier}: month_close is ${tier === "pro" ? "answered with three exceptions and a snapshot" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !close.isError && /"invoice-no-vat-rate": 1/.test(close.text)
+        && /"bank-debit-unexplained": 1/.test(close.text) && /"cash-without-bank-evidence": 1/.test(close.text)
+        && /"closed": true/.test(close.text)
+        : close.isError && /mcp\.zovo\.one\/buy\/cash-book\?src=cash-book\.month_close/.test(close.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=cash-book\.month_close\.bundle/.test(close.text),
+      close.text.replace(/\s+/g, " ").slice(0, 150));
+    const rep = await c.tool("ledger_report", period);
+    ok(`${tier}: ledger_report is ${tier === "pro" ? "answered per account" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !rep.isError && /"account": "receivables"/.test(rep.text)
+        : rep.isError && /mcp\.zovo\.one\/buy\/cash-book\?src=cash-book\.ledger_report/.test(rep.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=cash-book\.ledger_report\.bundle/.test(rep.text),
+      rep.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 10. No sibling store is ever written. This ledger is a view over six books it does not
+    // own, and the only file it owns is its own register of periods.
+    const invBytes = readFileSync(join(dataHome, "mcp-servers", "invoice", "invoices.json"), "utf8");
+    const bankBytes = readFileSync(join(dataHome, "mcp-servers", "bank-statement", "transactions.json"), "utf8");
+    ok(`${tier}: not one byte of the invoice or bank store changed across every tool above`,
+      /"paid_minor": 123000/.test(invBytes) && !/ledger|entry|bank_ref/.test(invBytes)
+      && /"id": "tx5"/.test(bankBytes) && !/bank_ref|matched/.test(bankBytes),
+      `${invBytes.length} + ${bankBytes.length} bytes`);
+  },
   "statement-of-account": async (c, tmp, tier, ok) => {
     // The three books this server reports on belong to servers/invoice, servers/billing-docs
     // and servers/deposits. They are seeded on disk directly, in the record shapes those
@@ -896,12 +1004,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 24 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 24 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 25 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 25 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -1200,6 +1308,76 @@ async function remote() {
       /friendly reminder/.test(sdunTxt) && /EUR 600\.00/.test(sdunTxt) && /DE89370400440532013000/.test(sdunTxt) && /No late fee, interest or cost is stated/.test(sdunTxt) &&
       !!sid && sbody.startsWith("<!doctype html") && sbody.includes(`<title>Statement of account ${sid}`) && sbody.includes(`<h1>STATEMENT OF ACCOUNT ${sid}`) && sbody.includes(sclient) && (sres?.headers.get("content-type") || "").startsWith("text/html"),
       `${sid} ${sdl ? "link" : "no link"} ${sres?.headers.get("content-type")}`);
+    // Extension 16: /mcp/cash-book. SIX books, one double-entry ledger, and none of the six
+    // is written. Four are reached through their published engines (/mcp/invoice,
+    // /mcp/billing-docs, /mcp/deposits, /mcp/asset-register) and two by PATH inside the
+    // virtual filesystem (/mcp/expense-tracker and /mcp/bank-statement publish no ./lib),
+    // so this seeds three endpoints in April 2026 EUR and derives the month from all of
+    // them. The tenant behind the bundle key carries April rows from earlier runs, so the
+    // period TOTALS are not a fixed number and the arithmetic is asserted per DOCUMENT,
+    // through the source_id filter, on ids minted by this run: a 1,230.00 invoice
+    // (1,000.00 net + 23 percent) of which 630.00 is received, a 1,000.00 deposit of which
+    // 600.00 is applied to it, and a 123.00 VAT-inclusive expense. What is asserted on the
+    // whole period is the thing that must hold whatever else is in it: it balances.
+    const cclient = `Cash Book Probe ${Date.now()}`;
+    await rpc("invoice", { jsonrpc: "2.0", id: 101, method: "tools/call", params: { name: "client_add", arguments: { name: cclient, address: "1 Probe Street, Warsaw" } } });
+    const cinvc = await rpc("invoice", { jsonrpc: "2.0", id: 102, method: "tools/call", params: { name: "invoice_create", arguments: { client: cclient, currency: "EUR", issue_date: "2026-04-03", due_days: 14, items: [{ description: "Consulting", quantity: 10, unit_price: 100, tax_rate: 23 }] } } });
+    const cinv = (JSON.stringify(cinvc).match(/INV-\d{4}-\d{4}/) || [])[0];
+    await rpc("invoice", { jsonrpc: "2.0", id: 103, method: "tools/call", params: { name: "invoice_mark_paid", arguments: { number: cinv, amount: 630, paid_date: "2026-04-20", method: "bank transfer" } } });
+    const cbexp = await rpc("expense-tracker", { jsonrpc: "2.0", id: 104, method: "tools/call", params: { name: "expense_add", arguments: { amount: 123, currency: "EUR", category: "travel", merchant: "Probe Rail", date: "2026-04-05", vat_rate: 23, billable: false } } });
+    const cxid = (JSON.stringify(cbexp).match(/Saved ([0-9a-f]{8})/) || [])[1];
+    const cdep = await rpc("deposits", { jsonrpc: "2.0", id: 105, method: "tools/call", params: { name: "deposit_record", arguments: { client: cclient, amount_minor: 100000, currency: "EUR", kind: "retainer", received_date: "2026-04-01" } } });
+    const cdid = (JSON.stringify(cdep).match(/DEP-\d{4}-\d{4}/) || [])[0];
+    await rpc("deposits", { jsonrpc: "2.0", id: 106, method: "tools/call", params: { name: "deposit_apply", arguments: { id: cdid, invoice: cinv, amount_minor: 60000, date: "2026-04-18" } } });
+    const cbld = await rpc("cash-book", { jsonrpc: "2.0", id: 107, method: "tools/call", params: { name: "ledger_build", arguments: { from: "2026-04-01", to: "2026-04-30", currency: "EUR" } } });
+    let cbk = {}; try { cbk = JSON.parse(cbld.result.content[0].text); } catch { cbk = {}; }
+    const cbal = Object.fromEntries((cbk.accounts || []).map((x) => [x.account, x.balance_minor]));
+    // All SEVEN source rows read - six stores, with billing-docs counted twice because a
+    // credit note and a purchase order are different documents - and every one of them
+    // reporting `read: true` rather than a silent zero. The two read BY PATH,
+    // expense-tracker and bank-statement, are the ones that prove the hydration: they
+    // publish no ./lib, so their data.json is opened at
+    // /home/mcp/.local/share/mcp-servers/<server>/data.json inside the virtual filesystem,
+    // and the expense below could not appear in the ledger if that path resolved to nothing.
+    ok("hosted ledger_build derives ONE balanced double-entry ledger from SIX books it never writes, all seven source rows read, the register row carrying the period",
+      cbk.balanced === true && cbk.imbalance_minor === 0 && cbk.debits_minor === cbk.credits_minor && cbk.debits_minor > 0 &&
+      cbk.currency === "EUR" && cbk.built?.from === "2026-04-01" && cbk.built?.to === "2026-04-30" && cbk.built?.currency === "EUR" &&
+      cbal.cash !== undefined && cbal.deposits_held !== undefined && cbal["expenses:travel"] !== undefined &&
+      (cbk.sources || []).length === 7 && (cbk.sources || []).every((r) => r.read === true) &&
+      (cbk.sources || []).map((r) => r.store).join(",") === "invoice,billing-docs credit notes,billing-docs purchase orders,deposits,expense-tracker,bank-statement,asset-register",
+      `${cinv} ${cdid} ${cxid} ${cbk.lines} lines ${cbk.debits}`);
+    // The question this endpoint exists for, free on every tier: is the ledger zero.
+    const ctb = await rpc("cash-book", { jsonrpc: "2.0", id: 108, method: "tools/call", params: { name: "trial_balance", arguments: { from: "2026-04-01", to: "2026-04-30", currency: "EUR" } } });
+    let cbt = {}; try { cbt = JSON.parse(ctb.result.content[0].text); } catch { cbt = {}; }
+    ok("hosted trial_balance comes to zero TO THE MINOR UNIT with no offenders and no plug: nothing is balanced by a forced figure, so a document whose own cbLegs did not add up would still make it non-zero",
+      cbt.balanced === true && cbt.imbalance_minor === 0 && cbt.imbalance === "EUR 0.00" &&
+      cbt.debits_minor === cbt.credits_minor && cbt.debits_minor === cbk.debits_minor &&
+      (cbt.offenders || []).length === 0 && /equal the credits to the minor unit/.test(cbt.verdict || ""),
+      `${cbt.imbalance} ${cbt.debits} ${(cbt.accounts || []).length} accounts`);
+    // Per DOCUMENT, on ids this run minted. The invoice: 1,230.00 of receivables against
+    // 1,000.00 of revenue and 230.00 of VAT output, then the 630.00 receipt debiting cash.
+    // The deposit: cash when it ARRIVED, and the 600.00 application debiting the LIABILITY
+    // and never cash - the money arrived once, so posting the application to cash would
+    // receive it twice and the trial balance would still come to zero. The expense: the VAT
+    // comes OUT of the 123.00 gross, 100.00 to the category and 23.00 to VAT input.
+    const clInv = await rpc("cash-book", { jsonrpc: "2.0", id: 109, method: "tools/call", params: { name: "ledger_lines", arguments: { from: "2026-04-01", to: "2026-04-30", currency: "EUR", source_id: cinv } } });
+    const clDep = await rpc("cash-book", { jsonrpc: "2.0", id: 110, method: "tools/call", params: { name: "ledger_lines", arguments: { from: "2026-04-01", to: "2026-04-30", currency: "EUR", source_id: cdid } } });
+    const clExp = await rpc("cash-book", { jsonrpc: "2.0", id: 111, method: "tools/call", params: { name: "ledger_lines", arguments: { from: "2026-04-01", to: "2026-04-30", currency: "EUR", source_id: cxid } } });
+    const cbLegs = (r) => { try { return JSON.parse(r.result.content[0].text).lines.map((l) => `${l.account}:${l.debit_minor}:${l.credit_minor}:${l.source}`).sort().join(" "); } catch { return "unparsed"; } };
+    const cbLi = cbLegs(clInv), cbLd = cbLegs(clDep), cbLx = cbLegs(clExp);
+    const ccsv = await rpc("cash-book", { jsonrpc: "2.0", id: 112, method: "tools/call", params: { name: "ledger_export_csv", arguments: { from: "2026-04-01", to: "2026-04-30", currency: "EUR" } } });
+    const ccsvTxt = JSON.stringify(ccsv).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const cbdl = (ccsvTxt.match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const cbres = cbdl ? await fetch(cbdl) : null;
+    const cbbody = cbres ? await cbres.text() : "";
+    const cbrows = cbbody.trim() ? cbbody.trim().split("\n") : [];
+    ok("hosted ledger_lines posts each document by its own rule - invoice 1,230.00 receivables against revenue and VAT output plus a 630.00 receipt into cash, the deposit applied against the LIABILITY and never against cash, expense VAT taken OUT of the 123.00 gross - and ledger_export_csv hands the whole period back as a text/csv download, one row per leg plus the header",
+      cbLi === "cash:63000:0:invoice receivables:0:63000:invoice receivables:123000:0:invoice revenue:0:100000:invoice vat_output:0:23000:invoice" &&
+      cbLd === "cash:100000:0:deposits deposits_held:0:100000:deposits deposits_held:60000:0:deposits receivables:0:60000:deposits" &&
+      cbLx === "cash:0:12300:expense-tracker expenses:travel:10000:0:expense-tracker vat_input:2300:0:expense-tracker" &&
+      (cbres?.headers.get("content-type") || "").startsWith("text/csv") && cbrows.length === cbk.lines + 1 &&
+      cbrows[0].startsWith('"date","entry","account"') && cbrows[0].includes('"bank_ref"') && cbbody.includes(`"${cinv}"`),
+      `${cbLi.slice(0, 60)} | ${cbres?.headers.get("content-type")} ${cbrows.length} rows`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
@@ -1243,7 +1421,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
