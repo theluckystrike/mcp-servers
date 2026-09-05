@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T00:16:25.801Z",
-  "total_commits": 363,
+  "generated_at": "2026-09-05T00:16:50.990Z",
+  "total_commits": 364,
   "sessions": 41,
   "loops": [
     {
@@ -71,7 +71,7 @@
     {
       "name": "Loop 14: per-tool click sources, profile-first, backlinks, v0.9.3",
       "sessions": 2,
-      "commits": 78
+      "commits": 79
     }
   ],
   "rows": [
@@ -502,14 +502,15 @@
       "at": "2026-09-05T00:16:25.623Z",
       "note": "loop 14 closed: v0.9.3 (released by hand after two agents stalled under machine load), 47 registry entries verified, 20 mirrors, validation 471/471, 881 tests; upgrade links now carry per-tool src at 73 gate sites and every storefront buy link (18 human clicks in 7d, most from the store home); profile-first sweep made 12 arguments across six servers default to the shared business profile; worthmyclaim and dscrradar now link in via live-mirror deploys (11 estate sites); TensorBlock resubmitted as one bundle entry (PR 2164); registry KPI reader rewritten per name (46-47 of 47); round 16 deferred; GSC key still dataless; downloads 1503; sales 0",
       "loop": "Loop 14: per-tool click sources, profile-first, backlinks, v0.9.3",
-      "commits": 6,
+      "commits": 7,
       "subjects": [
         "remote: a Revolut-shaped bank fixture for url uploads",
         "Record loop 14 metrics and validation data",
         "timezone: round 15 working-hours test spans a full week so a weekend start cannot empty the window",
         "Release v0.9.3: bump 21 packages, 38 internal ranges and 67 server manifests",
         "sha256 of the v0.9.3 bundles into every manifest that references one",
-        "Record release v0.9.3"
+        "Record release v0.9.3",
+        "Loop 14 close: v0.9.3 dashboard, per-name registry KPI, sprint log loop 14"
       ]
     }
   ]
