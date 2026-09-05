@@ -843,6 +843,64 @@ async function run(name) {
     const refunded = pick(await c.call("deposit_refund", refundArgs));
     resultLine(`${refunded.refunded.amount} back to the client by ${refunded.refunded.method}: ${refunded.deposit.id} is ${refunded.deposit.status}, held ${refunded.deposit.held}`);
   }
+  if (name === "per-diem") {
+    // The traveller on a saved trip comes from the suite's shared business profile, the same
+    // file every other server reads, so the fixture writes it where that profile lives rather
+    // than teaching this server a second place to look.
+    const { writeFileSync, mkdirSync } = await import("node:fs");
+    const profileDir = join(c.sandbox, "data", "mcp-servers", "profile");
+    mkdirSync(profileDir, { recursive: true });
+    writeFileSync(join(profileDir, "business.json"), JSON.stringify({
+      name: "Lucky Strike Software", default_currency: "PLN", timezone: "Europe/Warsaw",
+    }, null, 2));
+
+    // These tools answer in JSON and a whole answer does not fit the recorded frame, so the
+    // demo prints picked fields. Every string below is copied out of the response, never rebuilt.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Price a trip on the tax authority's own table, and be refused when the country is not bundled.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const plArgs = {
+      scheme: "pl", destination: "Poland",
+      start: "2026-03-02T08:00:00+01:00", end: "2026-03-04T18:00:00+01:00",
+      meals_provided: [["breakfast"], [], []], lodging_nights: 2,
+    };
+    toolLine("perdiem_calc", plArgs);
+    const pl = pick(await c.call("perdiem_calc", plArgs));
+    resultLine(`Krakow, ${pl.total_hours} hours, ${pl.days.length} diet days:`);
+    for (const d of pl.days) {
+      const less = d.meal_deduction_minor ? ` less ${d.meals_provided.join(", ")} PLN ${(d.meal_deduction_minor / 100).toFixed(2)}` : "";
+      resultLine(`  day ${d.day} ${d.hours}h ${d.basis}: PLN ${(d.gross_minor / 100).toFixed(2)}${less} = PLN ${(d.amount_minor / 100).toFixed(2)}`);
+    }
+    resultLine(`  diets ${pl.subsistence} + lodging ${pl.lodging_nights} x PLN 67.50 = ${pl.lodging} -> total ${pl.total}`);
+    await sleep(STEP_DELAY_MS);
+
+    const ukArgs = {
+      scheme: "uk", destination: "United Kingdom",
+      start: "2026-03-10T07:00:00Z", end: "2026-03-10T23:00:00Z",
+      meals_provided: [["lunch"]],
+    };
+    toolLine("perdiem_calc", ukArgs);
+    const uk = pick(await c.call("perdiem_calc", ukArgs));
+    const ukd = uk.days[0];
+    resultLine(`${ukd.hours}h, ${ukd.basis}: GBP ${(ukd.gross_minor / 100).toFixed(2)} less ${ukd.meals_provided.join(", ")} GBP ${(ukd.meal_deduction_minor / 100).toFixed(2)} = ${uk.total}`);
+    await sleep(STEP_DELAY_MS);
+
+    // The refusal that matters. An earlier build fell back to country.includes(destination),
+    // and "romania".includes("oman") is true, so Oman came back priced at Romania's EUR 42.00.
+    const omanArgs = { scheme: "pl", destination: "Oman", start: plArgs.start, end: plArgs.end };
+    toolLine("perdiem_calc", omanArgs);
+    resultLine(await c.call("perdiem_calc", omanArgs));
+    await sleep(STEP_DELAY_MS);
+
+    const tripArgs = { name: "Krakow client workshop", project: "acme", ...plArgs };
+    toolLine("trip_record", tripArgs);
+    const trip = pick(await c.call("trip_record", tripArgs));
+    const r = trip.recorded;
+    resultLine(`${r.id} "${r.name}" for ${r.traveller}, ${r.destination}, ${r.days} days: ${r.total}`);
+    resultLine(`  ${trip.notes[trip.notes.length - 1]}`);
+  }
   await sleep(STEP_DELAY_MS);
   c.close();
   if (ecb) ecb.close();
