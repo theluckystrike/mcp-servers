@@ -1,0 +1,8 @@
+# Release v0.9.3 (2026-09-05)
+
+status: done
+evidence: 21 package.json and 38 internal ranges at 0.9.3; 67 manifests bumped, 47 identifier URLs moved; release-check green (0 gaps); npm test 881 tests, 869 pass, 0 fail after one date-dependent timezone test was widened to a full week (a Friday-night start left a 3-day window with no weekday); 20 bundles built, three boot-checked at 0.9.3 (zip, barcode, invoice); GitHub release v0.9.3 with 20 assets; sha256 written into the 47 bundle-referencing manifests; registry 47 of 47 verified at 0.9.3 by fully qualified name; mirrors synced (see log note below).
+artifacts: https://github.com/theluckystrike/mcp-servers/releases/tag/v0.9.3, servers/*/server*.json, data/distribution.json
+cost: two release agents stalled at startup under machine load (fileproviderd, fseventsd and a runaway `pmset -g log` at 100 percent CPU; load average above 20), so the orchestrator ran the release by hand in bounded background steps. The publish loop was interrupted once after 30 of 47; the rerun reported 17 "duplicate version" errors, which is the registry refusing a re-publish of an entry the first pass had already landed. Verification by name settled it.
+failures: none open. Round 16 (timezone, bank-statement, expense-tracker hosted re-run) did not run this loop: the agent was lost mid-run when the machine stalled.
+insight: a "publish failed" line from mcp-publisher is not evidence of a missing entry. Duplicate-version 400s after an interrupted run mean the entry exists; only a search by fully qualified name at low concurrency is evidence either way. Running a release as a dozen short foreground and background steps survives a loaded machine where one long agent turn does not.
