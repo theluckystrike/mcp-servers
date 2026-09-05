@@ -69,7 +69,18 @@ function guard<A>(fn: (a: A) => Promise<{ content: { type: "text"; text: string 
   };
 }
 
+/** A leading `<scheme>://` means the caller has a URL, not a local path. Checked BEFORE
+ * any resolution, so a URL is never joined against the server's cwd and the refusal
+ * never has a path in it, let alone one that leaks the cwd. */
+const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
+
+// D-R83: a URL handed to a path argument used to be silently resolved as a relative
+// filesystem path, producing an error that leaked the server's own cwd. Refused by
+// name instead.
 function outPathOf(p: string): string {
+  if (URL_SCHEME_RE.test(p)) {
+    throw new Error(`"${p}" is a URL, not a file path; this tool writes local files. Give a local path to write to.`);
+  }
   const abs = isAbsolute(p) ? p : pathResolve(process.cwd(), p);
   const dir = dirname(abs);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -336,6 +347,12 @@ server.registerTool("ics_import", {
     raw = got.text; source = "url"; ref = got.finalUrl;
   } else if (a.path && a.path.trim()) {
     const p = a.path.trim().replace(/^~(?=\/|$)/, process.env.HOME ?? "~");
+    if (URL_SCHEME_RE.test(p)) {
+      throw new Error(
+        `"${p}" is a URL, not a file path; this tool reads local files. Use the url argument of this ` +
+        `same tool (ics_import {url: ..., name: ...}) instead of path.`,
+      );
+    }
     const abs = isAbsolute(p) ? p : pathResolve(process.cwd(), p);
     if (!existsSync(abs)) throw new Error(`no file at ${abs}.`);
     const st = statSync(abs);
