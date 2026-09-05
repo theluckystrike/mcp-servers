@@ -17,7 +17,7 @@ export const PRICE_BUNDLE_USD = 39;
  * the number of sellable servers on disk, so adding a server fails the suite rather than
  * leaving "all 22 servers" stale in every cap message on every server.
  */
-export const SERVER_COUNT = 24;
+export const SERVER_COUNT = 25;
 
 /** The bundle checkout URL for a cap message, tagged `<product>.<tool>.bundle`. */
 export function bundleLink(src: string, tenant?: string): string {

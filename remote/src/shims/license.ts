@@ -12,7 +12,7 @@ export const CHECKOUT_BASE = "https://mcp.zovo.one";
 export const PRICE_SINGLE_USD = 19;
 export const PRICE_BUNDLE_USD = 39;
 /** Mirrors packages/mcp-license/src/index.ts. One number, asserted equal by its test. */
-export const SERVER_COUNT = 24;
+export const SERVER_COUNT = 25;
 export const STALE_MS = 30_000;
 export const GUIDE_URL = "https://mcp.zovo.one/guides/mcp-server-free-vs-pro";
 
