@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T23:15:53.158Z",
-  "total_commits": 567,
+  "generated_at": "2026-09-05T23:15:59.652Z",
+  "total_commits": 568,
   "sessions": 52,
   "loops": [
     {
@@ -121,7 +121,7 @@
     {
       "name": "Loop 24: amortization, free-tier decision, backlink re-check, v0.16.0",
       "sessions": 1,
-      "commits": 78
+      "commits": 79
     }
   ],
   "rows": [
@@ -727,7 +727,7 @@
       "at": "2026-09-05T23:15:53.007Z",
       "note": "loop 24 closed: v0.16.0 with amortization (loan and lease schedules, effective interest, early repayment, cash-book journal lines; rounding the payment once is a term change; audit 18/18; the twenty-sixth server and hosted endpoint), 71 manifests verified, 1207 tests, validation 762/762, 27 bundles; cash-book free tier documented and its export gate names the free evidence; cash-book hosted 17/18; all twelve estate backlinks still serve; release checker number-word table extended; round 31 stdio 15/18 with the lost points on client-side totals over refused data; downloads 3850; clicks 101/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 24: amortization, free-tier decision, backlink re-check, v0.16.0",
-      "commits": 64,
+      "commits": 65,
       "subjects": [
         "statement-of-account: products, server count 24, children, mcpb, mirrors, pages, facts, tools, setup, distribution row",
         "statement-of-account: Part 2 CLI audit and Part 1 gap re-verification, no defects found",
