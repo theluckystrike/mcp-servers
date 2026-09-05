@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.4/zip.mcpb",
       "version": "0.9.4",
-      "fileSha256": "97340f4ac31a0e73d55c002f720880c7991f9e7a914df71798972f57361c01c9",
+      "fileSha256": "9aedf4cce49b93a9fa7800277046d5bbcd771712c0f959924417324834bffd62",
       "transport": {
         "type": "stdio"
       },
