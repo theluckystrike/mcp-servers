@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T03:15:16.856Z",
+  "generated_at": "2026-09-05T03:15:39.424Z",
   "rounds": [
     {
       "round": 1,
@@ -363,7 +363,9 @@
     {
       "round": 16,
       "file": "user_value_r16.json",
-      "pct": null,
+      "score": 39,
+      "max": 42,
+      "pct": 93,
       "scenarios": 14,
       "per_server": {
         "bank-statement": {

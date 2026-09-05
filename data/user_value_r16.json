@@ -276,6 +276,19 @@
       "detail": "Asked only to 'import it as Main', the model imported correctly and then, in the same turn, set category rules, ran the August summary, ran recurring_detect and reconcile_expenses, and attempted statement_export - six tool calls the prompt never asked for, on a token metered at 600 calls/hour. This is not a server defect (every tool it called answered correctly, verified live by curl) but a client-side scope problem: agentic sonnet, given the whole allowlist up front and no instruction to wait for the next turn, pre-empted the rest of the conversation. It cost b2 nothing (it re-verified live rather than trusting memory) but it means the round's six prompts are no longer independent measurements of what each individual ask produces - b1 alone did the work of b1 through b5 plus a b6 attempt. Not scored as a 1 or 0 because nothing it did was wrong; scored a 2 because the import-only prompt did not get an import-only answer."
     }
   ],
-  "score": 39,
-  "max": 42
+  "totals": {
+    "score": 39,
+    "max": 42,
+    "per_server": {
+      "bank-statement": {
+        "score": 16,
+        "max": 18
+      },
+      "expense-tracker": {
+        "score": 12,
+        "max": 12,
+        "score_r15": 10
+      }
+    }
+  }
 }
