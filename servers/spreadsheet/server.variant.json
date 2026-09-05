@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/sheets",
   "description": "Read, filter and edit spreadsheet data - xlsx and csv - from your AI chat. Local processing.",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.3/spreadsheet.mcpb",
-      "version": "0.9.3",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.4/spreadsheet.mcpb",
+      "version": "0.9.4",
       "fileSha256": "b03cec6640ddb4d05e327d3e0e1dd1b176e0b4435eab95e444269ed30f9524a6",
       "transport": {
         "type": "stdio"

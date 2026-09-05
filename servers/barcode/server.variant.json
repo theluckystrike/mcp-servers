@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/qr-code",
   "description": "QR codes from your AI chat: WiFi joins, vCards, SEPA payment codes, EAN-13. SVG or PNG.",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.3/barcode.mcpb",
-      "version": "0.9.3",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.9.4/barcode.mcpb",
+      "version": "0.9.4",
       "fileSha256": "2a8a48c67648619f0a551ac727b6cb4f2201dc7998e61ae12d4066fba2040352",
       "transport": {
         "type": "stdio"
