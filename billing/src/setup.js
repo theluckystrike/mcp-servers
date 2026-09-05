@@ -146,7 +146,7 @@ export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
  * twenty child processes and has no single connector URL. */
-const WEB_EXCLUDED = ["office-suite", "deposits"];
+const WEB_EXCLUDED = ["office-suite"];
 export function serversFor(clientId) {
   return clientId === "claude-web" ? SERVER_ORDER.filter((id) => !WEB_EXCLUDED.includes(id)) : SERVER_ORDER;
 }
@@ -756,6 +756,7 @@ const WEB_ANGLE = {
   image: "The resized or watermarked file comes back as a one-hour download link rather than a path, the same trade every writing tool makes on the hosted route, so the practical habit is downloading it in the same session you ask for it.",
   quotes: "The quote and the invoice it becomes live in the same hosted store behind the token, so quote_accept writes the invoice the invoice connector then lists; quote_pdf comes back as a print-to-PDF HTML link, since there is no PDF renderer on the hosted route.",
   "billing-docs": "Credit notes and purchase orders are written against the same invoice store /mcp/invoice serves for this token, so an invoice raised on the hosted invoice endpoint can be credited here without a file changing hands; both PDFs and both text exports come back as one-hour download links rather than paths.",
+  deposits: "The deposit ledger and the invoices it pays down are the same store /mcp/invoice serves for this token, so applying a deposit here moves the balance on an invoice raised on the hosted invoice endpoint, with no file changing hands; the A4 statement comes back as a one-hour download link rather than a path, and the text statement, which is what most people actually send, needs no download at all.",
   zip: "An archive goes in through zip_upload by name and every extracted entry comes back as its own one-hour download link, at most twenty per request; zip_bundle_month stays a local-install tool because the hosted route writes no folders for it to collect.",
   "bank-statement": "There is no local CSV to point at over a browser connector, so the statement goes in through bank_upload first, by name, and the export comes back as a one-hour download link; the expense ledger it reconciles against is the same one behind the token.",
   barcode: "SVG still comes back inline, since it is text, but PNG becomes a one-hour download link instead of a path on disk, and invoice_payment_qr reads the IBAN from the same shared business profile behind the token that the invoice connector already wrote.",

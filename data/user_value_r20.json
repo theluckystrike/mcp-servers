@@ -1,0 +1,161 @@
+{
+  "at": "2026-09-05T13:35:00Z",
+  "round": 20,
+  "compares_to": "nothing; deposits is the twenty-first server and no previous round has ever covered it, so round 20 is its first measurement and there is no earlier score to move",
+  "scope": "FIRST-COVERAGE round for deposits as a local stdio install: six natural-language prompts over one conversation covering the whole life of one client deposit, recorded when the money arrives, applied to an invoice that ALREADY carries an earlier payment (the point of the round), refused when it would pay out more than is held, refused again across a currency boundary, asked for as a balance, then refunded and turned into the statement text you would email. The invoice server was registered alongside it because a deposit is meaningless without a real invoice to apply it to; invoice tools were available to the model but only for lookup.",
+  "method": "Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config /private/tmp/uv-r20dep/mcp.json with two stdio entries, deposits -> node /Users/mike/mcp-servers/servers/deposits/dist/index.js (v0.10.0, 10 tools) and invoice -> node /Users/mike/mcp-servers/servers/invoice/dist/index.js, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation, one bounded request per prompt under timeout 240. Allowlist: 12 explicit mcp__deposits__<tool> and mcp__invoice__<tool> entries written out by name, because --allowedTools mcp__* grants nothing (D-E4). The CLI's own tools DENIED (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r20dep/cwd. Fresh XDG_DATA_HOME /private/tmp/uv-r20dep/data and XDG_CONFIG_HOME /private/tmp/uv-r20dep/config and MCP_LICENSE_KEY empty (free tier) set in each server's own env block inside mcp.json, so both servers share one store and neither can see any earlier round's data. Seeded once before the run by writing the invoice server's own field shapes directly: the shared business profile (Nova Studio, ul. Prosta 51 Warszawa, PL1234567890, EUR, 23 percent), one client (Acme Ltd, Dublin, IE9876543Q) and two invoices. INV-2026-0001 is the one the round turns on: EUR 1,230.00 with paid_minor ALREADY at 20000, a EUR 200.00 bank transfer dated 2026-09-03, so applying a deposit on top of it is the exact case where invoice_mark_paid would have overwritten. INV-2026-0002 is USD 400.00, added so the currency refusal has a real invoice to refuse against. Tool-call counts exclude the client's ToolSearch schema lookups. Host machine day Saturday 2026-09-05. One unscored direct read of the store after the run is recorded under verification.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "totals": {
+    "score": 16,
+    "max": 18,
+    "pct": 89,
+    "tool_calls": 6,
+    "seconds": 38.1,
+    "tool_errors": 0,
+    "clarifying_turns": 2,
+    "per_server": {
+      "deposits": {
+        "score": 16,
+        "max": 18,
+        "tool_calls": 6,
+        "seconds": 38.1
+      }
+    },
+    "calls_per_tool": {
+      "deposit_record": 1,
+      "deposit_apply": 2,
+      "deposit_refund": 1,
+      "deposit_statement_text": 1
+    }
+  },
+  "scenarios": [
+    {
+      "server": "deposits",
+      "surface": "stdio/deposits",
+      "id": "d1",
+      "prompt": "Acme Ltd wired us a 500 euro security deposit today, reference SEPA 88213. Please record it.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 8.0,
+      "tools": [
+        "deposit_record"
+      ],
+      "note": "One deposit_record {client: Acme Ltd, amount_minor: 50000, currency: EUR, kind: security, reference: SEPA 88213, received_date: 2026-09-05} produced DEP-2026-0001 on the first turn. The model converted 500 euro to 50000 minor units itself and picked kind security from the words in the prompt; nothing was asked for. The client block filled itself in from the shared invoice-server client list (address, email, VAT id) although the prompt named only the company. The reply back to the user named the id, the amount, the date, the reference and the status held."
+    },
+    {
+      "server": "deposits",
+      "surface": "stdio/deposits",
+      "id": "d2",
+      "prompt": "Apply 300 euro of that deposit against invoice INV-2026-0001.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 7.1,
+      "tools": [
+        "deposit_apply"
+      ],
+      "note": "One deposit_apply {id: DEP-2026-0001, invoice: INV-2026-0001, amount_minor: 30000}. This is the case the server exists for: the invoice already carried a EUR 200.00 bank transfer from 2026-09-03, and the tool replied paid EUR 500.00 of EUR 1230.00, balance due EUR 730.00, status partial. Reading the invoice store afterwards, paid_minor is 50000, so the earlier payment was added to rather than replaced. Routing the same deposit through the invoice server's own invoice_mark_paid would have left 30000 and lost the transfer."
+    },
+    {
+      "server": "deposits",
+      "surface": "stdio/deposits",
+      "id": "d3",
+      "prompt": "Now apply another 400 euro of the same deposit to that invoice.",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 3.3,
+      "tools": [],
+      "note": "The model refused the over-application itself, without calling deposit_apply, and this time every number it used was right: EUR 200.00 remaining of the original EUR 500.00 with EUR 300.00 already applied, and it offered to apply the EUR 200.00 instead. Nothing wrong was stored and nothing was invented, so this is a 2 rather than the 1 the same shape scored in round 19 (D-R86). It is still not a 3: the server's own refusal, which a direct probe confirms reads DEP-2026-0001 holds EUR 200.00 and this would apply EUR 400.00. A deposit cannot pay out more than was received. Nothing was changed., is the text the user should have seen, and a model that decides refusals for itself is one arithmetic slip away from refusing something the server would have allowed."
+    },
+    {
+      "server": "deposits",
+      "surface": "stdio/deposits",
+      "id": "d4",
+      "prompt": "Can we use what's left of Acme's deposit against INV-2026-0002?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 6.0,
+      "tools": [
+        "deposit_apply"
+      ],
+      "note": "The model tried the call rather than reasoning about it, and the server refused: DEP-2026-0001 is held in EUR and INV-2026-0002 is in USD. A deposit is applied at its own currency, never converted here: refund it and record it again in USD, or apply a USD deposit. Nothing was changed. The model relayed both the reason and the two ways out verbatim instead of paraphrasing them, which is exactly what d3 did not do."
+    },
+    {
+      "server": "deposits",
+      "surface": "stdio/deposits",
+      "id": "d5",
+      "prompt": "How much of Acme's money are we still holding, and since when?",
+      "score": 2,
+      "tool_calls": 0,
+      "seconds": 3.3,
+      "tools": [],
+      "note": "The answer was right, EUR 200.00 held on DEP-2026-0001 received 2026-09-05, but it came out of the conversation rather than out of the ledger: deposit_balance was never called. In this run the two agreed. Answering how much of theirs am I holding from chat memory instead of the store is the specific failure this server exists to prevent, and in a session that had not just done the arithmetic it would be a guess. Recorded as D-R88."
+    },
+    {
+      "server": "deposits",
+      "surface": "stdio/deposits",
+      "id": "d6",
+      "prompt": "Refund what's left to them by bank transfer, and send me the statement text I can email over.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 10.4,
+      "tools": [
+        "deposit_refund",
+        "deposit_statement_text"
+      ],
+      "note": "deposit_refund {id: DEP-2026-0001, method: bank transfer to the account it came from} with no amount refunded the whole EUR 200.00 still held, then deposit_statement_text returned the three movements in date order with Received EUR 500.00, Applied to invoices EUR -300.00, Refunded EUR -200.00 and HELD EUR 0.00, closing Nothing of yours is held any more. The model pasted the statement through unedited. The invoice was not touched by the refund, which is the intended split: giving a client their own money back is not a payment of a bill."
+    }
+  ],
+  "verification": [
+    {
+      "claim": "deposit_apply ADDS to the invoice's paid_minor rather than setting it",
+      "evidence": "the seeded INV-2026-0001 carried paid_minor 20000 (a EUR 200.00 transfer dated 2026-09-03); after d2 applied EUR 300.00, the invoice server's own invoices.json reads paid_minor 50000, status partial. The tool's reply said paid EUR 500.00 of EUR 1230.00, balance due EUR 730.00, and the store agrees.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A deposit is never converted across currencies",
+      "evidence": "d4's raw tool result is an isError naming both currencies and both ways out; nothing was written on either side and the deposit still held EUR 200.00 immediately afterwards.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The stored movements are what the statement is built from",
+      "evidence": "deposits.json after the run holds one application (2026-09-05, INV-2026-0001, 30000) and one refund (2026-09-05, 20000, bank transfer to the account it came from) on DEP-2026-0001, and those are the two movement lines the statement printed, with the received row.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The free-tier counter is stated on the write",
+      "evidence": "the deposit_record reply carried Free tier: 1 of 5 deposits recorded in 2026-09. deposit_statement_pdf and deposits_report are Pro.",
+      "verdict": "PASS"
+    }
+  ],
+  "defects": [
+    {
+      "id": "D-R88",
+      "server": "deposits",
+      "status": "open, client-side",
+      "note": "On d5 the model answered how much are we holding from the conversation instead of calling deposit_balance. It was right, because it had just applied the money itself in the same session, and it would be a guess in any session that had not. The tool exists and is free on every tier; the fix direction is on the client side of the boundary, in the tool description or the prompt, not in the server. Same family as D-R86 from round 19: the model substituting its own reasoning for a call the server would have answered exactly."
+    },
+    {
+      "id": "D-R89",
+      "server": "deposits",
+      "status": "open, cosmetic",
+      "note": "The statement column truncates a long refund method mid-word: DEP-2026-0001 refunded (bank transfer to the account, with the closing bracket lost. The number beside it is correct and the full method is in the store, but the line reads as if it were cut off, which it is. Fix direction: elide with a marker rather than a hard slice, or wrap the method onto the following line."
+    }
+  ],
+  "artifacts": {
+    "run_dir": "/private/tmp/uv-r20dep (scratch, not in the repo)",
+    "mcp_config": "/private/tmp/uv-r20dep/mcp.json, two stdio entries, fresh XDG dirs and empty MCP_LICENSE_KEY in each env block",
+    "transcripts": [
+      "/private/tmp/uv-r20dep/out/s1.jsonl",
+      "/private/tmp/uv-r20dep/out/s2.jsonl",
+      "/private/tmp/uv-r20dep/out/s3.jsonl",
+      "/private/tmp/uv-r20dep/out/s4.jsonl",
+      "/private/tmp/uv-r20dep/out/s5.jsonl",
+      "/private/tmp/uv-r20dep/out/s6.jsonl"
+    ],
+    "store": "/private/tmp/uv-r20dep/data/mcp-servers/{invoice,deposits}",
+    "seed_scripts": [
+      "/private/tmp/uv-r20dep/seed.mjs"
+    ]
+  },
+  "bottom_line": "16 of 18 on deposits' first measured round, and the question the server was built to answer came out right end to end through a real client: an invoice that already carried a EUR 200.00 bank transfer ended at paid_minor 50000 after a EUR 300.00 deposit was applied, not at 30000, which is what the invoice server's own invoice_mark_paid would have left. The currency refusal was relayed to the user verbatim, the refund left the invoice alone, and the statement printed the three movements the store actually holds. Both lost points are the same client-side shape rather than a server defect: on d3 and d5 the model answered from its own reasoning instead of calling a tool that was free, allowed and would have answered exactly. It happened to be right both times."
+}

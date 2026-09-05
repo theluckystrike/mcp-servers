@@ -416,12 +416,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 20 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 20 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 21 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 21 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -576,6 +576,34 @@ async function remote() {
     const bdrec = await rpc("billing-docs", { jsonrpc: "2.0", id: 69, method: "tools/call", params: { name: "purchase_order_receive", arguments: { id: bpid, note: "20 of 20 boxes" } } });
     const bdrep = await rpc("billing-docs", { jsonrpc: "2.0", id: 70, method: "tools/call", params: { name: "billing_docs_report", arguments: {} } });
     ok("hosted purchase_order_create (20 x EUR 24.50 + 23% = EUR 602.70) receives in full and billing_docs_report reads both documents", /602\.70/.test(JSON.stringify(bpo)) && /"status": "received"/.test(JSON.stringify(bdrec).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && /"purchase_orders": 1/.test(JSON.stringify(bdrep).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && /-1328\.40/.test(JSON.stringify(bdrep)), `${bpid} ${JSON.stringify(bdrep).slice(0, 90)}`);
+    // Extension 12: /mcp/deposits. The deposit is applied to the invoice quote_accept
+    // wrote above, which is the shared invoice store this endpoint hydrates read-WRITE:
+    // the payment has to be readable back on /mcp/invoice with the same token.
+    const dclient = `Probe Deposits ${Date.now()}`;
+    const drec = await rpc("deposits", { jsonrpc: "2.0", id: 71, method: "tools/call", params: { name: "deposit_record", arguments: { client: dclient, amount_minor: 50000, currency: "EUR", kind: "retainer", received_date: "2026-09-01", reference: "TRF-778" } } });
+    const did = (JSON.stringify(drec).match(/DEP-\d{4}-\d{4}/) || [])[0];
+    const dap = await rpc("deposits", { jsonrpc: "2.0", id: 72, method: "tools/call", params: { name: "deposit_apply", arguments: { id: did, invoice: qinv, amount_minor: 30000, note: "part payment" } } });
+    const dover = await rpc("deposits", { jsonrpc: "2.0", id: 73, method: "tools/call", params: { name: "deposit_apply", arguments: { id: did, invoice: qinv, amount_minor: 40000 } } });
+    const dil = await rpc("invoice", { jsonrpc: "2.0", id: 74, method: "tools/call", params: { name: "invoice_list", arguments: {} } });
+    const dilTxt = JSON.stringify(dil).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    // The payment has to be visible on the OTHER endpoint, on that invoice's own row, so
+    // the window is anchored on the number rather than on the document as a whole.
+    const dilRow = new RegExp(`"number": "${qinv}"[\\s\\S]{0,700}?"paid": "EUR 300\\.00",\\s*"balance_due": "EUR 1028\\.40"`).test(dilTxt);
+    ok("hosted deposit_apply writes the payment into the invoice /mcp/invoice holds for the same token (EUR 300.00 of EUR 1328.40 on invoice_list), and more than is held is refused",
+      !!did && /"balance_due": "EUR 1028\.40"/.test(JSON.stringify(dap).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && dilRow && /"status": "partial"/.test(dilTxt) && /holds EUR 200\.00 and this would apply EUR 400\.00/.test(JSON.stringify(dover)),
+      `${did} ${dilRow} ${JSON.stringify(dover).slice(0, 80)}`);
+    const dref = await rpc("deposits", { jsonrpc: "2.0", id: 75, method: "tools/call", params: { name: "deposit_refund", arguments: { id: did, amount_minor: 5000, method: "bank transfer" } } });
+    const dbal = await rpc("deposits", { jsonrpc: "2.0", id: 76, method: "tools/call", params: { name: "deposit_balance", arguments: { client: dclient } } });
+    ok("hosted deposit_refund leaves EUR 150.00 held (500.00 received - 300.00 applied - 50.00 refunded), and deposit_balance agrees",
+      /"held": "EUR 150\.00"/.test(JSON.stringify(dref).replace(/\\n/g, "\n").replace(/\\"/g, '"')) && /"held": "EUR 150\.00"/.test(JSON.stringify(dbal).replace(/\\n/g, "\n").replace(/\\"/g, '"')),
+      JSON.stringify(dbal).slice(0, 110));
+    const dpdf = await rpc("deposits", { jsonrpc: "2.0", id: 77, method: "tools/call", params: { name: "deposit_statement_pdf", arguments: { client: dclient, out_path: "probe-deposits" } } });
+    const ddl = (JSON.stringify(dpdf).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const dres = ddl ? await fetch(ddl) : null;
+    const dbody = dres ? await dres.text() : "";
+    ok("hosted deposit_statement_pdf download is the HTML statement served text/html, titled DEPOSIT STATEMENT, closing on what is still held",
+      dbody.startsWith("<!doctype html") && dbody.includes("<h1>DEPOSIT STATEMENT") && dbody.includes(dclient) && /EUR 150\.00 is still held/.test(dbody) && (dres?.headers.get("content-type") || "").startsWith("text/html"),
+      `${ddl ? "link" : "no link"} ${dres?.headers.get("content-type")}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";

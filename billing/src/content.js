@@ -2195,7 +2195,7 @@ money is still on your books.</p>
 <p>Free records 5 deposits a calendar month, counted by the date the money arrived. Applying to invoices,
 refunds, lists, balances and the text statement are unlimited on every tier, deliberately: a cap that
 trapped a client's deposit would be a limit on their money rather than on yours. Pro
-(<a href="/buy/deposits">$19 one-time</a>, or <a href="/bundle">$39 for the bundle</a>) removes the recording
+(<a href="/buy/deposits?src=store.guide.client-deposits-and-retainers-from-chat">$19 one-time</a>, or <a href="/bundle">$39 for the bundle</a>) removes the recording
 cap and adds the A4 statement PDF with your logo and the held, oldest-held and unapplied report.</p>`,
     faq: [
       { q: "Does applying a deposit actually change the invoice?", a: "Yes. deposit_apply writes paid_minor, paid_date and status onto the invoice record through the invoice engine's own store, under the invoice lock, so invoice_list and overdue_report stop chasing money you already hold. The one difference from invoice_mark_paid is that it adds to paid_minor rather than setting it, so a payment that arrived earlier is not erased." },
