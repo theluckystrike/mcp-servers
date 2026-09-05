@@ -2,7 +2,7 @@
 // MCP product KPIs, collected from live and local sources into data/kpi.json. Free endpoints only.
 // Categories follow the funnel a server lives in: discovered -> installed -> first call -> repeat use -> paid.
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const js = (p, d) => { try { return JSON.parse(readFileSync(`${ROOT}/${p}`, "utf8")); } catch { return d; } };
 const sh = (cmd, args, opts = {}) => { try { return execFileSync(cmd, args, { encoding: "utf8", timeout: 180000, maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PATH: `/opt/homebrew/bin:${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH}` }, ...opts }); } catch (e) { if (process.env.KPI_DEBUG) console.error("sh fail", cmd, args.slice(0, 3).join(" "), String(e.stderr || e.message).slice(0, 200)); return ""; } };
@@ -71,7 +71,7 @@ const clickToSession = clicks7d && stripe.human_sessions !== null && clicks7d > 
 
 // Sitemap size and registry entries
 let sitemapUrls = null; try { const x = await (await fetch("https://mcp.zovo.one/sitemap.xml")).text(); sitemapUrls = (x.match(/<loc>/g) || []).length; } catch {}
-let registryLatest = null; try { const r = await (await fetch("https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike&limit=100")).json(); const latest = {}; for (const s of (r.servers || []).filter((x) => (x._meta?.["io.modelcontextprotocol.registry/official"]?.status || x.server?.status || "active") !== "deprecated")) { const n = s.server.name; latest[n] = latest[n] && latest[n] > s.server.version ? latest[n] : s.server.version; } registryLatest = { entries: Object.keys(latest).length, hosted: (r.servers || []).filter((s) => s.server.remotes && s.server.remotes.length).map((s) => s.server.name).filter((v, i, a) => a.indexOf(v) === i).length }; } catch {}
+let registryLatest = null; try { const rel = JSON.parse(readFileSync(`${ROOT}/servers/office-suite/package.json`, "utf8")).version; const names = new Set(); for (const d of readdirSync(`${ROOT}/servers`)) { for (const f of readdirSync(`${ROOT}/servers/${d}`)) { if (/^server(\.[a-z0-9-]+)?\.json$/.test(f) && f !== "server.json" && f !== "server.npm-package.json") { try { names.add(JSON.parse(readFileSync(`${ROOT}/servers/${d}/${f}`, "utf8")).name); } catch {} } } } let atLatest = 0, hosted = 0; for (const n of names) { try { const c = new AbortController(); const t = setTimeout(() => c.abort(), 15000); const r = await (await fetch(`https://registry.modelcontextprotocol.io/v0/servers?search=${encodeURIComponent(n)}&version=latest`, { signal: c.signal })).json(); clearTimeout(t); const hit = (r.servers || []).find((x) => x.server.name === n); if (hit && hit.server.version === rel) atLatest++; if (hit && hit.server.remotes && hit.server.remotes.length) hosted++; } catch {} } registryLatest = { entries: atLatest, names: names.size, release: rel, hosted }; } catch {}
 
 const tests = Number((sh("bash", ["-lc", `cd ${ROOT} && npm test 2>/dev/null | grep -E '^# pass' | awk '{s+=$3} END {print s}'`]) || "").trim()) || null;
 const tools = ledger.servers.reduce((a, s) => a + (s.tool_count || 0), 0);
@@ -86,7 +86,7 @@ const regFind = (org.surfaces || []).find((s) => /Official MCP registry/i.test(s
 
 const kpis = [
   // Discovery
-  { cat: "Discovery", name: "Registry entries at latest version", value: registryLatest?.entries ?? null, target: servers + 1, unit: "entries", how: "registry search theluckystrike", why: "The official registry is the index Claude, Cursor and VS Code pickers read." },
+  { cat: "Discovery", name: "Registry entries at latest version", value: registryLatest?.entries ?? null, target: registryLatest?.names ?? servers + 1, unit: "of all published names", how: "one registry search per manifest name with version=latest, compared with the release version", why: "The official registry is the index Claude, Cursor and VS Code pickers read." },
   { cat: "Discovery", name: "Registry findable share", value: regFind ? Math.round(regFind.findable * 100) : null, target: 60, unit: "% of tracked tokens", how: "data/organic.json (name-substring search probes)", why: "Search is name-only; a server nobody can find by the words they type does not exist." },
   { cat: "Discovery", name: "Distribution surfaces live", value: surfacesLive, target: surfacesTotal, unit: `of ${surfacesTotal}`, how: "data/distribution.json", why: "Each free registry or catalog is a compounding source of installs." },
   { cat: "Discovery", name: "Pages indexed on the storefront sitemap", value: sitemapUrls, target: 150, unit: "URLs", how: "curl mcp.zovo.one/sitemap.xml", why: "Long-tail search queries are the only paid-free channel with measured intent." },
