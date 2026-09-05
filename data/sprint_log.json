@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T11:58:28.417Z",
-  "total_commits": 478,
-  "sessions": 48,
+  "generated_at": "2026-09-05T14:33:49.345Z",
+  "total_commits": 493,
+  "sessions": 49,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -101,7 +101,12 @@
     {
       "name": "Loop 20: per-diem, changelog, drift checks, v0.12.0",
       "sessions": 1,
-      "commits": 77
+      "commits": 17
+    },
+    {
+      "name": "Loop 21: bundle in every cap message, asset-register, v0.13.0",
+      "sessions": 1,
+      "commits": 75
     }
   ],
   "rows": [
@@ -623,7 +628,7 @@
       "at": "2026-09-05T11:57:59.851Z",
       "note": "loop 20 closed: v0.12.0 with per-diem (Polish, UK domestic and US GSA tables bundled byte-exact; UK overseas honestly omitted; audit 18/18; the twenty-second server and hosted endpoint), 59 registry entries verified, 1016 tests, validation 594/594, 23 bundles; invoice profile-reader list gained per-diem (D-R89); storefront /changelog generated from the release records; release-check hosted-row check; KPI readers keep the last good value when wrangler times out; round 21 deposits hosted 16/18; AIAnytime list merged the bundle entry; downloads 2478; sales 0; GSC key dataless again",
       "loop": "Loop 20: per-diem, changelog, drift checks, v0.12.0",
-      "commits": 63,
+      "commits": 20,
       "subjects": [
         "Record release v0.9.5",
         "Loop 17 close: v0.9.5 dashboard, digest, sprint log loop 17",
@@ -637,6 +642,27 @@
         "Wire billing-docs into the estate: gen-spec, office-suite, build scripts, pages, facts, tools, Stripe product, setup, guide, logo, demo GIF",
         "remote: twentieth endpoint /mcp/billing-docs, credit notes and purchase orders on the shared invoice store",
         "billing-docs: validate.mjs probes (34 checks), buy list, distribution.json, deploy mcp.zovo.one"
+      ]
+    },
+    {
+      "n": 49,
+      "at": "2026-09-05T14:33:49.149Z",
+      "note": "loop 21 closed: v0.13.0 with asset-register (KST, UK capital allowance and MACRS tables; monthly schedules that sum to base to the minor unit; audit 18/18; the twenty-third server and hosted endpoint), 62 manifests published; every cap message now ends with the $39 bundle link with its own click source and the instrument recorded the first bundle click; per-diem real compare page against gsa-perdiem-mcp; per-diem hosted 17/18; intel R10 found five more empty slots (cash-book, petty-cash, amortization, statement-of-account, dunning); downloads 2665; clicks 71/7d; sales 0; GSC key dataless",
+      "loop": "Loop 21: bundle in every cap message, asset-register, v0.13.0",
+      "commits": 58,
+      "subjects": [
+        "Plan v16: content debt, server 21, weakest lanes",
+        "Rewrite office-suite guide under a version-free slug, redirect the old one",
+        "Add servers/deposits: security and retainer deposits per client",
+        "User value audit round 20: billing-docs hosted, 17/18 vs r19's 16/18 stdio",
+        "Wire deposits into products, setup, lists, facts, tools, guide and logo",
+        "deposits: Part 2 CLI run and 7 gap-fill probes, 36 tests green",
+        "Deposits demo GIF, tape and README links",
+        "invoice_mark_paid: ADD to paid_minor instead of SET, refuse overpayment, log payments (D-R87)",
+        "Add round 20 bank-statement hosted user-value audit",
+        "Deposits: round 20 measurement, hosted web page, pages rebuild, buy tag",
+        "remote: twenty-first endpoint /mcp/deposits, deposits on the shared invoice store",
+        "Deposits validate.mjs probes, distribution row, guide correction for the invoice mark-paid fix"
       ]
     }
   ]
