@@ -1,0 +1,73 @@
+{
+  "round": "R9",
+  "measured": "2026-09-05",
+  "method": "One bounded GET registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, curl -s -m 15, first page only. count = metadata.count (raw row count, includes one row per stored version, same convention as R6/R7/R8). capped = metadata.nextCursor present. ours = any returned server name containing 'theluckystrike'. score = empty_slot_score x fit x buildability, empty_slot_score = 100/(1+count), fit/buildability are this round's qualitative 0-1 call against the 20-server suite (pure-TypeScript, no-network gate), same convention as INTEL_R6 part 3.",
+  "cap": "30 wall minutes, curl -s -m 15 inline, at most 60 registry requests, no background jobs, no paid APIs",
+  "already_probed_excluded": [
+    "time", "excel", "pdf", "watermark", "ics", "vat", "cv", "contract", "markdown", "email",
+    "crm", "board", "dst", "nda", "bank", "calendar", "clause", "currency", "docx", "expense",
+    "image", "invoice", "kanban", "price", "recurring", "resume", "spreadsheet", "timezone",
+    "statement", "transactions", "budget", "reconcile", "resize", "compress", "thumbnail",
+    "tasks", "csv", "notes", "todo", "contacts", "templates", "quotes", "receipts", "mileage",
+    "payroll", "habit", "journal", "ocr", "qr", "barcode", "epub", "translate", "zip", "estimate"
+  ],
+  "probes": [
+    {"token": "timesheet", "count": 24, "capped": false, "ours_present": true, "ours_name": "io.github.theluckystrike/time-tracker-timesheet-billable-hours", "ours_share": "23 of 24 rows, dominant", "covered_by_existing": "time-tracker", "variant_free_candidate": false, "note": "already owned, no action"},
+    {"token": "retainer", "count": 10, "capped": false, "ours_present": true, "ours_name": "io.github.theluckystrike/retainer", "ours_share": "10 of 10 rows (all our own version history)", "covered_by_existing": "recurring", "variant_free_candidate": false, "note": "already owned outright, no action"},
+    {"token": "deposit", "count": 0, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.65, "buildability": 0.9, "empty_slot_score": 100.0, "score": 58.5, "build_decision": "BUILD"},
+    {"token": "escrow", "count": 10, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.5, "buildability": 0.7, "empty_slot_score": 9.09, "score": 3.18, "build_decision": "no-build", "variant_free_candidate": "recurring/invoice (milestone-release schedule feature, not standalone)"},
+    {"token": "purchase-order", "count": 0, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.85, "buildability": 0.9, "empty_slot_score": 100.0, "score": 76.5, "build_decision": "BUILD"},
+    {"token": "po", "count": 100, "capped": true, "ours_present": false, "note": "ambiguous 2-letter substring, matches unrelated names containing 'po' anywhere; not a usable signal, excluded from scoring"},
+    {"token": "delivery-note", "count": 0, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.6, "buildability": 0.85, "empty_slot_score": 100.0, "score": 51.0, "build_decision": "no-build (below top 5, but qualifies on gates)"},
+    {"token": "packing-slip", "count": 0, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.55, "buildability": 0.85, "empty_slot_score": 100.0, "score": 46.75, "build_decision": "no-build (below top 5)"},
+    {"token": "credit-note", "count": 0, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.9, "buildability": 0.9, "empty_slot_score": 100.0, "score": 81.0, "build_decision": "BUILD"},
+    {"token": "refund", "count": 4, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.6, "buildability": 0.85, "empty_slot_score": 20.0, "score": 10.2, "build_decision": "no-build", "variant_free_candidate": "invoice (refund/credit workflow feature)"},
+    {"token": "expense-report", "count": 0, "capped": false, "ours_present": false, "covered_by_existing": "expense-tracker (conceptually, a report/export feature)", "fit": 0.4, "buildability": 0.9, "empty_slot_score": 100.0, "score": 36.0, "build_decision": "no-build, redundant with existing server per honesty rule"},
+    {"token": "per-diem", "count": 0, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.65, "buildability": 0.85, "empty_slot_score": 100.0, "score": 55.25, "build_decision": "BUILD"},
+    {"token": "travel", "count": 88, "capped": false, "ours_present": false, "fit": 0.3, "buildability": 0.3, "empty_slot_score": 1.12, "score": 0.1, "build_decision": "no-build, crowded and network-dependent"},
+    {"token": "itinerary", "count": 0, "capped": false, "ours_present": false, "fit": 0.4, "buildability": 0.35, "empty_slot_score": 100.0, "score": 14.0, "build_decision": "no-build, buildability too low pure-offline"},
+    {"token": "booking", "count": 73, "capped": false, "ours_present": false, "fit": 0.3, "buildability": 0.3, "empty_slot_score": 1.35, "score": 0.12, "build_decision": "no-build, crowded and network-dependent"},
+    {"token": "appointment", "count": 5, "capped": false, "ours_present": false, "fit": 0.6, "buildability": 0.6, "empty_slot_score": 16.67, "score": 6.0, "build_decision": "no-build", "variant_free_candidate": "calendar"},
+    {"token": "reminder", "count": 39, "capped": false, "ours_present": true, "ours_name": "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders", "ours_share": "13 of 39 rows", "covered_by_existing": "recurring", "variant_free_candidate": false, "note": "already present, competitive field"},
+    {"token": "followup", "count": 7, "capped": false, "ours_present": false, "fit": 0.6, "buildability": 0.85, "empty_slot_score": 12.5, "score": 6.375, "build_decision": "no-build", "variant_free_candidate": "recurring"},
+    {"token": "signature", "count": 6, "capped": false, "ours_present": false, "fit": 0.7, "buildability": 0.6, "empty_slot_score": 14.29, "score": 6.0, "build_decision": "no-build", "variant_free_candidate": "docx/clauses"},
+    {"token": "e-sign", "count": 14, "capped": false, "ours_present": false, "fit": 0.7, "buildability": 0.3, "empty_slot_score": 6.67, "score": 1.4, "build_decision": "no-build, legally binding e-sign needs identity/network"},
+    {"token": "letterhead", "count": 28, "capped": false, "ours_present": false, "fit": 0.75, "buildability": 0.9, "empty_slot_score": 3.45, "score": 2.33, "build_decision": "no-build (count too high for slot score)", "variant_free_candidate": "docx"},
+    {"token": "envelope", "count": 3, "capped": false, "ours_present": false, "fit": 0.5, "buildability": 0.85, "empty_slot_score": 25.0, "score": 10.6, "build_decision": "no-build", "variant_free_candidate": "docx"},
+    {"token": "label", "count": 29, "capped": false, "ours_present": false, "fit": 0.7, "buildability": 0.85, "empty_slot_score": 3.33, "score": 1.98, "build_decision": "no-build", "variant_free_candidate": "barcode"},
+    {"token": "shipping", "count": 15, "capped": false, "ours_present": false, "fit": 0.5, "buildability": 0.6, "empty_slot_score": 6.25, "score": 1.875, "build_decision": "no-build", "variant_free_candidate": "barcode/label"},
+    {"token": "tracking-number", "count": 0, "capped": false, "ours_present": false, "fit": 0.4, "buildability": 0.85, "empty_slot_score": 100.0, "score": 34.0, "build_decision": "no-build (below top 5)"},
+    {"token": "warranty", "count": 0, "capped": false, "ours_present": false, "fit": 0.6, "buildability": 0.85, "empty_slot_score": 100.0, "score": 51.0, "build_decision": "no-build (below top 5)"},
+    {"token": "inventory", "count": 13, "capped": false, "ours_present": false, "fit": 0.65, "buildability": 0.75, "empty_slot_score": 7.14, "score": 3.48, "build_decision": "no-build", "variant_free_candidate": "price-tracker"},
+    {"token": "stock", "count": 100, "capped": true, "ours_present": false, "note": "ambiguous (financial stock vs inventory stock), high competition, excluded from scoring"},
+    {"token": "asset-register", "count": 0, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.75, "buildability": 0.85, "empty_slot_score": 100.0, "score": 63.75, "build_decision": "BUILD"},
+    {"token": "depreciation", "count": 1, "capped": false, "ours_present": false, "covered_by_existing": null, "fit": 0.7, "buildability": 0.9, "empty_slot_score": 50.0, "score": 31.5, "build_decision": "no-build (below top 5, folds into asset-register spec)"}
+  ],
+  "top5_by_score": [
+    {"rank": 1, "token": "credit-note", "score": 81.0, "build_decision": "BUILD"},
+    {"rank": 2, "token": "purchase-order", "score": 76.5, "build_decision": "BUILD"},
+    {"rank": 3, "token": "asset-register", "score": 63.75, "build_decision": "BUILD"},
+    {"rank": 4, "token": "deposit", "score": 58.5, "build_decision": "BUILD"},
+    {"rank": 5, "token": "per-diem", "score": 55.25, "build_decision": "BUILD"}
+  ],
+  "variant_free_candidates_uncapped_under_100": [
+    {"token": "letterhead", "count": 28, "existing_server": "docx"},
+    {"token": "label", "count": 29, "existing_server": "barcode"},
+    {"token": "inventory", "count": 13, "existing_server": "price-tracker"},
+    {"token": "depreciation", "count": 1, "existing_server": "expense-tracker"},
+    {"token": "signature", "count": 6, "existing_server": "docx/clauses"},
+    {"token": "e-sign", "count": 14, "existing_server": "docx/clauses"},
+    {"token": "followup", "count": 7, "existing_server": "recurring"},
+    {"token": "appointment", "count": 5, "existing_server": "calendar"},
+    {"token": "shipping", "count": 15, "existing_server": "barcode"},
+    {"token": "envelope", "count": 3, "existing_server": "docx"},
+    {"token": "escrow", "count": 10, "existing_server": "recurring/invoice"},
+    {"token": "refund", "count": 4, "existing_server": "invoice"}
+  ],
+  "already_covered_confirmed": [
+    {"token": "timesheet", "existing_server": "time-tracker", "count": 24},
+    {"token": "retainer", "existing_server": "recurring", "count": 10},
+    {"token": "reminder", "existing_server": "recurring", "count": 39}
+  ],
+  "excluded_noisy_tokens": ["po", "stock", "travel", "booking"]
+}
