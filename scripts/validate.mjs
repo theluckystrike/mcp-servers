@@ -999,7 +999,7 @@ async function remote() {
     // of deposit applied, less a 100.00 credit note, closes at 350.00.
     const sclient = `Statement Probe ${Date.now()}`;
     await rpc("invoice", { jsonrpc: "2.0", id: 91, method: "tools/call", params: { name: "client_add", arguments: { name: sclient, address: "1 Probe Street, Warsaw", email: "ap@example.com" } } });
-    const sinvc = await rpc("invoice", { jsonrpc: "2.0", id: 92, method: "tools/call", params: { name: "invoice_create", arguments: { client: sclient, currency: "EUR", issue_date: "2026-06-05", due_days: 10, items: [{ description: "Consulting", quantity: 10, unit_price_minor: 10000, tax_rate: 0 }] } } });
+    const sinvc = await rpc("invoice", { jsonrpc: "2.0", id: 92, method: "tools/call", params: { name: "invoice_create", arguments: { client: sclient, currency: "EUR", issue_date: "2026-06-05", due_days: 10, items: [{ description: "Consulting", quantity: 10, unit_price: 100, tax_rate: 0 }] } } });
     const sinv = (JSON.stringify(sinvc).match(/INV-\d{4}-\d{4}/) || [])[0];
     await rpc("invoice", { jsonrpc: "2.0", id: 93, method: "tools/call", params: { name: "invoice_mark_paid", arguments: { number: sinv, amount: 400, paid_date: "2026-06-20", method: "bank transfer" } } });
     await rpc("billing-docs", { jsonrpc: "2.0", id: 94, method: "tools/call", params: { name: "credit_note_create", arguments: { invoice: sinv, amount_minor: 10000, reason: "One day descoped" } } });
@@ -1009,9 +1009,10 @@ async function remote() {
     const sbld = await rpc("statement-of-account", { jsonrpc: "2.0", id: 97, method: "tools/call", params: { name: "statement_build", arguments: { client: sclient, from: "2026-06-01", to: "2026-12-31", currency: "EUR" } } });
     let sb = {}; try { sb = JSON.parse(sbld.result.content[0].text); } catch { sb = {}; }
     ok("hosted statement_build closes on the arithmetic of THREE stores it never writes: 1000.00 invoiced (/mcp/invoice) less 400.00 paid less 150.00 of deposit applied (/mcp/deposits) less a 100.00 credit note (/mcp/billing-docs) is EUR 350.00",
-      sb.opening_minor === 0 && sb.invoiced_minor === 100000 && sb.paid_minor === 55000 && sb.credited_minor === 10000 && sb.closing_minor === 35000 && sb.closing_balance === "EUR 350.00" &&
-      sb.deposits_applied_minor === 15000 && sb.held_deposit_minor === 10000 &&
-      (sb.sources || []).length === 3 && JSON.stringify(sb.sources).includes('"read": true'),
+      sb.opening_balance_minor === 0 && sb.invoices_issued_minor === 100000 && sb.payments_received_minor === 55000 && sb.credit_notes_minor === 10000 &&
+      sb.closing_balance_minor === 35000 && sb.closing_balance === "EUR 350.00" &&
+      sb.of_which_deposits_applied_minor === 15000 && sb.deposit_still_held_minor === 10000 &&
+      (sb.sources || []).length === 3 && (sb.sources || []).every((r) => r.read === true) && (sb.sources || []).map((r) => r.store).join(",") === "invoice,billing-docs credit notes,deposits",
       `${sinv} ${sdid} ${JSON.stringify(sb).slice(0, 90)}`);
     // Aging is as at the date asked for in BOTH directions: at 2026-06-30 the 100.00 credit
     // note and the 150.00 deposit application, both dated today, have not happened, so the
@@ -1019,10 +1020,13 @@ async function remote() {
     // subtract paid_minor and the credit notes, then bucket by the due date - would report
     // 350.00 here, which is the balance of a different day.
     const sage = await rpc("statement-of-account", { jsonrpc: "2.0", id: 98, method: "tools/call", params: { name: "statement_aging", arguments: { client: sclient, currency: "EUR", as_of: "2026-06-30" } } });
-    const sageTxt = JSON.stringify(sage).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    let sa = {}; try { sa = JSON.parse(sage.result.content[0].text); } catch { sa = {}; }
+    const sarow = (sa.aging || [])[0] || {};
+    const sainv = (sa.invoices || []).find((i) => i.number === sinv) || {};
     ok("hosted statement_aging ages AS AT a past date: at 2026-06-30 the invoice is open at EUR 600.00 and 15 days late, and neither the credit note nor the deposit application dated after it has happened",
-      new RegExp(`"number": "${sinv}"[\\s\\S]{0,400}?"open_minor": 60000`).test(sageTxt) && /"days_overdue": 15/.test(sageTxt) && /"0-30": 60000/.test(sageTxt) && /"61-90": 0/.test(sageTxt),
-      sageTxt.slice(0, 110));
+      sa.as_of === "2026-06-30" && sainv.open_minor === 60000 && sainv.paid_minor === 40000 && sainv.credited_minor === 0 && sainv.days_overdue === 15 && sainv.bucket === "0-30" &&
+      sarow.buckets?.["0-30"]?.amount_minor === 60000 && sarow.buckets?.["31-60"]?.amount_minor === 0 && sarow.not_yet_due_minor === 0 && sarow.outstanding_minor === 60000,
+      `${sainv.open_minor} ${sainv.days_overdue} ${JSON.stringify(sarow).slice(0, 70)}`);
     // The chaser prints the bank details of the SHARED profile business_set wrote on
     // /mcp/invoice, and states no fee, interest or cost anywhere.
     const sdun = await rpc("statement-of-account", { jsonrpc: "2.0", id: 99, method: "tools/call", params: { name: "dunning_text", arguments: { client: sclient, level: 1, currency: "EUR", as_of: "2026-06-30" } } });

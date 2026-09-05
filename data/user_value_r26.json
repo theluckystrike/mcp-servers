@@ -1,0 +1,125 @@
+{
+  "at": "2026-09-05T23:35:00Z",
+  "round": 26,
+  "compares_to": "data/user_value_r24.json (asset-register, stdio, 16/18) and data/user_value_r25_asset_register... (asset-register, hosted, 14/18). First user-value coverage of statement-of-account; there is no earlier statement-of-account round to compare against.",
+  "scope": "STDIO single-lane first-run measurement of the NEW statement-of-account server, six prompts covering seeding/confirming the books and building one client's statement for a month with the closing balance checked, aging as at today for everyone, aging as at a past date to show a later payment has not happened yet, a level 1 dunning letter with level 3 refused free naming the buy link, the five-statements-a-month free cap with the sixth refused and a rebuild of one of the five still free, and the Pro-gated statements_report refused on free. The server was run unmodified from servers/statement-of-account/dist/index.js as it stood at the start of the round; no code was changed as part of this round, it is measurement only.",
+  "method": "Arrival: no connect page and no token, the server is spawned locally over stdio as node /Users/mike/mcp-servers/servers/statement-of-account/dist/index.js from one mcp.json with a single stdio entry, MCP_LICENSE_KEY set to the empty string in that entry's env block so the whole run measures the FREE tier. Seed: rather than registering the sibling mcp-invoice server on the same config, the three sibling stores were seeded directly on disk with a small node script that reproduces test/_client.mjs's seed helpers and its own workedMonth fixture byte for byte (invoices.json and clients.json under the invoice store, credit-notes.json under billing-docs, deposits.json under deposits, and the shared business profile under both invoice/business.json and profile/business.json: Studio One, PL1234567890, EUR default currency), written before any prompt ran, exactly as documented in the server's own README worked example (Acme Ltd, EUR, period 2026-06-01 to 2026-06-30, opening 500.00, invoiced 2,750.00, paid 900.00 of which 300.00 is a deposit application, credited 50.00, closing 2,300.00). Allowlist: eight explicit mcp__statement-of-account__<tool> entries read from a live tools/list (statement_build, statement_aging, statement_text, statement_pdf, dunning_text, statements_report, license_status, license_activate), no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the single stdio entry, --output-format stream-json --verbose --max-turns 12, one --session-id then five --resume so all six prompts are one conversation. Each prompt run as its own isolated shell invocation under timeout 280, each transcript read back in full before the next prompt ran. The CLI's own filesystem and search tools DENIED via --disallowedTools (Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent) and every turn run in an empty working directory /private/tmp/uv-r26soa/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r26soa/xdg, set in the server's env block, never CLAUDE_CONFIG_DIR. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Tool-call counts are calls that reached the server; they exclude the client's own ToolSearch schema lookups. Host machine day 2026-09-05 (Saturday), which is why aging as at today resolves to 2026-09-05 and every invoice in the June worked month reads as overdue by that date. Verification: every figure the model reported was re-derived by calling the same tools directly over stdio from a second JSON-RPC client against the SAME XDG_DATA_HOME after the run (statement_build for June rebuilt, statement_aging both as-of dates, dunning_text levels 1 and 3, a 6th statement_build to re-trigger the cap refusal, statements_report, and license_status), so the register state (5 statements already built in 2026-09) is the exact state the conversation left behind, not a fresh one.",
+  "rubric": "3 = correct, right numbers, no clarification. 2 = correct but needed a second turn, a workaround, or left the user a gap to close. 1 = partially wrong, or asked for something the tool could infer. 0 = failed.",
+  "arrival": {
+    "connect_page": "none; this is the stdio lane, the server is spawned as a child process and there is no endpoint, no token and no network hop",
+    "registration": "one mcp.json, one stdio entry, command node with the single argument /Users/mike/mcp-servers/servers/statement-of-account/dist/index.js, MCP_LICENSE_KEY empty; the server connected first try",
+    "tools_list": {
+      "statement-of-account": 8
+    },
+    "seed": "the three sibling stores (invoice, billing-docs, deposits) and the shared profile written directly to $XDG_DATA_HOME/mcp-servers/<store>/ the way test/_client.mjs's seed helpers and workedMonth fixture do it, before any prompt ran: Acme Ltd and Beta GmbH as clients, four invoices, two credit notes and one deposit with a partial application, Studio One as the issuing business on EUR"
+  },
+  "scenarios": [
+    {
+      "server": "statement-of-account",
+      "surface": "stdio/statement-of-account",
+      "id": "p1",
+      "prompt": "Look at the statement://sources resource first to confirm which of the three books (invoices, credit notes, deposits) this server can see for Studio One. Then build a statement of account for Acme Ltd for June 2026 (2026-06-01 to 2026-06-30) in EUR, and tell me the opening balance, everything that moved during the month, and the closing balance.",
+      "score": 3,
+      "tool_calls": 1,
+      "resource_reads": 1,
+      "seconds": 18.7,
+      "tools": [
+        "statement_build"
+      ],
+      "note": "Read statement://sources first, unprompted follow-through on the instruction, and reported all three stores read (invoice 4 rows, billing-docs credit notes 2 rows, deposits 1 row) with both clients named. One statement_build call then returned STMT-2026-0001 with opening 500.00, invoices issued 2,750.00, payments received 900.00 (of which 300.00 a deposit application), credit notes 50.00, closing 2,300.00, and five movements in date order. The model relayed every figure without rounding or re-deriving it itself, including the deposit-still-held memo line (200.00) that the server reports beside the balance rather than inside it. Re-run over stdio afterwards on the same store: identical statement_id, identical opening/closing to the cent."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "stdio/statement-of-account",
+      "id": "p2",
+      "prompt": "Now give me the aging as at today, for every client, across all currencies. Tell me who owes what and how overdue it is.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 12.3,
+      "tools": [
+        "statement_aging"
+      ],
+      "note": "One statement_aging call with no client filter and no as_of (so the server's own clock, 2026-09-05, decided the date) returned both clients in EUR: Acme Ltd 2,400.00 overdue (INV-2026-0002 1,700.00 at 62 days, INV-2026-0003 700.00 at 72 days, both 61-90) plus 100.00 unapplied credit, and Beta GmbH 500.00 overdue at 82 days. The model totalled 2,900.00 across both clients and correctly reported that nothing fell in 0-30, 31-60 or over-90 rather than leaving those buckets unmentioned. Re-derived over stdio afterwards: identical bucket amounts and identical oldest_overdue references."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "stdio/statement-of-account",
+      "id": "p3",
+      "prompt": "Now I need the aging as at 2026-06-10 specifically, not today, for Acme Ltd. INV-2026-0001 was paid in two instalments, one before 2026-06-10 and one after. Tell me exactly what was outstanding and what was overdue as at 2026-06-10, using only what was true on that date.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 10.8,
+      "tools": [
+        "statement_aging"
+      ],
+      "note": "This is the round's key insight and the model got it exactly right: one statement_aging call with as_of 2026-06-10 returned outstanding 2,500.00 and overdue 500.00 (31 days late on INV-2026-0001), matching the server's own README worked example figure for figure. The model explicitly named the mechanism rather than just quoting the total: only the 400.00 instalment paid before 2026-06-10 counts toward paid as at that date, the 600.00 instalment paid on 2026-06-12 (after the as-of date) is excluded because as at 2026-06-10 it had not happened yet, and INV-2026-0003 (issued 2026-06-20) is correctly absent from the books entirely rather than shown as zero. It did not fall back to today's paid_minor at any point. Re-run over stdio on the same store: identical outstanding 2,500.00, overdue 500.00, 31 days, and the same two-invoice set."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "stdio/statement-of-account",
+      "id": "p4",
+      "prompt": "Draft a level 1, friendly dunning letter for Acme Ltd based on what is overdue today. Then also try to draft a level 3 final demand for Acme Ltd, and tell me exactly what happens on the free tier.",
+      "score": 3,
+      "tool_calls": 2,
+      "seconds": 15.8,
+      "tools": [
+        "dunning_text",
+        "dunning_text"
+      ],
+      "note": "Level 1 came back as a full letter with the two overdue invoices, the 2,400.00 total, the bank details and the tool's own footer stating that no late fee, interest or jurisdiction figure is invented; the model relayed the letter and the footer verbatim rather than adding a late-fee line of its own. The level 3 call errored with the server's own Pro-feature text naming the $19 one-time price, the src-tagged buy URL, license_activate as the next step and the $39 bundle alternative; the model relayed the price, both numbers and the mechanism (offline key verification, no purchase made on the user's behalf) without softening the refusal or reconstructing a final-demand letter itself. Re-run over stdio afterwards: level 1 text identical, level 3 error text identical including both URLs."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "stdio/statement-of-account",
+      "id": "p5",
+      "prompt": "You already built one statement earlier in this conversation, for Acme Ltd, June 2026, EUR. Now build four more DISTINCT statements: Acme Ltd for January, February, March and April 2026, each in EUR (use each calendar month as its own from/to period). Then try to build a sixth distinct one: Acme Ltd, May 2026, EUR. Tell me exactly what happens on the sixth one. Then rebuild the very first statement from earlier in this conversation (Acme Ltd, June 2026, EUR) again and tell me whether that rebuild was accepted or blocked, and why.",
+      "score": 3,
+      "tool_calls": 6,
+      "seconds": 25.6,
+      "tools": [
+        "statement_build",
+        "statement_build",
+        "statement_build",
+        "statement_build",
+        "statement_build",
+        "statement_build"
+      ],
+      "note": "Jan through Apr built cleanly as STMT-2026-0002 through 0005 (Jan/Feb/Mar zero-activity, Apr 1,000.00 from INV-2026-0001's issue date), bringing the calendar-month total to five including the June statement built in p1. The sixth, May, errored by name and price: the free tier builds 5 statements a calendar month, naming statement_build as the gated tool, the $19 one-time and $39 bundle prices and both buy URLs, and explicitly noting statement_aging stays free and unlimited and any already-built statement can be rebuilt at no cost. The model then rebuilt STMT-2026-0001 (June) and confirmed it succeeded with identical figures, and correctly explained the mechanism from the error text itself: the cap counts distinct new statements built in the current calendar month (September, when the calls were made), not the calendar month each statement's period covers, which is why five statements covering five different months of the ledger all counted against the same September quota. Re-run over stdio afterwards against the same store: the sixth (May) call still errors identically, confirming the register truly holds 5 for 2026-09 and not a client-side miscount."
+    },
+    {
+      "server": "statement-of-account",
+      "surface": "stdio/statement-of-account",
+      "id": "p6",
+      "prompt": "Now run the statements report to see every client outstanding at once, aged, with the oldest overdue invoice per client. Tell me exactly what happens on the free tier and do not make up any totals yourself if the tool refuses.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 12.4,
+      "tools": [
+        "statements_report"
+      ],
+      "note": "statements_report errored outright with the server's own Pro-feature text, naming the $19 one-time price, the src-tagged buy URL, license_activate and the $39 bundle. The model relayed the refusal and explicitly declined to reconstruct a cross-client aged total from the statement_aging calls made earlier in the conversation, stating in its own words that the report has logic (per-client oldest overdue, cross-currency grouping) it could not guarantee matched without running the tool itself, and offered the free per-client statement_aging calls as an alternative rather than inventing the report's shape. No total was stated. Re-run over stdio afterwards: identical Pro-feature error text and URL."
+    }
+  ],
+  "totals": {
+    "score": 18,
+    "max": 18,
+    "pct": 100,
+    "tool_calls": 12,
+    "seconds": 95.6,
+    "resource_reads": 1,
+    "tool_errors": 3,
+    "denied_calls": 0,
+    "clarifying_turns": 0,
+    "per_server": {
+      "statement-of-account": {
+        "score": 18,
+        "max": 18,
+        "tool_calls": 12,
+        "seconds": 95.6
+      }
+    }
+  },
+  "verification": "Every figure reported by the model was re-derived after the run by a second JSON-RPC client spawning servers/statement-of-account/dist/index.js on the SAME XDG_DATA_HOME the conversation left behind (so the free-tier statement count for 2026-09 reflects the conversation's own five builds, not a fresh count). statement_build for Acme Ltd June 2026 returns STMT-2026-0001 with opening_balance_minor 50000, invoices_issued_minor 275000, payments_received_minor 90000 (of_which_deposits_applied_minor 30000), credit_notes_minor 5000, closing_balance_minor 230000, matching both the model's transcript and the server's own README worked example. statement_aging with no as_of resolves to 2026-09-05 (host day) and returns Acme Ltd 61-90 bucket 240000 minor and Beta GmbH 61-90 bucket 50000 minor, both matching the transcript. statement_aging as_of 2026-06-10 for Acme Ltd returns outstanding_minor 250000 and overdue_minor 50000 with INV-2026-0001 at 31 days overdue in the 31-60 bucket, and INV-2026-0002 correctly shown not_yet_due; INV-2026-0003 is absent, both matching the transcript and the README's own stated 2,500.00/500.00 pair. dunning_text level 1 text is byte-identical to the transcript's letter; level 3 errors with the identical Pro-feature text including both buy URLs. Re-issuing statement_build for May 2026 after the run still errors with the 5-a-month cap text naming statement_build, $19 and $39, confirming the register genuinely holds 5 statements for 2026-09 rather than the client having miscounted. statements_report errors with the identical Pro-feature text and URL. license_status confirms tier free with reason no license found. All six prompts match the transcript to the minor unit or to the byte for error text.",
+  "defects": [],
+  "bottom_line": "18 of 18 over stdio on the free tier, the first user-value coverage of statement-of-account. All six prompts landed clean threes with no clarifying turn, no denied call and no wrong figure anywhere in the round. The three that mattered most: p3 is the server's own headline insight and the model reproduced it exactly, aging as at 2026-06-10 shows 2,500.00 outstanding and 500.00 overdue at 31 days because the June-12 instalment had not happened yet as at that date, matching the README's worked example to the cent and naming the mechanism rather than just the number; p5 drove the free tier's five-a-month cap to its boundary, building four new distinct statements to bring the September total to five, getting the sixth refused by name and price, and confirming a rebuild of the very first statement built in the conversation was still free, correctly explaining that the cap counts the calendar month the statement was BUILT in rather than the month its period covers; and p6 refused the Pro-gated statements_report outright and the model explicitly declined to reconstruct its cross-client total from the free statement_aging calls already in the conversation, naming the reason (unknown internal grouping logic) rather than approximating. Every figure across all six prompts was re-derived over stdio afterwards against the exact XDG_DATA_HOME the conversation left behind, including re-triggering the cap refusal a second time to confirm the register's own count rather than trusting the model's arithmetic, and all of them match. No code was touched; this is a measurement-only report."
+}

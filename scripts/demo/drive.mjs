@@ -895,6 +895,57 @@ async function run(name) {
     toolLine("asset_schedule", tenArgs);
     resultLine(await c.call("asset_schedule", tenArgs));
   }
+  if (name === "statement-of-account") {
+    // The three books this server reads belong to mcp-invoice, mcp-billing-docs and
+    // mcp-deposits. The demo seeds the same worked month the unit suite asserts against,
+    // reusing that suite's own seeders, so every figure on screen is one recomputed by
+    // hand in docs/STATEMENT_RESULT.md rather than one invented for the recording.
+    const seedMod = await import(join(ROOT, "servers", "statement-of-account", "test", "_client.mjs"));
+    seedMod.workedMonth(join(c.sandbox, "data"));
+
+    // These tools answer in JSON and a whole answer does not fit the recorded frame, so the
+    // demo prints picked fields. Every string below is copied out of the response.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ One client, one month: the balance carried in, every movement, the balance out. Then age it as at a date.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const buildArgs = { client: "Acme Ltd", from: "2026-06-01", to: "2026-06-30", currency: "EUR" };
+    toolLine("statement_build", buildArgs);
+    const st = pick(await c.call("statement_build", buildArgs));
+    resultLine(`${st.statement_id} ${st.client} ${st.period.from} to ${st.period.to} ${st.currency}`);
+    resultLine(`  opening ${st.opening_balance}  invoiced ${st.invoices_issued}  received ${st.payments_received} (of which ${st.of_which_deposits_applied} deposit)  credited ${st.credit_notes}`);
+    for (const m of st.movements) resultLine(`  ${m.date}  ${m.reference.padEnd(13)} ${m.kind.padEnd(16)} ${m.amount}`);
+    resultLine(`  closing ${st.closing_balance}. ${st.deposit_still_held} still held is the client's money and is NOT in that balance`);
+    await sleep(STEP_DELAY_MS);
+
+    // The measured point. Aged at 2026-06-10 a payment dated 2026-06-12 has NOT happened.
+    const pastArgs = { as_of: "2026-06-10", client: "Acme Ltd", currency: "EUR" };
+    toolLine("statement_aging", pastArgs);
+    const pa = pick(await c.call("statement_aging", pastArgs)).aging[0];
+    resultLine(`as at 2026-06-10: outstanding ${pa.outstanding}, overdue ${pa.overdue} (31-60 ${pa.buckets["31-60"].amount}), not yet due ${pa.not_yet_due}`);
+    resultLine("  the 600.00 payment dated 2026-06-12 has not happened on the 10th, so it is not subtracted yet");
+    resultLine("  bucket by due date and take today's paid figure off instead and the SAME book reports 1700.00 and zero overdue");
+    await sleep(STEP_DELAY_MS);
+
+    const nowArgs = { as_of: "2026-06-30", currency: "EUR" };
+    toolLine("statement_aging", nowArgs);
+    const rows = pick(await c.call("statement_aging", nowArgs)).aging;
+    for (const r of rows) resultLine(`  ${r.client.padEnd(10)} outstanding ${r.outstanding.padEnd(12)} 0-30 ${r.buckets["0-30"].amount.padEnd(11)} not yet due ${r.not_yet_due.padEnd(12)} oldest overdue ${r.oldest_overdue}`);
+    resultLine(`  due today is not overdue: day zero sits in not_yet_due, and ${rows[0].unapplied_credit} of credit is unapplied rather than cancelling another invoice`);
+    await sleep(STEP_DELAY_MS);
+
+    const dunArgs = { client: "Acme Ltd", level: 1, currency: "EUR", as_of: "2026-06-30" };
+    toolLine("dunning_text", dunArgs);
+    const dun = await c.call("dunning_text", dunArgs);
+    for (const l of String(dun).split("\n").slice(0, 9)) resultLine(`  ${l}`);
+    resultLine("  levels 2 and 3 change the tone and the deadline. The figures and the bank details never move");
+    await sleep(STEP_DELAY_MS);
+
+    // The Pro gate, on the free tier, shown rather than described.
+    toolLine("statements_report", { as_of: "2026-06-30" });
+    resultLine(await c.call("statements_report", { as_of: "2026-06-30" }));
+  }
   if (name === "per-diem") {
     // The traveller on a saved trip comes from the suite's shared business profile, the same
     // file every other server reads, so the fixture writes it where that profile lives rather
