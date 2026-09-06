@@ -32,6 +32,7 @@ This server is only useful next to the servers that own the books: `mcp-invoice`
 | tool | what it does |
 | --- | --- |
 | `ledger_build` | Derives the ledger for one period in one currency and registers the period |
+| `period_delete` | Removes one built period from the register and gives its free-tier slot back |
 | `trial_balance` | Totals the debits and the credits and proves they are equal to the minor unit |
 | `ledger_lines` | Lists the lines, filtered by account, source server, source document or date |
 | `month_close` | Lists what the month leaves unposted or inconsistent, then closes it with a snapshot |
@@ -50,6 +51,8 @@ Accounts: `cash`, `receivables`, `revenue`, `vat_output`, `vat_input`, `expenses
 | `ledger_lines` | unlimited | unlimited |
 | `ledger_build` | 3 periods a calendar month | unlimited |
 | Rebuilding a period already built | free | free |
+| Rebuilding one with nothing changed | refused, names the row | refused, names the row |
+| `period_delete` | unlimited | unlimited |
 | `month_close` | - | yes |
 | `ledger_export_csv` | - | yes |
 | `ledger_report` | - | yes |

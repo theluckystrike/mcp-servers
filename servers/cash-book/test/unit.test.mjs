@@ -2,7 +2,7 @@
 // rows, and the table it comes from is in docs/CASH_BOOK_RESULT.md.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { client, sandbox, cleanup, proKey, workedMonth, balances, seed, PERIOD } from "./_client.mjs";
+import { client, sandbox, cleanup, proKey, workedMonth, balances, seed, expense, PERIOD } from "./_client.mjs";
 
 function open(t, opts = {}) {
   const box = sandbox();
@@ -179,13 +179,31 @@ test("ledger_report states the movement and the balance of every account, and sa
   assert.equal(r.balanced, true);
 });
 
-test("ledger_build registers the period once and says a rebuild costs nothing", async (t) => {
-  const { c } = await worked(t);
+test("ledger_build registers the period once, refuses the identical rebuild by name, and rebuilds it when the books move", async (t) => {
+  const { box, c } = await worked(t);
   const first = await c.json("ledger_build", PERIOD);
-  const second = await c.json("ledger_build", PERIOD);
-  assert.equal(first.built.first_built, second.built.first_built, "a rebuild allocated a second period");
-  assert.equal(second.lines, first.lines);
-  assert.equal((await c.json("ledger_build", { ...PERIOD, currency: "EUR" })).built.first_built, first.built.first_built);
+
+  // The same call again would write back exactly what is stored: refused, and it names the row.
+  const same = await c.call("ledger_build", PERIOD);
+  assert.equal(same.isError, true, "a byte-identical rebuild was accepted");
+  assert.match(same.text, /2026-06-01\.\.2026-06-30\/EUR is already built/);
+  assert.match(same.text, /Nothing was written/);
+  assert.match(same.text, /period_delete/);
+  // The normalised form of the same request is the same request: the currency is compared
+  // in the register's own case, and an omitted currency resolves to the same EUR.
+  const normalised = await c.call("ledger_build", { ...PERIOD, currency: "eur" });
+  assert.equal(normalised.isError, true, "a lowercase currency dodged the duplicate check");
+  assert.match(normalised.text, /is already built/);
+
+  // A sibling store moves, so the rebuild has something to write and goes through.
+  seed.expenses(box.dataHome, [
+    expense({ id: "exp_1", date: "2026-06-05", amount_minor: 12300, vat_rate: 23, category: "travel", merchant: "Rail" }),
+    expense({ id: "exp_2", date: "2026-06-12", amount_minor: 5000, category: "software", merchant: "Editor" }),
+    expense({ id: "exp_3", date: "2026-06-14", amount_minor: 2500, category: "software", merchant: "Editor" }),
+  ]);
+  const moved = await c.json("ledger_build", PERIOD);
+  assert.equal(moved.built.first_built, first.built.first_built, "a rebuild allocated a second period");
+  assert.ok(moved.lines > first.lines, "the moved books did not reach the rebuild");
 });
 
 test("ledger_lines filters by account, source and document, and says a filtered set is not expected to balance", async (t) => {

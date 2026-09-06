@@ -1,7 +1,7 @@
 // What happens when the books are wrong, absent, unreadable or in two currencies.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import {
   client, sandbox, cleanup, proKey, workedMonth, seed, storeDir, invoice, deposit, expense, txn, PERIOD,
@@ -221,7 +221,12 @@ test("the free tier builds three periods a month, rebuilds them free, and never 
   assert.equal(fourth.isError, true);
   assert.match(fourth.text, /builds 3 periods a calendar month/);
   assert.match(fourth.text, /Pro is a one-time \$\d+ for this server/);
-  assert.equal((await c.call("ledger_build", { from: "2026-06-01", to: "2026-06-30", currency: "EUR" })).isError, false, "a rebuild is free");
+  // Rebuilding one already in the register never costs a slot. It is refused only because
+  // it would write back what is already there, and the refusal names the row it found.
+  const rebuild = await c.call("ledger_build", { from: "2026-06-01", to: "2026-06-30", currency: "EUR" });
+  assert.equal(rebuild.isError, true);
+  assert.match(rebuild.text, /2026-06-01\.\.2026-06-30\/EUR is already built/);
+  assert.doesNotMatch(rebuild.text, /builds 3 periods a calendar month/, "a rebuild was refused as a cap breach");
   for (let i = 0; i < 5; i += 1) {
     assert.equal((await c.call("trial_balance", { from: "2026-06-01", to: `2026-06-0${i + 1}`, currency: "EUR" })).isError, false);
   }
@@ -277,4 +282,83 @@ test("a credit note stored with a positive total is posted as it stands and flag
   assert.ok(ex);
   assert.match(ex.message, /stores a POSITIVE total of 10000/);
   assert.equal(close.trial_balance.balanced, true);
+});
+
+/* ------------------------------------------- the register is recoverable, not one-way */
+
+const registerRows = (box) => JSON.parse(readFileSync(join(storeDir(box.dataHome, "cash-book"), "periods.json"), "utf8"));
+
+test("an identical rebuild is refused by name, writes nothing, and does not spend a free period", async (t) => {
+  const { box, c } = open(t);
+  workedMonth(box.dataHome);
+  await c.init();
+  assert.equal((await c.call("ledger_build", { from: "2026-06-01", to: "2026-06-30", currency: "EUR" })).isError, false);
+  const stored = readFileSync(join(storeDir(box.dataHome, "cash-book"), "periods.json"), "utf8");
+
+  const again = await c.call("ledger_build", { from: "2026-06-01", to: "2026-06-30", currency: "EUR" });
+  assert.equal(again.isError, true, "the same record was taken twice");
+  assert.match(again.text, /2026-06-01\.\.2026-06-30\/EUR is already built/, again.text);
+  assert.match(again.text, /Nothing was written/);
+  assert.match(again.text, /period_delete/, "the refusal does not name the tool that removes it");
+  assert.equal(readFileSync(join(storeDir(box.dataHome, "cash-book"), "periods.json"), "utf8"), stored,
+    "a refused rebuild still rewrote the register");
+  assert.equal(registerRows(box).length, 1);
+
+  // and the two free periods that were never spent are still there
+  for (const to of ["2026-06-10", "2026-06-20"]) {
+    assert.equal((await c.call("ledger_build", { from: "2026-06-01", to, currency: "EUR" })).isError, false);
+  }
+  assert.equal(registerRows(box).length, 3);
+});
+
+test("period_delete gives the free slot back: fill the cap, delete one, and the next build goes through", async (t) => {
+  const { box, c } = open(t);
+  workedMonth(box.dataHome);
+  await c.init();
+  for (const to of ["2026-06-10", "2026-06-20", "2026-06-30"]) {
+    assert.equal((await c.call("ledger_build", { from: "2026-06-01", to, currency: "EUR" })).isError, false);
+  }
+  const capped = await c.call("ledger_build", { from: "2026-06-01", to: "2026-06-25", currency: "EUR" });
+  assert.equal(capped.isError, true);
+  assert.match(capped.text, /builds 3 periods a calendar month/);
+
+  const gone = await c.json("period_delete", { from: "2026-06-01", to: "2026-06-20", currency: "EUR" });
+  assert.equal(gone.deleted.period, "2026-06-01..2026-06-20/EUR");
+  assert.equal(gone.periods_in_register, 2);
+  assert.equal(gone.free_tier.periods_built_this_month, 2);
+  assert.equal(gone.free_tier.periods_left_this_month, 1);
+  assert.equal(registerRows(box).length, 2, "the row is still on disk");
+
+  const after = await c.call("ledger_build", { from: "2026-06-01", to: "2026-06-25", currency: "EUR" });
+  assert.equal(after.isError, false, `the slot was not recovered: ${after.text}`);
+  assert.equal(registerRows(box).length, 3);
+
+  // and the fifth is capped again, so the delete gave one slot back and not the meter itself
+  assert.match((await c.call("ledger_build", { from: "2026-06-01", to: "2026-06-28", currency: "EUR" })).text,
+    /builds 3 periods a calendar month/);
+
+  const missing = await c.call("period_delete", { from: "2026-05-01", to: "2026-05-31", currency: "EUR" });
+  assert.equal(missing.isError, true);
+  assert.match(missing.text, /nothing to delete and nothing was written/);
+});
+
+test("a period a closed month stands on is refused, and the close is named", async (t) => {
+  const { box, c } = open(t, { key: proKey() });
+  workedMonth(box.dataHome);
+  await c.init();
+  assert.equal((await c.call("ledger_build", { ...PERIOD, currency: "EUR" })).isError, false);
+  assert.equal((await c.call("month_close", { month: "2026-06", currency: "EUR" })).isError, false);
+
+  const refused = await c.call("period_delete", { ...PERIOD, currency: "EUR" });
+  assert.equal(refused.isError, true, "a period with a dependent was deleted");
+  assert.match(refused.text, /2026-06-01\.\.2026-06-30\/EUR has 1 dependent/);
+  assert.match(refused.text, /the month 2026-06 was closed on/, "the dependent is not named");
+  assert.match(refused.text, /Nothing was written/);
+  assert.equal(registerRows(box).length, 1, "a refused delete removed the row anyway");
+
+  // a period in a month nothing was closed in has no dependent and goes
+  assert.equal((await c.call("ledger_build", { from: "2026-07-01", to: "2026-07-31", currency: "EUR" })).isError, false);
+  const ok = await c.json("period_delete", { from: "2026-07-01", to: "2026-07-31", currency: "EUR" });
+  assert.equal(ok.deleted.period, "2026-07-01..2026-07-31/EUR");
+  assert.equal(registerRows(box).length, 1);
 });

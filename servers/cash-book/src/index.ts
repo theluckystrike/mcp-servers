@@ -6,7 +6,7 @@ import { isIsoDate, today } from "@theluckystrike/mcp-quotes/lib";
 import { z } from "zod";
 import { VERSION } from "./version.js";
 import {
-  dataDir, findClose, findPeriod, getCloses, getPeriods, lockPath, periodKey, setCloses, setPeriods,
+  dataDir, findClose, findPeriod, getCloses, getPeriods, lockPath, periodId, periodKey, setCloses, setPeriods,
   type CloseRecord, type PeriodRecord,
 } from "./store.js";
 import { degradedNotes, readSources, sourceReport, type SourceSet } from "./sources.js";
@@ -42,6 +42,9 @@ function locked<T>(fn: () => T | Promise<T>): Promise<T> {
   return withFileLock(lockPath(), fn, { timeoutMs: 20000 });
 }
 
+/** Normalise a date argument before it is read or compared: whitespace only, never a shape. */
+function normDate(value: string): string { return String(value ?? "").trim(); }
+
 function checkDate(value: string, field: string): string {
   if (!isIsoDate(value)) throw new Error(`cannot read a date: ${field} "${value}" is not a real date in YYYY-MM-DD form. Nothing was written.`);
   return value;
@@ -71,7 +74,9 @@ function checkMonth(value: string): { month: string; from: string; to: string } 
  * the sibling books move under this server all the time, and a ledger that answers from a
  * cache is a ledger that answers about a month that no longer exists.
  */
-function derive(from: string, to: string, currency: string | undefined): { s: SourceSet; led: Ledger; bank: ReturnType<typeof matchBank> } {
+function derive(rawFrom: string, rawTo: string, currency: string | undefined): { s: SourceSet; led: Ledger; bank: ReturnType<typeof matchBank> } {
+  const from = normDate(rawFrom);
+  const to = normDate(rawTo);
   checkDate(from, "from");
   checkDate(to, "to");
   checkPeriod(from, to);
@@ -126,10 +131,43 @@ const BASIS =
 
 /* ---------------------------------------------------------- the free meter */
 
-function capRefusal(count: number, month: string, toolName: string): string {
-  return `the free tier builds ${FREE_PERIODS_PER_MONTH} periods a calendar month and ${count} have already been built in ${month}. ` +
+function capRefusal(count: number, month: string, built: PeriodRecord[], toolName: string): string {
+  const names = built.map((r) => periodId(r.from, r.to, r.currency)).join(", ");
+  return `the free tier builds ${FREE_PERIODS_PER_MONTH} periods a calendar month and ${count} have already been built in ${month}` +
+    `${names ? ` (${names})` : ""}. ` +
     `trial_balance stays free and unlimited, and any period already in the register can be rebuilt as often as you like at no cost. ` +
+    `A period you no longer need can be removed with period_delete, which counts from the register and so gives its slot back this month. ` +
     `Nothing was written. ` + gate.upgradeText("unlimited ledger periods", toolName);
+}
+
+/** The figures a build would store. Two builds that produce these are the same build. */
+function figuresOf(led: Ledger): Pick<PeriodRecord, "lines" | "debits_minor" | "credits_minor" | "imbalance_minor"> {
+  const tb = trialBalance(led);
+  return {
+    lines: led.lines.length, debits_minor: tb.debits_minor, credits_minor: tb.credits_minor,
+    imbalance_minor: tb.imbalance_minor,
+  };
+}
+
+/**
+ * A rebuild that would write back exactly what is already stored is refused rather than
+ * accepted silently: round 19 (docs/DIST_R19_RESULT.md, finding 3) measured that a tool
+ * which takes the same record twice and answers as if something happened teaches a caller
+ * to repeat it. The register is the free tier's unit, so the refusal names the row, says
+ * nothing was written and names the tool that removes it.
+ *
+ * It is the FIGURES that are compared, not just the dates: the sibling books move under
+ * this server, so a period whose ledger has changed is still rebuilt and the row updated.
+ * Only the identical rebuild, the one with nothing to write, is turned away.
+ */
+function duplicateRefusal(rec: PeriodRecord): string {
+  const id = periodId(rec.from, rec.to, rec.currency);
+  return `the period ${id} is already built and this rebuild is identical to it: ` +
+    `${rec.lines} lines, ${rec.debits_minor} minor units of debits and ${rec.credits_minor} of credits, unchanged since ${rec.updated}. ` +
+    `Nothing was written and no free period was used, so the register still holds one row for ${id}. ` +
+    `Read it with trial_balance or ledger_lines, both free and unlimited, or remove it with period_delete ` +
+    `(from ${rec.from}, to ${rec.to}, currency ${rec.currency}). A rebuild is only refused while it would change nothing: ` +
+    `once a sibling store moves, the same call rebuilds the period and updates the row.`;
 }
 
 /**
@@ -138,24 +176,22 @@ function capRefusal(count: number, month: string, toolName: string): string {
  * the third free period of the month cannot both pass it.
  */
 async function register(led: Ledger, toolName: string): Promise<PeriodRecord> {
-  const tb = trialBalance(led);
+  const figures = figuresOf(led);
   return await locked(() => {
     const list = getPeriods();
     const existing = findPeriod(list, periodKey(led.from, led.to, led.currency));
     const now = new Date().toISOString();
-    const figures = {
-      lines: led.lines.length, debits_minor: tb.debits_minor, credits_minor: tb.credits_minor,
-      imbalance_minor: tb.imbalance_minor,
-    };
     if (existing) {
+      const same = (Object.keys(figures) as (keyof typeof figures)[]).every((k) => existing[k] === figures[k]);
+      if (same) throw new Error(duplicateRefusal(existing));
       Object.assign(existing, figures, { updated: now });
       setPeriods(list);
       return existing;
     }
     const month = now.slice(0, 7);
     if (!gate.isPro()) {
-      const built = list.filter((r) => r.built_month === month).length;
-      if (built >= FREE_PERIODS_PER_MONTH) throw new Error(capRefusal(built, month, toolName));
+      const thisMonth = list.filter((r) => r.built_month === month);
+      if (thisMonth.length >= FREE_PERIODS_PER_MONTH) throw new Error(capRefusal(thisMonth.length, month, thisMonth, toolName));
     }
     const rec: PeriodRecord = {
       from: led.from, to: led.to, currency: led.currency, ...figures,
@@ -215,6 +251,82 @@ server.registerTool("ledger_build", {
         note: "A memo. An order is a commitment, not a transaction: nothing was delivered and nothing is owed, so no debit and no credit exists for it.",
       })),
       basis: BASIS,
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+/**
+ * What stands on a built period. The register is not read to compute a balance, so the
+ * only thing downstream of a period row is the close snapshot: `month_close` writes a
+ * trial balance for a month, and a period whose days that month covers is the work that
+ * snapshot was taken over. Nothing is posted, exported or carried forward from a period:
+ * `ledger_export_csv` writes no file and this ledger opens at nothing, so no later period
+ * carries a figure out of an earlier one.
+ */
+function dependentsOf(rec: PeriodRecord, closes: CloseRecord[]): string[] {
+  return closes
+    .filter((c) => c.currency.toUpperCase() === rec.currency.toUpperCase())
+    .filter((c) => !(monthEnd(c.month) < rec.from || `${c.month}-01` > rec.to))
+    .map((c) => `the month ${c.month} was closed on ${c.closed} in ${c.currency} and its trial balance snapshot ` +
+      `(${c.debits_minor} minor units of debits over ${Object.keys(c.balances).length} accounts) covers days inside this period`);
+}
+
+server.registerTool("period_delete", {
+  title: "Delete a built period",
+  description: "Delete one built period from the register and give its free-tier slot back. Refused when a closed month's snapshot covers the period, and that month is named. No sibling book is touched.",
+  inputSchema: {
+    from: fromArg, to: toArg,
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-letter ISO code such as EUR").optional()
+      .describe("Needed only when the same date range was built in more than one currency"),
+  },
+}, async (a) => {
+  try {
+    const from = checkDate(normDate(a.from), "from");
+    const to = checkDate(normDate(a.to), "to");
+    checkPeriod(from, to);
+    const out = await locked(() => {
+      const list = getPeriods();
+      const matches = a.currency
+        ? list.filter((p) => periodKey(p.from, p.to, p.currency) === periodKey(from, to, a.currency as string))
+        : list.filter((p) => p.from === from && p.to === to);
+      if (matches.length === 0) {
+        const held = list.map((p) => periodId(p.from, p.to, p.currency));
+        throw new Error(`no period ${periodId(from, to, a.currency ?? "any")} is in the register, so there is nothing to delete and nothing was written. ` +
+          (held.length ? `The register holds ${held.length}: ${held.join(", ")}.` : "The register is empty."));
+      }
+      if (matches.length > 1) {
+        const seen = matches.map((p) => p.currency.toUpperCase()).join(", ");
+        throw new Error(`the range ${from}..${to} is built in ${matches.length} currencies (${seen}) and one call deletes one period. ` +
+          `Pass currency to name which. Nothing was deleted.`);
+      }
+      const rec = matches[0];
+      const id = periodId(rec.from, rec.to, rec.currency);
+      const deps = dependentsOf(rec, getCloses());
+      if (deps.length) {
+        throw new Error(`${id} has ${deps.length} dependent${deps.length === 1 ? "" : "s"} and was not deleted: ${deps.join("; ")}. ` +
+          `Nothing was written. The snapshot is the record of what the books said at that close, so the period it was taken over stays in the register.`);
+      }
+      list.splice(list.indexOf(rec), 1);
+      setPeriods(list);
+      const month = new Date().toISOString().slice(0, 7);
+      const used = list.filter((r) => r.built_month === month).length;
+      return { rec, id, month, used, remaining: list.length };
+    });
+    return json({
+      deleted: {
+        period: out.id, from: out.rec.from, to: out.rec.to, currency: out.rec.currency,
+        first_built: out.rec.built, last_updated: out.rec.updated, lines: out.rec.lines,
+      },
+      periods_in_register: out.remaining,
+      free_tier: gate.isPro()
+        ? { tier: "pro", metered: false }
+        : {
+          tier: "free", month: out.month, periods_built_this_month: out.used,
+          periods_left_this_month: Math.max(0, FREE_PERIODS_PER_MONTH - out.used),
+        },
+      basis: "The free tier counts the rows in the register, not calls made, so this delete gave the slot back. " +
+        "Only this server's own register changed: no invoice, credit note, deposit, expense, bank row or asset was touched, " +
+        "and the ledger for these dates can be derived again at any time with trial_balance or ledger_lines, both free and unlimited.",
     });
   } catch (e) { return fail((e as Error).message); }
 });
