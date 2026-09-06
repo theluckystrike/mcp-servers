@@ -173,6 +173,66 @@ function depositsInMonth(month: string): number {
   return getDeposits().filter((d) => d.received_date.slice(0, 7) === month).length;
 }
 
+/**
+ * The duplicate fingerprint, D-R19: a create tool with no delete tool that accepts the
+ * same record twice holds one client's money twice on the book and, on the free tier,
+ * spends one of the five slots the month has with no way back except a Pro key.
+ *
+ * Normalised so the second call does not have to be byte-identical to be the same
+ * deposit: the client name is trimmed, its inner whitespace collapsed and case-folded,
+ * the currency and the kind are upper/lower-cased, the reference is trimmed and
+ * case-folded, the amount is compared in minor units and the date in YYYY-MM-DD.
+ *
+ * `notes` is deliberately NOT part of it. Notes are commentary on the same money, so two
+ * records that differ only there are still the same deposit; the reference is the field
+ * that separates two genuine payments of the same amount on the same day, and it is in.
+ */
+function fingerprint(p: {
+  client: string; amount_minor: number; currency: string; kind: string; received_date: string; reference?: string;
+}): string {
+  const norm = (v: string | undefined) => (v ?? "").trim().replace(/\s+/g, " ").toLowerCase();
+  return [
+    norm(p.client), String(p.amount_minor), p.currency.trim().toUpperCase(),
+    norm(p.kind), p.received_date.trim(), norm(p.reference),
+  ].join("\u0000");
+}
+
+function fingerprintOf(d: Deposit): string {
+  return fingerprint({
+    client: d.client.name, amount_minor: d.amount_minor, currency: d.currency,
+    kind: d.kind, received_date: d.received_date, reference: d.reference,
+  });
+}
+
+function duplicateRefusal(dup: Deposit): string {
+  return `${dup.id} is already this exact deposit: ${dup.client.name}, ${formatMoney(dup.amount_minor, dup.currency)}, ` +
+    `${dup.kind}, received ${dup.received_date}` +
+    (dup.reference ? `, reference ${dup.reference}` : ", no reference") + `. Nothing was written. ` +
+    `Storing it twice would show that money held twice and would spend one of the ${FREE_DEPOSITS_PER_MONTH} free deposits ` +
+    `${dup.received_date.slice(0, 7)} has. If the client really paid twice on the same day, record it again with its own ` +
+    `reference. If ${dup.id} was itself the mistake, deposit_delete {"id":"${dup.id}"} removes it and gives that month's slot back.`;
+}
+
+/**
+ * What stops a deposit being deleted. A deposit is only a mistake while none of its money
+ * has moved: an application is a payment this server already wrote onto an invoice in the
+ * invoice server's store (`paid_minor`, `paid_date`, `status`), and a refund is money
+ * already sent back to the client. Deleting either would leave that payment or that
+ * refund with nothing behind it, so both are named and the delete is refused. Those two
+ * arrays are the only links a deposit has: the statements are rendered from the deposits
+ * on the fly and store nothing that points back at an id.
+ */
+function dependentsOf(d: Deposit): string[] {
+  const out: string[] = [];
+  for (const ap of d.applications) {
+    out.push(`${formatMoney(ap.amount_minor, d.currency)} applied to invoice ${ap.invoice_number} on ${ap.date}, which is a payment on that invoice in the invoice server's store`);
+  }
+  for (const r of d.refunds) {
+    out.push(`${formatMoney(r.amount_minor, d.currency)} refunded on ${r.date} (${r.method})`);
+  }
+  return out;
+}
+
 function capRefusal(month: string, toolName: string): string {
   return `the free tier records ${FREE_DEPOSITS_PER_MONTH} deposits a month and ${month} already has ${depositsInMonth(month)}. ` +
     `Applying, refunding and every balance stay free, so nothing already held is stuck. Nothing was stored. ` +
@@ -218,9 +278,6 @@ server.registerTool("deposit_record", {
   try {
     return await locked(() => {
       const received = checkDate(a.received_date, today(), "received_date");
-      if (!gate.isPro() && depositsInMonth(received.slice(0, 7)) >= FREE_DEPOSITS_PER_MONTH) {
-        return fail(capRefusal(received.slice(0, 7), "deposit_record"));
-      }
       const biz = issuer();
       const currency = (a.currency ?? biz.default_currency).toUpperCase();
       const stored = findClient(a.client);
@@ -231,6 +288,18 @@ server.registerTool("deposit_record", {
         vat_id: a.client_vat_id ?? stored?.vat_id,
       };
       const list = getDeposits();
+      // D-R19. Checked BEFORE the cap, and on every tier: the same deposit twice is
+      // wrong on the book whether or not there is a slot left, and at the cap this is
+      // the answer that names the way back.
+      const fp = fingerprint({
+        client: client.name, amount_minor: a.amount_minor, currency,
+        kind: a.kind, received_date: received, reference: a.reference,
+      });
+      const dup = list.find((x) => fingerprintOf(x) === fp);
+      if (dup) return fail(duplicateRefusal(dup));
+      if (!gate.isPro() && depositsInMonth(received.slice(0, 7)) >= FREE_DEPOSITS_PER_MONTH) {
+        return fail(capRefusal(received.slice(0, 7), "deposit_record"));
+      }
       const now = new Date().toISOString();
       const d: Deposit = {
         id: nextDepositId(received.slice(0, 4), list.map((x) => x.id)),
@@ -448,6 +517,55 @@ server.registerTool("deposit_refund", {
         refunded: { deposit: d.id, date: when, amount: formatMoney(amount, d.currency), amount_minor: amount, method: a.method ?? "not stated" },
         deposit: depositSummary(d),
         note: `${d.id} now holds ${formatMoney(movements(d).held_minor, d.currency)}. No invoice was changed: a refund returns the client's own money, it does not pay a bill.`,
+      });
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+/**
+ * The way back from deposit_record, D-R19. The free cap counts STORED records whose
+ * received date falls in the month (`depositsInMonth` reads the store every time and
+ * there is no separate month counter), so removing the row is what genuinely gives the
+ * slot back: the very next deposit_record in that month is under the cap again.
+ *
+ * `counter.json` is deliberately NOT rewound. It only ever hands out the next id, and an
+ * id a client may already have seen on a receipt must never be issued twice, so deleting
+ * DEP-2026-0003 leaves the next deposit as DEP-2026-0004. The cap counts rows, not ids,
+ * so the gap costs nothing.
+ *
+ * Free on every tier: a tool that can only be reached by paying is not a way back.
+ */
+server.registerTool("deposit_delete", {
+  title: "Delete a deposit recorded by mistake",
+  description: "Delete a deposit recorded by mistake and free that month's free-tier slot again. Only a deposit with nothing applied to an invoice and nothing refunded can go; one whose money moved is refused, naming what holds it.",
+  inputSchema: {
+    id: z.string().min(1, "id is required").describe("Deposit id such as DEP-2026-0001, or an exact client name"),
+  },
+}, async (a) => {
+  try {
+    return await locked(() => {
+      const list = getDeposits();
+      const d = findDeposit(list, a.id);
+      if (!d) return fail(`no deposit matches "${a.id}". Run deposit_list to see the ids.`);
+      const deps = dependentsOf(d);
+      if (deps.length) {
+        return fail(
+          `${d.id} cannot be deleted: ${deps.join("; ")}. ` +
+          `Deleting it would leave ${d.applications.length ? "that payment on the invoice" : "that refund"} with no deposit behind it. ` +
+          `Only a deposit that never moved money can be deleted; this one is a real record now, not a mistyped one. Nothing was changed.`,
+        );
+      }
+      const gone = depositDetail(d);
+      const month = d.received_date.slice(0, 7);
+      setDeposits(list.filter((x) => x.id !== d.id));
+      const used = depositsInMonth(month);
+      return json({
+        deleted: gone,
+        free_tier: gate.isPro()
+          ? undefined
+          : `${used} of ${FREE_DEPOSITS_PER_MONTH} deposits now recorded in ${month}, so ${FREE_DEPOSITS_PER_MONTH - used} more can be recorded in that month.`,
+        note: `${d.id} is gone from the book and nothing else was touched: it had never been applied to an invoice and never refunded. ` +
+          `The id itself is not reused, so the next deposit gets a new number.`,
       });
     });
   } catch (e) { return fail((e as Error).message); }

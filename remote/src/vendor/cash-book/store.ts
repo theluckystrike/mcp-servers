@@ -97,6 +97,15 @@ export function periodKey(from: string, to: string, currency: string): string {
   return `${from}|${to}|${currency.toUpperCase()}`;
 }
 
+/**
+ * The name a built period is called by in an answer. The register keys on the same three
+ * fields, so the id is derived and never stored: a stored id is a second name for the row
+ * that can drift from the row it names.
+ */
+export function periodId(from: string, to: string, currency: string): string {
+  return `${from}..${to}/${currency.toUpperCase()}`;
+}
+
 export function findPeriod(list: PeriodRecord[], key: string): PeriodRecord | undefined {
   return list.find((p) => periodKey(p.from, p.to, p.currency) === key);
 }

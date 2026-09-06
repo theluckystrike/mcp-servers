@@ -1,4 +1,4 @@
-import { mkdirSync, renameSync, writeFileSync } from "../../shims/fs.js";
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from "../../shims/fs.js";
 import { homedir } from "../../shims/os.js";
 import { join } from "node:path";
 import { readJsonFile } from "../timezone/lib.js";
@@ -91,4 +91,43 @@ export function findTrip(list: Trip[], ref: string): Trip | undefined {
     );
   }
   return pool[0];
+}
+
+/**
+ * A row in servers/expense-tracker's own ledger, read-only. Only the fields this server
+ * needs to NAME a dependent are typed; the owning server's shape is its own business.
+ */
+export interface ExpenseRow { id?: string; date?: string; note?: string; merchant?: string }
+
+/**
+ * D-P2. Read-only, best effort: the rows servers/expense-tracker holds in its ledger.
+ *
+ * `trip_export` writes nothing there, but a caller who ran the payload it handed back
+ * leaves an expense whose note opens with the trip id (see the note builder in
+ * `trip_export`). That row is a DEPENDENT: deleting the trip under it would leave a
+ * booked expense citing an id that no longer resolves, and the per diem behind a filed
+ * claim would be gone. So `trip_delete` looks, and refuses when it finds one.
+ *
+ * Same XDG data root, read-only, never written -- the pattern expense-tracker itself uses
+ * for the bank ledger and kanban uses for time-tracker. A sibling store that is missing,
+ * unreadable or not JSON is not this server's problem and is reported as absent rather
+ * than thrown, because a deletion must not fail on someone else's broken file. Absence is
+ * reported to the caller so "no dependents" is never confused with "did not look".
+ */
+export function readExpenseRows(): { present: boolean; rows: ExpenseRow[]; note?: string } {
+  const base = process.env.XDG_DATA_HOME || join(homedir(), ".local", "share");
+  const file = join(base, "mcp-servers", "expense-tracker", "data.json");
+  let raw: string;
+  try {
+    raw = readFileSync(file, "utf8");
+  } catch {
+    return { present: false, rows: [], note: `no expense-tracker ledger at ${file}, so only this server's own export marker was checked` };
+  }
+  try {
+    const db = JSON.parse(raw) as { expenses?: unknown };
+    const rows = Array.isArray(db.expenses) ? (db.expenses as ExpenseRow[]) : [];
+    return { present: true, rows };
+  } catch {
+    return { present: false, rows: [], note: `the expense-tracker ledger at ${file} is not readable JSON, so only this server's own export marker was checked` };
+  }
 }

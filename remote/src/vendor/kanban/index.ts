@@ -209,6 +209,26 @@ function findTask(db: DB, id: string): Task | undefined {
   return db.tasks.find(t => t.id.toLowerCase() === q);
 }
 
+/**
+ * D-K11. task_add is the only tool on this server that creates a record, and a retried turn
+ * writes the same card twice: a second task eating another of the 200 free open-task slots,
+ * and on a new name a second board eating one of the 3 free project slots. Two calls are the
+ * same record only when every stored field matches after normalisation, so any real edit
+ * (a different column, due date, priority, estimate, tag or note) is still a new task.
+ */
+function fingerprint(t: {
+  project: string; title: string; column: string; priority: Priority;
+  due?: string; notes?: string; estimate_minutes?: number; tags: string[];
+}): string {
+  const norm = (s: string) => String(s).trim().toLowerCase().replace(/\s+/g, " ");
+  return JSON.stringify([
+    norm(t.project), norm(t.title), norm(t.column), t.priority,
+    t.due ?? "", norm(t.notes ?? ""),
+    typeof t.estimate_minutes === "number" ? t.estimate_minutes : null,
+    t.tags.map(norm).filter(Boolean).sort(),
+  ]);
+}
+
 function taskLine(t: Task, todayKey: string, columns: string[]): string[] {
   const flag = isOverdue(t, todayKey, columns) ? " (overdue)" : "";
   return [
@@ -291,24 +311,38 @@ server.registerTool("task_add", {
       board = { name: r.project, slug: slugFor(r.project, Object.values(db.boards).map(b => b.slug)), columns: [...DEFAULT_COLUMNS], counter: 0 };
       db.boards[key] = board;
     }
+    const column = a.column ? normColumn(a.column) : board.columns[0];
+    if (!board.columns.includes(column)) return err(`"${column}" is not a column on ${board.name}. Columns: ${board.columns.join(", ")}.`);
+    const tags = (a.tags ?? []).map(s => String(s).trim()).filter(Boolean);
+    const due = a.due ? parseDay(a.due) : undefined;
+    const fp = fingerprint({
+      project: board.name, title: String(a.title).trim(), column, priority: a.priority ?? "normal", tags,
+      ...(a.notes ? { notes: a.notes } : {}),
+      ...(due ? { due } : {}),
+      ...(typeof a.estimate_minutes === "number" ? { estimate_minutes: a.estimate_minutes } : {}),
+    });
+    const twin = db.tasks.find(t => fingerprint(t) === fp && !isDone(t, columnsOf(db, t.project)));
+    if (twin) {
+      return err(`"${twin.title}" is already open on ${twin.project} as ${twin.id}, with the same column, due date, priority, estimate, tags and notes. ` +
+        `Nothing was written and no free-tier slot was used. Edit ${twin.id} with task_update, remove it with task_delete, ` +
+        `or change something in this call if you really want a second copy.`);
+    }
     if (!gate.isPro() && openTaskCount(db) >= FREE_OPEN_TASKS) {
       return ok(`The free tier holds ${FREE_OPEN_TASKS} open tasks and you have ${openTaskCount(db)}. Finish or delete some, or go Pro.\n` + gate.upgradeText("unlimited tasks", "task_add"));
     }
-    const column = a.column ? normColumn(a.column) : board.columns[0];
-    if (!board.columns.includes(column)) return err(`"${column}" is not a column on ${board.name}. Columns: ${board.columns.join(", ")}.`);
     const now = new Date().toISOString();
     board.counter += 1;
     const t: Task = {
       id: makeId(board.slug, board.counter),
       project: board.name,
       title: String(a.title).trim(),
-      tags: (a.tags ?? []).map(s => String(s).trim()).filter(Boolean),
+      tags,
       priority: a.priority ?? "normal",
       column,
       created: now,
       updated: now,
       ...(a.notes ? { notes: a.notes } : {}),
-      ...(a.due ? { due: parseDay(a.due) } : {}),
+      ...(due ? { due } : {}),
       ...(typeof a.estimate_minutes === "number" ? { estimate_minutes: a.estimate_minutes } : {}),
     };
     if (column === doneColumn(board.columns)) t.done_at = now;
@@ -596,6 +630,39 @@ server.registerTool("project_list", {
   });
   const note = gate.isPro() ? "" : `\n\nFree tier: ${names.length}/${FREE_PROJECTS} projects, ${openTaskCount(db)}/${FREE_OPEN_TASKS} open tasks.`;
   return ok(table(["project", "prefix", "open", "done", "estimate", "overdue"], rows) + note);
+}));
+
+/**
+ * D-K12. A board is created as a side effect of task_add, so a typo or a repeated call can
+ * spend one of the three free project slots with no way back short of a Pro key. This is the
+ * way back. It only removes a board that owns nothing: a board's tasks are every row whose
+ * project is its name, done ones included, and nothing else on this server belongs to a board.
+ */
+server.registerTool("project_delete", {
+  title: "Delete project board",
+  description: "Delete an empty project board and free its free-tier slot. A board that still holds tasks, open or done, is refused with a task named.",
+  inputSchema: { project: text(MAX_PROJECT, 1).describe("Board to remove, e.g. 'Nova Site'. It must hold no tasks at all.") },
+}, guard(async ({ project }: { project: string }) => {
+  return withFileLock(LOCK, async () => {
+    const db = load();
+    const f = resolveFilter(db, project);
+    if (f.kind === "ambiguous") return ok(f.text);
+    const b = f.project ? boardOf(db, f.project) : undefined;
+    if (!b) return err(`no project board "${project}". Run project_list to see the boards.`);
+    const mine = db.tasks.filter(t => t.project.trim().toLowerCase() === b.name.trim().toLowerCase());
+    if (mine.length) {
+      const open = mine.filter(t => !isDone(t, b.columns)).length;
+      const first = mine[0];
+      return err(`${b.name} still holds ${mine.length} task(s), ${open} open and ${mine.length - open} done, starting with ${first.id} "${first.title}". ` +
+        `Nothing was deleted. Delete them with task_delete, then delete the board.`);
+    }
+    const key = Object.keys(db.boards).find(k => db.boards[k] === b);
+    if (key) delete db.boards[key];
+    save(db);
+    const left = Object.keys(db.boards).length;
+    const note = gate.isPro() ? "" : ` Free tier: ${left}/${FREE_PROJECTS} projects.`;
+    return ok(`Deleted the empty board ${b.name}. Its id prefix ${b.slug} is free again.${note}`);
+  });
 }));
 
 server.registerTool("overdue", {

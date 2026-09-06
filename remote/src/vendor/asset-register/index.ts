@@ -87,7 +87,58 @@ function assetSummary(a: Asset) {
 function capRefusal(count: number, toolName: string): string {
   return `the free tier holds ${FREE_ASSETS} assets in the register and there are already ${count}. ` +
     `asset_schedule stays free and unlimited, so a schedule can still be produced for anything already in the register; only adding more is capped. ` +
-    `Nothing was stored. ` + gate.upgradeText("an unlimited register", toolName);
+    `Nothing was stored. asset_delete removes an asset nothing depends on and frees its slot again, so a row added by mistake is not a slot spent for good. ` +
+    gate.upgradeText("an unlimited register", toolName);
+}
+
+/**
+ * The identity of an asset as a caller states it, normalised: name and category folded to
+ * lower case and collapsed whitespace, currency upper-cased, dates and money as stored.
+ *
+ * A create tool with no delete tool that accepts the same record twice spends a free-tier
+ * slot the caller cannot get back, and the second row is almost never a second machine: a
+ * retried call, a re-run script and a client that lost the first answer all look like
+ * this. Two genuinely identical units are still a legitimate register, so the refusal
+ * names the field that distinguishes them rather than the tier.
+ */
+function fingerprint(x: {
+  name: string; scheme: string; category: string; cost_minor: number; currency: string;
+  residual_minor: number; purchase_date: string; in_service_date: string; method: string; life_years: number;
+}): string {
+  const fold = (v: string) => v.trim().toLowerCase().replace(/\s+/g, " ");
+  return [
+    fold(x.name), x.scheme, fold(x.category), String(x.cost_minor), x.currency.trim().toUpperCase(),
+    String(x.residual_minor), x.purchase_date.trim(), x.in_service_date.trim(), fold(x.method), String(x.life_years),
+  ].join("|");
+}
+
+function duplicateRefusal(existing: Asset): string {
+  return `this is identical to ${existing.id} "${existing.name}", which is already in the register: same name, scheme ${existing.scheme}, ` +
+    `category ${existing.category} ${existing.category_name}, cost ${formatMoney(existing.cost_minor, existing.currency)} ${existing.currency}, ` +
+    `residual ${formatMoney(existing.residual_minor, existing.currency)}, purchase date ${existing.purchase_date}, in-service date ${existing.in_service_date}, ` +
+    `${existing.method} over ${existing.life_years} years. Nothing was written and no free-tier slot was used. ` +
+    `Two identical units are a legitimate register: give the second one a distinguishing name, such as a serial number, and it is accepted. ` +
+    `If ${existing.id} was added by mistake, asset_delete removes it and frees its slot again.`;
+}
+
+/**
+ * What already depends on an asset, in words. Only markers this server actually sets
+ * count: a recorded disposal, which `asset_report` reports for the year and which carries
+ * a gain or loss someone has filed, and the months `asset_journal` has posted, which are
+ * stamped on the asset when the journal produces its line. An asset with either one is
+ * refused by `asset_delete` rather than deleted, because deleting it would remove the cost
+ * and the accumulated depreciation behind a figure that has already left this server.
+ */
+function dependents(a: Asset): string[] {
+  const out: string[] = [];
+  if (a.disposal) {
+    out.push(`a disposal is recorded against it on ${a.disposal.date} (${a.disposal.result} ${formatMoney(Math.abs(a.disposal.result_minor), a.currency)} ${a.currency}), which asset_report shows for ${a.disposal.date.slice(0, 4)}`);
+  }
+  const months = a.journaled ?? [];
+  if (months.length) {
+    out.push(`asset_journal has already journaled it for ${months.length} month(s): ${months.join(", ")}`);
+  }
+  return out;
 }
 
 /** The last month a stored asset is still on the books, so a disposed asset stops charging. */
@@ -139,6 +190,17 @@ server.registerTool("asset_add", {
 
     return await locked(() => {
       const list = getAssets();
+      // The duplicate check runs before the cap, on every tier: a byte-identical record is
+      // refused whether or not there is a slot left, and refusing it before the cap means
+      // the answer names the id that is already there rather than the tier.
+      const wanted = fingerprint({
+        name: a.name, scheme, category: schedule.category.code, cost_minor: a.cost_minor, currency,
+        residual_minor: a.residual_minor ?? 0, purchase_date: purchase, in_service_date: inService,
+        method, life_years: schedule.useful_life_years,
+      });
+      // A disposed asset is off the register, so an identical replacement is a real one.
+      const twin = list.find((x) => !x.disposal && fingerprint(x) === wanted);
+      if (twin) return fail(duplicateRefusal(twin));
       if (!gate.isPro() && list.length >= FREE_ASSETS) return fail(capRefusal(list.length, "asset_add"));
       const now = new Date().toISOString();
       const id = nextAssetId(inService.slice(0, 4), list.map((x) => x.id));
@@ -302,7 +364,7 @@ server.registerTool("asset_schedule", {
  */
 server.registerTool("asset_journal", {
   title: "Journal the month's depreciation",
-  description: "Return the depreciation journal for one month: debit depreciation expense and credit accumulated depreciation, per asset and in total, plus an expense_add-ready payload per currency. It writes nothing itself. Pro.",
+  description: "Return the depreciation journal for one month: debit depreciation expense and credit accumulated depreciation, per asset and in total, plus an expense_add-ready payload per currency. It writes no expense. Pro.",
   inputSchema: {
     month: str("month", 10).describe("The month to journal, YYYY-MM. A date YYYY-MM-DD is read as its month"),
     scheme: schemeArg.optional().describe("Only assets on this tax scheme"),
@@ -340,6 +402,29 @@ server.registerTool("asset_journal", {
       });
       totals.set(asset.currency, (totals.get(asset.currency) ?? 0) + amount);
     }
+    // The journal marks the register: each asset it produced a line for records the month.
+    // Nothing is written into the expense ledger (see why_not_written below), but "has
+    // anything been posted for this asset" has to be answerable, or asset_delete would
+    // remove the cost behind a figure that is already in someone's books.
+    if (lines.length) {
+      const journaled = new Set(lines.map((l) => l.asset as string));
+      await locked(() => {
+        const all = getAssets();
+        let touched = false;
+        for (const asset of all) {
+          if (!journaled.has(asset.id)) continue;
+          const months = asset.journaled ?? [];
+          if (months.includes(month)) continue;
+          months.push(month);
+          months.sort();
+          asset.journaled = months;
+          asset.updated = new Date().toISOString();
+          touched = true;
+        }
+        if (touched) setAssets(all);
+      });
+    }
+
     const category = (a.category ?? "depreciation").trim();
     const lastDay = new Date(Date.UTC(m.y, m.m, 0)).getUTCDate();
     const date = `${month}-${String(lastDay).padStart(2, "0")}`;
@@ -367,6 +452,9 @@ server.registerTool("asset_journal", {
       why_not_written:
         "This server does not write into the expense ledger. servers/expense-tracker publishes no library entry point, and its id counter, category rules, VAT split and currency defaults all live inside its own expense_add handler under its own lock. Appending a row to its data.json directly would create an expense with none of those applied: it would look native and would not be.",
       no_vat: "No vat_rate is set on the payload. Depreciation is a book charge, not a purchase, and there is no input VAT on it; putting a rate here would invent a deductible amount.",
+      marked: lines.length
+        ? `${month} is now recorded on ${lines.length} asset(s) in the register, so asset_delete refuses them by name rather than deleting the cost behind a line that has been posted. No expense was written.`
+        : "No asset was charged this month, so nothing was marked.",
       note: "Currencies are never added together, and an asset disposed of before this month is excluded: depreciation is charged up to and including the month of disposal, then stops.",
     });
   } catch (e) { return fail((e as Error).message); }
@@ -429,6 +517,49 @@ server.registerTool("asset_dispose", {
         ],
         basis: `depreciation is charged up to and including the month of disposal (${month}), which is the Polish rule in art. 16h ust. 1 pkt 1 and the usual book convention; the accumulated figure above is the sum of the monthly charges through that month`,
         notes: s.notes,
+      });
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+/**
+ * D-D1. The counterpart to `asset_add`. A create tool with no delete tool makes every
+ * mistaken row permanent, and on the free tier a mistaken row is a slot the caller cannot
+ * get back except by buying a key, which is a tier that punishes a typo rather than one
+ * that meters a feature. So the delete is free, and it is narrow: it removes a row nothing
+ * else has consumed yet, and it refuses the moment something has.
+ */
+server.registerTool("asset_delete", {
+  title: "Delete an asset",
+  description: "Remove one asset from the register when nothing depends on it: not disposed of, never journaled. Its free-tier slot is free again. An asset with a dependent is refused and the dependent is named. Free.",
+  inputSchema: {
+    asset: str("asset", MAX_NAME).min(1, "asset is required").describe("Asset id such as ASSET-2026-0001, or an exact or partial name"),
+  },
+}, async (a) => {
+  try {
+    return await locked(() => {
+      const list = getAssets();
+      const asset = findAsset(list, a.asset);
+      if (!asset) return fail(`no asset matches "${a.asset}". Run asset_list to see the ids.`);
+      const blockers = dependents(asset);
+      if (blockers.length) {
+        return fail(
+          `${asset.id} "${asset.name}" has a dependent and was not deleted: ${blockers.join("; ")}. ` +
+          `Deleting it would remove the cost and the accumulated depreciation behind a figure that has already left this server, so the row stays. Nothing was written.`,
+        );
+      }
+      const kept = list.filter((x) => x.id !== asset.id);
+      setAssets(kept);
+      const notes = [
+        "The id is not reused: asset ids are allocated from a counter and checked against the register, so a deleted number is never issued to a different asset.",
+      ];
+      if (!gate.isPro()) notes.push(`Free tier: ${kept.length} of ${FREE_ASSETS} assets, so ${FREE_ASSETS - kept.length} slot(s) are open again.`);
+      return json({
+        deleted: assetSummary(asset),
+        assets_remaining: kept.length,
+        free_slots_open: gate.isPro() ? undefined : Math.max(0, FREE_ASSETS - kept.length),
+        checked: "no disposal is recorded against it and asset_journal has never journaled it, so nothing downstream depends on it",
+        notes,
       });
     });
   } catch (e) { return fail((e as Error).message); }

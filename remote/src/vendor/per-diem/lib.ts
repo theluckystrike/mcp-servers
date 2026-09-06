@@ -15,6 +15,6 @@ export { currencyDecimals, formatMoney, table, TABLE_IDS } from "./tables.js";
 export type { Band, FiscalYear, RateRow, Table, TableHeader, TableId } from "./tables.js";
 export { calc, findRate, MAX_TRIP_DAYS, MEALS, parseInstant, resolveTimezone, SCHEMES } from "./schemes.js";
 export type { CalcInput, CalcResult, DayLine, MealName, SchemeId } from "./schemes.js";
-export { dataDir, findTrip, getTrips, lockPath, nextTripId, setTrips } from "./store.js";
-export type { Trip } from "./store.js";
+export { dataDir, findTrip, getTrips, lockPath, nextTripId, readExpenseRows, setTrips } from "./store.js";
+export type { ExpenseRow, Trip } from "./store.js";
 export { VERSION } from "./version.js";

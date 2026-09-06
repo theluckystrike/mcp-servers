@@ -54,6 +54,10 @@ export interface Quote {
   decline_reason?: string;
   /** Set when accepting created a real invoice in the invoice server. */
   invoice_number?: string;
+  /** Day `quote_send_text` first handed the quote to the client. The client has seen it. */
+  sent_date?: string;
+  /** Where `quote_pdf` last wrote the rendered document. */
+  exported_path?: string;
   created: string;
   updated: string;
   /** Free tier renders a footer credit on the PDF. */
