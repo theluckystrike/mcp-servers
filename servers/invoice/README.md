@@ -64,7 +64,8 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | Tool | What it does |
 | --- | --- |
 | `business_set` | Store the issuer profile: name, address, email, VAT id, IBAN, bank, logo, default currency, default tax rate, payment terms, invoice prefix. `tax_rate`, `vat_rate` and `vat` are accepted as aliases for `default_tax_rate`, and any unrecognised field is reported back rather than dropped |
-| `client_add` | Add or update a client (name, address, email, VAT id) |
+| `client_add` | Add or update a client (name, address, email, VAT id). A record identical to one already stored is refused, naming the id that holds it, so the same client cannot be stored twice |
+| `client_delete` | Delete a stored client nothing uses. Refused, with the document named, while an invoice, quote, credit note, purchase order, deposit, statement or recurring schedule still references it |
 | `client_list` | List stored clients with their ids |
 | `invoice_create` | Create an invoice from line items; allocates the next number, computes discount, tax per rate and total. Items may carry a per-line `currency`, and a mix is refused rather than billed as one currency. If the client is created from a bare name the response says the BILL TO block has no address and how to add one |
 | `invoice_from_hours` | Shortcut: bill one client for N hours at an hourly rate. `target_currency` + `fx_rates` issue the invoice in another currency (you supply the rate); `entry_ids` come back with the new invoice number so the tracked hours can be closed with the time tracker's `entry_mark_billed` |
@@ -87,6 +88,7 @@ Prompt: `monthly_invoicing` reviews what is unpaid and what is overdue for a mon
 | "Set up my business: Acme Consulting, EUR, 23% VAT, 14 day terms." | `business_set` |
 | "Add a client: Beta Corp, their VAT id is..., email billing@beta.example." | `client_add` |
 | "List my clients." | `client_list` |
+| "Remove that duplicate Beta Corp client." | `client_delete` |
 | "Invoice Acme for 12 hours at 90 EUR plus 300 EUR setup, 23% VAT, PDF." | `invoice_create` + `invoice_pdf` |
 | "Bill Beta Corp for 5 hours at 120 EUR." | `invoice_from_hours` |
 | "Show me every unpaid invoice from August." | `invoice_list` |
@@ -175,6 +177,9 @@ client list.
 
 - Free tier allows 3 invoices per calendar month; the counter resets on the 1st. `overdue_report` and
   everything else (clients, tax lines, discounts, payments, multi-currency) is unrestricted on free.
+- Clients are never metered: the client list is unlimited on free and on Pro. `client_add` still refuses a
+  record identical to a stored one, and `client_delete` removes an unused client, so a mistyped or duplicated
+  record can always be undone without a licence key. A client any document references cannot be deleted.
 - Free PDFs carry a small "Generated with mcp-invoice" footer line; Pro removes it and adds a logo.
 - Creating an invoice for a client name the server has never seen creates that client with no address --
   the response says so and names `client_add` as the fix, but nothing blocks you from sending a PDF with

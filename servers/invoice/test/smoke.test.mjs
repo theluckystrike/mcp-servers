@@ -82,7 +82,7 @@ test("stdio: initialize, tools/list, full invoice lifecycle, PDF", async (t) => 
   const list = await c.send("tools/list", {});
   const names = list.result.tools.map((x) => x.name).sort();
   for (const n of [
-    "business_set", "client_add", "client_list", "invoice_create", "invoice_from_hours",
+    "business_set", "client_add", "client_delete", "client_list", "invoice_create", "invoice_from_hours",
     "invoice_get", "invoice_list", "invoice_mark_paid", "invoice_pdf", "overdue_report",
     "license_activate", "license_status",
   ]) assert.ok(names.includes(n), `missing tool ${n} (have ${names.join(",")})`);

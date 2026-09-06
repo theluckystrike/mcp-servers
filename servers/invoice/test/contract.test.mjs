@@ -113,7 +113,7 @@ test("every tool description is non-empty, single-paragraph, and within the hard
   t.after(() => c.close());
   await c.init();
   const tools = await c.tools();
-  assert.equal(tools.length, 12, "tool count changed; regenerate SPEC.md with scripts/gen-spec.mjs");
+  assert.equal(tools.length, 13, "tool count changed; regenerate SPEC.md with scripts/gen-spec.mjs");
 
   for (const tool of tools) {
     const d = tool.description ?? "";
