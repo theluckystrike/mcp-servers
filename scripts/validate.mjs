@@ -458,8 +458,9 @@ const PROBES = {
     // 11. A reconciled voucher cannot be deleted: the cash it took out was counted on the day
     // of the count, so removing it would make a recorded count wrong by its own amount.
     const delReconciled = await c.tool("voucher_delete", { voucher: "VOU-2026-0004" });
-    ok(`${tier}: deleting a reconciled voucher is refused naming the count date and the 125.00 it would break`,
-      delReconciled.isError && /2026-03-31/.test(delReconciled.text) && /125\.00/.test(delReconciled.text),
+    ok(`${tier}: deleting a reconciled voucher is refused naming the count date and the 12,500 it would break`,
+      delReconciled.isError && /was reconciled on 2026-03-31 and cannot be deleted/.test(delReconciled.text)
+      && /wrong by 12500 minor units/.test(delReconciled.text),
       delReconciled.text.replace(/\s+/g, " ").slice(0, 160));
 
     // 12. No balance is stored. The record holds the terms and the events only, and every
