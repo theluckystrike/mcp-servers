@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/asset-register.mcpb",
       "version": "0.20.0",
-      "fileSha256": "499eb32432f1a077b75afa905f18f546adaad7eec9e48ab0ce6d7d0d03841b55",
+      "fileSha256": "6811c1d904b8b6b93554488d9a646b4fa15d2ddcbf0a8d4c49d46348a134e1ca",
       "transport": {
         "type": "stdio"
       },

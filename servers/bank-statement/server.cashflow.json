@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/bank-statement.mcpb",
       "version": "0.20.0",
-      "fileSha256": "721deeabbbf05da2fe69315b08cda7bc152abd48011fc22709dacca6f288379a",
+      "fileSha256": "7aaf9a3a200db0d7afc2c23f54502225d4290801887d2dbd1eb91818b70aa655",
       "transport": {
         "type": "stdio"
       },

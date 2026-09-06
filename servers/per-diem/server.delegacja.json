@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/per-diem.mcpb",
       "version": "0.20.0",
-      "fileSha256": "b35bfe42fa22fbbe02e624b3f83a55715119a30518704dd21c5b58ec16a68545",
+      "fileSha256": "49e0755782a830b9184692e8e3b21cab292245156585d3733952ae6607baf2c3",
       "transport": {
         "type": "stdio"
       },

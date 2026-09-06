@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/cash-book.mcpb",
       "version": "0.20.0",
-      "fileSha256": "63843aaecf68975c53ef676b1b5962fc84300a65f2746bace5c5cce4d632a637",
+      "fileSha256": "8a15ba9d84a73fcee7c2cfdaa3ea8f8c96bb1030dd2ef55df74aa38668993756",
       "transport": {
         "type": "stdio"
       },
