@@ -242,6 +242,10 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
         (ctx().anonToken
           ? `Buy at ${url} - that link carries your token, so Pro switches on for this same connection right after payment, with nothing to paste and no data to move. `
           : `Buy at ${url} , then send the key as "Authorization: Bearer <key>" to this endpoint. `) +
+        // Same sentence as the stdio gate (packages/mcp-license/src/index.ts NO_HAND_MATH):
+        // round 29 and round 31 both lost a point to a client that totalled and journalled
+        // by hand over data a cap had just refused.
+        "Do not total or journal by hand from refused data; the free tools above already carry the exact figures. " +
         // The bundle sentence every cap message ends with, on every transport. Its src is
         // the same tag plus ".bundle", so /stats/clicks separates the two offers on the
         // same message. See docs/CONVERSION_INSTRUMENT.md.

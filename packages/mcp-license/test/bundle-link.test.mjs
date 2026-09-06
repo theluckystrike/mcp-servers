@@ -89,3 +89,24 @@ test("the two links on one message never share a src tag", () => {
   const tags = [...text.matchAll(/[?&]src=([^\s&]+)/g)].map((m) => decodeURIComponent(m[1]));
   assert.deepEqual(tags, ["zip.zip_create", "zip.zip_create.bundle"]);
 });
+
+/**
+ * Rounds 29 and 31 both lost the same point: refused by a free cap, the client totalled
+ * over data the server would not return and hand-wrote a journal with account names of
+ * its own. The refusal itself now says not to, on every transport, so the instruction
+ * reaches the client in the same message as the cap.
+ */
+const NO_HAND_MATH =
+  "Do not total or journal by hand from refused data; the free tools above already " +
+  "carry the exact figures.";
+
+test("stdio upgradeText tells the client not to total or journal by hand", () => {
+  const gate = createLicenseGate({ product: "amortization" });
+  assert.ok(gate.upgradeText("a fourth agreement", "loan_create").includes(NO_HAND_MATH));
+});
+
+test("hostedUpgradeText carries the same sentence", () => {
+  const tenant = "anon_" + "c".repeat(32);
+  assert.ok(hostedUpgradeText("a fourth agreement", "amortization", tenant, "loan_create")
+    .includes(NO_HAND_MATH));
+});
