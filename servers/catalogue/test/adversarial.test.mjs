@@ -220,6 +220,16 @@ test("one resolution carries one currency, and a mixed list is refused rather th
   assert.match(r.text, /nothing here converts on its own/);
 });
 
+test("a resolution asked for in a currency the SKU has no row in at all is refused, valid date and all", async (t) => {
+  const { c } = open(t);
+  await c.init();
+  await seed(c);
+  const r = await c.call("lines_resolve", { lines: [{ sku: "WEB-AUDIT", quantity: 1 }], date: RESOLVE_DATE, currency: "USD" });
+  assert.equal(r.isError, true, r.text);
+  assert.match(r.text, /WEB-AUDIT has no USD price at tier standard on 2026-03-15/);
+  assert.match(r.text, /no price was invented for it/);
+});
+
 test("an unknown role is refused by name and no hourly rate is invented", async (t) => {
   const { c } = open(t);
   await c.init();
