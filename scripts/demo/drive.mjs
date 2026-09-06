@@ -976,6 +976,62 @@ async function run(name) {
     toolLine("loan_repay_early", { loan: "LOAN-2026-0001", as_of_period: 6, penalty_minor: 5000 });
     resultLine(await c.call("loan_repay_early", { loan: "LOAN-2026-0001", as_of_period: 6, penalty_minor: 5000 }));
   }
+  if (name === "work-order") {
+    // This server writes only its own directory and the demo seeds nothing: the client is
+    // recorded inline because the invoice server has no record of it on a fresh sandbox,
+    // and the server says so itself in its own notes. Every figure below is one
+    // servers/work-order/test/unit.test.mjs asserts and docs/WORK_ORDER_RESULT.md
+    // recomputes by hand: 4.75 hours, labour 40,375, materials 19,458 on a parts cost of
+    // 18,093, markup earned 1,365, net 59,833.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ A job card for a one-van trade. The markup goes on the UNIT cost, never on the line total.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const createArgs = { client: "Harbour Cafe", client_address: "12 Quay Street, Gdansk", site_address: "12 Quay Street, Gdansk", requested_date: "2026-03-02", description: "Walk-in not holding temperature", priority: "high", currency: "EUR" };
+    toolLine("work_order_create", createArgs);
+    const cr = pick(await c.call("work_order_create", createArgs)).created;
+    resultLine(`${cr.id} ${cr.client} ${cr.site_address}, requested ${cr.requested_date}, ${cr.priority}, ${cr.currency}, status ${cr.status}`);
+    resultLine("  the client is looked up in the INVOICE server's own records, so the job and the invoice carry one customer");
+    await sleep(STEP_DELAY_MS);
+
+    const lines = [
+      { work_order: "WO-2026-0001", kind: "labour", description: "Diagnosis and gas check", hours: 3.5, rate_minor: 8500, date: "2026-03-08" },
+      { work_order: "WO-2026-0001", kind: "labour", description: "Refit and test", hours: 1.25, rate_minor: 8500, date: "2026-03-08" },
+      { work_order: "WO-2026-0001", kind: "parts", description: "Thermostat", quantity: 7, unit_cost_minor: 1299, markup_percent: 15, date: "2026-03-08" },
+      { work_order: "WO-2026-0001", kind: "parts", description: "Fan motor", quantity: 2, unit_cost_minor: 4500, markup_percent: 0, date: "2026-03-08" },
+    ];
+    toolLine("work_order_add_line", lines[2]);
+    for (const l of lines) await c.call("work_order_add_line", l);
+    const got = pick(await c.call("work_order_get", { work_order: "WO-2026-0001" })).work_order;
+    for (const l of got.lines_detail) {
+      resultLine(l.kind === "labour"
+        ? `  ${l.id}  labour  ${String(l.hours).padStart(5)} h  x ${l.rate.padEnd(9)}                   = ${l.value_minor.toString().padStart(7)}`
+        : `  ${l.id}  parts   ${String(l.quantity).padStart(5)}    x ${l.unit_cost.padEnd(9)} +${String(l.markup_percent).padStart(3)}%  unit ${l.billed_unit_minor} = ${l.value_minor.toString().padStart(7)}`);
+    }
+    resultLine(`  hours ${got.hours}, labour ${got.labour_minor}, materials ${got.materials_minor} (cost ${got.parts_cost_minor}, markup earned ${got.markup_earned_minor}), net ${got.net_minor}`);
+    resultLine("  7 x 1299 +15% is roundHalfUp(1299*1.15)=1494 a unit and 10,458; on the LINE total it is 10,457");
+    resultLine("  one minor unit, and only the unit basis is one the invoice server can reproduce");
+    await sleep(STEP_DELAY_MS);
+
+    // No total is stored: the record holds the facts and every figure above is derived.
+    toolLine("work_order_status", { work_order: "WO-2026-0001", status: "invoiced", date: "2026-03-09" });
+    resultLine(await c.call("work_order_status", { work_order: "WO-2026-0001", status: "invoiced", date: "2026-03-09" }));
+    resultLine("  every step carries its own date, so a skipped one loses the day the job reached it");
+    await sleep(STEP_DELAY_MS);
+
+    // A byte-identical job is refused BEFORE the cap is consulted: it names the id, not the upsell.
+    toolLine("work_order_create", createArgs);
+    resultLine(await c.call("work_order_create", createArgs));
+    resultLine("  refused before the free cap is even read, so it burns neither a slot nor a WO number");
+    await sleep(STEP_DELAY_MS);
+
+    // The Pro gate, on the free tier, shown rather than described.
+    toolLine("work_order_invoice_payload", { work_order: "WO-2026-0001" });
+    resultLine(await c.call("work_order_invoice_payload", { work_order: "WO-2026-0001" }));
+    resultLine("  Pro: the payload's totals are the INVOICE server's own computeTotals over the very items it hands you");
+    resultLine("  it posts nothing and marks nothing: posted false, marked_invoiced false");
+  }
   if (name === "petty-cash") {
     // This server reads no sibling store, so there is nothing to seed. Every figure recorded
     // below is one servers/petty-cash/test/unit.test.mjs asserts and docs/PETTY_CASH_RESULT.md
