@@ -2699,6 +2699,125 @@ bundle</a>).</p>`,
     ],
   },
 
+  "petty-cash-float-from-chat": {
+    title: "A petty cash float from chat, and why the cheque is not the sum of the vouchers",
+    description: "Run a tin on the imprest system from a conversation: a voucher for every receipt, a count that reconciles to the minor unit, and the replenishment that puts the float back to its imprest. Why the cheque is imprest minus balance rather than the total of the vouchers, and why reimbursing the voucher total shrinks the float a little every cycle while every reconciliation still reports clean.",
+    html: `<h1>A petty cash float from chat, and why the cheque is not the sum of the vouchers</h1>
+<p>A petty cash tin is the smallest book in the business and the one most likely to be wrong. Somebody holds
+some cash, receipts come back, and at the end of the month a cheque goes in to top it up. The
+<a href="/s/petty-cash">MCP Petty Cash</a> server runs that tin on the imprest system: a voucher for every
+receipt, a count whenever you like with the difference to the minor unit, and a replenishment worked out from
+the count rather than from the paperwork. It stores no balance and posts nothing anywhere.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add petty-cash -- npx -y @theluckystrike/mcp-petty-cash</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "petty-cash": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-petty-cash"]
+    }
+  }
+}</code></pre>
+<p>It reads no other server's store and writes into none. Its own store is three files: the floats, the
+vouchers and an id counter.</p>
+
+<h2>The cheque is not the sum of the vouchers</h2>
+<p>This is the finding worth the whole page. Take the worked month: a 50,000 minor unit imprest, EUR 500.00,
+and five vouchers.</p>
+<pre><code>Imprest                                     50,000
+VOU-2026-0001  2026-03-02  postage  Stamps    1,250
+VOU-2026-0002  2026-03-05  travel   Taxi      3,480
+VOU-2026-0003  2026-03-11  office   Coffee      899
+VOU-2026-0004  2026-03-18  office   Paper    12,500
+VOU-2026-0005  2026-03-24  travel   Bus       2,065
+                                            -------
+vouchers                                     20,194
+expected on 2026-03-31                       29,806
+counted                                      29,795
+difference                                      -11
+replenishment (50,000 - 29,795)              20,205</code></pre>
+<p>The paperwork says the tin holds 29,806 on the 31st. It holds 29,795. The count is short by exactly 11
+minor units: eleven cents that no voucher explains and no receipt will ever be found for.
+<strong>The replenishment is therefore 20,205, not 20,194.</strong></p>
+<p>What makes this worth a test rather than a footnote is what the wrong version looks like. Reimbursing the
+voucher total is not obviously wrong. It is the number the paperwork adds up to, it is the number a person
+reaches for, it reconciles against the receipts one by one, and the next count comes back short by 11 again,
+which reads as a fresh 11 rather than as the same one that was never put back. The unit suite runs three
+cycles of exactly that: the float ends at <strong>49,967 against a 50,000 imprest</strong>, 33 minor units
+light, with three clean-looking reconciliations behind it, each reporting a difference of exactly 11 and
+nothing worse. Nothing ever looks broken. The tin just gets smaller.</p>
+<p>So <code>replenish_request</code> computes <code>imprest - balance</code> and never
+<code>sum(vouchers)</code>, and the 11 comes back as its own <code>cash_over_short</code> journal line rather
+than folded into a category where it would look like postage.</p>
+
+<h2>A count is a fact, so it moves the book balance</h2>
+<p>Once a count is recorded, the balance is what was counted. The difference is carried forward as an over or
+short rather than re-reported at every later count. The alternative, leaving the book at what the vouchers say
+and reporting the same difference forever, makes the second count a copy of the first and hides the moment a
+NEW difference appears. Count the tin twice on the same day with nothing spent in between and the second count
+comes back at exactly zero, which is the point. The count history keeps every difference, so a tin that is
+short by a little every month is visible as a run rather than as one number.</p>
+
+<h2>Under the imprest system the float account does not move</h2>
+<p><code>replenish_request</code> hands back the double entry in the <a href="/s/cash-book">cash book</a>'s own
+account ids, character for character:</p>
+<pre><code>expenses:office            13,399   debit
+expenses:postage            1,250   debit
+expenses:travel             5,545   debit
+cash_over_short                11   debit
+cash                       20,205   credit</code></pre>
+<p><code>petty_cash</code> is not in that journal at all. It is debited once when the float is opened, and
+again only if the imprest itself changes. That is what the imprest system means, and a journal that moves the
+float account at every replenishment double-counts the tin. The per-category lines come from the cash book's
+own <code>expenseAccount</code>, so a category spelled <em>Office Supplies</em>, <em>office supplies</em> and
+<em>&nbsp;&nbsp;OFFICE&nbsp;&nbsp;&nbsp;SUPPLIES&nbsp;&nbsp;</em> is one account and one 300 line, not three.
+Beside the journal sits an <a href="/s/expense-tracker">expense_add</a>-ready payload per category.</p>
+
+<h2>A request is not a payment</h2>
+<p><code>replenish_request</code> writes nothing. It says what the cheque should be. The cash is recorded with
+<code>topup_record</code> when it is physically back in the tin, and it is that call which marks the vouchers
+reimbursed. A float that counts a request as cash is short by the whole request until the cheque clears, which
+is a bigger error than the one this page opened with.</p>
+
+<h2>What the tin refuses</h2>
+<p>A tin holds cash and can never hold less than nothing. A voucher larger than the balance on its own date is
+refused. So is a back-dated one that would make any LATER day negative, which an at-the-date check alone does
+not catch: back-dating takes the cash out earlier, so every day after it is short too. Record 30,000 on the
+10th and then try to back-date 25,000 to the 2nd, and the refusal names the 10th, the day it breaks, not the
+day it was typed.</p>
+<p>A reconciled voucher cannot be deleted, because the cash it took out was counted on the day of the count,
+and removing it would make a recorded count wrong by its own amount. Deletion is free while a voucher is still
+uncounted, which is what keeps the monthly cap honest. The VOU series never reissues a number, so a gap in it
+is the record that a voucher was deleted. And a byte-identical voucher, same float, date, amount, category,
+description, payee and receipt reference, is refused by name, because that is one voucher entered twice far
+more often than it is two identical purchases; <code>duplicate_ok</code> admits the second taxi fare of the
+day deliberately.</p>
+
+<h2>Ask it</h2>
+<pre class="prompt"><code>Open a EUR 500 office float on 2026-03-01, Anna holds the tin.</code></pre>
+<pre class="prompt"><code>Stamps 1,250 minor units on 2026-03-02, postage. Taxi 3,480 on the 5th, travel, receipt 4471.</code></pre>
+<pre class="prompt"><code>I counted 29,795 in the tin on 2026-03-31. What does the replenishment cheque have to be?</code></pre>
+<p><code>float_open</code>, <code>voucher_add</code>, <code>voucher_delete</code>,
+<code>topup_record</code> and <code>reconcile</code> are free; <code>replenish_request</code> and
+<code>float_report</code> are Pro
+(<a href="/buy/petty-cash?src=store.guide.petty-cash-float-from-chat">$19 one-time</a>, lifetime, verified
+offline, or <a href="/bundle?src=store.guide.petty-cash-float-from-chat">every server in the bundle</a>).</p>`,
+    faq: [
+      { q: "Why is the replenishment not the total of my vouchers?", a: "Because the two differ by exactly what the counts found over or short, and that difference is the whole reason a float shrinks. On the worked month the vouchers total 20,194 and the cheque is 20,205: the tin was counted 11 short. Reimbursing 20,194 restores the float 11 light, the same defect repeats every cycle, and every reconciliation still reports a clean 11. Three cycles of it leave a 50,000 float at 49,967." },
+      { q: "What happens to the difference a count finds?", a: "It becomes a cash_over_short line in the replenishment journal, on its own, rather than being folded into an expense category. Folded in, eleven cents of unexplained shortfall would look like postage, and the account that exists to carry exactly that would stay empty forever." },
+      { q: "Is reconcile metered?", a: "No, on any tier. Whether the cash in the tin matches the paperwork is the question this server exists to answer, and a free tier that withholds the answer is a demo rather than a tool. The meter is on the volume of record keeping: one float and twenty vouchers a calendar month on the free tier." },
+      { q: "Why does the second count on the same day come back at zero?", a: "Because a count is treated as a fact and moves the book balance. Once you have counted, the balance IS what you counted, and the difference is carried forward rather than re-reported. Leaving the book at what the vouchers say would make the second count a copy of the first and would hide the moment a genuinely new difference appears." },
+      { q: "Can I delete a voucher I typed wrongly?", a: "While it is still uncounted, yes, free on every tier, and the slot goes back. Once a reconciliation has covered it, no: the cash it took out was counted on the day of the count, so removing it would make a recorded count wrong by its own amount, and the refusal says so with the number. The VOU series never reissues a number, so the gap is the record that a voucher was deleted." },
+      { q: "Does the petty_cash account move when I replenish?", a: "No. Under the imprest system it is debited once when the float is opened and again only if the imprest itself changes. A replenishment credits cash and debits the expenses per category, and the suite asserts petty_cash is absent from that journal. A journal that moves the float account every cycle double-counts the tin." },
+      { q: "Can a voucher take the tin below zero?", a: "No. A voucher larger than the balance on its own date is refused, and so is a back-dated one that would make any later day negative, which the at-the-date check alone does not catch. The whole run of events is replayed in date order and the refusal names the day it breaks rather than the day it was typed." },
+      { q: "Does replenish_request record the cash?", a: "No, it writes nothing at all. It says what the cheque should be. topup_record is what registers the cash when it is physically back in the tin, and that call is what marks the vouchers reimbursed. A request is not a payment, and a float that counts one as cash is short by the whole request until the cheque clears." },
+      { q: "Where is the data kept?", a: "Three plain JSON files under ~/.local/share/mcp-servers/petty-cash/, or $XDG_DATA_HOME if you set it: floats.json, vouchers.json and counter.json. No balance is stored anywhere, because a stored balance is a second copy of what the vouchers already decide and the copy is the one that gets believed after somebody deletes a voucher. There is no network call anywhere in this server, no account and no API key, and license keys are verified offline." },
+    ],
+  },
+
   "client-statements-and-dunning-from-chat": {
     title: "Client statements and payment chasers from chat, aged as at any date you name",
     description: "Turn the invoices, credit notes and deposits you already keep into a statement of account for a period, age what is open into 0-30, 31-60, 61-90 and over 90 days AS AT a date, and draft the chaser. Why aging a past date with today's payment figures reports zero overdue on a day when a third of the book was late, and why paid_minor rather than the payment rows is the authority.",
@@ -3257,5 +3376,5 @@ ${FOOT}`,
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, travel allowances, fixed assets and depreciation, client statements and dunning, loan and lease schedules, and the one-install office-suite bundle.",
+  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, travel allowances, fixed assets and depreciation, client statements and dunning, loan and lease schedules, petty cash floats on the imprest system, and the one-install office-suite bundle.",
 };

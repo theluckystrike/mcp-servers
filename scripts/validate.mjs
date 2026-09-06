@@ -333,6 +333,149 @@ const PROBES = {
       && readdirSync(join(tmp, "data", "mcp-servers", "amortization")).sort().join(",") === "counter.json,loans.json",
       readdirSync(join(tmp, "data", "mcp-servers")).join(","));
   },
+  "petty-cash": async (c, tmp, tier, ok) => {
+    // This server reads no sibling store, so there is nothing to seed: the tin and its
+    // vouchers ARE the input. Every figure asserted below is one
+    // servers/petty-cash/test/unit.test.mjs works out by hand and docs/PETTY_CASH_RESULT.md
+    // recomputes, so this probe fails if the arithmetic moves and not only if the shape does.
+    const V = [
+      { date: "2026-03-02", category: "postage", description: "Stamps", amount_minor: 1250, paid_to: "Post Office", receipt_ref: "R-1" },
+      { date: "2026-03-05", category: "travel", description: "Taxi", amount_minor: 3480, paid_to: "City Cabs", receipt_ref: "4471" },
+      { date: "2026-03-11", category: "office", description: "Coffee", amount_minor: 899, paid_to: "Corner Shop", receipt_ref: "R-3" },
+      { date: "2026-03-18", category: "office", description: "Paper", amount_minor: 12500, paid_to: "Stationers", receipt_ref: "R-4" },
+      { date: "2026-03-24", category: "travel", description: "Bus", amount_minor: 2065, paid_to: "Transit", receipt_ref: "R-5" },
+    ];
+
+    // 1. The tin is opened on the imprest system. petty_cash is debited ONCE here and never
+    // moves again unless the imprest itself changes, which is what the system means.
+    const opened = await c.tool("float_open", { name: "Office float", currency: "EUR", imprest_minor: 50000, custodian: "Anna", opened: "2026-03-01" });
+    ok(`${tier}: FLOAT-2026-0001 opens at a 50,000 imprest, Dr petty_cash 50,000 Cr cash 50,000`,
+      !opened.isError && /"id": "FLOAT-2026-0001"/.test(opened.text) && /"imprest_minor": 50000/.test(opened.text)
+      && /"balance_minor": 50000/.test(opened.text)
+      && /"account": "petty_cash"[\s\S]{0,120}?"debit": 50000/.test(opened.text)
+      && /"account": "cash"[\s\S]{0,120}?"credit": 50000/.test(opened.text),
+      opened.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 2. The worked month, voucher by voucher. The first one is the one to read: the balance
+    // is derived, not stored, and the category becomes the cash book's own expenses:<x> id.
+    const first = await c.tool("voucher_add", V[0]);
+    ok(`${tier}: VOU-2026-0001 is 1,250 of postage and leaves the tin at 48,750, on expenses:postage`,
+      !first.isError && /"id": "VOU-2026-0001"/.test(first.text) && /"amount_minor": 1250/.test(first.text)
+      && /"expense_account": "expenses:postage"/.test(first.text) && /"balance_minor": 48750/.test(first.text),
+      first.text.replace(/\s+/g, " ").slice(0, 150));
+    for (const v of V.slice(1)) await c.tool("voucher_add", v);
+
+    // 3. A float is cash in a tin and can never hold less than nothing. The refusal names the
+    // balance ON THAT DATE, 29,806 after the five vouchers, not the balance today.
+    const over = await c.tool("voucher_add", { date: "2026-03-25", category: "office", description: "Huge", amount_minor: 900000, paid_to: "Nobody" });
+    ok(`${tier}: a voucher larger than the balance is refused naming the 298.06 the tin held that day, on every tier`,
+      over.isError && /EUR 298\.06 on 2026-03-25/.test(over.text) && /EUR 9,000\.00/.test(over.text)
+      && /cannot pay out more than it holds/.test(over.text) && /Nothing was written/.test(over.text)
+      && !/mcp\.zovo\.one\/buy/.test(over.text),
+      over.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 4. A byte-identical voucher is one voucher entered twice far more often than it is two
+    // identical purchases, and the refusal names the id already stored and the way through.
+    const dup = await c.tool("voucher_add", V[0]);
+    ok(`${tier}: a byte-identical voucher is refused naming VOU-2026-0001 and duplicate_ok`,
+      dup.isError && /VOU-2026-0001 is already this voucher, to the byte/.test(dup.text)
+      && /duplicate_ok/.test(dup.text) && /Nothing was written/.test(dup.text),
+      dup.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 5. The count, free and unlimited on EVERY tier: whether the cash matches the paperwork
+    // is the question this server exists for. Expected 29,806 against a counted 29,795, so
+    // the difference is exactly -11, and all five vouchers are marked reconciled.
+    const rec = await c.tool("reconcile", { counted_minor: 29795, date: "2026-03-31" });
+    ok(`${tier}: the count expects 29,806, counts 29,795 and reports the tin exactly 11 short, with no checkout link`,
+      !rec.isError && /"expected_minor": 29806/.test(rec.text) && /"counted_minor": 29795/.test(rec.text)
+      && /"difference_minor": -11/.test(rec.text) && /"verdict": "short"/.test(rec.text)
+      && /"vouchers_reconciled_minor": 20194/.test(rec.text) && /"balance_after_minor": 29795/.test(rec.text)
+      && !/mcp\.zovo\.one\/buy/.test(rec.text),
+      rec.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 6. A count is a FACT, so it moves the book balance. Counting again the same day with
+    // nothing spent in between comes back at exactly zero rather than re-reporting the 11.
+    const again = await c.tool("reconcile", { counted_minor: 29795, date: "2026-03-31" });
+    ok(`${tier}: the second count on the same day comes back at exactly zero, not at the same -11 again`,
+      !again.isError && /"difference_minor": 0/.test(again.text) && /"expected_minor": 29795/.test(again.text)
+      && /"vouchers_reconciled_minor": 0/.test(again.text),
+      again.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 7. The replenishment gate, and the measured point of the whole server: the cheque is
+    // imprest MINUS BALANCE, 20,205, and never the sum of the vouchers, 20,194. The 11 is a
+    // cash_over_short line of its own, and petty_cash is absent from the journal entirely.
+    const rep = await c.tool("replenish_request", { date: "2026-03-31" });
+    ok(`${tier}: replenish_request is ${tier === "pro" ? "20,205 against a voucher total of 20,194, with an 11 cash_over_short line" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !rep.isError && /"request_minor": 20205/.test(rep.text)
+        && /"vouchers_total_minor": 20194/.test(rep.text) && /"cash_over_short_minor": 11/.test(rep.text)
+        && /"account": "cash_over_short"[\s\S]{0,120}?"debit": 11/.test(rep.text)
+        : rep.isError && /mcp\.zovo\.one\/buy\/petty-cash\?src=petty-cash\.replenish_request/.test(rep.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=petty-cash\.replenish_request\.bundle/.test(rep.text),
+      rep.text.replace(/\s+/g, " ").slice(0, 160));
+    ok(`${tier}: the journal ${tier === "pro" ? "debits office 13,399, postage 1,250 and travel 5,545, credits cash 20,205, and petty_cash does NOT move" : "is behind the same Pro gate"}`,
+      tier === "pro" ? /"account": "expenses:office"[\s\S]{0,120}?"debit": 13399/.test(rep.text)
+        && /"account": "expenses:postage"[\s\S]{0,120}?"debit": 1250/.test(rep.text)
+        && /"account": "expenses:travel"[\s\S]{0,120}?"debit": 5545/.test(rep.text)
+        && /"account": "cash"[\s\S]{0,120}?"credit": 20205/.test(rep.text)
+        && !/"account": "petty_cash"/.test(rep.text) && /"posted": false/.test(rep.text)
+        : rep.isError,
+      rep.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 8. The report gate. It carries the history of every difference a count has found, which
+    // is what makes a tin short by a little every month readable as a run.
+    const report = await c.tool("float_report", {});
+    ok(`${tier}: float_report is ${tier === "pro" ? "the balance 29,795 against a 50,000 imprest, 20,205 to replenish and the -11 in the count history" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !report.isError && /"balance_minor": 29795/.test(report.text)
+        && /"imprest_minor": 50000/.test(report.text) && /"to_replenish_minor": 20205/.test(report.text)
+        && /"counts": \[[\s\S]{0,300}?"difference_minor": -11/.test(report.text)
+        : report.isError && /mcp\.zovo\.one\/buy\/petty-cash\?src=petty-cash\.float_report/.test(report.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=petty-cash\.float_report\.bundle/.test(report.text),
+      report.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 9. The free cap is on the volume of record keeping. Twenty vouchers a calendar month:
+    // five are recorded above, so fifteen more fill it and the twenty-first is refused.
+    for (let i = 0; i < 15; i++) await c.tool("voucher_add", { date: "2026-03-26", category: "office", description: `Filler ${i}`, amount_minor: 1, paid_to: "Shop" });
+    const twentyFirst = await c.tool("voucher_add", { date: "2026-03-26", category: "office", description: "Twenty-first", amount_minor: 1, paid_to: "Shop" });
+    ok(`${tier}: the 21st voucher of the month is ${tier === "pro" ? "allowed" : "refused, naming the $19 price and saying the count stays free"}`,
+      tier === "pro" ? !twentyFirst.isError && /"id": "VOU-2026-0021"/.test(twentyFirst.text)
+        : twentyFirst.isError && /\$19/.test(twentyFirst.text) && /20 vouchers/.test(twentyFirst.text)
+          && /mcp\.zovo\.one\/buy\/petty-cash\?src=petty-cash\.voucher_add/.test(twentyFirst.text),
+      twentyFirst.text.replace(/\s+/g, " ").slice(0, 160));
+    const stillFree = await c.tool("reconcile", { counted_minor: 29780, date: "2026-03-31" });
+    ok(`${tier}: counting the tin still answers after the cap, and still carries no checkout link`,
+      !stillFree.isError && /"counted_minor": 29780/.test(stillFree.text) && !/mcp\.zovo\.one\/buy/.test(stillFree.text),
+      stillFree.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 10. A second float is a second tin, which is the other half of the free cap.
+    const second = await c.tool("float_open", { name: "Warehouse float", currency: "EUR", imprest_minor: 10000, opened: "2026-03-01" });
+    ok(`${tier}: a second float is ${tier === "pro" ? "opened as FLOAT-2026-0002" : "refused, naming the open float and keeping vouchers and counts free on it"}`,
+      tier === "pro" ? !second.isError && /"id": "FLOAT-2026-0002"/.test(second.text)
+        : second.isError && /FLOAT-2026-0001 Office float/.test(second.text)
+          && /reconciliation and deletion on that float stay free/.test(second.text)
+          && /mcp\.zovo\.one\/buy\/petty-cash\?src=petty-cash\.float_open/.test(second.text),
+      second.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 11. A reconciled voucher cannot be deleted: the cash it took out was counted on the day
+    // of the count, so removing it would make a recorded count wrong by its own amount.
+    const delReconciled = await c.tool("voucher_delete", { voucher: "VOU-2026-0004" });
+    ok(`${tier}: deleting a reconciled voucher is refused naming the count date and the 125.00 it would break`,
+      delReconciled.isError && /2026-03-31/.test(delReconciled.text) && /125\.00/.test(delReconciled.text),
+      delReconciled.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 12. No balance is stored. The record holds the terms and the events only, and every
+    // balance is derived on the call, because a stored balance is a second copy of what the
+    // vouchers already decide and the copy is the one believed after a voucher is deleted.
+    const raw = readFileSync(join(tmp, "data", "mcp-servers", "petty-cash", "floats.json"), "utf8");
+    ok(`${tier}: the float record stores the imprest, the top-ups and the counts, and no balance`,
+      /"imprest_minor": 50000/.test(raw) && !/"balance/.test(raw),
+      raw.replace(/\s+/g, " ").slice(0, 130));
+
+    // 13. Nothing outside its own data directory. This server reads no sibling store at all.
+    ok(`${tier}: the data directory holds this server's three files and nothing belonging to anyone else`,
+      readdirSync(join(tmp, "data", "mcp-servers")).join(",") === "petty-cash"
+      && readdirSync(join(tmp, "data", "mcp-servers", "petty-cash")).sort().join(",") === "counter.json,floats.json,vouchers.json",
+      readdirSync(join(tmp, "data", "mcp-servers")).join(","));
+  },
   "cash-book": async (c, tmp, tier, ok) => {
     // The six books this server derives from belong to servers/invoice, servers/billing-docs,
     // servers/deposits, servers/expense-tracker, servers/bank-statement and
@@ -1153,12 +1296,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 26 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 26 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 27 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 27 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -1574,6 +1717,79 @@ async function remote() {
       amRow?.outstanding_minor === 597791 && amRow?.next_payment_date === "2026-07-15" && amRow?.next_payment_minor === 88849 &&
       amRow?.payments_this_year === 11 && amRow?.interest_this_year_minor === 65306 && amRow?.settled === false && amR.year === "2026",
       `${amRow?.outstanding_minor} next ${amRow?.next_payment_date} interest ${amRow?.interest_this_year_minor}`);
+    // Extension 18: /mcp/petty-cash. The worked month of servers/petty-cash/test/unit.test.mjs,
+    // run against the hosted handlers, and every figure below turns on the one decision the
+    // whole server rests on: the replenishment is IMPREST MINUS BALANCE and never the sum of
+    // the vouchers. The two differ by exactly what the count found short, so a build that
+    // substituted the voucher total would still return a plausible number, still balance its
+    // own journal, and still report a clean difference at every later reconciliation while
+    // restoring the float 11 minor units light for good. That is why the shortfall arithmetic
+    // is asserted three ways here: on the count, on the request, and on the cash_over_short
+    // leg of the journal. This endpoint reads no sibling book and writes no file, so there is
+    // no download to check and nothing to hydrate; the float register is its own document,
+    // per token, which is why the float is opened fresh per run and every later call names it.
+    const pcName = `Probe tin ${Date.now()}`;
+    const pco = await rpc("petty-cash", { jsonrpc: "2.0", id: 118, method: "tools/call", params: { name: "float_open", arguments: { name: pcName, currency: "EUR", imprest_minor: 50000, opened: "2026-03-01", custodian: "Probe Custodian" } } });
+    let pcO = {}; try { pcO = JSON.parse(pco.result.content[0].text); } catch { pcO = {}; }
+    const pcId = pcO.opened?.id;
+    const pcOj = (pcO.journal || []).map((l) => `${l.account}:${l.debit}:${l.credit}`).join(" ");
+    ok("hosted float_open opens a EUR 500.00 imprest float and draws it from cash: Dr petty_cash 50,000, Cr cash 50,000, with the account ids and names imported from /mcp/cash-book rather than restated here, and a balance of the whole imprest before a voucher is recorded",
+      /^FLOAT-\d{4}-\d{4}$/.test(pcId || "") && pcO.opened?.imprest_minor === 50000 && pcO.opened?.balance_minor === 50000 &&
+      pcO.opened?.currency === "EUR" && pcO.opened?.custodian_source === "call" &&
+      pcOj === "petty_cash:50000:0 cash:0:50000" && pcO.journal?.[0]?.account_name === "Petty cash" && pcO.journal?.[1]?.account_name === "Cash",
+      `${pcId} ${pcO.opened?.balance} ${pcOj}`);
+    const pcVou = [
+      { amount_minor: 1250, date: "2026-03-02", category: "postage", description: "Stamps", paid_to: "Post Office", receipt_ref: "R-001" },
+      { amount_minor: 3480, date: "2026-03-05", category: "travel", description: "Taxi", paid_to: "City Cabs", receipt_ref: "R-002" },
+      { amount_minor: 899, date: "2026-03-11", category: "office", description: "Coffee", paid_to: "Corner Shop", receipt_ref: "R-003" },
+    ];
+    const pcIds = [];
+    let pcLast = {};
+    for (const v of pcVou) {
+      const r = await rpc("petty-cash", { jsonrpc: "2.0", id: 119, method: "tools/call", params: { name: "voucher_add", arguments: { ...v, float: pcId } } });
+      try { pcLast = JSON.parse(r.result.content[0].text); } catch { pcLast = {}; }
+      pcIds.push(pcLast.recorded?.id);
+    }
+    const pcBig = await rpc("petty-cash", { jsonrpc: "2.0", id: 120, method: "tools/call", params: { name: "voucher_add", arguments: { amount_minor: 60000, date: "2026-03-12", category: "office", description: "More than the tin holds", paid_to: "Nobody", float: pcId } } });
+    const pcBigT = pcBig.result?.content?.[0]?.text || "";
+    ok("hosted voucher_add records the three vouchers of the worked month against the imported expenses:<category> accounts, leaves the tin at 44,371, and REFUSES a 60,000 voucher naming the 44,371 the float actually held on that date: a float is cash in a tin and cannot pay out more than it holds",
+      pcIds.every((x) => /^VOU-\d{4}-\d{4}$/.test(x || "")) && pcIds.length === 3 &&
+      pcLast.balance_minor === 44371 && pcLast.expense_account === "expenses:office" &&
+      pcBig.result?.isError === true && /the float held EUR 443\.71 on 2026-03-12 and the voucher is EUR 600\.00/.test(pcBigT) &&
+      /cannot pay out more than it holds/.test(pcBigT) && /Nothing was written/.test(pcBigT),
+      `${pcIds.join(",")} balance ${pcLast.balance_minor} | ${pcBigT.slice(0, 70)}`);
+    const pcr = await rpc("petty-cash", { jsonrpc: "2.0", id: 121, method: "tools/call", params: { name: "reconcile", arguments: { counted_minor: 44360, date: "2026-03-31", float: pcId } } });
+    let pcR = {}; try { pcR = JSON.parse(pcr.result.content[0].text); } catch { pcR = {}; }
+    ok("hosted reconcile counts 44,360 against an expected 44,371 and states the 11 minor units SHORT, marks all three vouchers (5,629) reconciled, and moves the book balance to what was counted - a count is a fact, so the difference is carried forward as cash_over_short rather than re-reported at every later count",
+      pcR.expected_minor === 44371 && pcR.counted_minor === 44360 && pcR.difference_minor === -11 &&
+      pcR.verdict === "short" && pcR.vouchers_reconciled_minor === 5629 && (pcR.vouchers_reconciled || []).length === 3 &&
+      pcR.balance_after_minor === 44360 && /SHORT by EUR 0\.11/.test((pcR.notes || []).join(" ")) &&
+      /carried as cash_over_short/.test((pcR.notes || []).join(" ")),
+      `expected ${pcR.expected_minor} counted ${pcR.counted_minor} diff ${pcR.difference_minor}`);
+    const pcq = await rpc("petty-cash", { jsonrpc: "2.0", id: 122, method: "tools/call", params: { name: "replenish_request", arguments: { float: pcId, date: "2026-04-01" } } });
+    let pcQ = {}; try { pcQ = JSON.parse(pcq.result.content[0].text); } catch { pcQ = {}; }
+    const pcJ = (pcQ.journal || []).map((l) => `${l.account}:${l.debit}:${l.credit}`).sort().join(" ");
+    const pcE = (pcQ.expense_add || []).map((x) => `${x.arguments.category}:${x.arguments.amount}`).join(" ");
+    ok("hosted replenish_request asks for 5,640, which is the imprest MINUS the balance and NOT the 5,629 the vouchers total: the 11 difference is what the count found short and it is a cash_over_short line, so the journal is Dr office 899 + postage 1,250 + travel 3,480 + cash_over_short 11 against Cr cash 5,640, petty_cash does not move under the imprest system, nothing is posted anywhere, and the expense_add payload carries the three category totals for /mcp/expense-tracker",
+      pcQ.request_minor === 5640 && pcQ.balance_minor === 44360 && pcQ.imprest_minor === 50000 &&
+      pcQ.request_minor === pcQ.imprest_minor - pcQ.balance_minor && pcQ.vouchers_total_minor === 5629 &&
+      pcQ.request_minor !== pcQ.vouchers_total_minor && pcQ.cash_over_short_minor === 11 &&
+      pcJ === "cash:0:5640 cash_over_short:11:0 expenses:office:899:0 expenses:postage:1250:0 expenses:travel:3480:0" &&
+      !pcJ.includes("petty_cash") && pcQ.posted === false && /Nothing was written/.test(pcQ.note || "") &&
+      pcE === "office:8.99 postage:12.5 travel:34.8" && (pcQ.expense_add || []).every((x) => x.server === "expense-tracker" && x.tool === "expense_add") &&
+      /Reimbursing only the voucher total would leave the tin EUR 0\.11 short for good/.test((pcQ.notes || []).join(" ")),
+      `request ${pcQ.request_minor} vouchers ${pcQ.vouchers_total_minor} over_short ${pcQ.cash_over_short_minor} | ${pcJ}`);
+    const pcf = await rpc("petty-cash", { jsonrpc: "2.0", id: 123, method: "tools/call", params: { name: "float_report", arguments: { float: pcId } } });
+    let pcF = {}; try { pcF = JSON.parse(pcf.result.content[0].text); } catch { pcF = {}; }
+    const pcRow = (pcF.per_float || []).find((x) => x.id === pcId);
+    ok("hosted float_report states this float at 44,360 against its 50,000 imprest with 5,640 to replenish - the same figure replenish_request asked for - one count that did not agree, a net difference of -11, nothing left unreconciled, and no balance stored anywhere to have got there",
+      pcF.floats === 1 && pcRow?.balance_minor === 44360 && pcRow?.imprest_minor === 50000 &&
+      pcRow?.to_replenish_minor === 5640 && pcRow?.to_replenish_minor === pcQ.request_minor &&
+      pcRow?.unreconciled_total_minor === 0 && (pcRow?.counts || []).length === 1 &&
+      pcRow?.counts?.[0]?.difference_minor === -11 && pcRow?.counts?.[0]?.vouchers === 3 &&
+      pcRow?.differences_net_minor === -11 && pcRow?.counts_that_agreed === 0 &&
+      (pcF.by_currency || []).some((c) => c.currency === "EUR" && c.differences_net_minor === -11),
+      `${pcRow?.balance_minor}/${pcRow?.imprest_minor} to_replenish ${pcRow?.to_replenish_minor} net ${pcRow?.differences_net_minor}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
@@ -1617,7 +1833,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
