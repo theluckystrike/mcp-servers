@@ -32,6 +32,7 @@ export const PRODUCTS = {
   "cash-book": { desc: "One double-entry ledger over the books you already keep: invoices, credit notes, deposits, expenses, the bank import and the fixed asset register. Every line carries the server, the document id and the date it came from, and the trial balance is proved to the minor unit. It writes into none of those books, and there is no way to type an entry into it.", free: "Free: 3 periods a calendar month, and the trial balance and the ledger lines unlimited on every tier, because whether the books add up is the question this server exists for.", pro: "Pro: unlimited periods, the month close with its snapshot and exception list, the CSV export and the per-account report.", name: "MCP Cash Book Pro", price: "price_1UCOv4JKCamubEm15469I5YT", usd: 19, pkg: "@theluckystrike/mcp-cash-book", bin: "mcp-cash-book", payload: "cash-book" },
   "amortization": { desc: "Loan and lease schedules from the terms of the agreement: the level payment, the effective annual rate beside the nominal one, and every period's opening balance, interest, principal and closing balance in integer minor units. Compounding and payment frequency are two different clocks, so the periodic rate is always the equivalent rate taken through the compounding clock. It posts nothing and stores no schedule.", free: "Free: 3 loans in the register, and the schedule unlimited on every tier, because the payment and the interest are the question this server exists for.", pro: "Pro: unlimited loans, early settlement and overpayment costed gross and net of the penalty, the payment journal with its expense-tracker payload, and the per-currency report.", name: "MCP Amortization Pro", price: "price_1UCROyJKCamubEm1eWJBgzIj", usd: 19, pkg: "@theluckystrike/mcp-amortization", bin: "mcp-amortization", payload: "amortization" },
   "petty-cash": { desc: "A petty cash float on the imprest system: a voucher for every receipt out of the tin, a count whenever you like with the difference to the minor unit, and the replenishment that puts the float back to its imprest, with the double entry and an expense_add-ready payload per category. The cheque is imprest minus balance, never the sum of the vouchers, and the difference is its own cash_over_short line. No balance is stored and nothing is posted anywhere.", free: "Free: 1 float, 20 vouchers a calendar month, and reconciliation unlimited on every tier, because whether the cash matches the paperwork is the question this server exists for.", pro: "Pro: unlimited floats and vouchers, the replenishment request with its journal and per-category expense payload, and the float report with the history of every difference a count found.", name: "MCP Petty Cash Pro", price: "price_1UCTn3JKCamubEm1IUHxx0kC", usd: 19, pkg: "@theluckystrike/mcp-petty-cash", bin: "mcp-petty-cash", payload: "petty-cash" },
+  "work-order": { desc: "Job orders for trades and field work, kept the way a job card is kept: a client the invoice server already knows, a site address, labour as hours at a rate and parts as a quantity at a unit cost with an optional markup, a status that moves one step at a time with every step dated, a completion report with a sign-off block, and an invoice_create-ready payload. No total is stored: value, hours, materials and VAT are derived from the lines on every call.", free: "Free: 5 open work orders, 200 lines each, and the text completion report on every tier. Closing a job frees its slot, and deleting an empty draft is free on every tier.", pro: "Pro: unlimited open work orders, the A4 completion report PDF with the sign-off block, the invoice payload, and the board report with hours this month and unbilled value per currency.", name: "MCP Work Order Pro", price: "PENDING_HUMAN", usd: 19, pkg: "@theluckystrike/mcp-work-order", bin: "mcp-work-order", payload: "work-order" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
@@ -45,7 +46,7 @@ export const SERVER_COUNT = SINGLE_PRODUCT_IDS.length;
 export const BUNDLE_SAVING_USD =
   SINGLE_PRODUCT_IDS.reduce((n, id) => n + PRODUCTS[id].usd, 0) - PRODUCTS.bundle.usd;
 
-const NUMBER_WORD = { 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four", 25: "Twenty-five", 26: "Twenty-six", 27: "Twenty-seven" };
+const NUMBER_WORD = { 19: "Nineteen", 20: "Twenty", 21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four", 25: "Twenty-five", 26: "Twenty-six", 27: "Twenty-seven", 28: "Twenty-eight" };
 
 /** The server count as a capitalised English word, e.g. "Twenty". Exported so the copy
  * tests can assert the rendered sentence without pinning a number that a new server moves. */
@@ -346,6 +347,7 @@ const FREE_FIVE_WORDS = {
   "cash-book": "Three periods a month, unlimited trial balances",
   "amortization": "Three loans, unlimited schedules",
   "petty-cash": "One float, twenty vouchers a month",
+  "work-order": "Five open work orders, 200 lines each",
 };
 
 const BUNDLE_DESCRIPTION =
@@ -840,6 +842,20 @@ ${faqHtml}
       const probeTag = request.headers.get("x-mcp-probe") === "1" || scripted ? "1" : "";
       const id = decodeURIComponent(path.slice("/buy/".length));
       if (!PRODUCTS[id]) return new Response(page("Not found", `<h1>Unknown product</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+      // A product whose price is the literal PENDING_HUMAN has no Stripe price id, because
+      // the key that would have minted it lost `product_write` (docs/HUMAN_GATED_PACK.md,
+      // 2026-09-06). Calling Stripe with that string would 400 and the buyer would read
+      // "Checkout could not start", which reads as an outage rather than as a shop that is
+      // not open yet. Answer plainly instead, and send them to the bundle, which does have
+      // a price and does include this server. This branch is before every Stripe call and
+      // before the click instrument, so a PENDING_HUMAN product creates no Session and
+      // records no conversion click it can never convert.
+      if (PRODUCTS[id].price === "PENDING_HUMAN") {
+        return new Response(page("Checkout not open", `<h1>Checkout for this server is not yet open</h1>
+<p>${esc(PRODUCTS[id].name.replace(/ Pro$/, ""))} Pro does not have a checkout link yet. The server itself is published and its free tier works today.</p>
+<p>Every server, including this one, is in the lifetime bundle: <a class="buy" href="/buy/bundle?src=store.pending.${esc(id)}">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
+<p><a href="/s/${esc(id)}">${esc(id)} product page</a> &middot; <a href="/">All servers</a></p>`), { status: 503, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-mcp-buy": "price-pending-human" } });
+      }
       const tenantParam = url.searchParams.get("tenant") || "";
       const tenant = validTenant(tenantParam) ? tenantParam : "";
       // 2026-09-05 (Stripe audit): 2,498 Sessions in 4 days, 0 paid. 1,598 were tagged

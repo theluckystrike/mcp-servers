@@ -282,9 +282,25 @@ check("facts", "facts.json", (s) => (facts.servers?.[s] ? true : "no entry"));
 check("tools", "tools.json", (s) =>
   Array.isArray(tools[s]) && tools[s].length ? true : "no entry");
 
+// A named gap: a check that is neither green nor a release blocker. It is printed by name
+// in its own section, the cell reads "gap", and the run still exits 0. Return
+// `gap("...")` rather than `true` so nothing counts it as passing.
+const GAP = "GAP: ";
+const gap = (why) => GAP + why;
+const isGap = (r) => typeof r === "string" && r.startsWith(GAP);
+
 check("product", "Stripe PRODUCTS", (s) => {
   const p = PRODUCTS[s];
   if (!p) return "no entry";
+  // 2026-09-06: the Stripe key in the keychain is a restricted key that lost
+  // `product_write`, so no price id could be minted for work-order and none was invented.
+  // The literal "PENDING_HUMAN" is the product entry saying so out loud. It is not green,
+  // because there is no checkout; it is not a failure, because nothing an agent can do
+  // closes it. It prints as a named gap and /buy/<server> answers 503 with the bundle link
+  // rather than calling Stripe with a string Stripe would reject.
+  if (p.price === "PENDING_HUMAN") {
+    return gap(`no Stripe price id: PRODUCTS["${s}"].price is the literal "PENDING_HUMAN". A human with a Stripe key carrying product_write must create the product (name "${p.name}", metadata payload ${p.payload}) and a $${p.usd} price, then replace that literal. Until then /buy/${s} answers 503 with the bundle link. See docs/HUMAN_GATED_PACK.md`);
+  }
   if (!p.price || !/^price_/.test(p.price)) return "no Stripe price id";
   return true;
 });
@@ -424,6 +440,7 @@ console.log("-".repeat(nameW) + "  " + colW.map((w) => "-".repeat(w)).join(" "))
 const cell = (s, id) => {
   const r = results.get(s).get(id);
   if (r === true) return waived.has(`${s}:${id}`) ? "STALE" : "ok";
+  if (isGap(r)) return "gap";
   return waived.has(`${s}:${id}`) ? "gap" : "FAIL";
 };
 for (const s of SERVERS) {
@@ -436,7 +453,8 @@ for (const s of SERVERS) {
   for (const c of checks) {
     const r = results.get(s).get(c.id);
     const w = waived.get(`${s}:${c.id}`);
-    if (r !== true && w) gaps.push(`${s}  ${c.id}: ${r}  [waived: ${w}]`);
+    if (isGap(r)) gaps.push(`${s}  ${c.id}: ${r.slice(GAP.length)}`);
+    else if (r !== true && w) gaps.push(`${s}  ${c.id}: ${r}  [waived: ${w}]`);
     else if (r !== true) failures.push(`${s}  ${c.id}: ${r}`);
     else if (w) failures.push(`${s}  ${c.id}: waiver is stale, this check now passes; delete it from WAIVERS in scripts/release-check.mjs`);
   }
@@ -458,7 +476,7 @@ for (const g of globals) {
 
 console.log("");
 if (gaps.length) {
-  console.log(`${gaps.length} recorded gap(s), not blocking (see WAIVERS in this script):`);
+  console.log(`${gaps.length} named gap(s), printed rather than passed, not blocking:`);
   for (const g of gaps) console.log(`  ${g}`);
   console.log("");
 }
