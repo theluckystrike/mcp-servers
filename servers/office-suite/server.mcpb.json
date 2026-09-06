@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/office-suite.mcpb",
       "version": "0.19.0",
-      "fileSha256": "b1d09d6c23bd5cbbc2d96eb13ec7f4558f857bb6709769f00663e0c2c7fb3f9e",
+      "fileSha256": "69bc05efa23573bb4c23a753c6e24b74edae2f94e4dfb28dbe6b099a5f4e35d6",
       "transport": {
         "type": "stdio"
       },

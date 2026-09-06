@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/work-order.mcpb",
       "version": "0.19.0",
-      "fileSha256": "921343c372e87040f925ca117e8e2fb989d82c3670c93c130cfaee2d05762ed2",
+      "fileSha256": "5aae5d271e2aa0da4b25c7c984472e701517440bcee31b7e27d4af7b52862e8b",
       "transport": {
         "type": "stdio"
       },

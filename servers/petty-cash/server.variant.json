@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/petty-cash.mcpb",
       "version": "0.19.0",
-      "fileSha256": "94be7f9d8cc9e7d3b6118fc80228398cf720f626129a2eb3a92de14f01cc9f27",
+      "fileSha256": "5f747682a2e58e89b441363bb79c4416faa170a10a9c83d0cb13ce0a302dff13",
       "transport": {
         "type": "stdio"
       },
