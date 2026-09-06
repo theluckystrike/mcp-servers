@@ -1078,5 +1078,55 @@
       "name": "license_activate",
       "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
     }
+  ],
+  "catalogue": [
+    {
+      "name": "sku_set",
+      "description": "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and a price in minor units for one currency, tier and valid-from date. Free tier: 25 SKUs."
+    },
+    {
+      "name": "sku_get",
+      "description": "Show the price of one SKU as of a date, in one currency and tier: the row picked is the latest valid_from at or before that date, and the answer names the row and any later one already booked. Free."
+    },
+    {
+      "name": "sku_list",
+      "description": "List catalogue lines with the price in force today, filtered by code prefix, by currency and by tier. A SKU with no price in that currency and tier is listed and said to have none. Free."
+    },
+    {
+      "name": "sku_delete",
+      "description": "Delete a catalogue line raised by mistake. Only one that no rate card points at and that has never priced a resolved line can go; the refusal names what depends on it. Free on every tier."
+    },
+    {
+      "name": "rate_set",
+      "description": "Set the hourly rate on a labour rate card: a role, a currency, an hourly rate in minor units and the day it comes into force. An update replaces the row for that currency and date. Free."
+    },
+    {
+      "name": "rate_get",
+      "description": "Show the hourly rate for a role as of a date and currency: the row picked is the latest valid_from at or before that date, and the answer names it. With no role given, lists every card. Free."
+    },
+    {
+      "name": "lines_resolve",
+      "description": "Turn a list of sku or role lines into invoice_create-ready and quote_create-ready items priced from the catalogue as of each line's date. An unknown code is refused by name and never priced. Free."
+    },
+    {
+      "name": "price_list_text",
+      "description": "Print the price list as plain text: every SKU with the price in force on a date, per currency and tier, with the valid-from date and any later price already booked, then the labour rates. Free."
+    },
+    {
+      "name": "price_list_pdf",
+      "description": "Call this tool to write the A4 price list for one currency and tier and return the file path: every SKU with its unit, its price in force and the day that price started. Pro."
+    },
+    {
+      "name": "catalogue_report",
+      "description": "Report the catalogue: how many SKUs there are, how many price rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
   ]
 }
