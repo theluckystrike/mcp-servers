@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-06T04:23:46.449Z",
-  "total_commits": 624,
+  "generated_at": "2026-09-06T07:05:57.355Z",
+  "total_commits": 645,
   "sessions": 54,
   "loops": [
     {
@@ -130,8 +130,13 @@
     },
     {
       "name": "Loop 26: work-order, checkout gap named, record-tests, v0.18.0",
-      "sessions": 2,
-      "commits": 102
+      "sessions": 1,
+      "commits": 24
+    },
+    {
+      "name": "Loop 27: catalogue, dist-version check, v0.19.0",
+      "sessions": 1,
+      "commits": 99
     }
   ],
   "rows": [
@@ -778,8 +783,8 @@
       "n": 54,
       "at": "2026-09-06T04:23:38.532Z",
       "note": "loop 26 closed: v0.18.0 with work-order (job orders with parts and labour lines, status flow, completion report, invoice-ready payload; markup on the unit cost so the invoice engine's rounding cannot disagree, gap of exactly one asserted; audit 17/18; the twenty-eighth server and hosted endpoint); checkout for work-order is a named gap because the keychain Stripe key lost product write, its buy page answers 503 with the bundle link and release-check reports the gap without turning green; 77 manifests, 1331 tests, validation 856/856, 29 bundles; petty-cash hosted 16/18; the release chain records the unit-test count and refuses a stale dist; downloads 4428; clicks 125/7d with 2 bundle-sourced; sales 0; GSC key dataless",
-      "loop": "Loop 26: work-order, checkout gap named, record-tests, v0.18.0",
-      "commits": 78,
+      "loop": "Loop 27: catalogue, dist-version check, v0.19.0",
+      "commits": 99,
       "subjects": [
         "Plan v21: schedules, the estate re-check, a free-tier decision",
         "Add round 4 backlink verification (read-only, 12/12 domains still serving)",
