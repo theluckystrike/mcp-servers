@@ -2699,6 +2699,115 @@ bundle</a>).</p>`,
     ],
   },
 
+  "work-orders-and-job-cards-from-chat": {
+    title: "Work orders and job cards from chat, and why the markup goes on the unit cost",
+    description: "Run a one-van trade's job board from a conversation: a work order against the client your invoices already know, parts and labour logged as they happen, a status that moves one dated step at a time, a completion report with a sign-off block, and an invoice payload that needs no retyping. Why a markup belongs on the unit cost and never on the line total, and what the one minor unit of difference does to an invoice.",
+    html: `<h1>Work orders and job cards from chat, and why the markup goes on the unit cost</h1>
+<p>A job card is the smallest document in a trade and the one that decides what the invoice says. Somebody
+calls, a van goes out, hours and parts get written on a docket, and a week later that docket has to become an
+invoice without anything being retyped or remembered. The <a href="/s/work-order">MCP Work Order</a> server
+keeps that job card: a work order against a client your invoices already know, lines logged as the job goes,
+a status that moves one dated step at a time, a completion report with a sign-off block, and an
+<code>invoice_create</code>-ready payload at the end. It stores no total and posts nothing anywhere.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add work-order -- npx -y @theluckystrike/mcp-work-order</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>claude_desktop_config.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "work-order": {
+      "command": "npx",
+      "args": ["-y", "@theluckystrike/mcp-work-order"]
+    }
+  }
+}</code></pre>
+<p>It writes only its own directory. It reads two files it does not own, both read-only and both
+best-effort: the shared business profile, for the currency, the VAT rate and the business name on the
+completion report, and the invoice server's client records, so a job carries the same customer the invoice
+will be raised against rather than a second spelling of the name.</p>
+
+<h2>The markup goes on the unit cost, never on the line total</h2>
+<p>This is the finding worth the whole page, and it is worth exactly one minor unit at a time. Seven
+thermostats cost you 1,299 each and you add 15 percent. There are two ways to do that and they are both
+defensible arithmetic:</p>
+<pre><code>on the unit    roundHalfUp(1299 * 1.15) = 1494 a unit,  x 7 = 10,458
+on the line    7 x 1299 = 9,093,  roundHalfUp(9093 * 1.15) = 10,457</code></pre>
+<p>One minor unit apart, and every internal check passes either way: both reconcile against their own
+workings, both look right on a completion report, and neither throws. The difference only appears when the
+job becomes an invoice. The <a href="/s/invoice">invoice server</a> rounds a unit price into minor units
+FIRST and computes the line from that stored value, so a line it can reproduce is a quantity times a rounded
+unit and nothing else. Price the job on the line total and the invoice quietly reprices it back to the unit,
+and the completion report the customer signed no longer adds up to the invoice they are sent.</p>
+<p>So a parts line's <code>unit_price</code> in the payload is the marked-up unit in major units, and nothing
+else. The two obvious alternatives both break the same identity: the bare cost with an invoice-level discount
+rounds per line against a different base, and the line total posted as a quantity of one loses the quantity
+the customer is being charged for. The unit suite asserts the gap between the two bases is exactly 1, so a
+change of basis fails the build rather than silently re-pricing every job on the board.</p>
+
+<h2>The worked job</h2>
+<pre><code>Client Harbour Cafe (from the invoice client records), site 12 Quay Street
+Requested 2026-03-02, priority high, EUR, VAT 23% from the shared profile
+
+labour  3.5 h   x 8500                     =  29,750
+labour  1.25 h  x 8500                     =  10,625
+parts   7       x 1299 + 15%  (unit 1494)  =  10,458
+parts   2       x 4500 +  0%               =   9,000
+                                              ------
+hours                                          4.75
+labour                                        40,375
+materials                                     19,458   (cost 18,093, markup earned 1,365)
+net                                           59,833
+VAT 23%                                       13,762
+gross                                         73,595</code></pre>
+<p>Every figure there is asserted in the server's own unit suite, and the last three are asserted a second
+time by taking the payload as returned and re-running the invoice server's <code>computeTotals</code> over
+<code>invoice_create.arguments.items</code> from the test process. That second assertion is not checking the
+arithmetic, which has only one implementation. It is checking that the payload's ITEMS carry what the work
+order thought they carried, which is the failure that survives every internal check.</p>
+
+<h2>The status moves one step at a time</h2>
+<p>draft, scheduled, in_progress, done, invoiced. A skipped step is refused, naming the step that IS next.
+That looks pedantic until you notice that every step carries its own date: a job that went from scheduled
+straight to invoiced was never marked done, so no completion report was ever produced and nothing in the
+record says the day the work actually finished. Backwards is refused too, because a job that has to go back
+out is a new work order and the history of the first one has to stay true. A change dated before the
+requested date, or before the step already recorded, is refused for the same reason: the history has to read
+as a timeline.</p>
+
+<h2>Nothing is stored twice</h2>
+<p>An order record holds its client, its lines and its status history. The value, the hours, the materials
+and the VAT are derived on every call. A stored total is a second copy of what the lines already decide, and
+the copy is the one that gets believed after somebody edits a line. The contract suite greps the raw store
+file for nine derived key names and asserts the record holds the facts only.</p>
+<p>Hours are counted on the LINE date rather than the order date, which matters at every month end: a
+February call worked in March logged its hours in March. Counting by order date moves a whole visit into the
+month the phone rang.</p>
+
+<h2>The free tier counts OPEN jobs</h2>
+<p>Five open work orders, which is a one-van trade, and 200 lines on each of them on every tier. The cap
+counts jobs that are open, draft, scheduled or in progress, rather than jobs ever raised, so finishing a job
+frees its slot and the free tier does not fill up with history. <code>work_order_delete</code> on a draft
+with no lines is free on every tier as well, because a way back that only a Pro key can reach is not a way
+back. A byte-identical work order is refused BEFORE the cap is consulted, so a double-typed job names the id
+already stored rather than being met with an upgrade prompt, and it burns neither a slot nor a WO number.</p>
+<p>Pro is $19 once, lifetime: unlimited open work orders, the A4 completion report PDF with the sign-off
+block, the invoice payload, and the board report. All servers together are
+<a href="/buy/bundle?src=store.guide.work-orders-and-job-cards-from-chat">$39</a>.</p>
+`,
+    faq: [
+      { q: "Why does the markup go on the unit cost rather than on the line total?", a: "Because the invoice server rounds a unit price into minor units first and computes the line from that stored value, so the marked-up unit is the only basis an invoice can reproduce. Seven parts at 1,299 with 15 percent is 1,494 a unit and 10,458 on the line; marking up the line total instead is 10,457. Both are defensible arithmetic and only one of them is what the customer is billed. The unit suite asserts the gap is exactly 1, so a change of basis fails the build rather than quietly re-pricing every job on the board." },
+      { q: "Does this server create the invoice?", a: "No. work_order_invoice_payload returns the invoice_create arguments and says so: posted false, marked_invoiced false. You run invoice_create in the invoice server and then set the status here to invoiced. The split is deliberate, because a tool that did both would bill a customer as a side effect of asking what the job was worth. An order already marked invoiced refuses a second payload by name and refuses further lines, so neither route bills anyone twice through this server." },
+      { q: "Where do the totals in the payload come from?", a: "From the invoice server's own computeTotals, run over the very items the payload is handing you. There is no second implementation to agree or disagree with. The test then re-runs that same function over the returned payload from its own process and asserts net 59,833, VAT 13,762 and total 73,595, with rounding drift of zero." },
+      { q: "Why can I not skip a status step?", a: "Because every step carries its own date. A job that went from scheduled straight to invoiced was never marked done, so no completion report was produced and nothing in the record says the day the work finished. A skipped step is refused naming the step that IS next. Backwards is refused too: a job that has to go back out is a new work order, and the history of the first one has to stay true." },
+      { q: "What counts against the five free work orders?", a: "Open ones only: draft, scheduled and in progress. Finishing a job frees its slot, so the free tier does not fill up with history. work_order_delete on a draft with no lines is free on every tier, because a way back that only a Pro key can reach is not a way back, and a byte-identical duplicate is refused before the cap is consulted so it costs neither a slot nor a WO number." },
+      { q: "Why is my labour rate refused?", a: "Because it has to be typed. The shared business profile carries a default currency, a default tax rate and payment terms, and nothing else survives the profile reader, so there is no default hourly rate for this server to fall back on today. The lookup is implemented and will start working the day that field exists. Until then rate_minor is refused by name, and the refusal says which field would have filled it. A rate this server invented would be printed on a completion report the customer signs and on an invoice nobody typed it into." },
+      { q: "Why is an unknown client name refused?", a: "A bare name that matches no invoice client record is a misspelling far more often than a new customer, and an invoice raised from that job would carry a BILL TO block with nothing in it. Either run client_add in the invoice server first, or pass client_address here, in which case the job records the client inline and notes that the invoice server has no record of it." },
+      { q: "Which month do the hours land in?", a: "The month of the LINE date, not the order date. A February call worked in March logs its hours in March. Counting by order date would move a whole visit into the month the phone rang, and the board report's hours-this-month figure would be wrong for every job that ran over a month end." },
+      { q: "Does it need the network or an account?", a: "No. There is no network call anywhere in this server except the checkout host named in the licensing copy, and the contract suite asserts that. There is no account and no API key, and license keys are verified offline." },
+    ],
+  },
+
   "petty-cash-float-from-chat": {
     title: "A petty cash float from chat, and why the cheque is not the sum of the vouchers",
     description: "Run a tin on the imprest system from a conversation: a voucher for every receipt, a count that reconciles to the minor unit, and the replenishment that puts the float back to its imprest. Why the cheque is imprest minus balance rather than the total of the vouchers, and why reimbursing the voucher total shrinks the float a little every cycle while every reconciliation still reports clean.",

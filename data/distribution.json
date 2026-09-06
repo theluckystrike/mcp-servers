@@ -609,6 +609,19 @@
    "mcpb": "pending: bundles/petty-cash.mcpb not built, server.mcpb.json fileSha256 is TBD",
    "github-mirror": "pending",
    "registry-name": "pending 0.17.0 (io.github.theluckystrike/cash-float, io.github.theluckystrike/imprest-account)"
+  },
+  "work-order": {
+   "github": "published",
+   "registry": "pending",
+   "hosted": "published https://mcp.zovo.one/mcp/work-order",
+   "npm": "missing",
+   "smithery": "pending",
+   "glama": "pending",
+   "docker-mcp-catalog": "submitted",
+   "cline-marketplace": "submitted",
+   "mcpb": "pending: bundles/work-order.mcpb not built, server.mcpb.json fileSha256 is TBD",
+   "github-mirror": "pending",
+   "registry-name": "pending 0.17.0 (io.github.theluckystrike/job-card, io.github.theluckystrike/field-service-order)"
   }
  }
 }

@@ -58,6 +58,7 @@ const CHILDREN: ChildDef[] = [
   { id: "cash-book", pkg: "@theluckystrike/mcp-cash-book", optional: true },
   { id: "amortization", pkg: "@theluckystrike/mcp-amortization", optional: true },
   { id: "petty-cash", pkg: "@theluckystrike/mcp-petty-cash", optional: true },
+  { id: "work-order", pkg: "@theluckystrike/mcp-work-order", optional: true },
 ];
 
 /** Resolve the absolute path to a sibling server's dist/index.js. */

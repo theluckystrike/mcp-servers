@@ -32,7 +32,7 @@ mkdir -p "$BUNDLES"
 MCPB="npx -y @anthropic-ai/mcpb"
 LIC_SRC="$ROOT/packages/mcp-license"
 
-SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash"
+SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order"
 
 declare -A DISPLAY_NAME=(
   [time-tracker]="Time Tracker"
@@ -62,6 +62,7 @@ declare -A DISPLAY_NAME=(
   [cash-book]="Cash Book"
   [amortization]="Amortization"
   [petty-cash]="Petty Cash"
+  [work-order]="Work Order"
 )
 
 declare -A KEYWORDS=(
@@ -92,6 +93,7 @@ declare -A KEYWORDS=(
   [cash-book]='["mcp","model-context-protocol","cash-book","double-entry","bookkeeping","ledger","trial-balance","accounting"]'
   [amortization]='["mcp","model-context-protocol","amortization","loan","lease","schedule","interest","finance"]'
   [petty-cash]='["mcp","model-context-protocol","petty-cash","imprest","float","vouchers","reconciliation","bookkeeping"]'
+  [work-order]='["mcp","model-context-protocol","work-order","job-card","field-service","trades","labour","invoicing"]'
 )
 
 # ------------------------------------------------------------------ helpers
