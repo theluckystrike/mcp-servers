@@ -160,5 +160,15 @@
   "D-R96": {
     "status": "fixed",
     "note": "invoice_get and the balance invoice_mark_paid reported were computed from total_minor - paid_minor alone, with no idea a credit note existed against the invoice in the billing-docs store, while statement-of-account already nets credit notes correctly (ageClient in servers/statement-of-account/src/statement.ts): CN-2026-0001 was invisible to both, so deposit_apply could also apply a deposit past what the client actually still owed (docs/USER_VALUE_R27.md). Fixed with a read-only, best-effort peek at billing-docs' credit-notes.json (creditedMinorFor in servers/invoice/src/store.ts, exported from servers/invoice/src/lib.ts) rather than a static import of @theluckystrike/mcp-billing-docs/lib, which itself depends on @theluckystrike/mcp-invoice/lib and would be circular; a missing or unreadable billing-docs store degrades to zero credit, never an error. invoice_get now returns credited_minor/credited and open_minor/open alongside the raw fields; invoice_list's balance_due and invoice_mark_paid's reported balance are netted the same way, and both name 'credited' in the row only when it is non-zero; invoice status itself is untouched (a credit note is not a payment). deposit_apply's open-balance check, overpay refusal and the invoice block in its response are netted identically, so a deposit can no longer be applied past the credit-netted balance. servers/invoice/src/{store,index}.ts and servers/deposits/src/index.ts (deposit_apply); tests servers/invoice/test/round27.test.mjs 'D-R96: invoice_get and invoice_mark_paid net a credit note from the billing-docs store' and servers/deposits/test/round27.test.mjs 'deposit_apply caps at the invoice's open balance NET of a credit note in the billing-docs store'."
+  },
+  "D-R97": {
+    "status": "fixed",
+    "round": "loop 28",
+    "note": "hosted catalogue: price_list_pdf title and first sentence say HTML (print to PDF); remote/build-vendor.mjs patch, live verified on tools/list"
+  },
+  "D-R98": {
+    "status": "fixed",
+    "round": "loop 28",
+    "note": "catalogue price_list_pdf: party block skipped on an empty label in both renderers, booked later row printed in the line and returned as booked_later; unit test"
   }
 }
