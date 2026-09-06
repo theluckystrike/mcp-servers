@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-06T01:50:26.845Z",
-  "total_commits": 602,
-  "sessions": 53,
+  "generated_at": "2026-09-06T04:23:38.744Z",
+  "total_commits": 623,
+  "sessions": 54,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -125,8 +125,13 @@
     },
     {
       "name": "Loop 25: petty-cash, recoverable slots, gate text as fact, v0.17.0",
-      "sessions": 1,
-      "commits": 90
+      "sessions": 0,
+      "commits": 10
+    },
+    {
+      "name": "Loop 26: work-order, checkout gap named, record-tests, v0.18.0",
+      "sessions": 2,
+      "commits": 101
     }
   ],
   "rows": [
@@ -752,8 +757,8 @@
       "n": 53,
       "at": "2026-09-06T01:50:19.914Z",
       "note": "loop 25 closed: v0.17.0 with petty-cash (imprest float, replenishment is imprest minus balance, a count is a fact; audit 16/18 with a date-guard fix; the twenty-seventh server and hosted endpoint), 74 manifests verified, 1374 tests, validation 811/811, 28 bundles; recoverable free slots: nine servers refuse a byte-identical record before the cap and ten free delete tools recover a slot; every cap message now states that figures outside the free tools are estimates (the imperative wording was read as a prompt injection); amortization hosted 15/18; intel R12 found five more empty slots; downloads 4247; clicks 111/7d with 2 bundle-sourced; sales 0; GSC key dataless",
-      "loop": "Loop 25: petty-cash, recoverable slots, gate text as fact, v0.17.0",
-      "commits": 80,
+      "loop": "Loop 26: work-order, checkout gap named, record-tests, v0.18.0",
+      "commits": 24,
       "subjects": [
         "Plan v20: one ledger, prompts you can copy, the share re-measured",
         "Content round 21: copy buttons on prompt blocks",
@@ -767,6 +772,27 @@
         "cash-book: setup entry, six client angles, claude-web angle, one-ledger-from-every-server guide",
         "cash-book: demo scene, tape, GIF and logo",
         "cash-book: Part 2 CLI audit and two new gap tests (missing bank store, no-VAT expense)"
+      ]
+    },
+    {
+      "n": 54,
+      "at": "2026-09-06T04:23:38.532Z",
+      "note": "loop 26 closed: v0.18.0 with work-order (job orders with parts and labour lines, status flow, completion report, invoice-ready payload; markup on the unit cost so the invoice engine's rounding cannot disagree, gap of exactly one asserted; audit 17/18; the twenty-eighth server and hosted endpoint); checkout for work-order is a named gap because the keychain Stripe key lost product write, its buy page answers 503 with the bundle link and release-check reports the gap without turning green; 77 manifests, 1331 tests, validation 856/856, 29 bundles; petty-cash hosted 16/18; the release chain records the unit-test count and refuses a stale dist; downloads 4428; clicks 125/7d with 2 bundle-sourced; sales 0; GSC key dataless",
+      "loop": "Loop 26: work-order, checkout gap named, record-tests, v0.18.0",
+      "commits": 77,
+      "subjects": [
+        "Plan v21: schedules, the estate re-check, a free-tier decision",
+        "Add round 4 backlink verification (read-only, 12/12 domains still serving)",
+        "cash-book: make ledger_lines the honest free path for the CSV export",
+        "Add round 30 user-value audit: cash-book hosted (17/18, matches R29 stdio)",
+        "Add mcp-amortization 0.15.0: loan and lease schedules",
+        "Bump SERVER_COUNT 25 to 26 for mcp-amortization",
+        "Open distribution round 19 checklist for mcp-amortization",
+        "amortization: PRODUCTS, CHILDREN, mcpb and mirror lists, page ids, facts, tools, compare_none, distribution row, setup entry and guide",
+        "amortization: logo",
+        "amortization: demo scene, tape and GIF",
+        "remote: add /mcp/amortization, the twenty-sixth endpoint",
+        "validate: cover the hosted /mcp/amortization endpoint"
       ]
     }
   ]

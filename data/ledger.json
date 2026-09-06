@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-06T01:50:20.068Z",
+  "generated_at": "2026-09-06T04:23:38.682Z",
   "session": {
-    "count": 53,
+    "count": 54,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -214,6 +214,10 @@
       {
         "at": "2026-09-06T01:50:19.914Z",
         "note": "loop 25 closed: v0.17.0 with petty-cash (imprest float, replenishment is imprest minus balance, a count is a fact; audit 16/18 with a date-guard fix; the twenty-seventh server and hosted endpoint), 74 manifests verified, 1374 tests, validation 811/811, 28 bundles; recoverable free slots: nine servers refuse a byte-identical record before the cap and ten free delete tools recover a slot; every cap message now states that figures outside the free tools are estimates (the imperative wording was read as a prompt injection); amortization hosted 15/18; intel R12 found five more empty slots; downloads 4247; clicks 111/7d with 2 bundle-sourced; sales 0; GSC key dataless"
+      },
+      {
+        "at": "2026-09-06T04:23:38.532Z",
+        "note": "loop 26 closed: v0.18.0 with work-order (job orders with parts and labour lines, status flow, completion report, invoice-ready payload; markup on the unit cost so the invoice engine's rounding cannot disagree, gap of exactly one asserted; audit 17/18; the twenty-eighth server and hosted endpoint); checkout for work-order is a named gap because the keychain Stripe key lost product write, its buy page answers 503 with the bundle link and release-check reports the gap without turning green; 77 manifests, 1331 tests, validation 856/856, 29 bundles; petty-cash hosted 16/18; the release chain records the unit-test count and refuses a stale dist; downloads 4428; clicks 125/7d with 2 bundle-sourced; sales 0; GSC key dataless"
       }
     ]
   },
@@ -221,7 +225,7 @@
     {
       "id": "amortization",
       "npm_name": "@theluckystrike/mcp-amortization",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/amortization",
       "tools": [
         "loan_create",
@@ -257,7 +261,7 @@
     {
       "id": "asset-register",
       "npm_name": "@theluckystrike/mcp-asset-register",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/asset-register",
       "tools": [
         "asset_add",
@@ -293,7 +297,7 @@
     {
       "id": "bank-statement",
       "npm_name": "@theluckystrike/mcp-bank-statement",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/bank-statement",
       "tools": [
         "statement_import",
@@ -332,7 +336,7 @@
     {
       "id": "barcode",
       "npm_name": "@theluckystrike/mcp-barcode",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/barcode",
       "tools": [
         "qr_create",
@@ -369,7 +373,7 @@
     {
       "id": "billing-docs",
       "npm_name": "@theluckystrike/mcp-billing-docs",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/billing-docs",
       "tools": [
         "credit_note_create",
@@ -412,7 +416,7 @@
     {
       "id": "calendar",
       "npm_name": "@theluckystrike/mcp-calendar",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/calendar",
       "tools": [
         "ics_import",
@@ -451,7 +455,7 @@
     {
       "id": "cash-book",
       "npm_name": "@theluckystrike/mcp-cash-book",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/cash-book",
       "tools": [
         "ledger_build",
@@ -487,7 +491,7 @@
     {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/clauses",
       "tools": [
         "clause_add",
@@ -526,7 +530,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -563,7 +567,7 @@
     {
       "id": "deposits",
       "npm_name": "@theluckystrike/mcp-deposits",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/deposits",
       "tools": [
         "deposit_record",
@@ -601,7 +605,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -639,7 +643,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -680,7 +684,7 @@
     {
       "id": "image",
       "npm_name": "@theluckystrike/mcp-image",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/image",
       "tools": [
         "image_info",
@@ -719,7 +723,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -740,7 +744,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 1715,
+      "loc": 1716,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -759,7 +763,7 @@
     {
       "id": "kanban",
       "npm_name": "@theluckystrike/mcp-kanban",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/kanban",
       "tools": [
         "task_add",
@@ -803,7 +807,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -812,7 +816,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 431,
+      "loc": 432,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -831,7 +835,7 @@
     {
       "id": "pdf",
       "npm_name": "@theluckystrike/mcp-pdf",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/pdf",
       "tools": [
         "pdf_info",
@@ -870,7 +874,7 @@
     {
       "id": "per-diem",
       "npm_name": "@theluckystrike/mcp-per-diem",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/per-diem",
       "tools": [
         "perdiem_rates",
@@ -906,7 +910,7 @@
     {
       "id": "petty-cash",
       "npm_name": "@theluckystrike/mcp-petty-cash",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/petty-cash",
       "tools": [
         "float_open",
@@ -942,7 +946,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -979,7 +983,7 @@
     {
       "id": "quotes",
       "npm_name": "@theluckystrike/mcp-quotes",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/quotes",
       "tools": [
         "quote_create",
@@ -1018,7 +1022,7 @@
     {
       "id": "recurring",
       "npm_name": "@theluckystrike/mcp-recurring",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/recurring",
       "tools": [
         "schedule_create",
@@ -1059,7 +1063,7 @@
     {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/resume",
       "tools": [
         "profile_set",
@@ -1096,7 +1100,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -1133,7 +1137,7 @@
     {
       "id": "statement-of-account",
       "npm_name": "@theluckystrike/mcp-statement-of-account",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/statement-of-account",
       "tools": [
         "statement_build",
@@ -1168,7 +1172,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -1209,7 +1213,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -1245,9 +1249,48 @@
       }
     },
     {
+      "id": "work-order",
+      "npm_name": "@theluckystrike/mcp-work-order",
+      "version": "0.18.0",
+      "dir": "servers/work-order",
+      "tools": [
+        "work_order_create",
+        "work_order_add_line",
+        "work_order_status",
+        "work_order_get",
+        "work_order_list",
+        "work_order_delete",
+        "completion_report_text",
+        "completion_report_pdf",
+        "work_order_invoice_payload",
+        "work_orders_report"
+      ],
+      "tool_count": 10,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "- npm test -w servers/work-order: # tests 43 / # pass 43 / # fail 0 / - node --test test/*.test.mjs (repo-wide): # tests 89 / # pass 89 / # fail 0",
+      "result_status": "DONE",
+      "loc": 1197,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "zip",
       "npm_name": "@theluckystrike/mcp-zip",
-      "version": "0.17.0",
+      "version": "0.18.0",
       "dir": "servers/zip",
       "tools": [
         "zip_create",
@@ -1434,6 +1477,11 @@
         "id": "timezone",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/timezone"
+      },
+      {
+        "id": "work-order",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/work-order"
       },
       {
         "id": "zip",
@@ -1712,6 +1760,10 @@
       "first_line": "Distribution round 20: wire mcp-petty-cash into the estate (2026-09-06)"
     },
     {
+      "file": "docs/DIST_R21_RESULT.md",
+      "first_line": "Distribution round 21: wire mcp-work-order into the estate (2026-09-06)"
+    },
+    {
       "file": "docs/DIST_R3_RESULT.md",
       "first_line": "Distribution round 3: currency, timezone, docx onto Docker MCP catalog + Cline marketplace"
     },
@@ -1956,6 +2008,10 @@
       "first_line": "Plan v22 (2026-09-06, loop 25): recoverable slots, honest gates, the last slot"
     },
     {
+      "file": "docs/PLAN_V23.md",
+      "first_line": "Plan v23 (2026-09-06, loop 26): job orders, the test count in the chain, a paid session still missing"
+    },
+    {
       "file": "docs/PLAN_V3.md",
       "first_line": "Plan v3 (2026-09-03, loop 6)"
     },
@@ -2042,6 +2098,10 @@
     {
       "file": "docs/RELEASE_V0170.md",
       "first_line": "Release v0.17.0 (2026-09-06)"
+    },
+    {
+      "file": "docs/RELEASE_V0180.md",
+      "first_line": "Release v0.18.0 (2026-09-06)"
     },
     {
       "file": "docs/RELEASE_V060.md",
@@ -2224,6 +2284,10 @@
       "first_line": "User value audit, round 32 (amortization, hosted) - 2026-09-06"
     },
     {
+      "file": "docs/USER_VALUE_R34_PETTY_CASH.md",
+      "first_line": "User value audit, round 34 (petty-cash, hosted) - 2026-09-06"
+    },
+    {
       "file": "docs/USER_VALUE_R4.md",
       "first_line": "User value audit, round 4 — 2026-09-02"
     },
@@ -2254,6 +2318,14 @@
     {
       "file": "docs/WEEKLY_2026-09-06.md",
       "first_line": "Weekly digest, 2026-09-06"
+    },
+    {
+      "file": "docs/WORK_ORDER_AUDIT.md",
+      "first_line": "mcp-work-order: Part 2 CLI run and the Part 1 gaps"
+    },
+    {
+      "file": "docs/WORK_ORDER_RESULT.md",
+      "first_line": "mcp-work-order: build"
     },
     {
       "file": "docs/ZIP_AUDIT.md",
