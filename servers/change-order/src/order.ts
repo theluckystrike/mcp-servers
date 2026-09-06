@@ -1,5 +1,5 @@
 import {
-  computeTotals, currencyDecimals, roundHalfUp, type InputItem, type Totals,
+  computeTotals, currencyDecimals, formatMoney, roundHalfUp, type InputItem, type Totals,
 } from "@theluckystrike/mcp-invoice/lib";
 
 /**
@@ -175,6 +175,11 @@ export interface DeltaItem {
 
 export function deltaItems(o: ChangeOrder, fallbackTaxRate: number): DeltaItem[] {
   const out: DeltaItem[] = [];
+  // An item description NEVER carries a bare minor figure. The invoice these items land
+  // on prints its unit price in MAJOR units, and "was 3 x 45000" beside a unit price of
+  // 450.00 is the 100x seam written into the customer's own document (D-R100). Every
+  // price in a description is formatted as money, with its code.
+  const price = (minor: number): string => formatMoney(minor, o.currency);
   for (const l of o.lines) {
     const rate = l.tax_rate ?? fallbackTaxRate;
     if (l.kind === "added") {
@@ -184,8 +189,8 @@ export function deltaItems(o: ChangeOrder, fallbackTaxRate: number): DeltaItem[]
     } else {
       const wq = l.was_quantity ?? 0;
       const wp = l.was_unit_price_minor ?? 0;
-      out.push({ line: l.id, kind: l.kind, part: "reversal", description: `${l.description} (was ${wq} x ${wp}, reversed: ${l.reason})`, quantity: -wq, unit_price_minor: wp, tax_rate: rate, value_minor: -productMinor(wq, wp) });
-      out.push({ line: l.id, kind: l.kind, part: "revised", description: `${l.description} (now ${l.quantity} x ${l.unit_price_minor})`, quantity: l.quantity, unit_price_minor: l.unit_price_minor, tax_rate: rate, value_minor: productMinor(l.quantity, l.unit_price_minor) });
+      out.push({ line: l.id, kind: l.kind, part: "reversal", description: `${l.description} (was ${wq} x ${price(wp)}, reversed: ${l.reason})`, quantity: -wq, unit_price_minor: wp, tax_rate: rate, value_minor: -productMinor(wq, wp) });
+      out.push({ line: l.id, kind: l.kind, part: "revised", description: `${l.description} (now ${l.quantity} x ${price(l.unit_price_minor)})`, quantity: l.quantity, unit_price_minor: l.unit_price_minor, tax_rate: rate, value_minor: productMinor(l.quantity, l.unit_price_minor) });
     }
   }
   return out;
@@ -296,6 +301,39 @@ export function contractValue(orders: ChangeOrder[]): ContractValue {
     void_delta_minor: sum(["void"]),
     counts,
   };
+}
+
+/**
+ * The value one reference would have with `o` approved on top of what is approved already:
+ * the original, plus every OTHER approved delta, plus this change order's own net.
+ *
+ * Below zero is refused at the line and at the approval (D-R99). A contract cannot be
+ * worth less than nothing: a removal that takes out more than is on the contract is a
+ * quantity or an original value that is wrong, and the customer would otherwise be sent
+ * a document reading "Value if approved EUR -39.99" and then owed money for work that
+ * was never priced. The check is on VALUE, because this server never opens the sibling
+ * store and cannot see the original quantity of the line being removed.
+ */
+export function valueIfApproved(siblings: ChangeOrder[], o: ChangeOrder): number {
+  const first = siblings[0] ?? o;
+  const otherApproved = siblings.filter((s) => s.status === "approved" && s.id !== o.id).reduce((a, s) => a + netDeltaMinor(s), 0);
+  return first.original_value_minor + otherApproved + netDeltaMinor(o);
+}
+
+/** Why `o` cannot be approved (or carry its lines) on this reference, or null when it can. */
+export function belowZeroError(siblings: ChangeOrder[], o: ChangeOrder): string | null {
+  const value = valueIfApproved(siblings, o);
+  if (value >= 0) return null;
+  const first = siblings[0] ?? o;
+  const otherApproved = siblings.filter((s) => s.status === "approved" && s.id !== o.id).reduce((a, s) => a + netDeltaMinor(s), 0);
+  const c = o.currency;
+  const sign = (m: number): string => (m < 0 ? `-${formatMoney(-m, c)}` : `+${formatMoney(m, c)}`);
+  return (
+    `would take ${o.reference} below zero: the original ${formatMoney(first.original_value_minor, c)}` +
+    (otherApproved ? ` plus ${sign(otherApproved)} already approved` : "") +
+    ` plus this change order's ${sign(netDeltaMinor(o))} is -${formatMoney(-value, c)}. ` +
+    `A contract cannot be worth less than nothing, so a removal cannot take out more than is on it. Check the quantity being removed, or the original value on file`
+  );
 }
 
 /* ---------------------------------------------------------------- duplicates */

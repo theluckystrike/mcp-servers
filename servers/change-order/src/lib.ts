@@ -25,10 +25,10 @@ export type {
 export {
   CLOSED_STATUSES, LINE_KINDS, MAX_LINES, MAX_MINOR, MAX_QUANTITY, MAX_ROWS, MAX_VAT,
   OPEN_STATUSES, REFERENCE_KINDS, STATUSES, TRANSITIONS,
-  addedMinor, changedMinor, contractValue, deltaItems, deltaTotals, inferReferenceKind,
+  addedMinor, belowZeroError, changedMinor, contractValue, deltaItems, deltaTotals, inferReferenceKind,
   invoiceItems, isOpen, lineDeltaMinor, major, netDeltaMinor, normaliseCurrency,
   normaliseReference, normaliseText, orderKey, productMinor, quoteItems, quoteReady,
-  reachedAt, removedMinor, transitionError,
+  reachedAt, removedMinor, transitionError, valueIfApproved,
 } from "./order.js";
 
 export {

@@ -9,7 +9,7 @@ import { VERSION } from "./version.js";
 import {
   CLOSED_STATUSES, LINE_KINDS, MAX_LINES, MAX_MINOR, MAX_QUANTITY, MAX_ROWS, MAX_VAT,
   OPEN_STATUSES, REFERENCE_KINDS, STATUSES, TRANSITIONS,
-  addedMinor, changedMinor, contractValue, deltaItems, deltaTotals, inferReferenceKind,
+  addedMinor, belowZeroError, changedMinor, contractValue, deltaItems, deltaTotals, inferReferenceKind,
   invoiceItems, isOpen, lineDeltaMinor, netDeltaMinor, normaliseCurrency, normaliseReference,
   normaliseText, orderKey, quoteItems, quoteReady, reachedAt, removedMinor, transitionError,
   type ChangeOrder, type Line, type LineKind, type ReferenceKind, type Status,
@@ -336,6 +336,10 @@ server.registerTool("change_order_add_line", {
         tax_rate: a.tax_rate ?? null,
         reason, date: lineDate, note: a.note, created: now,
       };
+      // D-R99: a removal or a reversal cannot take the reference below zero. Checked on
+      // the candidate before anything is pushed, so a refusal leaves the record as it was.
+      const why = belowZeroError(byReference(list, o.reference), { ...o, lines: [...o.lines, line] });
+      if (why) throw new Error(`${o.id} with ${line.id} ${why}. Nothing was written.`);
       o.lines.push(line);
       o.updated = now;
       setOrders(list);
@@ -383,6 +387,13 @@ server.registerTool("change_order_status", {
       }
       if (a.status === "sent" && !o.lines.length) {
         throw new Error(`${o.id} has no lines, so there is nothing to send. Add the added, removed and changed lines with change_order_add_line first. Nothing was written.`);
+      }
+      // D-R99 again at the approval: another change order against the same reference may
+      // have been approved since the lines were added, and the running value is what the
+      // approval commits to.
+      if (a.status === "approved") {
+        const why = belowZeroError(byReference(list, o.reference), o);
+        if (why) throw new Error(`approving ${o.id} ${why}. Void it and raise the change against the figures on the contract. Nothing was written.`);
       }
       const now = new Date().toISOString();
       const event = { from: o.status, to: a.status as Status, date, note: a.note, at: now };

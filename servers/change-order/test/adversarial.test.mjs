@@ -328,3 +328,63 @@ test("an unknown change order and an ambiguous title are refused by name", async
   assert.equal(exact.change_order.id, "CO-2026-0002");
   void LINES;
 });
+
+test("D-R99: a removal that takes the reference below zero is refused at the line, and again at the approval", async (t) => {
+  const { box, c } = open(t);
+  await c.init();
+  // The original is 12 x 3999. Removing 13 is more hosting than the contract holds.
+  const r = await c.json("change_order_create", { reference: "Q-2026-0009", client: CLIENT, title: "Drop hosting", date: CO_DATE, original_value_minor: 47988 });
+  const id = r.created.id;
+  const over = await c.call("change_order_add_line", { change_order: id, kind: "removed", description: "Managed hosting", quantity: 13, unit_price_minor: 3999, reason: "Client hosts in-house" });
+  assert.equal(over.isError, true, over.text);
+  assert.match(over.text, /CO-2026-0001 with L01 would take Q-2026-0009 below zero: the original EUR 479\.88 plus this change order's -EUR 519\.87 is -EUR 39\.99/);
+  assert.match(over.text, /A contract cannot be worth less than nothing/);
+  assert.match(over.text, /Nothing was written/);
+  assert.equal(orders(box)[0].lines.length, 0, "a refused line was still written");
+  // A reversal on a changed line is bounded the same way.
+  const rev = await c.call("change_order_add_line", { change_order: id, kind: "changed", description: "Hosting", quantity: 1, unit_price_minor: 1, was_quantity: 13, was_unit_price_minor: 3999, reason: "Shrunk" });
+  assert.equal(rev.isError, true, rev.text);
+  assert.match(rev.text, /would take Q-2026-0009 below zero/);
+  // Removing exactly what is there lands on zero, which is a cancelled contract, not a negative one.
+  const exact = await c.call("change_order_add_line", { change_order: id, kind: "removed", description: "Managed hosting", quantity: 12, unit_price_minor: 3999, reason: "Client hosts in-house" });
+  assert.equal(exact.isError, false, exact.text);
+  const cv = await c.json("contract_value", { reference: "Q-2026-0009" });
+  assert.equal(cv.if_all_pending_approved_minor, 0);
+
+  // Two pending change orders that are each fine alone: the second approval is what crosses zero.
+  await c.json("change_order_create", { reference: "Q-2026-0010", client: CLIENT, title: "Drop everything", date: CO_DATE, original_value_minor: 10000 });
+  await c.json("change_order_create", { reference: "Q-2026-0010", client: CLIENT, title: "Drop one more cent", date: CO_DATE });
+  const a = await c.call("change_order_add_line", { change_order: "Drop everything", kind: "removed", description: "Everything", quantity: 1, unit_price_minor: 10000, reason: "Cancelled" });
+  assert.equal(a.isError, false, a.text);
+  const b = await c.call("change_order_add_line", { change_order: "Drop one more cent", kind: "removed", description: "One cent", quantity: 1, unit_price_minor: 1, reason: "Cancelled" });
+  assert.equal(b.isError, false, b.text);
+  await approve(c, "Drop everything");
+  await c.call("change_order_status", { change_order: "Drop one more cent", status: "sent", date: "2026-03-13" });
+  const second = await c.call("change_order_status", { change_order: "Drop one more cent", status: "approved", date: "2026-03-16" });
+  assert.equal(second.isError, true, second.text);
+  assert.match(second.text, /approving CO-2026-0003 would take Q-2026-0010 below zero: the original EUR 100\.00 plus -EUR 100\.00 already approved plus this change order's -EUR 0\.01 is -EUR 0\.01/);
+  assert.match(second.text, /Void it and raise the change against the figures on the contract/);
+  const stored = orders(box).find((o) => o.id === "CO-2026-0003");
+  assert.equal(stored.status, "sent", "a refused approval still moved the status");
+  const after = await c.json("contract_value", { reference: "Q-2026-0010" });
+  assert.equal(after.current_value_minor, 0);
+  assert.equal(after.pending_delta_minor, -1);
+});
+
+test("D-R100: an invoice item description never carries a bare minor figure into a major-unit document", async (t) => {
+  const { c } = open(t, { key: proKey() });
+  await c.init();
+  const id = await seed(c);
+  await approve(c, id);
+  const p = await c.json("change_order_invoice_payload", { change_order: id });
+  const l03 = p.invoice_create.arguments.items.filter((i) => /Website audit/.test(i.description));
+  assert.equal(l03.length, 2, "a changed line is a reversal and a revised item");
+  assert.match(l03[0].description, /^Website audit \(was 3 x EUR 450\.00, reversed: Two more sites in scope, volume price agreed\)$/);
+  assert.match(l03[1].description, /^Website audit \(now 5 x EUR 420\.00\)$/);
+  for (const i of [...p.invoice_create.arguments.items, ...p.quote_create.arguments.items, ...p.items]) {
+    assert.doesNotMatch(i.description, /\b(45000|42000|3999)\b/, `a minor figure reached a description: ${i.description}`);
+  }
+  // The invoice items are in MAJOR units, and the description now says the same thing the unit price does.
+  assert.equal(l03[0].unit_price, 450);
+  assert.equal(l03[1].unit_price, 420);
+});
