@@ -25,7 +25,7 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
   "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
-  "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "price-tracker", "recurring",
+  "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "petty-cash", "price-tracker", "recurring",
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone",
 ].sort();
 
@@ -74,6 +74,35 @@ const CURATED = {
       "Nothing is written by `loan_repay_early`: the stored agreement keeps its original terms. It answers what would happen, and the agreement is amended by whoever signs it.",
       "Currencies are never added together. This server holds no exchange rate, so one outstanding figure over a EUR loan and a USD one would be invented.",
       "Month arithmetic CLAMPS to the end of the target month, so a loan drawn on the 31st pays on the 28th in February and on the 31st again in March. Rolling forward instead would move a payment into the next month and shift every date after it.",
+    ],
+  },
+  "petty-cash": {
+    summary: "A petty cash float on the imprest system, kept as the paperwork keeps it: the vouchers paid out of the tin, the count that reconciles them to the cash actually there, and the replenishment that puts the float back to its imprest, with the double entry and an expense_add-ready payload per category in the cash book's own account names. No balance is stored; every balance is derived from the imprest, the top-ups, the vouchers and what each count found.",
+    storageFiles: [
+      ["floats.json", "the floats, each carrying its imprest, its custodian, its top-ups and every count that was made on it"],
+      ["vouchers.json", "the vouchers paid out, each carrying the count that reconciled it and the top-up that reimbursed it"],
+      ["counter.json", "the FLOAT and VOU number series, per year"],
+    ],
+    primaryFile: "floats.json",
+    caps: [
+      "`FREE_FLOATS` = 1 float open on free. `FREE_VOUCHERS_PER_MONTH` = 20 vouchers a calendar month on free, counted by the voucher date.",
+      "`reconcile` is free and unlimited on every tier, and so are `voucher_delete` and `topup_record`: the question this server exists to answer is whether the cash in the tin matches the paperwork, and a free tier that withholds the answer is a demo.",
+      "`replenish_request` and `float_report` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_MINOR` = 1e14 per amount field; `MAX_ROWS` = 2000 unreconciled vouchers listed per float by one `float_report` answer.",
+    ],
+    extra: [
+      "THE REPLENISHMENT IS `imprest - balance`, NOT THE SUM OF THE VOUCHERS. The two differ by exactly what the counts found over or short. On the worked month the vouchers total 20,194 minor units and the cheque is 20,205, because the count found the tin 11 short; reimbursing the voucher total instead restores the float 11 light, every cycle, while every later reconciliation still balances against a book that was already wrong.",
+      "A COUNT IS A FACT. Once a count is recorded the book balance IS what was counted, and the difference is carried as a `cash_over_short` line into the next replenishment rather than repeated at every later count. The count history keeps every difference, so a tin that is short by a little every month is visible as a run and not as one number.",
+      "NO BALANCE IS STORED. The float record holds the imprest, the top-ups and the counts; every balance is derived on the call from those and the vouchers. A stored balance is a second copy of what the vouchers already decide, and the copy is the one that gets believed after somebody deletes a voucher.",
+      "A float is CASH IN A TIN and can never hold less than nothing. A voucher larger than the balance on its own date is refused, and so is a back-dated one that would make any later day negative: back-dating takes the cash out earlier, so every day after it is short too.",
+      "A byte-identical voucher is refused by name, with the id of the one already stored. Same float, date, amount, category, description, payee and receipt reference is one voucher entered twice far more often than it is two identical purchases, and the second one is admitted only when `duplicate_ok` says so out loud.",
+      "A RECONCILED VOUCHER CANNOT BE DELETED. The cash it took out was counted on the day of the count, so removing it would make that recorded count wrong by its own amount. Deletion is free while a voucher is still uncounted, and the number is never reissued: a gap in the VOU series is the record that a voucher was deleted.",
+      "`replenish_request` WRITES NOTHING. It says what the cheque should be; the cash is recorded with `topup_record` when it is physically back in the tin, and that is what marks the vouchers reimbursed.",
+      "Under the imprest system `petty_cash` does not move. It is debited once when the float is opened and again only if the imprest itself is changed; a replenishment credits `cash` and debits the expenses.",
+      "The account ids are the cash book's, IMPORTED from `@theluckystrike/mcp-cash-book/lib` rather than retyped: `cash` and the per-category `expenses:<category>` ids come from its own `expenseAccount`, so a category spelled three ways is one account. `petty_cash` and `cash_over_short` are new, because that server derives no float entries yet, and they follow its id convention exactly.",
+      "The custodian comes from the SHARED BUSINESS PROFILE when the call does not name one, and the answer always says which of the two it was. A float with no custodian still opens: a tin nobody is named for is a real and reportable state, not a reason to refuse the record.",
+      "Currencies are never added together. This server holds no exchange rate, so one balance over a EUR tin and a PLN one would be an invented number.",
+      "A count dated before the float was opened, or before the count before it, is refused: an earlier count would be reconciling a book that a later count has already moved.",
     ],
   },
   "cash-book": {
