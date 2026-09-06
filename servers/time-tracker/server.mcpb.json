@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.17.0/time-tracker.mcpb",
       "version": "0.17.0",
-      "fileSha256": "3f61712a880b5cbfe9d47afd1eb1fb464b9e837d86a951f86c142776ac27bbb9",
+      "fileSha256": "309dfeb063b4317bdacb48d93379d75d63e694be9d20e83e787edc7e8892fcce",
       "transport": {
         "type": "stdio"
       },

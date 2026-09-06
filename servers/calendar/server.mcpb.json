@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.17.0/calendar.mcpb",
       "version": "0.17.0",
-      "fileSha256": "50c321b86cfe5fe2ce8d8cbc1706df8d87aee30d094129b924d702cd864ad3db",
+      "fileSha256": "6dcc02b316176aa24f294c3691e0568d74f594734a19c73c92507e55035ab161",
       "transport": {
         "type": "stdio"
       },
