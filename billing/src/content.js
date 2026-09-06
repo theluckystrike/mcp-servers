@@ -2909,6 +2909,109 @@ report. All servers together are
     ],
   },
 
+  "change-orders-and-contract-value-from-chat": {
+    title: "Change orders and the running contract value from chat, and why a changed line is two items",
+    description: "Record what changed against a quote or a work order: added, removed and changed lines with a reason and a date, sent to the client and answered, and the contract value today as the original plus only what they approved. Why a changed line comes back as a reversal and a revised line rather than one net figure, and why the same delta is exactly 100x apart in the invoice payload and the quote payload.",
+    html: `<h1>Change orders and the running contract value from chat, and why a changed line is two items</h1>
+<p>Most quoted jobs change after the quote. A second page is asked for after the kickoff, the hosting is
+dropped because the client moved in-house, the audit is widened to five sites. Those changes live in an
+email thread and a spreadsheet column called extras, and three months later nobody can say what the
+contract is worth or which of the extras the client actually agreed to. The
+<a href="/s/change-order">MCP Change Order</a> server keeps each change as a record against the
+<a href="/s/quotes">quote</a> or <a href="/s/work-order">work order</a> it changes: the lines, the reason
+in the client's words, the day it was sent and the day it was answered. It stores no delta, creates no
+invoice, and invents nothing.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add change-order -- npx -y @theluckystrike/mcp-change-order</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>mcpServers</code>. Put it at the same scope as <code>mcp-invoice</code>: the VAT rate, the currency
+and the name on the document come from the shared business profile that server writes, and the payload
+this server builds is that server's argument shape.</p>
+
+<h2>The measured thing: a changed line is two items, not one</h2>
+<p>A line that goes from 3 x EUR 450.00 to 5 x EUR 420.00 is worth +EUR 750.00. The tempting payload is one
+item of quantity 1 at EUR 750.00. The customer cannot reproduce that figure from anything on the change
+order they signed: there is no 750 on it. The payload this server emits is a reversal, -3 x 450.00, and the
+revised line, 5 x 420.00. Each reproduces on a calculator from the change order, and the invoice server's own
+<code>computeTotals</code> over both is the same +750.00, because its <code>roundHalfUp</code> is symmetric in
+sign.</p>
+<p>That symmetry is what lets a removal ride through <code>invoice_create</code> as a negative quantity at the
+unit price it was booked at. It is also exactly what <code>quote_create</code> refuses, because a quote
+quantity must be greater than zero, so the quote payload carries a <code>ready</code> flag and says why it is
+false rather than promising a quote it cannot make. The unit suite re-runs <code>computeTotals</code> over the
+payload as returned and asserts the four item values and the three totals, so the day someone simplifies the
+payload to one net item, the build says so instead of the customer.</p>
+
+<h2>The second measured thing: the same delta is 100x apart in the two payloads</h2>
+<p>Once a change order is approved, <code>change_order_invoice_payload</code> builds the delta twice in one
+call: <code>invoice_create</code> items with <code>unit_price</code> in MAJOR units, 450 for EUR 450.00, and
+<code>quote_create</code> items with <code>unit_price_minor</code> in MINOR units, 45000 for the same price.
+Both fields are plain numbers, both are called the unit price, and neither tool can tell it was handed the
+other one's scale. The suite feeds the MINOR figure into the invoice engine as though it were MAJOR and asserts
+the net is exactly 100x, 11,701,200 against the correct 117,012, re-derived from each payload's own items.
+Take the payload named for the tool you are about to call, and change no number in it.</p>
+
+<h2>A worked change order</h2>
+<pre><code>Q-2026-0003, Harbour Cafe, EUR, original value 2,000,000 minor, VAT 23% from the shared profile
+
+L01 added    Extra landing page          2 x 450.00                     +900.00
+L02 removed  Managed hosting            12 x  39.99                     -479.88
+L03 changed  Website audit    was 3 x 450.00, now 5 x 420.00            +750.00
+                                                                       --------
+delta net                                                              1,170.12
+VAT 23% per item: 207.00 - 110.37 - 310.50 + 483.00 =                    269.13
+delta gross                                                            1,439.25
+rounding_drift_minor                                                          0
+
+contract value while draft or sent:  20,000.00  (1,170.12 pending, not added in)
+contract value once approved:        21,170.12</code></pre>
+<p>The invoice payload for that delta carries FOUR items, 2 x 450.00, -12 x 39.99, -3 x 450.00 and
+5 x 420.00, and their values are 900.00, -479.88, -1,350.00 and 2,100.00. The changed line is the last two,
+and they sum to the +750.00 the change order shows.</p>
+
+<h2>The running value counts only what the client approved</h2>
+<p><code>contract_value</code> answers the question the whole thing exists for: the original, plus the deltas
+the client APPROVED, equals the value today. Draft and sent change orders are shown as a pending delta beside
+it and are never added in, and the value if every pending one were approved is stated as its own figure so
+the two are never added by hand. Rejected and void change orders count for nothing.</p>
+<p>The original value is stated ONCE per reference, on the first change order, and every later one inherits
+it. A later change order that states a different figure is refused by name, because a contract with two
+original values has two running values and the customer sees whichever was typed last. A reference with no
+change order on file has no running value, and the server says so rather than starting from nothing but the
+change order's own delta: it does not open the quotes or work-order store to find the figure.</p>
+
+<h2>The status machine</h2>
+<p><code>draft</code> to <code>sent</code>; <code>sent</code> to <code>approved</code> or
+<code>rejected</code>; <code>draft</code> or <code>sent</code> to <code>void</code>. Approved, rejected and
+void are final. A draft cannot be approved directly, because approval is the client's answer to something they
+were sent. Lines go only on a draft: a sent change order that needs another line is voided and raised again,
+so the client's approval always refers to what they were sent. Every step carries its own date, and a step
+dated before the last one is refused, because a history that runs backwards cannot be read as a timeline.</p>
+
+<h2>Free and Pro</h2>
+<p>Free is five OPEN change orders, draft and sent, with 200 lines each on every tier. The cap counts the
+ones the client has not answered, not the ones ever raised, so approving, rejecting or voiding one frees its
+slot, and <code>change_order_delete</code> on a draft with no lines is free on every tier, because a way back
+that only a Pro key can reach is not a way back. <code>contract_value</code> is free on every tier. A
+byte-identical change order is refused BEFORE the cap is consulted, so a double-typed change names the id
+already stored rather than being met with an upgrade prompt.</p>
+<p>Pro is $19 once, lifetime: unlimited open change orders, the change order document with the approval
+block for the client to sign, and the invoice payload for the approved delta in both scales. All servers
+together are <a href="/buy/bundle?src=store.guide.change-orders-and-contract-value-from-chat">$39</a>.</p>
+`,
+    faq: [
+      { q: "Why does a changed line come back as two items on the invoice payload?", a: "Because one net item shows the customer nothing they can check. 3 x 450.00 becoming 5 x 420.00 is +750.00, and an item of quantity 1 at 750.00 reproduces from nothing on the change order the client signed. A reversal of -3 x 450.00 and the revised 5 x 420.00 both reproduce on a calculator and sum to the same +750.00, because the invoice server's roundHalfUp is symmetric in sign. The unit suite re-runs computeTotals over the payload as returned and asserts all four item values, so a payload simplified to one net item fails the build." },
+      { q: "What is the contract worth while a change order is sent but not yet answered?", a: "The original plus the deltas already APPROVED, and nothing else. The sent change order's delta is shown as pending beside that figure and never added in, and the value if every pending change order were approved is stated separately so nobody adds the two by hand. Rejected and void change orders count for nothing." },
+      { q: "Why is original_value_minor required on the first change order and refused on a later one?", a: "The original value is stated once per reference and inherited by every later change order. This server does not open the quotes or work-order store to find it, so the first change order has to state it, and a later one that states a different figure is refused by name, because a contract with two original values has two running values and the customer sees whichever was typed last. Omit it on later change orders and the figure on file is inherited." },
+      { q: "Can I add a line to a change order I have already sent?", a: "No. The client is looking at that change order, and a line added under them makes their approval an approval of something else. Void it and raise a new one with every line. Approved, rejected and void are final for the same reason: a change order the client has answered is a fact about what they answered." },
+      { q: "Why can a removal be invoiced but not quoted?", a: "invoice_create accepts a negative quantity, so a removal rides through as -12 x 39.99 at the price it was booked at and the invoice engine's rounding is symmetric in sign. quote_create refuses a quantity that is not greater than zero. So the quote payload is built for its scale and carries ready false with the reason, and the job is re-quoted whole in the quotes server or the delta is invoiced." },
+      { q: "Why does the payload carry the same delta twice?", a: "Because the two tools take two scales. invoice_create's unit_price is in MAJOR units, 450 for EUR 450.00; quote_create's unit_price_minor is in MINOR units, 45000 for the same price. Both are plain numbers and neither tool can tell it was handed the other one's scale. The suite feeds the minor figure into the invoice engine as though it were major and asserts the net is exactly 100x, 11,701,200 against 117,012, re-derived from each payload's own items." },
+      { q: "Does this server create the invoice?", a: "No. change_order_invoice_payload returns invoice_create's arguments and says posted false. You run invoice_create in the invoice server. A tool that did both would bill a customer as a side effect of asking what a change is worth." },
+      { q: "What counts against the five free change orders?", a: "Open ones, draft and sent. Approving, rejecting or voiding a change order frees its slot, and change_order_delete on a draft with no lines is free on every tier. contract_value, change_order_get and change_order_list are free and unlimited. A byte-identical change order is refused before the cap is consulted, so a double-typed change burns neither a slot nor a CO number." },
+      { q: "Does it need the network or an account?", a: "No. There is no network call anywhere in this server except the checkout host named in the licensing copy, and the contract suite asserts that. It reads exactly one file it does not own, read-only and best-effort: the shared business profile, for the currency, the default VAT rate and the name on the document. There is no account and no API key, and license keys are verified offline." },
+    ],
+  },
   "petty-cash-float-from-chat": {
     title: "A petty cash float from chat, and why the cheque is not the sum of the vouchers",
     description: "Run a tin on the imprest system from a conversation: a voucher for every receipt, a count that reconciles to the minor unit, and the replenishment that puts the float back to its imprest. Why the cheque is imprest minus balance rather than the total of the vouchers, and why reimbursing the voucher total shrinks the float a little every cycle while every reconciliation still reports clean.",
