@@ -1,6 +1,6 @@
 # Distribution round 23: wire mcp-change-order into the estate (2026-09-06)
 
-status: DONE apart from item 20, see below
+status: DONE
 
 Written first as a checklist and updated as each item closes, so a stalled agent leaves a
 verifiable state rather than an unknown one. An item is `done` only once the file exists on
@@ -38,7 +38,7 @@ Three named product gaps are expected at the end of this round: the Stripe key s
 | 17 | Docker catalog entry + repin 30 entries + PR 4892 body row | done | fork commit c5b82e5 on `add-theluckystrike-mcp-servers`: `servers/change-order/server.yaml` added and all 30 entries repinned to 8f37031 after the guard: local HEAD equalled `git ls-remote origin main` and the logo, the GIF and the Dockerfile all fetched 200 over raw.githubusercontent at that sha before any file was rewritten. PR 4892 body gained the row, the name list and the thirty/8f37031 pin line. `go run ./cmd/validate --name change-order` passed name, directory and title and hung at the Docker daemon step; killed at 60 s and recorded |
 | 18 | Cline marketplace issue in the shape of 2460 | done | https://github.com/cline/mcp-marketplace/issues/2461 |
 | 19 | `node scripts/release-check.mjs` change-order green apart from product and hosted-row | GREEN | 30 servers, 28 checks each, 0 failures, 3 named gaps. The hosted-row and endpoint columns are green too: the hosting agent landed `remote/src/index.ts` and rewrote the `hosted` field of the distribution row to the published value while this round was running, so neither gap is open |
-| 20 | `node scripts/validate.mjs` run, remote block count reported only | todo | |
+| 20 | `node scripts/validate.mjs` run, remote block count reported only | done | 951/951, exit 0, run 50 in data/validation.json: change-order 44/44 free and Pro, billing 36/36 including the /buy/change-order 503, remote 119/119 (the hosting agent's block, count only) |
 
 ## Not in scope, and what the sibling agents did meanwhile
 
@@ -99,5 +99,6 @@ the same way, with a `change_order_get` call on screen.
     change-order  ok ok ok ok ok ok ok ok ok ok ok ok ok ok ok ok gap ok ok ok ok ok ok ok ok ok ok ok
     node --test billing/test/*.test.mjs      76/81, the five on the First five minutes gate for change-order
     scripts/validate.mjs, change-order in isolation   44/44
+    node scripts/validate.mjs        951/951, exit 0; change-order 44/44, billing 36/36, remote 119/119
     wrangler deploy                  version 1b58f47c
     live                             /s/change-order 200, /buy/change-order 503 price-pending-human, guide 200, /setup/claude-web/change-order 200
