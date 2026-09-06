@@ -333,6 +333,154 @@ const PROBES = {
       && readdirSync(join(tmp, "data", "mcp-servers", "amortization")).sort().join(",") === "counter.json,loans.json",
       readdirSync(join(tmp, "data", "mcp-servers")).join(","));
   },
+  "work-order": async (c, tmp, tier, ok) => {
+    // This server writes only its own directory and the probe seeds no sibling store, so the
+    // client is recorded inline and the server says so itself. Every figure asserted below is
+    // one servers/work-order/test/unit.test.mjs works out by hand and
+    // docs/WORK_ORDER_RESULT.md recomputes, so this probe fails if the arithmetic moves and
+    // not only if the shape does.
+
+    // 1. The job is raised against a client the invoice server does not know, so it is
+    // recorded inline and the record says which invoice tool would make it shared.
+    const created = await c.tool("work_order_create", { client: "Harbour Cafe", client_address: "12 Quay Street, Gdansk", site_address: "12 Quay Street, Gdansk", requested_date: "2026-03-02", description: "Walk-in not holding temperature", priority: "high", currency: "EUR" });
+    ok(`${tier}: WO-2026-0001 opens as a draft, EUR, with the client recorded inline and client_add named`,
+      !created.isError && /"id": "WO-2026-0001"/.test(created.text) && /"status": "draft"/.test(created.text)
+      && /"client_source": "inline"/.test(created.text) && /client_add in the invoice server/.test(created.text),
+      created.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 2. The lines, and the one this whole server rests on. A markup goes on the UNIT cost:
+    // roundHalfUp(1299 * 1.15) = 1494 a unit and 10,458 on the line. On the line TOTAL it is
+    // roundHalfUp(9093 * 1.15) = 10,457, one minor unit lower, and only the unit basis is one
+    // the invoice server can reproduce, because it stores a rounded unit and derives the line.
+    for (const l of [
+      { kind: "labour", description: "Diagnosis and gas check", hours: 3.5, rate_minor: 8500, date: "2026-03-08" },
+      { kind: "labour", description: "Refit and test", hours: 1.25, rate_minor: 8500, date: "2026-03-08" },
+      { kind: "parts", description: "Thermostat", quantity: 7, unit_cost_minor: 1299, markup_percent: 15, date: "2026-03-08" },
+      { kind: "parts", description: "Fan motor", quantity: 2, unit_cost_minor: 4500, markup_percent: 0, date: "2026-03-08" },
+    ]) await c.tool("work_order_add_line", { work_order: "WO-2026-0001", ...l });
+    const got = await c.tool("work_order_get", { work_order: "WO-2026-0001" });
+    ok(`${tier}: the marked-up unit is 1,494 and the line 10,458, exactly 1 above the 10,457 a line-total markup gives`,
+      !got.isError && /"billed_unit_minor": 1494/.test(got.text) && /"value_minor": 10458/.test(got.text)
+      && Math.round(9093 * 1.15) - 10458 === -1,
+      got.text.replace(/\s+/g, " ").slice(0, 150));
+    ok(`${tier}: 4.75 hours, labour 40,375, materials 19,458 on a cost of 18,093 with 1,365 of markup earned, net 59,833`,
+      !got.isError && /"hours": 4\.75/.test(got.text) && /"labour_minor": 40375/.test(got.text)
+      && /"materials_minor": 19458/.test(got.text) && /"parts_cost_minor": 18093/.test(got.text)
+      && /"markup_earned_minor": 1365/.test(got.text) && /"net_minor": 59833/.test(got.text),
+      got.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 3. The status machine moves one step forward at a time. A skipped step is refused
+    // naming the step that IS next, because every step carries its own date: a job that went
+    // from draft straight to invoiced was never marked done, so nothing records the day the
+    // work finished and no completion report was ever produced.
+    const skip = await c.tool("work_order_status", { work_order: "WO-2026-0001", status: "invoiced", date: "2026-03-09" });
+    ok(`${tier}: skipping draft straight to invoiced is refused naming scheduled as the next step, on every tier`,
+      skip.isError && /is draft, and the next status is scheduled, not invoiced/.test(skip.text)
+      && /Nothing was written/.test(skip.text) && !/mcp\.zovo\.one\/buy/.test(skip.text),
+      skip.text.replace(/\s+/g, " ").slice(0, 150));
+    for (const st of ["scheduled", "in_progress", "done"]) await c.tool("work_order_status", { work_order: "WO-2026-0001", status: st, date: "2026-03-09" });
+
+    // 4. A byte-identical job is one job typed twice far more often than it is a second
+    // visit, and the refusal names the id already stored rather than selling an upgrade. It
+    // is checked BEFORE the free cap, so it burns neither a slot nor a WO number.
+    const dup = await c.tool("work_order_create", { client: "Harbour Cafe", client_address: "12 Quay Street, Gdansk", site_address: "12 Quay Street, Gdansk", requested_date: "2026-03-02", description: "Walk-in not holding temperature", priority: "high", currency: "EUR" });
+    ok(`${tier}: a byte-identical work order is refused naming WO-2026-0001 and duplicate_ok, with no checkout link`,
+      dup.isError && /WO-2026-0001 is already this work order/.test(dup.text)
+      && /duplicate_ok/.test(dup.text) && /Nothing was written/.test(dup.text)
+      && !/free tier/.test(dup.text) && !/mcp\.zovo\.one\/buy/.test(dup.text),
+      dup.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 5. The text completion report is free on every tier: handing the customer a written
+    // record of what was done is the thing the job was for, not an upsell.
+    const text = await c.tool("completion_report_text", { work_order: "WO-2026-0001" });
+    ok(`${tier}: the text completion report is free, carries both labour lines, the billed 14.94 unit and a sign-off block`,
+      !text.isError && /Hours 4\.75, labour EUR 403\.75/.test(text.text)
+      && /7 x EUR 14\.94/.test(text.text) && /Materials EUR 194\.58/.test(text.text)
+      && /SIGN-OFF/.test(text.text) && !/mcp\.zovo\.one\/buy/.test(text.text),
+      text.text.replace(/\s+/g, " ").slice(0, 150));
+
+    // 6. The PDF gate.
+    const pdf = await c.tool("completion_report_pdf", { work_order: "WO-2026-0001" });
+    ok(`${tier}: completion_report_pdf is ${tier === "pro" ? "written to the server's own pdf directory at a 598.33 total" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !pdf.isError && /"path": "[^"]*work-order\/pdf\/WO-2026-0001\.pdf"/.test(pdf.text) && /"total_minor": 59833/.test(pdf.text)
+        : pdf.isError && /mcp\.zovo\.one\/buy\/work-order\?src=work-order\.completion_report_pdf/.test(pdf.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=work-order\.completion_report_pdf\.bundle/.test(pdf.text),
+      pdf.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 7. The payload gate, and the measured point of the whole server. The payload's totals
+    // are the INVOICE server's own computeTotals run over the very items it is handing back,
+    // so this assertion re-derives them here from those items and requires the same figures:
+    // net 59,833, VAT 13,762 at 23 percent, total 73,595. That is not checking the
+    // arithmetic, which has one implementation; it is checking that the ITEMS carry what the
+    // work order thought they carried, which is the failure that survives every other check.
+    const pay = await c.tool("work_order_invoice_payload", { work_order: "WO-2026-0001", issue_date: "2026-03-10", tax_rate: 23 });
+    let recomputed = null;
+    if (tier === "pro" && !pay.isError) {
+      const items = JSON.parse(pay.text).invoice_create.arguments.items;
+      const { computeTotals } = await import(join(ROOT, "servers", "invoice", "dist", "money.js"));
+      recomputed = computeTotals(items, "EUR");
+    }
+    ok(`${tier}: work_order_invoice_payload is ${tier === "pro" ? "net 59,833, VAT 13,762 and total 73,595, and computeTotals over its own items agrees to the minor unit" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !pay.isError && /"net_minor": 59833/.test(pay.text) && /"vat_minor": 13762/.test(pay.text)
+        && /"total_minor": 73595/.test(pay.text)
+        && recomputed && recomputed.net_minor === 59833 && recomputed.tax_minor === 13762 && recomputed.total_minor === 73595 && recomputed.rounding_drift_minor === 0
+        : pay.isError && /mcp\.zovo\.one\/buy\/work-order\?src=work-order\.work_order_invoice_payload/.test(pay.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=work-order\.work_order_invoice_payload\.bundle/.test(pay.text),
+      recomputed ? `net ${recomputed.net_minor} vat ${recomputed.tax_minor} total ${recomputed.total_minor} drift ${recomputed.rounding_drift_minor}` : pay.text.replace(/\s+/g, " ").slice(0, 160));
+    ok(`${tier}: the payload ${tier === "pro" ? "prices the thermostats at the 14.94 billed unit, posts nothing and marks nothing" : "is behind the same Pro gate"}`,
+      tier === "pro" ? !pay.isError && /"unit_price": 14\.94/.test(pay.text)
+        && /"posted": false/.test(pay.text) && /"marked_invoiced": false/.test(pay.text)
+        : pay.isError,
+      pay.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 8. The board report gate.
+    const board = await c.tool("work_orders_report", { month: "2026-03" });
+    ok(`${tier}: work_orders_report is ${tier === "pro" ? "the board by status with this job counted as done" : "refused with the single and the bundle checkout links"}`,
+      tier === "pro" ? !board.isError && /"status": "done"[\s\S]{0,60}?"count": 1/.test(board.text)
+        : board.isError && /mcp\.zovo\.one\/buy\/work-order\?src=work-order\.work_orders_report/.test(board.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=work-order\.work_orders_report\.bundle/.test(board.text),
+      board.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 9. The free cap counts OPEN work orders, not jobs ever raised. WO-2026-0001 is done, so
+    // it holds no slot: five more fill the board and the sixth is the one refused.
+    for (let i = 0; i < 5; i++) {
+      await c.tool("work_order_create", { client: `Client ${i}`, client_address: `${i} Some Street`, site_address: `${i} Some Street`, requested_date: "2026-03-03", description: `Job ${i}`, currency: "EUR" });
+    }
+    const sixth = await c.tool("work_order_create", { client: "Client six", client_address: "6 Some Street", site_address: "6 Some Street", requested_date: "2026-03-03", description: "Job six", currency: "EUR" });
+    ok(`${tier}: the sixth OPEN work order is ${tier === "pro" ? "allowed, and the done job never held a slot" : "refused, naming the $19 price while the done job still holds none"}`,
+      tier === "pro" ? !sixth.isError && /"id": "WO-2026-0007"/.test(sixth.text)
+        : sixth.isError && /\$19/.test(sixth.text) && /mcp\.zovo\.one\/buy\/work-order\?src=work-order\.work_order_create/.test(sixth.text),
+      sixth.text.replace(/\s+/g, " ").slice(0, 160));
+
+    // 10. Both ways back are free. Deleting an empty draft frees its slot on every tier,
+    // because a way back that only a Pro key can reach is not a way back.
+    const del = await c.tool("work_order_delete", { work_order: "WO-2026-0006" });
+    ok(`${tier}: deleting an empty draft is free on every tier and carries no checkout link`,
+      !del.isError && !/mcp\.zovo\.one\/buy/.test(del.text),
+      del.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 11. No total is stored. The record holds its client, its lines and its history, and
+    // every figure above is derived on the call, because a stored total is a second copy of
+    // what the lines already decide and the copy is the one believed after a line is edited.
+    const raw = readFileSync(join(tmp, "data", "mcp-servers", "work-order", "orders.json"), "utf8");
+    ok(`${tier}: the order record stores the lines and the history, and no net, VAT, gross or hours total`,
+      /"unit_cost_minor": 1299/.test(raw) && !/"net_minor"/.test(raw) && !/"gross_minor"/.test(raw)
+      && !/"vat_minor"/.test(raw) && !/"materials_minor"/.test(raw),
+      raw.replace(/\s+/g, " ").slice(0, 130));
+
+    // 12. Nothing outside its own data directory. It READS the invoice server's clients and
+    // the shared profile, best-effort, and writes into neither. The read creates an EMPTY
+    // servers/invoice directory as a side effect of resolving the path, so the assertion is
+    // not that the directory is absent but that nothing was written inside it: an empty
+    // invoice directory is a lookup that found nothing, a non-empty one is this server
+    // writing into a store it does not own.
+    const dirs = readdirSync(join(tmp, "data", "mcp-servers")).sort();
+    const invoiceFiles = dirs.includes("invoice") ? readdirSync(join(tmp, "data", "mcp-servers", "invoice")) : [];
+    ok(`${tier}: this server writes only its own directory, and the invoice directory its client lookup touches stays empty`,
+      dirs.every((d) => d === "work-order" || d === "invoice") && dirs.includes("work-order")
+      && invoiceFiles.length === 0,
+      `${dirs.join(",")} | invoice: ${invoiceFiles.join(",") || "(empty)"}`);
+  },
   "petty-cash": async (c, tmp, tier, ok) => {
     // This server reads no sibling store, so there is nothing to seed: the tin and its
     // vouchers ARE the input. Every figure asserted below is one
@@ -1942,6 +2090,17 @@ async function billing() {
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
     for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    // work-order is the one server in the list that must NOT answer 303. Its PRODUCTS entry
+    // carries the literal "PENDING_HUMAN" instead of a price id, because the Stripe key in
+    // the keychain lost product_write on 2026-09-06 and no price could be minted
+    // (docs/HUMAN_GATED_PACK.md). Handing that string to Stripe would 400 and the buyer
+    // would read "Checkout could not start", which reads as an outage rather than as a shop
+    // that is not open yet; worse, a 303 here would be this validator reporting a checkout
+    // that does not exist. So the route answers 503 with the bundle link before any Stripe
+    // call, and this assertion is the one that fails the day someone wires a broken price id
+    // in without minting the product. Flip it back to the 303 loop above once the price id
+    // lands.
+    { const r = await fetch("https://mcp.zovo.one/buy/work-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const body = r.status === 503 ? await r.text() : ""; ok("buy/work-order -> 503, not 303: PRODUCTS.price is PENDING_HUMAN so no Stripe call is made", r.status === 503 && r.headers.get("x-mcp-buy") === "price-pending-human" && /Checkout for this server is not yet open/.test(body) && /\/buy\/bundle/.test(body) && !/checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
