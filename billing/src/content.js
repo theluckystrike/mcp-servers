@@ -2808,6 +2808,107 @@ block, the invoice payload, and the board report. All servers together are
     ],
   },
 
+  "price-lists-and-rate-cards-from-chat": {
+    title: "Price lists and rate cards from chat, and the 100x scale gap between the invoice and the quote",
+    description: "Keep one price list and one labour rate card where your invoices and your quotes can both read them: a price with the day it comes into force, the price on any date worked out on the call, and a list of what a customer had handed back already priced in both sibling argument shapes. Why the same unit price is exactly 100x apart in an invoice and in a quote, and what happens when the wrong one is pasted.",
+    html: `<h1>Price lists and rate cards from chat, and the 100x scale gap between the invoice and the quote</h1>
+<p>Most small businesses keep their prices in a spreadsheet and retype them into every quote and every
+invoice. That is not a filing problem, it is a correctness problem: the moment a price goes up, the
+spreadsheet is right and every document already sent is unexplainable, and the person retyping is the only
+thing standing between a customer and a figure nobody can account for. The
+<a href="/s/catalogue">MCP Catalogue</a> server keeps that price list where the
+<a href="/s/invoice">invoice</a> and <a href="/s/quotes">quote</a> servers can both read it: a code, a name,
+a unit, an optional VAT rate, and prices with the day each one comes into force. It creates no invoice and no
+quote, stores no current price, and invents nothing.</p>
+
+<h2>Install it</h2>
+<pre><code>claude mcp add catalogue -- npx -y @theluckystrike/mcp-catalogue</code></pre>
+<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
+<code>mcpServers</code>. Put it at the same scope as <code>mcp-invoice</code> and <code>mcp-quotes</code>:
+the whole point is that all three read one price list.</p>
+
+<h2>The measured thing: the same price is 100x apart in the two payloads</h2>
+<p>This is the decision the whole server rests on, and it is not a style preference. The invoice server's
+item carries <code>unit_price</code> in MAJOR units, documented in its own schema as "Price per unit in major
+units, e.g. 90 for 90 EUR". The quote server's item carries <code>unit_price_minor</code> in MINOR units,
+documented as "9000 = 90.00 EUR, 90 = JPY 90. Never a decimal". Both fields are plain numbers. Both are
+called the unit price in ordinary speech. And neither tool can tell that the number it was handed was scaled
+for the other one: <code>45000</code> passed as <code>unit_price</code> is a perfectly valid invoice line for
+EUR 45,000.00, and it reconciles against itself all the way down to the total.</p>
+<p>Measured on the worked resolution: the correct payload nets 261,363 minor units. The quote payload's field
+fed into the invoice engine nets 26,136,300, which the unit suite asserts is exactly 100x. In a 3-decimal
+currency such as KWD the gap is 1000x. There is no arithmetic error anywhere in that: it is two correct
+engines handed one number that meant something different in each.</p>
+<p>So the store holds MINOR units, which is the only lossless form, and <code>lines_resolve</code> builds
+BOTH payloads itself in one call, with the scale printed against each. A catalogue that returned "the price"
+and let the caller pick the field would be wrong half the time, and wrong by two orders of magnitude when it
+was. Take the payload named for the tool you are about to call, and change no number in it.</p>
+
+<h2>The second measured thing: a price is a history, not a number</h2>
+<p>A SKU holds its price ROWS, each one a currency, a tier, a valid-from date and an amount. The price on a
+date is the latest valid-from at or before that date, worked out on the call. Put WEB-AUDIT at 39,000 from
+2025-01-01, 45,000 from 2026-01-01 and 49,500 from 2026-07-01, and ask what it was on 2026-03-15: the answer
+is 45,000, and <code>sku_get</code> names the row it picked, says how many rows it considered, and names the
+later row already booked. Raising a price in July does not rewrite what June was quoted at, because there is
+no current price stored anywhere to rewrite.</p>
+<p>A date before every row has no price, and that is a refusal naming the earliest row and the day it starts.
+Filling it with the earliest row is the tempting default and it reprices history: a job done in December 2024
+would be billed at the January 2025 price and would reconcile perfectly against a price list that did not
+exist yet.</p>
+
+<h2>A worked resolution</h2>
+<pre><code>EUR, priced as of 2026-03-15, VAT 23% from the shared profile
+
+WEB-AUDIT          3 x 45000   135,000   (the 2026-01-01 row, not 39000 and not 49500)
+HOST-MO           12 x  3999    47,988
+senior developer 7.5 h x 8500    63,750
+junior developer 3.25 h x 4500   14,625
+                                -------
+net                             261,363
+VAT 23% per line 31050 + 11037 + 14663 + 3364 = 60,114
+gross                           321,477
+rounding_drift_minor                  0</code></pre>
+<p>The test then hands <code>lines_resolve</code>'s OWN <code>invoice_create.arguments.items</code> back to
+the invoice server's <code>computeTotals</code> in its own process and gets the same four line grosses and
+the same three totals. What that catches is not an arithmetic slip. It is a payload whose ITEMS do not carry
+what the catalogue thought they carried, which is the failure that survives every internal check.</p>
+
+<h2>Nothing is invented</h2>
+<p>No fallback, no profile default rate, no nearest match. An unknown code is refused by name. A code with no
+price in the currency and tier you asked for is refused by name. A line in a second currency is refused,
+because one resolution carries one currency and the alternative is a conversion nobody asked for. The
+invented number would be printed on a document a customer pays from, and it would look exactly like a real
+one.</p>
+<p>One row per currency, tier and valid-from date. Setting that key again REPLACES the row, and the response
+says what it was and what it became, because two rows on one key make "the price that day" a coin toss
+decided by array order. A call that would change nothing at all is refused by name instead, so
+<code>updated</code> is not rewritten and no repricing is reported that did not happen.</p>
+
+<h2>Free and Pro</h2>
+<p>Free is 25 SKUs, the one <code>standard</code> price tier, unlimited rate cards, and every text answer
+including <code>lines_resolve</code> and <code>price_list_text</code>. A price list nobody can read is not a
+price list, and withholding <code>lines_resolve</code> would withhold the one thing the sibling servers came
+here for. <code>sku_delete</code> is free on every tier, because a way back that only a Pro key can reach is
+not a way back. A byte-identical duplicate is refused BEFORE the free cap is consulted, so a product filed
+twice names the code already stored rather than being met with an upgrade prompt.</p>
+<p>Pro is $19 once, lifetime: an unlimited catalogue, price tiers beyond <code>standard</code> so trade and
+wholesale are a second column rather than a second catalogue, the A4 price list PDF, and the catalogue
+report. All servers together are
+<a href="/buy/bundle?src=store.guide.price-lists-and-rate-cards-from-chat">$39</a>.</p>
+`,
+    faq: [
+      { q: "Why does lines_resolve return two payloads instead of one price?", a: "Because the two servers it feeds take the same price in different scales, and the gap is exactly 100x. invoice_create's item carries unit_price in MAJOR units, 90 for 90 EUR. quote_create's item carries unit_price_minor in MINOR units, 9000 for 90.00 EUR. Both are plain numbers and neither tool can tell it was handed the other one's scale: 45000 as unit_price is a valid invoice line for EUR 45,000.00 that reconciles against itself. Measured on the worked resolution, the correct payload nets 261,363 minor and the quote field fed to the invoice engine nets 26,136,300, asserted as exactly 100x, and 1000x in a 3-decimal currency such as KWD. Returning one price and letting the caller choose the field would be wrong half the time." },
+      { q: "What price does it use for a date?", a: "The latest valid_from at or before that date, for that currency and that tier, worked out on the call. sku_get names the row it picked, how many rows it considered and any later row already booked, so a question about a figure on an old invoice lands on one line of one file rather than on an argument. No current price is stored anywhere, because a stored current price is a second copy of what the rows already decide, and the copy is the one still being quoted a month after the rise." },
+      { q: "What happens for a date before every price row?", a: "It is refused, and the refusal names the earliest row and the day it starts. Falling back to the earliest row reprices history: a job done in December 2024 would be billed at the January 2025 price and would reconcile perfectly against a price list that did not exist yet." },
+      { q: "Does this server create the invoice or the quote?", a: "No. lines_resolve returns arguments and says posted false. You run invoice_create in the invoice server, or quote_create in the quotes server. A tool that did both would bill a customer as a side effect of asking what a job comes to." },
+      { q: "What happens if I set the same price row twice?", a: "The key is currency, tier and valid-from date, and setting that key again REPLACES the row. The response says what it was and what it became. Two rows on one key make the price that day a coin toss decided by array order. A call that would change nothing at all is refused by name instead, so nothing reports a repricing that did not happen." },
+      { q: "What counts against the 25 free SKUs?", a: "SKUs in the catalogue. Price rows are not metered, rate cards are not metered, and every text answer is free including lines_resolve and price_list_text. sku_delete is free on every tier, and the resolution register is what makes that safe: a code that has priced a line, or that a rate card points at, is refused by name with the times it was used and the last resolution id, because a code printed on a document somebody sent is a fact about that document." },
+      { q: "Can it convert currencies?", a: "No, and that is the same rule as the invented price. One resolution carries one currency, and a line in another is refused. catalogue_report counts the SKUs that carry no price in the profile's default currency, because those are the rows that stop a resolution dead, and naming them is more use than converting them at a rate nobody chose." },
+      { q: "Why does the price list PDF show a total?", a: "It shows the sum of one of each, and the footer says so in words. A price list has no total of its own. The A4 renderer takes a document with totals, so rather than printing a figure that looks like a document total and means nothing, the page states in words that this is a price list at a quantity of one per line and not a quotation." },
+      { q: "Does it need the network or an account?", a: "No. There is no network call anywhere in this server except the checkout host named in the licensing copy, and the contract suite asserts that. It reads exactly one file it does not own, read-only and best-effort: the shared business profile, for the default currency, the default VAT rate and the name at the top of the price list. There is no account and no API key, and license keys are verified offline." },
+    ],
+  },
+
   "petty-cash-float-from-chat": {
     title: "A petty cash float from chat, and why the cheque is not the sum of the vouchers",
     description: "Run a tin on the imprest system from a conversation: a voucher for every receipt, a count that reconciles to the minor unit, and the replenishment that puts the float back to its imprest. Why the cheque is imprest minus balance rather than the total of the vouchers, and why reimbursing the voucher total shrinks the float a little every cycle while every reconciliation still reports clean.",
