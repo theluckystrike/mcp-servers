@@ -1,0 +1,62 @@
+{
+  "round": 12,
+  "measured": "2026-09-06",
+  "method": "One bounded GET registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, first page only, curl -s -m 15, same convention as R6/R9/R10. count = metadata.count (raw row count, one row per stored version). capped = page full (100) with metadata.nextCursor. empty_slot_score = 100/(1+count). fit (0-1) = pairing with the current 28-server suite (amortization, asset-register, bank-statement, barcode, billing-docs, calendar, cash-book, clauses, currency, deposits, docx, expense-tracker, image, invoice, kanban, office-suite, pdf, per-diem, petty-cash, price-tracker, quotes, recurring, resume, spreadsheet, statement-of-account, time-tracker, timezone, zip). buildability (0-1) = pure-TypeScript, no-network, no-paid-API feasibility gate. score = empty_slot_score x fit x buildability.",
+  "cap": "30 wall minutes, 30 registry GETs used (limit 60), no background jobs, no paid APIs",
+  "already_probed_excluded_note": "cross-checked against docs/INTEL_R6.md, docs/INTEL_R9.md, docs/INTEL_R10.md, docs/INTEL_R11.md and NAMING_R5's probed-token lists; none of the 30 tokens below repeat any earlier token (job-card/service-report/maintenance-log/warranty-claim are new terms distinct from R9's timesheet/retainer/warranty and R10's late-fee/dunning; retainer-hours differs from R9's retainer; project-budget differs from R10's budget-vs-actual and R6's budget; price-list differs from the price-tracker server name and R6's quotes probe)",
+  "probes": [
+    {"token": "work-order", "count": 0, "capped": false, "fit": 0.85, "buildability": 0.9, "score": 76.5},
+    {"token": "job-card", "count": 0, "capped": false, "fit": 0.6, "buildability": 0.85, "score": 51.0, "note": "overlaps work-order; fit exactly 0.6 fails strict >0.6 build gate"},
+    {"token": "service-report", "count": 0, "capped": false, "fit": 0.75, "buildability": 0.85, "score": 63.75},
+    {"token": "maintenance-log", "count": 0, "capped": false, "fit": 0.7, "buildability": 0.9, "score": 63.0},
+    {"token": "warranty-claim", "count": 0, "capped": false, "fit": 0.65, "buildability": 0.75, "score": 48.75},
+    {"token": "rma", "count": 100, "capped": true, "fit": null, "buildability": null, "score": null, "excluded": "noisy substring collisions: norma, wfirma, mermail, dealermax etc"},
+    {"token": "returns", "count": 3, "capped": false, "fit": 0.4, "buildability": 0.6, "score": 6.0, "note": "dominated by avalara/returns (tax filing), ambiguous vs merchandise returns"},
+    {"token": "restocking", "count": 0, "capped": false, "fit": 0.45, "buildability": 0.6, "score": 27.0},
+    {"token": "backorder", "count": 0, "capped": false, "fit": 0.4, "buildability": 0.55, "score": 22.0},
+    {"token": "price-list", "count": 0, "capped": false, "fit": 0.8, "buildability": 0.9, "score": 72.0},
+    {"token": "rate-card", "count": 0, "capped": false, "fit": 0.8, "buildability": 0.9, "score": 72.0},
+    {"token": "sla-credit", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.85, "score": 46.75},
+    {"token": "retainer-hours", "count": 0, "capped": false, "fit": 0.65, "buildability": 0.85, "score": 55.25},
+    {"token": "time-off", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.85, "score": 46.75},
+    {"token": "rota", "count": 2, "capped": false, "fit": null, "buildability": null, "score": null, "excluded": "noisy: surname (Sirota) and frotas substring collisions, zero real scheduling hits"},
+    {"token": "shift", "count": 48, "capped": false, "fit": null, "buildability": null, "score": null, "excluded": "dominated by a single publisher's repeated versions (com.shiftinbits/constellation), not shift-scheduling servers"},
+    {"token": "commission", "count": 1, "capped": false, "fit": 0.75, "buildability": 0.9, "score": 33.75},
+    {"token": "royalty", "count": 3, "capped": false, "fit": 0.7, "buildability": 0.85, "score": 14.875},
+    {"token": "licence-fee", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.8, "score": 44.0},
+    {"token": "affiliate", "count": 8, "capped": false, "fit": 0.5, "buildability": 0.6, "score": 3.33},
+    {"token": "referral", "count": 5, "capped": false, "fit": 0.5, "buildability": 0.6, "score": 5.0},
+    {"token": "gift-aid", "count": 0, "capped": false, "fit": 0.4, "buildability": 0.75, "score": 30.0},
+    {"token": "donation", "count": 1, "capped": false, "fit": 0.35, "buildability": 0.7, "score": 12.25},
+    {"token": "grant-report", "count": 0, "capped": false, "fit": 0.35, "buildability": 0.6, "score": 21.0},
+    {"token": "cost-centre", "count": 0, "capped": false, "fit": 0.6, "buildability": 0.75, "score": 45.0},
+    {"token": "project-budget", "count": 0, "capped": false, "fit": 0.7, "buildability": 0.8, "score": 56.0},
+    {"token": "wip", "count": 13, "capped": false, "fit": null, "buildability": null, "score": null, "excluded": "noisy substring: wiplash, swipe/swiper/swipa collisions, zero real work-in-progress accounting hits"},
+    {"token": "retention", "count": 9, "capped": false, "fit": 0.5, "buildability": 0.7, "score": 3.5},
+    {"token": "snagging", "count": 0, "capped": false, "fit": 0.5, "buildability": 0.85, "score": 42.5},
+    {"token": "handover", "count": 5, "capped": false, "fit": 0.45, "buildability": 0.85, "score": 6.375, "note": "real hits (sh.handover/handover) exist but are a generic handover tool, not project/client handover docs specifically"}
+  ],
+  "excluded_noisy_tokens": ["rma", "rota", "shift", "wip"],
+  "top5_by_score": [
+    {"rank": 1, "token": "work-order", "count": 0, "fit": 0.85, "buildability": 0.9, "score": 76.5, "decision": "BUILD"},
+    {"rank": 2, "token": "price-list", "count": 0, "fit": 0.8, "buildability": 0.9, "score": 72.0, "decision": "BUILD"},
+    {"rank": 3, "token": "rate-card", "count": 0, "fit": 0.8, "buildability": 0.9, "score": 72.0, "decision": "BUILD"},
+    {"rank": 4, "token": "service-report", "count": 0, "fit": 0.75, "buildability": 0.85, "score": 63.75, "decision": "BUILD"},
+    {"rank": 5, "token": "maintenance-log", "count": 0, "fit": 0.7, "buildability": 0.9, "score": 63.0, "decision": "BUILD"}
+  ],
+  "next_best_no_build": [
+    {"token": "project-budget", "score": 56.0, "reason": "ranked 6th"},
+    {"token": "retainer-hours", "score": 55.25, "reason": "ranked 7th"},
+    {"token": "job-card", "score": 51.0, "reason": "clears score threshold but fit exactly 0.6 fails strict fit>0.6 gate, and overlaps work-order"}
+  ],
+  "variant_free_candidates_uncapped_under_100": [
+    {"token": "commission", "count": 1, "existing_server": "invoice / quotes"},
+    {"token": "royalty", "count": 3, "existing_server": "invoice / quotes"},
+    {"token": "returns", "count": 3, "existing_server": "expense-tracker (weak fit, tax-returns ambiguity)"},
+    {"token": "donation", "count": 1, "existing_server": "billing-docs (off-thesis, low fit)"},
+    {"token": "affiliate", "count": 8, "existing_server": "invoice / recurring"},
+    {"token": "referral", "count": 5, "existing_server": "invoice / recurring"},
+    {"token": "retention", "count": 9, "existing_server": "billing-docs / invoice (construction retention)"},
+    {"token": "handover", "count": 5, "existing_server": "docx / office-suite"}
+  ]
+}
