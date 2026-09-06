@@ -30,6 +30,7 @@ test("a negative or zero quantity is refused, and so is a negative hours figure"
     { kind: "parts", description: "Element", quantity: -7, unit_cost_minor: 1299 },
     { kind: "parts", description: "Element", quantity: 0, unit_cost_minor: 1299 },
     { kind: "parts", description: "Element", quantity: 7, unit_cost_minor: -1299 },
+    { kind: "parts", description: "Element", quantity: 7, unit_cost_minor: 1299, markup_percent: -15 },
     { kind: "labour", description: "Time", hours: -2, rate_minor: 8500 },
     { kind: "labour", description: "Time", hours: 0, rate_minor: 8500 },
   ]) {
