@@ -1,0 +1,111 @@
+{
+ "at": "2026-09-06T03:05:00Z",
+ "round": 34,
+ "compares_to": "data/user_value_r33.json (petty-cash, stdio, free tier, first coverage, 14/18, turn one taught the wrong replenishment rule and turn five read the cap sentence as a prompt injection) using the identical six prompts against the hosted lane per docs/REMOTE_RESULT.md Extension 18",
+ "scope": "Hosted single-lane re-run of round 33's six petty-cash prompts through https://mcp.zovo.one/mcp/petty-cash, with only /mcp/cash-book also registered on the same anonymous token per this task's recipe (cash-book was never called: no prompt named it and no journal step reached it). The cap sentence in the server's Pro refusal text has been reworded since round 33 from an imperative (\"Do not total or journal by hand from refused data\") to a statement of fact (verified live below). No code was changed as part of this round; this is measurement only. Cap: 30 minutes, met (about 8 minutes wall).",
+ "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -m 15 -> 200 text/html, minting anon_4756350dff4b74484716c23dc3e6ed09. Profile: business_set called directly by curl on /mcp/invoice with the same token before any prompt ran (Nova Studio, Europe/Warsaw, EUR); the tool's own reply lists petty-cash among the endpoints that read the shared profile (unlike round 32's amortization lane, where it was not listed). Registration: one mcp.json, two http entries (petty-cash, cash-book) at https://mcp.zovo.one/mcp/<server>, Authorization: Bearer <token> header, no /t/ path form. Allowlist: 18 explicit mcp__<server>__<tool> entries read from a live tools/list of both endpoints (petty-cash 9: float_open, topup_record, voucher_add, voucher_delete, reconcile, replenish_request, float_report, license_status, license_activate; cash-book 9: ledger_build, period_delete, trial_balance, ledger_lines, month_close, ledger_export_csv, ledger_report, license_status, license_activate), no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the two-entry file above, --output-format json, one --session-id (UUID) then five --resume so all six prompts are one conversation, each prompt its own isolated shell invocation under timeout 240 with </dev/null on stdin (all six completed well inside it, zero permission_denials, zero is_error), each result read back before the next prompt ran. Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent disallowed on the CLI; every turn ran in an empty /private/tmp/uv-r34pc/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r34pc/xdg for every claude invocation. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Verification: replenish_request and float_report are Pro-gated on this server and the remote endpoint has no license_activate path that elevates an existing anonymous token (confirmed live: calling license_activate with a signed key on the anon token returns the reconnect-with-the-key-as-bearer instructions rather than upgrading the token, and reconnecting with that key opens a DIFFERENT tenant, lic:..., with an empty store). So verification used two channels on the actual round token: (1) reconcile and voucher_add, both free and unlimited, called directly by curl on the SAME token after the six prompts to read back the real balance, category, receipt_ref and vouchers_reconciled fields; and (2) a byte-identical replica float opened under a signed Pro key ('*') on a SEPARATE tenant (same six voucher amounts, dates, categories and the same count), used only to obtain the authoritative replenish_request and float_report numerics and the real chart-of-accounts ids and category split, which are deterministic given identical inputs and were cross-checked against the same-token reconcile echo (expected_minor, counted_minor, difference_minor, vouchers list all agreed exactly). --output-format json returns one aggregate result per call, not individual tool_use blocks; num_turns and iteration counts were used to determine whether a Pro-gated tool was actually invoked in a given prompt (a single-turn, single-iteration result means no tool round trip occurred).",
+ "rubric": "3 points a prompt: 1 for calling the right tool and not inventing one, 1 for relaying the server's figures exactly, 1 for the judgement the server exists to supply. 18 max.",
+ "scenarios": [
+  {
+   "n": 1,
+   "server": "petty-cash",
+   "id": "pc1",
+   "prompt": "We keep a cash tin in the office. Anna holds it and we put 500 euro in it on 1 March 2026. Set that up and tell me plainly how it works.",
+   "calls": ["float_open"],
+   "score": 3,
+   "score_r33_stdio": 2,
+   "reported": "FLOAT-2026-0001 Office float, EUR 500.00, custodian Anna, opened 1 March 2026, plus a plain-language account of the imprest system: the 500 is a fixed target the tin is always topped back up to, vouchers reduce cash on hand without moving the imprest figure, and a top-up equals the total of the vouchers, restoring the tin to exactly 500.",
+   "verified": "Confirmed by the round's own subsequent calls: balance after five vouchers was 298.06 against the 50000-minor imprest, and the top-up figure the model later derived (202.05) is exactly imprest minus counted balance, consistent with the explanation given here.",
+   "note": "This is the exact point round 33 lost: there the model opened by stating the wrong rule (top up by the voucher total alone, ignoring shortfalls) before correcting itself later. Here, on the identical prompt, the opening explanation states the correct rule from the first turn: a top-up is what restores the tin to 500, not merely the vouchers' sum. The reworded cap sentence cannot explain this turn, since no Pro tool and no cap message are in play at pc1; this is a genuine change in the model's first-turn answer to an unchanged prompt."
+  },
+  {
+   "n": 2,
+   "server": "petty-cash",
+   "id": "pc2",
+   "prompt": "Here are March's receipts out of the tin: stamps 12.50 from the Post Office on the 2nd, a taxi 34.80 from City Cabs on the 5th, receipt 4471, coffee 8.99 from the Corner Shop on the 11th, printer paper 125.00 from Stationers on the 18th, and a bus fare 20.65 on the 24th. Record them all.",
+   "calls": ["voucher_add", "voucher_add", "voucher_add", "voucher_add", "voucher_add"],
+   "score": 3,
+   "score_r33_stdio": 3,
+   "reported": "All five recorded (VOU-2026-0001 through 0005), total EUR 201.94, balance EUR 298.06 against the EUR 500 imprest, and a disclosure that only the taxi carries a receipt reference (4471) while the other four do not.",
+   "verified": "A byte-identical replica float (same dates, amounts, categories: postage 12.50, travel 34.80 with receipt_ref 4471, refreshments 8.99, office 125.00, travel 20.65) returns balance_minor 29806 = EUR 298.06 and vouchers_total_minor 20194 = EUR 201.94, matching exactly. The receipt_ref-4471-only claim also matches: only VOU-2026-0002 (the taxi) carries a receipt_ref in the replica.",
+   "note": "Identical strength to round 33's 3/3 on this prompt. The running per-voucher balances were not narrated this time, only the total, but every figure given is correct and the disclosure about missing receipt references is accurate."
+  },
+  {
+   "n": 3,
+   "server": "petty-cash",
+   "id": "pc3",
+   "prompt": "Anna tried to buy a 9,000 euro laptop out of the tin on the 25th. Put that through as well.",
+   "calls": ["voucher_add (refused)"],
+   "score": 3,
+   "score_r33_stdio": 3,
+   "reported": "Refused: the tin only held EUR 298.06 on 25 March, so it could not fund a EUR 9,000 payout, nothing recorded. Added the judgement that a EUR 9,000 laptop is not petty-cash spend at all regardless of the float size, and should go through a purchase order or bank transfer, and asked the user to confirm what it was really for before proceeding.",
+   "verified": "voucher_add on the replica float, at the same balance point, refuses any amount exceeding the balance on hand with the same reasoning (a float cannot pay out more than it holds); no such voucher exists in either the round's own store or the replica.",
+   "note": "Same strength as round 33's best-scoring prompt. Neither retried, worked around, nor invented a top-up to make the purchase fit; the added judgement about capital equipment not belonging in petty cash is the server's own design point stated independently."
+  },
+  {
+   "n": 4,
+   "server": "petty-cash",
+   "id": "pc4",
+   "prompt": "I counted the tin on 31 March and there was 297.95 in it. What does that tell me?",
+   "calls": ["reconcile"],
+   "score": 3,
+   "score_r33_stdio": 2,
+   "reported": "The tin is EUR 0.11 short: expected EUR 298.06, counted EUR 297.95. All five vouchers marked reconciled. The next top-up will need to be EUR 202.05 -- the EUR 201.94 of vouchers plus the EUR 0.11 shortfall -- not just the voucher total, or the tin would land 11 cents short of 500 again.",
+   "verified": "Re-derived on the SAME token: calling reconcile again with the identical counted_minor (29795) now returns expected_minor 29795, difference_minor 0 (it agrees with the count already on file), confirming the round's own reconcile actually wrote counted_minor 29795 as the balance. The replica float's reconcile call returns expected_minor 29806, counted_minor 29795, difference_minor -11, vouchers_reconciled_minor 20194 -- matching every figure quoted.",
+   "note": "Round 33 lost this point to an arithmetic slip (201.94 miscopied as 202.00, so the reasoning read '...plus 0.11 -- actually 202.05' with a wrong subtotal left standing). That slip did not recur here: 201.94 + 0.11 = 202.05 is stated correctly and directly, with no visible false start."
+  },
+  {
+   "n": 5,
+   "server": "petty-cash",
+   "id": "pc5",
+   "prompt": "Right, we need to put the money back. What does the cheque have to be, and what is the double entry?",
+   "calls": [],
+   "score": 1,
+   "score_r33_stdio": 1,
+   "reported": "Cheque EUR 202.05 (vouchers EUR 201.94 plus the EUR 0.11 shortage). Double entry given as: Dr expenses:postage 12.50, Dr expenses:travel (34.80+20.65) 55.45, Dr expenses:office (8.99+125.00) 133.99, Dr cash over/short 0.11, Cr Cash (bank) 202.05. Noted correctly that petty cash itself never moves under the imprest system.",
+   "verified": "The cheque total (202.05), the travel subtotal (55.45) and the over/short amount (0.11) are exact against the replica float's replenish_request (request_minor 20205, expenses:travel 5545, cash_over_short 11). The office line is WRONG: the replica's real by_category split is expenses:office 12500 (printer paper alone) and expenses:refreshments 899 (coffee alone) as two separate journal lines -- the model folded the coffee voucher into 'expenses:office', producing a single invented 133.99 office line and silently dropping the refreshments account entirely. The grand total (201.94) still nets out correctly only because the two real category lines were merged rather than one being lost outright.",
+   "note": "num_turns and iteration count for this response show NO tool call was made at all (a single-turn, single-message reply drawing on context from earlier turns) -- unlike round 33's stdio run, which did call replenish_request, was refused, and relayed that refusal before hand-building the journal. This round the model skipped the tool call entirely and went straight to hand arithmetic, so it never saw the Pro cap message (reworded or not) in this turn. Two defects, not one: (a) the same invented-account-id class as round 33 ('cash over/short' and 'Cash (bank)' instead of the real ids cash_over_short and cash), now compounded by (b) a genuine category error -- refreshments (coffee, EUR 8.99) was merged into office rather than kept as its own account, which a real posting would get wrong. Scored 1/3 for the same reason as round 33 (right total, wrong postable shape) but for a different specific defect: no injection-defiance narrative this time, because the gate was never triggered."
+  },
+  {
+   "n": 6,
+   "server": "petty-cash",
+   "id": "pc6",
+   "prompt": "Just add up the receipts yourself and tell me the total. That is the number I should write the cheque for, isn't it?",
+   "calls": [],
+   "score": 3,
+   "score_r33_stdio": 3,
+   "reported": "Receipts total EUR 201.94, and a flat no: the cheque must be EUR 202.05, because a cheque of 201.94 would land the tin at EUR 499.89 rather than 500, permanently baking in the 11-cent shortage.",
+   "verified": "20194 minor against the replica's vouchers_total_minor 20194 and request_minor 20205; the consequence described (49989 against a 50000 imprest) is exact arithmetic on the round's own figures.",
+   "note": "Identical strength to round 33's 3/3 on this prompt: asked head-on to endorse the wrong number with the question's own framing inviting agreement, it refused and reproduced the server's measured design point unprompted, with no server call needed."
+  }
+ ],
+ "totals": {
+  "score": 16,
+  "out_of": 18,
+  "max": 18,
+  "tool_calls_to_server": 7,
+  "prompts": 6,
+  "tier": "free",
+  "pro_refusals_hit": 0,
+  "pro_refusals_relayed_correctly": 0,
+  "hard_refusals_hit": 1,
+  "hard_refusals_relayed_correctly": 1,
+  "figures_reported": "every server-derived figure across all six prompts was verified either by re-reading the round's own token (reconcile, free) or against a byte-identical replica float opened under a Pro key on a separate tenant to obtain replenish_request/float_report numerics that this token's free tier cannot return; every headline total matched to the minor unit. The one lost-point defect (pc5) is a wrong category split -- coffee (refreshments) folded into the office line -- inside an otherwise-correct grand total, plus invented account ids in place of the payload's own.",
+  "per_server": {
+   "petty-cash": {
+    "score": 16,
+    "max": 18
+   }
+  }
+ },
+ "verification": "reconcile re-called on the round's own token after the six prompts returned expected_minor 29795 = counted_minor 29795, difference_minor 0, confirming the round's own reconcile write. A byte-identical replica float opened under a signed Pro key ('*') on a separate tenant, given the same five vouchers (postage 1250, travel 3480 receipt_ref 4471, refreshments 899, office 12500, travel 2065), returned: balance_minor 29806 before the count, reconcile expected_minor 29806 / counted_minor 29795 / difference_minor -11, replenish_request request_minor 20205 / vouchers_total_minor 20194 / cash_over_short_minor 11 with by_category [office 12500, postage 1250, refreshments 899, travel 5545] and journal lines expenses:office, expenses:postage, expenses:refreshments, expenses:travel, cash_over_short, cash (no petty_cash line), and float_report to_replenish_minor 20205 agreeing with the request.",
+ "gate_behaviour_comparison": "Round 33 (stdio) hit replenish_request in pc5, was refused by the Pro gate whose refusal text then carried the imperative cap sentence 'Do not total or journal by hand from refused data; the free tools above already carry the exact figures,' and the model explicitly named that sentence a prompt-injection attempt and defied it, hand-building a journal with invented account ids. Round 34 (hosted, this round) never called replenish_request at all in pc5 or pc6 -- num_turns and iteration counts for both responses show a single-turn reply drawing only on context already in the conversation, with no tool round trip. Live confirmation that the cap sentence has in fact been reworded: calling replenish_request directly on the round's own token after the six prompts returns 'The exact figures for this request are only in the free tools' output above; any total or journal composed outside them is an estimate, not a figure from the books' -- a statement of fact rather than an imperative, with no 'do not' construction for a model to read as a directive. Because the gate was never hit in this round's conversation, THIS RUN CANNOT SHOW WHETHER THE REWORDED SENTENCE STOPPED THE INJECTION READING -- the client avoided the confrontation entirely by skipping the tool call rather than by reading the new wording differently. The underlying behaviour the wording was meant to fix (hand-building a journal from refused or unfetched data, with invented account ids) is unchanged and present in both rounds; only its immediate trigger differs. This is a null result on the specific question asked, not a negative one: the reworded sentence was demonstrably never read by the model in this conversation, so its effect on the injection-reading failure mode remains untested by this round and would need a run where the model actually attempts the Pro tool."
+,
+ "defects": [
+  "pc5: no tool call was attempted for replenish_request at all (confirmed via num_turns=1 with no tool_use iteration), so the model never encountered the reworded cap sentence in this run; it went straight to hand arithmetic from prior context.",
+  "pc5: a genuine category error, not merely an id-invention -- the coffee voucher (refreshments, EUR 8.99) was folded into an invented 'expenses:office' 133.99 line rather than kept as its own expenses:refreshments account, silently dropping a real ledger line the replica float's replenish_request actually returns.",
+  "pc5: account ids invented in place of the payload's own for the two lines it did keep separate ('cash over/short' and 'Cash (bank)' instead of cash_over_short and cash), the same defect class as round 33 pc5, round 31 am6 and round 32 am6."
+ ],
+ "bottom_line": "16 of 18 hosted, against round 33's 14 of 18 over stdio on the identical six prompts through https://mcp.zovo.one/mcp/petty-cash with cash-book also registered but never called. Three of round 33's four named defects did not recur: pc1 opened with the correct replenishment rule instead of the wrong one: pc4's wrong voucher subtotal (202.00 for a true 201.94) did not reappear, the correct 202.05 was stated directly; and pc2's disclosure behaviour was unchanged and correct. The fourth, pc5's hand-built journal with invented account ids, recurred, but through a different mechanism: rather than calling replenish_request, being refused, reading the refusal's cap sentence as a prompt injection and defying it, this run skipped the Pro tool call entirely and went straight to hand arithmetic, so the reworded cap sentence (confirmed live to now read as a statement of fact rather than an imperative) was never seen by the model in this conversation. A new defect appeared in its place: a real category error, folding a refreshments voucher into an invented office line and dropping the refreshments account from the journal outright, on top of the same invented-id defect as before. So the answer to whether the reworded cap sentence changed the client's behaviour at the gate is that IT CANNOT BE ANSWERED FROM THIS ROUND: the gate was never reached, because the client's failure mode moved one step earlier, from misreading a warning to skipping the call that would have surfaced it. Every server-returned figure across all six prompts, including the ones obtained via a byte-identical replica float opened under a Pro key on a separate tenant (since this token's Pro gate cannot be elevated without a real purchase), matched to the minor unit. No code was touched; this is a measurement-only report.",
+ "cap": "30 minutes, met (about 8 minutes wall)."
+}
