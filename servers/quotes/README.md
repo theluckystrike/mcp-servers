@@ -59,6 +59,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `quote_send_text` | A plain-text quote with the aligned line table, VAT lines, total and validity date, ready to paste into an email. Free |
 | `quote_accept` | Mark it accepted and turn it into an invoice: created directly in the invoice server when its store is present, otherwise handed back as `invoice_create`-ready items |
 | `quote_decline` | Mark it lost, with a reason, so it stops counting against the open quotes and lands in the win rate |
+| `quote_delete` | Delete a draft quote nobody has seen yet and get its free open-quote slot back. Refused, with the dependent named, once it has been sent, accepted, invoiced or exported. Free |
 | `quote_pdf` | Render the A4 PDF and return the path. Pro |
 | `quote_report` | Open, accepted, declined and expired totals per currency, the value still open and the win rate. Free for the current calendar year to date |
 | `license_status` | Show free or Pro mode |
@@ -77,6 +78,7 @@ Prompt: `quote_followup` reviews what is open, what lapses soon and what already
 | "Make Q-2026-0003 20 hours instead and give them another two weeks." | `quote_update` |
 | "Acme said yes. Invoice it." | `quote_accept` |
 | "Beta went with someone cheaper." | `quote_decline` |
+| "I quoted Acme twice by mistake, drop the second one." | `quote_delete` |
 | "What is still open, and what is my win rate?" | `quote_report` |
 | "Which quotes have lapsed with no answer?" | `quote_list` with `state: "expired"` |
 
@@ -119,12 +121,15 @@ anywhere on the input side, so a price can never be entered ten times too small.
 | Open quotes | 5 at a time | Unlimited |
 | `quote_send_text` (email-ready text) | Yes, unlimited | Yes, unlimited |
 | Accept, decline, revise, VAT, discounts, multi-currency | Yes | Yes |
+| `quote_delete` (drafts only) and the duplicate guard | Yes | Yes |
 | `quote_pdf` | No | Yes |
 | `quote_report` (pipeline and win rate) | Current calendar year to date | Any date range |
 | PDF branding | n/a | No footer credit, and your logo |
 
 The cap counts quotes that are still OPEN. Accepting, declining or letting one lapse frees the slot, so a
-freelancer who closes their quotes never hits it.
+freelancer who closes their quotes never hits it. Two more things keep a slot from being wasted, both free:
+`quote_create` refuses a quote identical to one already open and names the one you have, and `quote_delete`
+removes a draft nobody has seen and gives the slot straight back.
 
 Pro is a one-time $19, or $39 for every server in the collection, lifetime.
 

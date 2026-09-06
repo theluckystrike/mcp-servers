@@ -24,7 +24,8 @@ test("initialize and tools/list", async (t) => {
   const names = (await c.tools()).map((x) => x.name).sort();
   assert.deepEqual(names, [
     "license_activate", "license_status", "quote_accept", "quote_create", "quote_decline",
-    "quote_get", "quote_list", "quote_pdf", "quote_report", "quote_send_text", "quote_update",
+    "quote_delete", "quote_get", "quote_list", "quote_pdf", "quote_report", "quote_send_text",
+    "quote_update",
   ]);
 });
 

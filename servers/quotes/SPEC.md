@@ -10,7 +10,7 @@ over stdio (`initialize`, `tools/list`), not off `src`. This server is not yet i
 | bin | `mcp-quotes` |
 | serverInfo.name | `mcp-quotes` |
 | transport | stdio, JSON-RPC 2.0 |
-| tools | 11 |
+| tools | 12 |
 | resources | 1 |
 | prompts | 1 |
 
@@ -20,7 +20,7 @@ Estimates and quotes for freelancers, on the invoice engine: VAT line items in m
 a pasteable text version, an A4 PDF, and an accept that becomes a real invoice under the invoice server's
 own number series.
 
-## Tools (11)
+## Tools (12)
 
 | tool | description |
 | --- | --- |
@@ -29,6 +29,7 @@ own number series.
 | `quote_accept` | Mark a quote accepted and turn it into an invoice: created directly in the invoice server when its store is present, otherwise returned as invoice_create-ready line items. The numbers are copied, never recomputed. |
 | `quote_create` | Quote a client: line items with quantity and unit price in minor units, VAT per line or the business default, an optional discount and a validity window. Returns the quote id and the totals. |
 | `quote_decline` | Mark a quote as lost, with an optional reason, so it stops counting against the open quotes and shows up in the win rate. An accepted quote is never turned back. |
+| `quote_delete` | Delete a draft quote that was never sent, accepted, invoiced or exported, and give its free open-quote slot back. A quote with any of those is refused with the dependent named. The id is never reissued. |
 | `quote_get` | The full stored record for one quote: every line with its unit price and VAT, the totals, the validity date, the notes and, when it was accepted, the invoice it became. |
 | `quote_list` | Every quote with its client, total, validity and state (open, expired, accepted or declined). Filter by state, by client or by quote date range. |
 | `quote_pdf` | Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro. |
@@ -100,6 +101,16 @@ Mark a quote as lost, with an optional reason, so it stops counting against the 
 | `date` | string | no | YYYY-MM-DD, defaults to today |
 | `id` | string | yes | Quote id such as Q-2026-0001 |
 | `reason` | string | no | Why it was lost, e.g. "price" or "went in-house". Kept on the record |
+
+### `quote_delete`
+
+Title: Delete a draft quote
+
+Delete a draft quote that was never sent, accepted, invoiced or exported, and give its free open-quote slot back. A quote with any of those is refused with the dependent named. The id is never reissued.
+
+| arg | type | required | description |
+| --- | --- | --- | --- |
+| `id` | string | yes | Quote id such as Q-2026-0001 |
 
 ### `quote_get`
 
@@ -211,7 +222,7 @@ directory (`.../mcp-servers/invoice/invoices.json`, `clients.json`, `counter.jso
 - `MAX_ITEMS` = 200 line items per quote.
 - `MAX_MINOR` = 1e12 per quantity and per unit price; a total that is not a safe integer is refused.
 - `MAX_VALIDITY_DAYS` = 3650.
-- `quote_pdf` is Pro-only.
+- `quote_pdf` is Pro-only. `quote_delete` is free on every tier: the way out of the open-quote cap is never behind the paywall.
 - `quote_report` is free for the current calendar year to date; a wider range is Pro. The response names the cap.
 
 ## Invariants
@@ -225,6 +236,9 @@ directory (`.../mcp-servers/invoice/invoices.json`, `clients.json`, `counter.jso
 - One quote is one currency. Two currencies across the line items, or a line that disagrees with the stated quote currency, is refused and nothing is stored.
 - Dates are calendar dates as `YYYY-MM-DD`. "Today" is computed in the shared business profile's `timezone` when one is set, so expiry does not depend on the host machine's zone.
 - A quote id `Q-<YYYY>-<NNNN>` is never reissued: the counter is written before the quote is stored, and ids already present in the store are skipped.
+- `quote_create` refuses a quote identical to one already OPEN. The fingerprint is the client name and every line description trimmed and case-folded, the currency uppercased, the line quantities, unit prices in minor units and VAT rates, the discount percent, the total in minor units, the quote date, the last valid day and the notes. The refusal names the existing id; nothing is written, no id is allocated and no free slot is spent. Accepted and declined quotes are not compared against: re-quoting the same work after a closed document is a new offer.
+- `quote_delete` removes a DRAFT only, and a draft is a quote with no dependent: not accepted, not invoiced, not declined, never handed to the client by `quote_send_text` and with no rendered document still on disk. A quote with any of those is refused with the dependent named and nothing is deleted. A delete really frees a free-tier slot, because the cap counts quotes in the open state and the row leaves `quotes.json`. The id is not reissued: the year counter is never rolled back.
+- `quote_send_text` stamps `sent_date` the first time it hands the text over, and `quote_pdf` stamps `exported_path`. Those two stamps are what separates a draft from a document someone is holding.
 - A quote is a document once it is closed. `quote_update` refuses an accepted or declined quote; `quote_accept` refuses a second acceptance; `quote_decline` refuses an accepted quote.
 - `quote_accept` copies the quote's stored lines and totals into the invoice. It never recomputes them, so a business-profile VAT change between issuing and accepting cannot move the agreed total.
 - An expired quote is refused by `quote_accept` unless `allow_expired: true`.
@@ -248,4 +262,6 @@ Error strings a caller can match on:
 - `valid_until <date> is before the quote date <date>. Nothing was stored.`
 - `that quote totals more than can be represented exactly in minor units. Nothing was stored.`
 - `line N (<desc>) does not round-trip: ... Nothing was stored.`
+- `this is quote <id> again, line for line: ... Nothing was written and no free open slot was used. ... remove it with quote_delete {id: "<id>"} and its slot comes back.`
+- `<id> (<client>, <total>) is not a draft: <dependent>; <dependent>. Deleting it would leave that behind with no quote to point at, so nothing was deleted. ...`
 - `data file is corrupt; moved to <path>; nothing was written. ...`
