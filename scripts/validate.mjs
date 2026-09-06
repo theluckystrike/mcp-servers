@@ -658,6 +658,185 @@ const PROBES = {
         .every((f) => ["counter.json", "rates.json", "register.json", "skus.json"].includes(f) || (tier === "pro" && f === "pdf")),
       `${dirs.join(",")} | ${readdirSync(join(tmp, "data", "mcp-servers", "catalogue")).sort().join(",")}`);
   },
+  "change-order": async (c, tmp, tier, ok) => {
+    // This server reads no sibling STORE: it reads the shared business profile, read-only
+    // and best-effort, and nothing else. Every figure asserted below is one
+    // servers/change-order/test/unit.test.mjs works out by hand and
+    // docs/CHANGE_ORDER_RESULT.md recomputes, so this probe fails if the arithmetic moves
+    // and not only if the shape does.
+    mkdirSync(join(tmp, "data", "mcp-servers", "profile"), { recursive: true });
+    writeFileSync(join(tmp, "data", "mcp-servers", "profile", "business.json"), JSON.stringify({
+      name: "Nova Studio", address: "ul. Prosta 1, Warsaw", default_currency: "EUR",
+      default_tax_rate: 23, payment_terms_days: 14, timezone: "Europe/Warsaw",
+    }));
+
+    // 1. The first change order against a reference states the original value once.
+    const created = await c.tool("change_order_create", { reference: "q-2026-0003", client: "Harbour Cafe", title: "Second landing page, drop hosting, widen the audit", date: "2026-03-10", original_value_minor: 2000000 });
+    ok(`${tier}: the first change order against a reference is CO-2026-0001, filed against the upper-cased quote reference with the original value on file`,
+      !created.isError && /"id": "CO-2026-0001"/.test(created.text) && /"reference": "Q-2026-0003"/.test(created.text)
+      && /"reference_kind": "quote"/.test(created.text) && /"status": "draft"/.test(created.text) && /"original_minor": 2000000/.test(created.text),
+      created.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 2. A second change order with a DIFFERENT original value is refused by name, because a
+    // contract with two original values has two running values.
+    const twoValues = await c.tool("change_order_create", { reference: "Q-2026-0003", client: "Harbour Cafe", title: "Something else", date: "2026-03-10", original_value_minor: 1500000 });
+    ok(`${tier}: a later change order stating a different original value is refused naming the figure on file`,
+      twoValues.isError && /2000000/.test(twoValues.text) && /1500000/.test(twoValues.text) && /Nothing was written/.test(twoValues.text),
+      twoValues.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 3. The three lines. added +90,000, removed -47,988, changed 3 x 45000 -> 5 x 42000 = +75,000.
+    const l1 = await c.tool("change_order_add_line", { change_order: "CO-2026-0001", kind: "added", description: "Extra landing page", quantity: 2, unit_price_minor: 45000, reason: "Client asked for a second page after the kickoff", date: "2026-03-10" });
+    const l2 = await c.tool("change_order_add_line", { change_order: "CO-2026-0001", kind: "removed", description: "Managed hosting", quantity: 12, unit_price_minor: 3999, reason: "Client hosts in-house from April", date: "2026-03-11" });
+    const l3 = await c.tool("change_order_add_line", { change_order: "CO-2026-0001", kind: "changed", description: "Website audit", quantity: 5, unit_price_minor: 42000, was_quantity: 3, was_unit_price_minor: 45000, reason: "Two more sites in scope, volume price agreed", date: "2026-03-12" });
+    const detail = await c.tool("change_order_get", { change_order: "CO-2026-0001" });
+    ok(`${tier}: three lines land with deltas +900.00, -479.88 and +750.00, and change_order_get derives the net delta 117,012 with VAT 26,913 and gross 143,925`,
+      !l1.isError && !l2.isError && !l3.isError && !detail.isError
+      && /"delta": "\+EUR 900\.00"/.test(l1.text) && /"delta": "-EUR 479\.88"/.test(l2.text) && /"delta": "\+EUR 750\.00"/.test(l3.text)
+      && /"delta_minor": 117012/.test(l3.text)
+      && /"added_minor": 90000/.test(detail.text) && /"removed_minor": -47988/.test(detail.text) && /"changed_minor": 75000/.test(detail.text)
+      && /"vat_minor": 26913/.test(detail.text) && /"delta_gross_minor": 143925/.test(detail.text) && /"vat_rate_source": "shared profile"/.test(detail.text),
+      detail.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 4. A changed line is TWO items, and the response says so before any payload exists.
+    ok(`${tier}: the changed line's response says it becomes two items, a reversal of 3 x EUR 450.00 and the new 5 x EUR 420.00, never one net item`,
+      /reversal of 3 x EUR 450\.00 and the new 5 x EUR 420\.00/.test(l3.text) && /never one net item/.test(l3.text),
+      l3.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 5. The running value while the change order is a draft: the original, with the delta
+    // pending and NOT added in.
+    const cvDraft = await c.tool("contract_value", { reference: "Q-2026-0003" });
+    ok(`${tier}: contract_value on a draft keeps the value at 2,000,000 with 117,012 pending and 2,117,012 only if approved`,
+      !cvDraft.isError && /"current_value_minor": 2000000/.test(cvDraft.text) && /"approved_delta_minor": 0/.test(cvDraft.text)
+      && /"pending_delta_minor": 117012/.test(cvDraft.text) && /"if_all_pending_approved_minor": 2117012/.test(cvDraft.text),
+      cvDraft.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 6. A draft cannot be approved directly: approval is the client's answer to something
+    // they were sent.
+    const early = await c.tool("change_order_status", { change_order: "CO-2026-0001", status: "approved", date: "2026-03-12" });
+    ok(`${tier}: approving a draft is refused, because approval is the answer to something that was sent`,
+      early.isError && /CO-2026-0001/.test(early.text) && /Nothing was written/.test(early.text),
+      early.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 7. Sent, then a line under the client is refused, then a step dated before the last
+    // one is refused, then approved on the 15th.
+    const sent = await c.tool("change_order_status", { change_order: "CO-2026-0001", status: "sent", date: "2026-03-12", note: "Emailed to the client" });
+    const lateLine = await c.tool("change_order_add_line", { change_order: "CO-2026-0001", kind: "added", description: "Logo refresh", quantity: 1, unit_price_minor: 30000, reason: "Asked for on the phone" });
+    const backwards = await c.tool("change_order_status", { change_order: "CO-2026-0001", status: "approved", date: "2026-03-11" });
+    const approved = await c.tool("change_order_status", { change_order: "CO-2026-0001", status: "approved", date: "2026-03-15", note: "Approved by email" });
+    ok(`${tier}: sent on the 12th, a line under the client refused, a step dated the 11th refused, approved on the 15th with the contract now worth 2,117,012`,
+      !sent.isError && /"status": "sent"/.test(sent.text)
+      && lateLine.isError && /is sent since 2026-03-12/.test(lateLine.text) && /Void it and raise a new one/.test(lateLine.text)
+      && backwards.isError && /2026-03-11/.test(backwards.text) && /before it/.test(backwards.text)
+      && !approved.isError && /"current_value_minor": 2117012/.test(approved.text)
+      && /Q-2026-0003 is now worth EUR 21170\.12: the original EUR 20000\.00 plus \+EUR 1170\.12 approved/.test(approved.text),
+      `${sent.isError ? "sent FAILED" : "sent ok"} | ${approved.text.replace(/\s+/g, " ").slice(0, 100)}`);
+
+    // 8. The running value once approved, with nothing pending.
+    const cv = await c.tool("contract_value", { reference: "Q-2026-0003" });
+    ok(`${tier}: contract_value once approved is 2,117,012 with an approved delta of 117,012 and nothing pending`,
+      !cv.isError && /"current_value_minor": 2117012/.test(cv.text) && /"approved_delta_minor": 117012/.test(cv.text) && /"pending_delta_minor": 0/.test(cv.text),
+      cv.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 9. Every later change order inherits the original value, stated once per reference.
+    const second = await c.tool("change_order_create", { reference: "Q-2026-0003", client: "Harbour Cafe", title: "Add a logo refresh", date: "2026-03-20" });
+    ok(`${tier}: a later change order inherits the original 2,000,000 and says so`,
+      !second.isError && /"id": "CO-2026-0002"/.test(second.text) && /"original_minor": 2000000/.test(second.text) && /was inherited from the 1 change order/.test(second.text),
+      second.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 10. A reference with no change order has no running value: nothing is invented.
+    const none = await c.tool("contract_value", { reference: "WO-2026-0099" });
+    ok(`${tier}: contract_value on a reference with no change order refuses rather than starting from nothing`,
+      none.isError && /WO-2026-0099/.test(none.text) && /Nothing was invented/.test(none.text),
+      none.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 11. The document gate. Free refuses with both checkout links; Pro renders the document
+    // with the four lines, the approval block and the contract value before and after.
+    const doc = await c.tool("change_order_document", { change_order: "CO-2026-0001" });
+    ok(`${tier}: the change order document is ${tier === "pro" ? "rendered with the approval block and the value before and after" : "refused on free with both checkout links"}`,
+      tier === "pro"
+        ? !doc.isError && /^CHANGE ORDER\nCO-2026-0001/.test(doc.text) && /Nova Studio/.test(doc.text) && /Net delta  \+EUR 1170\.12/.test(doc.text)
+          && /Original {20}EUR 20000\.00/.test(doc.text) && /Value today {17}EUR 21170\.12/.test(doc.text) && /Approved for the client by/.test(doc.text)
+        : doc.isError && /the change order document is Pro/.test(doc.text)
+          && /mcp\.zovo\.one\/buy\/change-order\?src=change-order\.change_order_document/.test(doc.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=change-order\.change_order_document\.bundle/.test(doc.text),
+      doc.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 12. The payload gate, and on Pro THE measured thing. Four items, not three: the changed
+    // line is a reversal and a revised line. computeTotals over the payload's own items gives
+    // the same net, and the quote payload's MINOR figure fed into the invoice engine as though
+    // it were MAJOR is EXACTLY 100x the correct net, re-derived from each payload's own items.
+    const pay = await c.tool("change_order_invoice_payload", { change_order: "CO-2026-0001", issue_date: "2026-03-16" });
+    if (tier === "pro") {
+      let inv = null, quo = null, netInvBasis = null, netQuoBasis = null, items = null;
+      try {
+        const j = JSON.parse(pay.text);
+        inv = j.invoice_create.arguments.items; quo = j.quote_create.arguments.items; items = j.items;
+        netInvBasis = inv.reduce((n, it) => n + Math.round(it.quantity * it.unit_price * 100), 0);
+        netQuoBasis = quo.reduce((n, it) => n + Math.round(it.quantity * it.unit_price_minor * 100), 0);
+      } catch { /* asserted below */ }
+      ok(`${tier}: the payload carries FOUR items, 2 x 450, -12 x 39.99, -3 x 450 and 5 x 420 in MAJOR units, netting 117,012 minor from its own items`,
+        !pay.isError && Array.isArray(inv) && inv.length === 4
+        && inv.map((i) => `${i.quantity}x${i.unit_price}`).join(",") === "2x450,-12x39.99,-3x450,5x420"
+        && netInvBasis === 117012
+        && Array.isArray(items) && items.map((i) => i.value_minor).join(",") === "90000,-47988,-135000,210000"
+        && /"net_minor": 117012/.test(pay.text) && /"vat_minor": 26913/.test(pay.text) && /"total_minor": 143925/.test(pay.text) && /"rounding_drift_minor": 0/.test(pay.text),
+        `items ${inv ? inv.map((i) => `${i.quantity}x${i.unit_price}`).join(",") : "?"} net ${netInvBasis}`);
+      ok(`${tier}: invoice_create takes MAJOR and quote_create takes MINOR, and the same net re-derived from each payload's own items is exactly 100x apart`,
+        Array.isArray(quo) && quo.length === 4 && quo.map((q) => q.unit_price_minor).join(",") === "45000,3999,45000,42000"
+        && /"unit": "MAJOR units, which is what invoice_create's unit_price takes"/.test(pay.text)
+        && /"unit": "MINOR units, which is what quote_create's unit_price_minor takes"/.test(pay.text)
+        && netQuoBasis === 11701200 && netQuoBasis / netInvBasis === 100
+        && /"ready": false/.test(pay.text) && /"posted": false/.test(pay.text),
+        `quote-basis ${netQuoBasis} / invoice-basis ${netInvBasis} = ${netQuoBasis && netInvBasis ? netQuoBasis / netInvBasis : "?"}x`);
+    } else {
+      ok(`${tier}: the invoice payload is refused on free with both checkout links`,
+        pay.isError && /the invoice payload is Pro/.test(pay.text)
+        && /mcp\.zovo\.one\/buy\/change-order\?src=change-order\.change_order_invoice_payload/.test(pay.text)
+        && /mcp\.zovo\.one\/buy\/bundle\?src=change-order\.change_order_invoice_payload\.bundle/.test(pay.text),
+        pay.text.replace(/\s+/g, " ").slice(0, 130));
+      ok(`${tier}: the free payload refusal wrote nothing`, /Nothing was written/.test(pay.text), pay.text.slice(0, 60));
+    }
+
+    // 13. The free cap counts OPEN change orders, and approving one gave its slot back:
+    // CO-2026-0001 is approved, CO-2026-0002 is a draft, so four more drafts fit on free
+    // and the sixth open one is refused with the checkout link. Pro takes all of them.
+    const extra = [];
+    for (const t of ["Third", "Fourth", "Fifth", "Sixth"]) extra.push(await c.tool("change_order_create", { reference: "Q-2026-0003", client: "Harbour Cafe", title: `${t} change`, date: "2026-03-21" }));
+    const sixth = await c.tool("change_order_create", { reference: "Q-2026-0003", client: "Harbour Cafe", title: "Seventh change", date: "2026-03-21" });
+    ok(`${tier}: the sixth OPEN change order is ${tier === "pro" ? "allowed on Pro" : "refused on free, naming the five open ones and the checkout link"}`,
+      extra.every((r) => !r.isError) && (tier === "pro" ? !sixth.isError
+        : sixth.isError && /5 open change orders and 5 are open/.test(sixth.text) && /CO-2026-0002 draft/.test(sixth.text)
+          && !/CO-2026-0001/.test(sixth.text.split("Closing one")[0])
+          && /mcp\.zovo\.one\/buy\/change-order\?src=change-order\.change_order_create/.test(sixth.text)),
+      sixth.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 14. change_order_delete is free on every tier on an empty draft, and refused by name
+    // on one with a line, because once there is a line it has a history and is voided.
+    const delFree = await c.tool("change_order_delete", { change_order: "CO-2026-0002" });
+    const delUsed = await c.tool("change_order_delete", { change_order: "CO-2026-0001" });
+    ok(`${tier}: deleting an empty draft is free on every tier, and an approved change order with lines is refused by name`,
+      !delFree.isError && !/mcp\.zovo\.one\/buy/.test(delFree.text)
+      && delUsed.isError && /CO-2026-0001/.test(delUsed.text) && !/mcp\.zovo\.one\/buy/.test(delUsed.text),
+      `${delFree.isError ? "free delete FAILED" : "free delete ok"} | ${delUsed.text.replace(/\s+/g, " ").slice(0, 90)}`);
+
+    // 15. No delta is stored. The record holds the lines and the history; delta, VAT and
+    // running value are derived on the call, because a stored delta is the copy believed
+    // after a line is edited.
+    const raw = readFileSync(join(tmp, "data", "mcp-servers", "change-order", "change-orders.json"), "utf8");
+    ok(`${tier}: the stored record holds lines and history and no delta, VAT, gross or current value of its own`,
+      /"unit_price_minor": 42000/.test(raw) && /"was_unit_price_minor": 45000/.test(raw) && /"to": "approved"/.test(raw)
+      && !/"delta_minor"/.test(raw) && !/"vat_minor"/.test(raw) && !/"delta_gross_minor"/.test(raw) && !/"current_value_minor"/.test(raw),
+      raw.replace(/\s+/g, " ").slice(0, 130));
+
+    // 16. Nothing outside its own data directory. The profile directory is the one this
+    // probe wrote; the shared profile read is best-effort and read-only.
+    const dirs = readdirSync(join(tmp, "data", "mcp-servers")).sort();
+    ok(`${tier}: this server writes only its own directory and brings no sibling store into existence`,
+      dirs.join(",") === "change-order,profile"
+      && readdirSync(join(tmp, "data", "mcp-servers", "change-order")).sort().every((f) => ["change-orders.json", "counter.json"].includes(f) || /\.lock$/.test(f))
+      && readdirSync(join(tmp, "data", "mcp-servers", "profile")).join(",") === "business.json",
+      `${dirs.join(",")} | ${readdirSync(join(tmp, "data", "mcp-servers", "change-order")).sort().join(",")}`);
+  },
   "petty-cash": async (c, tmp, tier, ok) => {
     // This server reads no sibling store, so there is nothing to seed: the tin and its
     // vouchers ARE the input. Every figure asserted below is one
@@ -1622,12 +1801,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 29 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 29 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 30 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 30 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -2304,6 +2483,85 @@ async function remote() {
       cgForce?.price_minor === 11000 && cgForce?.valid_from === "2026-04-01" &&
       cgExp?.price_minor === 11000 && cgExp?.replaced_on === "2026-07-01" && cgExp?.new_price_minor === 12500,
       `in force ${cgForce?.price_minor}@${cgForce?.valid_from} replaced ${cgExp?.replaced_on} by ${cgExp?.new_price_minor}`);
+    // Extension 21: /mcp/change-order. Reads NO sibling document: the reference is a name and
+    // the original contract value is stated once on the first change order against it, so
+    // what is asserted here is the three things a change order can get silently wrong: a
+    // pending delta added into the running value before the client agreed to it, a changed
+    // line netted into one item nobody can check, and the SCALE of each payload. The
+    // reference is unique per run, for the Extension 16 reason: the tenant behind the bundle
+    // key is not fresh between runs, and the original value is inherited per reference, so a
+    // reused reference would inherit a figure this run never stated.
+    const coStamp = Date.now().toString(36).toUpperCase();
+    const coRef = `Q-PROBE-${coStamp}`;
+    await rpc("invoice", { jsonrpc: "2.0", id: 142, method: "tools/call", params: { name: "business_set", arguments: { name: `Change Order Probe ${coStamp}`, address: "3 Market Street, Krakow", default_currency: "EUR", default_tax_rate: 23 } } });
+    const cocr = await rpc("change-order", { jsonrpc: "2.0", id: 143, method: "tools/call", params: { name: "change_order_create", arguments: { reference: coRef, client: "Harbour Cafe", title: `Second landing page and a bigger audit ${coStamp}`, date: "2026-03-02", currency: "EUR", original_value_minor: 2000000 } } });
+    let coC = {}; try { coC = JSON.parse(cocr.result.content[0].text); } catch { coC = {}; }
+    const coId = coC.created?.id;
+    const col1 = await rpc("change-order", { jsonrpc: "2.0", id: 144, method: "tools/call", params: { name: "change_order_add_line", arguments: { change_order: coId, kind: "added", description: "Extra landing page", quantity: 2, unit_price_minor: 45000, reason: "Client asked for a second page after the kickoff", date: "2026-03-03" } } });
+    let coL1 = {}; try { coL1 = JSON.parse(col1.result.content[0].text); } catch { coL1 = {}; }
+    const col2 = await rpc("change-order", { jsonrpc: "2.0", id: 145, method: "tools/call", params: { name: "change_order_add_line", arguments: { change_order: coId, kind: "changed", description: "Website audit", quantity: 5, unit_price_minor: 42000, was_quantity: 3, was_unit_price_minor: 45000, reason: "Two more sections at the volume rate", date: "2026-03-03" } } });
+    let coL2 = {}; try { coL2 = JSON.parse(col2.result.content[0].text); } catch { coL2 = {}; }
+    // The running value BEFORE approval: the original, with the whole delta pending and none
+    // of it added in. Computed here rather than taken on trust: 2 x 45000 = 90,000 added and
+    // 5 x 42000 - 3 x 45000 = 75,000 changed, 165,000 net.
+    const coNet = 2 * 45000 + (5 * 42000 - 3 * 45000);
+    const cocv0 = await rpc("change-order", { jsonrpc: "2.0", id: 146, method: "tools/call", params: { name: "contract_value", arguments: { reference: coRef } } });
+    let coV0 = {}; try { coV0 = JSON.parse(cocv0.result.content[0].text); } catch { coV0 = {}; }
+    const cosent = await rpc("change-order", { jsonrpc: "2.0", id: 147, method: "tools/call", params: { name: "change_order_status", arguments: { change_order: coId, status: "sent", date: "2026-03-04" } } });
+    const coappr = await rpc("change-order", { jsonrpc: "2.0", id: 148, method: "tools/call", params: { name: "change_order_status", arguments: { change_order: coId, status: "approved", date: "2026-03-06", note: "Approved by phone, confirmed in writing" } } });
+    let coA = {}; try { coA = JSON.parse(coappr.result.content[0].text); } catch { coA = {}; }
+    const cocv1 = await rpc("change-order", { jsonrpc: "2.0", id: 149, method: "tools/call", params: { name: "contract_value", arguments: { reference: coRef } } });
+    let coV1 = {}; try { coV1 = JSON.parse(cocv1.result.content[0].text); } catch { coV1 = {}; }
+    ok("hosted change_order_create states the original value once (2,000,000 minor against this run's reference) and the two lines are worth 165,000 net: the added line 90,000 and the changed line +75,000 as 210,000 less 135,000; contract_value shows the whole 165,000 as PENDING with the current value still 2,000,000 while it is a draft, and 2,165,000 with nothing pending once it is sent and approved, each step dated",
+      /^CO-\d{4}-\d{4}$/.test(coId || "") && coC.created?.status === "draft" && coC.created?.contract?.original_minor === 2000000 &&
+      coL1.added?.delta_minor === 90000 && coL2.added?.delta_minor === 75000 && coL2.change_order?.delta_minor === coNet && coNet === 165000 &&
+      /TWO items on the invoice payload/.test((coL2.notes || []).join(" ")) &&
+      coV0.original_value_minor === 2000000 && coV0.current_value_minor === 2000000 && coV0.pending_delta_minor === 165000 && coV0.approved_delta_minor === 0 && coV0.if_all_pending_approved_minor === 2165000 &&
+      !cosent.error && coA.change_order?.status === "approved" && coA.moved?.from === "sent" && coA.moved?.date === "2026-03-06" &&
+      coV1.current_value_minor === 2165000 && coV1.approved_delta_minor === 165000 && coV1.pending_delta_minor === 0 && coV1.counts?.approved === 1,
+      `${coId} L1 ${coL1.added?.delta_minor} L2 ${coL2.added?.delta_minor} before ${coV0.current_value_minor}/${coV0.pending_delta_minor} after ${coV1.current_value_minor}/${coV1.pending_delta_minor}`);
+    // The scale. invoice_create takes unit_price in MAJOR units and quote_create takes
+    // unit_price_minor in MINOR units; the changed line is TWO items, -3 x 450 and 5 x 420,
+    // never one net item. Both totals are re-run through the invoice server's OWN
+    // computeTotals from this process, and the 100x quotient is re-derived from each
+    // payload's own items rather than from the two literals, because a payload that carried
+    // 45000 into invoice_create would bill 100x and still look like a number.
+    const copay = await rpc("change-order", { jsonrpc: "2.0", id: 150, method: "tools/call", params: { name: "change_order_invoice_payload", arguments: { change_order: coId, issue_date: "2026-03-10" } } });
+    let coP = {}; try { coP = JSON.parse(copay.result.content[0].text); } catch { coP = {}; }
+    const coInv = coP.invoice_create?.arguments?.items ?? [];
+    const coQuo = coP.quote_create?.arguments?.items ?? [];
+    let coRe = {}; let coReQ = {};
+    try {
+      const { computeTotals } = await import(`file://${ROOT}/servers/invoice/dist/lib.js`);
+      const args = coP.invoice_create?.arguments ?? {};
+      coRe = computeTotals(args.items ?? [], args.currency ?? "EUR", 0, 0);
+      coReQ = computeTotals(coQuo.map((q) => ({ description: q.description, quantity: q.quantity, unit_price: q.unit_price_minor, tax_rate: q.tax_rate })), args.currency ?? "EUR", 0, 0);
+    } catch (e) { coRe = { error: String(e).slice(0, 60) }; coReQ = {}; }
+    ok("hosted change_order_invoice_payload carries the approved delta as THREE items in both scales, 2 x 450, -3 x 450 and 5 x 420 in MAJOR units for invoice_create and 45000, 45000 and 42000 minor for quote_create with ready false because one quantity is negative; the invoice server's own computeTotals over the invoice items from this process gives net 165,000, VAT 37,950 and total 202,950 to the minor unit, and the quote items fed in as though unit_price_minor were unit_price net exactly 100x that",
+      coP.status === "approved" && coP.approved_on === "2026-03-06" && coP.posted === false &&
+      coInv.length === 3 && coQuo.length === 3 &&
+      coInv.map((i) => `${i.quantity}x${i.unit_price}`).join(",") === "2x450,-3x450,5x420" &&
+      coQuo.map((i) => `${i.quantity}x${i.unit_price_minor}`).join(",") === "2x45000,-3x45000,5x42000" &&
+      coInv.every((i, k) => Math.round(i.unit_price * 100) === coQuo[k].unit_price_minor && i.quantity === coQuo[k].quantity) &&
+      coP.quote_create?.ready === false && coP.totals?.net_minor === 165000 && coP.totals?.vat_minor === 37950 && coP.totals?.total_minor === 202950 && coP.totals?.rounding_drift_minor === 0 &&
+      coRe.net_minor === 165000 && coRe.tax_minor === 37950 && coRe.total_minor === 202950 &&
+      coReQ.net_minor === 16500000 && coReQ.net_minor / coRe.net_minor === 100,
+      `inv ${coInv.map((i) => `${i.quantity}x${i.unit_price}`).join(",")} quote ${coQuo.map((i) => `${i.quantity}x${i.unit_price_minor}`).join(",")} recomputed ${coRe.net_minor}/${coRe.tax_minor}/${coRe.total_minor} quote-scale ${coReQ.net_minor}`);
+    // The document: the approval sheet inline AND as a .txt published under /out/, named by
+    // the change order id. Pro, exactly as over stdio.
+    const codoc = await rpc("change-order", { jsonrpc: "2.0", id: 151, method: "tools/call", params: { name: "change_order_document", arguments: { change_order: coId } } });
+    const codocT = JSON.stringify(codoc).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const codL = (codocT.match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const codRes = codL ? await fetch(codL) : null;
+    const codBody = codRes ? await codRes.text() : "";
+    ok("hosted change_order_document returns the approval sheet inline and as a .txt download served text/plain under the change order id, headed CHANGE ORDER with the issuer from the shared profile, both lines with their reasons, the delta and the value today of EUR 21650.00 (formatMoney carries no thousands separator), and the approval block",
+      !!codL && (codRes?.headers.get("content-type") || "").startsWith("text/plain") &&
+      (codRes?.headers.get("content-disposition") || "").includes(`${coId}.txt`) &&
+      codBody.startsWith("CHANGE ORDER\n") && codBody.includes(coId) && codBody.includes(`Change Order Probe ${coStamp}`) &&
+      codBody.includes("Extra landing page") && codBody.includes("Website audit") && codBody.includes("reason: Two more sections at the volume rate") &&
+      codBody.includes("Approved for the client by") && /Value today\s+EUR 21650\.00/.test(codBody) && /Net delta\s+\+EUR 1650\.00/.test(codBody) &&
+      codocT.includes("CHANGE ORDER\n") && codocT.includes("Download (.txt, valid 1 hour)"),
+      `${codRes?.headers.get("content-type")} ${codRes?.headers.get("content-disposition")} ${codBody.length} bytes`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
@@ -2363,6 +2621,10 @@ async function billing() {
     // key still lacks product_write, so PRODUCTS["catalogue"].price is the literal
     // "PENDING_HUMAN" too. Same assertion, same reason to keep it out of the 303 loop.
     { const r = await fetch("https://mcp.zovo.one/buy/catalogue", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const body = r.status === 503 ? await r.text() : ""; ok("buy/catalogue -> 503, not 303: PRODUCTS.price is PENDING_HUMAN so no Stripe call is made", r.status === 503 && r.headers.get("x-mcp-buy") === "price-pending-human" && /Checkout for this server is not yet open/.test(body) && /\/buy\/bundle/.test(body) && !/checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
+    // change-order is the third, same reason, same date: PRODUCTS["change-order"].price is
+    // the literal "PENDING_HUMAN" until a human mints the Stripe product. Same assertion,
+    // same reason to keep it out of the 303 loop.
+    { const r = await fetch("https://mcp.zovo.one/buy/change-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const body = r.status === 503 ? await r.text() : ""; ok("buy/change-order -> 503, not 303: PRODUCTS.price is PENDING_HUMAN so no Stripe call is made", r.status === 503 && r.headers.get("x-mcp-buy") === "price-pending-human" && /Checkout for this server is not yet open/.test(body) && /\/buy\/bundle/.test(body) && !/checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);

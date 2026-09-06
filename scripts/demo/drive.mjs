@@ -194,6 +194,13 @@ async function run(name) {
       [join(ROOT, "scripts", "sign-license.mjs"), "quotes"],
     ).toString().trim();
   }
+  if (name === "change-order") {
+    const { execFileSync } = await import("node:child_process");
+    env.MCP_LICENSE_KEY = execFileSync(
+      process.execPath,
+      [join(ROOT, "scripts", "sign-license.mjs"), "change-order"],
+    ).toString().trim();
+  }
   if (name === "barcode") {
     const { execFileSync } = await import("node:child_process");
     env.MCP_LICENSE_KEY = execFileSync(
@@ -1289,6 +1296,84 @@ async function run(name) {
     // The Pro gate, on the free tier, shown rather than described.
     toolLine("catalogue_report", {});
     resultLine(await c.call("catalogue_report", {}));
+  }
+  if (name === "change-order") {
+    // The server reads the shared business profile for its currency, its VAT rate and the
+    // name on the document, the same file every other server reads, so the fixture writes
+    // it where that profile lives. Nothing else is seeded: every figure below is one
+    // servers/change-order/test/unit.test.mjs asserts and docs/CHANGE_ORDER_RESULT.md
+    // recomputes by hand -- the +90,000 / -47,988 / +75,000 lines, the 117,012 net, and
+    // the 2,000,000 that becomes 2,117,012 only on the day the client approves.
+    const { writeFileSync: wf, mkdirSync: mk } = await import("node:fs");
+    const profileDir = join(c.sandbox, "data", "mcp-servers", "profile");
+    mk(profileDir, { recursive: true });
+    wf(join(profileDir, "business.json"), JSON.stringify({
+      name: "Nova Studio", address: "ul. Prosta 1, Warsaw", default_currency: "EUR",
+      default_tax_rate: 23, payment_terms_days: 14, timezone: "Europe/Warsaw",
+    }, null, 2));
+
+    // These tools answer in JSON and a whole answer does not fit the recorded frame, so the
+    // demo prints picked fields. Every number below is read out of the response, never rebuilt.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ A change order against a quote. The contract value counts only what the client APPROVED, and a changed line is TWO items.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const createArgs = { reference: "Q-2026-0003", client: "Harbour Cafe", title: "Second landing page, drop hosting, widen the audit", date: "2026-03-10", original_value_minor: 2000000 };
+    toolLine("change_order_create", createArgs);
+    const created = pick(await c.call("change_order_create", createArgs)).created;
+    resultLine(`${created.id} against ${created.reference} (${created.reference_kind}) for ${created.client}, ${created.status}, original value ${created.contract.original} stated once for this reference`);
+    await sleep(STEP_DELAY_MS);
+
+    const lines = [
+      { change_order: created.id, kind: "added", description: "Extra landing page", quantity: 2, unit_price_minor: 45000, reason: "Client asked for a second page after the kickoff", date: "2026-03-10" },
+      { change_order: created.id, kind: "removed", description: "Managed hosting", quantity: 12, unit_price_minor: 3999, reason: "Client hosts in-house from April", date: "2026-03-11" },
+      { change_order: created.id, kind: "changed", description: "Website audit", quantity: 5, unit_price_minor: 42000, was_quantity: 3, was_unit_price_minor: 45000, reason: "Two more sites in scope, volume price agreed", date: "2026-03-12" },
+    ];
+    let last;
+    for (const l of lines) {
+      toolLine("change_order_add_line", l);
+      last = pick(await c.call("change_order_add_line", l));
+      const a = last.added;
+      resultLine(`  ${a.id} ${a.kind.padEnd(7)} ${a.description.padEnd(20)} ${a.kind === "changed" ? `was ${a.was_quantity} x ${a.was_unit_price}, now ` : ""}${a.quantity} x ${a.unit_price}  ${a.delta}`);
+    }
+    resultLine(`  ${last.notes[0]}`);
+    toolLine("change_order_get", { change_order: created.id });
+    const co = pick(await c.call("change_order_get", { change_order: created.id })).change_order;
+    resultLine(`  added ${co.added_minor} removed ${co.removed_minor} changed ${co.changed_minor} minor: delta net ${co.delta} (${co.delta_minor} minor), VAT ${co.vat}, gross ${co.delta_gross}; nothing of that is stored`);
+    await sleep(STEP_DELAY_MS);
+
+    // The measured point: the value does not move until the client answers.
+    toolLine("contract_value", { reference: "Q-2026-0003" });
+    let cv = pick(await c.call("contract_value", { reference: "Q-2026-0003" }));
+    resultLine(`  while ${created.id} is ${cv.change_orders[0].status}: value today ${cv.current_value} (${cv.current_value_minor} minor), pending ${cv.pending_delta} NOT added in, ${cv.if_all_pending_approved} if approved`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("change_order_status", { change_order: created.id, status: "approved", date: "2026-03-12" });
+    resultLine(await c.call("change_order_status", { change_order: created.id, status: "approved", date: "2026-03-12" }));
+    await sleep(STEP_DELAY_MS);
+
+    for (const st of [{ status: "sent", date: "2026-03-12", note: "Emailed to the client" }, { status: "approved", date: "2026-03-15", note: "Approved by email" }]) {
+      toolLine("change_order_status", { change_order: created.id, ...st });
+      const m = pick(await c.call("change_order_status", { change_order: created.id, ...st }));
+      resultLine(`  ${m.moved.from} -> ${m.moved.to} on ${m.moved.date}: value today ${m.contract.current_value}, pending ${m.contract.pending_delta}`);
+    }
+    await sleep(STEP_DELAY_MS);
+
+    // THE point of the server: four items, not three, and both scales in one call.
+    const payArgs = { change_order: created.id, issue_date: "2026-03-16" };
+    toolLine("change_order_invoice_payload", payArgs);
+    const pay = pick(await c.call("change_order_invoice_payload", payArgs));
+    for (const i of pay.items) resultLine(`  ${i.line} ${i.kind.padEnd(7)} ${(i.part || "").padEnd(9)} ${i.description.split(" (")[0].padEnd(20)} ${String(i.quantity).padStart(4)} x ${i.unit_price.padEnd(11)} = ${i.value.padStart(13)}`);
+    resultLine(`  net ${pay.totals.net} (${pay.totals.net_minor} minor), VAT ${pay.totals.vat}, gross ${pay.totals.total}, rounding_drift_minor ${pay.totals.rounding_drift_minor}`);
+    resultLine("  the changed line is a reversal and a revised line: both reproduce on a calculator, one net item of 750.00 reproduces from nothing");
+    const inv = pay.invoice_create.arguments.items;
+    const quo = pay.quote_create.arguments.items;
+    const netInv = inv.reduce((n, it) => n + Math.round(it.quantity * it.unit_price * 100), 0);
+    const netQuo = quo.reduce((n, it) => n + Math.round(it.quantity * it.unit_price_minor * 100), 0);
+    resultLine(`  ${pay.invoice_create.tool}: ${pay.invoice_create.unit}  unit_price ${inv.map((i) => i.unit_price).join(" ")}`);
+    resultLine(`  ${pay.quote_create.tool}: ${pay.quote_create.unit}  unit_price_minor ${quo.map((q) => q.unit_price_minor).join(" ")}  ready ${pay.quote_create.ready}`);
+    resultLine(`  net from each payload's own items: ${netInv} against ${netQuo}, exactly ${netQuo / netInv}x; posted ${pay.posted}`);
   }
   await sleep(STEP_DELAY_MS);
   c.close();
