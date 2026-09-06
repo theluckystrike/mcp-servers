@@ -641,7 +641,7 @@ const PROBES = {
     // 15. No current price is stored. The record holds the code, the name, the unit, the
     // VAT rate and the ROWS, and everything else is derived on the call, because a stored
     // current price is the copy still being quoted a month after the rise.
-    const raw = readFileSync(join(tmp, "data", "mcp-servers", "catalogue", "catalogue.json"), "utf8");
+    const raw = readFileSync(join(tmp, "data", "mcp-servers", "catalogue", "skus.json"), "utf8");
     ok(`${tier}: the SKU record stores its price rows and no current price, in_force or price field of its own`,
       /"amount_minor": 45000/.test(raw) && !/"in_force"/.test(raw) && !/"current_price"/.test(raw)
       && !/"price_minor"/.test(raw) && !/"in_force_on"/.test(raw),
@@ -653,7 +653,8 @@ const PROBES = {
     // existence in a sandbox where this server has written nothing.
     const dirs = readdirSync(join(tmp, "data", "mcp-servers")).sort();
     ok(`${tier}: this server writes only its own directory and brings no sibling store into existence`,
-      dirs.join(",") === "catalogue",
+      dirs.join(",") === "catalogue"
+      && readdirSync(join(tmp, "data", "mcp-servers", "catalogue")).sort().join(",") === "counter.json,rates.json,register.json,skus.json",
       dirs.join(","));
   },
   "petty-cash": async (c, tmp, tier, ok) => {

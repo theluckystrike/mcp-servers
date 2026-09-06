@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-eight endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-nine endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -39,6 +39,7 @@ import { createServer as createCashBook } from "./vendor/cash-book/index.js";
 import { createServer as createAmortization } from "./vendor/amortization/index.js";
 import { createServer as createPettyCash } from "./vendor/petty-cash/index.js";
 import { createServer as createWorkOrder } from "./vendor/work-order/index.js";
+import { createServer as createCatalogue } from "./vendor/catalogue/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -498,6 +499,39 @@ const SERVERS: Record<string, ServerCfg> = {
     strip: ["/out/"],
     sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR), readOnly: true },
   },
+  "catalogue": {
+    // NO sharedDoc, and it is the strongest case of the four endpoints that carry none: this
+    // one borrows four sibling ENGINES and reads not one sibling DOCUMENT. The money and VAT
+    // arithmetic comes from @theluckystrike/mcp-invoice/lib (computeTotals, roundHalfUp,
+    // currencyDecimals, formatMoney) so a resolved line and the invoice raised from it cannot
+    // disagree by a minor unit; renderDocPdf comes from the billing-docs engine by way of
+    // remote/src/shims/pdf.ts; today() and isIsoDate() from the quotes engine; readJsonFile
+    // and its corrupt-store quarantine from the timezone engine. Borrowing CODE charges
+    // nothing to this endpoint's cap, while a sharedDoc entry would hydrate documents it
+    // never opens. The name and address at the top of a price list come from the SHARED
+    // business profile (business_set on /mcp/invoice) through readSharedProfile, which
+    // travels the licence shim exactly as it does on every other endpoint, and deliberately
+    // not through the invoice engine's getBusiness(), whose dataDir() would bring another
+    // server's directory into existence as a side effect of a read.
+    //
+    // lines_resolve returns invoice_create and quote_create ARGUMENTS and creates neither
+    // document, so no sibling store is written from here either: the caller passes the
+    // payload on, exactly as loan_journal and replenish_request hand theirs to
+    // /mcp/expense-tracker.
+    //
+    // Both price lists go out as downloads. price_list_pdf renders through the pdf shim and
+    // pushes its own link, so publish() only has to catch the .txt price_list_text writes
+    // under /out/ - and that one is free on every tier, because the price list is the
+    // document a customer is sent. out_path is a NAME here and not a path.
+    //
+    // The default 512 KB cap, and it did not have to be argued for: NO PRICE IS DERIVED AND
+    // STORED. A SKU holds its price ROWS with the day each came into force and the price on
+    // a date is worked out on the call, so the document grows with the price changes actually
+    // booked and never with the dates they are asked about.
+    factory: createCatalogue as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -886,6 +920,7 @@ const TOOLS: Record<string, string[]> = {
   "amortization": ["loan_create", "loan_schedule", "loan_repay_early", "loan_journal", "loan_list", "loans_report", "license_status", "license_activate"],
   "petty-cash": ["float_open", "topup_record", "voucher_add", "voucher_delete", "reconcile", "replenish_request", "float_report", "license_status", "license_activate"],
   "work-order": ["work_order_create", "work_order_add_line", "work_order_status", "work_order_get", "work_order_list", "work_order_delete", "completion_report_text", "completion_report_pdf", "work_order_invoice_payload", "work_orders_report", "license_status", "license_activate"],
+  "catalogue": ["sku_set", "sku_get", "sku_list", "sku_delete", "rate_set", "rate_get", "lines_resolve", "price_list_text", "price_list_pdf", "catalogue_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -1122,6 +1157,15 @@ function indexDoc(base: string) {
         free_limits: "5 OPEN work orders, counted on the board rather than on the calendar, so closing a job frees its slot and work_order_delete on a draft with no lines is free on every tier; completion_report_text is free, because the completion report is the one document the customer signs. completion_report_pdf, work_order_invoice_payload and work_orders_report are Pro",
         storage: `${DEFAULT_MAX_BYTES / 1024} KB of work orders per token`,
         notes: "the markup goes on the UNIT cost and never on the line total. Seven parts at 1299 minor units with 15 percent on top is 1494 a unit and 10,458 on the line; marking up the line total is 10,457, and only the first is a figure an invoice can reproduce, because /mcp/invoice rounds a unit price into minor units first and computes the line from that stored value. The payload's totals are computed by the invoice server's OWN computeTotals over the payload's own items, so there is no second implementation to disagree. NO TOTAL IS STORED - the lines decide it on every call, because a stored total is the copy that gets believed after somebody edits a line. The status machine moves one step forward at a time: a skipped step is refused naming the step that IS next, because every step carries its own date and a job that reached invoiced without done was never marked finished. A backwards step is refused, because a job that has to go back is a new work order. Hours are counted on the LINE date, not on the order date, so a February call worked in March logs its hours in March. This endpoint creates NO invoice and marks nothing: work_order_invoice_payload returns arguments, and the invoice client records it reads are hydrated READ-ONLY and never written. A client name that matches no invoice client record is refused unless you pass an address, because a misspelling would raise an invoice with an empty BILL TO block. A labour rate is never improvised: no default hourly rate exists in the shared profile today, so rate_minor is refused by name rather than invented onto a report the customer signs"
+      },
+      {
+        name: "catalogue", url: `${base}/mcp/catalogue`, tools: TOOLS["catalogue"],
+        mode: "your own price list",
+        how: "sku_set records a product with its unit and a price row carrying the day that price comes into force, per currency and per tier; sku_get and sku_list read the price in force on any date; rate_set and rate_get do the same for hourly labour rates by role; lines_resolve turns a list of sku and role lines into invoice_create-ready and quote_create-ready items priced as of each line's date; price_list_text and price_list_pdf print the list a customer is sent; catalogue_report names the rows in force, the rows a later row already replaces and the SKUs with no price in your default currency.",
+        outputs: "JSON, plus two documents: price_list_text returns the list inline AND as a .txt download link, and price_list_pdf returns the A4 list as an HTML print-to-PDF download (there is no PDF renderer on Workers). out_path is a NAME here, not a path: it only decides what the downloaded file is called.",
+        free_limits: "25 SKUs, and one price tier; lines_resolve and price_list_text are free and unlimited on every tier, because pricing a line is the one thing the invoice and quote servers come here for and a catalogue nobody can read is not a catalogue. Deleting an unused SKU is free, so the cap is one you can get back under. price tiers other than standard, price_list_pdf and catalogue_report are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of SKUs, rate cards and the usage register per token`,
+        notes: "NO CURRENT PRICE IS STORED. A SKU holds its price ROWS with the day each came into force, and the price on a date is the latest valid_from at or before it, worked out on the call, because a stored current price is the copy still being quoted a month after the rise. A date before every row has no price and is refused rather than priced off the earliest row. The two payloads are in DIFFERENT SCALES on purpose, because the two servers take them differently: invoice_create takes unit_price in MAJOR units and quote_create takes unit_price_minor in MINOR units, prices are held in minor units as the only lossless form, and swapping the two payloads misprices the job by 100x. The money and VAT arithmetic is /mcp/invoice's own computeTotals, imported rather than copied, so a resolved line and the invoice raised from it cannot disagree by a minor unit. An unknown code is refused BY NAME and never priced, and a partial name matching more than one product is refused with the list rather than resolved to the first. This endpoint creates NO invoice and NO quote: lines_resolve returns arguments, and no sibling store is read or written",
       },
     ],
     limits: {

@@ -4422,3 +4422,199 @@ which is the failure that survives every internal check. **remote 110/110,
 - The buy page for this product is not in this commit. `scripts/validate.mjs` run 50 is
   817/817 with no product gap surfacing in the remote or billing blocks, because the
   `buy/<product>` sweep does not yet name `work-order`; the pricing side is the orchestrator's.
+
+# Extension 20 2026-09-06 - catalogue
+
+status: DONE
+
+A twenty-ninth endpoint, `POST /mcp/catalogue`. Worker `mcp-remote`, version ID
+`2dbebc81-922c-4db8-9df5-c8e8f3d27c98`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-nine.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/catalogue | 12 | reads NO sibling document and writes none. FOUR sibling engines, only three reachable from `index.ts`. Two downloads, one of them free. `publish` on `/out/`, `strip` on `/out/`, the default 512 KB cap |
+
+### The finding: four engines, one document, and none of it anybody else's
+
+Extension 19 carried four entries in `LIB_RESOLUTIONS` and one in `sharedDoc`. This one
+carries four and ZERO, and it is the sharpest case of the split the last four extensions
+have been circling, because this endpoint is the one that would most obviously look like a
+reader from the outside. A price list is what an invoice and a quote are priced from, and
+`lines_resolve` hands back `invoice_create` and `quote_create` arguments. It still opens
+neither book.
+
+What it borrows is CODE: `@theluckystrike/mcp-invoice/lib` for `currencyDecimals`,
+`formatMoney` and the `Business` type from `index.ts` AND for `computeTotals` and
+`roundHalfUp` from `catalogue.ts`, `@theluckystrike/mcp-billing-docs/lib` for `renderDocPdf`,
+`@theluckystrike/mcp-quotes/lib` for `today` and `isIsoDate`, and
+`@theluckystrike/mcp-timezone/lib` for `readJsonFile` and its corrupt-store quarantine. Only
+THREE are reachable from `index.ts`: `store.ts` is the only file that imports the timezone
+engine, and `catalogue.ts` reaches the invoice engine a second time for the arithmetic every
+resolved line rests on. Extension 12's original index-only check would have passed a build
+that could not resolve the quarantine keeping an unreadable catalogue from reading as an
+empty one, which is the failure that resolves nothing and says so quietly. The entry is
+
+```
+"catalogue": ["invoice", "billing-docs", "quotes", "timezone"],
+```
+
+checked against the concatenated bytes of every file the server vendored, after the build.
+
+`SERVERS["catalogue"]` in `remote/src/index.ts` therefore has no `sharedDoc` at all. The
+name and address at the top of a price list come from the SHARED business profile
+(`business_set` on `/mcp/invoice`) through `readSharedProfile`, which travels the licence
+shim as it does on every endpoint, and deliberately NOT through the invoice engine's
+`getBusiness()`: that function calls the invoice store's `dataDir()`, which creates
+`mcp-servers/invoice/` as a side effect of a read, and a catalogue that prints a price list
+should not bring another server's directory into existence. The stdio server asserts that in
+`contract.test.mjs`; hosted, the absence of a `sharedDoc` says the same thing structurally,
+because there is no invoice document in this request's filesystem to create anything in.
+
+### Two documents out, and the free one is the one a customer is sent
+
+`grep -n "writeFileSync\|/out/\|out_path" servers/catalogue/src/*.ts` finds one writer,
+`store.ts` (`skus.json`, `rates.json`, `register.json`, `counter.json`, tmp + rename, a
+tenant document and not a download) and one `out_path`, on `price_list_pdf`. So the
+vendoring transform does the work-order thing twice:
+
+1. `out_path` is a NAME and not a path. `expandPath` is replaced with the Extension 15
+   function verbatim, down to the 1-64 character alphabet, and `renderDocPdf` returns the
+   download URL rather than writing a file. The default name becomes
+   `price-list-<currency>-<tier>-<date>` instead of `join(dataDir(), "pdf", ...)`, a
+   directory no hosted caller has.
+2. `price_list_text` keeps returning the list inline (it is meant to be pasted) AND writes
+   it under `/out/`, so the same call hands back a `.txt` link. It is free on every tier,
+   which is the point: the price list is the document a customer is sent, and a hosted free
+   tier that could only paste it would be a smaller server than the stdio one. That is the
+   whole of `EXTRA_IMPORTS["catalogue"]` (`publishFile`, `writeFileSync`) and the whole of
+   `publish: (p) => p.startsWith("/out/")` with `strip: ["/out/"]`.
+
+The `catalogue://price-list` resource is the D-R60 species for the tenth time. It reported
+`dir: dataDir()` - hosted, the worker's virtual homedir - and listed `pdf/` among the files
+it writes. It now says the catalogue is one document held per token and both price lists are
+download links rather than files, and `pdf/` is gone, because there is no such directory
+here and never was. `remote/test/vendor-paths.test.mjs` stays at 30/30.
+
+Vendoring is five files, `SERVERS["catalogue"] = index.ts, version.ts, lib.ts, catalogue.ts,
+store.ts`: every source file, `lib.ts` included, for the reason the last eight servers' are.
+`store.ts` needed no patch and `catalogue.ts` touches no path, no clock and no network. Caps
+and hardening are unchanged: the default 512 KB tenant document, the 256 KB body ceiling, the
+JSON-RPC batch rejection, the same free/Pro rate limits, the 1-hour download TTL and the
+35-day orphan sweep. The cap is the default and did not have to be argued for, for the fourth
+endpoint running: NO CURRENT PRICE IS STORED. A SKU holds its price ROWS with the day each
+came into force, so the document grows with the price changes actually booked and never with
+the dates they are asked about.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does. One POST per call, one token throughout, and `/mcp/invoice` and
+`/mcp/catalogue` below are two URLs over the same tenant.
+
+```
+$ GET /mcp                              -> 29 endpoints: ..., petty-cash, work-order, catalogue
+$ GET /mcp/connect                      -> 200, 29 rows, /mcp/catalogue listed
+
+$ catalogue tools/list
+  12 tools: sku_set, sku_get, sku_list, sku_delete, rate_set, rate_get, lines_resolve,
+  price_list_text, price_list_pdf, catalogue_report, license_status, license_activate
+
+$ invoice   business_set {name: "Catalogue Probe ...", address: "3 Market Street, Krakow",
+                          default_currency: "EUR", default_tax_rate: 23}
+
+$ catalogue sku_set  PROBE-<run>  EUR 10000 valid_from 2026-01-01 vat_rate 23  -> rows 1
+$ catalogue sku_set  PROBE-<run>  EUR 11000 valid_from 2026-04-01              -> rows 2
+$ catalogue sku_set  PROBE-<run>  EUR 12500 valid_from 2026-07-01              -> rows 3
+
+$ catalogue sku_get {sku: PROBE-<run>, date: "2026-03-15"}
+  EUR 100.00, from_row.valid_from 2026-01-01, superseded_by 11000 on 2026-04-01
+$ catalogue sku_get {..., date: "2026-05-15"}
+  EUR 110.00, from_row.valid_from 2026-04-01, superseded_by 12500 on 2026-07-01
+$ catalogue sku_get {..., date: "2026-09-06"}
+  EUR 125.00, from_row.valid_from 2026-07-01, superseded_by null
+  three dates, three DIFFERENT rows off one product: the ladder is read on the call, and a
+  stored current price would have answered all three the same way
+
+$ catalogue rate_set {role: engineer-<run>, currency: "EUR", hourly_minor: 8500,
+                      valid_from: "2026-01-01"}
+
+$ catalogue lines_resolve {client: "Probe client ...", date: "2026-05-15",
+                           lines: [{sku: PROBE-<run>, quantity: 4},
+                                   {role: engineer-<run>, hours: 3}]}
+  RES-2026-0001
+  invoice_create.arguments.items  unit_price       110      85      <- MAJOR units
+  quote_create.arguments.items    unit_price_minor 11000    8500    <- MINOR units, 100x
+  totals: net EUR 695.00 (69,500), VAT EUR 159.85 (15,985), total EUR 854.85 (85,485),
+          rounding_drift_minor 0
+  posted nowhere: neither an invoice nor a quote is created
+
+  re-run in the validating process, servers/invoice/dist/lib.js computeTotals over the
+  payload's OWN items: net 69,500, total 85,485, line gross 44,000 and 25,500 - the same
+  figures, because it is the same function the endpoint imported
+
+$ catalogue price_list_text {date: "2026-05-15", currency: "EUR"}
+  the list inline, and
+  "Download (.txt, valid 1 hour): https://mcp.zovo.one/mcp/download/5fa5a2d6..."
+  GET that URL -> 200, text/plain; charset=utf-8, carries the SKU at 110.00
+
+$ catalogue price_list_pdf {date: "2026-05-15", currency: "EUR",
+                            out_path: "trade-prices-may"}
+  {"download": "https://mcp.zovo.one/mcp/download/ab1c8566...",
+   "document": "HTML price list, A4 print-to-PDF layout (there is no PDF renderer on
+                Workers), link valid 1 hour",
+   "date": "2026-05-15", "currency": "EUR", "tier": "standard", "lines": 1,
+   "sum_of_one_of_each": "EUR 110.00"}
+  GET that URL -> 200, content-type text/html; charset=utf-8,
+  content-disposition inline; filename="trade-prices-may.html", 2,449 bytes,
+  <title>Price list EUR standard</title>, <h1>PRICE LIST EUR standard</h1>
+
+$ catalogue catalogue_report {date: "2026-05-15"}
+  default_currency EUR, default_currency_source "shared profile"
+  rows_in_force_detail   PROBE-<run> 11000 from 2026-04-01
+  rows_expiring_detail   PROBE-<run> 11000 replaced_on 2026-07-01 by 12500
+  register_rows 2 (the sku and the role this run resolved)
+```
+
+`scripts/validate.mjs` gained `catalogue` to the tools/list sweep plus four real calls, and
+the index assertion moved from 28 endpoints to 29. The probe seeds `business_set` on
+`/mcp/invoice` and then asserts the ladder (three `sku_set` rows, three `sku_get` dates, three
+different `from_row.valid_from` values and the `superseded_by` row at each end), the SCALE
+(both payloads' items, and `quote.unit_price_minor === invoice.unit_price * 100` on both
+lines rather than only the two literals, because a payload carrying 11,000 into
+`invoice_create` would bill 100x and still look like a number), the totals re-run through the
+invoice server's own `computeTotals` from the validating process, both downloads fetched and
+read, and the report's in-force and expiring rows. Everything is named per SKU and the SKU is
+unique per run, for the Extension 16 reason: the tenant behind the bundle key is not fresh
+between runs, so a count over the whole catalogue is not a stable figure. **remote 115/115.**
+
+### Limitations
+
+- The free tier is 25 SKUs and one price tier; `lines_resolve` and `price_list_text` are free
+  and unlimited, because pricing a line is the one thing the invoice and quote servers come
+  here for. The probes ran on a Pro key, so the hosted SKU cap refusal, the tier refusal and
+  the Pro gates on `price_list_pdf` and `catalogue_report` are asserted only by the stdio
+  suite, as are the concurrency rows.
+- `sku_list`, `sku_delete` and `rate_get` were not exercised against the live endpoint; the
+  four validate calls are the `sku_set`/`sku_get` ladder, `rate_set` + `lines_resolve`, the
+  two price lists and `catalogue_report`. All three are covered by the stdio suite and by the
+  tools/list sweep.
+- `out_path` is reduced to its bare name, so `/etc/passwd` renders a download called
+  `passwd.html` rather than being refused. That is the Extension 15 rule and it is
+  deliberate: there is no filesystem to escape from here, and the only thing the argument
+  can still decide is what the browser calls the file. A name outside the 1-64 character
+  alphabet is refused by name.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Over stdio the free-SKU check and the register write are one critical section;
+  hosted, two simultaneous twenty-sixth SKUs on one free token could both pass a check only
+  one of them should. The RES counter is written before the register row, so a lost write
+  burns a number rather than reusing one. Unchanged since Extension 1.
+- The corrupt-store behaviour cannot be reached through this endpoint, the
+  statement-of-account limitation verbatim: a tenant document is written by this worker as
+  one JSON object and hydrated back, so a catalogue that is on disk and unparseable is a
+  local-install condition. The quarantine code is vendored from the timezone engine and
+  resolves; it is the DISK state it defends against that hosted callers cannot produce.
+- Nothing is posted anywhere. `lines_resolve` hands back `invoice_create` and `quote_create`
+  arguments and the caller passes them on, exactly as `loan_journal`, `replenish_request` and
+  `work_order_invoice_payload` do. Hosted, that means further POSTs to other endpoints on the
+  same token, and no endpoint knows the other ran.

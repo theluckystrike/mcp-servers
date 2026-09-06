@@ -161,6 +161,25 @@ const SERVERS = {
   // vendored for the reason the others' are: it is this engine as a public API, so the next
   // server that reads a work order resolves here rather than to a module that cannot load.
   "work-order": ["index.ts", "version.ts", "lib.ts", "order.ts", "store.ts"],
+  // Every source file. This endpoint reads NO sibling document at all: it owns its price
+  // list, its rate cards and its usage register, and every other server's data it leaves
+  // alone. What it borrows is CODE, four engines of it, and only THREE are reachable from
+  // index.ts: @theluckystrike/mcp-invoice/lib for currencyDecimals, formatMoney and the
+  // Business type from index.ts AND for computeTotals and roundHalfUp from catalogue.ts -
+  // the money and VAT arithmetic is imported, never copied, so a resolved line and the
+  // invoice raised from it cannot disagree by a minor unit -
+  // @theluckystrike/mcp-billing-docs/lib for renderDocPdf, whose vendored copy re-exports
+  // it from ../../shims/pdf.js rather than from the pdfkit module that is deliberately not
+  // vendored, @theluckystrike/mcp-quotes/lib for today() and isIsoDate(), and
+  // @theluckystrike/mcp-timezone/lib for readJsonFile and its corrupt-store quarantine,
+  // which is imported by store.ts and by nothing else. So LIB_RESOLUTIONS below carries all
+  // four and checks them on the bytes that were written: an index-only check would have
+  // passed a build that could not resolve either the arithmetic every resolved line rests
+  // on or the quarantine that keeps an unreadable catalogue from reading as an empty one.
+  // lib.ts is vendored for the reason the last eight servers' are: it is this engine as a
+  // public API, so the next server that prices a line resolves here rather than to a module
+  // that cannot load.
+  "catalogue": ["index.ts", "version.ts", "lib.ts", "catalogue.ts", "store.ts"],
 };
 
 /**
@@ -2686,6 +2705,104 @@ function patchWorkOrderIndex(src) {
   return src;
 }
 
+/**
+ * catalogue. The hosted endpoint has no disk. What moves:
+ *   1. renderDocPdf is the one billing-docs uses, reached through
+ *      @theluckystrike/mcp-billing-docs/lib -> ../billing-docs/lib.js -> ../../shims/pdf.js,
+ *      the same two hops /mcp/deposits, /mcp/statement-of-account and /mcp/work-order take.
+ *      Nothing about the call changes: the price list was already expressed as a title, a
+ *      number, a reference line, a party label, meta rows, lines and a footer block.
+ *   2. out_path is a NAME, not a path: it only decides what the downloaded file is called.
+ *      The statement-of-account rule verbatim, down to the 1-64 character alphabet.
+ *   3. price_list_text keeps returning the list inline (it is meant to be pasted) and ALSO
+ *      writes it under /out/, so the same call hands back a .txt download link. It is free
+ *      on every tier, because the price list is the document a customer is sent, and a
+ *      hosted free tier that could only paste it would be a smaller server than the stdio
+ *      one.
+ * The store needs no patch: skus.json, rates.json, register.json, counter.json and the lock
+ * are one document per token under the homedir shim, written tmp + rename, and readJsonFile
+ * comes from the vendored timezone engine. catalogue.ts touches no path, no clock and no
+ * network. NO SIBLING DOCUMENT IS READ: the issuer on the price list comes from the shared
+ * business profile through readSharedProfile, which travels the licence shim as it does on
+ * every other endpoint, and lines_resolve returns invoice_create and quote_create ARGUMENTS
+ * and writes into neither book, so SERVERS["catalogue"] in remote/src/index.ts carries no
+ * sharedDoc at all.
+ */
+function patchCatalogueIndex(src) {
+  // The only path this server ever took was out_path, and here it is a name.
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.[A-Za-z0-9]{1,8}$/, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the name the downloaded file carries, 1-64 characters of letters, digits, \` +
+      \`underscore or dash.\`);
+  }
+  return m[1];
+}
+`, "catalogue expandPath");
+
+  // The price list PDF: the name is decided first, the renderer returns the link.
+  src = must(src,
+    '    const out = a.out_path ? expandPath(a.out_path) : join(dataDir(), "pdf", `price-list-${currency}-${tier}-${date}.pdf`);',
+    '    const name = `${expandPath(a.out_path ?? `price-list-${currency}-${tier}-${date}`)}.html`;',
+    "catalogue pdf out name");
+  src = must(src, "    await renderDocPdf({", "    const out = await renderDocPdf({",
+    "catalogue renderDocPdf call");
+  src = must(src,
+    "    }, biz, out, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "    }, biz, name, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "catalogue renderDocPdf filename");
+  src = must(src,
+    '      path: out,\n' +
+    '      document: /\\.html?$/i.test(out) ? "HTML price list (print to PDF)" : "PDF price list",',
+    '      download: out,\n' +
+    '      document: "HTML price list, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",',
+    "catalogue pdf result");
+  src = must(src,
+    'out_path: z.string().max(1000).optional().describe("Where to write the file. Defaults to the catalogue data directory under pdf/"),',
+    'out_path: z.string().max(1000).optional().describe("Name for the downloaded file, e.g. trade-prices-april. Defaults to price-list-<currency>-<tier>-<date>; the list comes back as a download link valid for one hour"),',
+    "catalogue out_path description");
+  src = must(src,
+    'description: "Call this tool to write the A4 price list for one currency and tier and return the file path:',
+    'description: "Call this tool to render the A4 price list for one currency and tier and return a download link valid for one hour:',
+    "catalogue pdf description");
+
+  // The plain-text list stays inline (it is meant to be pasted) AND is published.
+  src = must(src,
+    '    const notes: string[] = [];\n    if (businessMissing()) notes.push(`No business profile yet, so the list is headed "${PLACEHOLDER_ISSUER}". Run business_set {name, address} in the invoice server once.`);',
+    '    const notes: string[] = [];\n' +
+    '    const file = `/out/price-list-${currency}-${tiers[0] ?? DEFAULT_TIER}-${date}.txt`;\n' +
+    '    writeFileSync(file, body, "utf8");\n' +
+    '    const link = publishFile(file);\n' +
+    '    if (link) notes.push(`Download (.txt, valid 1 hour): ${link}`);\n' +
+    '    if (businessMissing()) notes.push(`No business profile yet, so the list is headed "${PLACEHOLDER_ISSUER}". Run business_set {name, address} in the invoice server once.`);',
+    "catalogue text download");
+  src = must(src,
+    'then the labour rates. Free.",',
+    'then the labour rates. The same text also comes back as a .txt download link valid for one hour. Free.",',
+    "catalogue text description");
+
+  // The catalogue://price-list resource reported dataDir(), which hosted is the worker's
+  // virtual homedir - a path no caller has and none can reach. The D-R60 species for the
+  // tenth time, and here it also claimed a pdf/ directory that does not exist: the price
+  // list is a download link and never a file on any disk the caller can open.
+  src = must(src,
+    '      writes: [{ store: "catalogue", dir: dataDir(), files: ["skus.json", "rates.json", "register.json", "counter.json", "pdf/"] }],',
+    '      writes: [{ store: "catalogue", dir: "not a directory on this endpoint: the catalogue is one document held " +\n' +
+    '        "per token, and both price lists are download links rather than files",\n' +
+    '        files: ["skus.json", "rates.json", "register.json", "counter.json"] }],',
+    "catalogue price-list resource writes dir");
+  src = must(src,
+    'description: "How a price is chosen on a date, the two payload scales, the free-tier limits and the one directory this server writes.",',
+    'description: "How a price is chosen on a date, the two payload scales, the free-tier limits and the one document this server writes.",',
+    "catalogue price-list resource description");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2720,6 +2837,7 @@ const EXTRA_IMPORTS = {
   "statement-of-account": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   "cash-book": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   "work-order": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
+  catalogue: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   zip: [
     'import { Buffer } from "node:buffer";',
     'import { registerZipUpload } from "../../shims/zip-upload.js";',
@@ -2792,6 +2910,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "amortization") src = patchAmortizationIndex(src);
     if (name === "petty-cash") src = patchPettyCashIndex(src);
     if (name === "work-order") src = patchWorkOrderIndex(src);
+    if (name === "catalogue") src = patchCatalogueIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -2873,6 +2992,14 @@ const LIB_RESOLUTIONS = {
   // whether a marked-up part is billed at 10,458 or 10,457 - and that resolution is checked
   // on the same concatenated bytes rather than assumed from the index.
   "work-order": ["invoice", "billing-docs", "quotes", "timezone"],
+  // Four, and only THREE of them (invoice, billing-docs and quotes) are reachable from
+  // index.ts: store.ts imports the timezone engine's readJsonFile, so an index-only check
+  // would have passed a build that could not resolve the corrupt-store quarantine that
+  // keeps an unreadable catalogue from being read as an empty one and resolving nothing.
+  // catalogue.ts reaches the invoice engine a second time, for computeTotals and
+  // roundHalfUp - the arithmetic that decides both payloads' figures - and that resolution
+  // is checked on the same concatenated bytes rather than assumed from the index.
+  "catalogue": ["invoice", "billing-docs", "quotes", "timezone"],
 };
 for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
   const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");
