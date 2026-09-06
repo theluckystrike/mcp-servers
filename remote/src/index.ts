@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-six endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-seven endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -37,6 +37,7 @@ import { createServer as createAssetRegister } from "./vendor/asset-register/ind
 import { createServer as createStatementOfAccount } from "./vendor/statement-of-account/index.js";
 import { createServer as createCashBook } from "./vendor/cash-book/index.js";
 import { createServer as createAmortization } from "./vendor/amortization/index.js";
+import { createServer as createPettyCash } from "./vendor/petty-cash/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -74,7 +75,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-05.4";
+const BUILD_VERSION = "2026-09-06.1";
 
 interface ServerCfg {
   factory: () => McpServer;
@@ -447,6 +448,26 @@ const SERVERS: Record<string, ServerCfg> = {
     // two derived figures are kept per loan, and every row of every schedule is rebuilt on
     // the call, so the document does not grow with the term. 512 KB holds thousands of them.
     factory: createAmortization as () => McpServer,
+  },
+  "petty-cash": {
+    // The amortization entry for the second time, and the same three absences for the same
+    // three reasons. No sharedDoc: this server reads no sibling book, so there is nothing to
+    // hydrate. It consumes four sibling ENGINES rather than four sibling stores - the cash
+    // book's chart of accounts, the asset register's money formatting, the quotes engine's
+    // today() and the timezone engine's readJsonFile - and borrowing CODE charges nothing to
+    // this endpoint's cap, while a sharedDoc entry would hydrate four documents it never
+    // opens. No publish() and no strip: NO TOOL WRITES A FILE. Every one of the seven tools
+    // answers in JSON, and replenish_request - the one that would be a document elsewhere -
+    // returns an expense_add-ready payload per category for /mcp/expense-tracker to post,
+    // exactly as loan_journal and asset_journal do, because that ledger's id counter,
+    // category rules and VAT split live inside its own expense_add handler. Nothing is
+    // posted from here and no sibling store is written.
+    //
+    // The default 512 KB cap, and it does not have to be reasoned about: NO BALANCE IS
+    // STORED. A float record holds its imprest, its top-ups and its counts; every balance is
+    // derived on the call from those and the vouchers, so this document grows only with the
+    // vouchers actually recorded and 512 KB holds many years of a real one-tin office.
+    factory: createPettyCash as () => McpServer,
   },
 };
 
@@ -834,6 +855,7 @@ const TOOLS: Record<string, string[]> = {
   "statement-of-account": ["statement_build", "statement_aging", "statement_text", "statement_pdf", "dunning_text", "statements_report", "license_status", "license_activate"],
   "cash-book": ["ledger_build", "trial_balance", "ledger_lines", "month_close", "ledger_export_csv", "ledger_report", "license_status", "license_activate"],
   "amortization": ["loan_create", "loan_schedule", "loan_repay_early", "loan_journal", "loan_list", "loans_report", "license_status", "license_activate"],
+  "petty-cash": ["float_open", "topup_record", "voucher_add", "voucher_delete", "reconcile", "replenish_request", "float_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -1052,6 +1074,15 @@ function indexDoc(base: string) {
         outputs: "JSON only. NO tool here writes a file, so there is nothing to download and nothing is published. loan_journal returns the expense_add ARGUMENTS for the interest alone, to pass to /mcp/expense-tracker yourself: this endpoint posts to no ledger, because the expense server's id counter, category rules and VAT split live inside its own expense_add handler.",
         free_limits: "3 loans in the register; loan_schedule and loan_list are free and unlimited on every tier, because what a payment is made of is the question this endpoint exists for and a free tier that hides it is a demo. loan_repay_early, loan_journal and loans_report are Pro",
         notes: "the payment never varies and the last period absorbs the rounding residual in its interest and principal SPLIT, not in the payment, so every payment is the amount on the agreement and the closing balance reaches the balloon, or zero, exactly. Compounding and payment frequency are two different clocks: the rate for one payment period is the equivalent rate taken through the compounding clock, never the nominal rate divided by the number of payments, which is worth about 1 percent of the interest on a one-year loan in the lender's favour and is invisible in a quote. NO SCHEDULE IS STORED - only the terms are, and every row is derived on the call, because a stored schedule is a second copy of what the rate and the term already decide and the copy is the one that gets believed after somebody edits the rate. A level payment rounded once can clear the debt before the term ends, and the schedule STOPS where the debt does rather than filling out the term with rows the borrower does not owe. Fees are paid at drawdown and are not interest; a balloon is due WITH the last payment and never inside it. Only the interest is an expense: booking the whole payment overstates the cost of the business by the principal every period and still reconciles against the bank. Nothing is posted from here, and currencies are never added together",
+      },
+      {
+        name: "petty-cash", url: `${base}/mcp/petty-cash`, tools: TOOLS["petty-cash"],
+        mode: "a float you keep, on your own token",
+        how: "float_open opens a petty cash tin on the imprest system - the amount the tin is topped back up to at every replenishment, in whole MINOR units, so 50000 is EUR 500.00. voucher_add records one receipt paid out of it, voucher_delete removes one entered wrongly, topup_record records cash physically going back in, reconcile counts the tin against the paperwork, replenish_request works out the cheque that restores the imprest and float_report states every float against its imprest with the history of what the counts found.",
+        outputs: "JSON only. NO tool here writes a file, so there is nothing to download and nothing is published. replenish_request returns the expense_add ARGUMENTS per category, to pass to /mcp/expense-tracker yourself, and the double entry in /mcp/cash-book's own account ids: this endpoint posts to no ledger and no expense book, because the expense server's id counter, category rules and VAT split live inside its own expense_add handler.",
+        free_limits: "1 float and 20 vouchers a calendar month; reconcile and voucher_delete are free and unlimited on every tier, because whether the cash in the tin matches the paperwork is the question this endpoint exists for and a free tier that withholds the answer is a demo. replenish_request and float_report are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of floats and vouchers per token`,
+        notes: "the replenishment is IMPREST MINUS BALANCE and never the sum of the vouchers. The two differ by exactly what the counts found over or short, and reimbursing the voucher total restores the float that much light for good, every cycle, while every reconciliation still reports a clean difference. NO BALANCE IS STORED - the imprest, the top-ups, the counts and the vouchers decide it on the call, because a stored balance is the copy that gets believed after somebody deletes a voucher. A count is a FACT, so it moves the book balance and the difference is carried forward as a cash_over_short line rather than re-reported at every later count. A float is cash in a tin: a voucher larger than the balance is refused, and so is a back-dated one that would leave any LATER day negative, named by the day it breaks rather than the day it was typed. A voucher already covered by a count cannot be deleted, and a byte-identical one is refused by id unless duplicate_ok says the same thing really was bought twice. Under the imprest system petty_cash does not move: a replenishment credits cash and debits the expenses, and the float account is not in that journal at all. The chart of accounts is IMPORTED from /mcp/cash-book rather than restated, so a category spelled three ways is one account and no rename there can leave this endpoint posting to an account that ledger does not have. Currencies are never added together",
       },
     ],
     limits: {

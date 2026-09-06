@@ -123,6 +123,21 @@ const SERVERS = {
   // others' are: it is this engine as a public API, so the next server that amortises a
   // loan resolves here rather than to a module that cannot load.
   "amortization": ["index.ts", "version.ts", "lib.ts", "accounts.ts", "schedule.ts", "store.ts"],
+  // Every source file. The second endpoint in a row that reads NO sibling book: it owns
+  // floats.json, vouchers.json and counter.json and nothing else, so there is no sharedDoc
+  // entry for it in remote/src/index.ts. What it consumes is FOUR sibling ENGINES rather
+  // than four sibling stores - @theluckystrike/mcp-cash-book/lib for the chart of accounts
+  // (CASH, expenseAccount and accountFor, so a line journalled here lands in the account
+  // that ledger already posts to), @theluckystrike/mcp-asset-register/lib for formatMoney
+  // and currencyDecimals, @theluckystrike/mcp-quotes/lib for today() and isIsoDate(), and
+  // @theluckystrike/mcp-timezone/lib for readJsonFile and its corrupt-store quarantine -
+  // and only TWO of the four are reachable from index.ts. accounts.ts imports the chart of
+  // accounts and store.ts imports readJsonFile, so LIB_RESOLUTIONS below carries all four
+  // and checks them on the bytes that were written. float.ts imports nothing at all: the
+  // balance, the reconciliation and the replenishment are pure arithmetic. lib.ts is
+  // vendored for the reason the others' are: it is this engine as a public API, so the
+  // next server that reads a float resolves here rather than to a module that cannot load.
+  "petty-cash": ["index.ts", "version.ts", "lib.ts", "accounts.ts", "float.ts", "store.ts"],
 };
 
 /**
@@ -2524,6 +2539,33 @@ function patchAmortizationIndex(src) {
   return src;
 }
 
+/**
+ * petty-cash. The amortization case exactly: NOTHING here writes a file a caller could ever
+ * want. `grep -n "writeFileSync\|/out/\|out_path" servers/petty-cash/src/*.ts` finds one
+ * writer, store.ts, writing floats.json, vouchers.json and counter.json under the homedir
+ * shim by tmp + rename - this endpoint's own register, which is a tenant document and not a
+ * download. No tool takes an out_path, no tool renders a document and there is no
+ * *_export_csv, so this endpoint publishes nothing, has no /out/ and gains no EXTRA_IMPORTS
+ * entry. replenish_request returns an expense_add-ready payload for /mcp/expense-tracker to
+ * post, exactly as loan_journal and asset_journal do, so it reaches no sibling store either.
+ * The one thing that has to move is the pettycash://accounts resource, which reported
+ * dataDir() - hosted, the worker's virtual homedir, a path no caller has and none can reach,
+ * the D-R60 species for the eighth time.
+ */
+function patchPettyCashIndex(src) {
+  src = must(src,
+    '      writes: [{ store: "petty-cash", dir: dataDir(), files: ["floats.json", "vouchers.json", "counter.json"] }],',
+    '      writes: [{ store: "petty-cash", dir: "not a directory on this endpoint: the float register is one " +\n' +
+    '        "document held per token, and no balance is ever stored in it",\n' +
+    '        files: ["floats.json", "vouchers.json", "counter.json"] }],',
+    "petty-cash accounts resource writes dir");
+  src = must(src,
+    'description: "The account ids this server journals to, matching the cash book, and the one directory it writes.",',
+    'description: "The account ids this server journals to, matching the cash book, and the one document it writes.",',
+    "petty-cash accounts resource description");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2627,6 +2669,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "statement-of-account") src = patchStatementIndex(src);
     if (name === "cash-book") src = patchCashBookIndex(src);
     if (name === "amortization") src = patchAmortizationIndex(src);
+    if (name === "petty-cash") src = patchPettyCashIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -2694,6 +2737,12 @@ const LIB_RESOLUTIONS = {
   // so an index-only check would have passed a build that could not resolve the split
   // arithmetic or the corrupt-store quarantine the whole register depends on.
   "amortization": ["asset-register", "quotes", "timezone"],
+  // Four, and only TWO of them (asset-register and quotes) are reachable from index.ts:
+  // accounts.ts imports the cash book's chart of accounts and store.ts imports the timezone
+  // engine's readJsonFile, so an index-only check would have passed a build that could not
+  // resolve either the account ids every journal line is posted to or the corrupt-store
+  // quarantine that keeps an unreadable float register from being read as an empty one.
+  "petty-cash": ["cash-book", "asset-register", "quotes", "timezone"],
 };
 for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
   const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");
