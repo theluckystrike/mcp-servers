@@ -185,6 +185,17 @@ check("profile-reader", "PROFILE_READERS wiring", (s) => {
   return true;
 });
 
+check("dist-version", "dist/version.js equals src/version.ts", (s) => {
+  const srcFile = join(SERVERS_DIR, s, "src", "version.ts");
+  const distFile = join(SERVERS_DIR, s, "dist", "version.js");
+  if (!has(srcFile)) return `missing servers/${s}/src/version.ts; run node scripts/sync-versions.mjs`;
+  if (!has(distFile)) return `missing servers/${s}/dist/version.js; run npm run build -w servers/${s}`;
+  const src = (readFileSync(srcFile, "utf8").match(/"(\d+\.\d+\.\d+)"/) || [])[1];
+  const dist = (readFileSync(distFile, "utf8").match(/VERSION = "(\d+\.\d+\.\d+)"/) || [])[1];
+  if (src && dist && src !== dist) return `dist says ${dist}, src says ${src}; the bundle would carry a stale handshake; run npm run build -w servers/${s}`;
+  return true;
+});
+
 check("manifests", "server.json + mcpb", (s) => {
   const miss = ["server.json", "server.mcpb.json"].filter((f) => !has(join(SERVERS_DIR, s, f)));
   return miss.length ? `missing ${miss.join(", ")}` : true;
