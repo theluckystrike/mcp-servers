@@ -59,7 +59,7 @@ is `[x]` only once the file exists on disk in its final shape.
 - [x] `node --test billing/test/checkout.test.mjs billing/test/bundle.test.mjs` green
 - [x] `node scripts/sync-versions.mjs --check` 0 files written
 - [x] `node scripts/release-check.mjs` run once at the end; the change-order line recorded below
-- [ ] Commits by path, no attribution lines (ticked in the commit itself)
+- [x] Commits by path, no attribution lines (cf5ea92, c9553f2)
 
 ## What was built
 
