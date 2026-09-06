@@ -2768,8 +2768,10 @@ function patchCatalogueIndex(src) {
     "catalogue out_path description");
   src = must(src,
     'description: "Call this tool to write the A4 price list for one currency and tier and return the file path:',
-    'description: "Call this tool to render the A4 price list for one currency and tier and return a download link valid for one hour:',
+    'description: "Call this tool to render the price list for one currency and tier as an A4 HTML document laid out for print-to-PDF (this hosted endpoint has no PDF renderer) and return a download link valid for one hour:',
     "catalogue pdf description");
+  // D-R97: the title must not promise a format the endpoint cannot produce.
+  src = must(src, 'title: "The price list as a PDF",', 'title: "The price list as an HTML document (print to PDF)",', "catalogue pdf title");
 
   // The plain-text list stays inline (it is meant to be pasted) AND is published.
   src = must(src,
