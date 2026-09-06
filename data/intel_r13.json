@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-09-06",
+  "cap_minutes": 30,
+  "method": {
+    "registry_probe": "Single bounded GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100 per token, curl -s -m 15, first page only, sequential, no background jobs. count = metadata.count. capped = page full (100) with metadata.nextCursor present.",
+    "scoring": "empty_slot_score = 100/(1+count); fit (0-1) = pairing with the current 29-server suite; buildability (0-1) = pure-TypeScript, no-network, no-paid-API feasibility; score = empty_slot_score x fit x buildability.",
+    "build_gate": "build only if count < 20 AND fit > 0.6 AND buildability > 0.7"
+  },
+  "existing_suite": ["amortization","asset-register","bank-statement","barcode","billing-docs","calendar","cash-book","clauses","currency","deposits","docx","expense-tracker","image","invoice","kanban","office-suite","pdf","per-diem","petty-cash","price-tracker","quotes","recurring","resume","spreadsheet","statement-of-account","time-tracker","timezone","work-order","zip"],
+  "prior_rounds_checked": ["docs/INTEL_R6.md","docs/INTEL_R9.md","docs/INTEL_R10.md","docs/INTEL_R11.md","docs/INTEL_R12.md","mcp-registry-naming-ceiling.md"],
+  "tokens_probed": [
+    {"token": "delivery-schedule", "count": 0, "capped": false, "fit": 0.65, "buildability": 0.85, "score": 55.25, "decision": "BUILD"},
+    {"token": "booking-calendar", "count": 0, "capped": false, "fit": 0.5, "buildability": 0.8, "score": 40.0, "decision": "no-build, overlaps existing calendar server"},
+    {"token": "class-schedule", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.8, "score": 44.0, "decision": "no-build"},
+    {"token": "attendance", "count": 0, "capped": false, "fit": 0.6, "buildability": 0.85, "score": 51.0, "decision": "no-build, ranked 6th-adjacent"},
+    {"token": "timesheet-approval", "count": 0, "capped": false, "fit": 0.65, "buildability": 0.75, "score": 48.75, "decision": "no-build"},
+    {"token": "expense-claim", "count": 0, "capped": false, "fit": 0.5, "buildability": 0.85, "score": 42.5, "decision": "no-build, overlaps expense-tracker"},
+    {"token": "reimbursement", "count": 0, "capped": false, "fit": 0.5, "buildability": 0.85, "score": 42.5, "decision": "no-build, overlaps expense-tracker/per-diem"},
+    {"token": "per-client-budget", "count": 0, "capped": false, "fit": 0.65, "buildability": 0.8, "score": 52.0, "decision": "BUILD"},
+    {"token": "hours-cap", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.75, "score": 41.25, "decision": "no-build"},
+    {"token": "overrun", "count": 0, "capped": false, "fit": 0.45, "buildability": 0.65, "score": 29.25, "decision": "no-build, generic/ambiguous"},
+    {"token": "change-order", "count": 0, "capped": false, "fit": 0.8, "buildability": 0.85, "score": 68.0, "decision": "BUILD"},
+    {"token": "variation", "count": 0, "capped": false, "fit": 0.4, "buildability": 0.6, "score": 24.0, "decision": "no-build, generic/ambiguous"},
+    {"token": "milestone", "count": 1, "capped": false, "fit": 0.75, "buildability": 0.85, "score": 31.875, "decision": "no-build, variant candidate for invoice/quotes"},
+    {"token": "deliverable", "count": 0, "capped": false, "fit": 0.6, "buildability": 0.75, "score": 45.0, "decision": "no-build"},
+    {"token": "acceptance", "count": 2, "capped": false, "fit": 0.7, "buildability": 0.85, "score": 19.83, "decision": "no-build, variant candidate for quotes/clauses"},
+    {"token": "sign-off", "count": 1, "capped": false, "fit": 0.7, "buildability": 0.85, "score": 29.75, "decision": "no-build, variant candidate for invoice/clauses"},
+    {"token": "snag-list", "count": 0, "capped": false, "fit": 0.6, "buildability": 0.85, "score": 51.0, "decision": "no-build, ranked 6th-adjacent, near-dup of R12 snagging"},
+    {"token": "punch-list", "count": 0, "capped": false, "fit": 0.65, "buildability": 0.85, "score": 55.25, "decision": "BUILD"},
+    {"token": "inspection", "count": 0, "capped": false, "fit": 0.6, "buildability": 0.8, "score": 48.0, "decision": "no-build"},
+    {"token": "checklist", "count": 5, "capped": false, "fit": 0.7, "buildability": 0.9, "score": 10.5, "decision": "no-build, variant candidate for docx/office-suite"},
+    {"token": "sop", "count": 61, "capped": false, "fit": null, "buildability": null, "score": null, "decision": "excluded, noisy substring (sophon, autosophia)"},
+    {"token": "procedure", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.85, "score": 46.75, "decision": "no-build"},
+    {"token": "onboarding-checklist", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.85, "score": 46.75, "decision": "no-build"},
+    {"token": "offboarding", "count": 0, "capped": false, "fit": 0.5, "buildability": 0.8, "score": 40.0, "decision": "no-build"},
+    {"token": "equipment-loan", "count": 0, "capped": false, "fit": 0.65, "buildability": 0.85, "score": 55.25, "decision": "BUILD"},
+    {"token": "key-register", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.85, "score": 46.75, "decision": "no-build"},
+    {"token": "visitor-log", "count": 0, "capped": false, "fit": 0.45, "buildability": 0.85, "score": 38.25, "decision": "no-build, off-thesis (facilities)"},
+    {"token": "incident-report", "count": 11, "capped": false, "fit": 0.5, "buildability": 0.8, "score": 3.33, "decision": "no-build, off-thesis, single-publisher heavy"},
+    {"token": "near-miss", "count": 0, "capped": false, "fit": 0.45, "buildability": 0.8, "score": 36.0, "decision": "no-build, off-thesis (safety compliance)"},
+    {"token": "risk-register", "count": 0, "capped": false, "fit": 0.55, "buildability": 0.8, "score": 44.0, "decision": "no-build"}
+  ],
+  "excluded_noisy_tokens": [
+    {"token": "sop", "count": 61, "capped": false, "reason": "substring collisions on 'sophon' (consulting.sophon/sophon-consulting) and 'autosophia' (io.autosophia/*, 4 of top 5 rows); zero genuine standard-operating-procedure servers on page 1"}
+  ],
+  "top5": [
+    {"token": "change-order", "count": 0, "fit": 0.8, "buildability": 0.85, "score": 68.0, "decision": "BUILD", "spec": "Pure-TS change-order/variation-order generator for trades and contractors: link to an original quote or work-order, itemized scope change, price delta, client approval field, PDF export reusing the quotes/invoice template engine; no network calls."},
+    {"token": "delivery-schedule", "count": 0, "fit": 0.65, "buildability": 0.85, "score": 55.25, "decision": "BUILD", "spec": "Pure-TS delivery/appointment schedule builder: recurring or one-off delivery slots, address and time window, status tracking, calendar-format export; no network calls, pairs with the calendar server."},
+    {"token": "equipment-loan", "count": 0, "fit": 0.65, "buildability": 0.85, "score": 55.25, "decision": "BUILD", "spec": "Pure-TS equipment loan/checkout tracker: item reference, borrower, loan and due-back dates, condition notes at checkout/return, overdue flagging; no network calls, pairs with asset-register."},
+    {"token": "punch-list", "count": 0, "fit": 0.65, "buildability": 0.85, "score": 55.25, "decision": "BUILD", "spec": "Pure-TS punch-list/defect-list generator for construction and renovation handover: itemized defect with location and trade, photo-reference field, status (open/fixed/verified), client sign-off PDF; no network calls, pairs with work-order and maintenance-log."},
+    {"token": "per-client-budget", "count": 0, "fit": 0.65, "buildability": 0.8, "score": 52.0, "decision": "BUILD", "spec": "Pure-TS per-client project budget tracker: budget ceiling per client or engagement, running spend roll-up from logged time/expenses, remaining-balance alert threshold; no network calls, pairs with time-tracker and expense-tracker."}
+  ],
+  "variant_candidates": [
+    {"token": "milestone", "count": 1, "existing_server": "invoice / quotes"},
+    {"token": "sign-off", "count": 1, "existing_server": "invoice / clauses"},
+    {"token": "acceptance", "count": 2, "existing_server": "quotes / clauses"},
+    {"token": "checklist", "count": 5, "existing_server": "docx / office-suite"},
+    {"token": "incident-report", "count": 11, "existing_server": "billing-docs (weak fit, off-thesis)"}
+  ],
+  "requests_used": 30,
+  "requests_budget": 60,
+  "cap_minutes_used_estimate": "under 30",
+  "paid_apis_used": false,
+  "paid_submissions": "none"
+}
