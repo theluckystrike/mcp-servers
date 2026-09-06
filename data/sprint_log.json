@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-06T04:23:38.744Z",
-  "total_commits": 623,
+  "generated_at": "2026-09-06T04:23:46.449Z",
+  "total_commits": 624,
   "sessions": 54,
   "loops": [
     {
@@ -131,7 +131,7 @@
     {
       "name": "Loop 26: work-order, checkout gap named, record-tests, v0.18.0",
       "sessions": 2,
-      "commits": 101
+      "commits": 102
     }
   ],
   "rows": [
@@ -779,7 +779,7 @@
       "at": "2026-09-06T04:23:38.532Z",
       "note": "loop 26 closed: v0.18.0 with work-order (job orders with parts and labour lines, status flow, completion report, invoice-ready payload; markup on the unit cost so the invoice engine's rounding cannot disagree, gap of exactly one asserted; audit 17/18; the twenty-eighth server and hosted endpoint); checkout for work-order is a named gap because the keychain Stripe key lost product write, its buy page answers 503 with the bundle link and release-check reports the gap without turning green; 77 manifests, 1331 tests, validation 856/856, 29 bundles; petty-cash hosted 16/18; the release chain records the unit-test count and refuses a stale dist; downloads 4428; clicks 125/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 26: work-order, checkout gap named, record-tests, v0.18.0",
-      "commits": 77,
+      "commits": 78,
       "subjects": [
         "Plan v21: schedules, the estate re-check, a free-tier decision",
         "Add round 4 backlink verification (read-only, 12/12 domains still serving)",
