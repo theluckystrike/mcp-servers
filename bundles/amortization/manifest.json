@@ -1,0 +1,87 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-amortization",
+  "display_name": "Amortization",
+  "version": "0.19.0",
+  "description": "Loan and lease schedules: payment, interest, early settlement and the journal, to the minor unit.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "loan_create",
+      "description": "Record a loan or a lease from its terms and return its id, its level payment and its effective annual rate. Principal, fees and balloon are whole minor units; the rate is nominal annual basis points."
+    },
+    {
+      "name": "loan_schedule",
+      "description": "Build the schedule for one loan: opening balance, payment, interest, principal and closing balance for every period, with the total interest. The closing balance reaches the balloon, or zero, exactly. Free."
+    },
+    {
+      "name": "loan_repay_early",
+      "description": "Work out what settling or overpaying costs as of a period: the outstanding balance, the penalty if one is given, the recalculated remaining schedule and the interest saved, stated gross and net of the penalty. Pro."
+    },
+    {
+      "name": "loan_journal",
+      "description": "Return the double entry for one payment period or one month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Pro."
+    },
+    {
+      "name": "loan_list",
+      "description": "List the loans and leases in the register with their terms, the level payment, the effective annual rate and the balance outstanding at a date. Free and unlimited."
+    },
+    {
+      "name": "loan_delete",
+      "description": "Remove one loan or lease from the register and give its free-tier slot back. Refused, with the entry named, if a journal has already been taken from it. Free."
+    },
+    {
+      "name": "loans_report",
+      "description": "Report the debt: what is outstanding per currency, when each next payment falls due, and the interest charged in a calendar year, per loan and in total. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "amortization",
+    "loan",
+    "lease",
+    "schedule",
+    "interest",
+    "finance"
+  ]
+}

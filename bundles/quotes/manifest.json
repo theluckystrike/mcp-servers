@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-quotes",
   "display_name": "Quotes",
-  "version": "0.13.0",
+  "version": "0.19.0",
   "description": "Send a client a real quote in seconds: line items with VAT, a validity date, a plain-text version to paste into email and an A4 PDF. Accepting a quote turns it into an invoice with the same numbers. All local.",
   "author": {
     "name": "theluckystrike",
@@ -64,6 +64,10 @@
     {
       "name": "quote_decline",
       "description": "Mark a quote as lost, with an optional reason, so it stops counting against the open quotes and shows up in the win rate. An accepted quote is never turned back."
+    },
+    {
+      "name": "quote_delete",
+      "description": "Delete a draft quote that was never sent, accepted, invoiced or exported, and give its free open-quote slot back. A quote with any of those is refused with the dependent named. The id is never reissued."
     },
     {
       "name": "quote_pdf",

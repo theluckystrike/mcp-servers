@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-asset-register",
   "display_name": "Asset Register",
-  "version": "0.13.0",
+  "version": "0.19.0",
   "description": "Fixed assets and depreciation on bundled Polish KST, HMRC and IRS MACRS tables.",
   "author": {
     "name": "theluckystrike",
@@ -51,11 +51,15 @@
     },
     {
       "name": "asset_journal",
-      "description": "Return the depreciation journal for one month: debit depreciation expense and credit accumulated depreciation, per asset and in total, plus an expense_add-ready payload per currency. It writes nothing itself. Pro."
+      "description": "Return the depreciation journal for one month: debit depreciation expense and credit accumulated depreciation, per asset and in total, plus an expense_add-ready payload per currency. It writes no expense. Pro."
     },
     {
       "name": "asset_dispose",
       "description": "Record the sale, scrapping or write-off of an asset on a date for a proceeds amount, and return the gain or loss against net book value at that date. Free."
+    },
+    {
+      "name": "asset_delete",
+      "description": "Remove one asset from the register when nothing depends on it: not disposed of, never journaled. Its free-tier slot is free again. An asset with a dependent is refused and the dependent is named. Free."
     },
     {
       "name": "asset_report",

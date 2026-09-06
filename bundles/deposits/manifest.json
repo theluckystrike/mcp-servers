@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-deposits",
   "display_name": "Deposits",
-  "version": "0.13.0",
+  "version": "0.19.0",
   "description": "Security and retainer deposits per client: hold them, apply them to invoices, refund them.",
   "author": {
     "name": "theluckystrike",
@@ -52,6 +52,10 @@
     {
       "name": "deposit_refund",
       "description": "Give part or all of a held deposit back to the client, with the date and how it was sent. Refuses more than is still held. The invoice server is not touched: a refund is not a payment."
+    },
+    {
+      "name": "deposit_delete",
+      "description": "Delete a deposit recorded by mistake and free that month's free-tier slot again. Only a deposit with nothing applied to an invoice and nothing refunded can go; one whose money moved is refused, naming what holds it."
     },
     {
       "name": "deposit_balance",

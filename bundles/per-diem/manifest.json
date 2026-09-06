@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-per-diem",
   "display_name": "Per Diem",
-  "version": "0.13.0",
+  "version": "0.19.0",
   "description": "Daily travel allowances on bundled public rate tables: Poland, HMRC and GSA.",
   "author": {
     "name": "theluckystrike",
@@ -52,6 +52,10 @@
     {
       "name": "trip_list",
       "description": "List saved trips with the scheme, destination, dates and total on each, and a total per currency. Filter by scheme, destination, traveller, project and start date range. Free and unlimited."
+    },
+    {
+      "name": "trip_delete",
+      "description": "Delete one saved trip that has not been exported and has no expense booked against it, and free the free-tier slot it held that month. A trip with a dependent is refused, named. Free and unlimited."
     },
     {
       "name": "trip_export",

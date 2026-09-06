@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-billing-docs",
   "display_name": "Billing Docs",
-  "version": "0.13.0",
+  "version": "0.19.0",
   "description": "Credit notes against your invoices and purchase orders to your suppliers, on the invoice engine.",
   "author": {
     "name": "theluckystrike",
@@ -58,6 +58,10 @@
       "description": "Turn a credit note into a plain-text summary with the negated line table, the VAT lines, the total and the invoice it reverses, ready to paste into an email. Free on every tier."
     },
     {
+      "name": "credit_note_delete",
+      "description": "Remove a credit note that was never posted to its invoice and never rendered to a file: the invoice becomes creditable again and the free monthly document slot comes back. One with a dependent is refused."
+    },
+    {
       "name": "purchase_order_create",
       "description": "Order from a supplier: line items with quantity and unit price in minor units, VAT, a currency and an expected delivery date. You are the buyer, from the shared business profile."
     },
@@ -80,6 +84,10 @@
     {
       "name": "purchase_order_receive",
       "description": "Record that a purchase order arrived, in full or in part. A partial receipt keeps the order open and is kept on the record with its date and note; a full receipt closes it."
+    },
+    {
+      "name": "purchase_order_delete",
+      "description": "Remove a purchase order with nothing received against it that was never rendered to a file: the free monthly document slot comes back. An order with a receipt is refused, naming that receipt."
     },
     {
       "name": "billing_docs_report",

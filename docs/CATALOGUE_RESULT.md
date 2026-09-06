@@ -19,7 +19,7 @@ lands without being named. One entry, `"catalogue"`, was added. That suite passe
 Adding a 29th server that sells Pro makes `packages/mcp-license/test/bundle-link.test.mjs`
 fail, exactly as the work-order and petty-cash builds reported:
 
-    SERVER_COUNT is 28 but 29 servers build a licence gate (... catalogue ... zip).
+    SERVER_COUNT reads 29 in both licence files since commit c4f4efd (this note was stale at 28 for one loop).
     Update SERVER_COUNT in packages/mcp-license/src/index.ts and
     remote/src/shims/license.ts together, or every cap message names a stale count.
 

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-cash-book",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "One double-entry ledger derived from your invoices, bank, expenses, deposits and assets.",
   "type": "module",
   "bin": {
@@ -51,13 +51,13 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/cash-book",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-asset-register": "^0.18.0",
-    "@theluckystrike/mcp-billing-docs": "^0.18.0",
-    "@theluckystrike/mcp-deposits": "^0.18.0",
-    "@theluckystrike/mcp-invoice": "^0.18.0",
-    "@theluckystrike/mcp-license": "^0.18.0",
-    "@theluckystrike/mcp-quotes": "^0.18.0",
-    "@theluckystrike/mcp-statement-of-account": "^0.18.0",
+    "@theluckystrike/mcp-asset-register": "^0.19.0",
+    "@theluckystrike/mcp-billing-docs": "^0.19.0",
+    "@theluckystrike/mcp-deposits": "^0.19.0",
+    "@theluckystrike/mcp-invoice": "^0.19.0",
+    "@theluckystrike/mcp-license": "^0.19.0",
+    "@theluckystrike/mcp-quotes": "^0.19.0",
+    "@theluckystrike/mcp-statement-of-account": "^0.19.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

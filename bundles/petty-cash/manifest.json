@@ -1,0 +1,87 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-petty-cash",
+  "display_name": "Petty Cash",
+  "version": "0.19.0",
+  "description": "A petty cash float on the imprest system: vouchers, reconciliation and the replenishment.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "float_open",
+      "description": "Open a petty cash float on the imprest system and return its id. The imprest is the cash the tin is topped back up to at every replenishment, in whole minor units. Free tier: one float."
+    },
+    {
+      "name": "topup_record",
+      "description": "Record cash put into the tin: the amount in whole minor units, the date and where it came from. It reimburses every voucher up to that date, which is what a replenishment cheque does. Free."
+    },
+    {
+      "name": "voucher_add",
+      "description": "Record one voucher paid out of the tin and return its VOU-YYYY-NNNN number. More than the float holds is refused, and so is a byte-identical duplicate. Free tier: 20 vouchers a calendar month."
+    },
+    {
+      "name": "voucher_delete",
+      "description": "Delete a voucher that was entered wrongly, by its VOU number. A voucher already covered by a reconciliation is refused: the cash it took out was counted, so removing it would make a past count wrong. Free."
+    },
+    {
+      "name": "reconcile",
+      "description": "Count the cash and reconcile: the expected balance, the difference to the minor unit, and every voucher since the last count, which this marks reconciled. Records the count. Free and unlimited."
+    },
+    {
+      "name": "replenish_request",
+      "description": "Work out what puts the float back to its imprest: the amount, the vouchers it reimburses, the totals per category as an expense_add-ready payload, and the double entry. Writes nothing. Pro."
+    },
+    {
+      "name": "float_report",
+      "description": "Report every float: the balance against its imprest, what is unreconciled, the last count, and the history of what the counts found over or short, per float and in total. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "petty-cash",
+    "imprest",
+    "float",
+    "vouchers",
+    "reconciliation",
+    "bookkeeping"
+  ]
+}

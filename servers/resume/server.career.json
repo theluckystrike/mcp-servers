@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/career",
   "description": "Tailor a career resume and cover letter as real Word docx files from stored facts.",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.18.0/resume.mcpb",
-      "version": "0.18.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/resume.mcpb",
+      "version": "0.19.0",
       "fileSha256": "b125e9e399649938e376f09e411109099b16dcb52e09a56ba738f93fa2a6f530",
       "transport": {
         "type": "stdio"

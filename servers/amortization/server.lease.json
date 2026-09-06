@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/lease-schedule",
   "description": "Lease schedules with a residual: the payment, the interest split and the journal per month.",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.18.0/amortization.mcpb",
-      "version": "0.18.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/amortization.mcpb",
+      "version": "0.19.0",
       "fileSha256": "64f751fdea7a714dc6641a864606987deeec7147416adeba25ec593ea637f03e",
       "transport": {
         "type": "stdio"

@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-invoice",
   "display_name": "Invoice",
-  "version": "0.13.0",
+  "version": "0.19.0",
   "description": "Make real, sendable PDF invoices from a sentence. Clients, numbering that never repeats, VAT lines, discounts and overdue reports, all stored locally.",
   "author": {
     "name": "theluckystrike",
@@ -43,7 +43,11 @@
     },
     {
       "name": "client_add",
-      "description": "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details."
+      "description": "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details; a record identical to one already stored is refused, naming the id that holds it."
+    },
+    {
+      "name": "client_delete",
+      "description": "Delete a stored client that nothing uses. A client still referenced by an invoice, quote, credit note, purchase order, deposit, statement or recurring schedule is refused, with the document named."
     },
     {
       "name": "client_list",
@@ -63,7 +67,7 @@
     },
     {
       "name": "invoice_get",
-      "description": "Return the full stored record for one invoice number, including every line and tax breakdown."
+      "description": "Return the full stored record for one invoice number, including every line, tax breakdown, and the balance still open after any credit note issued against it (see credited_minor)."
     },
     {
       "name": "invoice_mark_paid",

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/per-diem",
   "description": "Daily travel allowances from bundled public rate tables: Poland, HMRC and GSA CONUS.",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.18.0/per-diem.mcpb",
-      "version": "0.18.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/per-diem.mcpb",
+      "version": "0.19.0",
       "fileSha256": "d0eba66b149bc57bb3496d12e5e60e8fd85b727093a14f9065e646b345206b60",
       "transport": {
         "type": "stdio"
