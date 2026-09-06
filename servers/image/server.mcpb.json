@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/image-resize-convert-compress-watermark",
   "description": "Resize, convert, compress, crop, thumbnail and watermark images from your AI chat.",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.16.0/image.mcpb",
-      "version": "0.16.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.17.0/image.mcpb",
+      "version": "0.17.0",
       "fileSha256": "d06ab4caf59dd0507b03cfadbc30025209a1e2f17006a9b6d5e9997c94641be5",
       "transport": {
         "type": "stdio"
