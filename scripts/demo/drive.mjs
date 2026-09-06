@@ -1194,6 +1194,102 @@ async function run(name) {
     resultLine(`${r.id} "${r.name}" for ${r.traveller}, ${r.destination}, ${r.days} days: ${r.total}`);
     resultLine(`  ${trip.notes[trip.notes.length - 1]}`);
   }
+  if (name === "catalogue") {
+    // The catalogue reads the shared business profile for its currency and its VAT
+    // fallback, the same file every other server reads, so the fixture writes it where
+    // that profile lives. Nothing else is seeded: every figure below is one
+    // servers/catalogue/test/unit.test.mjs asserts and docs/CATALOGUE_RESULT.md recomputes
+    // by hand -- the 39000/45000/49500 ladder, the 2026-01-01 row picked on 2026-03-15,
+    // and a net of 261,363 minor against the 26,136,300 the mis-scaled payload bills.
+    const { writeFileSync: wf, mkdirSync: mk } = await import("node:fs");
+    const profileDir = join(c.sandbox, "data", "mcp-servers", "profile");
+    mk(profileDir, { recursive: true });
+    wf(join(profileDir, "business.json"), JSON.stringify({
+      name: "Nova Studio", address: "ul. Prosta 1, Warsaw", default_currency: "EUR",
+      default_tax_rate: 23, payment_terms_days: 14, timezone: "Europe/Warsaw",
+    }, null, 2));
+
+    // These tools answer in JSON and a whole answer does not fit the recorded frame, so the
+    // demo prints picked fields. Every number below is read out of the response, never rebuilt.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ One price list both sibling servers read. The price on a date is a ROW, and the two payloads are two SCALES.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const ladder = [
+      { sku: "WEB-AUDIT", name: "Website audit", unit: "each", price_minor: 39000, valid_from: "2025-01-01" },
+      { sku: "WEB-AUDIT", name: "Website audit", unit: "each", price_minor: 45000, valid_from: "2026-01-01" },
+      { sku: "WEB-AUDIT", name: "Website audit", unit: "each", price_minor: 49500, valid_from: "2026-07-01" },
+    ];
+    toolLine("sku_set", ladder[2]);
+    let created;
+    // The first call creates the SKU and the two later ones add rows to it, so the answer
+    // is keyed "created" once and "updated" after that.
+    for (const s of ladder) { const j = pick(await c.call("sku_set", s)); created = j.created ?? j.updated; }
+    resultLine(`${created.sku} "${created.name}" per ${created.unit}: ${created.rows} price rows, none of them "the" price`);
+    for (const r of created.price_rows) resultLine(`  ${r.currency} ${r.tier.padEnd(8)} from ${r.valid_from}  ${r.price.padStart(10)}  (${r.price_minor} minor)`);
+    await sleep(STEP_DELAY_MS);
+
+    // The measured point. Three dates, three rows, and the middle one is picked on its own
+    // merits: the row is named, and the row that already replaces it is named with it.
+    for (const date of ["2025-06-30", "2026-03-15", "2026-09-01"]) {
+      toolLine("sku_get", { sku: "WEB-AUDIT", date });
+      const g = pick(await c.call("sku_get", { sku: "WEB-AUDIT", date }));
+      resultLine(`  ${g.date} -> ${g.price} (${g.price_minor} minor) from the ${g.from_row.valid_from} row`
+        + (g.superseded_by ? `, already replaced by ${g.superseded_by.price} from ${g.superseded_by.valid_from}` : ", nothing booked after it"));
+    }
+    resultLine("  the middle answer is 45000, not the 39000 it was and not the 49500 it becomes: no current price is stored");
+    await sleep(STEP_DELAY_MS);
+
+    for (const s of [
+      { sku: "HOST-MO", name: "Managed hosting", unit: "month", price_minor: 3999, valid_from: "2025-01-01" },
+      { sku: "COPY-1K", name: "Copywriting", unit: "1000 words", price_minor: 12000, valid_from: "2025-01-01" },
+    ]) await c.call("sku_set", s);
+    for (const r of [
+      { role: "senior developer", hourly_minor: 8500, valid_from: "2025-01-01" },
+      { role: "junior developer", hourly_minor: 4500, valid_from: "2025-01-01" },
+    ]) await c.call("rate_set", r);
+
+    const resolveArgs = {
+      client: "Harbour Cafe", date: "2026-03-15",
+      lines: [
+        { sku: "WEB-AUDIT", quantity: 3 },
+        { sku: "HOST-MO", quantity: 12 },
+        { role: "senior developer", hours: 7.5 },
+        { role: "junior developer", hours: 3.25 },
+      ],
+    };
+    toolLine("lines_resolve", resolveArgs);
+    const res = pick(await c.call("lines_resolve", resolveArgs));
+    for (const l of res.lines) {
+      resultLine(`  ${l.ref.padEnd(16)} ${String(l.quantity).padStart(5)} ${l.unit.padEnd(10)} x ${l.unit_price.padEnd(10)} = ${l.value.padStart(11)}  priced from the ${l.priced_from.valid_from} ${l.priced_from.tier} row`);
+    }
+    resultLine(`  net ${res.totals.net} (${res.totals.net_minor} minor), VAT ${res.totals.vat}, gross ${res.totals.total}, rounding_drift_minor ${res.totals.rounding_drift_minor}`);
+    await sleep(STEP_DELAY_MS);
+
+    // THE point of the server: one call, two payloads, and the scale printed against each.
+    const inv = res.invoice_create.arguments.items;
+    const quo = res.quote_create.arguments.items;
+    resultLine(`  ${res.invoice_create.tool} (server ${res.invoice_create.server}): ${res.invoice_create.unit}`);
+    resultLine(`    items[0] ${JSON.stringify(inv[0])}`);
+    resultLine(`  ${res.quote_create.tool} (server ${res.quote_create.server}): ${res.quote_create.unit}`);
+    resultLine(`    items[0] ${JSON.stringify(quo[0])}`);
+    const ratio = quo.map((q, i) => q.unit_price_minor / inv[i].unit_price);
+    resultLine(`  unit_price ${inv.map((i) => i.unit_price).join(" ")}  against  unit_price_minor ${quo.map((q) => q.unit_price_minor).join(" ")}`);
+    resultLine(`  every line differs by exactly ${[...new Set(ratio)].join(" ")}x, so the quote payload fed to invoice_create bills ${res.totals.net_minor * 100} minor, not ${res.totals.net_minor}`);
+    resultLine("  both fields are plain numbers and both are called the unit price: neither sibling tool can detect the swap");
+    await sleep(STEP_DELAY_MS);
+
+    // A code that is not in the catalogue is refused by name, and nothing is priced.
+    const badArgs = { lines: [{ sku: "WEB-AUDT", quantity: 3 }], date: "2026-03-15" };
+    toolLine("lines_resolve", badArgs);
+    resultLine(await c.call("lines_resolve", badArgs));
+    await sleep(STEP_DELAY_MS);
+
+    // The Pro gate, on the free tier, shown rather than described.
+    toolLine("catalogue_report", {});
+    resultLine(await c.call("catalogue_report", {}));
+  }
   await sleep(STEP_DELAY_MS);
   c.close();
   if (ecb) ecb.close();
