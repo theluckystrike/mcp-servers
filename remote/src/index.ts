@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-seven endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, twenty-eight endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -38,6 +38,7 @@ import { createServer as createStatementOfAccount } from "./vendor/statement-of-
 import { createServer as createCashBook } from "./vendor/cash-book/index.js";
 import { createServer as createAmortization } from "./vendor/amortization/index.js";
 import { createServer as createPettyCash } from "./vendor/petty-cash/index.js";
+import { createServer as createWorkOrder } from "./vendor/work-order/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -469,6 +470,34 @@ const SERVERS: Record<string, ServerCfg> = {
     // vouchers actually recorded and 512 KB holds many years of a real one-tin office.
     factory: createPettyCash as () => McpServer,
   },
+  "work-order": {
+    // The first endpoint since /mcp/statement-of-account that hydrates a sibling DOCUMENT
+    // rather than only borrowing sibling CODE, and it hydrates exactly ONE, read-only: the
+    // invoice client records. work_order_create looks the client up with findClient from
+    // @theluckystrike/mcp-invoice/lib so a job carries the same record the invoice will be
+    // raised against rather than a second spelling of the name, and a bare name that matches
+    // nothing there is refused rather than invented. readOnly: true is the declaration, not
+    // the habit - work_order_invoice_payload returns invoice_create ARGUMENTS and creates no
+    // invoice, marks nothing paid and writes no client, so that document is never flushed
+    // and this endpoint cannot bill a customer behind the invoice server's back.
+    //
+    // The shared business profile (business_set on /mcp/invoice) travels the same way every
+    // other endpoint's does, through the licence shim, and is not a sharedDoc.
+    //
+    // What this endpoint owns is the board - orders.json and its per-year counter, under the
+    // homedir shim, tmp + rename - and NO TOTAL IS STORED: the value, the hours, the
+    // materials and the VAT are derived on every call from the lines, so 512 KB is a board
+    // of jobs and never a pile of arithmetic.
+    //
+    // completion_report_pdf renders through remote/src/shims/pdf.ts by way of the vendored
+    // @theluckystrike/mcp-billing-docs/lib and pushes its own download, so publish() only has
+    // to catch the .txt completion_report_text writes under /out/ - and that one is free on
+    // every tier, because the completion report is the document the customer signs.
+    factory: createWorkOrder as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+    sharedDoc: { server: "invoice", owns: (p) => p.startsWith(INVOICE_DIR), readOnly: true },
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -856,6 +885,7 @@ const TOOLS: Record<string, string[]> = {
   "cash-book": ["ledger_build", "trial_balance", "ledger_lines", "month_close", "ledger_export_csv", "ledger_report", "license_status", "license_activate"],
   "amortization": ["loan_create", "loan_schedule", "loan_repay_early", "loan_journal", "loan_list", "loans_report", "license_status", "license_activate"],
   "petty-cash": ["float_open", "topup_record", "voucher_add", "voucher_delete", "reconcile", "replenish_request", "float_report", "license_status", "license_activate"],
+  "work-order": ["work_order_create", "work_order_add_line", "work_order_status", "work_order_get", "work_order_list", "work_order_delete", "completion_report_text", "completion_report_pdf", "work_order_invoice_payload", "work_orders_report", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -1083,6 +1113,15 @@ function indexDoc(base: string) {
         free_limits: "1 float and 20 vouchers a calendar month; reconcile and voucher_delete are free and unlimited on every tier, because whether the cash in the tin matches the paperwork is the question this endpoint exists for and a free tier that withholds the answer is a demo. replenish_request and float_report are Pro",
         storage: `${DEFAULT_MAX_BYTES / 1024} KB of floats and vouchers per token`,
         notes: "the replenishment is IMPREST MINUS BALANCE and never the sum of the vouchers. The two differ by exactly what the counts found over or short, and reimbursing the voucher total restores the float that much light for good, every cycle, while every reconciliation still reports a clean difference. NO BALANCE IS STORED - the imprest, the top-ups, the counts and the vouchers decide it on the call, because a stored balance is the copy that gets believed after somebody deletes a voucher. A count is a FACT, so it moves the book balance and the difference is carried forward as a cash_over_short line rather than re-reported at every later count. A float is cash in a tin: a voucher larger than the balance is refused, and so is a back-dated one that would leave any LATER day negative, named by the day it breaks rather than the day it was typed. A voucher already covered by a count cannot be deleted, and a byte-identical one is refused by id unless duplicate_ok says the same thing really was bought twice. Under the imprest system petty_cash does not move: a replenishment credits cash and debits the expenses, and the float account is not in that journal at all. The chart of accounts is IMPORTED from /mcp/cash-book rather than restated, so a category spelled three ways is one account and no rename there can leave this endpoint posting to an account that ledger does not have. Currencies are never added together",
+      },
+      {
+        name: "work-order", url: `${base}/mcp/work-order`, tools: TOOLS["work-order"],
+        mode: "your own board, plus the invoice client records read-only",
+        how: "work_order_create opens a job against a client already in your /mcp/invoice client records, at a site address, with a requested date and a priority; work_order_add_line records the hours (kind labour, with the rate in MINOR units) and the parts fitted (kind parts, with the unit cost in MINOR units and an optional markup percent); work_order_status walks the job draft to scheduled to in_progress to done to invoiced, one step at a time, each step carrying its own date; completion_report_text and completion_report_pdf are the document the customer signs; work_order_invoice_payload hands back invoice_create arguments; work_orders_report values the board.",
+        outputs: "JSON, plus two documents: completion_report_text returns the report inline AND as a .txt download link, and completion_report_pdf returns the A4 report as an HTML print-to-PDF download (there is no PDF renderer on Workers). out_path is a NAME here, not a path: it only decides what the downloaded file is called.",
+        free_limits: "5 OPEN work orders, counted on the board rather than on the calendar, so closing a job frees its slot and work_order_delete on a draft with no lines is free on every tier; completion_report_text is free, because the completion report is the one document the customer signs. completion_report_pdf, work_order_invoice_payload and work_orders_report are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of work orders per token`,
+        notes: "the markup goes on the UNIT cost and never on the line total. Seven parts at 1299 minor units with 15 percent on top is 1494 a unit and 10,458 on the line; marking up the line total is 10,457, and only the first is a figure an invoice can reproduce, because /mcp/invoice rounds a unit price into minor units first and computes the line from that stored value. The payload's totals are computed by the invoice server's OWN computeTotals over the payload's own items, so there is no second implementation to disagree. NO TOTAL IS STORED - the lines decide it on every call, because a stored total is the copy that gets believed after somebody edits a line. The status machine moves one step forward at a time: a skipped step is refused naming the step that IS next, because every step carries its own date and a job that reached invoiced without done was never marked finished. A backwards step is refused, because a job that has to go back is a new work order. Hours are counted on the LINE date, not on the order date, so a February call worked in March logs its hours in March. This endpoint creates NO invoice and marks nothing: work_order_invoice_payload returns arguments, and the invoice client records it reads are hydrated READ-ONLY and never written. A client name that matches no invoice client record is refused unless you pass an address, because a misspelling would raise an invoice with an empty BILL TO block. A labour rate is never improvised: no default hourly rate exists in the shared profile today, so rate_minor is refused by name rather than invented onto a report the customer signs"
       },
     ],
     limits: {

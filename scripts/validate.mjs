@@ -1297,12 +1297,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 27 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 27 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 28 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 28 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -1791,6 +1791,113 @@ async function remote() {
       pcRow?.differences_net_minor === -11 && pcRow?.counts_that_agreed === 0 &&
       (pcF.by_currency || []).some((c) => c.currency === "EUR" && c.differences_net_minor === -11),
       `${pcRow?.balance_minor}/${pcRow?.imprest_minor} to_replenish ${pcRow?.to_replenish_minor} net ${pcRow?.differences_net_minor}`);
+    // Extension 19: /mcp/work-order. The first endpoint since /mcp/statement-of-account that
+    // hydrates a sibling DOCUMENT rather than only borrowing sibling CODE, and it hydrates
+    // exactly ONE, read-only: the invoice client records. So the probe seeds the client on
+    // /mcp/invoice and then never touches that endpoint again - work_order_invoice_payload
+    // returns invoice_create ARGUMENTS, creates no invoice and marks nothing.
+    //
+    // Every figure here turns on the one decision the server rests on: the markup goes on the
+    // UNIT cost and never on the line total. Seven parts at 1299 minor units with 15 percent
+    // on top is 1494 a unit and 10,458 on the line; marking up the line total is 10,457. Both
+    // are arithmetically correct, both reconcile against their own workings, and only the
+    // first is a figure /mcp/invoice can reproduce, because it rounds a unit price into minor
+    // units FIRST and computes the line from that stored value. The wrong one is one cent, it
+    // never nets out because it is a rounding direction, it is invisible to a spreadsheet that
+    // was built on the same basis, and it reaches the customer twice - on a report they signed
+    // and on an invoice that disagrees with it. So the gap is asserted as exactly 1 here
+    // rather than left implied, and the payload's totals are re-run through the invoice
+    // server's own computeTotals from the validating process, which is what catches a payload
+    // whose ITEMS do not carry what the work order thought they carried.
+    //
+    // The board is this endpoint's own document per token, so the client and the job are
+    // created fresh per run and every later call names the id.
+    const woClient = `Work Order Probe ${Date.now()}`;
+    await rpc("invoice", { jsonrpc: "2.0", id: 124, method: "tools/call", params: { name: "client_add", arguments: { name: woClient, address: "12 Quay Street, Gdansk", email: "ap@example.com" } } });
+    const wocr = await rpc("work-order", { jsonrpc: "2.0", id: 125, method: "tools/call", params: { name: "work_order_create", arguments: { client: woClient, site_address: "12 Quay Street, Gdansk", description: "Coffee machine service", requested_date: "2026-03-02", priority: "high", currency: "EUR" } } });
+    let woC = {}; try { woC = JSON.parse(wocr.result.content[0].text); } catch { woC = {}; }
+    const woId = woC.created?.id;
+    const wol1 = await rpc("work-order", { jsonrpc: "2.0", id: 126, method: "tools/call", params: { name: "work_order_add_line", arguments: { work_order: woId, kind: "parts", description: "Group head seal", quantity: 7, unit_cost_minor: 1299, markup_percent: 15, date: "2026-03-06" } } });
+    let woL1 = {}; try { woL1 = JSON.parse(wol1.result.content[0].text); } catch { woL1 = {}; }
+    const wol2 = await rpc("work-order", { jsonrpc: "2.0", id: 127, method: "tools/call", params: { name: "work_order_add_line", arguments: { work_order: woId, kind: "labour", description: "On site", hours: 3.5, rate_minor: 8500, date: "2026-03-06" } } });
+    let woL2 = {}; try { woL2 = JSON.parse(wol2.result.content[0].text); } catch { woL2 = {}; }
+    // The line-total basis, computed here rather than taken on trust: 7 x 1299 = 9093, and
+    // 9093 x 1.15 rounded half up is 10,457. The hosted line is 10,458.
+    const woLineTotalBasis = Math.floor(9093 * 1.15 + 0.5);
+    ok("hosted work_order_create takes the client from the invoice client records it hydrates READ-ONLY, and the 15 percent markup goes on the UNIT cost: 1299 becomes 1494 a unit and the line is 10,458, exactly 1 minor unit away from the 10,457 the line-total basis gives, which is the figure an invoice could not reproduce",
+      /^WO-\d{4}-\d{4}$/.test(woId || "") && woC.created?.client_source === "invoice client record" &&
+      woC.created?.client_record?.address === "12 Quay Street, Gdansk" && woC.created?.status === "draft" &&
+      woL1.added?.billed_unit_minor === 1494 && woL1.added?.value_minor === 10458 &&
+      woLineTotalBasis === 10457 && woL1.added?.value_minor - woLineTotalBasis === 1 &&
+      /markup goes on the UNIT cost/.test((woL1.notes || []).join(" ")) &&
+      woL2.added?.value_minor === 29750 && woL2.work_order?.hours === 3.5 &&
+      woL2.work_order?.materials_minor === 10458 && woL2.work_order?.labour_minor === 29750 && woL2.work_order?.net_minor === 40208,
+      `${woId} unit ${woL1.added?.billed_unit_minor} line ${woL1.added?.value_minor} vs ${woLineTotalBasis} net ${woL2.work_order?.net_minor}`);
+    // The status machine: a skipped step is refused NAMING the step that is next, because
+    // every step carries its own date and a job that reached done without in_progress has no
+    // day the work started. Then the three legal steps, each with its own date.
+    const woSkip = await rpc("work-order", { jsonrpc: "2.0", id: 128, method: "tools/call", params: { name: "work_order_status", arguments: { work_order: woId, status: "done", date: "2026-03-06" } } });
+    const woSkipT = woSkip.result?.content?.[0]?.text || "";
+    const woSteps = [];
+    for (const [st, d] of [["scheduled", "2026-03-03"], ["in_progress", "2026-03-06"], ["done", "2026-03-06"]]) {
+      const r = await rpc("work-order", { jsonrpc: "2.0", id: 129, method: "tools/call", params: { name: "work_order_status", arguments: { work_order: woId, status: st, date: d } } });
+      let j = {}; try { j = JSON.parse(r.result.content[0].text); } catch { j = {}; }
+      woSteps.push(j);
+    }
+    const woDone = woSteps[2];
+    ok("hosted work_order_status REFUSES draft straight to done naming scheduled as the step that is next, then walks the job draft to scheduled to in_progress to done with a date recorded per step, so the history reads as a timeline",
+      woSkip.result?.isError === true && /is draft, and the next status is scheduled, not done/.test(woSkipT) &&
+      /Nothing was written/.test(woSkipT) && woSteps.map((j) => j.work_order?.status).join(",") === "scheduled,in_progress,done" &&
+      woDone?.work_order?.open === false && (woDone?.history || []).map((h) => `${h.from}>${h.to}@${h.date}`).join(" ") === "draft>scheduled@2026-03-03 scheduled>in_progress@2026-03-06 in_progress>done@2026-03-06",
+      `${woSkipT.slice(0, 60)} | ${(woDone?.history || []).length} steps`);
+    // The completion report, both ways out: the .txt published under /out/ by the free tool
+    // and the A4 HTML the Pro tool renders through the same shim /mcp/billing-docs uses.
+    // out_path is a NAME here and not a path.
+    const wotxt = await rpc("work-order", { jsonrpc: "2.0", id: 130, method: "tools/call", params: { name: "completion_report_text", arguments: { work_order: woId } } });
+    const wotxtT = JSON.stringify(wotxt).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const wotL = (wotxtT.match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const wotRes = wotL ? await fetch(wotL) : null;
+    const wotBody = wotRes ? await wotRes.text() : "";
+    const wopdf = await rpc("work-order", { jsonrpc: "2.0", id: 131, method: "tools/call", params: { name: "completion_report_pdf", arguments: { work_order: woId, out_path: "harbour-cafe-report" } } });
+    const wopL = (JSON.stringify(wopdf).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const wopRes = wopL ? await fetch(wopL) : null;
+    const wopBody = wopRes ? await wopRes.text() : "";
+    ok("hosted completion_report_text publishes the signed-off report as a .txt download and completion_report_pdf renders the A4 report as HTML served text/html, titled COMPLETION REPORT, both naming the same work order and the same EUR 402.08",
+      !!wotL && (wotRes?.headers.get("content-type") || "").startsWith("text/plain") &&
+      wotBody.includes("COMPLETION REPORT") && wotBody.includes(woId) && wotBody.includes("SIGN-OFF") &&
+      !!wopL && (wopRes?.headers.get("content-type") || "").startsWith("text/html") &&
+      wopBody.startsWith("<!doctype html") && wopBody.includes(`<title>Completion report ${woId}</title>`) &&
+      wopBody.includes(`<h1>COMPLETION REPORT ${woId}</h1>`) && wopBody.includes(woClient) && wopBody.includes("EUR 402.08"),
+      `${wotRes?.headers.get("content-type")} | ${wopRes?.headers.get("content-type")} ${wopL ? "link" : "no link"}`);
+    // The payload, checked against the invoice server's OWN engine from this process. What
+    // this catches is not an arithmetic slip - the server ran the same function - but a
+    // payload whose items do not carry what the work order thought they carried.
+    const wopl = await rpc("work-order", { jsonrpc: "2.0", id: 132, method: "tools/call", params: { name: "work_order_invoice_payload", arguments: { work_order: woId, issue_date: "2026-03-10" } } });
+    let woP = {}; try { woP = JSON.parse(wopl.result.content[0].text); } catch { woP = {}; }
+    let woRe = {};
+    try {
+      const { computeTotals } = await import(`file://${ROOT}/servers/invoice/dist/lib.js`);
+      const args = woP.invoice_create?.arguments ?? {};
+      woRe = computeTotals(args.items ?? [], args.currency ?? "EUR", 0, 0);
+    } catch (e) { woRe = { error: String(e).slice(0, 60) }; }
+    ok("hosted work_order_invoice_payload prices the parts at the MARKED-UP unit (14.94, not 12.99) and the labour by the hour, and its totals are the invoice server's own: re-running computeTotals on the payload's items from this process gives the same net 40,208 to the minor unit, with posted false and marked_invoiced false",
+      woP.posted === false && woP.marked_invoiced === false &&
+      woP.invoice_create?.tool === "invoice_create" && woP.invoice_create?.server === "invoice" &&
+      (woP.invoice_create?.arguments?.items || []).length === 2 &&
+      woP.invoice_create?.arguments?.items?.[0]?.unit_price === 14.94 && woP.invoice_create?.arguments?.items?.[0]?.quantity === 7 &&
+      woP.invoice_create?.arguments?.items?.[1]?.unit_price === 85 && woP.invoice_create?.arguments?.items?.[1]?.quantity === 3.5 &&
+      woP.totals?.net_minor === 40208 && woP.totals?.total_minor === woRe.total_minor && woP.totals?.net_minor === woRe.net_minor &&
+      woRe.net_minor === 40208 && woRe.lines?.[0]?.gross_minor === 10458 && woRe.lines?.[1]?.gross_minor === 29750,
+      `payload ${woP.totals?.net_minor}/${woP.totals?.total_minor} recomputed ${woRe.net_minor}/${woRe.total_minor}`);
+    const worep = await rpc("work-order", { jsonrpc: "2.0", id: 133, method: "tools/call", params: { name: "work_orders_report", arguments: {} } });
+    let woR = {}; try { woR = JSON.parse(worep.result.content[0].text); } catch { woR = {}; }
+    const woCur = (woR.unbilled_by_currency || []).find((c) => c.currency === "EUR");
+    ok("hosted work_orders_report values the board from the lines with no total stored anywhere: one done job, nothing open, and EUR 402.08 unbilled made of 297.50 labour and 104.58 materials",
+      woR.work_orders === 1 && woR.open === 0 &&
+      (woR.by_status || []).find((b) => b.status === "done")?.count === 1 &&
+      woCur?.unbilled_minor === 40208 && woCur?.labour_minor === 29750 && woCur?.materials_minor === 10458 && woCur?.hours === 3.5 &&
+      /No total is stored/.test(woR.basis || ""),
+      `${woR.work_orders} orders, open ${woR.open}, unbilled ${woCur?.unbilled_minor}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";

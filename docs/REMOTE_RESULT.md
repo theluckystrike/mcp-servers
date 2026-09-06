@@ -4227,3 +4227,198 @@ aggregate over every float in the register is not a stable figure. **remote 104/
 - `float_open` fills the custodian from the shared business profile (`business_set` on
   `/mcp/invoice`) when none is given, and says which of the two it used. The probe passed one
   explicitly, so the profile path is asserted only by the stdio suite.
+
+# Extension 19 2026-09-06 - work-order
+
+status: DONE
+
+A twenty-eighth endpoint, `POST /mcp/work-order`. Worker `mcp-remote`, version ID
+`4bf14bf1-111a-4434-9d4d-f932c12c8085`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-eight.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/work-order | 12 | ONE sibling document, hydrated read-only: the invoice client records. Two downloads, one of them free. `publish` on `/out/`, `strip` on `/out/`, the default 512 KB cap |
+
+### The finding: the two tables answer different questions again, and the sum is four to one
+
+Extensions 17 and 18 were endpoints whose `SERVERS[...].sharedDoc` in `remote/src/index.ts`
+was empty while `LIB_RESOLUTIONS` in `remote/build-vendor.mjs` carried three and then four
+entries: sibling ENGINES with no sibling DOCUMENTS. This one is the first since Extension 15
+to carry both, and they still do not match. `LIB_RESOLUTIONS` carries FOUR; `sharedDoc`
+carries ONE.
+
+The four are `invoice` (the money engine and the client lookup), `billing-docs`
+(`renderDocPdf`), `quotes` (`today`, `isIsoDate`) and `timezone` (`readJsonFile` and its
+corrupt-store quarantine), and only THREE of them are reachable from `index.ts`. `store.ts`
+is the only file that imports the timezone engine, and `order.ts` reaches the invoice engine
+a second time for `computeTotals` and `roundHalfUp` - the arithmetic that decides whether a
+marked-up part is billed at 10,458 or 10,457. Extension 12's original index-only check would
+have passed a build that could not resolve the quarantine keeping an unreadable board from
+being read as an empty one. The entry is
+
+```
+"work-order": ["invoice", "billing-docs", "quotes", "timezone"],
+```
+
+checked against the concatenated bytes of every file the server vendored, after the build.
+
+The ONE `sharedDoc` is the invoice data directory, `readOnly: true`, and the read-only flag
+is the whole design of the endpoint expressed structurally. `work_order_create` looks the
+client up with `findClient` so a job carries the same record the invoice will be raised
+against rather than a second spelling of the name; `work_order_invoice_payload` returns
+`invoice_create` ARGUMENTS and creates no invoice, marks nothing paid and writes no client.
+Hydrating that document read-write would have made this endpoint capable of billing a
+customer behind /mcp/invoice's back, which is exactly what the stdio server refuses to do by
+convention. The shared business profile travels the licence shim as it does on every other
+endpoint and is not a `sharedDoc`.
+
+### Two documents out, and the free one is the one the customer signs
+
+`grep -n "writeFileSync\|/out/\|out_path" servers/work-order/src/*.ts` finds one writer,
+`store.ts` (the board, tmp + rename, a tenant document and not a download) and one
+`out_path`, on `completion_report_pdf`. So the vendoring transform does the
+statement-of-account thing twice:
+
+1. `out_path` is a NAME and not a path. `expandPath` is replaced with the Extension 15
+   function verbatim, down to the 1-64 character alphabet, and `renderDocPdf` returns the
+   download URL rather than writing a file. The default name becomes `completion-<WO id>`
+   instead of `join(dataDir(), "pdf", ...)`, a directory no hosted caller has.
+2. `completion_report_text` keeps returning the pasteable text inline AND writes it under
+   `/out/`, so the same call hands back a `.txt` link. It is free on every tier, which is
+   the point: the completion report is the one document a customer signs, and a hosted free
+   tier that could only paste it would be a smaller server than the stdio one. That is the
+   whole of `EXTRA_IMPORTS["work-order"]` (`publishFile`, `writeFileSync`) and the whole of
+   `publish: (p) => p.startsWith("/out/")` with `strip: ["/out/"]`.
+
+The `workorder://board` resource is the D-R60 species for the ninth time. It reported
+`dir: dataDir()` - hosted, the worker's virtual homedir - and listed `pdf/` among the files
+it writes. It now says the board is one document held per token and the completion report is
+a download link rather than a file, and `pdf/` is gone, because there is no such directory
+here and never was. `remote/test/vendor-paths.test.mjs` stays at 30/30.
+
+Vendoring is five files, `SERVERS["work-order"] = index.ts, version.ts, lib.ts, order.ts,
+store.ts`: every source file, `lib.ts` included, for the reason the last seven servers' are.
+`store.ts` needed no patch and `order.ts` touches no path, no clock and no network. Caps and
+hardening are unchanged: the default 512 KB tenant document, the 256 KB body ceiling, the
+JSON-RPC batch rejection, the same free/Pro rate limits, the 1-hour download TTL and the
+35-day orphan sweep. The cap is the default and did not have to be argued for, for the third
+endpoint running: NO TOTAL IS STORED. An order holds its client, its lines and its status
+history, and the value, the hours, the materials and the VAT are derived on every call.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does. One POST per call, one token throughout.
+
+```
+$ GET /mcp                              -> 28 endpoints: ..., petty-cash, work-order
+$ GET /mcp/connect                      -> 200, 28 server rows, work-order among them
+
+$ work-order tools/list
+  12 tools: work_order_create, work_order_add_line, work_order_status, work_order_get,
+  work_order_list, work_order_delete, completion_report_text, completion_report_pdf,
+  work_order_invoice_payload, work_orders_report, license_status, license_activate
+
+$ invoice client_add {name: "Work Order Probe ...", address: "12 Quay Street, Gdansk"}
+  Added client ... (f81150d9)
+
+$ work-order work_order_create {client: same name, site 12 Quay Street, requested 2026-03-02,
+                                priority high, currency EUR}
+  WO-2026-0001  draft   client_source "invoice client record"
+  client_record {name, address 12 Quay Street Gdansk, email} -> read out of /mcp/invoice's
+  clients.json, hydrated read-only
+
+$ work-order work_order_add_line {parts, 7 x unit_cost_minor 1299, markup_percent 15}
+  billed_unit 1494   value 10,458   "The 15% markup goes on the UNIT cost: EUR 12.99 becomes
+  EUR 14.94 a unit, and the line is 7 of those."
+  the line-total basis, computed in the probe: roundHalfUp(9093 x 1.15) = 10,457, a gap of 1
+
+$ work-order work_order_add_line {labour, 3.5 h at rate_minor 8500}
+  value 29,750    board: hours 3.5, labour 29,750, materials 10,458, net 40,208
+
+$ work-order work_order_status {status: "done"}      <- from draft
+  Error: WO-2026-0001 is draft, and the next status is scheduled, not done. Every step is
+  recorded with its own timestamp, so skipping one loses the day the job actually reached it.
+  Nothing was written.
+
+$ work-order work_order_status x3
+  draft>scheduled@2026-03-03  scheduled>in_progress@2026-03-06  in_progress>done@2026-03-06
+  open false
+
+$ work-order completion_report_text
+  inline text + "Download (.txt, valid 1 hour): https://mcp.zovo.one/mcp/download/<t>"
+  GET that link -> 200 text/plain, COMPLETION REPORT ... SIGN-OFF, 660 bytes
+
+$ work-order completion_report_pdf {out_path: "harbour-cafe-report"}
+  document "HTML completion report, A4 print-to-PDF layout (there is no PDF renderer on
+  Workers), link valid 1 hour"   total EUR 402.08
+  GET that link -> 200 text/html; charset=utf-8
+    <title>Completion report WO-2026-0001</title>
+    <h1>COMPLETION REPORT WO-2026-0001</h1>   the client name, EUR 402.08
+
+$ work-order work_order_invoice_payload {issue_date: "2026-03-10"}
+  invoice_create.arguments.items
+    [{Group head seal (15% on cost), qty 7,   unit_price 14.94},
+     {On site (3.5 h at 85.00 EUR/h), qty 3.5, unit_price 85}]
+  totals net 40,208, total 40,208   posted false   marked_invoiced false
+  re-run through servers/invoice computeTotals from the validating process:
+    net 40,208, total 40,208, line grosses 10,458 and 29,750   identical
+
+$ work-order work_orders_report
+  work_orders 1, open 0, done 1
+  unbilled_by_currency [{EUR, hours 3.5, labour 29,750, materials 10,458, unbilled 40,208}]
+```
+
+VAT is 0 percent on this tenant and says so (`vat_rate_source: "none"`): the bundle key mints
+a fresh tenant id per signature, so no `business_set` has ever run behind it. The rate path
+is asserted by the stdio suite.
+
+`scripts/validate.mjs` gained `work-order` to the tools/list sweep, the index assertion moved
+from 27 endpoints to 28, and five real calls were added: the create plus both lines, the
+refused skip plus the three legal steps, both downloads, the payload, and the board report.
+The markup gap is asserted as EXACTLY 1 rather than left implied, because the wrong basis is
+one cent, never nets out (it is a rounding direction, not a random error), is invisible to a
+spreadsheet built on the same basis, and reaches the customer twice - on a report they signed
+and on an invoice that disagrees with it. And the payload's totals are re-run through
+`servers/invoice`'s own `computeTotals` from the validating process rather than compared to a
+literal, because what that catches is not an arithmetic slip - the server ran the same
+function - but a payload whose ITEMS do not carry what the work order thought they carried,
+which is the failure that survives every internal check. **remote 110/110,
+`node scripts/validate.mjs` run 50: 817/817.**
+
+### Limitations
+
+- The free tier is 5 OPEN work orders, counted on the board rather than on the calendar. The
+  probes ran on a Pro key, so the cap refusal, the free `work_order_delete` way back and the
+  Pro gates on `completion_report_pdf`, `work_order_invoice_payload` and `work_orders_report`
+  are asserted only by the stdio suite, as are the concurrency rows.
+- `work_order_get`, `work_order_list` and `work_order_delete` were not exercised against the
+  live endpoint; the five validate calls are `work_order_create`, `work_order_add_line`
+  (twice), `work_order_status` (a refusal and three steps), `completion_report_text`,
+  `completion_report_pdf`, `work_order_invoice_payload` and `work_orders_report`. All three
+  are covered by the stdio suite and by the tools/list sweep.
+- The status step to `invoiced` was not walked live, and neither was the refusal of a second
+  payload on an already-invoiced order. Both are stdio-asserted.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Over stdio the free-cap check and the board write are one critical section;
+  hosted, two simultaneous sixth open orders on one free token could both pass a check only
+  one of them should. Unchanged since Extension 1. The WO counter is written before the
+  record, so a lost write burns a number rather than reusing one.
+- The corrupt-store behaviour cannot be reached through this endpoint, the petty-cash
+  limitation verbatim: the board is written by this worker as one JSON object and hydrated
+  back, so a board that is on disk and unparseable is a local-install condition. The
+  quarantine code is vendored from the timezone engine and resolves; it is the DISK state it
+  defends against that hosted callers cannot produce.
+- Nothing is posted anywhere. `work_order_invoice_payload` hands back `invoice_create`
+  arguments and the caller passes them on - hosted, a further POST to `/mcp/invoice` on the
+  same token, exactly as `asset_journal`, `loan_journal` and `replenish_request` do, and
+  neither endpoint knows the other ran. The difference from those three is that this
+  endpoint's sibling document IS hydrated, read-only, so the client record it quotes is the
+  live one rather than a name typed twice.
+- A labour rate is still never improvised. `PROFILE_FIELDS` carries no default hourly rate,
+  so `rate_minor` is refused by name and the refusal says which field would have filled it.
+  The lookup is vendored and will start working the day that package adds the field.
+- The buy page for this product is not in this commit. `scripts/validate.mjs` run 50 is
+  817/817 with no product gap surfacing in the remote or billing blocks, because the
+  `buy/<product>` sweep does not yet name `work-order`; the pricing side is the orchestrator's.

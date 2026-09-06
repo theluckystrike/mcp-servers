@@ -138,6 +138,29 @@ const SERVERS = {
   // vendored for the reason the others' are: it is this engine as a public API, so the
   // next server that reads a float resolves here rather than to a module that cannot load.
   "petty-cash": ["index.ts", "version.ts", "lib.ts", "accounts.ts", "float.ts", "store.ts"],
+  // Every source file. The first endpoint since /mcp/statement-of-account that reads a
+  // sibling DOCUMENT again rather than only borrowing sibling CODE: findClient from
+  // @theluckystrike/mcp-invoice/lib opens the invoice server's clients.json, so a job
+  // carries the same client record the invoice will be raised against instead of a second
+  // spelling of the name. That is one read-only sharedDoc in remote/src/index.ts, and one
+  // only: work_order_invoice_payload returns invoice_create ARGUMENTS and creates no
+  // invoice, so nothing in the invoice ledger is ever written from here.
+  //
+  // Four sibling engines, and only THREE of them are reachable from index.ts:
+  // @theluckystrike/mcp-invoice/lib (currencyDecimals, findClient, formatMoney,
+  // getBusiness, hasBusiness from index.ts, and computeTotals, roundHalfUp from order.ts -
+  // the money basis is imported, never copied), @theluckystrike/mcp-billing-docs/lib for
+  // renderDocPdf, which the vendored billing-docs/lib.ts re-exports from ../../shims/pdf.js
+  // rather than from the pdfkit module that is deliberately not vendored,
+  // @theluckystrike/mcp-quotes/lib for today() and isIsoDate(), and
+  // @theluckystrike/mcp-timezone/lib for readJsonFile and its corrupt-store quarantine,
+  // which is imported by store.ts and by nothing else. So LIB_RESOLUTIONS below carries all
+  // four and checks them on the bytes that were written: an index-only check would have
+  // passed a build that could not resolve the quarantine keeping an unreadable board from
+  // reading as an empty one. order.ts is pure arithmetic over the imported engine. lib.ts is
+  // vendored for the reason the others' are: it is this engine as a public API, so the next
+  // server that reads a work order resolves here rather than to a module that cannot load.
+  "work-order": ["index.ts", "version.ts", "lib.ts", "order.ts", "store.ts"],
 };
 
 /**
@@ -2566,6 +2589,103 @@ function patchPettyCashIndex(src) {
   return src;
 }
 
+/**
+ * work-order. The hosted endpoint has no disk. What moves:
+ *   1. renderDocPdf is the one billing-docs uses, reached through
+ *      @theluckystrike/mcp-billing-docs/lib -> ../billing-docs/lib.js -> ../../shims/pdf.js,
+ *      the same two hops /mcp/deposits and /mcp/statement-of-account take. Nothing about the
+ *      call changes: the completion report was already expressed as a title, a reference
+ *      line, a party label, meta rows and a footer block.
+ *   2. out_path is a NAME, not a path: it only decides what the downloaded file is called.
+ *      The statement-of-account rule verbatim, down to the 1-64 character alphabet.
+ *   3. completion_report_text keeps returning the pasteable text inline and ALSO writes it
+ *      under /out/, so the same call hands back a .txt download link. The completion report
+ *      is the one document here a customer signs, so it has to be sendable as a file and not
+ *      only pasteable, and it is free on every tier: publishing it hosted keeps the free tier
+ *      the same shape it has over stdio.
+ * The store needs no patch: orders.json and counter.json are one document per token under
+ * the homedir shim, written tmp + rename, and readJsonFile comes from the vendored timezone
+ * engine. order.ts touches no path, no clock and no network. The one book this server READS
+ * - the invoice client records, through findClient - is the tenant's own document on
+ * /mcp/invoice, hydrated read-ONLY (SERVERS["work-order"].sharedDoc, one entry, readOnly)
+ * and never flushed: work_order_invoice_payload returns invoice_create arguments and creates
+ * nothing, so the hosted copy says structurally what the stdio server says by convention.
+ */
+function patchWorkOrderIndex(src) {
+  // The only path this server ever took was out_path, and here it is a name.
+  src = must(src, /function expandPath\(p: string\): string \{[\s\S]*?\n\}\n/,
+`function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.[A-Za-z0-9]{1,8}$/, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the name the downloaded file carries, 1-64 characters of letters, digits, \` +
+      \`underscore or dash.\`);
+  }
+  return m[1];
+}
+`, "work-order expandPath");
+
+  // The completion report PDF: the name is decided first, the renderer returns the link.
+  src = must(src,
+    '    const out = a.out_path ? expandPath(a.out_path) : join(dataDir(), "pdf", `${o.id}.pdf`);',
+    '    const name = `${expandPath(a.out_path ?? `completion-${o.id}`)}.html`;',
+    "work-order pdf out name");
+  src = must(src, "    await renderDocPdf({", "    const out = await renderDocPdf({",
+    "work-order renderDocPdf call");
+  src = must(src,
+    "    }, issuer(), out, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "    }, issuer(), name, { branded: !gate.isPro(), logo: gate.isPro() });",
+    "work-order renderDocPdf filename");
+  src = must(src,
+    '      work_order: o.id, path: out,\n' +
+    '      document: /\\.html?$/i.test(out) ? "HTML completion report (print to PDF)" : "PDF completion report",',
+    '      work_order: o.id, download: out,\n' +
+    '      document: "HTML completion report, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",',
+    "work-order pdf result");
+  src = must(src,
+    'out_path: z.string().max(1000).optional().describe("Where to write the file. Defaults to the work-order data directory under pdf/"),',
+    'out_path: z.string().max(1000).optional().describe("Name for the downloaded file, e.g. harbour-cafe-report. Defaults to the work order id; the report comes back as a download link valid for one hour"),',
+    "work-order out_path description");
+  src = must(src,
+    'description: "Call this tool to write the A4 completion report of one work order and return the file path:',
+    'description: "Call this tool to render the A4 completion report of one work order and return a download link valid for one hour:',
+    "work-order pdf description");
+
+  // The plain-text report stays inline (it is meant to be pasted) AND is published.
+  src = must(src,
+    "    return ok(`${reportText(o)}",
+    '    const text = reportText(o);\n' +
+    '    const file = `/out/completion-${o.id}.txt`;\n' +
+    '    writeFileSync(file, text, "utf8");\n' +
+    '    const link = publishFile(file);\n' +
+    '    if (link) notes.unshift(`Download (.txt, valid 1 hour): ${link}`);\n' +
+    "    return ok(`${text}",
+    "work-order text download");
+  src = must(src,
+    'ready to paste into an email. Free on every tier.",',
+    'ready to paste into an email. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    "work-order text description");
+
+  // The workorder://board resource reported dataDir(), which hosted is the worker's virtual
+  // homedir - a path no caller has and none can reach. The D-R60 species for the ninth time,
+  // and here it also claimed a pdf/ directory that does not exist: the completion report is
+  // a download link and never a file on any disk the caller can open.
+  src = must(src,
+    '      writes: [{ store: "work-order", dir: dataDir(), files: ["orders.json", "counter.json", "pdf/"] }],',
+    '      writes: [{ store: "work-order", dir: "not a directory on this endpoint: the board is one document held " +\n' +
+    '        "per token, and the completion report is a download link rather than a file",\n' +
+    '        files: ["orders.json", "counter.json"] }],',
+    "work-order board resource writes dir");
+  src = must(src,
+    'description: "The five statuses in order, the free-tier limits, the one directory this server writes and the one sibling store it reads.",',
+    'description: "The five statuses in order, the free-tier limits, the one document this server writes and the one sibling store it reads.",',
+    "work-order board resource description");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2599,6 +2719,7 @@ const EXTRA_IMPORTS = {
   deposits: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   "statement-of-account": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   "cash-book": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
+  "work-order": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   zip: [
     'import { Buffer } from "node:buffer";',
     'import { registerZipUpload } from "../../shims/zip-upload.js";',
@@ -2670,6 +2791,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "cash-book") src = patchCashBookIndex(src);
     if (name === "amortization") src = patchAmortizationIndex(src);
     if (name === "petty-cash") src = patchPettyCashIndex(src);
+    if (name === "work-order") src = patchWorkOrderIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -2743,6 +2865,14 @@ const LIB_RESOLUTIONS = {
   // resolve either the account ids every journal line is posted to or the corrupt-store
   // quarantine that keeps an unreadable float register from being read as an empty one.
   "petty-cash": ["cash-book", "asset-register", "quotes", "timezone"],
+  // Four, and only THREE of them (invoice, billing-docs and quotes) are reachable from
+  // index.ts: store.ts imports the timezone engine's readJsonFile, so an index-only check
+  // would have passed a build that could not resolve the corrupt-store quarantine that
+  // keeps an unreadable board from being read as an empty one. order.ts reaches the invoice
+  // engine a second time, for computeTotals and roundHalfUp - the arithmetic that decides
+  // whether a marked-up part is billed at 10,458 or 10,457 - and that resolution is checked
+  // on the same concatenated bytes rather than assumed from the index.
+  "work-order": ["invoice", "billing-docs", "quotes", "timezone"],
 };
 for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
   const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");
