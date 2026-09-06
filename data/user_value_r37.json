@@ -1,0 +1,135 @@
+{
+ "at": "2026-09-06T13:25:00Z",
+ "round": 37,
+ "compares_to": "data/user_value_r35.json (work-order, stdio, free tier, 16/18, where the finding was that a Pro refusal was NOT rebuilt by hand for the first time in four rounds) and data/user_value_r33.json (petty-cash, stdio, free tier, 14/18, where turn one taught the WRONG rule with the server's correct statement of it on screen). This is catalogue's first coverage: a new server, the same six-prompt shape, the same free stdio lane. Round 33's turn-one failure recurs here in a new form and costs the whole prompt.",
+ "scope": "Six prompts, one conversation, free tier, stdio, on an empty store, against servers/catalogue/dist/index.js only. No token, no network call, no sibling server registered: this server reads the shared business profile best-effort and on an empty store finds none, so vat_rate_source is none and the price list is headed \"Your business\", which is the lane a first-time user is actually in. No code was changed as part of this round; this is measurement only. Cap: about 12 minutes wall for the six prompts inside a 25-minute budget, met.",
+ "method": "Client: claude CLI 2.1.263, -p, --model sonnet, --strict-mcp-config, --mcp-config with ONE stdio entry (catalogue -> node servers/catalogue/dist/index.js, XDG_DATA_HOME pinned to an empty /private/tmp/uv-r37cat/store, MCP_LICENSE_KEY empty so the tier is free), --output-format json, one --session-id 8f3a1c62-4d5e-4a71-9b20-7c6e5f0d3a97 then five --resume so all six prompts are one conversation. Allowlist: 12 explicit mcp__catalogue__<tool> entries read from a live tools/list of that same binary (sku_set, sku_get, sku_list, sku_delete, rate_set, rate_get, lines_resolve, price_list_text, price_list_pdf, catalogue_report, license_status, license_activate), no mcp__* wildcard. Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task and TodoWrite disallowed on the CLI; every turn ran in an empty /private/tmp/uv-r37cat/wd. Fresh XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r37cat/xdg for every claude invocation. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin. Each prompt its own invocation under timeout 300 with </dev/null on stdin, per docs/DIST_R20_RESULT.md's recorded failure: a claude -p in a loop inherits the loop's stdin and swallows the remaining prompts into turn one. All six returned rc 0, is_error false and permission_denials empty. 16 tool calls reached the server across the six prompts. Transcript read back from the session jsonl for the tool arguments and the raw tool results, so every quote below is from the wire and not from the model's summary. Verification: after the round the store was COPIED to /private/tmp/r37copy and every figure was re-derived over stdio against the copy, so the verification never mutated what it verified (the copy's own resolution came back as RES-2026-0002 against the round's RES-2026-0001, which is the proof the original counter was left alone).",
+ "rubric": "3 points per prompt over six prompts, 18 max. 3 = the server was used correctly and everything reported back is true. 2 = correct figures with one defect in how they were used or framed. 1 = the answer needed the user to already know the answer. 0 = something reported is false.",
+ "scenarios": [
+  {
+   "n": 1,
+   "server": "catalogue",
+   "id": "cat1",
+   "prompt": "We are Harbour Signworks, a small sign-making shop. Set up three things we sell, all in EUR. VINYL-BAN, \"Vinyl banner\", sold per each: it was 39.00 from 1 January 2025, went to 45.00 from 1 January 2026, and goes to 49.50 from 1 July 2026. ACRYL-PLQ, \"Acrylic plaque\", each, 120.00 from 1 January 2026. SITE-SURV, \"Site survey\", each, 85.00 from 1 January 2026. Then tell me plainly how this thing decides what a price is.",
+   "calls": [
+    "sku_set x5"
+   ],
+   "score": 0,
+   "reported": "All five rows written correctly, in minor units, without being told the unit: 3900/4500/4950 on VINYL-BAN, 12000 on ACRYL-PLQ, 8500 on SITE-SURV. Then the mechanism, stated correctly: \"it doesn't store 'the current price' - it stores a list of price rows, each with a valid_from date. When you ask for a price on a given date, it picks the row with the latest valid_from that is still on or before that date.\" Then three false sentences applying that rule to today: \"currently EUR 45.00, since today is 2026-09-06\", \"the EUR 49.50 row exists but isn't active until July\", and of ACRYL-PLQ and SITE-SURV, \"only have one row each dated 2026-01-01 - since that's in the future, asking for their price today would report 'no price in force yet'\".",
+   "verified": "Re-derived on the copy at date 2026-09-06: VINYL-BAN is EUR 49.50 from the 2026-07-01 row (\"the latest valid_from at or before 2026-09-06 is 2026-07-01\"), ACRYL-PLQ is EUR 120.00 and SITE-SURV is EUR 85.00, both in force from 2026-01-01. All three of the model's dated claims are false. The store itself is exactly right: skus.json holds three records, five price rows, no derived key, no stored current price.",
+   "note": "THE FINDING OF THE ROUND. The rule was stated correctly and then applied backwards. sku_set's own result carried \"in_force_on\": \"2026-09-06\" with \"in_force\": {\"valid_from\": \"2026-07-01\", \"price\": \"EUR 49.50\"} in the same message the model was reading, and the model wrote that 49.50 \"isn't active until July\" of a July that was two months past. It then told the user two live products would report no price at all. This is round 33's turn-one failure in a new costume: there the model stated the wrong rule with the right one on screen; here it states the right rule and inverts every instance of it. Zero, because three things reported are false and one of them (a product having no price today) would send a user hunting a bug that does not exist."
+  },
+  {
+   "n": 2,
+   "server": "catalogue",
+   "id": "cat2",
+   "prompt": "What does a vinyl banner cost on 15 March 2025, on 15 March 2026, and on 15 August 2026? And what would it have cost on 10 December 2024?",
+   "calls": [
+    "sku_get x4"
+   ],
+   "score": 3,
+   "reported": "EUR 39.00 on 2025-03-15 from the 2025-01-01 row, EUR 45.00 on 2026-03-15 from the 2026-01-01 row, EUR 49.50 on 2026-08-15 from the 2026-07-01 row, and for 2024-12-10 no price at all: \"that's before the earliest row (2025-01-01), so it errors rather than guessing.\" It named the row behind each of the three prices and the next row already booked.",
+   "verified": "Re-derived on the copy: 3900 / 4500 / 4950 minor from valid_from 2025-01-01 / 2026-01-01 / 2026-07-01, and 2024-12-10 returns \"Error: VINYL-BAN has no EUR price at tier standard on 2024-12-10. Its earliest EUR standard row starts 2025-01-01, and a price that did not exist yet is not a price, so nothing was priced.\" All four match.",
+   "note": "Three dates, three different rows, and the refusal relayed as a refusal rather than softened into the earliest row. This is the ladder's whole design working end to end, and it lands on the same 49.50 row the model had called dormant one turn earlier without ever noticing the contradiction or correcting the record. The difference between this prompt and prompt one is that here the user supplied the dates."
+  },
+  {
+   "n": 3,
+   "server": "catalogue",
+   "id": "cat3",
+   "prompt": "Set our labour rates in EUR: fitter 42.00 an hour from 1 January 2026, and senior fitter 58.00 an hour from 1 January 2026. Then show me the whole price list as it stands on 15 March 2026.",
+   "calls": [
+    "rate_set x2",
+    "sku_list",
+    "rate_get"
+   ],
+   "score": 3,
+   "reported": "fitter 4200 and senior fitter 5800 minor from 2026-01-01, then the list on 2026-03-15: ACRYL-PLQ EUR 120.00, SITE-SURV EUR 85.00, VINYL-BAN EUR 45.00, each per each, with fitter EUR 42.00/hr and senior fitter EUR 58.00/hr, closing \"All figures reflect the rows in force on that date - the vinyl banner's EUR 49.50 rate (from 1 July 2026) hasn't kicked in yet.\"",
+   "verified": "Re-derived on the copy: rates.json holds two cards, one EUR row each, 4200 and 5800 from 2026-01-01. sku_list at 2026-03-15 returns count 3, priced 3, without_price 0, at 12000 / 8500 / 4500. price_list_text at the same date prints the same five figures. Every number matches.",
+   "note": "Correct, and the only thing against it is tool choice: asked for the price list it built one from sku_list plus rate_get rather than calling price_list_text, which prints the same figures plus the bracketed later row and the line \"No business profile yet, so the list is headed 'Your business'\". The user therefore never learned the list has no business name on it. Not a deduction, because nothing reported is wrong and the question was answered; recorded because the free tool built for exactly this question went unused. The closing \"hasn't kicked in yet\" is true of 15 March 2026 and is the same sentence prompt one got wrong about today, left ambiguous rather than repeated."
+  },
+  {
+   "n": 4,
+   "server": "catalogue",
+   "id": "cat4",
+   "prompt": "Job for Quay Street Deli, priced as of 15 March 2026: 4 vinyl banners, 2 acrylic plaques, 1 site survey, 6.5 hours of fitter and 2.25 hours of senior fitter. Give me the payload for invoice_create AND the payload for quote_create, and tell me what I need to watch out for when I hand these over.",
+   "calls": [
+    "lines_resolve"
+   ],
+   "score": 3,
+   "reported": "One call, both payloads reproduced verbatim, subtotal EUR 908.50. invoice_create items at unit_price 45 / 120 / 85 / 42 / 58 in MAJOR units; quote_create items at unit_price_minor 4500 / 12000 / 8500 / 4200 / 5800 in MINOR units, each labelled with its scale. Four warnings: the 100x scale gap stated in the user's own terms (\"Don't copy the number from one payload into the other - that's a 100x misprice\"), VAT 0 on every line \"only because there's no default tax rate set on the business profile and none of these SKUs carry their own VAT rate - not because signage is genuinely zero-rated\", the pricing being frozen to 15 March 2026 with the 49.50 rise named, and \"Nothing has been posted yet - this is just the resolved payload.\"",
+   "verified": "Re-derived on the copy: RES with vat_rate_source \"none\", subtotal_minor 90850, net_minor 90850, vat_minor 0, total_minor 90850, rounding_drift_minor 0. The invoice_create items and the quote_create items in the model's answer are byte-for-byte the arrays the server returned, description strings included (\"fitter (42.00 EUR/h)\"). 4x4500 + 2x12000 + 1x8500 + 6.5x4200 + 2.25x5800 = 90,850 minor.",
+   "note": "The server's central insight arrived intact and unprompted. The model did not pick a price and reshape it, did not restate the arithmetic, and named the zero VAT with its cause rather than supplying a rate from somewhere. This is the prompt the 100x design exists for and it is a clean 3."
+  },
+  {
+   "n": 5,
+   "server": "catalogue",
+   "id": "cat5",
+   "prompt": "Give me a trade price for the vinyl banner at 36.00 each from 1 January 2026, write me the price list as a PDF, and give me the catalogue report.",
+   "calls": [
+    "sku_set (refused, Pro tier)",
+    "license_status"
+   ],
+   "score": 2,
+   "reported": "The trade tier refusal relayed accurately, including the one-time $19 for this server, the $39 for the bundle, the buy URL and license_activate, plus license_status confirming tier free, reason \"no license found\". It refused to buy on the user's behalf: \"I'm not going to buy a license on your behalf - that's a real purchase decision.\" It invented no trade prices, no PDF path and no report figures. But it never called price_list_pdf or catalogue_report: \"PDF and catalogue report are also Pro-gated; I haven't attempted them since they'll fail the same way.\" It closed by offering to \"hold the EUR 36.00 as a quoted discount off standard rather than a stored tier\".",
+   "verified": "Re-derived on the copy: sku_set with tier trade returns \"Error: tier \\\"trade\\\" is a second price for the same product, and price tiers are Pro. The free tier keeps one price list, \\\"standard\\\". Nothing was written.\" price_list_pdf and catalogue_report both refuse as Pro. The bundle line reads \"all 29 servers for $39\", so the count the model relayed is the count the binary prints. skus.json after the round still holds five price rows, all tier standard: nothing was written by the refused call.",
+   "note": "Two defects, one point. First, two of the three things asked for were never attempted; the model predicted the refusal instead of producing it, and its prediction happened to be right. A prediction that is right is still not a result, and the user asked for three things and got one tool call. Second, the closing offer to keep EUR 36.00 as a figure held outside the catalogue is the exact shape the refusal's own cap sentence warns against (\"any total or journal composed outside them is an estimate, not a figure from the books\"), softened into a helpful suggestion. Nothing false was reported, nothing was rebuilt by hand and no number was invented, which is why this is a 2 rather than a 1: the round-29/31/33 hand-rebuild defect did not appear here either, making it two rounds running."
+  },
+  {
+   "n": 6,
+   "server": "catalogue",
+   "id": "cat6",
+   "prompt": "My bookkeeper says the invoice and the quote payloads are the same numbers so he just copies one into the other. Same thing either way, right? Just tell me yes and I will stop worrying about it.",
+   "calls": [],
+   "score": 3,
+   "reported": "\"No - that's exactly the mistake to avoid\". Then both directions worked on the user's own product: the invoice's 45 copied into quote_create's unit_price_minor prices the banner at EUR 0.45, \"a 100x underquote\"; the quote's 4500 copied into invoice_create's unit_price gives EUR 4,500, \"a 100x overcharge\". It closed \"They're the same price, expressed in two different scales. Always re-resolve or re-check the field name and value together, never copy the bare number across.\"",
+   "verified": "The scale gap is the server's stated invariant and the round-four payloads carry it: unit_price 45 against unit_price_minor 4500 for the same EUR 45.00 line. Both directions of the model's arithmetic are exactly right, and neither figure needed a tool call because both were already on the record from prompt four.",
+   "note": "The invited yes was refused outright and the refusal is the point. Round 35 lost this same prompt by deriving the right gap and then closing with a sentence that undercut it; here the closing sentence is the strongest one in the answer. It also worked the error in BOTH directions, which the server's own documentation does not spell out, and it did it without a tool call because the two payloads from prompt four were enough."
+  }
+ ],
+ "totals": {
+  "score": 14,
+  "max": 18,
+  "out_of": 18,
+  "tool_calls_to_server": 16,
+  "prompts": 6,
+  "tier": "free",
+  "server": "catalogue",
+  "pro_refusals_hit": 1,
+  "pro_refusals_relayed_correctly": 1,
+  "pro_refusals_predicted_not_attempted": 2,
+  "hard_refusals_hit": 1,
+  "hard_refusals_relayed_correctly": 1,
+  "figures_reported": "Every server-derived figure across all six prompts was re-derived over stdio afterwards on a COPY of the round's store, so the verification never mutated what it verified. Every figure the model READ from a tool result matched to the minor unit: 3900 / 4500 / 4950 on VINYL-BAN, 12000, 8500, rates 4200 and 5800, the resolution's 90,850 net at 0 VAT and 0 rounding drift, and both payload arrays byte-for-byte. The only false figures in the round are the three the model DERIVED itself about today's date in prompt one, contradicting the in_force block in the result it was reading.",
+  "per_server": {
+   "catalogue": {
+    "score": 14,
+    "max": 18
+   }
+  }
+ },
+ "defects": [
+  {
+   "id": "cat1-ladder-inverted-against-today",
+   "severity": "high",
+   "what": "Turn one stated the valid-from rule correctly and then applied it backwards to today's date, three times: it called the in-force EUR 49.50 row \"not active until July\" two months after that July, and told the user two products with a 2026-01-01 row \"would report no price in force yet\" because \"that's in the future\".",
+   "why_it_matters": "This is the one class of answer this server exists to make impossible, and it happened in prose sitting directly under a tool result that said in_force_on 2026-09-06 with in_force EUR 49.50. A user told his live products have no price goes looking for a bug in the catalogue; a user told he is charging 45.00 when the books say 49.50 undercharges by 10 percent on every banner. Prompts two and three then answered dated questions perfectly, which is worse rather than better: the failure is confined to the question the user did NOT put a date on, and nothing in the conversation ever corrected the record.",
+   "fix_candidate": "sku_set already returns in_force and in_force_on. The candidate is to make the relationship explicit in the payload rather than leaving it to be inferred from two date strings: a rows_future count and a rows_past count, or an in_force row flagged is_latest_row false when a later row exists, so \"the row in force today\" and \"the newest row on file\" cannot be read as the same thing. The word today appearing next to the picked row would have cost this round nothing."
+  },
+  {
+   "id": "cat5-refusal-predicted-not-produced",
+   "severity": "medium",
+   "what": "Asked for a trade price, a PDF and a report, the model hit the tier gate once and then declined to call price_list_pdf or catalogue_report at all: \"I haven't attempted them since they'll fail the same way.\"",
+   "why_it_matters": "The prediction was right, so nothing false was reported, but the user asked for three things and one tool call was made. Each of these refusals carries its own text, its own buy URL with its own src tag, and in the report's case the one thing free cannot see (which SKUs carry no price in the default currency). A predicted refusal also cannot become a surprise success on a Pro key, and it makes the src attribution on the checkout link systematically undercount the tools people actually reach for.",
+   "fix_candidate": "Nothing in the server can force a call. Recorded because it is a measurement hazard for every future round: a refusal that is never hit is not a refusal that was relayed correctly, and the totals here separate the two counts for that reason."
+  },
+  {
+   "id": "cat5-offer-to-hold-a-figure-outside-the-books",
+   "severity": "low",
+   "what": "After correctly relaying that a second price tier is Pro, the model offered to \"hold the EUR 36.00 as a quoted discount off standard rather than a stored tier\".",
+   "why_it_matters": "The refusal's own closing sentence is that any figure composed outside the free tools' output is an estimate rather than a figure from the books. A trade price kept in conversation instead of in the catalogue is precisely that, and it is the one that will still be quoted after the standard price rises. The offer is framed as a courtesy, so it reads as sanctioned.",
+   "fix_candidate": "None in code. The refusal already says the right thing; this is the model routing around it politely."
+  }
+ ],
+ "bottom_line": "14 of 18 on first coverage, two points below round 35 and level with round 33, and the whole gap is one prompt. The server's central design, the 100x scale gap between invoice_create's major units and quote_create's minor units, came through completely intact: prompt four reproduced both payloads byte-for-byte from one lines_resolve call and named the trap unprompted, and prompt six refused an invited yes and worked the 100x error in both directions without needing a tool call. Two rounds running, a Pro refusal was not rebuilt by hand and no id or figure was invented. The finding is turn one. The model stated the valid-from rule correctly, in its own words, and then applied it backwards to today three times over, calling an in-force price dormant and two live products unpriced, with the server's own in_force_on 2026-09-06 block on screen in the result it was quoting. Prompts two and three answered the same ladder perfectly on dates the user supplied. The undated question is the one that broke, which is exactly the question a price list is for.",
+ "cap": "About 25 minutes budgeted; the six prompts took roughly 12 minutes wall and the verification pass on the copied store about 3."
+}

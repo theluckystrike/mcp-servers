@@ -481,6 +481,181 @@ const PROBES = {
       && invoiceFiles.length === 0,
       `${dirs.join(",")} | invoice: ${invoiceFiles.join(",") || "(empty)"}`);
   },
+  "catalogue": async (c, tmp, tier, ok) => {
+    // This server reads no sibling STORE: it reads the shared business profile, read-only
+    // and best-effort, and nothing else. Every figure asserted below is one
+    // servers/catalogue/test/unit.test.mjs works out by hand and docs/CATALOGUE_RESULT.md
+    // recomputes, so this probe fails if the arithmetic moves and not only if the shape does.
+
+    // 1. The price ladder. Three rows on one SKU, each with the day it comes into force.
+    // No current price is stored anywhere, so there is nothing for the third row to rewrite.
+    const l1 = await c.tool("sku_set", { sku: "WEB-AUDIT", name: "Website audit", unit: "each", currency: "EUR", price_minor: 39000, valid_from: "2025-01-01" });
+    await c.tool("sku_set", { sku: "WEB-AUDIT", name: "Website audit", unit: "each", currency: "EUR", price_minor: 45000, valid_from: "2026-01-01" });
+    const l3 = await c.tool("sku_set", { sku: "WEB-AUDIT", name: "Website audit", unit: "each", currency: "EUR", price_minor: 49500, valid_from: "2026-07-01" });
+    ok(`${tier}: three price rows on one SKU, each keeping its own valid_from`,
+      !l1.isError && !l3.isError && /"rows": 3/.test(l3.text)
+      && /"valid_from": "2025-01-01"[\s\S]*39000/.test(l3.text)
+      && /"valid_from": "2026-01-01"[\s\S]*45000/.test(l3.text)
+      && /"valid_from": "2026-07-01"[\s\S]*49500/.test(l3.text),
+      l3.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 2. The price on a date is the latest valid_from at or before it, worked out on the
+    // call, and the answer names the row it picked. Three dates, three different rows, so a
+    // price put up in July does not rewrite what June was quoted at.
+    const g1 = await c.tool("sku_get", { sku: "WEB-AUDIT", date: "2025-06-30", currency: "EUR" });
+    const g2 = await c.tool("sku_get", { sku: "WEB-AUDIT", date: "2026-03-15", currency: "EUR" });
+    const g3 = await c.tool("sku_get", { sku: "WEB-AUDIT", date: "2026-08-01", currency: "EUR" });
+    ok(`${tier}: one ladder answers three dates with three different rows, each naming its valid_from`,
+      !g1.isError && !g2.isError && !g3.isError
+      && /"price_minor": 39000/.test(g1.text) && /the latest valid_from at or before 2025-06-30 is 2025-01-01/.test(g1.text)
+      && /"price_minor": 45000/.test(g2.text) && /the latest valid_from at or before 2026-03-15 is 2026-01-01/.test(g2.text)
+      && /"price_minor": 49500/.test(g3.text) && /the latest valid_from at or before 2026-08-01 is 2026-07-01/.test(g3.text),
+      `${/"price_minor": (\d+)/.exec(g1.text)?.[1]}/${/"price_minor": (\d+)/.exec(g2.text)?.[1]}/${/"price_minor": (\d+)/.exec(g3.text)?.[1]}`);
+
+    // 3. The row it picked is named alongside the later row already booked, so a question
+    // about a figure on an old invoice lands on one line of one file rather than an argument.
+    ok(`${tier}: the answer names the row it came from and the later price already booked`,
+      /"from_row"[\s\S]*"valid_from": "2026-01-01"/.test(g2.text)
+      && /"superseded_by"[\s\S]*"valid_from": "2026-07-01"[\s\S]*49500/.test(g2.text)
+      && /"rows_considered"/.test(g2.text),
+      g2.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 4. A date before every row has no price, and that is a refusal naming the earliest
+    // row. Falling back to it would reprice history: a job done in December 2024 would be
+    // billed at the January 2025 price and reconcile against a list that did not exist yet.
+    const early = await c.tool("sku_get", { sku: "WEB-AUDIT", date: "2024-12-01", currency: "EUR" });
+    ok(`${tier}: a date before every row is refused, naming the earliest row rather than repricing history`,
+      early.isError && /2024-12-01/.test(early.text) && /earliest EUR standard row starts 2025-01-01/.test(early.text)
+      && /a price that did not exist yet is not a price/.test(early.text),
+      early.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 5. An unknown code is refused BY NAME and nothing is invented for it. The invented
+    // number would be printed on a document a customer pays from and would look real.
+    const unknown = await c.tool("sku_get", { sku: "NOPE", date: "2026-03-15", currency: "EUR" });
+    ok(`${tier}: an unknown SKU is refused by name and no price is invented for it`,
+      unknown.isError && /no SKU matches "NOPE"/.test(unknown.text)
+      && /no price was invented/.test(unknown.text) && !/"price_minor"/.test(unknown.text),
+      unknown.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 6. The rest of the worked resolution's inputs.
+    await c.tool("sku_set", { sku: "HOST-MO", name: "Hosting, monthly", unit: "month", currency: "EUR", price_minor: 3999, valid_from: "2025-01-01" });
+    await c.tool("rate_set", { role: "senior developer", currency: "EUR", hourly_minor: 8500, valid_from: "2025-01-01" });
+    await c.tool("rate_set", { role: "junior developer", currency: "EUR", hourly_minor: 4500, valid_from: "2025-01-01" });
+
+    // 7. The worked resolution. WEB-AUDIT prices off the 2026-01-01 row, not the 2025 one
+    // and not the 2026-07-01 one, because the resolution carries its own date.
+    const res = await c.tool("lines_resolve", { client: "Nova Studio", currency: "EUR", date: "2026-03-15", tax_rate: 23, lines: [{ sku: "WEB-AUDIT", quantity: 3 }, { sku: "HOST-MO", quantity: 12 }, { role: "senior developer", hours: 7.5 }, { role: "junior developer", hours: 3.25 }] });
+    ok(`${tier}: the worked resolution nets 261,363, VAT 60,114, gross 321,477, drift zero`,
+      !res.isError && /"net_minor": 261363/.test(res.text) && /"vat_minor": 60114/.test(res.text)
+      && /"total_minor": 321477/.test(res.text) && /"rounding_drift_minor": 0/.test(res.text)
+      && /"value_minor": 135000/.test(res.text) && /"value_minor": 47988/.test(res.text)
+      && /"value_minor": 63750/.test(res.text) && /"value_minor": 14625/.test(res.text)
+      && /"valid_from": "2026-01-01"/.test(res.text),
+      res.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 8. THE MEASURED THING. The two sibling tools take the same price in different scales:
+    // invoice_create's unit_price is in MAJOR units and quote_create's unit_price_minor is
+    // in MINOR units. Both are plain numbers, both are called the unit price, and neither
+    // tool can tell it was handed the other one's scale, so the wrong paste reconciles
+    // against itself all the way to the total. The assertion is not that both payloads
+    // exist: it is that the same line carries 450 in one and 45000 in the other, that each
+    // payload says which scale it is in, and that the gap re-derived from the payloads
+    // themselves is EXACTLY 100x on the whole net. A change of scale fails the build rather
+    // than quietly mispricing every invoice by two orders of magnitude.
+    let scaleGap = null;
+    try {
+      const j = JSON.parse(res.text);
+      const inv = j.invoice_create.arguments.items;
+      const quo = j.quote_create.arguments.items;
+      const netInvBasis = inv.reduce((n, it) => n + Math.round(it.quantity * it.unit_price * 100), 0);
+      const netQuoBasis = quo.reduce((n, it) => n + Math.round(it.quantity * it.unit_price_minor * 100), 0);
+      scaleGap = netQuoBasis / netInvBasis;
+    } catch { scaleGap = null; }
+    ok(`${tier}: invoice_create takes MAJOR and quote_create takes MINOR, and the same net is exactly 100x apart`,
+      /"unit_price": 450\b/.test(res.text) && /"unit_price_minor": 45000/.test(res.text)
+      && /"unit": "MAJOR units, which is what invoice_create's unit_price takes"/.test(res.text)
+      && /"unit": "MINOR units, which is what quote_create's unit_price_minor takes"/.test(res.text)
+      && scaleGap === 100,
+      `scale gap ${scaleGap}x`);
+
+    // 9. It creates no invoice and no quote. A tool that did both would bill a customer as
+    // a side effect of asking what a job comes to.
+    ok(`${tier}: the resolution posts nothing and names the two tools that would`,
+      /"posted": false/.test(res.text) && /Nothing was invoiced and nothing was quoted/.test(res.text)
+      && /invoice_create in the invoice server/.test(res.text) && /quote_create in the quotes server/.test(res.text),
+      res.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 10. The tier gate. A second price for the same product is the thing a business with
+    // trade customers actually pays for, so a tier beyond standard is Pro on both routes.
+    const trade = await c.tool("price_list_text", { currency: "EUR", tier: "trade" });
+    ok(`${tier}: a price tier beyond standard is ${tier === "pro" ? "allowed on Pro" : "refused on free with both checkout links"}`,
+      tier === "pro" ? !trade.isError
+        : trade.isError && /price tiers are Pro/.test(trade.text)
+          && /mcp\.zovo\.one\/buy\/catalogue\?src=catalogue\.price_list_text/.test(trade.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=catalogue\.price_list_text\.bundle/.test(trade.text),
+      trade.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 11. The PDF gate. The free text price list is not gated, because a price list nobody
+    // can read is not a price list.
+    const txt = await c.tool("price_list_text", { currency: "EUR" });
+    const pdf = await c.tool("price_list_pdf", { currency: "EUR" });
+    ok(`${tier}: the text price list is free on every tier and the PDF is ${tier === "pro" ? "written" : "refused, writing nothing"}`,
+      !txt.isError && !/mcp\.zovo\.one\/buy/.test(txt.text)
+      && (tier === "pro" ? !pdf.isError && /catalogue\/pdf\//.test(pdf.text)
+        : pdf.isError && /Nothing was written/.test(pdf.text)
+          && /mcp\.zovo\.one\/buy\/catalogue\?src=catalogue\.price_list_pdf/.test(pdf.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=catalogue\.price_list_pdf\.bundle/.test(pdf.text)),
+      pdf.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 12. The report gate.
+    const rep = await c.tool("catalogue_report", {});
+    ok(`${tier}: the catalogue report is ${tier === "pro" ? "allowed on Pro" : "refused on free with both checkout links"}`,
+      tier === "pro" ? !rep.isError && /"skus"|"rows"|"superseded"/.test(rep.text)
+        : rep.isError && /the catalogue report is Pro/.test(rep.text)
+          && /mcp\.zovo\.one\/buy\/catalogue\?src=catalogue\.catalogue_report/.test(rep.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=catalogue\.catalogue_report\.bundle/.test(rep.text),
+      rep.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 13. The free cap counts SKUs. Two are already stored, so 23 more fill it and the 26th
+    // is refused on free and allowed on Pro.
+    for (let i = 3; i <= 25; i++) {
+      await c.tool("sku_set", { sku: `FILL-${String(i).padStart(2, "0")}`, name: `Filler ${i}`, unit: "each", currency: "EUR", price_minor: 1000 + i, valid_from: "2025-01-01" });
+    }
+    const sixth = await c.tool("sku_set", { sku: "FILL-26", name: "Filler 26", unit: "each", currency: "EUR", price_minor: 2600, valid_from: "2025-01-01" });
+    ok(`${tier}: the 26th SKU is ${tier === "pro" ? "accepted on Pro" : "refused on free, priced and linked"}`,
+      tier === "pro" ? !sixth.isError
+        : sixth.isError && /\$19/.test(sixth.text)
+          && /mcp\.zovo\.one\/buy\/catalogue\?src=catalogue\.sku_set/.test(sixth.text),
+      sixth.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 14. sku_delete is free on every tier, because a way back that only a Pro key can
+    // reach is not a way back. A code that has priced a resolved line is refused by name,
+    // because a code printed on a document somebody sent is a fact about that document.
+    const delFree = await c.tool("sku_delete", { sku: "FILL-03" });
+    const delUsed = await c.tool("sku_delete", { sku: "WEB-AUDIT" });
+    ok(`${tier}: deleting an unused SKU is free on every tier, and one that priced a line is refused by name`,
+      !delFree.isError && !/mcp\.zovo\.one\/buy/.test(delFree.text)
+      && delUsed.isError && /WEB-AUDIT/.test(delUsed.text) && !/mcp\.zovo\.one\/buy/.test(delUsed.text),
+      `${delFree.isError ? "free delete FAILED" : "free delete ok"} | ${delUsed.text.replace(/\s+/g, " ").slice(0, 90)}`);
+
+    // 15. No current price is stored. The record holds the code, the name, the unit, the
+    // VAT rate and the ROWS, and everything else is derived on the call, because a stored
+    // current price is the copy still being quoted a month after the rise.
+    const raw = readFileSync(join(tmp, "data", "mcp-servers", "catalogue", "catalogue.json"), "utf8");
+    ok(`${tier}: the SKU record stores its price rows and no current price, in_force or price field of its own`,
+      /"amount_minor": 45000/.test(raw) && !/"in_force"/.test(raw) && !/"current_price"/.test(raw)
+      && !/"price_minor"/.test(raw) && !/"in_force_on"/.test(raw),
+      raw.replace(/\s+/g, " ").slice(0, 130));
+
+    // 16. Nothing outside its own data directory. The shared profile read is best-effort
+    // and read-only, and the invoice server's own dataDir() is never called, because that
+    // function mkdirs as a side effect of a READ and would bring an invoice store into
+    // existence in a sandbox where this server has written nothing.
+    const dirs = readdirSync(join(tmp, "data", "mcp-servers")).sort();
+    ok(`${tier}: this server writes only its own directory and brings no sibling store into existence`,
+      dirs.join(",") === "catalogue",
+      dirs.join(","));
+  },
   "petty-cash": async (c, tmp, tier, ok) => {
     // This server reads no sibling store, so there is nothing to seed: the tin and its
     // vouchers ARE the input. Every figure asserted below is one
@@ -1445,12 +1620,12 @@ async function remote() {
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
-    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 28 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 28 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
+    const idx = await fetch("https://mcp.zovo.one/mcp").then((r) => r.json()); ok("index lists 29 endpoints", Array.isArray(idx.endpoints) ? idx.endpoints.length >= 29 : JSON.stringify(idx).includes("time-tracker"), JSON.stringify(idx).slice(0, 100));
     const mintRes = await fetch("https://mcp.zovo.one/mcp/token"); const mint = mintRes.status === 200 ? await mintRes.json() : { status: mintRes.status };
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -2046,6 +2221,87 @@ async function remote() {
       woCur?.unbilled_minor === 40208 && woCur?.labour_minor === 29750 && woCur?.materials_minor === 10458 && woCur?.hours === 3.5 &&
       /No total is stored/.test(woR.basis || ""),
       `${woR.work_orders} orders, open ${woR.open}, unbilled ${woCur?.unbilled_minor}`);
+    // Extension 20: /mcp/catalogue. The endpoint that reads NO sibling document at all and
+    // borrows four sibling ENGINES, so what is asserted here is the two things a price list
+    // can get silently wrong: which row is in force on a date, and which SCALE each payload
+    // is in. Everything is named per SKU and the SKU is unique per run, for the Extension 16
+    // reason: the tenant behind the bundle key is not fresh between runs, so a count over the
+    // whole catalogue is not a stable figure.
+    const cgStamp = Date.now().toString(36).toUpperCase();
+    const cgSku = `PROBE-${cgStamp}`;
+    const cgRole = `engineer-${cgStamp}`;
+    await rpc("invoice", { jsonrpc: "2.0", id: 134, method: "tools/call", params: { name: "business_set", arguments: { name: `Catalogue Probe ${cgStamp}`, address: "3 Market Street, Krakow", default_currency: "EUR", default_tax_rate: 23 } } });
+    // Three price rows, three valid_from dates, one product. The ladder: a date picks the
+    // LATEST row at or before it, and a stored "current price" would answer all three the
+    // same way.
+    for (const [vf, minor] of [["2026-01-01", 10000], ["2026-04-01", 11000], ["2026-07-01", 12500]]) {
+      await rpc("catalogue", { jsonrpc: "2.0", id: 135, method: "tools/call", params: { name: "sku_set", arguments: { sku: cgSku, name: `Probe widget ${cgStamp}`, unit: "each", currency: "EUR", price_minor: minor, valid_from: vf, vat_rate: 23 } } });
+    }
+    const cgGets = [];
+    for (const d of ["2026-03-15", "2026-05-15", "2026-09-06"]) {
+      const r = await rpc("catalogue", { jsonrpc: "2.0", id: 136, method: "tools/call", params: { name: "sku_get", arguments: { sku: cgSku, date: d } } });
+      try { cgGets.push(JSON.parse(r.result.content[0].text)); } catch { cgGets.push({}); }
+    }
+    ok("hosted sku_set books three price rows on one SKU and sku_get reads the ladder rather than a stored current price: 2026-03-15 is 100.00 from 2026-01-01, 2026-05-15 is 110.00 from 2026-04-01 and 2026-09-06 is 125.00 from 2026-07-01, each naming the row it picked",
+      cgGets.map((g) => g.price_minor).join(",") === "10000,11000,12500" &&
+      cgGets.map((g) => g.from_row?.valid_from).join(",") === "2026-01-01,2026-04-01,2026-07-01" &&
+      cgGets[0]?.superseded_by?.price_minor === 11000 && cgGets[2]?.superseded_by === null &&
+      cgGets.every((g) => g.sku === cgSku && g.currency === "EUR" && g.tier === "standard"),
+      cgGets.map((g) => `${g.date} ${g.price_minor}@${g.from_row?.valid_from}`).join(" | "));
+    const cgRate = await rpc("catalogue", { jsonrpc: "2.0", id: 137, method: "tools/call", params: { name: "rate_set", arguments: { role: cgRole, currency: "EUR", hourly_minor: 8500, valid_from: "2026-01-01" } } });
+    // The scale. invoice_create takes unit_price in MAJOR units, quote_create takes
+    // unit_price_minor in MINOR units, and the same line has to appear as 110 in one payload
+    // and 11000 in the other. A payload that carried 11000 into invoice_create would bill
+    // 100x, so the difference is asserted on the ratio and not only on the two figures, and
+    // the totals are re-run through the invoice server's OWN computeTotals from this process.
+    const cgRes = await rpc("catalogue", { jsonrpc: "2.0", id: 138, method: "tools/call", params: { name: "lines_resolve", arguments: { client: `Probe client ${cgStamp}`, date: "2026-05-15", lines: [{ sku: cgSku, quantity: 4 }, { role: cgRole, hours: 3 }] } } });
+    let cgP = {}; try { cgP = JSON.parse(cgRes.result.content[0].text); } catch { cgP = {}; }
+    const cgInv = cgP.invoice_create?.arguments?.items ?? [];
+    const cgQuo = cgP.quote_create?.arguments?.items ?? [];
+    let cgRe = {};
+    try {
+      const { computeTotals } = await import(`file://${ROOT}/servers/invoice/dist/lib.js`);
+      const args = cgP.invoice_create?.arguments ?? {};
+      cgRe = computeTotals(args.items ?? [], args.currency ?? "EUR", 0, 0);
+    } catch (e) { cgRe = { error: String(e).slice(0, 60) }; }
+    ok("hosted lines_resolve prices both lines off the row in force on 2026-05-15 and returns BOTH payloads in their own scale: invoice_create carries unit_price 110 and 85 in MAJOR units, quote_create carries unit_price_minor 11000 and 8500 in MINOR units, exactly 100x apart, and re-running the invoice server's own computeTotals over the payload's items from this process gives the same net 69,500 and total 85,485 to the minor unit",
+      !cgRate.error && cgInv.length === 2 && cgQuo.length === 2 &&
+      cgInv[0]?.unit_price === 110 && cgInv[1]?.unit_price === 85 &&
+      cgQuo[0]?.unit_price_minor === 11000 && cgQuo[1]?.unit_price_minor === 8500 &&
+      cgQuo[0].unit_price_minor === cgInv[0].unit_price * 100 && cgQuo[1].unit_price_minor === cgInv[1].unit_price * 100 &&
+      cgP.totals?.net_minor === 69500 && cgP.totals?.total_minor === 85485 &&
+      cgRe.net_minor === cgP.totals?.net_minor && cgRe.total_minor === cgP.totals?.total_minor &&
+      cgRe.lines?.[0]?.gross_minor === 44000 && cgRe.lines?.[1]?.gross_minor === 25500,
+      `inv ${cgInv[0]?.unit_price}/${cgInv[1]?.unit_price} quote ${cgQuo[0]?.unit_price_minor}/${cgQuo[1]?.unit_price_minor} payload ${cgP.totals?.net_minor}/${cgP.totals?.total_minor} recomputed ${cgRe.net_minor}/${cgRe.total_minor}`);
+    // Both price lists out: the .txt published under /out/ by the free tool and the A4 HTML
+    // the Pro tool renders through the same shim /mcp/billing-docs uses. out_path is a NAME
+    // here and not a path.
+    const cgTxt = await rpc("catalogue", { jsonrpc: "2.0", id: 139, method: "tools/call", params: { name: "price_list_text", arguments: { date: "2026-05-15", currency: "EUR" } } });
+    const cgTxtT = JSON.stringify(cgTxt).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const cgtL = (cgTxtT.match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const cgtRes = cgtL ? await fetch(cgtL) : null;
+    const cgtBody = cgtRes ? await cgtRes.text() : "";
+    const cgPdf = await rpc("catalogue", { jsonrpc: "2.0", id: 140, method: "tools/call", params: { name: "price_list_pdf", arguments: { date: "2026-05-15", currency: "EUR", out_path: "trade-prices-may" } } });
+    const cgpL = (JSON.stringify(cgPdf).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
+    const cgpRes = cgpL ? await fetch(cgpL) : null;
+    const cgpBody = cgpRes ? await cgpRes.text() : "";
+    ok("hosted price_list_text publishes the list as a .txt download and price_list_pdf renders the A4 list as HTML served text/html under the name out_path gave it, titled PRICE LIST, both carrying this run's SKU at the 110.00 in force on 2026-05-15",
+      !!cgtL && (cgtRes?.headers.get("content-type") || "").startsWith("text/plain") &&
+      cgtBody.includes(cgSku) && cgtBody.includes("110.00") &&
+      !!cgpL && (cgpRes?.headers.get("content-type") || "").startsWith("text/html") &&
+      cgpBody.startsWith("<!doctype html") && cgpBody.includes("<title>Price list EUR standard</title>") &&
+      cgpBody.includes("<h1>PRICE LIST EUR standard</h1>") && cgpBody.includes(cgSku) &&
+      (cgpRes?.headers.get("content-disposition") || "").includes("trade-prices-may.html"),
+      `${cgtRes?.headers.get("content-type")} | ${cgpRes?.headers.get("content-type")} ${cgpRes?.headers.get("content-disposition")}`);
+    const cgRep = await rpc("catalogue", { jsonrpc: "2.0", id: 141, method: "tools/call", params: { name: "catalogue_report", arguments: { date: "2026-05-15" } } });
+    let cgR = {}; try { cgR = JSON.parse(cgRep.result.content[0].text); } catch { cgR = {}; }
+    const cgExp = (cgR.rows_expiring_detail || []).find((e) => e.sku === cgSku);
+    const cgForce = (cgR.rows_in_force_detail || []).find((e) => e.sku === cgSku);
+    ok("hosted catalogue_report names the row in force on 2026-05-15 and the rise already booked behind it: this run's SKU at 110.00 from 2026-04-01, replaced on 2026-07-01 by 125.00, with the default currency read from the shared business profile",
+      cgR.default_currency === "EUR" && cgR.default_currency_source === "shared profile" &&
+      cgForce?.price_minor === 11000 && cgForce?.valid_from === "2026-04-01" &&
+      cgExp?.price_minor === 11000 && cgExp?.replaced_on === "2026-07-01" && cgExp?.new_price_minor === 12500,
+      `in force ${cgForce?.price_minor}@${cgForce?.valid_from} replaced ${cgExp?.replaced_on} by ${cgExp?.new_price_minor}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";
@@ -2101,6 +2357,10 @@ async function billing() {
     // in without minting the product. Flip it back to the 303 loop above once the price id
     // lands.
     { const r = await fetch("https://mcp.zovo.one/buy/work-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const body = r.status === 503 ? await r.text() : ""; ok("buy/work-order -> 503, not 303: PRODUCTS.price is PENDING_HUMAN so no Stripe call is made", r.status === 503 && r.headers.get("x-mcp-buy") === "price-pending-human" && /Checkout for this server is not yet open/.test(body) && /\/buy\/bundle/.test(body) && !/checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
+    // catalogue is the second such server, for the same reason and on the same date: the
+    // key still lacks product_write, so PRODUCTS["catalogue"].price is the literal
+    // "PENDING_HUMAN" too. Same assertion, same reason to keep it out of the 303 loop.
+    { const r = await fetch("https://mcp.zovo.one/buy/catalogue", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const body = r.status === 503 ? await r.text() : ""; ok("buy/catalogue -> 503, not 303: PRODUCTS.price is PENDING_HUMAN so no Stripe call is made", r.status === 503 && r.headers.get("x-mcp-buy") === "price-pending-human" && /Checkout for this server is not yet open/.test(body) && /\/buy\/bundle/.test(body) && !/checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
