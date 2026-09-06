@@ -56,6 +56,27 @@ function requirePro(feature: string, toolName: string): void {
   if (!gate.isPro()) throw new Error(`${feature} is Pro. Nothing was written. ${gate.upgradeText(feature, toolName)}`);
 }
 
+/**
+ * The identity of an agreement, for the duplicate guard: every stored term, normalised.
+ *
+ * Name and lender are trimmed and case-folded, the currency is uppercased, and the note is
+ * left out, because a note is a remark ABOUT an agreement and never a second one. Two
+ * records with the same fingerprint are the same paper recorded twice, and the second one
+ * costs a free-tier slot while telling the reader nothing the first does not.
+ */
+function fingerprint(l: {
+  name: string; lender?: string; kind: string; principal_minor: number; currency: string;
+  rate_bps: number; compounding: Frequency; payment_frequency: Frequency; term_periods: number;
+  method: Method; start_date: string; fees_minor: number; balloon_minor: number;
+}): string {
+  const fold = (v: string | undefined) => String(v ?? "").trim().toLowerCase();
+  return JSON.stringify([
+    fold(l.name), l.principal_minor, l.currency.toUpperCase(), l.rate_bps, l.compounding,
+    l.payment_frequency, l.term_periods, l.method, l.start_date, l.fees_minor, l.balloon_minor,
+    l.kind, fold(l.lender),
+  ]);
+}
+
 function terms(l: Loan): LoanTerms {
   return {
     principal_minor: l.principal_minor, currency: l.currency, rate_bps: l.rate_bps,
@@ -159,6 +180,19 @@ server.registerTool("loan_create", {
     }
     const rec = await locked(() => {
       const list = getLoans();
+      // Before the cap, and before anything is written: the duplicate is what the cap is
+      // spent on, so the guard has to fire while there is still room to spend.
+      const mine = fingerprint({ name: a.name, lender: a.lender, kind: a.kind ?? "loan", ...t });
+      const twin = list.find((x) => fingerprint(x) === mine);
+      if (twin) {
+        throw new Error(
+          `this agreement is already in the register as ${twin.id} "${twin.name}", term for term: ` +
+          `name, principal, currency, rate, compounding, payment frequency, term, method, start date, fees, balloon, kind and lender all match. ` +
+          `Nothing was written and no slot was used. Call loan_schedule with ${twin.id} to rebuild its schedule, free and unlimited. ` +
+          `If this really is a second agreement on identical terms, give it a different name. ` +
+          `If ${twin.id} was recorded in error, remove it with loan_delete and the slot comes back.`,
+        );
+      }
       if (!gate.isPro() && list.length >= FREE_LOANS) {
         throw new Error(
           `the free tier holds ${FREE_LOANS} loans and ${list.length} are already in the register. ` +
@@ -176,7 +210,7 @@ server.registerTool("loan_create", {
       setLoans(list);
       return loan;
     });
-    if (!gate.isPro()) notes.push(`Free tier: ${getLoans().length} of ${FREE_LOANS} loans. loan_repay_early, loan_journal and loans_report are Pro.`);
+    if (!gate.isPro()) notes.push(`Free tier: ${getLoans().length} of ${FREE_LOANS} loans. loan_delete gives a slot back and is free. loan_repay_early, loan_journal and loans_report are Pro.`);
     return json({
       created: loanSummary(rec),
       periodic_rate_pct: (i * 100).toFixed(6),
@@ -321,6 +355,19 @@ server.registerTool("loan_journal", {
       { account: liabilityAcc, account_name: accountName(liabilityAcc), debit_minor: principal, credit_minor: 0, debit: money(principal, l.currency), credit: money(0, l.currency), description: `Principal repaid on ${l.id} ${l.name}, ${label}` },
       { account: cashAcc, account_name: accountName(cashAcc), debit_minor: 0, credit_minor: payment, debit: money(0, l.currency), credit: money(payment, l.currency), description: `Payment on ${l.id} ${l.name}, ${label}` },
     ].filter((x) => x.debit_minor !== 0 || x.credit_minor !== 0);
+    // The one dependency this server can see. A journal is an entry in somebody else's
+    // ledger, and the terms behind it are here, so the agreement is pinned against
+    // loan_delete from the moment the entry is handed out.
+    await locked(() => {
+      const list = getLoans();
+      const rec = list.find((x) => x.id === l.id);
+      if (!rec) return;
+      const marks = new Set(rec.journalled ?? []);
+      marks.add(label);
+      rec.journalled = [...marks].sort();
+      rec.updated = new Date().toISOString();
+      setLoans(list);
+    });
     const d = currencyDecimals(l.currency);
     return json({
       loan: { id: l.id, name: l.name, currency: l.currency },
@@ -345,7 +392,9 @@ server.registerTool("loan_journal", {
         },
       },
       note: "Only the interest is an expense. The principal repays a liability and belongs on the balance sheet, so the expense_add payload carries the interest alone: booking the whole payment would overstate the cost of the business by the principal, every period, and would still reconcile against the bank.",
-      basis: "Nothing was posted. This is the entry for whoever owns the ledger to post; this server writes only its own loan register.",
+      journalled: label,
+      basis: "Nothing was posted. This is the entry for whoever owns the ledger to post; this server writes only its own loan register. " +
+        `The label "${label}" is recorded against ${l.id} there, so loan_delete will refuse to remove an agreement an entry has already been taken from.`,
     });
   } catch (e) { return fail((e as Error).message); }
 });
@@ -390,6 +439,45 @@ server.registerTool("loan_list", {
       outstanding_by_currency: [...totals.values()].map((t) => ({ ...t, outstanding: money(t.outstanding_minor, t.currency) })),
       tier: gate.isPro() ? "pro" : `free: ${rows.length} of ${FREE_LOANS} loans`,
       note: "Currencies are never added together. This server holds no exchange rate, so one number over a EUR loan and a USD one would be an invented one.",
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("loan_delete", {
+  title: "Delete a loan from the register",
+  description: "Remove one loan or lease from the register and give its free-tier slot back. Refused, with the entry named, if a journal has already been taken from it. Free.",
+  inputSchema: {
+    loan: loanArg,
+  },
+}, async (a) => {
+  try {
+    const removed = await locked(() => {
+      const list = getLoans();
+      const l = findLoan(list, a.loan);
+      if (!l) throw new Error(`no loan matches "${a.loan}". Call loan_list to see the register. Nothing was deleted.`);
+      const marks = l.journalled ?? [];
+      if (marks.length > 0) {
+        throw new Error(
+          `${l.id} "${l.name}" has a journal taken from it and cannot be deleted: ${marks.length} entr${marks.length === 1 ? "y" : "ies"}, ${marks.join(", ")}. ` +
+          `Those lines are in somebody's ledger and the terms behind them are here, so removing the agreement would leave them with nothing to check against. ` +
+          `Nothing was deleted. Reverse the entries where they were posted first.`,
+        );
+      }
+      setLoans(list.filter((x) => x.id !== l.id));
+      return l;
+    });
+    const left = getLoans().length;
+    const notes = [
+      `${removed.id} is gone from the register. Its schedule was never stored, so nothing derived from it survives anywhere.`,
+      `The number is not reissued: the ${removed.id.slice(0, 9)} series only ever counts up, so a later agreement cannot take an id that has been on a signed one.`,
+    ];
+    if (!gate.isPro()) notes.push(`Free tier: ${left} of ${FREE_LOANS} loans. The slot is back and loan_create will take another agreement.`);
+    return json({
+      deleted: loanSummary(removed),
+      loans_left: left,
+      tier: gate.isPro() ? "pro" : `free: ${left} of ${FREE_LOANS} loans`,
+      notes,
+      basis: "Only this server's own register was written. No journal, no expense and no ledger entry is touched by a delete: this server has never posted one, and a loan that HAS had one taken from it is refused rather than removed.",
     });
   } catch (e) { return fail((e as Error).message); }
 });

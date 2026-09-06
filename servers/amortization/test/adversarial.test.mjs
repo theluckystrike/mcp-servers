@@ -277,3 +277,75 @@ test("a kept payment that cannot cover the interest on what is left is refused, 
     /does not cover the interest on .*: the term cannot be shortened/,
   );
 });
+
+test("a byte-identical agreement is refused by name rather than recorded twice", async (t) => {
+  const { c } = open(t);
+  await c.init();
+  const first = await c.json("loan_create", { ...WORKED, lender: "Nordbank" });
+  assert.equal(first.created.id, "LOAN-2026-0001");
+  // Same terms, and the normalisation the guard applies: padded name, lower-case currency
+  // and lender in another case are the SAME agreement, not a second one.
+  const again = await c.call("loan_create", {
+    ...WORKED, name: `  ${WORKED.name.toUpperCase()}  `, currency: "eur", lender: "NORDBANK",
+  });
+  assert.equal(again.isError, true, "a duplicate was recorded");
+  assert.match(again.text, /already in the register as LOAN-2026-0001/);
+  assert.match(again.text, /Nothing was written and no slot was used/);
+  assert.match(again.text, /remove it with loan_delete/);
+  assert.equal((await c.json("loan_list", {})).count, 1, "the refused duplicate was written anyway");
+  // A note is a remark about an agreement, not a second one; a different name is.
+  assert.equal((await c.call("loan_create", { ...WORKED, lender: "Nordbank", note: "second copy" })).isError, true);
+  assert.equal((await c.call("loan_create", { ...WORKED, lender: "Nordbank", name: "Second van" })).isError, false);
+  assert.equal((await c.json("loan_list", {})).count, 2);
+});
+
+test("the duplicate guard fires while there is still room under the cap", async (t) => {
+  const { c } = open(t);
+  await c.init();
+  assert.equal((await c.call("loan_create", { ...WORKED, name: "Only one" })).isError, false);
+  const r = await c.call("loan_create", { ...WORKED, name: "Only one" });
+  assert.equal(r.isError, true);
+  assert.match(r.text, /already in the register as LOAN-2026-0001/);
+  assert.doesNotMatch(r.text, /the free tier holds 3 loans/, "the cap answered a question the duplicate guard owns");
+  assert.equal((await c.json("loan_list", {})).count, 1);
+});
+
+test("loan_delete gives the free-tier slot back", async (t) => {
+  const { c } = open(t);
+  await c.init();
+  for (let n = 1; n <= 3; n++) {
+    assert.equal((await c.call("loan_create", { ...WORKED, name: `Loan ${n}` })).isError, false, `loan ${n}`);
+  }
+  assert.equal((await c.call("loan_create", { ...WORKED, name: "Loan 4" })).isError, true, "the cap did not hold");
+  // Free tier, no key: the way back is not a purchase.
+  const gone = await c.json("loan_delete", { loan: "LOAN-2026-0002" });
+  assert.equal(gone.deleted.id, "LOAN-2026-0002");
+  assert.equal(gone.loans_left, 2);
+  const fourth = await c.call("loan_create", { ...WORKED, name: "Loan 4" });
+  assert.equal(fourth.isError, false, `the slot did not come back: ${fourth.text}`);
+  const list = await c.json("loan_list", {});
+  assert.equal(list.count, 3);
+  assert.deepEqual(list.loans.map((x) => x.name).sort(), ["Loan 1", "Loan 3", "Loan 4"]);
+  // The number is not reissued after a delete.
+  assert.deepEqual(list.loans.map((x) => x.id).sort(), ["LOAN-2026-0001", "LOAN-2026-0003", "LOAN-2026-0004"]);
+  assert.equal((await c.call("loan_delete", { loan: "LOAN-2026-0002" })).isError, true, "a deleted loan was deleted twice");
+});
+
+test("a loan a journal has been taken from is refused by loan_delete, with the entry named", async (t) => {
+  const { c } = open(t, { key: proKey() });
+  await c.init();
+  const made = await c.json("loan_create", { ...WORKED, name: "Journalled" });
+  const clean = await c.json("loan_create", { ...WORKED, name: "Untouched" });
+  const j = await c.json("loan_journal", { loan: made.created.id, period: 3 });
+  assert.equal(j.journalled, "period 3");
+  const r = await c.call("loan_delete", { loan: made.created.id });
+  assert.equal(r.isError, true, "a loan with a dependent was deleted");
+  assert.match(r.text, /LOAN-2026-0001 "Journalled" has a journal taken from it/);
+  assert.match(r.text, /period 3/);
+  assert.match(r.text, /Nothing was deleted/);
+  assert.equal((await c.json("loan_list", {})).count, 2, "the refused delete removed a row anyway");
+  // A second journal on the same loan names both; a loan with none is still deletable.
+  await c.call("loan_journal", { loan: made.created.id, month: "2026-05" });
+  assert.match((await c.call("loan_delete", { loan: made.created.id })).text, /period 3, 2026-05|2026-05, period 3/);
+  assert.equal((await c.call("loan_delete", { loan: clean.created.id })).isError, false);
+});

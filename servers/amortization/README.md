@@ -34,6 +34,7 @@ claude mcp add amortization -- npx -y @theluckystrike/mcp-amortization
 | `loan_repay_early` | What settling or overpaying at a period costs: the outstanding balance, the penalty, the recalculated remaining schedule and the interest saved, gross and net of the penalty |
 | `loan_journal` | The double entry for a period or a month: debit interest expense and loan liability, credit cash, plus an `expense_add`-ready payload |
 | `loan_list` | The register, with the balance outstanding and the next payment date at any date |
+| `loan_delete` | Remove one agreement and give its slot back. Refused, with the entry named, if a journal has already been taken from it |
 | `loans_report` | What is owed per currency, when each next payment falls due, and the interest charged in a calendar year |
 | `license_status`, `license_activate` | Your tier, and activating a Pro key |
 
@@ -43,9 +44,12 @@ claude mcp add amortization -- npx -y @theluckystrike/mcp-amortization
 | --- | --- | --- |
 | Loans in the register | 3 | Unlimited |
 | Schedules | Unlimited | Unlimited |
+| Delete an agreement (`loan_delete`) | Yes | Yes |
 | Early repayment (`loan_repay_early`) | - | Yes |
 | Journals (`loan_journal`) | - | Yes |
 | Report (`loans_report`) | - | Yes |
+
+`loan_delete` is free on purpose. The cap is on agreements held, so recording the same lease twice would otherwise cost two of the three slots with no way back but a key; a duplicate is refused by `loan_create` before anything is written, naming the record it matches, and anything already in the register comes back out with `loan_delete`. A loan a journal has been taken from is refused instead, and named, because those lines are already in somebody's ledger.
 
 The schedule is never metered. The payment and the interest are the question this server exists to answer, and a free tier that hides the answer is a demo. The meter is on the number of agreements held, which is the unit of work.
 

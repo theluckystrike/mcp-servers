@@ -108,9 +108,9 @@ test("every tool description is non-empty, single-paragraph, and within the ceil
   const { c } = open(t);
   await c.init();
   const tools = await c.tools();
-  assert.equal(tools.length, 8, "tool count changed; update servers/amortization/SPEC.md");
+  assert.equal(tools.length, 9, "tool count changed; update servers/amortization/SPEC.md");
   assert.deepEqual(tools.map((x) => x.name).sort(), [
-    "license_activate", "license_status", "loan_create", "loan_journal",
+    "license_activate", "license_status", "loan_create", "loan_delete", "loan_journal",
     "loan_list", "loan_repay_early", "loan_schedule", "loans_report",
   ]);
 
@@ -170,6 +170,11 @@ test("the free tier is the documented one: create and schedule free, early repay
     // The conversion instrument: every gate link carries the tool that tripped it.
     assert.match(r.text, new RegExp(`src=${PRODUCT}\\.${tool}`), `${tool} gate link is untagged`);
   }
+  // loan_delete is the way back off the cap, so it is never gated: a slot recovered only
+  // by buying a key is not a free tier, it is a trap.
+  const del = await c.call("loan_delete", { loan: made.created.id });
+  assert.equal(del.isError, false, del.text);
+  assert.equal((await c.json("loan_list", {})).count, 0);
 });
 
 test("the resource and the prompt are registered and answer", async (t) => {

@@ -41,6 +41,13 @@ export interface Loan {
   payment_minor: number;
   effective_annual_rate_bps: number;
   note?: string;
+  /**
+   * The journals already taken from this agreement, by their label ("period 3", "2026-04").
+   * Set by `loan_journal` and by nothing else. It is the only dependency this server can
+   * see: an entry that is already in somebody's ledger has terms behind it, so a loan
+   * carrying one is refused by `loan_delete` rather than removed out from under it.
+   */
+  journalled?: string[];
   created: string;
   updated: string;
 }
