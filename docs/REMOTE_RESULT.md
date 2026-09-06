@@ -4022,3 +4022,208 @@ makes `loan_create` mint a uniquely named loan per run rather than reusing one.
   `/mcp/expense-tracker` and lines in `/mcp/cash-book`'s account ids, and the caller passes
   them on. Hosted, that means two POSTs to two endpoints on the same token, exactly as
   `asset_journal` has since Extension 14, and neither endpoint knows the other ran.
+
+# Extension 18 2026-09-06 - petty-cash
+
+status: DONE
+
+A twenty-seventh endpoint, `POST /mcp/petty-cash`. Worker `mcp-remote`, version ID
+`9d941860-3dea-4393-868c-9b317698fcc4`, same KV namespace `REMOTE_DATA`
+(`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp` and `/mcp/connect` list twenty-seven.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/petty-cash | 9 | reads NO sibling store and writes NO file. FOUR sibling engines, only two of them reachable from `index.ts`. No `sharedDoc`, no `publish`, no `strip`, the default 512 KB cap, and nothing to download |
+
+### The finding: the two tables diverged again, and by a wider margin
+
+Extension 17 was the first endpoint where `SERVERS[...].sharedDoc` in `remote/src/index.ts`
+and `LIB_RESOLUTIONS` in `remote/build-vendor.mjs` answered completely different questions:
+three sibling ENGINES, zero sibling DOCUMENTS. This one repeats it with four engines instead
+of three, and the four are worth naming because each is a copy this server refused to keep.
+
+`servers/petty-cash` imports `@theluckystrike/mcp-cash-book/lib` for the chart of accounts
+(`CASH`, `expenseAccount`, `accountFor`), `@theluckystrike/mcp-asset-register/lib` for
+`formatMoney` and `currencyDecimals`, `@theluckystrike/mcp-quotes/lib` for `today` and
+`isIsoDate`, and `@theluckystrike/mcp-timezone/lib` for `readJsonFile` and its corrupt-store
+quarantine. It reads no ledger, no asset, no quote and no timezone contact: it borrows CODE,
+not DATA. So `SERVERS["petty-cash"]` is one line, `factory`, with no `sharedDoc`, while
+`LIB_RESOLUTIONS` carries all four. A `sharedDoc` entry here would hydrate four documents
+this endpoint never opens and charge their bytes to its cap; leaving one out of
+`LIB_RESOLUTIONS` would ship a worker that cannot resolve the arithmetic.
+
+The chart-of-accounts import is the one where a missing resolution would have been worst.
+Every journal line this server returns is posted to an account id `servers/cash-book` owns,
+and the whole reason it is imported rather than restated is that a category spelled "Office
+Supplies", "office supplies" and "  OFFICE   SUPPLIES  " must be ONE account and not three.
+That import lives in `accounts.ts`, and `readJsonFile` lives in `store.ts`; only
+`asset-register` and `quotes` are reachable from `index.ts`. Extension 12's original
+index-only check would have passed a build that could not resolve either the account ids
+every line is posted to or the quarantine that keeps an unreadable float register from being
+read as an empty one. The entry is
+
+```
+"petty-cash": ["cash-book", "asset-register", "quotes", "timezone"],
+```
+
+checked against the concatenated bytes of every file the server vendored, after the build.
+`float.ts` needed nothing at all: the balance, the reconciliation and the replenishment
+import nothing and are pure arithmetic.
+
+### Nothing to publish, and that was checked rather than assumed
+
+The instruction was to publish only where a tool writes a file, so the question was answered
+on the source. `grep -n "writeFileSync\|/out/\|out_path" servers/petty-cash/src/*.ts` finds
+exactly one writer, `store.ts`, writing `floats.json`, `vouchers.json` and `counter.json`
+under the homedir shim by tmp + rename - the endpoint's own register, which is a tenant
+document and not a download. No tool takes an `out_path`, no tool renders a document, and
+there is no `*_export_csv`. `replenish_request` is the tool that would be a document
+elsewhere and is not: it returns the cheque amount, the vouchers it reimburses, the totals
+per category as an `expense_add`-ready payload for `/mcp/expense-tracker`, and the double
+entry in the cash book's own account ids. The caller passes those on. So this endpoint has
+no `publish`, no `strip`, no `/out/` and no `publishFile` import: `EXTRA_IMPORTS` gains no
+entry. Inventing a CSV export here would have been a hosted-only tool the stdio server does
+not have, which is the one thing the vendoring transform exists to avoid.
+
+### Vendoring: six files and one patch
+
+`SERVERS["petty-cash"]` is `index.ts, version.ts, lib.ts, accounts.ts, float.ts, store.ts`.
+Every source file, `lib.ts` included, for the reason the last six servers' are: it is this
+engine as a public API, so the next server that reads a float resolves here rather than to a
+module that cannot load.
+
+One patch, `patchPettyCashIndex`, and it is the D-R60 species for the eighth time. The
+`pettycash://accounts` resource reported `writes: [{ dir: dataDir() }]`, which hosted is the
+worker's virtual homedir - a path no caller has and none can reach - and now says the float
+register is one document held per token that no balance is ever stored in. Its description
+said "the one directory it writes" and now says the one document.
+`remote/test/vendor-paths.test.mjs` scans every vendored file for exactly this and stays at
+30/30.
+
+`store.ts` needed no patch: the three files and the lock are one document per token under the
+homedir shim, written tmp + rename, and `readJsonFile` comes from the vendored timezone
+engine. `float.ts` and `accounts.ts` touch no path, no clock and no network. Caps and
+hardening are unchanged: the default 512 KB tenant document, the 256 KB body ceiling, the
+JSON-RPC batch rejection, the same free/Pro rate limits, the 1-hour download TTL and the
+35-day orphan sweep.
+
+The cap is the default deliberately, and for the second endpoint running it did not have to
+be reasoned about. NO BALANCE IS STORED: a float record holds its imprest, its top-ups and
+its counts, and every balance is derived on the call from those and the vouchers, so the
+document grows only with the vouchers actually recorded. 512 KB holds many years of a real
+one-tin office.
+
+## Verification transcript
+
+Deployed worker, `$T` a bundle Pro key signed with `scripts/sign-license.mjs '*'` as
+`scripts/validate.mjs` does (no token was minted: `/mcp/token` is rate-limited per IP, and a
+`GET /mcp/connect` without `?token=` returned 429 for exactly that reason during this run).
+One POST per call, one token throughout.
+
+```
+$ GET /mcp
+  27 endpoints: ..., cash-book, amortization, petty-cash
+$ GET /mcp/connect?token=anon_...       -> 27 server rows plus /mcp/whoami, petty-cash listed
+
+$ petty-cash tools/list
+  9 tools: float_open, topup_record, voucher_add, voucher_delete, reconcile,
+  replenish_request, float_report, license_status, license_activate
+
+$ petty-cash float_open {name: "Probe tin ...", currency: "EUR", imprest_minor: 50000,
+                         opened: "2026-03-01", custodian: "Probe Custodian"}
+  FLOAT-2026-0001   imprest EUR 500.00 (50,000)   balance EUR 500.00   custodian_source "call"
+  journal  petty_cash "Petty cash"  Dr 50,000
+           cash       "Cash"                      Cr 50,000
+  both ids and both names come from /mcp/cash-book's own chart of accounts, imported
+
+$ petty-cash voucher_add x3
+  VOU-2026-0001  2026-03-02  postage  Stamps  EUR 12.50  expenses:postage  balance EUR 487.50
+  VOU-2026-0002  2026-03-05  travel   Taxi    EUR 34.80  expenses:travel   balance EUR 452.70
+  VOU-2026-0003  2026-03-11  office   Coffee  EUR  8.99  expenses:office   balance EUR 443.71
+
+$ petty-cash voucher_add {amount_minor: 60000, date: "2026-03-12", ...}
+  Error: the float held EUR 443.71 on 2026-03-12 and the voucher is EUR 600.00. A float is
+  cash in a tin, so it cannot pay out more than it holds. Record the top-up that funded it
+  first. Nothing was written.
+
+$ petty-cash reconcile {counted_minor: 44360, date: "2026-03-31"}
+  expected EUR 443.71 (44,371)   counted EUR 443.60 (44,360)   difference -11   verdict short
+  vouchers_reconciled 3, 5,629 minor      balance_after 44,360
+  "The tin is SHORT by EUR 0.11. The balance from here is what was counted, and the shortage
+   is carried as cash_over_short into the next replenishment, which is therefore that much
+   larger than the vouchers."
+
+$ petty-cash replenish_request {date: "2026-04-01"}
+  balance 44,360   imprest 50,000   request 5,640      <- 50,000 - 44,360
+  vouchers_total 5,629   cash_over_short 11            <- the request is NOT the voucher sum
+  journal  expenses:office   "Expenses: office"     Dr    899
+           expenses:postage  "Expenses: postage"    Dr  1,250
+           expenses:travel   "Expenses: travel"     Dr  3,480
+           cash_over_short   "Cash over and short"  Dr     11
+           cash              "Cash"                            Cr 5,640
+  petty_cash is NOT in that journal: under the imprest system the float account is debited
+  once when the float is opened and does not move again
+  expense_add -> three payloads for /mcp/expense-tracker: office 8.99, postage 12.5,
+                 travel 34.8, merchant "Petty cash FLOAT-2026-0001", billable false
+  posted false, "Nothing was written."
+  "The request is EUR 56.40 while the vouchers total EUR 56.29 ... Reimbursing only the
+   voucher total would leave the tin EUR 0.11 short for good."
+
+$ petty-cash float_report {float: "FLOAT-2026-0001"}
+  balance 44,360 against imprest 50,000, to_replenish 5,640   <- the same figure as the request
+  counts [{2026-03-31, expected 44,371, counted 44,360, difference -11, vouchers 3}]
+  differences_net -11, counts_that_agreed 0, unreconciled_total 0
+  by_currency [{EUR, floats 1, balance 44,360, imprest 50,000, differences_net -11}]
+```
+
+Every figure above is the figure `servers/petty-cash/test/unit.test.mjs` asserts to the minor
+unit over stdio, produced by the hosted handlers on a Worker with no filesystem.
+
+`scripts/validate.mjs` gained `petty-cash` to the tools/list sweep plus five real calls, and
+the index assertion moved from 26 endpoints to 27. The probe seeds nothing on any other
+endpoint - there is nothing to seed - and the shortfall arithmetic is asserted THREE ways
+rather than once, because a build that substituted the voucher total for the imprest
+shortfall would still return a plausible number, still balance its own journal, and still
+report a clean difference at every later reconciliation while restoring the float 11 minor
+units light for good, every cycle. So the probe asserts `difference_minor === -11` on the
+count, `request_minor === imprest_minor - balance_minor` AND `request_minor !== vouchers_
+total_minor` on the request, and the `cash_over_short:11:0` leg by name in a journal string
+that is also checked NOT to contain `petty_cash`. `float_report`'s `to_replenish_minor` is
+asserted equal to the request rather than to a literal, so the two derivations have to agree.
+Everything is named per float, and the float is opened fresh per run with a unique name, for
+the Extension 16 reason: the tenant behind the bundle key is not fresh between runs, so an
+aggregate over every float in the register is not a stable figure. **remote 104/104,
+`node scripts/validate.mjs` run 50: 811/811.**
+
+### Limitations
+
+- The free tier is 1 float and 20 vouchers a calendar month; `reconcile` and `voucher_delete`
+  are free and unlimited, because whether the cash matches the paperwork is the question this
+  endpoint exists for. The probes ran on a Pro key, so the hosted cap refusals and the Pro
+  gates on `replenish_request` and `float_report` are asserted only by the stdio suite, as
+  are the concurrency rows.
+- `topup_record` and `voucher_delete` were not exercised against the live endpoint; the five
+  validate calls are `float_open`, `voucher_add` (three plus one refusal), `reconcile`,
+  `replenish_request` and `float_report`. Both are covered by the stdio suite and by the
+  tools/list sweep.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Over stdio the free-voucher check and the register write are one critical
+  section; hosted, two simultaneous twenty-first vouchers on one free token could both pass a
+  check only one of them should. Unchanged since Extension 1. The VOU and FLOAT counters are
+  written before the record on each request, so a lost write burns a number rather than
+  reusing one, which is the property a paper voucher book depends on.
+- The corrupt-store behaviour cannot be reached through this endpoint, the
+  statement-of-account limitation verbatim: a tenant document is written by this worker as
+  one JSON object and hydrated back, so a float register that is on disk and unparseable is a
+  local-install condition. The quarantine code is vendored from the timezone engine and
+  resolves; it is the DISK state it defends against that hosted callers cannot produce.
+- Nothing is posted anywhere. `replenish_request` hands back `expense_add` payloads for
+  `/mcp/expense-tracker` and lines in `/mcp/cash-book`'s account ids, and the caller passes
+  them on. Hosted, that means further POSTs to other endpoints on the same token, exactly as
+  `asset_journal` has since Extension 14 and `loan_journal` since Extension 17, and no
+  endpoint knows the other ran. In particular `/mcp/cash-book` derives no float entries yet:
+  `petty_cash` and `cash_over_short` are this server's two additions to that chart, following
+  its id convention so that they are the ids it will use when it does.
+- `float_open` fills the custodian from the shared business profile (`business_set` on
+  `/mcp/invoice`) when none is given, and says which of the two it used. The probe passed one
+  explicitly, so the profile path is asserted only by the stdio suite.
