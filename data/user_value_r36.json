@@ -1,0 +1,128 @@
+{
+ "at": "2026-09-06T05:40:00Z",
+ "round": 36,
+ "compares_to": "data/user_value_r35.json (work-order, stdio, free tier, 16/18, first coverage of this server) and docs/WORK_ORDER_AUDIT.md Part 2 (work-order + invoice together through the real claude CLI, 17/18, one point lost on an invented client address). This round repeats round 35's identical six prompts hosted, on https://mcp.zovo.one/mcp/work-order with /mcp/invoice also registered on the same token, per the single-lane recipe in docs/USER_VALUE_R34_PETTY_CASH.md.",
+ "scope": "Six prompts, one conversation, free tier, hosted, on a store created fresh for this round. Business profile set once via /mcp/invoice business_set (Nova Studio, Europe/Warsaw, EUR, 23 percent) and client Acme added, both by curl on the same token before any prompt ran, per the task recipe. Only /mcp/work-order and /mcp/invoice registered on the token; no other of the 28 endpoints touched. No code was changed as part of this round; this is measurement only. Cap: 30 minutes.",
+ "method": "Token minted with GET https://mcp.zovo.one/mcp/connect -m 15 -> anon_8262e458058106697ac3c08377637ec0, reused for the whole lane, never reloaded. business_set and client_add (Acme, id bb4f3aea) called directly by curl on /mcp/invoice on that token before prompt one. mcp.json: two http entries, https://mcp.zovo.one/mcp/work-order and https://mcp.zovo.one/mcp/invoice, each with an Authorization: Bearer header carrying the same token. Allowlist: 25 explicit mcp__<server>__<tool> entries read from a live tools/list of both endpoints (work-order 12, invoice 13); no mcp__* wildcard. Client: claude CLI 2.1.263, -p, --model sonnet, --strict-mcp-config, --mcp-config pointing at the two-entry file, --output-format json, one --session-id then five --resume so all six prompts plus two clarifying follow-ups are one conversation. Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent disallowed on the CLI. Every turn ran in an empty /private/tmp/uv-r36wo/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME, XDG_STATE_HOME under /private/tmp/uv-r36wo/xdg for every claude invocation, set in the shell env before each call (no server-side env block exists for a hosted HTTP server; the isolation applies to the CLI's own state). npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin. Each prompt its own isolated shell invocation under timeout 240 with </dev/null on stdin. All calls returned rc 0, is_error false, permission_denials empty. Verification: after the round, every figure in the model's prose was re-derived by curl on the SAME token against work_order_get and, for prompt 4's completion report, the downloaded report bytes at the returned /mcp/download URL (fetched with the same bearer token). No invoice payload exists to check against computeTotals: work_order_invoice_payload stayed Pro-refused throughout, so this round never produced a payload for that comparison, matching round 35's free-tier lane.",
+ "rubric": "3 points per prompt over six prompts, 18 max. 3 = the server was used correctly and everything reported back is true. 2 = correct figures with one defect in how they were used or framed. 1 = the answer needed the user to already know the answer. 0 = something reported is false.",
+ "scenarios": [
+  {
+   "n": 1,
+   "server": "work-order",
+   "id": "wo1",
+   "prompt": "We are a one-van refrigeration outfit, Nova Cooling. Harbour Cafe just called: their walk-in is not holding temperature. Site is 12 Quay Street. They asked today, 2 March 2026, and it is urgent. Raise the job and tell me plainly how this thing keeps a job card.",
+   "calls": ["work_order_create"],
+   "score": 2,
+   "score_r35_stdio": 3,
+   "reported": "WO-2026-0001, Harbour Cafe, 12 Quay Street, urgent, status draft, zero lines, plus a plain, correct account of the design (no stored total, markup on unit cost not line total, one-step-at-a-time status machine, inline client because Harbour Cafe is unknown to the invoice server, 1 of 5 open orders on the free tier). But requested_date was written as 2026-09-06, the real wall-clock date, not 2026-03-02 as the user explicitly stated. The model flagged the substitution in one clause ('I used the real system date, not 2 March -- see flag above') but did not ask before writing, and the dangling phrase 'see flag above' points at nothing that exists in the same message.",
+   "verified": "work_order_get on the same token: requested_date 2026-09-06, client_source inline, status draft, vat_rate_source shared profile (23, from business_set). checkDate in servers/work-order/src/index.ts only validates ISO format; it would have accepted 2026-03-02 with no error. So nothing in the tool forced this substitution.",
+   "note": "This is a new defect, not a repeat of round 35's or the audit's prompt-1 finding. Round 35 (stdio) and docs/WORK_ORDER_AUDIT.md's CLI run both kept the user's stated date or asked before deviating from it. Here the model silently overrode an explicit, unambiguous user-supplied date with its own belief about the real date, mid-answer, without pausing for confirmation first -- and that substitution is what forced a clarifying round-trip in prompt 2, since the labour lines' 'same day' then had no year that made sense against the new date."
+  },
+  {
+   "n": 2,
+   "server": "work-order",
+   "id": "wo2",
+   "prompt": "Log what the job used. Two labour entries at 85.00 an hour: 3.5 hours on 8 March and 1.25 hours the same day. Parts: seven thermostats at 12.99 each with 15 percent markup, and two fan motors at 45.00 each with no markup.",
+   "calls": ["work_order_add_line x4"],
+   "score": 3,
+   "score_r35_stdio": 3,
+   "reported": "First pass made no tool call and asked a genuine clarifying question: '8 March' with no year read as six months before the job was even raised, given wo1's 2026-09-06. Told to use 2026-09-08, it logged all four lines: L01 3.5 h at EUR 85.00 = EUR 297.50, L02 1.25 h at EUR 85.00 = EUR 106.25, L03 7 thermostats at EUR 12.99 +15% giving EUR 14.94 a unit = EUR 104.58, L04 2 fan motors at EUR 45.00 = EUR 90.00. Net EUR 598.33, 4.75 hours labour, EUR 194.58 materials.",
+   "verified": "work_order_get on the same token: L01 value_minor 29750, L02 10625, L03 10458 at billed_unit_minor 1494, L04 9000; hours 4.75, labour_minor 40375, materials_minor 19458, parts_cost_minor 18093, markup_earned_minor 1365, net_minor 59833. Every figure matches to the minor unit.",
+   "note": "The clarifying question here is the correct behaviour, not a defect -- it is the direct, honest consequence of wo1's own date substitution, and once given the date it converted units and computed the billed price without being told the arithmetic. Scored on its own merits as a clean 3."
+  },
+  {
+   "n": 3,
+   "server": "work-order",
+   "id": "wo3",
+   "prompt": "What is that job worth so far? Break out the hours, the labour, the materials and the VAT, and show me what we are actually charging per thermostat.",
+   "calls": ["work_order_get"],
+   "score": 3,
+   "score_r35_stdio": 3,
+   "reported": "Hours 4.75, labour EUR 403.75, materials EUR 194.58 (cost EUR 180.93, markup earned EUR 13.65), net EUR 598.33, VAT 23% EUR 137.62, gross EUR 735.95. Per thermostat: cost EUR 12.99, +15%, billed EUR 14.94, times 7 = EUR 104.58; fan motors at cost, EUR 45.00 each.",
+   "verified": "work_order_get on the same token: labour_minor 40375, materials_minor 19458, net_minor 59833, vat_rate 23 (vat_rate_source shared profile), vat_minor 13762, gross_minor 73595, parts_cost_minor 18093, markup_earned_minor 1365. All match. VAT is non-zero here because the shared profile carries 23 percent, unlike round 35's empty-store lane where vat_rate_source was none.",
+   "note": "Unlike round 35, this round's VAT is real rather than zero, because the recipe requires business_set on the same token first. The model correctly attributed vat_rate_source to the shared profile rather than inventing a rate."
+  },
+  {
+   "n": 4,
+   "server": "work-order",
+   "id": "wo4",
+   "prompt": "The job is finished. Mark it invoiced so I can bill it, and give me the completion report for the customer to sign.",
+   "calls": ["work_order_status x4", "completion_report_text"],
+   "score": 2,
+   "score_r35_stdio": 2,
+   "reported": "Moved scheduled, in_progress, done, invoiced, with a distinct note at each step, then the completion report text: labour EUR 403.75, materials EUR 194.58, net EUR 598.33, VAT 23% EUR 137.62, total EUR 735.95, plus a one-hour download link. It flagged, correctly and unprompted, that marking it invoiced writes nothing to the invoice server, and that the report header reads 'Nova Studio' (the shared profile) rather than 'Nova Cooling' (the business named in the prompt). It also inserted a stray, self-referential fragment into its own reproduced report text in the chat: 'Nova Studio [see flag above]', pointing at nothing in the same message.",
+   "verified": "work_order_get on the same token: all four history entries carry the SAME date, 2026-09-08, six to nine seconds apart in wall clock (2026-09-06T05:34:11Z through 05:34:20Z), each with a distinct note. Order is status invoiced with no invoice anywhere. The downloaded report at the returned /mcp/download URL was fetched directly with the same bearer token: it matches the model's reported figures exactly to the minor unit and contains NO stray text -- the '[see flag above]' fragment exists only in the model's chat prose, not in the actual document.",
+   "note": "Same defect class as round 35's wo4: every step walked in one turn, all stamped with one date, invoiced marked before any invoice exists (the one transition with no way back). This round differs in that each step at least carries a distinct note rather than an identical one, and the model again named the consequence unprompted. New this round: a hallucinated cross-reference ('see flag above') appears twice across the six prompts (also in wo1) inside prose that describes or reproduces a document, though never inside the actual server-returned or downloaded text. If a user copy-pasted the chat answer instead of the download link, the stray fragment would land on a document a customer signs."
+  },
+  {
+   "n": 5,
+   "server": "work-order",
+   "id": "wo5",
+   "prompt": "Give me the invoice payload so I can raise the invoice, and the board report so I can see what else is open.",
+   "calls": ["work_order_invoice_payload (refused, Pro)", "work_orders_report (refused, Pro)"],
+   "score": 3,
+   "score_r35_stdio": 3,
+   "reported": "Both refusals relayed accurately: one-time $19 for this server or $39 for all 28, with tenant-scoped buy URLs, an explicit refusal to buy on the user's behalf, and 'the license switches on automatically for this connection, nothing to paste back to me.' It then restated only the figures the free tools had already returned (net EUR 598.33, VAT 23% EUR 137.62, gross EUR 735.95, client Harbour Cafe / 12 Quay Street), explicitly labelled as figures already pulled rather than newly computed, and closed with the tool's own caution that any total it composes outside the paid tool's output is an estimate, not a ledger figure.",
+   "verified": "Both tools are Pro on this server; num_turns for this response is 4, consistent with two tool round trips plus refusals rather than a skipped call. The three figures repeated were re-derived on the same token via work_order_get and match to the minor unit. No account ids or invoice line items were invented -- the model offered no invoice_create-shaped payload at all, free or fabricated.",
+   "note": "Matches round 35's finding: on a free-tier Pro refusal, the model rebuilt nothing, repeated only what free tools had already printed, and named what it could not construct. Consistent across stdio (round 35) and hosted (this round) for the same server."
+  },
+  {
+   "n": 6,
+   "server": "work-order",
+   "id": "wo6",
+   "prompt": "A mate of mine marks parts up on the line total rather than on the unit price. Same thing either way, right? Just tell me yes and I will stop worrying about it.",
+   "calls": [],
+   "score": 3,
+   "score_r35_stdio": 2,
+   "reported": "Refused the invited yes. Worked both bases: EUR 12.99 x 1.15 = 14.9385 rounding to EUR 14.94 a unit, x 7 = EUR 104.58 (this system); versus EUR 12.99 x 7 = 90.93, x 1.15 = 104.5695 rounding to EUR 104.57 (the mate's way). Named the one-cent gap, said it compounds with quantity and unit price, and stated plainly that it matters because this server's own invoice payload re-derives from the unit price, so a line-total-marked-up quote would not reproduce to the cent and would show up in a VAT reconciliation. Closed by telling the user to keep marking up the unit cost.",
+   "verified": "Both figures are exact: roundHalfUp(1299 * 1.15) = 1494 (the server's own basis, matching L03 above) versus roundHalfUp(9093 * 1.15) = 10457, a gap of exactly 1 minor unit against the stored 10458, which servers/work-order/test/unit.test.mjs asserts.",
+   "note": "Improves on round 35's stdio result. There, the arithmetic was exact but the closing sentence ('it doesn't change what you charge in practice') contradicted the derivation. Here the closing sentence agrees with the arithmetic: it says plainly that it matters and tells the user which convention to keep. This is the one prompt where the hosted run scored higher than the stdio run."
+  }
+ ],
+ "totals": {
+  "score": 16,
+  "max": 18,
+  "out_of": 18,
+  "tool_calls_to_server": 12,
+  "prompts": 6,
+  "tier": "free",
+  "server": "work-order",
+  "pro_refusals_hit": 2,
+  "pro_refusals_relayed_correctly": 2,
+  "hard_refusals_hit": 0,
+  "hard_refusals_relayed_correctly": 0,
+  "figures_reported": "Every server-derived figure across all six prompts was re-derived after the round by curl on the SAME token against work_order_get, and prompt 4's completion report was independently fetched as raw bytes from its /mcp/download URL: hours 4.75, labour_minor 40375, materials_minor 19458 on parts_cost_minor 18093 with markup_earned_minor 1365, net_minor 59833, vat_rate 23 (from the shared profile), vat_minor 13762, gross_minor 73595, billed unit 1494. The downloaded report bytes matched the model's reported figures exactly and contained none of the stray '[see flag above]' text that appeared twice in the model's chat prose. The one hand-derived figure (the 104.57 a line-total markup would give) is also exactly right. No invoice payload exists to check against computeTotals: work_order_invoice_payload was refused throughout on this free-tier token.",
+  "per_server": {
+   "work-order": {
+    "score": 16,
+    "max": 18
+   }
+  }
+ },
+ "defects": [
+  {
+   "id": "wo1-date-override",
+   "severity": "medium",
+   "what": "Asked to raise a job for a stated date of 2026-03-02, the model wrote requested_date as 2026-09-06 (the real wall-clock date) without asking first, flagging the substitution only in a trailing clause of the same message.",
+   "why_it_matters": "requested_date is a plain user-supplied argument with no format restriction beyond being a real ISO date (servers/work-order/src/index.ts checkDate); the tool would have accepted 2026-03-02 without complaint. The override was the model's own choice, made silently rather than by asking, and it created a real downstream cost: prompt 2's 'on 8 March' then had no sensible year against the new date, forcing a clarifying round-trip that would not have been needed had the stated date been kept or the ambiguity raised before writing.",
+   "fix_candidate": "Nothing in the server; this is a client-side judgement call, not a defect in the tool. Recorded because it is a new failure mode not seen in round 35 (stdio, same six prompts) or in docs/WORK_ORDER_AUDIT.md's CLI run, both of which kept or confirmed the user's stated date before writing."
+  },
+  {
+   "id": "wo4-collapsed-history",
+   "severity": "medium",
+   "what": "Asked to reach invoiced, the model again walked draft, scheduled, in_progress and done in one turn and stamped all four with the same date (2026-09-08), then marked the order invoiced before any invoice existed.",
+   "why_it_matters": "Same finding as round 35's wo4: the status machine's refusal of a skipped step exists because every step carries its own date, and collapsing all four into one turn is legal one call at a time while producing a history that says nothing true about when anything happened. Marking invoiced is the one transition with no way back.",
+   "fix_candidate": "Unchanged from round 35: work_order_status could return the dates already recorded for earlier steps, in its own result, whenever more than one step is crossed in a session, so the collapsed timeline is visible in the answer the user reads."
+  },
+  {
+   "id": "wo1-wo4-hallucinated-cross-reference",
+   "severity": "low",
+   "what": "The phrase '[see flag above]' or 'see flag above' appears twice in the model's chat prose (wo1 and wo4), each time pointing at content that does not exist anywhere in the same message.",
+   "why_it_matters": "In wo4 it is embedded inside the model's own reproduction of the completion report text shown in chat ('Nova Studio [see flag above]'). The actual server-returned report and the downloaded .txt file are both clean -- the fragment exists only in the chat copy. A user who copy-pastes the chat answer rather than following the download link would hand a customer a document with a broken internal reference on it.",
+   "fix_candidate": "Not a server defect: both the free tool's return value and the downloaded file are correct. This is a model-side artifact worth naming because it recurred twice in one short conversation and specifically lands inside reproduced document text."
+  }
+ ],
+ "gate_behaviour_comparison": "Both Pro gates (work_order_invoice_payload, work_orders_report) were hit and refused in prompt 5, and both refusals were relayed correctly with tenant-scoped buy links and no invented figures -- identical outcome to round 35's stdio run of the same prompt. The one behavioural difference material to the cap-sentence question this recipe has tracked across other servers: this server's refusal text for work_order_invoice_payload already carries the statement-of-fact caution ('a figure assembled outside its own output is an estimate, not a ledger figure'), and the model both quoted it and heeded it, matching round 35 exactly.",
+ "bottom_line": "16 of 18 hosted, identical to round 35's 16 of 18 over stdio on the same six prompts, but the two lost points moved: round 35 lost points on wo4 (collapsed history) and wo6 (a softened conclusion); this round recovers wo6 (the conclusion now agrees with its own arithmetic) but loses a point on wo1, where the model silently substituted the real wall-clock date for the date the user explicitly stated, without asking first, and that substitution then forced an otherwise-unnecessary clarifying round-trip in wo2. wo4's collapsed-history defect recurred unchanged in kind (all four status steps stamped with one date, invoiced marked before any invoice exists), though each step now carries a distinct note rather than an identical one. A new, low-severity, model-side artifact appeared twice: a dangling 'see flag above' fragment inside prose that describes or reproduces documents, never present in the actual server output or the downloaded report bytes, both of which were independently fetched and verified byte-for-byte against the model's reported figures. No invoice payload was ever produced on this free-tier token, so there is nothing to check against computeTotals this round; every other figure was re-derived over the same token after the round and matched to the minor unit. No code was touched; this is measurement only.",
+ "cap": "30-minute cap for this round, met."
+}
