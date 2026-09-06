@@ -1,7 +1,7 @@
 // One worked example per scheme, with the exact expected numbers, plus the tier switch.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { client, sandbox, cleanup, proKey, seedProfile, TRIP } from "./_client.mjs";
+import { client, sandbox, cleanup, proKey, seedExpenses, seedProfile, TRIP } from "./_client.mjs";
 
 function open(t, opts = {}) {
   const box = sandbox();
@@ -254,4 +254,93 @@ test("perdiem_report totals per scheme and month and never adds two currencies",
     { currency: "PLN", total: "PLN 90.00", total_minor: 9000 },
   ]);
   assert.match(rep.basis, /Currencies are never added together/);
+});
+
+// D-P2: a create tool that accepts the same record twice spends a capped free slot on a
+// row the caller already has. These three cover the refusal, the way back, and its limit.
+
+test("trip_record refuses a record identical to one already stored, and names it", async (t) => {
+  const { c } = open(t);
+  await c.init();
+  const first = await c.json("trip_record", { ...TRIP, purpose: "Client kickoff" });
+  assert.equal(first.recorded.id, "TRIP-2026-0001");
+
+  // Byte-identical, then the same record with the free text spaced and cased differently
+  // and the same instants written as offsets: both are the same trip.
+  const same = await c.call("trip_record", { ...TRIP, purpose: "Client kickoff" });
+  assert.equal(same.isError, true);
+  assert.match(same.text, /same record as TRIP-2026-0001 \("Warsaw sprint"\)/);
+  assert.match(same.text, /Nothing was written and no free-tier slot was used/);
+  assert.match(same.text, /trip_delete/, "the refusal must name the tool that removes the existing one");
+
+  const normalised = await c.call("trip_record", {
+    ...TRIP, name: "  warsaw   SPRINT ", purpose: "client  kickoff",
+    start: "2026-05-04T06:00:00Z", end: "2026-05-04T19:00:00Z", timezone: undefined,
+  });
+  assert.equal(normalised.isError, true, "trim, case-fold and the same instant are the same record");
+  assert.match(normalised.text, /TRIP-2026-0001/);
+
+  // One real difference is not a duplicate.
+  const real = await c.json("trip_record", { ...TRIP, purpose: "Client kickoff", meals_provided_daily: ["breakfast"] });
+  assert.equal(real.recorded.id, "TRIP-2026-0002");
+  assert.equal((await c.json("trip_list", {})).count, 2, "the two refusals wrote nothing");
+});
+
+test("trip_delete frees a free-tier slot: fill the month, delete one, record again", async (t) => {
+  const { c } = open(t);
+  await c.init();
+  for (let i = 1; i <= 5; i++) await c.json("trip_record", { ...TRIP, name: `trip ${i}` });
+  const sixth = await c.call("trip_record", { ...TRIP, name: "trip 6" });
+  assert.equal(sixth.isError, true);
+  assert.match(sixth.text, /records 5 trips a month and 2026-05 already has 5/);
+  assert.match(sixth.text, /trip_delete/, "the cap refusal must name the way back");
+
+  const gone = await c.json("trip_delete", { trip: "TRIP-2026-0003" });
+  assert.equal(gone.deleted.id, "TRIP-2026-0003");
+  assert.equal(gone.trips_left, 4);
+  assert.equal(gone.month, "2026-05");
+  assert.match(gone.notes.join(" "), /4 of 5 trips now recorded in 2026-05/);
+  assert.equal((await c.json("trip_list", {})).count, 4);
+
+  // The slot really came back, and the id did not: the counter still goes up.
+  const again = await c.json("trip_record", { ...TRIP, name: "trip 6" });
+  assert.equal(again.recorded.id, "TRIP-2026-0006", "a deleted id is retired, never reissued");
+  assert.equal((await c.json("trip_list", {})).count, 5);
+  const seventh = await c.call("trip_record", { ...TRIP, name: "trip 7" });
+  assert.equal(seventh.isError, true, "the cap is back at 5 once the slot is used again");
+});
+
+test("trip_delete refuses a trip with a dependent and names the dependent", async (t) => {
+  const box = sandbox();
+  const c = client({ dataHome: box.dataHome, key: proKey() });
+  t.after(() => { c.close(); cleanup(box.dir); });
+  await c.init();
+  await c.json("trip_record", { ...TRIP, name: "exported" });
+  await c.json("trip_record", { ...TRIP, name: "booked" });
+
+  // Marker 1: this server's own exported_at, stamped by trip_export.
+  await c.json("trip_export", { trip: "TRIP-2026-0001", mark_exported: true });
+  const marked = await c.call("trip_delete", { trip: "TRIP-2026-0001" });
+  assert.equal(marked.isError, true);
+  assert.match(marked.text, /TRIP-2026-0001 \("exported"\) was NOT deleted/);
+  assert.match(marked.text, /exported_at/);
+  assert.equal((await c.json("trip_list", {})).count, 2, "the refusal deleted nothing");
+
+  // Looking without mark_exported is not a dependent: nothing was written anywhere.
+  await c.json("trip_export", { trip: "TRIP-2026-0002" });
+  const dep = await c.json("trip_delete", { trip: "TRIP-2026-0002" });
+  assert.equal(dep.deleted.id, "TRIP-2026-0002");
+
+  // Marker 2: an expense in the expense-tracker ledger whose note cites the trip id.
+  const third = await c.json("trip_record", { ...TRIP, name: "in the ledger" });
+  assert.equal(third.recorded.id, "TRIP-2026-0003");
+  seedExpenses(box.dataHome, [
+    { id: "EXP-2026-0007", date: "2026-05-04", amount_minor: 4500, currency: "PLN", note: "TRIP-2026-0003 in the ledger | PL per diem", billable: false, created: "2026-05-05T09:00:00.000Z" },
+  ]);
+  const booked = await c.call("trip_delete", { trip: "TRIP-2026-0003" });
+  assert.equal(booked.isError, true);
+  assert.match(booked.text, /expense EXP-2026-0007/, "the booked expense must be named");
+  assert.match(booked.text, /dated 2026-05-04/);
+  assert.match(booked.text, /Nothing was written/);
+  assert.equal((await c.json("trip_list", {})).count, 2);
 });

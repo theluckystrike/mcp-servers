@@ -37,6 +37,7 @@ Cursor (`~/.cursor/mcp.json` or `.cursor/mcp.json`): the same entry as Claude De
 | `perdiem_calc` | Price one trip: the allowance per day and the total, with the partial-day fraction and the meal deductions the scheme's rule applies. |
 | `trip_record` | Calculate a trip and save it under a name, with the traveller from the shared business profile. |
 | `trip_list` | List saved trips with a total per currency. |
+| `trip_delete` | Delete a saved trip that has not been exported and has no expense booked against it, and free the free-tier slot it held. |
 | `trip_export` | The exact `expense_add` arguments for a saved trip, one payload per currency, for the expense-tracker server. |
 | `perdiem_report` | Totals per scheme and per calendar month, in each scheme's own currency. |
 | `license_status` | Free or Pro, and where to upgrade. |
@@ -49,6 +50,7 @@ Cursor (`~/.cursor/mcp.json` or `.cursor/mcp.json`): the same entry as Claude De
 | `perdiem_rates`, `perdiem_calc` | Yes, unlimited | Yes |
 | Trips saved per calendar month | 5, by start date | Unlimited |
 | `trip_list` | Yes, unlimited | Yes |
+| `trip_delete` | Yes, unlimited | Yes |
 | `trip_export` | No | Yes |
 | `perdiem_report` | No | Yes |
 

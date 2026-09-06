@@ -102,11 +102,11 @@ test("every tool description is non-empty, single-paragraph, and within the ceil
   const { c } = open(t);
   await c.init();
   const tools = await c.tools();
-  assert.equal(tools.length, 8, "tool count changed; update servers/per-diem/SPEC.md");
+  assert.equal(tools.length, 9, "tool count changed; update servers/per-diem/SPEC.md");
   assert.deepEqual(tools.map((x) => x.name).sort(), [
     "license_activate", "license_status",
     "perdiem_calc", "perdiem_rates", "perdiem_report",
-    "trip_export", "trip_list", "trip_record",
+    "trip_delete", "trip_export", "trip_list", "trip_record",
   ]);
 
   for (const tool of tools) {

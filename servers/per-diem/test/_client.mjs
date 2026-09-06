@@ -85,6 +85,19 @@ export function seedProfile(dataHome, profile) {
   return profile;
 }
 
+/**
+ * A row in servers/expense-tracker's ledger, written directly for the same reason
+ * seedProfile is: trip_delete reads that ledger to find dependents, and spawning the
+ * expense server to create one would test that server, not this one. The shape is
+ * servers/expense-tracker src/store.ts DB.
+ */
+export function seedExpenses(dataHome, expenses) {
+  const dir = join(dataHome, "mcp-servers", "expense-tracker");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "data.json"), JSON.stringify({ version: 1, expenses, rules: [], settings: {} }, null, 2) + "\n");
+  return expenses;
+}
+
 /** A trip that is always accepted, for tests that need a row rather than a number. */
 export const TRIP = {
   name: "Warsaw sprint", scheme: "pl", destination: "Poland",

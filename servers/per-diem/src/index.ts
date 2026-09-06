@@ -5,8 +5,8 @@ import { createLicenseGate, readSharedProfile, withFileLock } from "@theluckystr
 import { z } from "zod";
 import { VERSION } from "./version.js";
 import { currencyDecimals, formatMoney, table, type TableId } from "./tables.js";
-import { calc, MAX_TRIP_DAYS, MEALS, SCHEMES, type CalcInput, type MealName, type SchemeId } from "./schemes.js";
-import { dataDir, findTrip, getTrips, lockPath, nextTripId, setTrips, type Trip } from "./store.js";
+import { calc, MAX_TRIP_DAYS, MEALS, SCHEMES, type CalcInput, type CalcResult, type MealName, type SchemeId } from "./schemes.js";
+import { dataDir, findTrip, getTrips, lockPath, nextTripId, readExpenseRows, setTrips, type Trip } from "./store.js";
 
 /**
  * Free tier: five trips recorded in a calendar month, counted by the start date. Rate
@@ -66,14 +66,85 @@ function home(): Home {
 const schemeArg = z.enum(["pl", "uk", "us"]);
 const mealList = z.array(z.enum(["breakfast", "lunch", "dinner"]));
 
+/**
+ * The cap is counted from the STORED records every time, never from a counter that only
+ * goes up. That is what makes `trip_delete` mean anything: a deleted trip stops being
+ * counted the moment it leaves trips.json, so the slot it held comes back on the free
+ * tier. (`counter.json` is one-way, but it allocates IDS, not slots: a deleted id is
+ * never reissued, so an id on a filed claim cannot come back pointing at a new trip.)
+ */
 function tripsInMonth(month: string): number {
   return getTrips().filter((t) => t.calc.start.slice(0, 7) === month).length;
+}
+
+/** Trim, collapse runs of whitespace, and case-fold. Used for every free-text field. */
+const norm = (v: unknown) => String(v ?? "").trim().replace(/\s+/g, " ").toLowerCase();
+
+/**
+ * D-P2 (docs/DIST_R19_RESULT.md finding 3). A create tool that accepts the same record
+ * twice, in a suite with a monthly cap, silently spends a free slot on a row the caller
+ * already has -- and before `trip_delete` existed there was no way back except a Pro key.
+ *
+ * So `trip_record` fingerprints what it is about to store and refuses an exact match. The
+ * fingerprint is taken AFTER normalisation on both sides: free text is trimmed,
+ * whitespace-collapsed and case-folded, so " berlin  Workshop " and "Berlin workshop" are
+ * the same record; the dates, times, currency, per-day fractions, meal flags and every
+ * deduction come from the calc RESULT rather than the raw arguments, and start and end are
+ * compared as EPOCH INSTANTS, so the same journey written as "+02:00" and as a local time
+ * plus a timezone is also the same record. The zone name itself and the per-day wall-clock
+ * strings are deliberately left out for the same reason: they are two renderings of one
+ * instant. Anything the zone genuinely changes -- which calendar day a US night falls in,
+ * how many hours a DST crossing is worth -- lands in the day lines, which ARE compared.
+ * Meals are sorted, because breakfast-then-lunch and lunch-then-breakfast are one day.
+ *
+ * A trip that differs in anything real -- another name, another destination, another hour,
+ * one more free meal -- is not a duplicate and is stored. Recording the same journey twice
+ * on purpose is legitimate; recording it twice by accident is what this catches.
+ */
+function fingerprint(r: { name: string; traveller: string; purpose?: string; project?: string; calc: CalcResult }): string {
+  const c = r.calc;
+  return JSON.stringify([
+    norm(r.name), norm(r.traveller), norm(r.purpose), norm(r.project),
+    c.scheme, norm(c.destination), c.currency.toUpperCase(),
+    Date.parse(c.start), Date.parse(c.end), c.total_hours, c.part, c.lodging_nights,
+    c.subsistence_minor, c.lodging_minor, c.total_minor,
+    c.days.map((d) => [d.day, d.hours, d.basis, d.fraction, d.gross_minor,
+      [...d.meals_provided].sort(), d.meal_deduction_minor, d.amount_minor]),
+  ]);
+}
+
+/**
+ * What stops a trip being deleted. Two markers, and both are real rather than assumed:
+ *
+ *  1. `exported_at` on the record itself, stamped by `trip_export {mark_exported:true}`.
+ *     It is this server's own statement that the trip went out.
+ *  2. A row in servers/expense-tracker's ledger whose note cites the trip id -- the note
+ *     `trip_export` builds opens with `<id> <name>`, so a caller who actually ran the
+ *     payload leaves the trip's id in the expense book. That expense is booked; deleting
+ *     the per diem under it would leave it citing an id that resolves to nothing.
+ *
+ * Anything else is deletable. A trip that was merely LOOKED at by trip_export without
+ * mark_exported is not a dependent: nothing was written anywhere, so nothing depends on it.
+ */
+function dependents(t: Trip): { blockers: string[]; note?: string } {
+  const blockers: string[] = [];
+  if (t.exported_at) {
+    blockers.push(`its own export marker: exported_at ${t.exported_at}, stamped by trip_export with mark_exported`);
+  }
+  const ledger = readExpenseRows();
+  for (const e of ledger.rows) {
+    if (typeof e.note === "string" && e.note.includes(t.id)) {
+      blockers.push(`expense ${e.id ?? "(unnamed row)"} in the expense-tracker ledger${e.date ? ` dated ${e.date}` : ""}, whose note cites ${t.id}`);
+    }
+  }
+  return { blockers, note: ledger.note };
 }
 
 function capRefusal(month: string, toolName: string): string {
   return `the free tier records ${FREE_TRIPS_PER_MONTH} trips a month and ${month} already has ${tripsInMonth(month)}. ` +
     `perdiem_rates and perdiem_calc stay free and unlimited, so the numbers are still available; only saving them is capped. ` +
-    `Nothing was stored. ` + gate.upgradeText("unlimited trips", toolName);
+    `Nothing was stored. Run trip_list to see the five, and trip_delete to remove one you no longer need: the cap counts stored trips, so deleting one frees its slot in ${month} straight away. ` +
+    gate.upgradeText("unlimited trips", toolName);
 }
 
 function tripSummary(t: Trip) {
@@ -189,10 +260,26 @@ server.registerTool("trip_record", {
     const result = calc(toCalcInput(a));
     return await locked(() => {
       const month = result.start.slice(0, 7);
-      if (!gate.isPro() && tripsInMonth(month) >= FREE_TRIPS_PER_MONTH) return fail(capRefusal(month, "trip_record"));
       const h = home();
       const traveller = (a.traveller ?? "").trim() || h.traveller;
       const list = getTrips();
+
+      // The duplicate check runs BEFORE the cap check and on every tier: a caller under the
+      // cap must not spend a slot on a row they already have either, and a Pro caller must
+      // not end up claiming the same journey twice.
+      const candidate = { name: a.name.trim(), traveller: traveller ?? "unknown", purpose: a.purpose, project: a.project, calc: result };
+      const mine = fingerprint(candidate);
+      const twin = list.find((x) => fingerprint(x) === mine);
+      if (twin) {
+        return fail(
+          `this is the same record as ${twin.id} ("${twin.name}"), recorded ${twin.created}: same name, traveller, scheme, destination, ` +
+          `start and end, meals and deductions, currency and total (${twin.calc.total}). Nothing was written and no free-tier slot was used. ` +
+          `If the journey really did happen twice, change something real -- the name, the times, the meals -- and it will be stored. ` +
+          `If ${twin.id} is the row you want gone, run trip_delete {"trip": "${twin.id}"} first; that also frees its slot in ${twin.calc.start.slice(0, 7)}.`,
+        );
+      }
+
+      if (!gate.isPro() && tripsInMonth(month) >= FREE_TRIPS_PER_MONTH) return fail(capRefusal(month, "trip_record"));
       const now = new Date().toISOString();
       const t: Trip = {
         id: nextTripId(result.start.slice(0, 4), list.map((x) => x.id)),
@@ -243,6 +330,49 @@ server.registerTool("trip_list", {
       count: list.length,
       totals: [...by.entries()].sort().map(([currency, minor]) => ({ currency, total: formatMoney(minor, currency), total_minor: minor })),
       trips: list.slice(0, MAX_ROWS).map(tripSummary),
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+/**
+ * D-P2, the way back. Without a delete, the monthly cap is one-way: five recorded rows in
+ * a month and the free tier is spent until the calendar turns, even when one of them was a
+ * typo. So deletion is FREE -- putting the only exit behind the paywall would be selling
+ * the way out of a hole the tool dug.
+ *
+ * It is also narrow. A trip with a dependent is refused and the dependent is named (see
+ * `dependents`), because the failure this prevents is worse than the one it allows: an
+ * expense filed against a per diem that no longer exists is a claim nobody can evidence.
+ */
+server.registerTool("trip_delete", {
+  title: "Delete a saved trip",
+  description: "Delete one saved trip that has not been exported and has no expense booked against it, and free the free-tier slot it held that month. A trip with a dependent is refused, named. Free and unlimited.",
+  inputSchema: {
+    trip: z.string().min(1, "trip is required").describe("Trip id such as TRIP-2026-0001, or an exact or partial trip name. A partial name matching more than one trip is refused with the list"),
+  },
+}, async (a) => {
+  try {
+    return await locked(() => {
+      const list = getTrips();
+      const t = findTrip(list, a.trip);
+      if (!t) return fail(`no trip matches "${a.trip}". Run trip_list to see the ids. Nothing was deleted.`);
+      const { blockers, note } = dependents(t);
+      if (blockers.length) {
+        return fail(
+          `${t.id} ("${t.name}") was NOT deleted: it has ${blockers.length} dependent${blockers.length === 1 ? "" : "s"} -- ${blockers.join("; ")}. ` +
+          `Deleting it would leave that pointing at a trip id that resolves to nothing, so the per diem behind a filed claim could not be evidenced. ` +
+          `Nothing was written. Remove the dependent first, or keep the trip: on the free tier its slot stays used.`,
+        );
+      }
+      const month = t.calc.start.slice(0, 7);
+      setTrips(list.filter((x) => x.id !== t.id));
+      const notes: string[] = [];
+      if (!gate.isPro()) {
+        notes.push(`Free tier: ${tripsInMonth(month)} of ${FREE_TRIPS_PER_MONTH} trips now recorded in ${month}. The cap counts stored trips, so ${t.id}'s slot is free again and trip_record will take another trip in ${month}.`);
+      }
+      notes.push(`The id ${t.id} is retired, not recycled: the per-year counter only goes up, so a later trip never reuses an id that may sit on a claim someone already filed.`);
+      if (note) notes.push(note);
+      return json({ deleted: tripSummary(t), trips_left: tripsInMonth(month), month, notes });
     });
   } catch (e) { return fail((e as Error).message); }
 });
