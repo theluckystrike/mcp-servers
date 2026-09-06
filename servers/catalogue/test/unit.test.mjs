@@ -151,6 +151,7 @@ test("the PDF is written and names the currency and tier", async (t) => {
   assert.equal(r.isError, undefined, JSON.stringify(r).slice(0, 300));
   assert.equal(r.path, join(storeDir(box.dataHome), "pdf", "price-list-EUR-standard-2026-03-15.pdf"));
   assert.equal(r.lines, 3);
+  assert.deepEqual(r.booked_later, [{ sku: "WEB-AUDIT", price: "EUR 495.00", from: "2026-07-01" }], "D-R98: the PDF names the booked later row, as the text list does");
   assert.equal(r.sum_of_one_of_each, "EUR 609.99", "450.00 + 39.99 + 120.00 is one of each, and nothing else");
   const bytes = readFileSync(r.path);
   assert.equal(bytes.subarray(0, 5).toString(), "%PDF-");

@@ -211,8 +211,8 @@ ${d.reference ? `<div class="muted">${esc(d.reference)}</div>` : ""}
 ${meta}</div>
 <div><strong>${esc(biz.name)}</strong><br>${esc(biz.address ?? "").replace(/\n/g, "<br>")}
 ${biz.vat_id ? `<br>VAT ${esc(biz.vat_id)}` : ""}${biz.email ? `<br>${esc(biz.email)}` : ""}</div></div>
-<p><strong>${esc(d.party_label)}</strong><br>${esc(d.party.name)}<br>${esc(d.party.address ?? "").replace(/\n/g, "<br>")}
-${d.party.vat_id ? `<br>VAT ${esc(d.party.vat_id)}` : ""}${d.party.email ? `<br>${esc(d.party.email)}` : ""}</p>
+${d.party_label === "" ? "" : `<p><strong>${esc(d.party_label)}</strong><br>${esc(d.party.name)}<br>${esc(d.party.address ?? "").replace(/\n/g, "<br>")}
+${d.party.vat_id ? `<br>VAT ${esc(d.party.vat_id)}` : ""}${d.party.email ? `<br>${esc(d.party.email)}` : ""}</p>`}
 <table><thead><tr><th>Description</th><th class="n">Qty</th><th class="n">Unit</th><th class="n">Tax</th><th class="n">Amount</th></tr></thead>
 <tbody>${rows}</tbody>
 <tfoot><tr><td colspan="4" class="n">Subtotal</td><td class="n">${m(d.subtotal_minor)}</td></tr>

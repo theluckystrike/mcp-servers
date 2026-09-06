@@ -133,18 +133,22 @@ export async function renderDocPdf(
   }
   y = Math.max(issuerBottom, dy) + 22;
 
-  doc.font("Helvetica-Bold").fontSize(9).fillColor(MUTED).text(d.party_label, M, y);
-  y = doc.y + 4;
-  const party: string[] = [d.party.name];
-  if (d.party.address) party.push(d.party.address);
-  if (d.party.email) party.push(d.party.email);
-  if (d.party.vat_id) party.push(`VAT ID: ${d.party.vat_id}`);
-  doc.font("Helvetica-Bold").fontSize(11).fillColor(INK).text(party[0], M, y, { width: 300 });
-  if (party.length > 1) {
-    doc.font("Helvetica").fontSize(9).fillColor(MUTED)
-      .text(party.slice(1).join("\n"), M, doc.y + 2, { width: 300 });
+  // An empty party_label means the document has no second party (a price list is issued, not addressed):
+  // the issuer block above already names the business, so the party block is skipped rather than repeated.
+  if (d.party_label !== "") {
+    doc.font("Helvetica-Bold").fontSize(9).fillColor(MUTED).text(d.party_label, M, y);
+    y = doc.y + 4;
+    const party: string[] = [d.party.name];
+    if (d.party.address) party.push(d.party.address);
+    if (d.party.email) party.push(d.party.email);
+    if (d.party.vat_id) party.push(`VAT ID: ${d.party.vat_id}`);
+    doc.font("Helvetica-Bold").fontSize(11).fillColor(INK).text(party[0], M, y, { width: 300 });
+    if (party.length > 1) {
+      doc.font("Helvetica").fontSize(9).fillColor(MUTED)
+        .text(party.slice(1).join("\n"), M, doc.y + 2, { width: 300 });
+    }
+    y = doc.y + 24;
   }
-  y = doc.y + 24;
 
   const drawTableHead = (top: number): number => {
     doc.font("Helvetica-Bold").fontSize(9).fillColor(MUTED);
