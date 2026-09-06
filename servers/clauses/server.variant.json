@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/agreement",
   "description": "Reusable agreement and proposal clauses assembled into a real Word docx, variables filled.",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/clauses.mcpb",
-      "version": "0.19.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/clauses.mcpb",
+      "version": "0.20.0",
       "fileSha256": "bd11f6978b487d391f7f9261457d11094f452ac97a7b0b9b8fbcc0fd981ef1ec",
       "transport": {
         "type": "stdio"

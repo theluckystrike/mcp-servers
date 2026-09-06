@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-statement-of-account",
   "display_name": "Statement of Account",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "Per-client statements of account, aging buckets and dunning letters from your own books.",
   "author": {
     "name": "theluckystrike",

@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-petty-cash",
   "display_name": "Petty Cash",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "A petty cash float on the imprest system: vouchers, reconciliation and the replenishment.",
   "author": {
     "name": "theluckystrike",

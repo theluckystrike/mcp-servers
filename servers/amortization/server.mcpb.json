@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/amortization",
   "description": "Loan and lease schedules: payment, interest, early settlement and the journal, to the minor unit.",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/amortization.mcpb",
-      "version": "0.19.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/amortization.mcpb",
+      "version": "0.20.0",
       "fileSha256": "97afba2d609cf20ad267398030e83d011aeb9d3d991f3a076263d3bc87edaf49",
       "transport": {
         "type": "stdio"

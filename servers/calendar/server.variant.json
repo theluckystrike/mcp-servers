@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/availability",
   "description": "Read .ics calendar exports: free-busy, availability windows, double bookings, conflicts.",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/calendar.mcpb",
-      "version": "0.19.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/calendar.mcpb",
+      "version": "0.20.0",
       "fileSha256": "67a016b7fc37eca87e01071be7b86195e3515a0fde287fd17155597db470e9e6",
       "transport": {
         "type": "stdio"

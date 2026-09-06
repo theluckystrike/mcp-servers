@@ -1,0 +1,95 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-change-order",
+  "display_name": "Change Order",
+  "version": "0.20.0",
+  "description": "Change orders against a quote or work order: deltas, approval, running contract value.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "change_order_create",
+      "description": "Raise a change order against a quote or work order and return its CO-YYYY-NNNN number: the reference, the client, a title, the date, and the original contract value in minor units. Free tier: 5 open."
+    },
+    {
+      "name": "change_order_add_line",
+      "description": "Add one line to a draft change order: added or removed with a quantity and a unit price in minor units, or changed with the old and the new quantity and price, each with a reason and a date. Free."
+    },
+    {
+      "name": "change_order_status",
+      "description": "Move a change order: draft to sent, sent to approved or rejected, draft or sent to void, stamping the date and a note. Approved, rejected and void are final, and a draft cannot be approved unsent. Free."
+    },
+    {
+      "name": "change_order_get",
+      "description": "Show one change order in full: every added, removed and changed line with its reason and delta, the VAT, the delta gross, the status history and the running value of the reference. Free."
+    },
+    {
+      "name": "change_order_list",
+      "description": "List change orders with their status and delta. Filter by reference, by status, by client, and by a date range. Free."
+    },
+    {
+      "name": "change_order_delete",
+      "description": "Delete a change order raised by mistake. Only a draft with no lines can go: once there is a line or it has been sent, it has a history and is voided, not erased. Free on every tier."
+    },
+    {
+      "name": "contract_value",
+      "description": "The running value of one quote or work order: the original, the approved deltas and the current value, with pending draft and sent deltas shown separately and never added in. Free on every tier."
+    },
+    {
+      "name": "change_order_document",
+      "description": "Render one change order as a plain-text document for the client to approve: every line with its reason, the delta net and gross, the contract value before and after, and an approval block. Pro."
+    },
+    {
+      "name": "change_order_invoice_payload",
+      "description": "Build the approved delta as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing and creates nothing. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "change-order",
+    "variation-order",
+    "scope-change",
+    "contract-value",
+    "quotes",
+    "invoicing"
+  ]
+}

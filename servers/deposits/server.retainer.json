@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/retainer",
   "description": "Client retainers held on account: record one, draw it down against invoices, refund it.",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/deposits.mcpb",
-      "version": "0.19.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/deposits.mcpb",
+      "version": "0.20.0",
       "fileSha256": "235f21f43282874e4aa89815af495df47661590d0770d3a280474e83ffd24c8b",
       "transport": {
         "type": "stdio"

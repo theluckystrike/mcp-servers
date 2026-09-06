@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
@@ -1088,6 +1088,42 @@
     {
       "name": "catalogue_report",
       "description": "Report the catalogue: how many SKUs there are, how many price rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Pro."
+    },
+    {
+      "name": "change_order_create",
+      "description": "Raise a change order against a quote or work order and return its CO-YYYY-NNNN number: the reference, the client, a title, the date, and the original contract value in minor units. Free tier: 5 open."
+    },
+    {
+      "name": "change_order_add_line",
+      "description": "Add one line to a draft change order: added or removed with a quantity and a unit price in minor units, or changed with the old and the new quantity and price, each with a reason and a date. Free."
+    },
+    {
+      "name": "change_order_status",
+      "description": "Move a change order: draft to sent, sent to approved or rejected, draft or sent to void, stamping the date and a note. Approved, rejected and void are final, and a draft cannot be approved unsent. Free."
+    },
+    {
+      "name": "change_order_get",
+      "description": "Show one change order in full: every added, removed and changed line with its reason and delta, the VAT, the delta gross, the status history and the running value of the reference. Free."
+    },
+    {
+      "name": "change_order_list",
+      "description": "List change orders with their status and delta. Filter by reference, by status, by client, and by a date range. Free."
+    },
+    {
+      "name": "change_order_delete",
+      "description": "Delete a change order raised by mistake. Only a draft with no lines can go: once there is a line or it has been sent, it has a history and is voided, not erased. Free on every tier."
+    },
+    {
+      "name": "contract_value",
+      "description": "The running value of one quote or work order: the original, the approved deltas and the current value, with pending draft and sent deltas shown separately and never added in. Free on every tier."
+    },
+    {
+      "name": "change_order_document",
+      "description": "Render one change order as a plain-text document for the client to approve: every line with its reason, the delta net and gross, the contract value before and after, and an approval block. Pro."
+    },
+    {
+      "name": "change_order_invoice_payload",
+      "description": "Build the approved delta as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing and creates nothing. Pro."
     }
   ],
   "keywords": [

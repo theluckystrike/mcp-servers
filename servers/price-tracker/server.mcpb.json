@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
   "description": "Check a shop page price now, keep a watch list, see history and target alerts. All data stays local.",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/price-tracker.mcpb",
-      "version": "0.19.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/price-tracker.mcpb",
+      "version": "0.20.0",
       "fileSha256": "d6cc99ca49173644a30a9b3c0e140916595ec7318057b04ec4c204055c34eed6",
       "transport": {
         "type": "stdio"

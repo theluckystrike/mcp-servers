@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/trial-balance",
   "description": "Prove your books balance: every debit and credit for a month, to the minor unit.",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.19.0/cash-book.mcpb",
-      "version": "0.19.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/cash-book.mcpb",
+      "version": "0.20.0",
       "fileSha256": "63843aaecf68975c53ef676b1b5962fc84300a65f2746bace5c5cce4d632a637",
       "transport": {
         "type": "stdio"
