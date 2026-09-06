@@ -19,14 +19,14 @@ Three named product gaps are expected at the end of this round: the Stripe key s
 
 | # | Item | Status | Evidence |
 | --- | --- | --- | --- |
-| 1 | office-suite CHILDREN | todo | |
-| 2 | build-mcpb SERVERS / DISPLAY_NAME / KEYWORDS | todo | |
-| 3 | sync-mirrors ALL_SERVERS + topics_for | todo | |
-| 4 | build-pages ids | todo | |
-| 5 | data/facts.json server row, added lines only | todo | |
-| 6 | data/facts.json compare_none note, 30-day TTL, with a control | todo | |
-| 7 | data/tools.json from a live stdio tools/list | todo | |
-| 8 | data/distribution.json per_server row, added lines only, hosted fields left to the hosting agent | todo | |
+| 1 | office-suite CHILDREN | done | b5fdec9, `servers/office-suite/src/index.ts` CHILDREN, one entry, optional true |
+| 2 | build-mcpb SERVERS / DISPLAY_NAME / KEYWORDS | done | b5fdec9, `scripts/build-mcpb.sh` SERVERS, DISPLAY_NAME "Change Order", KEYWORDS; `bash -n` clean |
+| 3 | sync-mirrors ALL_SERVERS + topics_for | done | b5fdec9, `scripts/sync-mirrors.sh` ALL_SERVERS and topics_for (change-order variation-order scope-change contract-value) |
+| 4 | build-pages ids | done | b5fdec9, `scripts/build-pages.mjs` ids, 30 entries |
+| 5 | data/facts.json server row, added lines only | done | `data/facts.json` servers["change-order"], inserted as text at the file's own indent: 22 insertions, 0 deletions across the server row and the compare_none note together |
+| 6 | data/facts.json compare_none note, 30-day TTL, with a control | done | `data/facts.json` compare_none["change-order"], 4 tokens (change-order, variation-order, scope-change, contract-value) probed on 2026-09-06 on registry.modelcontextprotocol.io/v0/servers?search=, all 0, the two-word form 0, control `service` 100 in the same minute; ttl 30 days |
+| 7 | data/tools.json from a live stdio tools/list | done | `data/tools.json`, 11 rows read from a live tools/list over stdio on a fresh XDG_DATA_HOME, no licence key. 46 insertions, 0 deletions |
+| 8 | data/distribution.json per_server row, added lines only, hosted fields left to the hosting agent | done | `data/distribution.json` per_server["change-order"], 13 insertions, 0 deletions; `hosted` left as a pending placeholder naming the hosting agent, so the hosted-row check stays red until that agent writes the published value |
 | 9 | setup: SETUP_SERVERS, six ANGLE entries, a WEB_ANGLE | todo | |
 | 10 | guide /guides/change-orders-and-contract-value-from-chat | todo | |
 | 11 | validate.mjs PROBES["change-order"] with the 100x assertion re-derived from each payload's own items | todo | |

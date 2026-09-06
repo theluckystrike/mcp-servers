@@ -635,6 +635,19 @@
       "mcpb": "pending: bundles/catalogue.mcpb not built, server.mcpb.json fileSha256 is TBD",
       "github-mirror": "pending",
       "registry-name": "pending 0.19.0 (io.github.theluckystrike/price-list, io.github.theluckystrike/rate-card)"
+    },
+    "change-order": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "pending: the hosting agent owns this field (plan v25 item 3)",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending: bundles/change-order.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.19.0 (io.github.theluckystrike/variation-order, io.github.theluckystrike/scope-change)"
     }
   }
 }
