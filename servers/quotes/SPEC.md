@@ -1,4 +1,4 @@
-# quotes — contract spec
+# quotes: contract spec
 
 Written in the shape `scripts/gen-spec.mjs` emits; the tool tables below were read off the built server
 over stdio (`initialize`, `tools/list`), not off `src`. This server is not yet in the generator's list.
