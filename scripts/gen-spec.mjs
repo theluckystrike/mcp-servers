@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
+  "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "catalogue", "clauses", "currency", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "petty-cash", "price-tracker", "recurring",
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone", "work-order",
 ].sort();
@@ -74,6 +74,39 @@ const CURATED = {
       "Nothing is written by `loan_repay_early`: the stored agreement keeps its original terms. It answers what would happen, and the agreement is amended by whoever signs it.",
       "Currencies are never added together. This server holds no exchange rate, so one outstanding figure over a EUR loan and a USD one would be invented.",
       "Month arithmetic CLAMPS to the end of the target month, so a loan drawn on the 31st pays on the 28th in February and on the 31st again in March. Rolling forward instead would move a payment into the next month and shift every date after it.",
+    ],
+  },
+  "catalogue": {
+    summary: "One price list and one labour rate card, kept where the invoice and the quote servers can both read them. A SKU carries a code, a name, a unit, an optional VAT rate and price ROWS, each row a currency, a tier, a valid-from date and an amount in minor units; a role carries an hourly rate the same way. The price on a date is the latest valid_from at or before it, worked out on the call. lines_resolve hands back the same lines in both sibling argument shapes, already priced. No current price is stored and no price is ever invented.",
+    storageFiles: [
+      ["skus.json", "the catalogue lines, each carrying its price rows and nothing worked out from them"],
+      ["rates.json", "the labour rate cards, each carrying its rate rows and the SKU it bills under"],
+      ["register.json", "one row per SKU or role a resolution has priced a line from, which is what makes sku_delete safe to leave free"],
+      ["counter.json", "the RES resolution number series, per year of the resolution date"],
+      ["pdf/", "price lists written by price_list_pdf when no out_path is given"],
+    ],
+    primaryFile: "skus.json",
+    caps: [
+      "`FREE_SKUS` = 25 SKUs in the catalogue on free. Deleting one that nothing depends on is free on every tier, so the cap is one you can get back under without a key.",
+      "Price tiers other than `standard` are Pro, on every tool that takes a tier. `price_list_pdf` and `catalogue_report` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_PRICE_ROWS` = 100 price rows on one SKU; `MAX_RATE_ROWS` = 100 rate rows on one card; `MAX_MINOR` = 1e12 per money field; `MAX_QUANTITY` = 1,000,000; `MAX_HOURS` = 100,000; `MAX_VAT` = 1000 percent.",
+      "`MAX_LINES` = 200 lines in one `lines_resolve` call; `MAX_ROWS` = 500 rows returned by one `sku_list`, `price_list_text` or `catalogue_report` section.",
+    ],
+    extra: [
+      "THE TWO SIBLING SERVERS TAKE THE SAME PRICE IN DIFFERENT SCALES, AND THE GAP IS EXACTLY 100x. `invoice_create`'s item carries `unit_price` in MAJOR units; `quote_create`'s item carries `unit_price_minor` in MINOR units. Neither tool can tell that the number it was handed was scaled for the other one. So the catalogue stores MINOR units, which is the only lossless form, and `lines_resolve` builds BOTH payloads itself in one call with the scale printed against each, rather than returning one price the caller reshapes.",
+      "THE MONEY IS THE INVOICE SERVER'S OWN. `computeTotals`, `currencyDecimals`, `formatMoney` and `roundHalfUp` are imported from `@theluckystrike/mcp-invoice/lib` and no arithmetic is restated here, so a resolution's totals ARE what `invoice_create` will compute rather than a second implementation that agrees today.",
+      "EVERY STORED PRICE IS A WHOLE NUMBER OF MINOR UNITS, so the major-unit form in the invoice payload rounds straight back to the integer it came from and `rounding_drift_minor` on a resolution is zero by construction. The unit suite asserts it, which is the machine-checkable form of \"the invoice will show the figure the price list showed\".",
+      "NO CURRENT PRICE IS STORED. A SKU holds its price rows with the day each came into force; the price on a date is derived on the call. A stored current price is a second copy of what the rows already decide, and the copy is the one still being quoted a month after the rise.",
+      "THE PRICE ON A DATE IS THE LATEST `valid_from` AT OR BEFORE IT, for that currency and that tier. A date before every row has no price and is refused naming the earliest row, because a price that did not exist yet is not a price, and filling it with the earliest row would reprice history.",
+      "ONE ROW PER CURRENCY, TIER AND VALID-FROM DATE. Setting a row on a key that already exists REPLACES it and says what it replaced, so two rows can never share one key and the price on that day is never a coin toss. A call that would change nothing at all is refused by name rather than rewriting `updated` and reporting a repricing that did not happen.",
+      "A SECOND CODE CARRYING THE SAME NAME, UNIT AND PRICE IS REFUSED BEFORE THE FREE CAP IS CONSULTED, so the refusal names the code already stored rather than selling an upgrade, and burns neither a slot nor a place in the price list. `duplicate_ok` is the way through for a genuine second product.",
+      "AN UNKNOWN SKU OR ROLE IS REFUSED BY NAME AND NOTHING IS PRICED. There is no fallback price, no profile default rate and no nearest match: a price this server invented would be printed on a document a customer pays from. The refusal names the code and points at `sku_list` or `sku_set`.",
+      "A SKU IS DELETED ONLY WHILE NOTHING DEPENDS ON IT: no rate card points at it, and no resolution has ever priced a line from it. The register records one row per priced ref, so the refusal names the times it was used and the last resolution id. Deleting is free on every tier, because a way back under the cap that only a Pro key can reach is not a way back.",
+      "THIS SERVER CREATES NO INVOICE AND NO QUOTE. `lines_resolve` returns arguments and says `posted: false`; the caller runs `invoice_create` in the invoice server or `quote_create` in the quotes server.",
+      "ONE RESOLUTION CARRIES ONE CURRENCY. A line in another currency is refused rather than converted, because this server holds no exchange rate. A SKU with no price in the profile's default currency is counted by `catalogue_report`, since that is the row that stops a resolution dead.",
+      "THE PRICE LIST PDF PRINTS EVERY LINE AT A QUANTITY OF ONE and labels the figure at the bottom as the sum of one of each, not a quotation. A price list has no total of its own, and printing one as though it were a document total would put a number on a customer's desk that means nothing.",
+      "THE NAME ON THE PRICE LIST COMES FROM THE SHARED PROFILE, NOT FROM THE INVOICE SERVER'S `getBusiness()`, because that function's `dataDir()` CREATES `mcp-servers/invoice/` as a side effect of a read. The contract suite asserts the only sibling path this process touches is the shared profile file.",
+      "The A4 price list is `renderDocPdf` from `@theluckystrike/mcp-billing-docs/lib`, the same page a credit note and a purchase order use, so a price list and the invoice it becomes are recognisably one document family.",
     ],
   },
   "work-order": {
