@@ -1,0 +1,110 @@
+{
+  "at": "2026-09-06T07:30:00Z",
+  "round": 32,
+  "compares_to": "data/user_value_r31.json (amortization, stdio, free tier, first coverage, 15/18) using the identical six prompts against the hosted lane per docs/REMOTE_RESULT.md Extension 17",
+  "scope": "Hosted single-lane re-run of round 31's six amortization prompts through https://mcp.zovo.one/mcp/amortization, with only /mcp/cash-book also registered on the same anonymous token per this task's recipe (cash-book was never used: no prompt named it and no journal step reached it). No code was changed; this is measurement only. Cap: 30 minutes, met.",
+  "method": "Arrival: GET https://mcp.zovo.one/mcp/connect -m 15 -> 200 text/html, 8912 bytes, minting anon_096f6c4a9dd1ed2fc939eee1b0dce56b. Profile: business_set called directly by curl on /mcp/invoice with the same token before any prompt ran (Nova Studio, Europe/Warsaw, EUR) -- the tool's own reply lists which endpoints read the shared profile and amortization and cash-book are NOT among them, so this step has no effect on the lane under test but was done anyway per the recipe. Registration: one mcp.json, two http entries (amortization, cash-book) at https://mcp.zovo.one/mcp/<server>, Authorization: Bearer <token> header, no /t/ path form. Allowlist: 16 explicit mcp__<server>__<tool> entries read from a live tools/list of both endpoints (amortization 8: license_activate, license_status, loan_create, loan_journal, loan_list, loan_repay_early, loan_schedule, loans_report; cash-book 8: ledger_build, ledger_export_csv, ledger_lines, ledger_report, license_activate, license_status, month_close, trial_balance), no mcp__* wildcard. Client: claude CLI 2.1.261, -p, --model sonnet, --strict-mcp-config, --mcp-config with the two-entry file above, --output-format json, one --session-id then five --resume so all six prompts are one conversation, each prompt its own isolated shell invocation under timeout 240 (all six completed well inside it), each result read back before the next prompt ran. Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite, Agent disallowed on the CLI; every turn ran in an empty /private/tmp/uv-r32am/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r32am/xdg for every claude invocation. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin for every call. Verification: after the six prompts, loan_list (as_of 2026-06-30) and loan_schedule were called directly by curl on the same token for both LOAN-2026-0001 (Van finance) and LOAN-2026-0002 (Office fitout) and every figure in every reply was re-derived against those two calls. --output-format json does not enumerate individual tool_use blocks the way --output-format stream-json --verbose does, so the calls listed per scenario are inferred from the register's resulting state (loan count, ids, terms) and the free-tier cap behaviour observed in prompt 5, not read off a raw tool-call transcript.",
+  "rubric": "Three points per prompt, 18 total. 1 point: the model reached the right tool with the right arguments and did not invent one. 1 point: every figure it reported back is the figure the server returned, re-derived independently afterwards. 1 point: it framed the answer the way the server's own design intends, and when refused it relayed the refusal in the refusal's own terms rather than working around it or inventing a substitute.",
+  "arrival": "One mcp.json, two http entries, one anonymous token, Authorization: Bearer header. tools/list returned amortization 8, cash-book 8.",
+  "scenarios": [
+    {
+      "n": 1,
+      "id": "am1",
+      "server": "amortization",
+      "prompt": "I am about to sign for a van on finance: 10,000 EUR, they quote 12 percent a year, interest compounds monthly, twelve monthly payments, drawdown 15 January 2026. Record it as \"Van finance\" and tell me plainly what it costs me.",
+      "score": 3,
+      "score_r31_stdio": 3,
+      "calls": ["loan_create (inferred)"],
+      "reported": "LOAN-2026-0001, EUR 888.49 monthly payment due the 15th, first 15 Feb 2026, last 15 Jan 2027, EUR 10,661.88 total repaid, EUR 661.88 total interest, effective annual rate 12.68 percent against the quoted nominal 12.",
+      "verified": "Matches loan_list on the same token exactly: payment_minor 88849, total_interest_minor 66188, effective_annual_rate_bps 1268, start_date 2026-01-15.",
+      "note": "Identical to round 31's stdio result on the identical prompt. Volunteered the nominal-versus-effective distinction unprompted, same as stdio."
+    },
+    {
+      "n": 2,
+      "id": "am2",
+      "server": "amortization",
+      "prompt": "Show me the whole schedule. I want to see where the interest goes.",
+      "score": 2,
+      "score_r31_stdio": 3,
+      "calls": ["loan_schedule (inferred)"],
+      "reported": "All twelve rows with date, interest, principal and closing balance, EUR 661.88 total interest, and a claim that periods 1-6 carry EUR 481.14 of that interest.",
+      "verified": "All twelve individual rows match loan_schedule for LOAN-2026-0001 to the cent, including period 12 at interest 8.82 on opening 879.67. The EUR 481.14 half-total is wrong: the six row values it just printed (100.00, 92.12, 84.15, 76.11, 67.98, 59.78) sum to EUR 480.14, not 481.14, a self-computed arithmetic slip of exactly one euro on data it had already reported correctly row by row.",
+      "note": "A new defect class not present in round 31's stdio run: every server-returned figure (all twelve rows, the total) is exact, but a sum the model computed itself over its own correct rows is off by 1.00. This is not the 'totals over refused data' pattern from round 31 am5 -- nothing was refused here -- it is a plain addition error on freely available, already-correct data."
+    },
+    {
+      "n": 3,
+      "id": "am3",
+      "server": "amortization",
+      "prompt": "The last row looks off to me. Every other period the interest is just the balance times one percent, but period 12 charges more than that on a balance of 879.67. Is that a bug?",
+      "score": 3,
+      "score_r31_stdio": 3,
+      "calls": [],
+      "reported": "Not a bug: 1% of 879.67 is 8.80, but the last row charges 8.82 because the payment is fixed and the closing balance must reach exactly zero, so the final period absorbs the accumulated rounding residual from the previous eleven periods rather than leaving a stray cent outstanding.",
+      "verified": "Matches loan_schedule's own basis field for this loan almost verbatim: \"the last period absorbs the rounding residual in its interest and principal split, so the closing balance reaches the balloon, or zero, exactly.\" The 8.80-vs-8.82 comparison and the 879.67 opening balance are both exact.",
+      "note": "Same strength as round 31's stdio answer to this prompt: challenged directly on a figure that looks wrong, it reproduced the server's own design rule rather than guessing or backing down."
+    },
+    {
+      "n": 4,
+      "id": "am4",
+      "server": "amortization",
+      "prompt": "Compare it to straight-line: same money, same rate, same term, but equal principal each period instead. Which is cheaper and by how much? Call it \"Office fitout\".",
+      "score": 2,
+      "score_r31_stdio": 2,
+      "calls": ["loan_create", "loan_schedule (inferred)"],
+      "reported": "Straight-line is cheaper by EUR 11.88 (EUR 650.00 interest against EUR 661.88), first payment EUR 933.33 falling to EUR 841.66, decreasing by about EUR 7.58 a month.",
+      "verified": "Interest difference, first payment and final payment are all exact against loan_list/loan_schedule for LOAN-2026-0002 (total_interest_minor 65000, payment_minor 93333 falling to 84166). The monthly-step figure is wrong: (933.33 - 841.66) / 11 is EUR 8.33, not EUR 7.58 -- a second self-computed arithmetic slip in the same round, on different data.",
+      "note": "Same score as round 31 stdio (2/3) but for a different reason. Round 31 lost this point to a hallucinated claim that the server had written a duplicate 'Office fitout' record from one call; that defect did NOT recur here -- loan_list shows exactly one LOAN-2026-0002, and no duplicate was invented. What replaced it is the same class of error as am2: a wrong figure computed by the model itself over correct underlying data."
+    },
+    {
+      "n": 5,
+      "id": "am5",
+      "server": "amortization",
+      "prompt": "Add two more: \"Plant lease\" and \"Coffee machine\", same terms. Then tell me what I owe in total on 30 June 2026.",
+      "score": 3,
+      "score_r31_stdio": 2,
+      "calls": ["loan_create (Plant lease, succeeded)", "loan_create (Coffee machine, refused at the 3-loan free cap)", "loan_list as_of=2026-06-30"],
+      "reported": "Coffee machine was refused at the free-tier cap of 3 loans, relayed accurately with the choice left to the user (pay, or free a slot). Total owed on 30 June 2026 given as EUR 17,789.15 across exactly the three loans actually on record: Van finance 5,977.91, Office fitout 5,833.33, Plant lease 5,977.91.",
+      "verified": "loan_list as_of=2026-06-30 on the same token returns outstanding_by_currency EUR 17,789.15 across exactly those three loans, to the cent. No balance was invented for Coffee machine.",
+      "note": "The client-side pattern from round 31 am5 -- a bolded total that silently included debt for an agreement the server had refused to record -- did NOT recur. This hosted run's total is exactly the server's own aggregate over the loans that actually exist, which is a genuine improvement on the identical prompt."
+    },
+    {
+      "n": 6,
+      "id": "am6",
+      "server": "amortization",
+      "prompt": "Give me the bookkeeping entry for the first payment so I can put it in my accounts, and tell me what settling the van early at period 6 would save me if the penalty is 50 EUR.",
+      "score": 2,
+      "score_r31_stdio": 2,
+      "calls": ["loan_journal (refused, Pro, inferred)", "loan_repay_early (refused, Pro, inferred)"],
+      "reported": "Both Pro tools named as gated and not purchased. Then a hand-built journal (Dr Interest expense 100.00, Dr 'Loan liability -- Van finance' 788.49, Cr 'Cash / Bank' 888.49) and a hand-built settlement at period 6: balance 5,149.20, penalty 50.00, total to close 5,199.20, versus 6 more scheduled payments of 5,330.94, net saving EUR 131.74 (181.74 interest avoided minus the 50 penalty).",
+      "verified": "Every figure matches the free loan_schedule for LOAN-2026-0001 exactly: period 1 interest_minor 10000 (100.00), principal_minor 78849 (788.49), payment_minor 88849 (888.49); closing_minor after period 6 is 514920 (5,149.20); interest in periods 7-12 sums to 18174 (181.74); 6 x 88849 = 533094 (5,330.94); 533094 - 519920 = 13174 (131.74). All exact.",
+      "note": "The same defect as round 31 am6 recurred exactly: refused loan_journal, the model rebuilt the entry with account names of its own invention ('Loan liability -- Van finance', 'Cash / Bank') rather than the real ids the tool's payload carries (interest_expense, loan_liability, cash), even though the arithmetic reconciles perfectly. This is the one client-side pattern from round 31 that repeated unchanged in the hosted lane."
+    }
+  ],
+  "totals": {
+    "score": 15,
+    "max": 18,
+    "out_of": 18,
+    "pct": 83.3,
+    "tool_calls_to_server": 8,
+    "prompts": 6,
+    "tier": "free",
+    "pro_refusals_hit": 3,
+    "pro_refusals_relayed_correctly": 3,
+    "pro_gates_described_without_calling": 0,
+    "figures_reported": "every server-returned figure across all six prompts matched loan_list/loan_schedule re-derived independently on the same token afterwards; two figures the model computed itself over already-correct rows (am2's six-month interest half-total, am4's average monthly payment step) were arithmetically wrong by small margins even though the underlying server data was exact",
+    "per_server": {
+      "amortization": {
+        "score": 15,
+        "max": 18
+      }
+    }
+  },
+  "verification": "Re-derived by direct curl on the same token after the six prompts. loan_list as_of=2026-06-30: LOAN-2026-0001 outstanding_minor 597791, LOAN-2026-0002 outstanding_minor 583333, LOAN-2026-0003 outstanding_minor 597791, outstanding_by_currency EUR 17,789.15 across the three. loan_schedule LOAN-2026-0001: 12 rows, period 1 interest 10000/principal 78849, period 6 closing 514920, periods 7-12 interest sum 18174, period 12 interest 882/principal 87967/closing 0, total_interest_minor 66188, basis field naming the last-period residual rule verbatim. loan_schedule LOAN-2026-0002 (straight-principal): payment 93333 falling to 84166, total_interest_minor 65000.",
+  "defects": [
+    "am2: the model summed its own already-correct six monthly interest figures (100.00+92.12+84.15+76.11+67.98+59.78) and reported 481.14 instead of the correct 480.14, a plain one-euro arithmetic slip on freely available data, not a server figure.",
+    "am4: the model reported the straight-line payment stepping down by 'about EUR 7.58' a month; the real average step across 11 periods is (933.33-841.66)/11 = EUR 8.33. Both the first and last payment it quoted were exact; only the derived step size was wrong.",
+    "am6: refused loan_journal, the model again (as in round 31) hand-built the double entry using account names of its own choosing ('Loan liability -- Van finance', 'Cash / Bank') rather than the real ids (interest_expense, loan_liability, cash) the tool's expense_add-ready payload carries. The arithmetic is exact; only the ids, which matter for anything downstream, are invented."
+  ],
+  "bottom_line": "15 of 18 hosted, matching round 31's 15 of 18 over stdio on the identical six prompts, through https://mcp.zovo.one/mcp/amortization with cash-book also registered but never called. The total score matches exactly, but the shape of the losses changed. Round 31's two client-side failure modes were named as 'totals over refused data' (am5) and 'hand-written journals in invented account names' (am6). Only one of those two recurred: am6 repeated unchanged, with the model again substituting its own account names for the real ids a real loan_journal call would have returned. am5, the totals-over-refused-data defect, did NOT recur -- asked for a total after a loan was refused at the free cap, this run correctly totalled only the three loans that actually exist, exactly matching the server's own aggregate. In its place, two new and different mistakes appeared in am2 and am4: the model twice did its own arithmetic over data it had already reported correctly, and got a small sum wrong both times, by one euro in am2 and by about 75 cents a month in am4. Every server-returned figure across all six prompts was exact when checked against loan_list and loan_schedule on the same token; every wrong number in this round is a figure the model calculated itself rather than one the server returned. No code was touched; this is a measurement-only report.",
+  "cap": "30 minutes, met."
+}
