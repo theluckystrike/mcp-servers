@@ -104,10 +104,10 @@ test("every tool description is non-empty, single-paragraph, and within the ceil
   const { c } = open(t);
   await c.init();
   const tools = await c.tools();
-  assert.equal(tools.length, 8, "tool count changed; update servers/asset-register/SPEC.md");
+  assert.equal(tools.length, 9, "tool count changed; update servers/asset-register/SPEC.md");
   assert.deepEqual(tools.map((x) => x.name).sort(), [
-    "asset_add", "asset_dispose", "asset_journal", "asset_list", "asset_report", "asset_schedule",
-    "license_activate", "license_status",
+    "asset_add", "asset_delete", "asset_dispose", "asset_journal", "asset_list", "asset_report",
+    "asset_schedule", "license_activate", "license_status",
   ]);
 
   for (const tool of tools) {
@@ -195,6 +195,8 @@ test("the free tier is the documented one: schedules free, ten assets, journal a
   assert.equal((await c.call("asset_schedule", { asset: "a0" })).isError, false);
   assert.equal((await c.call("asset_list", {})).isError, false);
   assert.equal((await c.call("asset_dispose", { asset: "a0", date: "2027-01-31" })).isError, false);
+  assert.equal((await c.call("asset_delete", { asset: "a1" })).isError, false, "delete is free");
+  assert.equal((await c.call("asset_add", { ...ASSET, name: "a11" })).isError, false, "the deleted asset's slot is open again");
   assert.equal((await c.call("asset_journal", { month: "2026-06" })).isError, true);
   assert.equal((await c.call("asset_report", {})).isError, true);
 });

@@ -36,6 +36,7 @@ Cursor (`~/.cursor/mcp.json` or `.cursor/mcp.json`): the same entry as Claude De
 | `asset_schedule` | The full schedule for a stored asset or for one you are only pricing, per year or per month, down to zero or the residual. |
 | `asset_journal` | One month's journal: debit depreciation expense, credit accumulated depreciation, per asset and in total, plus an `expense_add` payload. |
 | `asset_dispose` | Record a sale, a scrapping or a write-off and get the gain or loss against net book value at that date. |
+| `asset_delete` | Remove an asset nothing depends on, and get its free-tier slot back. An asset that has been disposed of or journaled is refused, with the dependent named. |
 | `asset_report` | Net book value by category and currency, the year's charge, and every disposal in the year with its result. |
 | `license_status` | Free or Pro, and where to upgrade. |
 | `license_activate` | Activate a Pro key. Verified offline. |
@@ -48,7 +49,7 @@ Read the `assets://categories` resource for every bundled category, its code, it
 | --- | --- | --- |
 | Assets in the register | 10 | Unlimited |
 | `asset_schedule` | Yes, unlimited | Yes |
-| `asset_list`, `asset_dispose` | Yes, unlimited | Yes |
+| `asset_list`, `asset_dispose`, `asset_delete` | Yes, unlimited | Yes |
 | `asset_journal` | No | Yes |
 | `asset_report` | No | Yes |
 
@@ -75,12 +76,14 @@ Rates change. Check the `effective_date` in any answer before you rely on it, an
 - **A UK writing down allowance is a pool rate, not a per-asset charge.** This server applies it to one asset so a per-asset figure exists, and says so in every answer. A pure reducing balance never reaches zero, so the schedule is cut at 25 periods and the last one writes off what is left, with the basis line saying that is what happened.
 - **MACRS ignores salvage value.** The published percentages recover the whole cost. A residual passed for a US asset is reported back as ignored and kept on the record for book purposes, rather than silently reducing the base.
 - **The periods sum to the depreciable base, to the minor unit.** Money is integer minor units end to end and the schedule is allocated by cumulative rounding, so `sum(periods) == cost - residual` holds for every input, and the monthly rows sum to their year.
+- **A byte-identical asset is refused, not stored twice.** `asset_add` normalises the name, the category, the cost, the currency, the dates, the method, the life, the scheme and the salvage value, and a record that matches an asset already on the register is refused by that asset's id with nothing written. A retried call and a re-run script look exactly like a second machine, and on a ten-asset free tier the second row is a slot you cannot get back. Two genuinely identical units are a legitimate register: give the second one a distinguishing name and it is accepted.
+- **`asset_delete` is the way back, and it is free.** It removes an asset nothing depends on. A recorded disposal or a month `asset_journal` has already journaled is a dependent, and the delete is refused with that dependent named rather than removing the cost behind a figure that has already left this server. The id is never reissued.
 - **Depreciation is charged up to and including the month of disposal**, then stops. The gain or loss is proceeds less net book value at that month, and the disposal journal balances to zero.
 - **Currencies are never added together.** There is no exchange rate in this server, so a PLN register and a USD one stay two figures.
 
 ## Posting to the expense tracker
 
-`asset_journal` returns the exact `expense_add` arguments for the [expense-tracker](../expense-tracker) server, one payload per currency, and writes nothing itself. That is deliberate: expense-tracker publishes no library entry point, and its id counter, its category rules, its VAT split and its currency defaults all live inside its own `expense_add` handler under its own lock. Appending a row to its `data.json` directly would produce an entry with none of those applied: one that looks native and is not. Handing back the arguments is the same contract [per-diem](../per-diem) and [kanban](../kanban) use.
+`asset_journal` returns the exact `expense_add` arguments for the [expense-tracker](../expense-tracker) server, one payload per currency, and writes no expense itself. That is deliberate: expense-tracker publishes no library entry point, and its id counter, its category rules, its VAT split and its currency defaults all live inside its own `expense_add` handler under its own lock. Appending a row to its `data.json` directly would produce an entry with none of those applied: one that looks native and is not. Handing back the arguments is the same contract [per-diem](../per-diem) and [kanban](../kanban) use. It does mark the register: each asset it produced a line for records the month, so `asset_delete` can refuse an asset whose depreciation has already been journaled instead of deleting the cost behind a posted figure.
 
 No `vat_rate` is set on the payload. Depreciation is a book charge, not a purchase, so there is no input VAT on it.
 

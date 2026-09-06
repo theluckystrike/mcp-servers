@@ -194,3 +194,58 @@ test("no tool throws across the transport: every refusal is an isError answer, n
     assert.match(r.text, /^Error: /, `${tool} did not answer as a tool error: ${r.text.slice(0, 120)}`);
   }
 });
+
+test("a second byte-identical asset is refused, names the id already stored, and spends no slot", async (t) => {
+  const { c } = open(t);
+  await c.init();
+  const first = await c.json("asset_add", ASSET);
+  assert.equal(first.added.id, "ASSET-2026-0001");
+
+  // The same record again, with the fields the caller controls re-cased and re-spaced:
+  // a retried call, a re-run script and a client that lost the first answer all look
+  // like this, and none of them is a second machine.
+  const again = await c.call("asset_add", { ...ASSET, name: "  macbook   PRO ", category: "487" });
+  assert.equal(again.isError, true);
+  assert.match(again.text, /identical to ASSET-2026-0001/);
+  assert.match(again.text, /"MacBook Pro"/);
+  assert.match(again.text, /Nothing was written/);
+  assert.match(again.text, /no free-tier slot was used/);
+  assert.match(again.text, /asset_delete/, "the refusal must name the tool that removes the first one");
+  assert.equal((await c.json("asset_list", {})).count, 1, "nothing was stored by the refused call");
+
+  // It fires under the cap, and a distinguishing name is still accepted.
+  assert.equal((await c.call("asset_add", { ...ASSET, name: "MacBook Pro serial 2" })).isError, false);
+  assert.equal((await c.json("asset_list", {})).count, 2);
+  // One differing field is enough to make it a different asset.
+  assert.equal((await c.call("asset_add", { ...ASSET, cost_minor: 849901 })).isError, false);
+  assert.equal((await c.json("asset_list", {})).count, 3);
+});
+
+test("asset_delete refuses an asset with a dependent and names the dependent", async (t) => {
+  const { c } = open(t, { key: proKey("asset-register") });
+  await c.init();
+  await c.call("asset_add", { ...ASSET, name: "Disposed one" });
+  await c.call("asset_add", { ...ASSET, name: "Journaled one" });
+  await c.call("asset_dispose", { asset: "ASSET-2026-0001", date: "2026-08-10", proceeds_minor: 400000 });
+  await c.json("asset_journal", { month: "2026-05" });
+
+  const disposed = await c.call("asset_delete", { asset: "ASSET-2026-0001" });
+  assert.equal(disposed.isError, true);
+  assert.match(disposed.text, /ASSET-2026-0001 "Disposed one" has a dependent/);
+  assert.match(disposed.text, /a disposal is recorded against it on 2026-08-10/);
+  assert.match(disposed.text, /Nothing was written/);
+
+  const journaled = await c.call("asset_delete", { asset: "ASSET-2026-0002" });
+  assert.equal(journaled.isError, true);
+  assert.match(journaled.text, /ASSET-2026-0002 "Journaled one" has a dependent/);
+  assert.match(journaled.text, /asset_journal has already journaled it for 1 month\(s\): 2026-05/);
+
+  // Both rows are still on the register, with everything they carried.
+  const list = await c.json("asset_list", { include_disposed: true });
+  assert.equal(list.count, 2);
+  assert.equal(list.assets.find((x) => x.id === "ASSET-2026-0001").disposed.date, "2026-08-10");
+
+  const missing = await c.call("asset_delete", { asset: "nothing here" });
+  assert.equal(missing.isError, true);
+  assert.match(missing.text, /no asset matches/);
+});

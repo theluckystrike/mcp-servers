@@ -322,3 +322,27 @@ test("200 assets: the register scales, ids stay unique, and list/report totals s
   assert.equal(plRow.nbv_minor + plRow.accumulated_minor, plRow.cost_minor);
   assert.equal(usRow.nbv_minor + usRow.accumulated_minor, usRow.cost_minor);
 });
+
+test("asset_delete gives the free-tier slot back: fill the cap, delete one, add again", async (t) => {
+  const { c } = open(t);
+  await c.init();
+  for (let i = 0; i < 10; i++) {
+    assert.equal((await c.call("asset_add", { ...ASSET, name: `A${i}` })).isError, false, `asset ${i}`);
+  }
+  const capped = await c.call("asset_add", { ...ASSET, name: "A10" });
+  assert.equal(capped.isError, true);
+  assert.match(capped.text, /asset_delete/, "the cap refusal points at the way back");
+
+  const d = await c.json("asset_delete", { asset: "A3" });
+  assert.equal(d.deleted.id, "ASSET-2026-0004");
+  assert.equal(d.deleted.name, "A3");
+  assert.equal(d.assets_remaining, 9);
+  assert.equal(d.free_slots_open, 1);
+  assert.equal((await c.json("asset_list", {})).count, 9);
+
+  const after = await c.json("asset_add", { ...ASSET, name: "A10" });
+  assert.equal(after.added.id, "ASSET-2026-0011", "the deleted id is never reissued");
+  assert.equal((await c.json("asset_list", {})).count, 10);
+  // And the cap still holds at ten.
+  assert.equal((await c.call("asset_add", { ...ASSET, name: "A11" })).isError, true);
+});

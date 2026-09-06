@@ -49,6 +49,15 @@ export interface Asset {
   project?: string;
   note?: string;
   disposal?: Disposal;
+  /**
+   * The months `asset_journal` has already produced a line for, as `YYYY-MM`, ascending.
+   *
+   * The journal writes nothing into the expense ledger, but it does leave this mark on
+   * the register, because without it "has anything downstream been posted for this asset"
+   * is unanswerable and `asset_delete` would have to either refuse everything or delete
+   * the cost behind a figure that is already in someone's books.
+   */
+  journaled?: string[];
   created: string;
   updated: string;
 }
