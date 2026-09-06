@@ -339,7 +339,9 @@ server.registerTool("change_order_add_line", {
       // D-R99: a removal or a reversal cannot take the reference below zero. Checked on
       // the candidate before anything is pushed, so a refusal leaves the record as it was.
       const why = belowZeroError(byReference(list, o.reference), { ...o, lines: [...o.lines, line] });
-      if (why) throw new Error(`${o.id} with ${line.id} ${why}. Nothing was written.`);
+      // D-R102: the refusal names what stays on file, so a client does not report "nothing was written"
+      // about a draft its own earlier call created.
+      if (why) throw new Error(`${o.id} with ${line.id} ${why}. The line was not added; ${o.id} stays a ${o.status} with ${o.lines.length} line${o.lines.length === 1 ? "" : "s"} and ${o.reference} keeps its value.`);
       o.lines.push(line);
       o.updated = now;
       setOrders(list);
@@ -526,6 +528,7 @@ server.registerTool("contract_value", {
     return json({
       ...contractJson(orders),
       note: "current_value is the original plus APPROVED deltas. pending_delta is what the client has not answered; if_all_pending_approved is the value if every open change order were approved, shown so the two figures are never added by hand. Rejected and void change orders count for nothing.",
+      values_are: "net of VAT. This server holds no gross contract value and no VAT total for the reference; the VAT on a delta is only in that change order's own totals, and a gross for the whole contract exists nowhere in these books.",
       basis: BASIS,
     });
   } catch (e) { return fail((e as Error).message); }

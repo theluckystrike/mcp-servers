@@ -170,5 +170,25 @@
     "status": "fixed",
     "round": "loop 28",
     "note": "catalogue price_list_pdf: party block skipped on an empty label in both renderers, booked later row printed in the line and returned as booked_later; unit test"
+  },
+  "D-R101": {
+    "status": "fixed",
+    "round": "loop 28",
+    "note": "change-order contract_value carries values_are: net of VAT, no gross exists in these books; adversarial test"
+  },
+  "D-R102": {
+    "status": "fixed",
+    "round": "loop 28",
+    "note": "below-zero refusal names the draft state left on file (stays a draft with N lines, reference keeps its value); adversarial test"
+  },
+  "D-R103": {
+    "status": "client",
+    "round": "round 39",
+    "note": "Pro refusal rebuilt by hand with the gate sentence inverted; server text already states it as fact (loop 25); client class"
+  },
+  "D-R104": {
+    "status": "client",
+    "round": "round 39",
+    "note": "changed line netted into one figure on request against the server note; client class"
   }
 }

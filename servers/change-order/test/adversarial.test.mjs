@@ -339,7 +339,8 @@ test("D-R99: a removal that takes the reference below zero is refused at the lin
   assert.equal(over.isError, true, over.text);
   assert.match(over.text, /CO-2026-0001 with L01 would take Q-2026-0009 below zero: the original EUR 479\.88 plus this change order's -EUR 519\.87 is -EUR 39\.99/);
   assert.match(over.text, /A contract cannot be worth less than nothing/);
-  assert.match(over.text, /Nothing was written/);
+  // D-R102: the refusal names what stays on file, so "nothing was written" cannot be read as "no draft exists".
+  assert.match(over.text, /The line was not added; CO-2026-0001 stays a draft with 0 lines and Q-2026-0009 keeps its value/);
   assert.equal(orders(box)[0].lines.length, 0, "a refused line was still written");
   // A reversal on a changed line is bounded the same way.
   const rev = await c.call("change_order_add_line", { change_order: id, kind: "changed", description: "Hosting", quantity: 1, unit_price_minor: 1, was_quantity: 13, was_unit_price_minor: 3999, reason: "Shrunk" });
@@ -350,6 +351,9 @@ test("D-R99: a removal that takes the reference below zero is refused at the lin
   assert.equal(exact.isError, false, exact.text);
   const cv = await c.json("contract_value", { reference: "Q-2026-0009" });
   assert.equal(cv.if_all_pending_approved_minor, 0);
+  // D-R101: round 39 invented two different gross figures for one net; the answer says a gross exists nowhere here.
+  assert.match(cv.values_are, /^net of VAT\. This server holds no gross contract value/);
+  assert.match(cv.values_are, /exists nowhere in these books/);
 
   // Two pending change orders that are each fine alone: the second approval is what crosses zero.
   await c.json("change_order_create", { reference: "Q-2026-0010", client: CLIENT, title: "Drop everything", date: CO_DATE, original_value_minor: 10000 });
