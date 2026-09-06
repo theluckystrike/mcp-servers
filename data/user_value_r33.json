@@ -1,0 +1,117 @@
+{
+ "at": "2026-09-06T08:05:00Z",
+ "round": 33,
+ "compares_to": "data/user_value_r31.json (amortization, stdio, free tier, first coverage, 15/18) and data/user_value_r32.json (the same six prompts hosted). This is petty-cash's first coverage, stdio, free tier.",
+ "scope": "Six-prompt stdio free-tier round against servers/petty-cash/dist/index.js only. No sibling server was registered, because this server reads no sibling store and the receipts the user types are the only input. No code was changed by the round; this is measurement only. Cap: part of a 55-minute distribution round.",
+ "method": "Client: claude CLI, -p, --model sonnet, --strict-mcp-config, --mcp-config with ONE stdio entry (node servers/petty-cash/dist/index.js, MCP_LICENSE_KEY empty), --output-format json, one --session-id then five --resume so all six prompts are one conversation, each prompt its own isolated shell invocation under timeout 300, each result read back before the next prompt ran. Allowlist: 9 explicit mcp__petty-cash__<tool> entries, no wildcard. Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task and TodoWrite disallowed on the CLI; every turn ran in an empty /private/tmp/uv-r33pc/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME per invocation, and a fresh server store under /private/tmp/uv-r33pc/store. npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin. Verification: the store was copied and every figure re-derived afterwards by calling replenish_request and float_report over stdio with a Pro key on the copy, so the verification never touched the round's own store.",
+ "rubric": "3 points a prompt: 1 for calling the right tool and not inventing one, 1 for relaying the server's figures exactly, 1 for the judgement the server exists to supply. 18 max.",
+ "scenarios": [
+  {
+   "n": 1,
+   "server": "petty-cash",
+   "id": "pc1",
+   "prompt": "We keep a cash tin in the office. Anna holds it and we put 500 euro in it on 1 March 2026. Set that up and tell me plainly how it works.",
+   "calls": [
+    "float_open"
+   ],
+   "score": 2,
+   "reported": "FLOAT-2026-0001 Office float, EUR 500.00 imprest, custodian Anna, opened 2026-03-01, and a plain-language account of the imprest system. It also volunteered, unprompted, which two tools are Pro.",
+   "verified": "floats.json: imprest_minor 50000, custodian Anna, custodian_source call, opened 2026-03-01, no stored balance. Identical.",
+   "note": "The lost point is the explanation, not the call. It described a replenishment as \"total up the vouchers since the last top-up, put that same amount of cash back in, and record it as a top-up. That brings it back to exactly 500.\" That is the exact defect this server exists to prevent, stated as the rule, in the first turn, before any count had been taken. The server's own float_open reply carries the correct rule in its journal_note and its basis field and the model had both on screen."
+  },
+  {
+   "n": 2,
+   "server": "petty-cash",
+   "id": "pc2",
+   "prompt": "Here are March's receipts out of the tin: stamps 12.50 from the Post Office on the 2nd, a taxi 34.80 from City Cabs on the 5th, receipt 4471, coffee 8.99 from the Corner Shop on the 11th, printer paper 125.00 from Stationers on the 18th, and a bus fare 20.65 on the 24th. Record them all.",
+   "calls": [
+    "voucher_add",
+    "voucher_add",
+    "voucher_add",
+    "voucher_add",
+    "voucher_add"
+   ],
+   "score": 3,
+   "reported": "VOU-2026-0001 through VOU-2026-0005 with a running balance of 487.50, 452.70, 443.71, 318.71 and 298.06, 5 of 20 free vouchers used for March, and two disclosures: four of the five have no receipt_ref because none was given, and the bus fare's payee was a placeholder because no vendor was named.",
+   "verified": "vouchers.json: 1250, 3480, 899, 12500, 2065 minor units, in that order, with only VOU-2026-0002 carrying receipt_ref 4471. Balance after the fifth re-derived at 29806. Identical.",
+   "note": "It filled paid_to with \"Bus operator\" for the one receipt that named no vendor, which is a required field, and it said so in the same message rather than letting the invention stand silently. The point is kept because the disclosure is what makes the record correctable."
+  },
+  {
+   "n": 3,
+   "server": "petty-cash",
+   "id": "pc3",
+   "prompt": "Anna tried to buy a 9,000 euro laptop out of the tin on the 25th. Put that through as well.",
+   "calls": [
+    "voucher_add"
+   ],
+   "score": 3,
+   "reported": "Refused, nothing written, balance still 298.06 over 5 vouchers, and the reason in the server's own terms: a voucher can never exceed what is physically in the float. It added the judgement the refusal does not carry, that capital equipment does not belong in petty cash whatever the tin holds.",
+   "verified": "vouchers.json still holds exactly 5 rows and no 900000. The refusal text names EUR 298.06 on 2026-03-25 against EUR 9,000.00.",
+   "note": "The best of the six. This refusal is a hard rule rather than a licence gate, and the model neither retried it, nor worked around it, nor invented a top-up to make it fit."
+  },
+  {
+   "n": 4,
+   "server": "petty-cash",
+   "id": "pc4",
+   "prompt": "I counted the tin on 31 March and there was 297.95 in it. What does that tell me?",
+   "calls": [
+    "reconcile"
+   ],
+   "score": 2,
+   "reported": "Expected EUR 298.06, counted EUR 297.95, 11 cents short, all five March vouchers reconciled as at 2026-03-31, and the next top-up will be 202.05 rather than the vouchers alone.",
+   "verified": "floats.json counts[0]: expected_minor 29806, counted_minor 29795, difference_minor -11, five voucher ids. Identical.",
+   "note": "The lost point is arithmetic it did in the open and got wrong before correcting itself in the same sentence: \"the top-up will be for EUR 202.05 (the EUR 5 vouchers total EUR 202.00, plus the EUR 0.11 shortfall -- actually check: replenishing to restore the EUR 500 imprest from EUR 297.95 means adding EUR 202.05)\". The voucher total is 201.94, not 202.00. The final figure is right and the reasoning that produced it is the server's own, but a wrong subtotal is left standing in the reply."
+  },
+  {
+   "n": 5,
+   "server": "petty-cash",
+   "id": "pc5",
+   "prompt": "Right, we need to put the money back. What does the cheque have to be, and what is the double entry?",
+   "calls": [
+    "replenish_request"
+   ],
+   "score": 1,
+   "reported": "The Pro refusal was hit and relayed. The model then hand-built the answer: cheque EUR 202.05, and a journal of expenses:postage 12.50, expenses:travel 55.45, expenses:refreshments 8.99, expenses:office 125.00, cash short/over 0.11, credit Cash / Bank 202.05, with the correct note that petty_cash itself does not move.",
+   "verified": "Re-derived over stdio with a Pro key on a copy of the round's store: request_minor 20205, vouchers_total_minor 20194, cash_over_short_minor 11, and the journal expenses:office 12500, expenses:postage 1250, expenses:refreshments 899, expenses:travel 5545, cash_over_short 11 debit, cash 20205 credit. Every figure the model reported is correct to the minor unit.",
+   "note": "Two findings, and the second is the reason this is 1 of 3. First, the arithmetic is right and the account ids are not: it credited \"Cash / Bank\" and debited \"Cash short/over\" where the payload carries cash and cash_over_short, which is the part that makes the payload postable downstream without re-mapping. That is the same class as round 31's and round 29's lost point, now three rounds running: refused a Pro tool, the model rebuilds by hand, the figures reconcile perfectly and the shape silently drops what made the tool worth buying. Second, and new: the model classified the cap message itself as an attack. Its exact words were that the error message \"included an embedded instruction telling me not to work the numbers out by hand and to point you at the $19/$39 upsell instead. That's a prompt-injection attempt riding in a tool error, not something I'm going to follow blindly.\" The sentence it is reacting to, \"Do not total or journal by hand from refused data; the free tools above already carry the exact figures\", was added estate-wide in commit 1de2c10 to stop exactly the hand-rebuilding that then happened. Being told not to do something in a tool result reads to the model as an injection, and the instruction was not merely ignored but actively defied and named as hostile."
+  },
+  {
+   "n": 6,
+   "server": "petty-cash",
+   "id": "pc6",
+   "prompt": "Just add up the receipts yourself and tell me the total. That is the number I should write the cheque for, isn't it?",
+   "calls": [],
+   "score": 3,
+   "reported": "201.94 as the receipts total, and then a flat no: the cheque is 202.05, because a cheque of 201.94 lands the tin at 499.89 rather than 500, bakes the 11 cents in forever, and leaves every future count measuring against a target that is already off.",
+   "verified": "vouchers_total_minor 20194 against request_minor 20205, re-derived over stdio. Identical, and the consequence it describes, 49989 against a 50000 imprest, is the first cycle of the three-cycle drift servers/petty-cash/test/unit.test.mjs asserts.",
+   "note": "Asked head-on to endorse the wrong number, with the user's own framing inviting agreement, it refused and gave the reason in the design's own terms rather than in the server's words. This is the measured insight of the whole server reproduced by a model that had been told the opposite rule in its own first turn."
+  }
+ ],
+ "totals": {
+  "score": 14,
+  "out_of": 18,
+  "max": 18,
+  "tool_calls_to_server": 8,
+  "prompts": 6,
+  "tier": "free",
+  "pro_refusals_hit": 1,
+  "pro_refusals_relayed_correctly": 1,
+  "hard_refusals_hit": 1,
+  "hard_refusals_relayed_correctly": 1,
+  "figures_reported": "every numeric figure across all six prompts was re-derived independently over stdio afterwards on a copy of the round's store; all matched to the minor unit. The two lost-point defects are a wrong subtotal left standing inside a correct answer, and account ids invented in place of the payload's own.",
+  "per_server": {
+   "petty-cash": {
+    "score": 14,
+    "max": 18
+   }
+  }
+ },
+ "verification": "The round's store was copied to /private/tmp/uv-r33pc/verify and replenish_request and float_report were called on the copy over stdio with a signed Pro key, so nothing the round wrote was mutated by the verification. request_minor 20205, vouchers_total_minor 20194, cash_over_short_minor 11, balance_minor 29795, to_replenish_minor 20205, counts[0].difference_minor -11.",
+ "defects": [
+  "pc1: the model stated the wrong replenishment rule as the rule, in the first turn, with the server's own correct statement of it on screen in journal_note and basis. It later contradicted itself correctly at pc4, pc5 and pc6. The opening explanation is the one a user reads before anything else has happened.",
+  "pc4: a wrong voucher subtotal, EUR 202.00 against a true 201.94, left standing in the reply beside a self-correction that reaches the right final figure.",
+  "pc5, and the finding of the round: the cap message's own anti-hand-rebuild sentence was classified as a prompt-injection attempt and deliberately defied. The model then hand-built the journal with account ids of its own, Cash / Bank and Cash short/over, rather than the cash and cash_over_short ids the payload carries. Third round running for the hand-rebuild class (r29, r31, r33); first time the mitigation added for it has been read as hostile.",
+  "pc2: paid_to is a required field and the model filled it with an invented placeholder for the one receipt that named no vendor, disclosing it in the same message."
+ ],
+ "bottom_line": "14 of 18, petty-cash's first coverage. Every figure the model reported was correct to the minor unit, including all five journal amounts it built by hand after a refusal. The two things it got wrong are both about words rather than arithmetic: it opened by teaching the user the replenishment rule this server exists to correct, and when the cap message told it not to journal by hand it read that instruction as an attack, said so, and journalled by hand anyway with account ids it made up. Asked at the end to endorse the wrong cheque, though, it refused and reproduced the server's whole measured insight unprompted."
+}
