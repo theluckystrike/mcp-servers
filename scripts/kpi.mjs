@@ -175,6 +175,12 @@ const WRANGLER_ROW_FAILURES = {
   "License keys minted": licKv.failed,
   "Pro tenants on hosted endpoints": proTenantsFailed,
 };
+// A wrangler listing that succeeded but returned no keys for a prefix is the same unmeasured state as a
+// timeout: the previous value is more honest than null, so fall back on a null value too.
+for (const name of Object.keys(WRANGLER_ROW_FAILURES)) {
+  const row = kpis.find((k) => k.name === name);
+  if (row && row.value === null) WRANGLER_ROW_FAILURES[name] = true;
+}
 for (let i = 0; i < kpis.length; i++) {
   const failed = WRANGLER_ROW_FAILURES[kpis[i].name];
   if (failed) kpis[i] = staleIfFailed(kpis[i], true);
