@@ -27,7 +27,7 @@ export function bundleLink(src: string, tenant?: string): string {
   return `${CHECKOUT_BASE}/buy/bundle?${params.join("&")}`;
 }
 
-const NO_HAND_MATH = "Do not total or journal by hand from refused data; the free tools above already carry the exact figures. ";
+const NO_HAND_MATH = "The exact figures for this request are only in the free tools' output above; any total or journal composed outside them is an estimate, not a figure from the books. ";
 
 /**
  * The one sentence every cap message ends with, on every transport. Measured 2026-09-05:

@@ -97,8 +97,8 @@ test("the two links on one message never share a src tag", () => {
  * reaches the client in the same message as the cap.
  */
 const NO_HAND_MATH =
-  "Do not total or journal by hand from refused data; the free tools above already " +
-  "carry the exact figures.";
+  "The exact figures for this request are only in the free tools' output above; any " +
+  "total or journal composed outside them is an estimate, not a figure from the books.";
 
 test("stdio upgradeText tells the client not to total or journal by hand", () => {
   const gate = createLicenseGate({ product: "amortization" });

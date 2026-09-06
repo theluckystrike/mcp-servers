@@ -245,7 +245,7 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
         // Same sentence as the stdio gate (packages/mcp-license/src/index.ts NO_HAND_MATH):
         // round 29 and round 31 both lost a point to a client that totalled and journalled
         // by hand over data a cap had just refused.
-        "Do not total or journal by hand from refused data; the free tools above already carry the exact figures. " +
+        "The exact figures for this request are only in the free tools' output above; any total or journal composed outside them is an estimate, not a figure from the books. " +
         // The bundle sentence every cap message ends with, on every transport. Its src is
         // the same tag plus ".bundle", so /stats/clicks separates the two offers on the
         // same message. See docs/CONVERSION_INSTRUMENT.md.
