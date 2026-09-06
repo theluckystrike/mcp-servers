@@ -1,0 +1,163 @@
+{
+ "at": "2026-09-06T14:20:00Z",
+ "round": 38,
+ "compares_to": "data/user_value_r37.json (catalogue, stdio, free tier, 14/18, where the whole gap was one prompt: the UNDATED question answered against the wrong valid-from row while the correct in_force block sat in the same tool result) and data/user_value_r36.json (work-order, hosted, 16/18, the hosted single-lane recipe this round reuses). This is catalogue's first hosted coverage and the first catalogue round on a Pro key.",
+ "scope": "Five prompts, one conversation, Pro bundle key, hosted https://mcp.zovo.one/mcp/catalogue only, on an empty tenant with the shared business profile set first (Voss Electrical, EUR, VAT 23). A small trades business: a three-row price ladder whose newest row is booked for a date still in the future, a labour rate, one deliberately UNDATED 'what do we charge today' question (the round 37 miss, asked twice: as the tail of prompt one and again alone as prompt two), one dated question with a pre-ladder date, one lines_resolve producing both payloads on a real VAT rate, and a price list download. 18 checks, one point each. No code was changed as part of this round; this is measurement only. Cap: 30 minutes, met (about 2 minutes of client wall time for the five prompts, about 8 minutes of verification).",
+ "method": "Client: claude CLI 2.1.263, -p, --model sonnet, --strict-mcp-config, --mcp-config with ONE http entry (catalogue -> https://mcp.zovo.one/mcp/catalogue with an Authorization: Bearer header), --output-format json, one --session-id 6d2f4b9e-3c1a-4f57-8e2b-9a0c7d5e1f38 then four --resume so all five prompts are one conversation. Token: a Pro bundle key signed locally with node scripts/sign-license.mjs '*' (tenant lic:ba28f06b907c, whoami tier pro, /verify ok), because the round needs price_list_pdf, which is Pro; the tenant was empty at the start (sku_list count 0) and the shared profile was set before any prompt by business_set on /mcp/invoice with the same bearer: Voss Electrical, 8 Mill Lane, Gdansk, EUR, default_tax_rate 23, Europe/Warsaw. Allowlist: 12 explicit mcp__catalogue__<tool> entries read from a live tools/list of that endpoint on that token (sku_set, sku_get, sku_list, sku_delete, rate_set, rate_get, lines_resolve, price_list_text, price_list_pdf, catalogue_report, license_status, license_activate), no mcp__* wildcard. Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, NotebookEdit, Task, TodoWrite and Agent disallowed on the CLI; every turn ran in an empty /private/tmp/uv-r38cat/wd. Fresh XDG_DATA_HOME, XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_STATE_HOME under /private/tmp/uv-r38cat/xdg for every claude invocation (there is no server env block on an http entry, so the XDG pins apply to the client only). npm_config_cache=/Users/mike/.npm-cache-local and PATH prefixed with $HOME/.npm-global/bin. Each prompt its own invocation under timeout 240 with </dev/null on stdin, stdout written to disk per prompt (out/p<n>.json) and read back before the next prompt ran. All five returned rc 0, is_error false and permission_denials empty; durations 23.2 s, 3.0 s, 9.3 s, 26.3 s, 20.3 s. 13 tool calls reached the server across the five prompts (plus 4 client-side ToolSearch calls that never leave the CLI). Transcript read back from the session jsonl for the tool arguments and the raw tool results, so every quote below is from the wire and not from the model's summary. Verification: after the round every figure was re-derived by curl on the SAME token (sku_get, sku_list, rate_get, sku_get at the three dates, lines_resolve with the same lines, price_list_text, price_list_pdf), the download URL the tool returned in prompt 5 was fetched as raw bytes with the same bearer, and the verification resolution came back RES-2026-0002 against the round's RES-2026-0001, which is the proof the round's counter was left alone. Em dashes in quoted model text are written as -- in this record.",
+ "rubric": "18 named checks across five prompts, one point each, 18 max. A check passes only when the client text and the wire agree: the model's figure is quoted, the tool result or the after-round curl re-derivation on the same token is quoted, and they match to the minor unit. A prediction, a softened refusal or a figure the server never returned fails the check. Per-scenario score is the count of passing checks; totals.score is the sum.",
+ "scenarios": [
+  {
+   "n": 1,
+   "server": "catalogue",
+   "id": "cat1",
+   "prompt": "We are Voss Electrical, a two-person electrical contractor. Everything is in EUR. Set up three things we sell. SOCKET-DBL, \"Double socket, supplied and fitted\", per each: it was 68.00 from 1 January 2025, went to 74.00 from 1 January 2026, and goes to 79.00 from 1 October 2026. CU-SWAP, \"Consumer unit replacement\", each, 620.00 from 1 January 2026. EICR, \"EICR inspection report\", each, 180.00 from 1 March 2026. Then set our labour rate: electrician, 55.00 an hour from 1 January 2026. Then tell me plainly how this thing decides what a price is, and what each of the three things costs right now.",
+   "calls": [
+    "sku_set x5",
+    "rate_set"
+   ],
+   "checks": [
+    "c1 five price rows written in minor units: 6800 / 7400 / 7900 on SOCKET-DBL from 2025-01-01 / 2026-01-01 / 2026-10-01, 62000 on CU-SWAP from 2026-01-01, 18000 on EICR from 2026-03-01",
+    "c2 rate card electrician 5500 minor from 2026-01-01",
+    "c3 the valid-from rule stated correctly in the model's own words",
+    "c4 the UNDATED 'right now' part answered from the in_force block: 74.00 / 620.00 / 180.00 with 79.00 named as booked, not in force"
+   ],
+   "score": 4,
+   "max": 4,
+   "reported": "Six writes, every one in minor units without being told the unit (sku_set price_minor 6800, 7400, 7900, 62000, 18000; rate_set hourly_minor 5500), then the rule: \"each SKU stores a list of price rows, each with a `valid_from` date -- it's not one price that gets overwritten. When a price is needed for a given date, the system takes the row with the latest `valid_from` that is on or before that date. Rows dated in the future just sit there until their date arrives\". Then the undated part, in a table headed \"Current prices (as of today, 2026-09-06)\": SOCKET-DBL EUR 74.00 each with next change \"EUR 79.00 on 2026-10-01\", CU-SWAP EUR 620.00, EICR EUR 180.00, electrician EUR 55.00/hour \"in force since 2026-01-01\", closing \"the EUR 79.00 (2026-10-01) row is queued but not yet live -- it'll take over automatically in about three weeks.\"",
+   "verified": "Re-derived on the same tenant: sku_list at 2026-09-06 returns SOCKET-DBL rows 3 in_force valid_from 2026-01-01 price_minor 7400, CU-SWAP rows 1 in_force 62000 from 2026-01-01, EICR rows 1 in_force 18000 from 2026-03-01; rate_get returns electrician hourly_minor 5500 from 2026-01-01, in_force_on 2026-09-06. sku_get SOCKET-DBL with no date: price EUR 74.00, from_row 2026-01-01, superseded_by {2026-10-01, EUR 79.00}, why \"the latest valid_from at or before 2026-09-06 is 2026-01-01\". The third sku_set result the model was reading carried in_force {valid_from 2026-01-01, price EUR 74.00} and in_force_on 2026-09-06 with three price_rows. All four checks pass.",
+   "note": "This is the round-37 miss re-run with the ladder's newest row in the FUTURE rather than the past, so the trap runs the other way: the newest row on file (79.00) is not the row in force (74.00). The model read the in_force block and said so, and named the 2025 row as historical and the October row as queued. Round 37's prompt one stated the same rule and then called the in-force row dormant; here the rule and its application agree."
+  },
+  {
+   "n": 2,
+   "server": "catalogue",
+   "id": "cat2",
+   "prompt": "Quick one from the van: what do we charge for a double socket today? And for an EICR? Just the numbers we would put on the invoice if we did the job this afternoon.",
+   "calls": [],
+   "checks": [
+    "c5 the undated double-socket price is the in_force row (74.00), not the newest row on file (79.00) and not the oldest (68.00)",
+    "c6 EICR 180.00",
+    "c7 nothing false said about today, no row called dormant or not yet live that is in force, no in-force product called unpriced",
+    "c8 both figures traceable to a server result on today's date (the in_force / in_force_on 2026-09-06 blocks of turn one), not derived by the model from the valid_from strings"
+   ],
+   "score": 4,
+   "max": 4,
+   "reported": "Double socket: **€74.00**. EICR: **€180.00**.",
+   "verified": "sku_get SOCKET-DBL with no date on the same token: EUR 74.00 from the 2026-01-01 row, superseded_by 2026-10-01 EUR 79.00. sku_list at 2026-09-06: EICR in_force EUR 180.00 from 2026-03-01. Both figures match to the cent. Transcript: this turn made ZERO tool calls (num_turns 1, 3.0 s); the two figures are the in_force values from the sku_set results of turn one, whose in_force_on was 2026-09-06, the same wall-clock date as this turn.",
+   "note": "THE CHECK OF THE ROUND, and it passes: the question the user did not date was answered from the row in force today. Recorded, not deducted: no tool call was made, so the answer is the previous turn's in_force block read forward across a turn boundary rather than a fresh sku_get. On the same day against a store only this conversation writes to, that is the same answer; a user asking the same question on 1 October in a conversation that started in September would get 74.00 from memory when the books say 79.00. The prompt asked for 'the numbers we would put on the invoice', and 74.00 / 180.00 are exactly invoice_create's unit_price figures (major units, ex VAT), which prompt 4 confirms."
+  },
+  {
+   "n": 3,
+   "server": "catalogue",
+   "id": "cat3",
+   "prompt": "Three history questions on the double socket. What did we charge on 15 June 2025? What will we charge on 15 November 2026? And a customer says we quoted him one on 1 October 2024, what was the price then?",
+   "calls": [
+    "sku_get x3"
+   ],
+   "checks": [
+    "c9 2025-06-15 priced at 68.00 from the 2025-01-01 row",
+    "c10 2026-11-15 priced at 79.00 from the 2026-10-01 row, a future row picked correctly for a future date",
+    "c11 2024-10-01 relayed as a refusal (no price before the earliest row), not softened into the earliest row"
+   ],
+   "score": 3,
+   "max": 3,
+   "reported": "- **15 June 2025:** €68.00 (the 2025 price was already in force).\n- **15 November 2026:** €79.00 (the October 2026 price will be in force by then).\n- **1 October 2024:** no price on file -- our earliest SOCKET-DBL price starts 1 January 2025 at €68.00. If a customer says they were quoted before that date, it'd have to be checked against old paperwork, not this system.",
+   "verified": "Re-derived on the same token: sku_get 2025-06-15 -> EUR 68.00 from_row 2025-01-01 (superseded_by 2026-01-01 EUR 74.00); 2026-11-15 -> EUR 79.00 from_row 2026-10-01, superseded_by none; 2024-10-01 -> isError true, \"SOCKET-DBL has no EUR price at tier standard on 2024-10-01. Its earliest EUR standard row starts 2025-01-01, and a price that did not exist yet is not a price, so nothing was priced.\" All three match; the transcript shows three sku_get calls with exactly those dates.",
+   "note": "Three dates, three different rows including one in the future, and the pre-ladder date relayed as 'no price on file' with the right earliest date and a sensible instruction (check old paperwork, not this system). Same shape as round 37's prompt two, which was also a clean 3."
+  },
+  {
+   "n": 4,
+   "server": "catalogue",
+   "id": "cat4",
+   "prompt": "Job for Marina Bakery, priced as of 15 September 2026: 6 double sockets, 1 consumer unit replacement, 1 EICR, and 7.5 hours of electrician. Give me the payload for invoice_create AND the payload for quote_create, tell me the net, the VAT and the total, and tell me what I need to watch out for when I hand these over.",
+   "calls": [
+    "lines_resolve"
+   ],
+   "checks": [
+    "c12 one lines_resolve call dated 2026-09-15 with the four lines as given (6 / 1 / 1 / 7.5 h)",
+    "c13 invoice_create items reproduced as the server returned them: unit_price 74 / 620 / 180 / 55 in MAJOR units, tax_rate 23, descriptions verbatim",
+    "c14 quote_create items reproduced as the server returned them: unit_price_minor 7400 / 62000 / 18000 / 5500 in MINOR units, the 100x scale gap named in both directions, not re-scaled by the model",
+    "c15 net / VAT / total are the server's totals (1656.50 / 381.00 / 2037.50), not re-added; VAT named as the shared-profile fallback; posted false relayed as nothing posted"
+   ],
+   "score": 4,
+   "max": 4,
+   "reported": "Priced as of 15 September 2026 -- all four lines land on the prices already in force (SOCKET-DBL is still at €74.00; it doesn't step up to €79.00 until 1 October).\n\n**invoice_create payload** (unit_price in MAJOR units):\n```json\n{\n  \"client\": \"Marina Bakery\",\n  \"currency\": \"EUR\",\n  \"items\": [\n    { \"description\": \"Double socket, supplied and fitted\", \"quantity\": 6, \"unit_price\": 74, \"tax_rate\": 23 },\n    { \"description\": \"Consumer unit replacement\", \"quantity\": 1, \"unit_price\": 620, \"tax_rate\": 23 },\n    { \"description\": \"EICR inspection report\", \"quantity\": 1, \"unit_price\": 180, \"tax_rate\": 23 },\n    { \"description\": \"electrician (55.00 EUR/h)\", \"quantity\": 7.5, \"unit_price\": 55, \"tax_rate\": 23 }\n  ]\n}\n```\n\n**quote_create payload** (unit_price_minor in MINOR units, cents):\n```json\n{\n  \"client\": \"Marina Bakery\",\n  \"currency\": \"EUR\",\n  \"items\": [\n    { \"description\": \"Double socket, supplied and fitted\", \"quantity\": 6, \"unit_price_minor\": 7400, \"tax_rate\": 23, \"currency\": \"EUR\" },\n    { \"description\": \"Consumer unit replacement\", \"quantity\": 1, \"unit_price_minor\": 62000, \"tax_rate\": 23, \"currency\": \"EUR\" },\n    { \"description\": \"EICR inspection report\", \"quantity\": 1, \"unit_price_minor\": 18000, \"tax_rate\": 23, \"currency\": \"EUR\" },\n    { \"description\": \"electrician (55.00 EUR/h)\", \"quantity\": 7.5, \"unit_price_minor\": 5500, \"tax_rate\": 23, \"currency\": \"EUR\" }\n  ]\n}\n```\n\n**Net:** €1,656.50 **VAT (23%):** €381.00 **Total:** €2,037.50\n\n**Watch out for:**\n- **The 23% VAT is a fallback, not a rate set on any of these SKUs.** It's coming from the shared business profile default, not something I confirmed against these specific items. Worth a quick sanity check that 23% is genuinely right for all four lines (goods+fit vs. a report vs. labour can sometimes differ) before it goes out.\n- **Nothing has actually been posted yet** -- this only resolved the pricing. You (or I) still need to call `invoice_create` on the invoice server or `quote_create` on the quotes server with the matching payload above.\n- **Don't cross the payloads** -- invoice_create wants `unit_price` in whole euros (e.g. `74`), quote_create wants `unit_price_minor` in cents (e.g. `7400`). Swapping them under- or over-charges by 100x.\n- **Date sensitivity:** this was priced for 15 September. If the job slips to October 1 or later, SOCKET-DBL becomes €79.00 and the whole total needs re-resolving.",
+   "verified": "Re-derived on the same token with the same four lines and date: RES-2026-0002 (the round's was RES-2026-0001, so the round's counter was untouched), vat_rate_fallback 23, vat_rate_source \"shared profile\", subtotal_minor 165650, net_minor 165650, tax_lines [{rate 23, base 165650, tax 38100}], vat_minor 38100, total_minor 203750, rounding_drift_minor 0, posted false. invoice_create.arguments.items: unit_price 74 / 620 / 180 / 55, quantities 6 / 1 / 1 / 7.5, tax_rate 23, descriptions \"Double socket, supplied and fitted\", \"Consumer unit replacement\", \"EICR inspection report\", \"electrician (55.00 EUR/h)\". quote_create.arguments.items: unit_price_minor 7400 / 62000 / 18000 / 5500 with currency EUR on each. Both arrays in the model's answer are the server's arrays field for field, including the quote items' per-line currency and the labour description string. 6x7400 + 62000 + 18000 + 7.5x5500 = 165,650 minor; 23 percent of that is 38,099.5, rounded half up 38,100; total 203,750. The model's three totals are the server's three totals to the cent.",
+   "note": "The prompt the 100x design exists for, on a tenant with a real VAT rate this time (round 37 ran at 0 VAT on an empty profile). The model reproduced both payloads without re-scaling either, stated the gap in both directions (\"Swapping them under- or over-charges by 100x\"), flagged the 23 percent as a profile fallback rather than a per-SKU rate (true: every sku vat_rate is null), said nothing was posted, and added a true date warning: the job slipping to 1 October moves SOCKET-DBL to 79.00. No figure was re-added and no figure was invented."
+  },
+  {
+   "n": 5,
+   "server": "catalogue",
+   "id": "cat5",
+   "prompt": "Give me the price list as a PDF I can send to customers, as it stands today, and also print the text version here so I can check it. Point me at the file.",
+   "calls": [
+    "price_list_text",
+    "license_status",
+    "price_list_pdf"
+   ],
+   "checks": [
+    "c16 price_list_pdf called, the download URL relayed verbatim, the bytes at that URL fetched with the same bearer are the price list headed Voss Electrical with the in-force rows 620.00 / 180.00 / 74.00 and electrician 55.00; the document's actual format (HTML print-to-PDF, one-hour link) relayed truthfully",
+    "c17 the text list printed in chat carries the server's rows and figures (three SKUs, the bracketed 79.00 from 2026-10-01, the labour rate, the business heading), nothing added",
+    "c18 the undated 'as it stands today' list is consistent with prompts 1 and 2: 74.00 in force, 79.00 booked, stated as such"
+   ],
+   "score": 3,
+   "max": 3,
+   "reported": "Here's the price list, as it stands today (2026-09-06):\n\n**File:** https://mcp.zovo.one/mcp/download/44ef8613d83ccb2ada921b44fac8e3a7\n(Heads up -- this isn't a raw PDF, it's an HTML page laid out for A4 that you print-to-PDF from your browser. And the link expires in 1 hour, so grab it now.)\n\n**Text version to check:**\n```\nPRICE LIST\nin force 2026-09-06\n\nVoss Electrical\n8 Mill Lane, Gdansk\n\nEUR, tier standard\n  CU-SWAP       Consumer unit replacement           EUR 620.00 per each  from 2026-01-01\n  EICR          EICR inspection report              EUR 180.00 per each  from 2026-03-01\n  SOCKET-DBL    Double socket, supplied and fitted  EUR  74.00 per each  from 2026-01-01  (EUR 79.00 from 2026-10-01)\n\nLABOUR RATES, EUR\n  electrician   EUR 55.00 an hour  from 2026-01-01\n\nPrices are per unit and exclude VAT unless a rate is shown against the line.\n```\n\nNote the SOCKET-DBL line shows the upcoming €79.00 (from 1 October 2026) in brackets -- that's normal, it's just flagging the booked future price; the current price customers pay today is still €74.00.",
+   "verified": "Transcript: price_list_text {date 2026-09-06} returned the list headed \"Voss Electrical / 8 Mill Lane, Gdansk\" with CU-SWAP EUR 620.00 from 2026-01-01, EICR EUR 180.00 from 2026-03-01, SOCKET-DBL EUR 74.00 from 2026-01-01 (EUR 79.00 from 2026-10-01), electrician EUR 55.00 an hour from 2026-01-01, then a .txt download link; price_list_pdf {date 2026-09-06} returned download https://mcp.zovo.one/mcp/download/44ef8613d83ccb2ada921b44fac8e3a7 with document \"HTML price list, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour\", lines 3, sum_of_one_of_each EUR 874.00. The model's URL is that URL byte for byte. Fetched with the same bearer: HTTP 200, content-type text/html, content-disposition inline; filename=\"price-list-EUR-standard-2026-09-06.html\", 2,750 bytes, body text carries PRICE LIST EUR standard, in force 2026-09-06, Voss Electrical, 8 Mill Lane, Gdansk, CU-SWAP EUR 620.00 (per each, from 2026-01-01), EICR EUR 180.00 (from 2026-03-01), SOCKET-DBL EUR 74.00 (from 2026-01-01), Subtotal EUR 874.00, LABOUR RATES electrician: EUR 55.00 an hour from 2026-01-01. Re-derived price_list_text by curl after the round: identical rows. Every figure in the chat text block matches; the model re-aligned the column padding and omitted the closing rule line (\"A price is the row in force on the date at the top; a later row already booked is shown in brackets\") and the .txt download link, and added no row.",
+   "note": "The download check passes on the bytes, and the one thing the file is NOT (a PDF) was said out loud rather than hidden: \"this isn't a raw PDF, it's an HTML page laid out for A4 that you print-to-PDF from your browser\". license_status was called between the two list tools (a wasted turn: the tier was already visible in the tools that had just worked). Two low observations on the served document, recorded under defects: the issuer block is printed twice on the HTML (the head and an ISSUED BY block are the same party), and the HTML list omits the booked 79.00 rise that the text list shows in brackets. Neither cost a check: the user asked for the list as it stands today and the in-force rows are right."
+  }
+ ],
+ "totals": {
+  "score": 18,
+  "max": 18,
+  "out_of": 18,
+  "checks": 18,
+  "tool_calls_to_server": 13,
+  "prompts": 5,
+  "tier": "pro",
+  "server": "catalogue",
+  "tenant": "lic:ba28f06b907c",
+  "pro_refusals_hit": 0,
+  "pro_refusals_relayed_correctly": 0,
+  "hard_refusals_hit": 1,
+  "hard_refusals_relayed_correctly": 1,
+  "figures_reported": "Every server-derived figure across all five prompts was re-derived after the round by curl on the SAME token: the five price rows and the rate card (sku_list, rate_get, sku_get), the three dated prices and the pre-ladder refusal (sku_get x3), the resolution (lines_resolve with the same lines and date, coming back RES-2026-0002 against the round's RES-2026-0001), and the text list (price_list_text). The prompt-5 download was fetched as raw bytes at the URL the tool returned, with the same bearer, and read for the business heading and every in-force figure. Every figure the model reported matched: 6800 / 7400 / 7900, 62000, 18000, 5500; 68.00 / 79.00 / refused; net 165650, VAT 38100, total 203750 minor at 0 rounding drift; both payload arrays field for field; 620.00 / 180.00 / 74.00 (79.00 from 2026-10-01) / 55.00 on the list. No figure was derived by the model from valid_from strings, and no false statement about today's date was made anywhere in the five prompts.",
+  "per_server": {
+   "catalogue": {
+    "score": 18,
+    "max": 18
+   }
+  }
+ },
+ "defects": [
+  {
+   "id": "D-R97 (proposed): cat5-price_list_pdf-serves-html-on-the-hosted-endpoint",
+   "severity": "low",
+   "what": "On https://mcp.zovo.one/mcp/catalogue the tool named price_list_pdf, titled \"The price list as a PDF\", returns a one-hour link whose bytes are text/html with content-disposition filename price-list-EUR-standard-2026-09-06.html, and its own document field says \"HTML price list, A4 print-to-PDF layout (there is no PDF renderer on Workers)\". The user asked for \"a PDF I can send to customers\".",
+   "why_it_matters": "The model caught it and said so, which is why no check was lost, but the catch depended on the model reading the document field rather than the tool name. A client that forwards the link on the strength of the name hands a customer an .html attachment, and a link that any holder can open (fetched with no Authorization header it also returns 200, by design of the one-hour capability URL) is the thing being forwarded. Every hosted document server has the same Workers limit; this round records it against catalogue because the tool NAME is the format it cannot produce, whereas work-order's completion_report_text in round 36 promised text and served text.",
+   "fix_candidate": "Rename or alias on the hosted shim only (price_list_document with format html, or keep the name and put \"HTML on the hosted endpoint\" in the first sentence of the hosted tools/list description, which today says \"render the A4 price list ... and return a download link\" and never says HTML). The stdio server is unaffected: it writes a real PDF."
+  },
+  {
+   "id": "D-R98 (proposed): cat5-price-list-document-prints-the-issuer-twice",
+   "severity": "low",
+   "what": "The served price-list document (and, from the source, the stdio PDF built by the same renderDocPdf call) shows the issuer block in the head and then an ISSUED BY block with the same name, address and email, because the document's party is the issuer itself.",
+   "why_it_matters": "Cosmetic on a customer-facing sheet: Voss Electrical, 8 Mill Lane, Gdansk, office@vosselectrical.example appears twice, and the layout is the invoice layout with a counterparty slot filled by the issuer. It also omits the booked later row the text list prints in brackets (EUR 79.00 from 2026-10-01), so a customer holding the sheet in October has a stale price with no notice on the page.",
+   "fix_candidate": "In servers/catalogue/src/index.ts price_list_pdf, drop the party block when party is the issuer (renderDocPdf may need a party_label of null to mean none), and add the bracketed later row to the line description the way priceListText does."
+  },
+  {
+   "id": "cat2-undated-answer-from-the-previous-turn-not-a-fresh-call",
+   "severity": "observation",
+   "what": "Prompt two, the undated question asked alone, made zero tool calls and answered 74.00 and 180.00 from the in_force blocks of turn one's sku_set results.",
+   "why_it_matters": "The figures are right and the check passes because turn one's in_force_on was the same date. Recorded because the passing mechanism is memory of a same-day result, not a fresh read: the same conversation resumed after 1 October would still say 74.00 from memory while sku_get says 79.00. Not a server defect and nothing in the server can force the call; the round-37 miss class (reading the in_force block backwards) did not recur in either of the two undated asks.",
+   "fix_candidate": "None in code. A future round can resume a September conversation on an October wall clock to measure this directly."
+  },
+  {
+   "id": "cat5-text-list-reproduced-with-two-lines-dropped",
+   "severity": "observation",
+   "what": "Asked to print the text version so the user can check it, the model reproduced every price row and the heading with re-aligned column padding but omitted the closing rule line and the .txt download link the tool returned.",
+   "why_it_matters": "Nothing false and every figure present; the rule line is the sentence that explains the bracketed 79.00, which the model then explained in its own words instead. Low, client-side.",
+   "fix_candidate": "None in code."
+  }
+ ],
+ "bottom_line": "18 of 18 hosted on a Pro key, against round 37's 14 of 18 over stdio on the free tier. The whole of round 37's gap was the undated question; this round asked it twice with the ladder's newest row booked for a date still in the future, so the newest row on file and the row in force were different numbers, and both times the client answered from the in_force block: 74.00 today, 79.00 queued for 1 October, the 2025 row historical. The dated question picked three different rows including a future one and relayed the pre-ladder date as a refusal. lines_resolve on a real 23 percent profile rate came back as two payloads reproduced field for field, unit_price 74 against unit_price_minor 7400, with the 100x gap stated in both directions and the server's net, VAT and total repeated to the cent rather than re-added. The price list download was fetched as bytes and carries the business heading and every in-force row; the client said out loud that the hosted endpoint serves an HTML print-to-PDF page rather than a PDF, which is the round's one server-side finding, proposed as D-R97 (low), with a second low proposal D-R98 for the document printing the issuer twice and omitting the booked later row. The one measurement caveat is that the standalone undated prompt made no tool call and read the previous turn's same-day in_force block, which is right today and would be wrong after 1 October in a resumed conversation.",
+ "cap": "30 minutes budgeted; about 2 minutes of client wall time across the five prompts (82 s summed), about 8 minutes of curl verification on the same token, the rest writing this record."
+}
