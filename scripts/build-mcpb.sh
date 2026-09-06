@@ -41,7 +41,7 @@ mkdir -p "$BUNDLES"
 MCPB="npx -y @anthropic-ai/mcpb"
 LIC_SRC="$ROOT/packages/mcp-license"
 
-SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue"
+SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order"
 
 declare -A DISPLAY_NAME=(
   [time-tracker]="Time Tracker"
@@ -73,6 +73,7 @@ declare -A DISPLAY_NAME=(
   [petty-cash]="Petty Cash"
   [work-order]="Work Order"
   [catalogue]="Catalogue"
+  [change-order]="Change Order"
 )
 
 declare -A KEYWORDS=(
@@ -105,6 +106,7 @@ declare -A KEYWORDS=(
   [petty-cash]='["mcp","model-context-protocol","petty-cash","imprest","float","vouchers","reconciliation","bookkeeping"]'
   [work-order]='["mcp","model-context-protocol","work-order","job-card","field-service","trades","labour","invoicing"]'
   [catalogue]='["mcp","model-context-protocol","catalogue","price-list","rate-card","pricing","sku","invoicing"]'
+  [change-order]='["mcp","model-context-protocol","change-order","variation-order","scope-change","contract-value","quotes","invoicing"]'
 )
 
 # ------------------------------------------------------------------ helpers
