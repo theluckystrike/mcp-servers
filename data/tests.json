@@ -1,9 +1,10 @@
 {
-  "tests": 1374,
-  "pass": 1363,
+  "tests": 1331,
+  "pass": 1320,
   "fail": 0,
   "cancelled": 0,
   "skipped": 11,
-  "at": "2026-09-06T02:54:41.106Z",
-  "release": "v0.17.0"
+  "at": "2026-09-06T04:13:53.258Z",
+  "release": "v0.18.0",
+  "note": "the one chain failure was a stale kanban dist (version.js at 0.17.0 next to version.ts at 0.18.0); rebuilt, contract suite 29/29 on rerun, bundles for kanban and office-suite rebuilt"
 }

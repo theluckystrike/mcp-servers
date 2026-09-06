@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-work-order",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "Job orders for trades and field work: parts, labour, status, completion report, invoice payload.",
   "type": "module",
   "bin": {
@@ -51,11 +51,11 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/work-order",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-billing-docs": "^0.17.0",
-    "@theluckystrike/mcp-invoice": "^0.17.0",
-    "@theluckystrike/mcp-license": "^0.17.0",
-    "@theluckystrike/mcp-quotes": "^0.17.0",
-    "@theluckystrike/mcp-timezone": "^0.17.0",
+    "@theluckystrike/mcp-billing-docs": "^0.18.0",
+    "@theluckystrike/mcp-invoice": "^0.18.0",
+    "@theluckystrike/mcp-license": "^0.18.0",
+    "@theluckystrike/mcp-quotes": "^0.18.0",
+    "@theluckystrike/mcp-timezone": "^0.18.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

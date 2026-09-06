@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/delegacja",
   "description": "Policz diete za delegacje krajowa i zagraniczna wedlug rozporzadzenia oraz stawek HMRC i GSA.",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.17.0/per-diem.mcpb",
-      "version": "0.17.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.18.0/per-diem.mcpb",
+      "version": "0.18.0",
       "fileSha256": "adfb969d8dd1aaeeb177259fdb5c177d6bace6ff8408381122f7da31d837fcc0",
       "transport": {
         "type": "stdio"

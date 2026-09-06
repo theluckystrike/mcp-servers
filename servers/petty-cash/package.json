@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-petty-cash",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "A petty cash float on the imprest system: vouchers, reconciliation and the replenishment.",
   "type": "module",
   "bin": {
@@ -51,11 +51,11 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/petty-cash",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-asset-register": "^0.17.0",
-    "@theluckystrike/mcp-cash-book": "^0.17.0",
-    "@theluckystrike/mcp-license": "^0.17.0",
-    "@theluckystrike/mcp-quotes": "^0.17.0",
-    "@theluckystrike/mcp-timezone": "^0.17.0",
+    "@theluckystrike/mcp-asset-register": "^0.18.0",
+    "@theluckystrike/mcp-cash-book": "^0.18.0",
+    "@theluckystrike/mcp-license": "^0.18.0",
+    "@theluckystrike/mcp-quotes": "^0.18.0",
+    "@theluckystrike/mcp-timezone": "^0.18.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

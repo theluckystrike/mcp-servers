@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/petty-cash",
   "description": "A petty cash float on the imprest system: vouchers, reconciliation and the replenishment.",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.17.0/petty-cash.mcpb",
-      "version": "0.17.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.18.0/petty-cash.mcpb",
+      "version": "0.18.0",
       "fileSha256": "d051af4b4d85c454909b0f7d3bd42a7a6831976457f2b923fdbca1fbd3211915",
       "transport": {
         "type": "stdio"
