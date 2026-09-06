@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-06T01:50:20.123Z",
-  "total_commits": 601,
+  "generated_at": "2026-09-06T01:50:26.845Z",
+  "total_commits": 602,
   "sessions": 53,
   "loops": [
     {
@@ -126,7 +126,7 @@
     {
       "name": "Loop 25: petty-cash, recoverable slots, gate text as fact, v0.17.0",
       "sessions": 1,
-      "commits": 89
+      "commits": 90
     }
   ],
   "rows": [
@@ -753,7 +753,7 @@
       "at": "2026-09-06T01:50:19.914Z",
       "note": "loop 25 closed: v0.17.0 with petty-cash (imprest float, replenishment is imprest minus balance, a count is a fact; audit 16/18 with a date-guard fix; the twenty-seventh server and hosted endpoint), 74 manifests verified, 1374 tests, validation 811/811, 28 bundles; recoverable free slots: nine servers refuse a byte-identical record before the cap and ten free delete tools recover a slot; every cap message now states that figures outside the free tools are estimates (the imperative wording was read as a prompt injection); amortization hosted 15/18; intel R12 found five more empty slots; downloads 4247; clicks 111/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 25: petty-cash, recoverable slots, gate text as fact, v0.17.0",
-      "commits": 79,
+      "commits": 80,
       "subjects": [
         "Plan v20: one ledger, prompts you can copy, the share re-measured",
         "Content round 21: copy buttons on prompt blocks",
