@@ -99,9 +99,9 @@ test("every tool description is non-empty, single-paragraph, and within the ceil
   const { c } = open(t);
   await c.init();
   const tools = await c.tools();
-  assert.equal(tools.length, 10, "tool count changed; update servers/deposits/SPEC.md");
+  assert.equal(tools.length, 11, "tool count changed; update servers/deposits/SPEC.md");
   assert.deepEqual(tools.map((x) => x.name).sort(), [
-    "deposit_apply", "deposit_balance", "deposit_list", "deposit_record", "deposit_refund",
+    "deposit_apply", "deposit_balance", "deposit_delete", "deposit_list", "deposit_record", "deposit_refund",
     "deposit_statement_pdf", "deposit_statement_text", "deposits_report",
     "license_activate", "license_status",
   ]);

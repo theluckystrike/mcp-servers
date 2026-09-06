@@ -61,6 +61,7 @@ default currency from one shared business profile.
 | `deposit_list` | Every deposit with received, applied, refunded and held. Filter by client, status, kind or date |
 | `deposit_apply` | Apply part or all of a held deposit to an invoice, as a payment on that invoice |
 | `deposit_refund` | Give part or all of a held deposit back, with the date and the method |
+| `deposit_delete` | Remove a deposit recorded by mistake, if none of it was ever applied or refunded |
 | `deposit_balance` | What is held, per client and per currency: received, applied, refunded, held |
 | `deposit_statement_text` | The plain-text statement to paste into an email |
 | `deposit_statement_pdf` | The A4 PDF, titled DEPOSIT STATEMENT (Pro) |
@@ -75,6 +76,7 @@ One resource, `deposits://held`, and one prompt, `settle_deposits`.
 | --- | --- | --- |
 | Deposits recorded per calendar month | 5 | Unlimited |
 | Applying to invoices, refunds, balances, lists | Yes, unlimited | Yes |
+| `deposit_delete` for a deposit that never moved money | Yes, unlimited | Yes |
 | `deposit_statement_text` | Yes, unlimited | Yes |
 | `deposit_statement_pdf` | No | Yes, plus your logo and no footer credit |
 | `deposits_report` | No | Yes |
@@ -82,6 +84,12 @@ One resource, `deposits://held`, and one prompt, `settle_deposits`.
 The free cap is on recording new deposits only. Money already held can always be applied, refunded
 and accounted for, on any tier: a limit that trapped a client's deposit would be a limit on their
 money, not on yours.
+
+The cap counts the deposits stored with a received date in that month, so `deposit_delete` gives the
+slot straight back: a deposit typed in twice or with the wrong amount costs nothing but the id.
+`deposit_record` also refuses a deposit that matches one already stored on client, amount, currency,
+kind, received date and reference, names that id and stores nothing, so the same money is never held
+twice and no free slot is spent on a retry.
 
 Get Pro: https://mcp.zovo.one/buy/deposits ($19 one-time for this server, $39 for the bundle).
 
