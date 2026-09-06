@@ -25,6 +25,15 @@ if [ "${RELEASE_CHECK:-1}" != "0" ]; then node "$ROOT/scripts/release-check.mjs"
 # serverInfo.version is compiled in from src/version.ts; regenerate it from each
 # package.json so a bundle can never announce a version its manifest disagrees with.
 node "$ROOT/scripts/sync-versions.mjs"
+# Refuse to bundle a server whose compiled version.js disagrees with its generated version.ts:
+# a stale dist would ship a bundle whose handshake contradicts its manifest (seen at v0.18.0 on kanban).
+for d in "$ROOT"/servers/*/; do
+  src=$(grep -o '"[0-9][0-9.]*"' "$d/src/version.ts" 2>/dev/null | head -1)
+  dist=$(grep -o 'VERSION = "[0-9][0-9.]*"' "$d/dist/version.js" 2>/dev/null | grep -o '"[0-9][0-9.]*"')
+  if [ -n "$src" ] && [ -n "$dist" ] && [ "$src" != "$dist" ]; then
+    echo "stale dist: $(basename "$d") src=$src dist=$dist (run npm run build -w servers/$(basename "$d"))" >&2; exit 1
+  fi
+done
 
 BUNDLES="$ROOT/bundles"
 mkdir -p "$BUNDLES"
