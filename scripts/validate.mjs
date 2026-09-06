@@ -411,10 +411,15 @@ const PROBES = {
         : fourth.isError && /\$19/.test(fourth.text)
           && /mcp\.zovo\.one\/buy\/cash-book\?src=cash-book\.ledger_build/.test(fourth.text),
       fourth.text.replace(/\s+/g, " ").slice(0, 140));
+    // A rebuild that would write the same figures is refused by period id rather than
+    // silently rewriting the row (docs/RECOVERABLE_SLOTS_RESULT.md). It is still not a cap
+    // breach: no slot is spent and the refusal carries no buy link.
     const rebuild = await c.tool("ledger_build", period);
-    ok(`${tier}: rebuilding a period already in the register is free on every tier and keeps its figures`,
-      !rebuild.isError && /"debits_minor": 1638300/.test(rebuild.text) && /"first_built"/.test(rebuild.text),
-      rebuild.text.replace(/\s+/g, " ").slice(0, 120));
+    ok(`${tier}: an identical rebuild is refused by period id and spends no free period`,
+      rebuild.isError && /2026-06-01\.\.2026-06-30\/EUR is already built/.test(rebuild.text)
+        && /1638300/.test(rebuild.text) && /period_delete/.test(rebuild.text)
+        && !/mcp\.zovo\.one\/buy/.test(rebuild.text),
+      rebuild.text.replace(/\s+/g, " ").slice(0, 140));
 
     // 9. The two Pro gates, with the single and the bundle checkout links on the refusals.
     const close = await c.tool("month_close", { month: "2026-06", currency: "EUR" });
@@ -786,10 +791,18 @@ const PROBES = {
 
     // 10. The free cap counts RECORDS only. One exists, so the fifth lands and the sixth
     // is refused naming the count and the buy link; Pro gets DEP-2026-0006.
+    // Each one carries its own reference: since round 32 a byte-identical deposit is
+    // refused by id before the cap is consulted, so a cap probe has to record five
+    // DISTINCT deposits or it measures the duplicate guard instead.
     let lastRec = null;
     for (let n = 2; n <= 6; n++) {
-      lastRec = await c.tool("deposit_record", { client: "Acme Ltd", amount_minor: 1000, currency: "EUR", kind: "retainer", received_date: "2026-09-10" });
+      lastRec = await c.tool("deposit_record", { client: "Acme Ltd", amount_minor: 1000, currency: "EUR", kind: "retainer", received_date: "2026-09-10", reference: `TRF-${n}` });
     }
+    const dupe = await c.tool("deposit_record", { client: "Acme Ltd", amount_minor: 1000, currency: "EUR", kind: "retainer", received_date: "2026-09-10", reference: "TRF-2" });
+    ok(`${tier}: a byte-identical deposit is refused by id, on every tier, and writes nothing`,
+      dupe.isError && /DEP-\d{4}-0002 is already this exact deposit/.test(dupe.text)
+        && /Nothing was written/.test(dupe.text) && /deposit_delete/.test(dupe.text),
+      dupe.text.replace(/\s+/g, " ").slice(0, 140));
     ok(`${tier}: the 6th deposit in a month is ${tier === "pro" ? "allowed" : "refused, naming the count and the buy link"}`,
       tier === "pro" ? !lastRec.isError && /DEP-\d{4}-0006/.test(lastRec.text) : lastRec.isError && /mcp\.zovo\.one\/buy\/deposits/.test(lastRec.text) && /5/.test(lastRec.text),
       lastRec.text.replace(/\s+/g, " ").slice(0, 130));

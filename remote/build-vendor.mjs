@@ -1491,17 +1491,18 @@ function patchQuotesIndex(src) {
     "quotes quote_pdf description");
 
   // quote_send_text: the text stays inline (it is meant to be pasted) AND is published.
+  // Re-anchored 2026-09-06: quote_send_text now stamps sent_date on the record (the
+  // stamp quote_delete reads), so the old two-line anchor no longer exists. The patch
+  // keeps the stamp and only replaces the line that returns the body.
   src = must(src,
-    '    const text = out.join("\\n");\n' +
-    '    return ok(businessMissing() ? `${text}\\n\\n---\\n${NO_BUSINESS_NOTE}` : text);',
-    '    const text = out.join("\\n");\n' +
+    '    const body = businessMissing() ? `${text}\\n\\n---\\n${NO_BUSINESS_NOTE}` : text;',
     '    const file = `/out/${q.id}.txt`;\n' +
     '    writeFileSync(file, text, "utf8");\n' +
     '    const link = publishFile(file);\n' +
-    '    const tail =\n' +
+    '    const body =\n' +
+    '      text +\n' +
     '      (link ? `\\n\\n---\\nDownload (.txt, valid 1 hour): ${link}` : "") +\n' +
-    '      (businessMissing() ? `\\n\\n---\\n${NO_BUSINESS_NOTE}` : "");\n' +
-    '    return ok(`${text}${tail}`);',
+    '      (businessMissing() ? `\\n\\n---\\n${NO_BUSINESS_NOTE}` : "");',
     "quotes quote_send_text download");
   src = must(src,
     'description: "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier.",',
