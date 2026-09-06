@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.18.0/amortization.mcpb",
       "version": "0.18.0",
-      "fileSha256": "23f8bb553aed9c27954ee993e9a55a8f4eeaed6026032d1b2cca14a889e3d2d2",
+      "fileSha256": "64f751fdea7a714dc6641a864606987deeec7147416adeba25ec593ea637f03e",
       "transport": {
         "type": "stdio"
       },

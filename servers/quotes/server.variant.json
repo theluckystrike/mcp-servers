@@ -14,7 +14,7 @@
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.18.0/quotes.mcpb",
       "version": "0.18.0",
-      "fileSha256": "f3af289b760ad0ed164ef3cc213a3fbd106e4cb0eaf03851adc0f762757f6ba9",
+      "fileSha256": "b753a53aac4ffaec676d5ebe4515b8f73c7fee29d74d4602017834735b941658",
       "transport": {
         "type": "stdio"
       },
