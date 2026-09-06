@@ -26,7 +26,7 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SERVERS = [
   "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "clauses", "currency", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "petty-cash", "price-tracker", "recurring",
-  "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone",
+  "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone", "work-order",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -74,6 +74,37 @@ const CURATED = {
       "Nothing is written by `loan_repay_early`: the stored agreement keeps its original terms. It answers what would happen, and the agreement is amended by whoever signs it.",
       "Currencies are never added together. This server holds no exchange rate, so one outstanding figure over a EUR loan and a USD one would be invented.",
       "Month arithmetic CLAMPS to the end of the target month, so a loan drawn on the 31st pays on the 28th in February and on the 31st again in March. Rolling forward instead would move a payment into the next month and shift every date after it.",
+    ],
+  },
+  "work-order": {
+    summary: "Job orders for trades and field work, kept the way a job card is kept: the client and the site, the parts and the hours the job actually used, the status the job stands at with the date it reached it, the completion report the customer signs, and an invoice_create-ready payload whose unit prices are already the billed units. No total is stored; every figure is derived from the lines on the call.",
+    storageFiles: [
+      ["orders.json", "the work orders, each carrying its client record, its lines and its status history and nothing derived from them"],
+      ["counter.json", "the WO number series, per year of the requested date"],
+      ["pdf/", "completion reports written by completion_report_pdf when no out_path is given"],
+    ],
+    primaryFile: "orders.json",
+    caps: [
+      "`FREE_OPEN_ORDERS` = 5 OPEN work orders on free, counting draft, scheduled and in_progress. Closing one frees its slot, and so does deleting a draft with no lines; both are free on every tier.",
+      "`completion_report_pdf`, `work_order_invoice_payload` and `work_orders_report` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_LINES` = 200 lines on one work order; `MAX_MINOR` = 1e12 per money field; `MAX_HOURS` = 100,000; `MAX_QUANTITY` = 1,000,000; `MAX_MARKUP` = 1000 percent.",
+      "`MAX_ROWS` = 500 rows returned by one `work_order_list` or `work_orders_report` answer.",
+    ],
+    extra: [
+      "THE MARKUP GOES ON THE UNIT COST, NEVER ON THE LINE TOTAL. The invoice server rounds a unit price to the minor unit first and multiplies (D-R24, servers/invoice/src/money.ts), so the marked-up UNIT is the only basis an invoice can reproduce. Seven parts at 1299 with 15 percent on top is 1494 a unit and 10,458 on the line; marking up the line total is round(9093 x 1.15) = 10,457. One minor unit, on every line whose marked-up unit does not land on a whole cent, and it never nets out across lines.",
+      "THE MONEY IS THE INVOICE SERVER'S OWN. `computeTotals`, `currencyDecimals`, `formatMoney` and `roundHalfUp` are imported from `@theluckystrike/mcp-invoice/lib` and no arithmetic is restated here, so the payload's totals ARE what `invoice_create` will compute rather than a second implementation that agrees today.",
+      "NO TOTAL IS STORED. A work order record holds its client, its lines and its status history; the value, the hours, the materials and the VAT are derived on every call. A stored total is a second copy of what the lines already decide, and the copy is the one that gets believed after somebody edits a line.",
+      "The status machine moves ONE STEP FORWARD at a time: draft to scheduled to in_progress to done to invoiced. A skipped step is refused naming the step that is next, because every step carries its own timestamp and skipping one loses the day the job reached it; a backwards step is refused because a job that has to go back is a new work order.",
+      "A status change is refused when it is dated before the requested date, or before the step already recorded, so the history always reads as a timeline.",
+      "THIS SERVER CREATES NO INVOICE AND MARKS NOTHING. `work_order_invoice_payload` returns arguments; the caller runs `invoice_create` in the invoice server and then sets the status to invoiced here. An already-invoiced order refuses a second payload by name, so the customer cannot be billed twice through this route.",
+      "An invoiced work order takes no more lines: adding one would change a job the customer has already been billed for. The extra work is a second work order.",
+      "A work order is DELETED only while it is a draft with no lines. Once there is an hour or a part on it, or a status past draft, the job has a history and is corrected rather than erased. The WO series never reissues a number, so a gap in it is the record that one was deleted.",
+      "A byte-identical work order (client, site, requested date, description, priority, currency) is refused BEFORE the free cap is consulted, so the refusal names the id already stored rather than selling an upgrade, and burns neither a slot nor a WO number.",
+      "AN UNKNOWN CLIENT NAME WITH NO ADDRESS IS REFUSED. A bare name that matches no invoice client record is a misspelling far more often than a new customer, and the invoice raised from the job would carry an empty BILL TO block. Either `client_add` in the invoice server first, or pass `client_address` and the job records the client inline and says so.",
+      "A LABOUR RATE IS NEVER IMPROVISED. The shared business profile carries a default currency, a default tax rate and payment terms but no default hourly rate (`PROFILE_FIELDS`, packages/mcp-license/src/profile.ts), so `rate_minor` is refused by name with the field that would have filled it rather than guessed.",
+      "Hours in the board report are counted on the LINE date, not on the date the job was requested, so a February call worked in March counts in March.",
+      "Currencies are never added together. This server holds no exchange rate, so one value over a EUR job and a PLN one would be an invented number.",
+      "The A4 completion report is `renderDocPdf` from `@theluckystrike/mcp-billing-docs/lib`, the same page a credit note and a purchase order use, so a report and the invoice it becomes are recognisably one document family.",
     ],
   },
   "petty-cash": {

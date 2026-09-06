@@ -37,6 +37,7 @@ const gate = createLicenseGate({ product: "invoice" });
 export const PROFILE_READERS = [
   "asset-register", "bank-statement", "barcode", "calendar", "clauses", "currency", "docx", "expense-tracker",
   "image", "kanban", "pdf", "per-diem", "petty-cash", "quotes", "resume", "statement-of-account", "time-tracker", "timezone",
+  "work-order",
 ];
 
 /**
