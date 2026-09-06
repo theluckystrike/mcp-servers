@@ -120,7 +120,10 @@ const clickToSession = clicks7d && stripe.human_sessions !== null && clicks7d > 
 let sitemapUrls = null; try { const x = await (await fetch("https://mcp.zovo.one/sitemap.xml")).text(); sitemapUrls = (x.match(/<loc>/g) || []).length; } catch {}
 let registryLatest = null; try { const rel = JSON.parse(readFileSync(`${ROOT}/servers/office-suite/package.json`, "utf8")).version; const names = new Set(); for (const d of readdirSync(`${ROOT}/servers`)) { for (const f of readdirSync(`${ROOT}/servers/${d}`)) { if (/^server(\.[a-z0-9-]+)?\.json$/.test(f) && f !== "server.json" && f !== "server.npm-package.json") { try { names.add(JSON.parse(readFileSync(`${ROOT}/servers/${d}/${f}`, "utf8")).name); } catch {} } } } let atLatest = 0, hosted = 0; for (const n of names) { try { const c = new AbortController(); const t = setTimeout(() => c.abort(), 15000); const r = await (await fetch(`https://registry.modelcontextprotocol.io/v0/servers?search=${encodeURIComponent(n)}&version=latest`, { signal: c.signal })).json(); clearTimeout(t); const hit = (r.servers || []).find((x) => x.server.name === n); if (hit && hit.server.version === rel) atLatest++; if (hit && hit.server.remotes && hit.server.remotes.length) hosted++; } catch {} } registryLatest = { entries: atLatest, names: names.size, release: rel, hosted }; } catch {}
 
-const tests = Number((sh("bash", ["-lc", `cd ${ROOT} && npm test 2>/dev/null | grep -E '^# pass' | awk '{s+=$3} END {print s}'`]) || "").trim()) || null;
+// Unit tests: read the count the last release chain recorded (data/tests.json, written by the release step), never re-run the
+// whole suite inside the KPI collector, which took longer than the collector's own budget and left this row null.
+const testsRec = js("data/tests.json", null);
+const tests = testsRec && Number.isFinite(testsRec.pass) ? testsRec.pass : null;
 const tools = ledger.servers.reduce((a, s) => a + (s.tool_count || 0), 0);
 const servers = ledger.servers.filter((s) => s.id !== "office-suite").length;
 // per_server.hosted is "published <url>", not the bare "published" this once matched:
@@ -152,7 +155,7 @@ const kpis = [
   { cat: "Value", name: "Servers that reached 100% in a round", value: (uvi.matrix || []).filter((m) => m.best_pct === 100).length, target: servers, unit: `of ${servers}`, how: "per-server matrix", why: "Shows which servers are done and which still lose points on natural prompts." },
   // Reliability
   { cat: "Reliability", name: "Live validation checks passing", value: val.total ? `${val.pass}/${val.total}` : null, target: "all", unit: "checks", how: "node scripts/validate.mjs", why: "Stdio, hosted and billing exercised end to end on every change." },
-  { cat: "Reliability", name: "Unit tests passing", value: tests, target: "all", unit: "tests", how: "npm test", why: "Regression floor; contract suites enforce stdout hygiene, quarantine, caps, licensing." },
+  { cat: "Reliability", name: "Unit tests passing", value: tests, target: "all", unit: "tests", how: `data/tests.json written by the last release chain${testsRec ? " at " + testsRec.at : ""}`, why: "Regression floor; contract suites enforce stdout hygiene, quarantine, caps, licensing." },
   { cat: "Reliability", name: "Hosted tools/list latency p50", value: latency.p50_ms, target: 800, unit: "ms", lower_is_better: true, how: "3 timed POSTs to /mcp/time-tracker", why: "Above about a second, clients start their first prompt before the server answers (round 4 D-R5)." },
   { cat: "Reliability", name: "Silent-partial-result defects open", value: 0, target: 0, unit: "open", how: "audits: truncated history, capped loops, partial files all fixed", why: "A plausible wrong answer costs more than an error." },
   // Monetization

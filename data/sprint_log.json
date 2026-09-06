@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-05T23:15:59.652Z",
-  "total_commits": 568,
-  "sessions": 52,
+  "generated_at": "2026-09-06T01:50:20.123Z",
+  "total_commits": 601,
+  "sessions": 53,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -121,7 +121,12 @@
     {
       "name": "Loop 24: amortization, free-tier decision, backlink re-check, v0.16.0",
       "sessions": 1,
-      "commits": 79
+      "commits": 23
+    },
+    {
+      "name": "Loop 25: petty-cash, recoverable slots, gate text as fact, v0.17.0",
+      "sessions": 1,
+      "commits": 89
     }
   ],
   "rows": [
@@ -727,7 +732,7 @@
       "at": "2026-09-05T23:15:53.007Z",
       "note": "loop 24 closed: v0.16.0 with amortization (loan and lease schedules, effective interest, early repayment, cash-book journal lines; rounding the payment once is a term change; audit 18/18; the twenty-sixth server and hosted endpoint), 71 manifests verified, 1207 tests, validation 762/762, 27 bundles; cash-book free tier documented and its export gate names the free evidence; cash-book hosted 17/18; all twelve estate backlinks still serve; release checker number-word table extended; round 31 stdio 15/18 with the lost points on client-side totals over refused data; downloads 3850; clicks 101/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 24: amortization, free-tier decision, backlink re-check, v0.16.0",
-      "commits": 65,
+      "commits": 19,
       "subjects": [
         "statement-of-account: products, server count 24, children, mcpb, mirrors, pages, facts, tools, setup, distribution row",
         "statement-of-account: Part 2 CLI audit and Part 1 gap re-verification, no defects found",
@@ -741,6 +746,27 @@
         "Distribution round 17 record: statement-of-account wired, release-check green",
         "Release v0.14.0: statement-of-account joins; bump 26 packages, 54 internal ranges and 90 server manifests; asset-register contract accepts a real sha",
         "sha256 of the v0.14.0 bundles into every manifest that references one"
+      ]
+    },
+    {
+      "n": 53,
+      "at": "2026-09-06T01:50:19.914Z",
+      "note": "loop 25 closed: v0.17.0 with petty-cash (imprest float, replenishment is imprest minus balance, a count is a fact; audit 16/18 with a date-guard fix; the twenty-seventh server and hosted endpoint), 74 manifests verified, 1374 tests, validation 811/811, 28 bundles; recoverable free slots: nine servers refuse a byte-identical record before the cap and ten free delete tools recover a slot; every cap message now states that figures outside the free tools are estimates (the imperative wording was read as a prompt injection); amortization hosted 15/18; intel R12 found five more empty slots; downloads 4247; clicks 111/7d with 2 bundle-sourced; sales 0; GSC key dataless",
+      "loop": "Loop 25: petty-cash, recoverable slots, gate text as fact, v0.17.0",
+      "commits": 79,
+      "subjects": [
+        "Plan v20: one ledger, prompts you can copy, the share re-measured",
+        "Content round 21: copy buttons on prompt blocks",
+        "content: month-end guide prompts as pre.prompt blocks with copy buttons",
+        "User value round 28: statement-of-account hosted lane, 18/18",
+        "Round 11: registry findable share reprobe, 97-token comparable (49.98%) and 113-token extended set (55.14%)",
+        "cash-book: one double-entry ledger derived from the sibling stores",
+        "license: SERVER_COUNT 24 -> 25 for cash-book",
+        "Distribution round 18: checklist",
+        "cash-book: PRODUCTS, CHILDREN, mcpb and mirror lists, page ids, facts, tools, compare_none, distribution row",
+        "cash-book: setup entry, six client angles, claude-web angle, one-ledger-from-every-server guide",
+        "cash-book: demo scene, tape, GIF and logo",
+        "cash-book: Part 2 CLI audit and two new gap tests (missing bank store, no-VAT expense)"
       ]
     }
   ]
