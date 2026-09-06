@@ -121,7 +121,9 @@ test("purchase_order_receive refuses a second full receipt and a receipt before 
   assert.equal(again.isError, true, again.text);
   assert.match(again.text, /already received in full on 2026-09-03/);
 
-  parse(await c.call("purchase_order_create", { supplier: "Widget Co", issue_date: "2026-09-01", items: [{ description: "Cables", quantity: 1, unit_price_minor: 1000 }] }));
+  // A different order, not a re-send of the first: purchase_order_create refuses a
+  // byte-identical record and would never allocate PO-2026-0002 for one.
+  parse(await c.call("purchase_order_create", { supplier: "Widget Co", issue_date: "2026-09-01", items: [{ description: "Cable ties", quantity: 4, unit_price_minor: 250 }] }));
   const early = await c.call("purchase_order_receive", { id: "PO-2026-0002", date: "2026-08-01" });
   assert.equal(early.isError, true);
   assert.match(early.text, /before the order date 2026-09-01/);
@@ -166,15 +168,16 @@ test("free tier: five documents a month across both kinds, then a refusal naming
     assert.equal(r.isError, false, r.text);
   }
   for (let i = 0; i < 2; i++) {
-    const r = await c.call("purchase_order_create", { supplier: "Widget Co", issue_date: "2026-09-02", items: [{ description: "Cables", quantity: 1, unit_price_minor: 1000 }] });
+    const r = await c.call("purchase_order_create", { supplier: "Widget Co", issue_date: "2026-09-02", items: [{ description: "Cables", quantity: i + 1, unit_price_minor: 1000 }] });
     assert.equal(r.isError, false, r.text);
   }
-  const sixth = await c.call("purchase_order_create", { supplier: "Widget Co", issue_date: "2026-09-02", items: [{ description: "Cables", quantity: 1, unit_price_minor: 1000 }] });
+  // Distinct from both of those: at the cap the refusal must be the cap, not the duplicate.
+  const sixth = await c.call("purchase_order_create", { supplier: "Widget Co", issue_date: "2026-09-02", items: [{ description: "Cables", quantity: 9, unit_price_minor: 1000 }] });
   assert.equal(sixth.isError, true, sixth.text);
   assert.match(sixth.text, /five documents a month|5 documents a month/);
   assert.match(sixth.text, /https:\/\/mcp\.zovo\.one\/buy\/billing-docs\?src=billing-docs\.purchase_order_create/);
   // A document dated in another month is not blocked by this month's five.
-  const other = await c.call("purchase_order_create", { supplier: "Widget Co", issue_date: "2026-10-02", items: [{ description: "Cables", quantity: 1, unit_price_minor: 1000 }] });
+  const other = await c.call("purchase_order_create", { supplier: "Widget Co", issue_date: "2026-10-02", items: [{ description: "Cables", quantity: 9, unit_price_minor: 1000 }] });
   assert.equal(other.isError, false, other.text);
 });
 

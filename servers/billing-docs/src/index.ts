@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { randomBytes } from "node:crypto";
+import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -349,6 +350,109 @@ function capRefusal(month: string, toolName: string): string {
     gate.upgradeText("unlimited credit notes and purchase orders", toolName);
 }
 
+/* ------------------------------------------- duplicates and their dependents */
+
+/**
+ * A create tool that takes the same record twice writes two documents, and on free it
+ * spends two of the five monthly slots on one order with no way back short of a licence
+ * key (docs/DIST_R19_RESULT.md, finding 3). The second call is refused instead, naming
+ * the document that is already there and the tool that removes it.
+ *
+ * The comparison is on the NORMALISED record, never on the raw arguments: text is
+ * trimmed, its runs of whitespace collapsed and case-folded, the currency upper-cased,
+ * money compared in minor units and dates as calendar dates. So " Widget  Co " and
+ * "widget co" are one supplier, and a re-send of the same order is caught whatever the
+ * caller's spacing. The id, the created timestamp and the branding flag are left out:
+ * they are what the store adds, not what the caller asked for.
+ */
+const normText = (s: string | undefined): string => (s ?? "").trim().replace(/\s+/g, " ").toLowerCase();
+
+function lineFingerprint(lines: ComputedLine[]): string {
+  return lines
+    .map((l) => [normText(l.description), l.quantity, l.unit_price_minor, l.tax_rate, l.gross_minor, l.net_minor, l.tax_minor].join("~"))
+    .join("|");
+}
+
+function creditFingerprint(c: CreditNote): string {
+  return [
+    normText(c.invoice_number), c.issue_date, c.currency.toUpperCase(), c.basis,
+    normText(c.reason), normText(c.notes),
+    c.total_minor, c.tax_minor, c.discount_percent, lineFingerprint(c.lines),
+  ].join("\u0000");
+}
+
+function poFingerprint(p: PurchaseOrder): string {
+  return [
+    normText(p.supplier.name), normText(p.supplier.address), normText(p.supplier.email), normText(p.supplier.vat_id),
+    p.issue_date, p.expected_delivery_date ?? "", p.currency.toUpperCase(), normText(p.notes),
+    p.total_minor, p.tax_minor, p.discount_percent, lineFingerprint(p.lines),
+  ].join("\u0000");
+}
+
+function duplicateRefusal(existing: string, kind: string, same: string, getTool: string, deleteTool: string): string {
+  return (
+    `${existing} is already this ${kind}, field for field: ${same}. Nothing was written and no free-tier document slot was used. ` +
+    `Read it with ${getTool} {id: "${existing}"}. If it is wrong, remove it with ${deleteTool} {id: "${existing}"} and issue it again.`
+  );
+}
+
+/**
+ * What a document has left behind that a delete cannot take back.
+ *
+ * Only the files the PDF tools write to their DEFAULT path can be seen from here: a
+ * caller who passed `out_path` put the render somewhere this server never recorded, so
+ * the refusal says where it looked.
+ */
+function exportedFiles(id: string): string[] {
+  const dir = join(dataDir(), "pdf");
+  return ["pdf", "html", "htm"].map((ext) => join(dir, `${id}.${ext}`)).filter((f) => existsSync(f));
+}
+
+/**
+ * A credit note is deletable while it is only a record here. It stops being one when it
+ * has been POSTED -- `syncInvoiceCredited` has written `credited_minor` back onto the
+ * invoice the engine owns -- or when it has been EXPORTED, because a rendered credit
+ * note is a document a client may already hold and a deleted record cannot be shown
+ * against it.
+ */
+function creditNoteDependents(c: CreditNote): string[] {
+  const out: string[] = [];
+  const inv = getInvoices().find((i) => i.number === c.invoice_number) as (Invoice & { credited_minor?: number }) | undefined;
+  if (inv && "credited_minor" in inv && (inv.credited_minor ?? 0) !== 0) {
+    out.push(`invoice ${inv.number} carries credited_minor ${inv.credited_minor}, so this credit note is posted against it`);
+  }
+  for (const f of exportedFiles(c.id)) out.push(`${f} was rendered from it`);
+  return out;
+}
+
+/**
+ * A purchase order is deletable while nothing has come in against it: no receipt, full
+ * or partial, and no render. A receipt is the record that goods arrived, and deleting
+ * the order would delete that fact with it.
+ */
+function purchaseOrderDependents(p: PurchaseOrder): string[] {
+  const out: string[] = [];
+  if (p.receipts.length) {
+    const last = p.receipts[p.receipts.length - 1];
+    out.push(
+      `${p.receipts.length} receipt${p.receipts.length === 1 ? "" : "s"} recorded against it, the last on ${last.date}` +
+      `${last.note ? ` ("${last.note}")` : ""}`,
+    );
+  } else if (p.status !== "open") {
+    out.push(`its status is ${p.status}`);
+  }
+  for (const f of exportedFiles(p.id)) out.push(`${f} was rendered from it`);
+  return out;
+}
+
+function dependentRefusal(id: string, kind: string, deps: string[], advice: string): string {
+  return (
+    `${id} has ${deps.length === 1 ? "something" : "things"} depending on it: ${deps.join("; ")}. ` +
+    `Nothing was removed. ${advice} ` +
+    `A render under your own out_path is not visible from here, so only ${join(dataDir(), "pdf")} was checked for a ${kind} file.`
+  );
+}
+
 /* ------------------------------------------------------------------- server */
 
 const server = new McpServer(
@@ -383,9 +487,6 @@ server.registerTool("credit_note_create", {
         return fail("pass amount_minor or lines, not both: they are two different ways of saying how much to credit. Nothing was stored.");
       }
       const notes = getCreditNotes();
-      if (!gate.isPro() && docsInMonth(issue.slice(0, 7)) >= FREE_DOCS_PER_MONTH) {
-        return fail(capRefusal(issue.slice(0, 7), "credit_note_create"));
-      }
 
       const inv = findInvoice(a.invoice);
       if (!inv) {
@@ -471,7 +572,10 @@ server.registerTool("credit_note_create", {
       if (agg.total_minor <= 0) return fail("that credit note would be for nothing. Nothing was stored.");
 
       const c: CreditNote = {
-        id: nextDocId("CN", issue.slice(0, 4), notes.map((n) => n.id)),
+        // Allocated below, once the record is known to be new and to fit the free cap:
+        // nextDocId writes the counter, and a burnt number for a refused document is a
+        // gap in the CN series a bookkeeper has to explain.
+        id: "",
         invoice_number: inv.number,
         invoice_total_minor: inv.total_minor,
         invoice_issue_date: inv.issue_date,
@@ -494,6 +598,21 @@ server.registerTool("credit_note_create", {
         created: new Date().toISOString(),
         branded: !gate.isPro(),
       };
+
+      const dup = notes.find((x) => creditFingerprint(x) === creditFingerprint(c));
+      if (dup) {
+        return fail(duplicateRefusal(
+          dup.id, "credit note",
+          `same invoice ${dup.invoice_number}, same issue date ${dup.issue_date}, same reason, the same lines and the same ` +
+          `total ${formatMoney(dup.total_minor, dup.currency)}`,
+          "credit_note_get", "credit_note_delete",
+        ));
+      }
+      if (!gate.isPro() && docsInMonth(issue.slice(0, 7)) >= FREE_DOCS_PER_MONTH) {
+        return fail(capRefusal(issue.slice(0, 7), "credit_note_create"));
+      }
+      c.id = nextDocId("CN", issue.slice(0, 4), notes.map((n) => n.id));
+
       notes.push(c);
       setCreditNotes(notes);
       const creditedNow = already + agg.total_minor;
@@ -658,6 +777,52 @@ server.registerTool("credit_note_text", {
   } catch (e) { return fail((e as Error).message); }
 });
 
+server.registerTool("credit_note_delete", {
+  title: "Delete a credit note",
+  description: "Remove a credit note that was never posted to its invoice and never rendered to a file: the invoice becomes creditable again and the free monthly document slot comes back. One with a dependent is refused.",
+  inputSchema: { id: z.string().describe("Credit note id such as CN-2026-0001, or an exact client name") },
+}, async (a) => {
+  try {
+    return await lockedWithInvoice(() => {
+      const list = getCreditNotes();
+      const c = findDoc(list, a.id, (x) => x.id, (x) => x.client.name, "credit note");
+      if (!c) return fail(`no credit note matches "${a.id}". Run credit_note_list to see the ids.`);
+      const deps = creditNoteDependents(c);
+      if (deps.length) {
+        return fail(dependentRefusal(
+          c.id, "credit note", deps,
+          "A credit note that has been posted or sent to the client is undone by issuing a document against it, not by deleting the record.",
+        ));
+      }
+      const month = c.issue_date.slice(0, 7);
+      const kept = list.filter((x) => x.id !== c.id);
+      setCreditNotes(kept);
+
+      const inv = findInvoice(c.invoice_number);
+      const stillCreditable = inv ? inv.total_minor - creditedAgainst(inv.number, kept) : undefined;
+      const out: string[] = [
+        `${c.id} is gone from the store. Its number is not handed out again: the CN series only counts up, so no two ` +
+        `documents can ever carry the same id.`,
+      ];
+      if (!gate.isPro()) {
+        out.push(
+          `Free tier: ${docsInMonth(month)} of ${FREE_DOCS_PER_MONTH} documents used in ${month}. The cap counts the ` +
+          `documents in the store, so the slot ${c.id} held is free again.`,
+        );
+      }
+      return json({
+        deleted: creditSummary(c),
+        invoice: inv ? {
+          number: inv.number,
+          still_creditable: formatMoney(stillCreditable!, inv.currency),
+          still_creditable_minor: stillCreditable,
+        } : undefined,
+        notes: out,
+      });
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
 /* --------------------------------------------------------- purchase orders */
 
 server.registerTool("purchase_order_create", {
@@ -689,10 +854,6 @@ server.registerTool("purchase_order_create", {
       if (a.expected_delivery_date !== undefined && a.expected_delivery_date < issue) {
         return fail(`expected_delivery_date ${a.expected_delivery_date} is before the order date ${issue}. Nothing was stored.`);
       }
-      if (!gate.isPro() && docsInMonth(issue.slice(0, 7)) >= FREE_DOCS_PER_MONTH) {
-        return fail(capRefusal(issue.slice(0, 7), "purchase_order_create"));
-      }
-
       const biz = issuer();
       const currency = resolveCurrency(a.items, a.currency, biz.default_currency);
       const totals = totalsFor(a.items, currency, a.discount_percent ?? 0, a.tax_rate ?? biz.default_tax_rate);
@@ -700,7 +861,10 @@ server.registerTool("purchase_order_create", {
       const stored = findClient(a.supplier);
       const list = getPurchaseOrders();
       const p: PurchaseOrder = {
-        id: nextDocId("PO", issue.slice(0, 4), list.map((x) => x.id)),
+        // Allocated below, after the duplicate and cap checks, for the same reason as
+        // the CN series: nextDocId writes the counter, so a refused order must not burn
+        // a number.
+        id: "",
         buyer: { name: biz.name, address: biz.address, email: biz.email, vat_id: biz.vat_id },
         supplier_client_id: stored?.id,
         supplier: {
@@ -728,6 +892,21 @@ server.registerTool("purchase_order_create", {
         updated: new Date().toISOString(),
         branded: !gate.isPro(),
       };
+
+      const dup = list.find((x) => poFingerprint(x) === poFingerprint(p));
+      if (dup) {
+        return fail(duplicateRefusal(
+          dup.id, "purchase order",
+          `same supplier ${dup.supplier.name}, same order date ${dup.issue_date}, the same lines and the same ` +
+          `total ${formatMoney(dup.total_minor, dup.currency)}`,
+          "purchase_order_get", "purchase_order_delete",
+        ));
+      }
+      if (!gate.isPro() && docsInMonth(issue.slice(0, 7)) >= FREE_DOCS_PER_MONTH) {
+        return fail(capRefusal(issue.slice(0, 7), "purchase_order_create"));
+      }
+      p.id = nextDocId("PO", issue.slice(0, 4), list.map((x) => x.id));
+
       list.push(p);
       setPurchaseOrders(list);
 
@@ -905,6 +1084,41 @@ server.registerTool("purchase_order_receive", {
           ? `${p.id} stays open: a partial receipt is on the record and the order can be received again.`
           : `${p.id} is closed. Its full value is out of the open-orders figure in billing_docs_report.`,
       });
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("purchase_order_delete", {
+  title: "Delete a purchase order",
+  description: "Remove a purchase order with nothing received against it that was never rendered to a file: the free monthly document slot comes back. An order with a receipt is refused, naming that receipt.",
+  inputSchema: { id: z.string().describe("Purchase order id such as PO-2026-0001, or an exact supplier name") },
+}, async (a) => {
+  try {
+    return await locked(() => {
+      const list = getPurchaseOrders();
+      const p = findDoc(list, a.id, (x) => x.id, (x) => x.supplier.name, "purchase order");
+      if (!p) return fail(`no purchase order matches "${a.id}". Run purchase_order_list to see the ids.`);
+      const deps = purchaseOrderDependents(p);
+      if (deps.length) {
+        return fail(dependentRefusal(
+          p.id, "purchase order", deps,
+          "An order that has already been delivered against stays on the record; raise a credit note or a new order for what changed.",
+        ));
+      }
+      const month = p.issue_date.slice(0, 7);
+      setPurchaseOrders(list.filter((x) => x.id !== p.id));
+
+      const out: string[] = [
+        `${p.id} is gone from the store and out of the open-orders figure in billing_docs_report. Its number is not handed ` +
+        `out again: the PO series only counts up.`,
+      ];
+      if (!gate.isPro()) {
+        out.push(
+          `Free tier: ${docsInMonth(month)} of ${FREE_DOCS_PER_MONTH} documents used in ${month}. The cap counts the ` +
+          `documents in the store, so the slot ${p.id} held is free again.`,
+        );
+      }
+      return json({ deleted: poSummary(p), notes: out });
     });
   } catch (e) { return fail((e as Error).message); }
 });

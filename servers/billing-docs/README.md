@@ -7,7 +7,9 @@ names the invoice it reverses and takes the money off it, with the VAT unwound a
 charged. When you order from a supplier, you owe them a purchase order: what you want, at what price,
 by when, with your own details on it. This server writes both, against the invoices and the clients
 the `mcp-invoice` server already holds, and it will not let a credit note give back more money than
-the invoice charged. Everything stays on your machine.
+the invoice charged. Sending the same document twice is refused by the id of the one already there,
+and a document nothing depends on can be deleted, so a re-send never costs you a free-tier slot.
+Everything stays on your machine.
 
 Built on `@theluckystrike/mcp-invoice/lib`: the money, VAT, currency and formatting code is the
 invoice server's, not a second copy of it, so a credit note and the invoice it reverses agree to the
@@ -61,12 +63,14 @@ their name, address, VAT id and default currency from one shared business profil
 | `credit_note_get` | One credit note in full |
 | `credit_note_pdf` | The A4 PDF, titled CREDIT NOTE and carrying the invoice number it reverses (Pro) |
 | `credit_note_text` | The plain-text version to paste into an email |
+| `credit_note_delete` | Remove one that was never posted to its invoice or rendered: the free monthly slot comes back |
 | `purchase_order_create` | Raise an order: line items, VAT, currency, expected delivery date |
 | `purchase_order_list` | Every order with its status: open, partially received, received |
 | `purchase_order_get` | One order in full, with its receipts |
 | `purchase_order_pdf` | The A4 PDF, titled PURCHASE ORDER (Pro) |
 | `purchase_order_text` | The plain-text version to send the supplier |
 | `purchase_order_receive` | Mark an order received, in full or in part |
+| `purchase_order_delete` | Remove one with nothing received against it and no render: the free monthly slot comes back |
 | `billing_docs_report` | Credited per currency, on order per currency, deliveries past their date (Pro) |
 | `license_status`, `license_activate` | Free or Pro, and how to upgrade |
 
@@ -77,6 +81,7 @@ One resource, `billing-docs://open-orders`, and one prompt, `chase_deliveries`.
 | | Free | Pro |
 | --- | --- | --- |
 | Documents per calendar month | 5, credit notes and purchase orders together | Unlimited |
+| `credit_note_delete`, `purchase_order_delete` | Yes: the cap counts what is in the store, so a delete returns the slot | Yes |
 | `credit_note_text`, `purchase_order_text` | Yes, unlimited | Yes |
 | Full, partial and per-line credit notes, VAT, multi-currency, receiving orders | Yes | Yes |
 | `credit_note_pdf`, `purchase_order_pdf` | No | Yes, plus your logo and no footer credit |
