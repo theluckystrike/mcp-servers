@@ -336,3 +336,8 @@ itself.
   (confirmed crawler-indexed content, Add Server button present, no field list visible),
   `npmjs.com/login` (403 to the fetcher), `support.claude.com` custom-connectors article (no
   developer submission path documented), two Claude-directory URL guesses (403 each)
+
+
+## Stripe key permissions (2026-09-06)
+
+The Stripe key in the keychain (`StripeCLI`, `default.live_mode_api_key`) is now a restricted key without `product_write`; creating the work-order product returned `more_permissions_required`. Either grant Products Write to that restricted key in the Stripe dashboard or store a key that has it, then create the product with `POST /v1/products` (name "MCP Work Order Pro", metadata payload work-order) and a $19 price, and put the price id in `billing/src/index.js` PRODUCTS. Until then the work-order server ships without a checkout and release-check records the gap.

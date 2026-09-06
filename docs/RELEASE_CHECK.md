@@ -194,3 +194,8 @@ retries.
 Run `node scripts/release-check.mjs` after the server folder is finished. The failing
 column names the file and the list to edit. That is the whole checklist; there is no
 second copy of it in a document that can go stale.
+
+
+## Unit-test count for the KPI
+
+`scripts/record-tests.mjs <test-log> <tag>` writes `data/tests.json` from the release chain's `npm test` output. The KPI collector reads that file and never re-runs the suite, which took longer than the collector's budget and left the row null at v0.17.0. Run it right after `npm test` in every release, before the KPI step.
