@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "catalogue", "clauses", "currency", "deposits", "docx",
+  "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "catalogue", "change-order", "clauses", "currency", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "petty-cash", "price-tracker", "recurring",
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone", "work-order",
 ].sort();
@@ -107,6 +107,35 @@ const CURATED = {
       "THE PRICE LIST PDF PRINTS EVERY LINE AT A QUANTITY OF ONE and labels the figure at the bottom as the sum of one of each, not a quotation. A price list has no total of its own, and printing one as though it were a document total would put a number on a customer's desk that means nothing.",
       "THE NAME ON THE PRICE LIST COMES FROM THE SHARED PROFILE, NOT FROM THE INVOICE SERVER'S `getBusiness()`, because that function's `dataDir()` CREATES `mcp-servers/invoice/` as a side effect of a read. The contract suite asserts the only sibling path this process touches is the shared profile file.",
       "The A4 price list is `renderDocPdf` from `@theluckystrike/mcp-billing-docs/lib`, the same page a credit note and a purchase order use, so a price list and the invoice it becomes are recognisably one document family.",
+    ],
+  },
+  "change-order": {
+    summary: "Change orders against a quote or a work order, kept the way a variation is kept on site: added, removed and changed lines, each with a quantity, a unit price in minor units, a reason and a date; a status that moves draft to sent to approved or rejected, each step dated; the running contract value as the original plus APPROVED deltas with pending deltas held apart; a plain-text document for the client to approve; and the approved delta as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units at once. No delta is stored and no original value is invented.",
+    storageFiles: [
+      ["change-orders.json", "the change orders, each carrying its reference, its original value, its lines and its status history and nothing derived from them"],
+      ["counter.json", "the CO number series, per year of the change order date"],
+    ],
+    primaryFile: "change-orders.json",
+    caps: [
+      "`FREE_OPEN_ORDERS` = 5 OPEN change orders on free, counting draft and sent. Approving, rejecting or voiding one frees its slot, and so does deleting a draft with no lines; all of those are free on every tier.",
+      "`change_order_document` and `change_order_invoice_payload` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_LINES` = 200 lines on one change order; `MAX_MINOR` = 1e12 per money field; `MAX_QUANTITY` = 1,000,000; `MAX_VAT` = 1000 percent.",
+      "`MAX_ROWS` = 500 rows returned by one `change_order_list` answer.",
+    ],
+    extra: [
+      "THE TWO SIBLING SERVERS TAKE THE SAME DELTA IN DIFFERENT SCALES, AND THE GAP IS EXACTLY 100x. `invoice_create`'s item carries `unit_price` in MAJOR units; `quote_create`'s item carries `unit_price_minor` in MINOR units. Neither tool can tell that the number it was handed was scaled for the other one. So the store holds MINOR units, which is the only lossless form, and `change_order_invoice_payload` builds BOTH payloads itself in one call with the scale printed against each. The unit suite re-derives the net from each payload's own items and asserts the quotient is 100.",
+      "THE MONEY IS THE INVOICE SERVER'S OWN. `computeTotals`, `currencyDecimals`, `formatMoney` and `roundHalfUp` are imported from `@theluckystrike/mcp-invoice/lib` and no arithmetic is restated here, so the payload's totals ARE what `invoice_create` will compute rather than a second implementation that agrees today.",
+      "A CHANGED LINE IS TWO ITEMS, A REVERSAL AND THE REVISED LINE, NEVER ONE NET ITEM. 3 x 450.00 becoming 5 x 420.00 is worth +750.00, but an item of quantity 1 at 750.00 shows the customer nothing they can check; -3 x 450.00 and 5 x 420.00 both reproduce on a calculator and sum to the same +750.00, because `roundHalfUp` is symmetric in sign. A removal is a negative quantity at the unit price it was booked at, which `invoice_create` accepts.",
+      "THE QUOTE PAYLOAD IS READY ONLY WHEN EVERY QUANTITY IS POSITIVE. `quote_create` refuses a quantity that is not greater than zero, so a delta with a removal or a reversal cannot be quoted as it stands. The items are still emitted in MINOR units so the scale identity holds, and `quote_create.ready` is false with the rule named.",
+      "NO DELTA AND NO RUNNING VALUE IS STORED. A record holds its reference, its original value, its lines and its status history; the delta, the running value and the VAT are derived on every call. The contract suite greps the raw store for the derived key names and asserts a record holds its facts only.",
+      "THE RUNNING CONTRACT VALUE IS THE ORIGINAL PLUS APPROVED DELTAS. Draft and sent deltas are pending and shown as a separate figure, with the value if every pending one were approved beside it, so the two are never added by hand. Rejected and void change orders count for nothing and are listed so they can be seen to count for nothing.",
+      "THE ORIGINAL VALUE IS STATED ONCE PER REFERENCE AND INHERITED. This server opens neither the quotes store nor the work-order store (their `dataDir()` creates a directory on read), so the first change order against a reference must carry `original_value_minor`, every later one inherits it, and a later one that states a different figure is refused by name with the figure on file. One reference carries one currency; a second is refused rather than converted.",
+      "The status machine: draft to sent; sent to approved or rejected; draft or sent to void. Approved, rejected and void are final. A draft cannot be approved directly, because approval is the client's answer to something they were sent, and the refusal names the step that is next. A step dated before the change order's date or before the last step is refused so the history reads as a timeline; the same day as the last step is allowed.",
+      "LINES ARE ADDED ONLY WHILE A CHANGE ORDER IS A DRAFT. Once sent, the client is looking at a document, and a line added under them makes their approval an approval of something else. A sent change order that needs another line is voided and raised again. A draft with no lines cannot be sent.",
+      "ONLY AN APPROVED CHANGE ORDER HAS AN INVOICE PAYLOAD. A draft or sent one is not agreed; a rejected or void one bills nothing. The refusal names the status and the date it was reached. This server creates no invoice and no quote: the payload returns arguments and says `posted: false`.",
+      "A byte-identical change order (reference, title, client, currency) is refused BEFORE the free cap is consulted, so the refusal names the id already on file rather than selling an upgrade, and burns neither a slot nor a CO number. `duplicate_ok` is the way through.",
+      "A change order is DELETED only while it is a draft with no lines. Once there is a line, or it has been sent, it has a history and is voided rather than erased. The CO series never reissues a number, so a gap in it is the record that one was deleted.",
+      "Currencies are never added together. This server holds no exchange rate, so one delta over a EUR contract and a PLN one would be an invented number.",
     ],
   },
   "work-order": {
