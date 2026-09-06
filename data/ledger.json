@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-06T07:06:13.521Z",
+  "generated_at": "2026-09-06T08:22:23.388Z",
   "session": {
-    "count": 55,
+    "count": 56,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -222,6 +222,10 @@
       {
         "at": "2026-09-06T07:06:13.423Z",
         "note": "Loop 27: catalogue is the twenty-ninth server, hosted and audited 18/18; v0.19.0 shipped (30 bundles, 80 manifests, tests 1455/1466, validate 902/902); dist-version check and stale-dist guard; registry JWT expiry caught and re-login pattern recorded"
+      },
+      {
+        "at": "2026-09-06T08:22:23.182Z",
+        "note": "Loop 28: change-order is the thirtieth server (built, wired 20/20, hosted as endpoint 30, audit 18/18 after D-R99 and D-R100); v0.20.0 shipped (31 bundles, 83 manifests, tests 1507/1518, validate 951/951); catalogue hosted round 38 18/18 and D-R97/D-R98 fixed; change-order round 39 11/18 with D-R101 and D-R102 mitigated server-side; every SPEC.md free of em dashes"
       }
     ]
   },
@@ -229,7 +233,7 @@
     {
       "id": "amortization",
       "npm_name": "@theluckystrike/mcp-amortization",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/amortization",
       "tools": [
         "loan_create",
@@ -265,7 +269,7 @@
     {
       "id": "asset-register",
       "npm_name": "@theluckystrike/mcp-asset-register",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/asset-register",
       "tools": [
         "asset_add",
@@ -301,7 +305,7 @@
     {
       "id": "bank-statement",
       "npm_name": "@theluckystrike/mcp-bank-statement",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/bank-statement",
       "tools": [
         "statement_import",
@@ -340,7 +344,7 @@
     {
       "id": "barcode",
       "npm_name": "@theluckystrike/mcp-barcode",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/barcode",
       "tools": [
         "qr_create",
@@ -377,7 +381,7 @@
     {
       "id": "billing-docs",
       "npm_name": "@theluckystrike/mcp-billing-docs",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/billing-docs",
       "tools": [
         "credit_note_create",
@@ -401,7 +405,7 @@
       "build_ok": true,
       "test_summary": "# pass 34 / # fail 0",
       "result_status": "DONE",
-      "loc": 1705,
+      "loc": 1709,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -420,7 +424,7 @@
     {
       "id": "calendar",
       "npm_name": "@theluckystrike/mcp-calendar",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/calendar",
       "tools": [
         "ics_import",
@@ -459,7 +463,7 @@
     {
       "id": "cash-book",
       "npm_name": "@theluckystrike/mcp-cash-book",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/cash-book",
       "tools": [
         "ledger_build",
@@ -495,7 +499,7 @@
     {
       "id": "catalogue",
       "npm_name": "@theluckystrike/mcp-catalogue",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/catalogue",
       "tools": [
         "sku_set",
@@ -515,7 +519,45 @@
       "build_ok": true,
       "test_summary": "- npm test --workspace @theluckystrike/mcp-catalogue: # tests 42 / # pass 42 / # fail 0",
       "result_status": "DONE",
-      "loc": 1310,
+      "loc": 1318,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "change-order",
+      "npm_name": "@theluckystrike/mcp-change-order",
+      "version": "0.20.0",
+      "dir": "servers/change-order",
+      "tools": [
+        "change_order_create",
+        "change_order_add_line",
+        "change_order_status",
+        "change_order_get",
+        "change_order_list",
+        "change_order_delete",
+        "contract_value",
+        "change_order_document",
+        "change_order_invoice_payload"
+      ],
+      "tool_count": 9,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "- npm test --workspace @theluckystrike/mcp-change-order: # tests 47 / # pass 47 / # fail 0",
+      "result_status": "DONE",
+      "loc": 1284,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -534,7 +576,7 @@
     {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/clauses",
       "tools": [
         "clause_add",
@@ -573,7 +615,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -610,7 +652,7 @@
     {
       "id": "deposits",
       "npm_name": "@theluckystrike/mcp-deposits",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/deposits",
       "tools": [
         "deposit_record",
@@ -648,7 +690,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -686,7 +728,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -727,7 +769,7 @@
     {
       "id": "image",
       "npm_name": "@theluckystrike/mcp-image",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/image",
       "tools": [
         "image_info",
@@ -766,7 +808,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -806,7 +848,7 @@
     {
       "id": "kanban",
       "npm_name": "@theluckystrike/mcp-kanban",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/kanban",
       "tools": [
         "task_add",
@@ -850,7 +892,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -859,7 +901,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 433,
+      "loc": 434,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -878,7 +920,7 @@
     {
       "id": "pdf",
       "npm_name": "@theluckystrike/mcp-pdf",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/pdf",
       "tools": [
         "pdf_info",
@@ -917,7 +959,7 @@
     {
       "id": "per-diem",
       "npm_name": "@theluckystrike/mcp-per-diem",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/per-diem",
       "tools": [
         "perdiem_rates",
@@ -953,7 +995,7 @@
     {
       "id": "petty-cash",
       "npm_name": "@theluckystrike/mcp-petty-cash",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/petty-cash",
       "tools": [
         "float_open",
@@ -989,7 +1031,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -1026,7 +1068,7 @@
     {
       "id": "quotes",
       "npm_name": "@theluckystrike/mcp-quotes",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/quotes",
       "tools": [
         "quote_create",
@@ -1065,7 +1107,7 @@
     {
       "id": "recurring",
       "npm_name": "@theluckystrike/mcp-recurring",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/recurring",
       "tools": [
         "schedule_create",
@@ -1106,7 +1148,7 @@
     {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/resume",
       "tools": [
         "profile_set",
@@ -1143,7 +1185,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -1180,7 +1222,7 @@
     {
       "id": "statement-of-account",
       "npm_name": "@theluckystrike/mcp-statement-of-account",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/statement-of-account",
       "tools": [
         "statement_build",
@@ -1215,7 +1257,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -1256,7 +1298,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -1294,7 +1336,7 @@
     {
       "id": "work-order",
       "npm_name": "@theluckystrike/mcp-work-order",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/work-order",
       "tools": [
         "work_order_create",
@@ -1333,7 +1375,7 @@
     {
       "id": "zip",
       "npm_name": "@theluckystrike/mcp-zip",
-      "version": "0.19.0",
+      "version": "0.20.0",
       "dir": "servers/zip",
       "tools": [
         "zip_create",
@@ -1425,6 +1467,11 @@
         "id": "catalogue",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/catalogue"
+      },
+      {
+        "id": "change-order",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/change-order"
       },
       {
         "id": "clauses",
@@ -1622,6 +1669,14 @@
     {
       "file": "docs/CATALOGUE_RESULT.md",
       "first_line": "mcp-catalogue: build"
+    },
+    {
+      "file": "docs/CHANGE_ORDER_AUDIT.md",
+      "first_line": "mcp-change-order: the 18-item adversarial audit"
+    },
+    {
+      "file": "docs/CHANGE_ORDER_RESULT.md",
+      "first_line": "mcp-change-order: build"
     },
     {
       "file": "docs/CHECKOUT_AUDIT.md",
@@ -1822,6 +1877,10 @@
     {
       "file": "docs/DIST_R22_RESULT.md",
       "first_line": "Distribution round 22: wire mcp-catalogue into the estate (2026-09-06)"
+    },
+    {
+      "file": "docs/DIST_R23_RESULT.md",
+      "first_line": "Distribution round 23: wire mcp-change-order into the estate (2026-09-06)"
     },
     {
       "file": "docs/DIST_R3_RESULT.md",
@@ -2080,6 +2139,14 @@
       "first_line": "Plan v24 (2026-09-06, loop 27): a catalogue, the version scan in the checker, the key still restricted"
     },
     {
+      "file": "docs/PLAN_V25.md",
+      "first_line": "Plan v25 (2026-09-06, loop 28): change-order, a hosted round on catalogue, the key still restricted"
+    },
+    {
+      "file": "docs/PLAN_V26.md",
+      "first_line": "Plan v26 (2026-09-06, loop 29): delivery-schedule, a hosted round on change-order, intel round 14"
+    },
+    {
       "file": "docs/PLAN_V3.md",
       "first_line": "Plan v3 (2026-09-03, loop 6)"
     },
@@ -2174,6 +2241,10 @@
     {
       "file": "docs/RELEASE_V0190.md",
       "first_line": "Release v0.19.0 (2026-09-06)"
+    },
+    {
+      "file": "docs/RELEASE_V0200.md",
+      "first_line": "Release v0.20.0 (2026-09-06)"
     },
     {
       "file": "docs/RELEASE_V060.md",
@@ -2362,6 +2433,14 @@
     {
       "file": "docs/USER_VALUE_R36_WORK_ORDER.md",
       "first_line": "User value audit, round 36 (work-order, hosted) - 2026-09-06"
+    },
+    {
+      "file": "docs/USER_VALUE_R38_CATALOGUE_HOSTED.md",
+      "first_line": "User value audit, round 38 (catalogue, hosted, Pro key) - 2026-09-06"
+    },
+    {
+      "file": "docs/USER_VALUE_R39_CHANGE_ORDER.md",
+      "first_line": "User value audit, round 39 (change-order, stdio, free tier) - 2026-09-06"
     },
     {
       "file": "docs/USER_VALUE_R4.md",

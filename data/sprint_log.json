@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-06T07:05:57.355Z",
-  "total_commits": 645,
-  "sessions": 54,
+  "generated_at": "2026-09-06T08:21:51.964Z",
+  "total_commits": 671,
+  "sessions": 55,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -136,7 +136,17 @@
     {
       "name": "Loop 27: catalogue, dist-version check, v0.19.0",
       "sessions": 1,
-      "commits": 99
+      "commits": 23
+    },
+    {
+      "name": "Loop 28: change-order, hosted round on catalogue, v0.20.0",
+      "sessions": 1,
+      "commits": 32
+    },
+    {
+      "name": "Loop 29: plan v26",
+      "sessions": 0,
+      "commits": 70
     }
   ],
   "rows": [
@@ -784,7 +794,7 @@
       "at": "2026-09-06T04:23:38.532Z",
       "note": "loop 26 closed: v0.18.0 with work-order (job orders with parts and labour lines, status flow, completion report, invoice-ready payload; markup on the unit cost so the invoice engine's rounding cannot disagree, gap of exactly one asserted; audit 17/18; the twenty-eighth server and hosted endpoint); checkout for work-order is a named gap because the keychain Stripe key lost product write, its buy page answers 503 with the bundle link and release-check reports the gap without turning green; 77 manifests, 1331 tests, validation 856/856, 29 bundles; petty-cash hosted 16/18; the release chain records the unit-test count and refuses a stale dist; downloads 4428; clicks 125/7d with 2 bundle-sourced; sales 0; GSC key dataless",
       "loop": "Loop 27: catalogue, dist-version check, v0.19.0",
-      "commits": 99,
+      "commits": 23,
       "subjects": [
         "Plan v21: schedules, the estate re-check, a free-tier decision",
         "Add round 4 backlink verification (read-only, 12/12 domains still serving)",
@@ -798,6 +808,27 @@
         "amortization: demo scene, tape and GIF",
         "remote: add /mcp/amortization, the twenty-sixth endpoint",
         "validate: cover the hosted /mcp/amortization endpoint"
+      ]
+    },
+    {
+      "n": 55,
+      "at": "2026-09-06T07:06:13.423Z",
+      "note": "Loop 27: catalogue is the twenty-ninth server, hosted and audited 18/18; v0.19.0 shipped (30 bundles, 80 manifests, tests 1455/1466, validate 902/902); dist-version check and stale-dist guard; registry JWT expiry caught and re-login pattern recorded",
+      "loop": "Loop 28: change-order, hosted round on catalogue, v0.20.0",
+      "commits": 102,
+      "subjects": [
+        "Plan v22: recoverable slots, honest gates, the last slot",
+        "Cap messages: tell the client not to total or journal by hand from refused data",
+        "Add INTEL_R12: 30 fresh tokens probed, top 5 build candidates (work-order, price-list, rate-card, service-report, maintenance-log)",
+        "amortization: refuse a byte-identical loan, and loan_delete gives the slot back",
+        "deposits: refuse a byte-identical deposit, and deposit_delete gives the month slot back",
+        "asset-register: refuse a byte-identical asset, and asset_delete gives the slot back",
+        "cash-book: refuse a no-op rebuild, and period_delete gives the month slot back",
+        "quotes: refuse a line-for-line duplicate, and quote_delete gives the open slot back",
+        "per-diem: refuse a byte-identical trip, and trip_delete gives the month slot back",
+        "billing-docs: refuse a duplicate document, and a delete per kind gives the slot back",
+        "invoice: refuse a byte-identical client, and client_delete removes an unused one",
+        "Add round 32 user-value audit: amortization, hosted (15/18, matches r31 stdio)"
       ]
     }
   ]
