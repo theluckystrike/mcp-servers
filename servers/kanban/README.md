@@ -77,11 +77,13 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `task_update` | Change any field: title, notes, due (`none` clears it), estimate, priority, tags, column or project. |
 | `task_done` | Mark a task done: it moves to the done column and is stamped with the time. |
 | `task_delete` | Delete a task. The id is never reused. |
+| | An identical `task_add` (same project, title, column, due date, estimate, priority, tags and notes as a task already open) is refused and names the task that already holds the slot, rather than writing a second copy. |
 | `task_search` | Find tasks by text in the title, notes, tags or id. |
 | `board` | Column-by-column summary of one board: tasks, estimate total, actual total, overdue count. |
 | `task_start_timer` | Return the exact arguments to pass to the time-tracker server's `timer_start` for this task, and record the link on the task. |
 | `task_log_time` | Add real minutes worked to a task, so estimate and actual can be compared. |
 | `project_list` | Every board with open and done counts, remaining estimate and overdue count. |
+| `project_delete` | Delete an empty board and free its project slot. A board that still holds tasks, open or done, is refused with a task named; clear them with `task_delete` first. |
 | `overdue` | Everything past its due date, across all boards; `as_of` measures against another day. |
 | `weekly_review` | Done versus planned for a week, with estimate against actual per project. This week is free; past weeks are Pro. |
 | `columns_set` | Replace one board's columns (Pro). Tasks in a removed column move to the first column. |
