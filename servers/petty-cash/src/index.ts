@@ -171,6 +171,7 @@ server.registerTool("topup_record", {
     const out = await locked(() => {
       const floats = getFloats();
       const f = resolveFloat(floats, a.float);
+      if (date < f.opened) throw new Error(`${f.id} was opened on ${f.opened} and the top-up is dated ${date}. There was no tin to put cash into yet. Nothing was written.`);
       const vouchers = getVouchers();
       const covered = vouchersOf(vouchers, f.id).filter((v) => v.replenished_on === null && v.date <= date);
       f.topups.push({ date, amount_minor: a.amount_minor, source: a.source.trim(), recorded: new Date().toISOString() });
@@ -218,6 +219,7 @@ server.registerTool("voucher_add", {
     const out = await locked(() => {
       const floats = getFloats();
       const f = resolveFloat(floats, a.float);
+      if (date < f.opened) throw new Error(`${f.id} was opened on ${f.opened} and the voucher is dated ${date}. There was no tin to pay it out of yet. Nothing was written.`);
       const vouchers = getVouchers();
       const month = date.slice(0, 7);
       const inMonth = vouchers.filter((v) => v.date.slice(0, 7) === month).length;

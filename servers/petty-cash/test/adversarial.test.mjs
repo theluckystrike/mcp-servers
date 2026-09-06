@@ -22,6 +22,33 @@ async function withFloat(t, opts = { key: proKey() }, over = {}) {
   return { box, c, id: r.opened.id };
 }
 
+test("a voucher dated before the float opened is refused, not merely allowed because the tin held enough", async (t) => {
+  const { c } = await withFloat(t); // FLOAT opens 2026-03-01
+  const r = await c.call("voucher_add", { amount_minor: 1000, date: "2026-02-15", category: "office", description: "Before the tin existed", paid_to: "X" });
+  assert.equal(r.isError, true, r.text);
+  assert.match(r.text, /opened on 2026-03-01 and the voucher is dated 2026-02-15/);
+  const rep = await c.json("float_report", {});
+  assert.equal(rep.per_float[0].vouchers, 0, "nothing was written");
+});
+
+test("a top-up dated before the float opened is refused the same way", async (t) => {
+  const { c } = await withFloat(t);
+  const r = await c.call("topup_record", { amount_minor: 1000, date: "2026-02-15", source: "Owner" });
+  assert.equal(r.isError, true, r.text);
+  assert.match(r.text, /opened on 2026-03-01 and the top-up is dated 2026-02-15/);
+  const rep = await c.json("float_report", {});
+  assert.equal(rep.per_float[0].topups, 0, "nothing was written");
+});
+
+test("a top-up larger than what was spent is allowed and flagged, not silently absorbed", async (t) => {
+  const { c } = await withFloat(t); // imprest 50000, opened 2026-03-01
+  await c.json("voucher_add", { amount_minor: 1000, date: "2026-03-02", category: "office", description: "Pens", paid_to: "Shop" });
+  const r = await c.json("topup_record", { amount_minor: 5000, date: "2026-03-03", source: "Owner tops it up too far" });
+  assert.equal(r.balance_minor, 50000 - 1000 + 5000);
+  assert.ok(r.balance_minor > 50000, "the probe itself must exceed the imprest");
+  assert.ok(r.notes.some((n) => /more than the imprest/.test(n)), JSON.stringify(r.notes));
+});
+
 test("a voucher larger than the float holds is refused, and nothing is written", async (t) => {
   const { box, c } = await withFloat(t);
   const r = await c.call("voucher_add", {
