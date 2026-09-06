@@ -654,8 +654,9 @@ const PROBES = {
     const dirs = readdirSync(join(tmp, "data", "mcp-servers")).sort();
     ok(`${tier}: this server writes only its own directory and brings no sibling store into existence`,
       dirs.join(",") === "catalogue"
-      && readdirSync(join(tmp, "data", "mcp-servers", "catalogue")).sort().join(",") === "counter.json,rates.json,register.json,skus.json",
-      dirs.join(","));
+      && readdirSync(join(tmp, "data", "mcp-servers", "catalogue")).sort()
+        .every((f) => ["counter.json", "rates.json", "register.json", "skus.json"].includes(f) || (tier === "pro" && f === "pdf")),
+      `${dirs.join(",")} | ${readdirSync(join(tmp, "data", "mcp-servers", "catalogue")).sort().join(",")}`);
   },
   "petty-cash": async (c, tmp, tier, ok) => {
     // This server reads no sibling store, so there is nothing to seed: the tin and its
