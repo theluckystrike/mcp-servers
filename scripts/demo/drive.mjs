@@ -976,6 +976,59 @@ async function run(name) {
     toolLine("loan_repay_early", { loan: "LOAN-2026-0001", as_of_period: 6, penalty_minor: 5000 });
     resultLine(await c.call("loan_repay_early", { loan: "LOAN-2026-0001", as_of_period: 6, penalty_minor: 5000 }));
   }
+  if (name === "petty-cash") {
+    // This server reads no sibling store, so there is nothing to seed. Every figure recorded
+    // below is one servers/petty-cash/test/unit.test.mjs asserts and docs/PETTY_CASH_RESULT.md
+    // recomputes by hand: a 50,000 minor unit imprest, five vouchers totalling 20,194, a
+    // count of 29,795 against an expected 29,806, and a replenishment of 20,205.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ A petty cash tin on the imprest system. The count is free on every tier.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const openArgs = { name: "Office float", currency: "EUR", imprest_minor: 50000, custodian: "Anna", opened: "2026-03-01" };
+    toolLine("float_open", openArgs);
+    const op = pick(await c.call("float_open", openArgs));
+    resultLine(`${op.opened.id} ${op.opened.name}: imprest ${op.opened.imprest}, ${op.opened.custodian} holds the tin`);
+    for (const j of op.journal) resultLine(`  ${j.account.padEnd(16)} Dr ${String(j.debit).padStart(7)}  Cr ${String(j.credit).padStart(7)}`);
+    resultLine("  petty_cash is debited ONCE here and does not move again unless the imprest itself changes");
+    await sleep(STEP_DELAY_MS);
+
+    const vouchers = [
+      { date: "2026-03-02", category: "postage", description: "Stamps", amount_minor: 1250, paid_to: "Post Office", receipt_ref: "R-1" },
+      { date: "2026-03-05", category: "travel", description: "Taxi", amount_minor: 3480, paid_to: "City Cabs", receipt_ref: "4471" },
+      { date: "2026-03-11", category: "office", description: "Coffee", amount_minor: 899, paid_to: "Corner Shop", receipt_ref: "R-3" },
+      { date: "2026-03-18", category: "office", description: "Paper", amount_minor: 12500, paid_to: "Stationers", receipt_ref: "R-4" },
+      { date: "2026-03-24", category: "travel", description: "Bus", amount_minor: 2065, paid_to: "Transit", receipt_ref: "R-5" },
+    ];
+    toolLine("voucher_add", vouchers[0]);
+    for (const v of vouchers) {
+      const r = pick(await c.call("voucher_add", v));
+      resultLine(`  ${r.recorded.id}  ${r.recorded.date}  ${r.recorded.category.padEnd(8)} ${r.recorded.description.padEnd(7)} ${r.recorded.amount.padStart(10)}  ${r.expense_account.padEnd(17)} balance ${r.balance}`);
+    }
+    await sleep(STEP_DELAY_MS);
+
+    // A float is cash in a tin and can never hold less than nothing.
+    toolLine("voucher_add", { date: "2026-03-25", category: "office", description: "Laptop", amount_minor: 900000, paid_to: "Nobody" });
+    resultLine(await c.call("voucher_add", { date: "2026-03-25", category: "office", description: "Laptop", amount_minor: 900000, paid_to: "Nobody" }));
+    await sleep(STEP_DELAY_MS);
+
+    // The count. Free and unlimited on every tier: this is the question the server exists for.
+    toolLine("reconcile", { counted_minor: 29795, date: "2026-03-31" });
+    const rc = pick(await c.call("reconcile", { counted_minor: 29795, date: "2026-03-31" }));
+    resultLine(`expected ${rc.expected}, counted ${rc.counted}, difference ${rc.difference} ${rc.verdict}`);
+    resultLine(`  ${rc.vouchers_reconciled.length} vouchers reconciled, ${rc.vouchers_reconciled_minor} minor units, balance from here ${rc.balance_after}`);
+    resultLine("  free and unlimited on every tier: eleven cents no receipt will ever explain");
+    await sleep(STEP_DELAY_MS);
+
+    // The Pro gate, on the free tier, shown rather than described. The refusal is the
+    // measured point of the whole server: the cheque is imprest minus balance, 20,205,
+    // and never the sum of the vouchers, 20,194.
+    toolLine("replenish_request", { date: "2026-03-31" });
+    resultLine(await c.call("replenish_request", { date: "2026-03-31" }));
+    resultLine("  Pro: the cheque is imprest MINUS BALANCE, 20,205, never the vouchers' 20,194");
+    resultLine("  the 11 is a cash_over_short line. Reimburse 20,194 instead and the tin stays 11 short, for good");
+  }
   if (name === "statement-of-account") {
     // The three books this server reads belong to mcp-invoice, mcp-billing-docs and
     // mcp-deposits. The demo seeds the same worked month the unit suite asserts against,
