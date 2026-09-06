@@ -4618,3 +4618,216 @@ between runs, so a count over the whole catalogue is not a stable figure. **remo
   arguments and the caller passes them on, exactly as `loan_journal`, `replenish_request` and
   `work_order_invoice_payload` do. Hosted, that means further POSTs to other endpoints on the
   same token, and no endpoint knows the other ran.
+
+# Extension 21 2026-09-06 - change-order
+
+status: DONE
+
+A thirtieth endpoint, `POST /mcp/change-order`. Worker `mcp-remote`, version ID
+`3342c55f-a2a3-4abd-ba02-af03cf83277e` (re-vendored and redeployed after the audit commit
+c9ad909, D-R99 and D-R100, over the first deploy `2f793565-b08f-48d9-932a-2e69b2c89704`),
+same KV namespace `REMOTE_DATA` (`cf848cc5c07d4e0a9c7c65ad1c70055c`). `GET /mcp`, `/mcp/token` and `/mcp/connect` list
+thirty.
+
+| endpoint | tools | notes |
+|---|---|---|
+| https://mcp.zovo.one/mcp/change-order | 11 | reads NO sibling document and writes none. THREE sibling engines, only two reachable from `index.ts`. One download, Pro, plain text. `publish` on `/out/`, `strip` on `/out/`, the default 512 KB cap |
+
+### The finding: no path to reduce, and the build says so rather than assumes it
+
+Every extension since 15 has replaced an `expandPath` with the bare-name function and
+turned an `out_path` into what the downloaded file is called. This server has neither. No
+tool takes a path, no `expandPath` exists in `servers/change-order/src`, and the one document
+it renders, `change_order_document`, already comes back INLINE as plain text: the approval
+sheet with the lines, their reasons, the delta, the contract value before and after, and the
+signature block. `grep -n "expandPath\|out_path\|writeFileSync\|/out/" servers/change-order/src/*.ts`
+finds exactly one writer, `store.ts` (`change-orders.json`, `counter.json`, tmp + rename, a
+tenant document and not a download), and nothing else.
+
+So `patchChangeOrderIndex` opens with an assertion instead of a substitution:
+
+```
+if (/expandPath|out_path/.test(src)) {
+  throw new Error("change-order/src/index.ts now carries a path argument; ...");
+}
+```
+
+A later stdio release that grows an `out_path` fails the vendor build by name rather than
+shipping a real path onto an endpoint that has no disk, which is the D-R60 species caught
+before it exists instead of after. What the patch then does is the work-order thing once:
+`change_order_document` keeps returning the sheet inline (it is meant to be pasted) AND
+writes it to `/out/<CO id>.txt`, so the same call hands back a `.txt` download link named by
+the change order id. The Pro gate is untouched: `requirePro` runs first, exactly as over
+stdio, so the free tier gets the same refusal with the same two checkout links and no file is
+written on a refusal. That is the whole of `EXTRA_IMPORTS["change-order"]` (`publishFile`,
+`writeFileSync`) and the whole of `publish: (p) => p.startsWith("/out/")` with
+`strip: ["/out/"]`.
+
+The `changeorder://contract` resource is the D-R60 species for the eleventh time: it reported
+`dir: dataDir()`, hosted the worker's virtual homedir. It now says the change orders are one
+document held per token and the approval document is a download link rather than a file.
+`remote/test/vendor-paths.test.mjs` stays green; the only `${dataDir()}` in the source is the
+stdio boot line, which the build drops.
+
+### The finding: the original value is inherited, so there is no sibling to hydrate
+
+Extension 19 hydrated the invoice client records read-only because a work order is raised
+against a client the invoice will name. A change order is raised against a QUOTE or a WORK
+ORDER, and the obvious hosted shape is two read-only `sharedDoc` entries so
+`change_order_create` can look the reference up and take the contract value from it. The
+stdio server does not do that, on purpose (`servers/change-order/src/store.ts`): both of those
+servers' `dataDir()` create their directory as a side effect of a read, and a change order
+that refused to exist until its reference could be found on this machine would refuse every
+quote raised on another one. Instead the original contract value is stated ONCE per
+reference, on the first change order against it, in whole minor units, and every later change
+order on that reference inherits the figure on file; a call that states a different one is
+refused, because a contract with two original values has two running values and the customer
+sees whichever was typed last.
+
+Hosted, that rule does the sharedDoc's job structurally. There is nothing to hydrate because
+the endpoint never opens the book the figure would come from, so `SERVERS["change-order"]` in
+`remote/src/index.ts` carries no `sharedDoc` at all, and the refusal text that names the
+figure on file and the change order it came from is the stdio text verbatim. The name and
+address at the top of the document come from the SHARED business profile (`business_set` on
+`/mcp/invoice`) through `readSharedProfile`, which travels the licence shim as it does on
+every endpoint. `change_order_invoice_payload` returns `invoice_create` and `quote_create`
+ARGUMENTS and creates neither, exactly as `lines_resolve` and `work_order_invoice_payload` do.
+
+What it borrows is CODE, three engines of it, and only TWO are reachable from `index.ts`:
+`@theluckystrike/mcp-invoice/lib` for `formatMoney` from `index.ts` AND for `computeTotals`,
+`currencyDecimals` and `roundHalfUp` from `order.ts`, `@theluckystrike/mcp-quotes/lib` for
+`today` and `isIsoDate`, and `@theluckystrike/mcp-timezone/lib` for `readJsonFile` and its
+corrupt-store quarantine, from `store.ts` and nowhere else. No billing-docs engine: the one
+document is plain text and never goes through the pdf shim. The entry is
+
+```
+"change-order": ["invoice", "quotes", "timezone"],
+```
+
+checked against the concatenated bytes of every file the server vendored, after the build.
+Extension 12's original index-only check would have passed a build that could not resolve
+the arithmetic every delta rests on or the quarantine that keeps an unreadable store from
+reporting the original contract value as the current one.
+
+Vendoring is five files, `SERVERS["change-order"] = index.ts, version.ts, lib.ts, order.ts,
+store.ts`: every source file, `lib.ts` included, for the reason the last nine servers' are.
+`store.ts` needed no patch and `order.ts` touches no path, no clock and no network. Caps and
+hardening are unchanged: the default 512 KB tenant document, the 256 KB body ceiling, the
+JSON-RPC batch rejection, the same free/Pro rate limits, the 1-hour download TTL and the
+35-day orphan sweep. The cap is the default and did not have to be argued for, for the fifth
+endpoint running: NO DELTA AND NO RUNNING VALUE IS STORED. A change order holds its lines and
+its status history, and the delta, the VAT and the running contract value are derived on
+every call, so the document grows with the lines actually booked and never with the questions
+asked about them.
+
+## Verification transcript
+
+Deployed worker. `$A` is one anonymous token minted with `POST /mcp/token`; `$T` a bundle
+Pro key signed with `scripts/sign-license.mjs '*'` as `scripts/validate.mjs` does. One POST
+per call, and `/mcp/invoice` and `/mcp/change-order` below are two URLs over the same tenant.
+
+```
+$ GET /mcp                              -> 30 endpoints: ..., work-order, catalogue, change-order
+$ POST /mcp/token                       -> 200, anon_..., endpoints 30
+
+$ [$A] change-order tools/list
+  11 tools: change_order_create, change_order_add_line, change_order_status, change_order_get,
+  change_order_list, change_order_delete, contract_value, change_order_document,
+  change_order_invoice_payload, license_status, license_activate
+  = the stdio count (9 tools plus the two licence tools)
+
+$ [$A] change_order_create {reference: Q-ANON-<run>, client, title, original_value_minor: 100000}
+  CO-2026-0001, "Free tier: 1 of 5 open change orders. change_order_document and
+  change_order_invoice_payload are Pro."
+$ [$A] change_order_document {change_order: CO-2026-0001}
+  isError: "the change order document is Pro. Nothing was written. ... Buy at
+  https://mcp.zovo.one/buy/change-order?tenant=anon_..."   <- the stdio refusal, verbatim,
+  and no /out/ file was written to publish
+
+$ [$T] invoice   business_set {name: "Change Order Probe <run>", address: "3 Market Street, Krakow",
+                               default_currency: "EUR", default_tax_rate: 23}
+
+$ [$T] change_order_create {reference: Q-PROBE-<run>, client: "Harbour Cafe", date: 2026-03-02,
+                            currency: EUR, original_value_minor: 2000000}
+  CO-2026-0001, contract.original_minor 2000000, current_minor 2000000, pending_minor 0
+$ [$T] change_order_add_line added    "Extra landing page" 2 x 45000              delta_minor  90000
+$ [$T] change_order_add_line changed  "Website audit" was 3 x 45000, now 5 x 42000  delta_minor  75000
+  change_order.delta_minor 165000; note "A changed line becomes TWO items on the invoice payload"
+
+$ [$T] contract_value {reference: Q-PROBE-<run>}          <- while it is a DRAFT
+  original 2000000, current_value 2000000, pending_delta 165000, approved_delta 0,
+  if_all_pending_approved 2165000
+  the whole delta is pending and none of it is added in
+
+$ [$T] change_order_status sent      2026-03-04
+$ [$T] change_order_status approved  2026-03-06  -> moved {from: sent, to: approved, date: 2026-03-06}
+$ [$T] contract_value {reference: Q-PROBE-<run>}          <- once APPROVED
+  current_value 2165000, approved_delta 165000, pending_delta 0, counts.approved 1
+
+$ [$T] change_order_invoice_payload {change_order: CO-2026-0001, issue_date: 2026-03-10}
+  status approved, approved_on 2026-03-06, posted false
+  invoice_create.arguments.items  2 x 450   -3 x 450   5 x 420     <- MAJOR units, tax_rate 23
+  quote_create.arguments.items    2 x 45000 -3 x 45000 5 x 42000   <- MINOR units, ready false
+  totals: net 165,000, VAT 37,950, total 202,950, rounding_drift_minor 0
+
+  re-run in the validating process, servers/invoice/dist/lib.js computeTotals:
+    over the invoice items                       net 165,000  VAT 37,950  total 202,950
+    over the quote items fed in as unit_price    net 16,500,000
+    quotient 16,500,000 / 165,000 = 100, exactly, from each payload's own items
+
+$ [$T] change_order_document {change_order: CO-2026-0001}
+  the sheet inline, and "Download (.txt, valid 1 hour): https://mcp.zovo.one/mcp/download/7dafe07b..."
+  GET that URL -> 200, text/plain; charset=utf-8, content-disposition inline;
+  filename="CO-2026-0001.txt", 1,143 bytes, starts "CHANGE ORDER", headed by the shared
+  profile's name and address, both lines with their reasons, "Net delta  +EUR 1650.00",
+  "Value today  EUR 21650.00", the approval block
+
+$ [$A] and [$T] change_order_create {reference: Q-ZERO-<run>, original_value_minor: 100000}
+$ change_order_add_line removed "Managed hosting" 3 x 50000       -> isError, D-R99: the removal
+  would take the reference below zero (original 100000, delta -150000); nothing was written,
+  change_order_get shows 0 lines
+$ change_order_add_line removed "Managed hosting" 1 x 50000       -> delta_minor -50000, accepted
+```
+
+`scripts/validate.mjs` gained `change-order` to the tools/list sweep plus three real calls,
+and the index assertion moved from 29 endpoints to 30. The probe seeds `business_set` on
+`/mcp/invoice`, raises the change order against a reference unique to the run (the tenant
+behind the bundle key is not fresh between runs, and the original value is inherited per
+reference, so a reused reference would inherit a figure this run never stated), adds the
+added and the changed line, asserts `contract_value` BEFORE approval (165,000 pending, current
+still 2,000,000) and AFTER (2,165,000, nothing pending), then the payload with both scales,
+the changed line as two items, `quote_create.ready` false, the totals re-run through the
+invoice server's own `computeTotals` and the 100x quotient re-derived from each payload's own
+items rather than from the two literals, and the document fetched and read under the change
+order id. **remote 119/119** against `2f793565`; the worked flow, the payload, the quotient and the document were re-run by hand against `3342c55f` with the same figures, plus the D-R99 probe below.
+
+### Limitations
+
+- The free tier is 5 OPEN change orders (draft and sent). The anonymous probe above
+  exercised the free `change_order_create` and the Pro refusal on `change_order_document`;
+  the hosted open-order cap refusal, the duplicate-before-cap refusal, the inherited-value
+  refusal and the Pro gate on `change_order_invoice_payload` are asserted only by the stdio
+  suite, as are the concurrency rows.
+- `change_order_get`, `change_order_list` and `change_order_delete` were not exercised
+  against the live endpoint; the three validate calls are the create/lines/status/
+  `contract_value` flow, the payload and the document. All three are covered by the stdio
+  suite and by the tools/list sweep.
+- There is no path argument on this endpoint, so the bare-name rule the last six extensions
+  applied has nothing to apply to; the download is always named by the change order id. The
+  build asserts the absence rather than assuming it.
+- `withFileLock` is the no-op shim here: one request is one isolate with one in-memory
+  filesystem. Over stdio the open-order check and the store write are one critical section;
+  hosted, two simultaneous sixth change orders on one free token could both pass a check only
+  one of them should. The CO counter is written before the record, so a lost write burns a
+  number rather than reusing one. Unchanged since Extension 1.
+- The corrupt-store behaviour cannot be reached through this endpoint, the
+  statement-of-account limitation verbatim: a tenant document is written by this worker as
+  one JSON object and hydrated back. The quarantine is vendored from the timezone engine and
+  resolves; it is the DISK state it defends against that hosted callers cannot produce.
+- Nothing is posted anywhere. `change_order_invoice_payload` hands back `invoice_create` and
+  `quote_create` arguments and the caller passes them on, exactly as `lines_resolve` and
+  `work_order_invoice_payload` do. Hosted, that means further POSTs to other endpoints on the
+  same token, and no endpoint knows the other ran.
+- The document formats money without a thousands separator (`EUR 21650.00`), because that is
+  what the invoice engine's `formatMoney` does everywhere; the validate regex matches that
+  form rather than the one a human would type.

@@ -639,7 +639,7 @@
     "change-order": {
       "github": "published",
       "registry": "pending",
-      "hosted": "pending: the hosting agent owns this field (plan v25 item 3)",
+      "hosted": "published https://mcp.zovo.one/mcp/change-order",
       "npm": "missing",
       "smithery": "pending",
       "glama": "pending",

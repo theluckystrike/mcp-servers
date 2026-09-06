@@ -180,6 +180,26 @@ const SERVERS = {
   // public API, so the next server that prices a line resolves here rather than to a module
   // that cannot load.
   "catalogue": ["index.ts", "version.ts", "lib.ts", "catalogue.ts", "store.ts"],
+  // Every source file. This endpoint reads NO sibling document: the quote or work order a
+  // change order is against is named by its id and its original value is stated ONCE per
+  // reference on the first change order, then inherited by every later one, so neither the
+  // quotes store nor the work-order store is ever opened. What it borrows is CODE, three
+  // engines of it, and only TWO are reachable from index.ts: @theluckystrike/mcp-invoice/lib
+  // for formatMoney from index.ts AND for computeTotals, currencyDecimals and roundHalfUp
+  // from order.ts - the delta, the VAT and both payloads rest on that arithmetic, imported
+  // and never copied, so a change order and the invoice raised from it cannot disagree by a
+  // minor unit - @theluckystrike/mcp-quotes/lib for today() and isIsoDate(), and
+  // @theluckystrike/mcp-timezone/lib for readJsonFile and its corrupt-store quarantine,
+  // which is imported by store.ts and by nothing else. So LIB_RESOLUTIONS below carries all
+  // three and checks them on the bytes that were written: an index-only check would have
+  // passed a build that could not resolve either the arithmetic every delta rests on or the
+  // quarantine that keeps an unreadable store from reporting the original value as current.
+  // No billing-docs engine: the one document here is plain text, the approval sheet a client
+  // signs, and it goes out as a .txt download rather than through the pdf shim. lib.ts is
+  // vendored for the reason the last nine servers' are: it is this engine as a public API,
+  // so the next server that reads a change order resolves here rather than to a module that
+  // cannot load.
+  "change-order": ["index.ts", "version.ts", "lib.ts", "order.ts", "store.ts"],
 };
 
 /**
@@ -2805,6 +2825,65 @@ function patchCatalogueIndex(src) {
   return src;
 }
 
+/**
+ * change-order. The hosted endpoint has no disk, and this server never had a path argument
+ * to reduce to a name: no tool takes out_path, no expandPath exists in its source, and the
+ * one document it renders (change_order_document) already comes back INLINE as plain text.
+ * So there is nothing to make into a bare document name. What moves:
+ *   1. change_order_document keeps returning the approval sheet inline (it is the document
+ *      the client signs, and it is meant to be pasted) AND writes it under /out/, so the
+ *      same call hands back a .txt download link named by the change order id. The Pro gate
+ *      is untouched: requirePro runs first, exactly as over stdio, so the free tier gets the
+ *      same refusal with the same checkout links and no file is written on a refusal.
+ *   2. The changeorder://contract resource reported dataDir(), which hosted is the worker's
+ *      virtual homedir - a path no caller has and none can reach. The D-R60 species for the
+ *      eleventh time.
+ * The store needs no patch: change-orders.json, counter.json and the lock are one document
+ * per token under the homedir shim, written tmp + rename, and readJsonFile comes from the
+ * vendored timezone engine. order.ts touches no path, no clock and no network. NO SIBLING
+ * DOCUMENT IS READ: the original contract value is stated once per reference and inherited
+ * by reference, the issuer on the document comes from the shared business profile through
+ * readSharedProfile, which travels the licence shim as it does on every other endpoint, and
+ * change_order_invoice_payload returns invoice_create and quote_create ARGUMENTS and writes
+ * into neither book, so SERVERS["change-order"] in remote/src/index.ts carries no sharedDoc.
+ */
+function patchChangeOrderIndex(src) {
+  // No expandPath and no out_path anywhere in this server: asserted, not assumed, so a later
+  // stdio release that grows a path argument fails this build rather than shipping a path.
+  if (/expandPath|out_path/.test(src)) {
+    throw new Error("change-order/src/index.ts now carries a path argument; patchChangeOrderIndex must reduce it to a bare document name");
+  }
+
+  // The approval sheet stays inline (it is meant to be pasted) AND is published.
+  src = must(src,
+    "    return ok(`${documentText(o, siblings)}\\n\\n${notes.length ? `${notes.join(\"\\n\")}\\n\\n` : \"\"}${JSON.stringify({ change_order: o.id, status: o.status, delta_minor: netDeltaMinor(o), current_value_minor: contractValue(siblings).current_value_minor }, null, 2)}`);",
+    '    const text = documentText(o, siblings);\n' +
+    '    const file = `/out/${o.id}.txt`;\n' +
+    '    writeFileSync(file, text, "utf8");\n' +
+    '    const link = publishFile(file);\n' +
+    '    if (link) notes.unshift(`Download (.txt, valid 1 hour): ${link}`);\n' +
+    "    return ok(`${text}\\n\\n${notes.length ? `${notes.join(\"\\n\")}\\n\\n` : \"\"}${JSON.stringify({ change_order: o.id, status: o.status, delta_minor: netDeltaMinor(o), current_value_minor: contractValue(siblings).current_value_minor }, null, 2)}`);",
+    "change-order document download");
+  src = must(src,
+    'the contract value before and after, and an approval block. Pro.",',
+    'the contract value before and after, and an approval block. The same text also comes back as a .txt download link valid for one hour. Pro.",',
+    "change-order document description");
+
+  // The changeorder://contract resource reported dataDir(), which hosted is the worker's
+  // virtual homedir - a path no caller has and none can reach.
+  src = must(src,
+    '      writes: [{ store: "change-order", dir: dataDir(), files: ["change-orders.json", "counter.json"] }],',
+    '      writes: [{ store: "change-order", dir: "not a directory on this endpoint: the change orders are one document held " +\n' +
+    '        "per token, and the approval document is a download link rather than a file",\n' +
+    '        files: ["change-orders.json", "counter.json"] }],',
+    "change-order contract resource writes dir");
+  src = must(src,
+    'description: "The five statuses and the legal moves, how the running value is built, the two payload scales, the free-tier limits and the one directory this server writes.",',
+    'description: "The five statuses and the legal moves, how the running value is built, the two payload scales, the free-tier limits and the one document this server writes.",',
+    "change-order contract resource description");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2840,6 +2919,7 @@ const EXTRA_IMPORTS = {
   "cash-book": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   "work-order": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   catalogue: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
+  "change-order": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   zip: [
     'import { Buffer } from "node:buffer";',
     'import { registerZipUpload } from "../../shims/zip-upload.js";',
@@ -2913,6 +2993,7 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "petty-cash") src = patchPettyCashIndex(src);
     if (name === "work-order") src = patchWorkOrderIndex(src);
     if (name === "catalogue") src = patchCatalogueIndex(src);
+    if (name === "change-order") src = patchChangeOrderIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -3002,6 +3083,14 @@ const LIB_RESOLUTIONS = {
   // roundHalfUp - the arithmetic that decides both payloads' figures - and that resolution
   // is checked on the same concatenated bytes rather than assumed from the index.
   "catalogue": ["invoice", "billing-docs", "quotes", "timezone"],
+  // Three, and only TWO of them (invoice and quotes) are reachable from index.ts: store.ts
+  // imports the timezone engine's readJsonFile, so an index-only check would have passed a
+  // build that could not resolve the corrupt-store quarantine that keeps an unreadable store
+  // from reporting the original contract value as the current one. order.ts reaches the
+  // invoice engine a second time, for computeTotals, currencyDecimals and roundHalfUp - the
+  // arithmetic that decides the delta, the VAT and both payloads' figures - and that
+  // resolution is checked on the same concatenated bytes rather than assumed from the index.
+  "change-order": ["invoice", "quotes", "timezone"],
 };
 for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
   const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");

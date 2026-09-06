@@ -1,7 +1,7 @@
 /**
  * mcp-remote: the stdio servers' tool sets served over MCP streamable HTTP.
  *
- * One Worker, twenty-nine endpoints. Every POST builds a fresh McpServer and a fresh
+ * One Worker, thirty endpoints. Every POST builds a fresh McpServer and a fresh
  * stateless WebStandardStreamableHTTPServerTransport, hydrates an in-memory
  * filesystem from KV, runs the request, then flushes the filesystem back to KV.
  * The tool handlers are the vendored, unmodified handlers of servers/<name>.
@@ -40,6 +40,7 @@ import { createServer as createAmortization } from "./vendor/amortization/index.
 import { createServer as createPettyCash } from "./vendor/petty-cash/index.js";
 import { createServer as createWorkOrder } from "./vendor/work-order/index.js";
 import { createServer as createCatalogue } from "./vendor/catalogue/index.js";
+import { createServer as createChangeOrder } from "./vendor/change-order/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -532,6 +533,39 @@ const SERVERS: Record<string, ServerCfg> = {
     publish: (p) => p.startsWith("/out/"),
     strip: ["/out/"],
   },
+  "change-order": {
+    // NO sharedDoc, for the catalogue reason and one more: this endpoint does not open the
+    // quotes store or the work-order store to find the contract it changes. The original
+    // contract value is stated ONCE per reference, on the first change order raised against
+    // it, and every later change order on that reference inherits the figure on file; a call
+    // that states a different one is refused, because a contract with two original values
+    // has two running values. Over stdio that is what keeps a change order raisable against
+    // a quote that was priced on another machine; hosted, it is what keeps this endpoint from
+    // hydrating two sibling documents it would never read. What it borrows is CODE: the money
+    // and VAT arithmetic from @theluckystrike/mcp-invoice/lib (computeTotals, currencyDecimals,
+    // formatMoney, roundHalfUp), so the delta and the invoice raised from it cannot disagree
+    // by a minor unit; today() and isIsoDate() from the quotes engine; readJsonFile and its
+    // corrupt-store quarantine from the timezone engine. The name and address on the document
+    // come from the SHARED business profile (business_set on /mcp/invoice) through
+    // readSharedProfile, which travels the licence shim exactly as it does everywhere else.
+    //
+    // change_order_invoice_payload returns invoice_create and quote_create ARGUMENTS and
+    // creates neither document, so no sibling store is written from here either.
+    //
+    // One document goes out, and it is plain text: change_order_document, the approval sheet
+    // the client signs, returns inline AND is written under /out/ as a .txt, which is what
+    // publish() catches. It is Pro, exactly as over stdio, and the free tier gets the stdio
+    // refusal with the same checkout links; nothing is written on a refusal. There is no
+    // path argument on this endpoint to reduce to a name, and the build asserts that.
+    //
+    // The default 512 KB cap, and it did not have to be argued for: NO DELTA AND NO RUNNING
+    // VALUE IS STORED. A change order holds its lines and its status history, and the delta,
+    // the VAT and the running contract value are derived on every call, so the document
+    // grows with the lines actually booked and never with the questions asked about them.
+    factory: createChangeOrder as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -921,6 +955,7 @@ const TOOLS: Record<string, string[]> = {
   "petty-cash": ["float_open", "topup_record", "voucher_add", "voucher_delete", "reconcile", "replenish_request", "float_report", "license_status", "license_activate"],
   "work-order": ["work_order_create", "work_order_add_line", "work_order_status", "work_order_get", "work_order_list", "work_order_delete", "completion_report_text", "completion_report_pdf", "work_order_invoice_payload", "work_orders_report", "license_status", "license_activate"],
   "catalogue": ["sku_set", "sku_get", "sku_list", "sku_delete", "rate_set", "rate_get", "lines_resolve", "price_list_text", "price_list_pdf", "catalogue_report", "license_status", "license_activate"],
+  "change-order": ["change_order_create", "change_order_add_line", "change_order_status", "change_order_get", "change_order_list", "change_order_delete", "contract_value", "change_order_document", "change_order_invoice_payload", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -1166,6 +1201,15 @@ function indexDoc(base: string) {
         free_limits: "25 SKUs, and one price tier; lines_resolve and price_list_text are free and unlimited on every tier, because pricing a line is the one thing the invoice and quote servers come here for and a catalogue nobody can read is not a catalogue. Deleting an unused SKU is free, so the cap is one you can get back under. price tiers other than standard, price_list_pdf and catalogue_report are Pro",
         storage: `${DEFAULT_MAX_BYTES / 1024} KB of SKUs, rate cards and the usage register per token`,
         notes: "NO CURRENT PRICE IS STORED. A SKU holds its price ROWS with the day each came into force, and the price on a date is the latest valid_from at or before it, worked out on the call, because a stored current price is the copy still being quoted a month after the rise. A date before every row has no price and is refused rather than priced off the earliest row. The two payloads are in DIFFERENT SCALES on purpose, because the two servers take them differently: invoice_create takes unit_price in MAJOR units and quote_create takes unit_price_minor in MINOR units, prices are held in minor units as the only lossless form, and swapping the two payloads misprices the job by 100x. The money and VAT arithmetic is /mcp/invoice's own computeTotals, imported rather than copied, so a resolved line and the invoice raised from it cannot disagree by a minor unit. An unknown code is refused BY NAME and never priced, and a partial name matching more than one product is refused with the list rather than resolved to the first. This endpoint creates NO invoice and NO quote: lines_resolve returns arguments, and no sibling store is read or written",
+      },
+      {
+        name: "change-order", url: `${base}/mcp/change-order`, tools: TOOLS["change-order"],
+        mode: "your own change orders, against a quote or work order named by its id",
+        how: "change_order_create raises a change order against a quote or work order by its id, with the client, a one-line title, the date and, on the first change order against that reference, the original contract value in whole MINOR units, which every later one inherits; change_order_add_line records each added or removed line with its quantity and unit price, or a changed line with the old and the new quantity and price, each with a reason and a date; change_order_status walks it draft to sent to approved or rejected, or draft or sent to void, each step dated; change_order_get and change_order_list read them; contract_value states the running value of one reference; change_order_document is the approval sheet the client signs; change_order_invoice_payload hands back invoice_create and quote_create arguments for the approved delta.",
+        outputs: "JSON, plus one document: change_order_document returns the approval sheet inline AND as a .txt download link valid for one hour. change_order_invoice_payload returns the approved delta as invoice_create arguments in MAJOR units and quote_create arguments in MINOR units, and creates neither.",
+        free_limits: "5 OPEN change orders (draft and sent), counted on the pile the client has not answered rather than on the calendar, so approving, rejecting or voiding one frees its slot, and change_order_delete on a draft with no lines is free on every tier; contract_value is free and unlimited, because the running value is the question this endpoint exists for. change_order_document and change_order_invoice_payload are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of change orders per token`,
+        notes: "the original contract value is stated ONCE per reference and inherited by every later change order against it; a call that states a different figure is refused, because a contract with two original values has two running values and the customer sees whichever was typed last. NO DELTA AND NO RUNNING VALUE IS STORED: the lines and the status history decide both on every call. The running value is the original plus APPROVED deltas only; draft and sent deltas are shown as pending and never added in, and rejected and void ones count for nothing. A changed line becomes TWO items on the invoice payload, a reversal of the old quantity at the old price and the new quantity at the new price, never one net item, so both figures reproduce on a calculator; a removed line is a negative quantity at the price it was booked at. The two payloads are in DIFFERENT SCALES on purpose: invoice_create takes unit_price in MAJOR units and quote_create takes unit_price_minor in MINOR units, and swapping them misprices the delta by 100x; quote_create.ready is false whenever any quantity is not positive, because that server refuses one. Lines are added only while a change order is a draft, a draft cannot be approved unsent, and every status date must follow the last. This endpoint opens neither the quotes store nor the work-order store, creates NO invoice and NO quote, and the money arithmetic is /mcp/invoice's own computeTotals, imported rather than copied",
       },
     ],
     limits: {

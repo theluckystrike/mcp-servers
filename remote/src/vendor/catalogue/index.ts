@@ -748,8 +748,8 @@ server.registerTool("price_list_text", {
 });
 
 server.registerTool("price_list_pdf", {
-  title: "The price list as a PDF",
-  description: "Call this tool to render the A4 price list for one currency and tier and return a download link valid for one hour: every SKU with its unit, its price in force and the day that price started. Pro.",
+  title: "The price list as an HTML document (print to PDF)",
+  description: "Call this tool to render the price list for one currency and tier as an A4 HTML document laid out for print-to-PDF (this hosted endpoint has no PDF renderer) and return a download link valid for one hour: every SKU with its unit, its price in force and the day that price started. Pro.",
   inputSchema: {
     date: str("date", 10).optional().describe("The day the list is in force, YYYY-MM-DD. Default today"),
     currency: currencyArg.optional().describe("Defaults to the shared business profile's currency"),
@@ -764,15 +764,19 @@ server.registerTool("price_list_pdf", {
     const tier = normaliseTier(a.tier);
     const rows = listRows(date, currency, tier);
     if (!rows.length) throw new Error(`no SKU carries a ${currency} price at tier ${tier} on ${date}, so the price list would be blank. Nothing was written.`);
-    const resolved: ResolvedLine[] = rows.map(({ s, row }) => ({
+    const resolved: ResolvedLine[] = rows.map(({ s, row }) => {
+      const next = supersededBy(s, row);
+      return {
       kind: "sku", ref: s.sku,
-      description: `${s.sku}  ${s.name}  (per ${s.unit}, from ${row.valid_from})`,
+      description: `${s.sku}  ${s.name}  (per ${s.unit}, from ${row.valid_from}` +
+        (next ? `; ${money(next.amount_minor, currency)} from ${next.valid_from}` : "") + ")",
       unit: s.unit, quantity: 1,
       unit_price_minor: row.amount_minor,
       tax_rate: s.vat_rate ?? 0,
       from: { currency: row.currency, tier: row.tier, valid_from: row.valid_from },
       value_minor: row.amount_minor,
-    }));
+      };
+    });
     const totals = resolutionTotals(resolved, currency);
     const cards = getRates();
     const name = `${expandPath(a.out_path ?? `price-list-${currency}-${tier}-${date}`)}.html`;
@@ -781,7 +785,7 @@ server.registerTool("price_list_pdf", {
       title: "PRICE LIST",
       number: `${currency} ${tier}`,
       reference: `in force ${date}`,
-      party_label: "ISSUED BY",
+      party_label: "",
       party: { name: biz.name, address: biz.address, email: biz.email, vat_id: biz.vat_id },
       meta: [
         ["In force", date],
@@ -805,13 +809,17 @@ server.registerTool("price_list_pdf", {
         }),
         "Every quantity above is one, so the figures below are the sum of one of each line. This is a price list, not a quotation.",
       ],
-      notes: "A price is the row in force on the date shown. Prices exclude VAT unless a rate is printed against the line.",
+      notes: "A price is the row in force on the date shown; a later price already booked is printed after it in the line. Prices exclude VAT unless a rate is printed against the line.",
       product: "mcp-catalogue",
     }, biz, name, { branded: !gate.isPro(), logo: gate.isPro() });
     return json({
       download: out,
       document: "HTML price list, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",
       date, currency, tier, lines: rows.length,
+      booked_later: rows.flatMap(({ s, row }) => {
+        const next = supersededBy(s, row);
+        return next ? [{ sku: s.sku, price: money(next.amount_minor, currency), from: next.valid_from }] : [];
+      }),
       sum_of_one_of_each: money(totals.net_minor, currency),
       note: "Every line is a quantity of one, so the total on the page is the sum of one of each and is labelled as such. A price list has no total of its own.",
       notes: businessMissing() ? [`No business profile yet, so the list is headed "${PLACEHOLDER_ISSUER}". Run business_set in the invoice server.`] : undefined,
