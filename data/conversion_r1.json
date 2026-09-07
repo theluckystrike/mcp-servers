@@ -1,0 +1,207 @@
+{
+  "generated_at": "2026-09-07T01:15:00Z",
+  "agent": "G (conversion audit), loop 29",
+  "owns": ["docs/CONVERSION_R1.md", "data/conversion_r1.json"],
+  "verdict": "The funnel has never been meaningfully tested by humans. 229 of 294 recorded upgrade clicks (77.9%) carry a src that no live page emits and were produced by browser-UA automation, including this loop's own agents. Only 3 clicks (1.0%) came from an in-product free-tier cap message. Zero payments is the arithmetic of an empty room, not a conversion defect. The catalogued leaks are real and must be fixed before traffic arrives.",
+  "instrument": {
+    "endpoint": "https://mcp.zovo.one/stats/clicks",
+    "read_at": "2026-09-07T01:06:24Z",
+    "total_clicks": 293,
+    "clicks_7d": 293,
+    "note": "total_clicks == clicks_7d: every click ever recorded falls inside the instrument's own 7-day window.",
+    "kpi_json_snapshot": {"generated_at": "2026-09-06T08:21:51Z", "clicks_7d": 152},
+    "delta": "+141 clicks in ~17h on a site with 0 Google impressions and 22 unique human repo visitors in 14 days",
+    "contamination_proof": {
+      "method": "controlled increment test",
+      "command": "curl -sS -A '<Chrome 140 UA from docs/LOOP29_BRIEF.md:18>' https://mcp.zovo.one/buy/time-tracker",
+      "http_status": 303,
+      "redirected_to": "checkout.stripe.com (live Session created)",
+      "before": {"time-tracker.unknown": 5, "total_clicks": 293},
+      "after": {"time-tracker.unknown": 6, "total_clicks": 294},
+      "root_cause": "billing/src/index.js:845 scripted-UA regex /^(curl|python|node|wget|go-http|undici|axios|httpie)/i is start-anchored; a spoofed browser UA passes it and reaches recordClick at billing/src/index.js:876"
+    }
+  },
+  "click_taxonomy": [
+    {"category": "A", "src_pattern": "<product>.unknown", "clicks": 194, "share_pct": 66.0, "emitted_by_live_page": false, "interpretation": "/buy/<id> fetched with no ?src=; fallback at billing/src/index.js:875. Zero live /buy/ links omit src."},
+    {"category": "B", "src_pattern": "store.home", "clicks": 31, "share_pct": 10.5, "emitted_by_live_page": false, "interpretation": "Live home emits only store.home.table.<id>. 31 == count of PRODUCTS. One sweep."},
+    {"category": "C", "src_pattern": "audit", "clicks": 4, "share_pct": 1.4, "emitted_by_live_page": false, "interpretation": "Literal internal audit tag."},
+    {"category": "D1", "src_pattern": "store.home.table.*", "clicks": 23, "share_pct": 7.8, "emitted_by_live_page": true, "interpretation": "Home table row; provenance indistinguishable from a crawler."},
+    {"category": "D2", "src_pattern": "store.s.*", "clicks": 7, "share_pct": 2.4, "emitted_by_live_page": true, "interpretation": "Product page."},
+    {"category": "D3", "src_pattern": "store.setup.*", "clicks": 15, "share_pct": 5.1, "emitted_by_live_page": true, "interpretation": "Setup page."},
+    {"category": "D4", "src_pattern": "store.guide.*", "clicks": 14, "share_pct": 4.8, "emitted_by_live_page": true, "interpretation": "Guide page."},
+    {"category": "D5", "src_pattern": "store.pending.*", "clicks": 3, "share_pct": 1.0, "emitted_by_live_page": true, "interpretation": "Bundle rescue link ON the 503 page. The 503 recovery path works."},
+    {"category": "E", "src_pattern": "<product>.<tool>", "clicks": 3, "share_pct": 1.0, "emitted_by_live_page": false, "interpretation": "In-product free-tier cap messages: per-diem.perdiem_report 1, time-tracker.full_history 1, time-tracker.full_history.bundle 1. The only clicks necessarily from a person running the software."}
+  ],
+  "zero_click_live_surfaces": ["store.bundle", "store.compare.* (all 19 compare pages)", "store.setup.claude-desktop", "store.home.table.barcode", "store.home.table.cash-book", "store.home.table.catalogue", "store.home.table.change-order", "store.home.table.clauses", "store.home.table.pdf", "store.home.table.per-diem", "store.home.table.petty-cash", "store.home.table.price-tracker", "store.home.table.quotes", "store.home.table.resume", "store.home.table.statement-of-account", "store.home.table.timezone", "store.home.table.work-order", "store.s.billing-docs", "store.s.catalogue", "store.s.invoice", "store.s.pdf", "store.s.work-order"],
+  "leaks": [
+    {
+      "rank": 1,
+      "leak": "Click instrument counts its own operators and creates a live Stripe Session for each",
+      "evidence": "billing/src/index.js:845 (start-anchored scripted-UA regex); :876 (recordClick after the guard); :875 (${id}.unknown fallback). Reproduced: 5->6, 293->294.",
+      "clicks_affected": 229,
+      "share_of_294_pct": 77.9,
+      "measurable": true,
+      "fixable": "agent",
+      "owner": "agent A (billing worker)"
+    },
+    {
+      "rank": 2,
+      "leak": "The advertised install command does not exist on the npm registry",
+      "evidence": "npm view @theluckystrike/mcp-invoice -> E404; same for -spreadsheet, -time-tracker, -pdf, -docx. 35 of 39 sampled sitemap pages (89.7%) print a @theluckystrike/mcp- package name.",
+      "clicks_affected": null,
+      "share_of_294_pct": null,
+      "measurable": false,
+      "unmeasured_reason": "affects every visitor who tries the headline install path; no instrument records install attempts",
+      "fixable": "operator",
+      "owner": "operator (npm publish needs interactive browser login); agent can demote the path today"
+    },
+    {
+      "rank": 3,
+      "leak": "Home and /bundle print the dead npx command with no 'npm publish is pending' disclaimer, while every /s/ and /setup/ page does disclose it",
+      "evidence": "grep -c 'npm publish': home.html 0, bundle.html 0, s_invoice.html 2, all 24 sampled /setup/ pages 1.",
+      "clicks_affected": 23,
+      "share_of_294_pct": 7.8,
+      "measurable": true,
+      "fixable": "agent",
+      "owner": "agent A"
+    },
+    {
+      "rank": 4,
+      "leak": "Home's .mcpb link, the only genuinely working install path, points at release v0.1.1 which contains 4 of 30 bundles",
+      "evidence": "billing/src/index.js:302 hardcodes ${REPO}/releases/tag/v0.1.1; verified live in home.html. gh api .../releases/tags/v0.1.1 -> 4 assets; .../releases/latest -> v0.20.0, 31 assets.",
+      "clicks_affected": null,
+      "share_of_294_pct": null,
+      "measurable": false,
+      "unmeasured_reason": "outbound link clicks to github.com are not instrumented",
+      "fixable": "agent",
+      "owner": "agent A (one-line change to /releases/latest)"
+    },
+    {
+      "rank": 5,
+      "leak": "33 live links point at a dead buy route, and the leak is invisible to the instrument",
+      "evidence": "/buy/work-order, /buy/catalogue, /buy/change-order -> 503 x-mcp-buy: price-pending-human; /buy/office-suite -> 404. Link count from sitemap: 3 home + 3 /s/ + 27 /setup/ (21 pending + 6 office-suite).",
+      "clicks_affected": 0,
+      "share_of_294_pct": 0.0,
+      "measurable": false,
+      "unmeasured_reason": "both the 404 branch (billing/src/index.js:848) and the PENDING_HUMAN branch (:849-856) return before recordClick, so a click on a dead route is never counted",
+      "fixable": "agent",
+      "owner": "agent A (already assigned)"
+    },
+    {
+      "rank": 6,
+      "leak": "office-suite has 6 setup pages and no PRODUCTS record, so its buy link is a bare 404 with no bundle rescue",
+      "evidence": "grep -rn office-suite billing/src/ -> no PRODUCTS entry; /setup/claude-desktop/office-suite carries href=\"/buy/office-suite?src=store.setup.claude-desktop\"; that URL returns 404 'Unknown product'.",
+      "clicks_affected": 0,
+      "share_of_294_pct": 0.0,
+      "measurable": false,
+      "unmeasured_reason": "see rank 5",
+      "fixable": "agent",
+      "owner": "agent A"
+    },
+    {
+      "rank": 7,
+      "leak": "A paying customer's first instruction on /success is the broken npx install command",
+      "evidence": "billing/src/index.js:588-606 (installSnippet) called at :632 inside successPage.",
+      "clicks_affected": 0,
+      "share_of_294_pct": 0.0,
+      "measurable": true,
+      "note": "0 buyers exist; pure refund risk at volume",
+      "fixable": "agent",
+      "owner": "agent A"
+    },
+    {
+      "rank": 8,
+      "leak": "Stale checkable claims on the highest-click page",
+      "evidence": "grep -oi seventeen home.html -> 4 occurrences (there are 30 servers), including the JSON-LD SoftwareApplication.description; 'Measured, not claimed' section claims '399 of 399 automated checks' while git log --oneline -1 records 'validate 951/951'.",
+      "clicks_affected": 54,
+      "share_of_294_pct": 18.4,
+      "measurable": true,
+      "fixable": "agent",
+      "owner": "agent A"
+    },
+    {
+      "rank": 9,
+      "leak": "Refund terms appear on 2 of 6 page types",
+      "evidence": "grep -ci refund: home.html 2, guides.html 2, bundle.html 0, s_invoice.html 0, compare.html 0, setup page 0. Source: billing/src/index.js:305, billing/src/content.js:405,423.",
+      "clicks_affected": 7,
+      "share_of_294_pct": 2.4,
+      "measurable": true,
+      "fixable": "agent",
+      "owner": "agent A"
+    },
+    {
+      "rank": 10,
+      "leak": "No key is emailed; the license key exists only on the /success page",
+      "evidence": "billing/src/index.js:608-631; pre-purchase warning does exist in checkoutCustomText after_submit at :105-108; recovery via /recover?session_id=.",
+      "clicks_affected": 0,
+      "share_of_294_pct": 0.0,
+      "measurable": true,
+      "note": "adequately disclosed before purchase; real support cost at volume",
+      "fixable": "operator",
+      "owner": "operator (needs an email sender)"
+    }
+  ],
+  "free_tier_assessment": {
+    "paywall_enforced": true,
+    "evidence": "servers/invoice/src/index.ts:23 FREE_INVOICES_PER_MONTH = 3; :526-531 refuses the fourth. packages/mcp-license/src/index.ts:151-208 is a real offline-verified gate.",
+    "servers_whose_free_tier_says_unlimited": 12,
+    "list": ["time-tracker", "price-tracker", "expense-tracker", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "catalogue"],
+    "finding": "The free tier is not too generous to be worth paying past; it is too generous to produce a purchase signal inside a trial. 3 invoices/month, 5 statements/month and 5 deposits/month bind in week three, not in the first session. Measured consequence: 3 in-product cap clicks in the instrument's lifetime.",
+    "by_design_examples": ["billing/src/index.js:32 cash-book trial balance 'unlimited on every tier'", "billing/src/index.js:33 amortization schedule 'unlimited on every tier'"]
+  },
+  "top_three_fixes": [
+    {
+      "rank": 1,
+      "title": "Make the click counter countable",
+      "owner": "agent A",
+      "file": "billing/src/index.js",
+      "steps": [
+        "Replace the start-anchored scripted test at :845 with one that also requires accept: text/html and sec-fetch-mode: navigate, which every real browser navigation sends and no curl -A sweep sends by default.",
+        "Never count a request whose resolved src is the ${id}.unknown fallback at :875; bucket it as unattributed:<id> outside total_clicks and clicks_7d.",
+        "Move recordClick above the 404 and PENDING_HUMAN returns at :848-856 with a distinct dead:<id> src so the 503/404 leak becomes measurable.",
+        "Reset the KV click: prefix once, and restate the KPI 'how' field in data/kpi.json to say what is then true."
+      ]
+    },
+    {
+      "rank": 2,
+      "title": "Stop printing an install command that does not exist",
+      "owner": "agent A",
+      "file": "billing/src/index.js",
+      "steps": [
+        "On home and /bundle, reorder 'Three ways to start' so connect-by-URL is first and npx is last.",
+        "Add to the npx bullet the sentence the /s/ pages already carry: npm publish is pending; use the .mcpb bundle or connect by URL until it lands.",
+        "Change :302 from ${REPO}/releases/tag/v0.1.1 to ${REPO}/releases/latest.",
+        "In installSnippet() at :588-606, put /mcp/connect and the .mcpb download above the npx block."
+      ],
+      "verified_working_path": "GET /mcp/connect -> 200, mints token; POST /mcp/invoice/t/<token> answered initialize (protocolVersion 2025-06-18, serverInfo mcp-invoice 0.20.0) and tools/list correctly during this audit"
+    },
+    {
+      "rank": 3,
+      "title": "Make the free tier produce a purchase signal in the first session",
+      "owner": "owner of the server packages (not agent A)",
+      "steps": [
+        "Emit the tagged upgrade URL one step BEFORE the cap binds, not only at refusal: 'invoice 2 of 3 this month'.",
+        "Fix packages/mcp-license/src/index.ts:154 - LicenseGate.status() returns upgradeUrl without a src, so every click from license_status is filed as .unknown and mixed into crawler traffic. Give it ?src=<product>.license_status."
+      ]
+    }
+  ],
+  "unmeasured": [
+    {"item": "How many of the 294 clicks are human", "why": "The worker stores no IP, no UA and no timestamp beyond the day bucket alongside a click. Bounded above by 65 (the live-surface srcs). Not estimated."},
+    {"item": "How many clicks hit the 503 or 404 buy routes", "why": "Both branches return before recordClick (billing/src/index.js:848, :849-856). 33 dead links counted; zero clicks countable."},
+    {"item": "What the live Stripe hosted checkout page shows", "why": "checkout.stripe.com served a 564,105-byte JS shell with no product string, merchant name or price in the initial HTML. checkoutDescription() (billing/src/index.js:110-119) only feeds a stripe-sync step its own comment says is run by hand with a live key, and docs/LOOP29_BRIEF.md:21-23 records that the available key lacks product_write. Whether the live Stripe Products carry the right name and description is unverified by anyone."},
+    {"item": "Whether checkout actually completes", "why": "No payment has been attempted. 27 of 31 routes reaching checkout.stripe.com proves a Session is created and nothing about the pay button, card acceptance or the webhook. /success and /recover have never run against a real payment."},
+    {"item": "Whether any of the 5,105 bundle downloads is a human install", "why": "Delegated to docs/AUDIENCE_REALITY_R1.md. Spot check of v0.19.0 agrees: 30 assets, mean 6.4, stdev 1.62, range 4-13; invoice.mcpb at 4 ties office-suite.mcpb, which is not a purchasable product. Flat where human demand is a power law."},
+    {"item": "Per-click timing, referrer or funnel joins", "why": "KV schema is click:<src>:<yyyy-mm-dd> and click:<src>:total (billing/src/index.js:508-509). No session, no referrer, no step data, so click->session->payment cannot be joined for any visitor."}
+  ],
+  "corroborating_external_signals": {
+    "gsc_pages_with_any_impression_7d": 0,
+    "gsc_queries_with_any_impression_7d": 0,
+    "gsc_window": ["2026-08-28", "2026-09-03"],
+    "gsc_source": "data/intel_r6.json impressions_clicks_7d",
+    "gsc_reported_indexed": 0,
+    "sitemap_urls": 312,
+    "human_repo_unique_visitors_14d": 22,
+    "human_repo_source": "docs/AUDIENCE_REALITY_R1.md (orchestrator)"
+  },
+  "evidence_dir": "/private/tmp/claude-501/-Users-mike/791603f5-7436-4058-a8e8-9cdc5fafea5f/scratchpad/funnel/"
+}
