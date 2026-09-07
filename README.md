@@ -1,53 +1,73 @@
 # MCP servers by theluckystrike
 
+<!-- gen:badge -->
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![MCP Registry](https://img.shields.io/badge/MCP%20registry-listed-brightgreen)
-![Release](https://img.shields.io/badge/release-v0.3.2-informational)
+![Release](https://img.shields.io/badge/release-v0.21.0-informational)
+<!-- /gen:badge -->
 
 Practical Model Context Protocol servers for people who work inside Claude, Cursor and other MCP clients.
 Every server runs locally over stdio, keeps all data on your machine, and has a genuinely useful free tier.
-Pro unlocks the limits for a one-time payment: $19 per server or $39 for the bundle, lifetime. Eight of the
-nine products are also reachable as a hosted remote endpoint with no install at all (see below).
+Pro unlocks the limits for a one-time payment: $19 per server or $39 for the bundle, lifetime.
 
-| Server | Demo | What it does | Install |
+<!-- gen:counts -->
+31 servers plus the office-suite aggregator, 30 of them also reachable as a hosted endpoint with no install.
+<!-- /gen:counts -->
+
+<!-- gen:install -->
+Install any server by downloading its `.mcpb` bundle from the
+[latest release](https://github.com/theluckystrike/mcp-servers/releases/latest) and opening it in Claude Desktop. That is one double-click, no terminal.
+
+The npm packages are **not published yet**, so `npx -y @theluckystrike/mcp-<name>` returns 404. Do not use it, and
+do not recommend it. The two paths that work today are the `.mcpb` bundle above and the hosted endpoints at
+`https://mcp.zovo.one/mcp/<server>`, which need no install at all.
+<!-- /gen:install -->
+
+<!-- gen:table -->
+| Server | Demo | What it does | One-click bundle |
 |---|---|---|---|
-| [mcp-time-tracker](servers/time-tracker/README.md) | ![time-tracker](assets/demo-time-tracker.gif) | Track billable time from chat: timers, entries, reports, CSV, invoice summaries | `npx -y @theluckystrike/mcp-time-tracker`* |
-| [mcp-price-tracker](servers/price-tracker/README.md) | ![price-tracker](assets/demo-price-tracker.gif) | Check and watch product prices on ordinary shop pages, history, target alerts | `npx -y @theluckystrike/mcp-price-tracker`* |
-| [mcp-spreadsheet](servers/spreadsheet/README.md) | ![spreadsheet](assets/demo-spreadsheet.gif) | Read, query, add columns to and convert xlsx/csv files without corrupting them | `npx -y @theluckystrike/mcp-spreadsheet`* |
-| [mcp-invoice](servers/invoice/README.md) | ![invoice](assets/demo-invoice.gif) | Create numbered invoices with tax lines and render professional PDFs | `npx -y @theluckystrike/mcp-invoice`* |
-| [mcp-expense-tracker](servers/expense-tracker/README.md) | ![expense-tracker](assets/demo-expense-tracker.gif) | Log receipts and mileage in chat, split the VAT, rebill onto an invoice | `npx -y @theluckystrike/mcp-expense-tracker`* |
-| [mcp-currency](servers/currency/README.md) | ![currency](assets/demo-currency.gif) | Real ECB exchange rates in chat: convert, compare pairs, rate history, cached offline | `npx -y @theluckystrike/mcp-currency`* |
-| [mcp-docx](servers/docx/README.md) | ![docx](assets/demo-docx.gif) | Write real Word documents from chat: proposals, contracts, letters and templates | `npx -y @theluckystrike/mcp-docx`* |
-| [mcp-timezone](servers/timezone/README.md) | ![timezone](assets/demo-timezone.gif) | Convert times across cities, find meeting slots everyone can make, write the invite | `npx -y @theluckystrike/mcp-timezone`* |
-| [mcp-resume](servers/resume/README.md) | ![resume](assets/demo-resume.gif) | Tailor a resume to a posting and write a cover letter that cannot state a fact you did not give it | `npx -y @theluckystrike/mcp-resume`* |
-| [mcp-recurring](servers/recurring/README.md) | ![recurring](assets/demo-recurring.gif) | Define a repeating invoice once, generate the ones actually due, idempotent by period | `npx -y @theluckystrike/mcp-recurring`* |
-| [mcp-clauses](servers/clauses/README.md) | ![clauses](assets/demo-clauses.gif) | Assemble a contract from a searchable clause library, variables filled or flagged | `npx -y @theluckystrike/mcp-clauses`* |
-| [mcp-pdf](servers/pdf/README.md) | ![pdf](assets/demo-pdf.gif) | Merge, split, stamp and read PDFs from chat: page ranges, watermarks, text extraction | `npx -y @theluckystrike/mcp-pdf`* |
-| [mcp-calendar](servers/calendar/README.md) | ![calendar](assets/demo-calendar.gif) | Import a calendar export, list events with recurring series expanded, free/busy, bill a meeting | `npx -y @theluckystrike/mcp-calendar`* |
-| [mcp-kanban](servers/kanban/README.md) | ![kanban](assets/demo-kanban.gif) | A local task board per project: columns, due dates, estimates, timer handoff, weekly review | `npx -y @theluckystrike/mcp-kanban`* |
-| [mcp-image](servers/image/README.md) | ![image](assets/demo-image.gif) | Resize, compress, convert and thumbnail images from chat, with a real before/after byte count | `npx -y @theluckystrike/mcp-image`* |
-| [mcp-bank-statement](servers/bank-statement/README.md) | ![bank-statement](assets/demo-bank-statement.gif) | Import a bank CSV, dedupe on re-import, categorise, summarise per currency, find subscriptions | `npx -y @theluckystrike/mcp-bank-statement`* |
-| [mcp-quotes](servers/quotes/README.md) | ![quotes](assets/demo-quotes.gif) | Send a priced, VAT-correct quote from chat, then turn the yes into an invoice with one call | `npx -y @theluckystrike/mcp-quotes`* |
-| [mcp-barcode](servers/barcode/README.md) | ![barcode](assets/demo-barcode.gif) | QR codes, WiFi and vCard codes, SEPA payment codes and EAN/UPC/Code 128 barcodes, drawn locally | `npx -y @theluckystrike/mcp-barcode`* |
-| [mcp-zip](servers/zip/README.md) | ![zip](assets/demo-zip.gif) | Pack a folder with a glob, look inside an archive somebody sent you, unpack it with bomb, traversal and symlink guards | `npx -y @theluckystrike/mcp-zip`* |
-| [mcp-billing-docs](servers/billing-docs/README.md) | ![billing-docs](assets/demo-billing-docs.gif) | Credit notes and purchase orders on your invoices, with the VAT split across the rates the invoice used and no credit larger than what it billed | `npx -y @theluckystrike/mcp-billing-docs`* |
-| [mcp-deposits](servers/deposits/README.md) | ![deposits](assets/demo-deposits.gif) | Security and retainer deposits held per client, applied to an invoice as a payment that adds to what was already paid rather than replacing it | `npx -y @theluckystrike/mcp-deposits`* |
-| [mcp-per-diem](servers/per-diem/README.md) | ![per-diem](assets/demo-per-diem.gif) | Statutory travel allowances on the Polish delegation regulation, the HMRC benchmark scale rates and the US GSA CONUS standard, with the partial-day ladder and every meal deduction shown | `npx -y @theluckystrike/mcp-per-diem`* |
-| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that proxies all eight servers above behind a single config line, 76 tools | `npx -y @theluckystrike/mcp-office-suite`* |
+| [mcp-amortization](servers/amortization/README.md) | ![amortization](assets/demo-amortization.gif) | Loan and lease schedules from the terms of the agreement, to the minor unit. | `amortization.mcpb` |
+| [mcp-asset-register](servers/asset-register/README.md) | ![asset-register](assets/demo-asset-register.gif) | A fixed asset register that depreciates on the rates the tax authorities actually publish, with the schedule, the journal and the gain on sale. | `asset-register.mcpb` |
+| [mcp-bank-statement](servers/bank-statement/README.md) | ![bank-statement](assets/demo-bank-statement.gif) | Bank CSV exports categorised, summarised and reconciled with expenses. | `bank-statement.mcpb` |
+| [mcp-barcode](servers/barcode/README.md) | ![barcode](assets/demo-barcode.gif) | QR codes and barcodes drawn on your machine, with no upload and no network call. | `barcode.mcpb` |
+| [mcp-billing-docs](servers/billing-docs/README.md) | ![billing-docs](assets/demo-billing-docs.gif) | Credit notes and purchase orders, on the same engine as your invoices. | `billing-docs.mcpb` |
+| [mcp-calendar](servers/calendar/README.md) | ![calendar](assets/demo-calendar.gif) | Read .ics calendars: events, free and busy, conflicts, exports. | `calendar.mcpb` |
+| [mcp-cash-book](servers/cash-book/README.md) | ![cash-book](assets/demo-cash-book.gif) | One double-entry ledger derived from the books you already keep, proved to the minor unit. | `cash-book.mcpb` |
+| [mcp-catalogue](servers/catalogue/README.md) | ![catalogue](assets/demo-catalogue.gif) | One price list and one rate card, kept where the invoice and the quote can both read them. | `catalogue.mcpb` |
+| [mcp-change-order](servers/change-order/README.md) | ![change-order](assets/demo-change-order.gif) | Change orders against a quote or a work order, with the running contract value derived from what the client approved. | `change-order.mcpb` |
+| [mcp-clauses](servers/clauses/README.md) | ![clauses](assets/demo-clauses.gif) | Reusable contract clauses, searched and assembled into Word. | `clauses.mcpb` |
+| [mcp-currency](servers/currency/README.md) | ![currency](assets/demo-currency.gif) | ECB reference rates: convert, history, and fx_rates for rebilling. | `currency.mcpb` |
+| [mcp-delivery-schedule](servers/delivery-schedule/README.md) | ![delivery-schedule](assets/demo-delivery-schedule.gif) | Dated deliverables against a quote or a work order, and what is late as at any date you name. | `delivery-schedule.mcpb` |
+| [mcp-deposits](servers/deposits/README.md) | ![deposits](assets/demo-deposits.gif) | Security and retainer deposits, held per client, on the same engine as your invoices. | `deposits.mcpb` |
+| [mcp-docx](servers/docx/README.md) | ![docx](assets/demo-docx.gif) | Real Word documents from chat: proposals, contracts, quotes. | `docx.mcpb` |
+| [mcp-expense-tracker](servers/expense-tracker/README.md) | ![expense-tracker](assets/demo-expense-tracker.gif) | Receipts, mileage and expenses that turn into invoice lines. | `expense-tracker.mcpb` |
+| [mcp-image](servers/image/README.md) | ![image](assets/demo-image.gif) | Resize, convert, compress and watermark images, pure JavaScript. | `image.mcpb` |
+| [mcp-invoice](servers/invoice/README.md) | ![invoice](assets/demo-invoice.gif) | Numbered invoices with tax lines, rendered to a professional PDF. | `invoice.mcpb` |
+| [mcp-kanban](servers/kanban/README.md) | ![kanban](assets/demo-kanban.gif) | A task board per project that hands off to the time tracker. | `kanban.mcpb` |
+| [mcp-pdf](servers/pdf/README.md) | ![pdf](assets/demo-pdf.gif) | Merge, split, stamp and read PDFs, pure JavaScript. | `pdf.mcpb` |
+| [mcp-per-diem](servers/per-diem/README.md) | ![per-diem](assets/demo-per-diem.gif) | Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them. | `per-diem.mcpb` |
+| [mcp-petty-cash](servers/petty-cash/README.md) | ![petty-cash](assets/demo-petty-cash.gif) | A petty cash float on the imprest system, reconciled to the minor unit. | `petty-cash.mcpb` |
+| [mcp-price-tracker](servers/price-tracker/README.md) | ![price-tracker](assets/demo-price-tracker.gif) | Check and watch product prices on ordinary shop pages. | `price-tracker.mcpb` |
+| [mcp-quotes](servers/quotes/README.md) | ![quotes](assets/demo-quotes.gif) | Priced, VAT-correct quotes from chat, and the yes turns into an invoice. | `quotes.mcpb` |
+| [mcp-recurring](servers/recurring/README.md) | ![recurring](assets/demo-recurring.gif) | Scheduled invoices, generated into your invoice book with PDFs. | `recurring.mcpb` |
+| [mcp-resume](servers/resume/README.md) | ![resume](assets/demo-resume.gif) | Resumes and cover letters as Word files from one profile, never invented. | `resume.mcpb` |
+| [mcp-spreadsheet](servers/spreadsheet/README.md) | ![spreadsheet](assets/demo-spreadsheet.gif) | Read, query, edit and convert xlsx and csv files safely. | `spreadsheet.mcpb` |
+| [mcp-statement-of-account](servers/statement-of-account/README.md) | ![statement-of-account](assets/demo-statement-of-account.gif) | The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted. | `statement-of-account.mcpb` |
+| [mcp-time-tracker](servers/time-tracker/README.md) | ![time-tracker](assets/demo-time-tracker.gif) | Track billable time without leaving the chat. | `time-tracker.mcpb` |
+| [mcp-timezone](servers/timezone/README.md) | ![timezone](assets/demo-timezone.gif) | Find meeting slots inside everyone's working hours. | `timezone.mcpb` |
+| [mcp-work-order](servers/work-order/README.md) | ![work-order](assets/demo-work-order.gif) | Job orders for trades and field work, priced the way the invoice will be. | `work-order.mcpb` |
+| [mcp-zip](servers/zip/README.md) | ![zip](assets/demo-zip.gif) | Make a zip, look inside one, and unpack one, entirely on your machine. | `zip.mcpb` |
+| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that exposes every tool of all 31 servers, 292 of them. | `office-suite.mcpb` |
+<!-- /gen:table -->
 
-\* npm publish is still pending for all nine packages (see npm status below). Until then, the fastest path is the
-`.mcpb` one-click bundle from the
-[latest release](https://github.com/theluckystrike/mcp-servers/releases/latest) -- double-click it in Claude
-Desktop and it installs, no terminal needed. Or clone and build:
-`git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers`, `npm install`,
-`npm run build -w packages/mcp-license -w servers/<name>`. Each server's README has the full 60-second install
-with all three client configs.
+Or clone and build: `git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers`,
+`npm install`, `npm run build`. Each server's README has the full 60-second install with every client config.
 
 Buy Pro: https://mcp.zovo.one  (keys verify offline with Ed25519; no phone-home).
 
 ## Hosted endpoints (no install)
 
-All eight servers are also live behind streamable HTTP, for clients that connect to a URL instead of
+Thirty of the servers are also live behind streamable HTTP, for clients that connect to a URL instead of
 spawning a local process:
 
 - Base URL: `https://mcp.zovo.one/mcp` -- `GET` returns an index of the endpoints; each server is
@@ -73,7 +93,7 @@ spawning a local process:
 
 ## Registry names
 
-The MCP registry listing for all nine of these servers uses word-rich names instead of the plain directory
+The MCP registry listing for these servers uses word-rich names instead of the plain directory
 name, for example `time-tracker-timesheet-billable-hours` instead of `time-tracker`, or
 `office-suite-time-invoice-expense-excel-price` instead of `office-suite`: every extra token is a word the
 server's own tool descriptions already use, and registry search matches on whole words, so a name built only
@@ -95,7 +115,7 @@ each server's `server.mcpb.json`:
 The old short names are deprecated on the registry; npm package names, directory names and checkout URLs are
 unchanged.
 
-## Why these nine
+## Why these servers
 
 The median MCP server on the public registry gets installed and never called again. Looking at what actually gets
 used, two things separate the servers people keep: a config snippet that works on the first try, and a visible
@@ -106,7 +126,7 @@ tab (tracking time, watching a price, editing a sheet, cutting an invoice, loggi
 currency, drafting a Word document, finding a meeting slot across time zones) with one that runs
 entirely on-device: no account, no telemetry, no server-side data at rest (the hosted endpoints are the one
 exception, and they say plainly what they keep and for how long). office-suite exists because the most-used
-server in this category, measured across the registry, is an aggregator: one install beats eight.
+server in this category, measured across the registry, is an aggregator: one install beats thirty-one.
 
 ## Guides
 
@@ -121,15 +141,15 @@ server in this category, measured across the registry, is an aggregator: one ins
 - [Meeting slots across time zones](https://mcp.zovo.one/guides/meeting-slots-across-time-zones)
 
 Also live: [54 client-by-server setup pages](https://mcp.zovo.one/setup) (six clients: Claude Desktop, Claude
-Code, Cursor, VS Code, Windsurf, Cline, times nine servers) and [8 head-to-head compare pages](https://mcp.zovo.one/compare)
+Code, Cursor, VS Code, Windsurf, Cline, times every server) and [8 head-to-head compare pages](https://mcp.zovo.one/compare)
 against named competitor MCP servers, sourced from each competitor's own README, GitHub metadata or npm/registry
 record.
 
 ## Validation
 
-Before anything ships: 321 unit tests across the nine servers and the shared license package (protocol smoke
+Before anything ships: 1,507 unit tests across the servers and the shared license package (protocol smoke
 tests over real stdio, plus adversarial cases: bad input, oversized strings, path traversal, concurrent
-writers, zero-byte files), a 184-check live validation database run against the built servers and the hosted
+writers, zero-byte files), a 951-check live validation database run against the built servers and the hosted
 worker (`data/validation.json`, run 50), seven rounds of user-value testing through a real MCP client (one
 prompt per conversation, not a unit test; round 7 is cross-server, chaining calls across the whole
 office-suite bundle), and four rounds of independent Codex model review of the core build plus two more of the
@@ -142,7 +162,8 @@ remote hosted worker. Details: [docs/AUDIT.md](docs/AUDIT.md), [docs/CURRENCY_AU
 
 ## npm status
 
-None of the nine packages are on npm yet (the account's publish token is dead; see
+None of the packages are on npm yet. The account has never published, and the remaining step needs a person to run
+`npm login --auth-type=web` (see
 [docs/NPM_AUTH_RESULT.md](docs/NPM_AUTH_RESULT.md)). The working install paths today are the `.mcpb` one-click
 bundle from the [latest release](https://github.com/theluckystrike/mcp-servers/releases/latest), a clone and
 build from source, or the hosted endpoints above -- no local install at all. The `npx` lines in this README and

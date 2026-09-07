@@ -16,6 +16,7 @@
 // the network, and imports the billing and setup modules only to read their exported
 // tables, so it cannot itself be the thing that breaks a release.
 
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -397,6 +398,15 @@ for (const w of WAIVERS) for (const s of w.servers) waived.set(`${s}:${w.check}`
 /** Checks that are about the estate, not about one server. */
 const globals = [];
 const global_ = (label, fn) => globals.push({ label, fn });
+
+global_("README generated sections are current", () => {
+  // The README claimed nine servers, 76 tools, v0.3.2 and 321 unit tests while the estate
+  // was 31 servers, 292 tools, v0.21.0 and 1,507 tests. Its volatile parts are generated
+  // now; this gate fails the day they drift again.
+  
+  try { execFileSync(process.execPath, [join(ROOT, "scripts/build-readme.mjs"), "--check"], { encoding: "utf8" }); return true; }
+  catch (e) { return String(e.stdout || e.message).trim().split("\n")[0] || "README has drifted; run node scripts/build-readme.mjs"; }
+});
 
 global_("PRODUCTS.bundle names the right count and saving", () => {
   const b = PRODUCTS.bundle;
