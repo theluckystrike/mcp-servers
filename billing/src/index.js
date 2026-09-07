@@ -62,6 +62,11 @@ export const SINGLE_PRODUCT_IDS = Object.keys(PRODUCTS).filter((id) => id !== "b
 export const PRODUCT_ALIASES = { "office-suite": "bundle" };
 
 /** Ed25519 public key for MCP registry domain verification (see /.well-known/mcp-registry-auth). */
+/** Tools office-suite exposes, read from the running v0.21.0 bundle over stdio on 2026-09-07
+ * (tools/list returned 292 distinct names across 31 children). The README claimed four
+ * children for weeks; this constant exists so the number has one home. */
+const OFFICE_SUITE_TOOLS = 292;
+
 const MCP_REGISTRY_AUTH = "v=MCPv1; k=ed25519; p=KY+O0ut45badUE3n6TtwlXj09gkKnTd+/pkY56Y0A9Q=";
 
 /** Pure: the PRODUCTS id a /buy/<id> path sells, or "" when nothing sells it. */
@@ -1030,14 +1035,24 @@ ${faqHtml}
       return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nDisallow: /bound\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });
     }
     if (path === "/llms.txt") {
-      const lines = Object.entries(PAGES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline} Install: npx -y @theluckystrike/mcp-${k}`).join("\n");
+      // Every install line here used to print `npx -y @theluckystrike/mcp-<name>`, which
+      // returns E404 because nothing has been published to npm. This file is the artifact
+      // assistant crawlers actually read: in the measured week ClaudeBot fetched 311 of 312
+      // URLs while Googlebot took 2, so an assistant recommending that command was the most
+      // likely way a real person met this project, and it failed for all of them. Lead with
+      // the two paths that work today. Promote npx back to first place the day
+      // `npm view @theluckystrike/mcp-invoice` resolves.
+      const lines = Object.entries(PAGES).map(([k, v]) => {
+        const hosted = k === "office-suite" ? "" : ` Or connect with no install at https://mcp.zovo.one/mcp/${k}.`;
+        return `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline} Install: download ${k}.mcpb from ${REPO}/releases/latest and open it in Claude Desktop.${hosted}`;
+      }).join("\n");
       const guideLines = Object.entries(GUIDES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/guides/${k}): ${v.description}`).join("\n");
       const compareLines = Object.entries(COMPARE).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/compare/${k}): ${v.description}`).join("\n");
       const setupLines = CLIENT_ORDER.map((c) =>
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file || "none, a connector URL"}, key ${CLIENTS[c].key || "none"}. ` +
         serversFor(c).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](${REPO}/tree/main/servers/office-suite): one config entry that runs time-tracker, price-tracker, spreadsheet and invoice as child processes and merges their tools; it forwards one key to all four, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n\n${lines}\n\n- [${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {

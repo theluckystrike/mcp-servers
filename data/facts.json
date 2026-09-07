@@ -262,9 +262,9 @@
     },
     "office-suite": {
       "title": "MCP Office Suite (bundle server)",
-      "tagline": "One install that exposes every tool of the five servers.",
-      "does": "A stdio proxy that starts the time tracker, price tracker, spreadsheet, invoice and expense tracker as child processes and exposes all their tools, resources and prompts under one server with a single license_status and license_activate. Measured reason: the most-used server in the category is an aggregator; one install beats five.",
-      "for": "Anyone who wants the whole freelancer workflow in one config line.",
+      "tagline": "One install that exposes every tool of all 31 servers, 292 of them.",
+      "does": "A stdio proxy that starts every sibling server in this repository as a child process and exposes all their tools, resources and prompts under one server, with a single license_status and license_activate. Measured on the running v0.21.0 bundle on 2026-09-07: tools/list returns 292 distinct tools and office://tools_map names 31 children. Measured reason for existing: the most-used server in this category is an aggregator, so one install beats thirty-one.",
+      "for": "Anyone who wants the whole back-office workflow in one config line instead of thirty-one.",
       "example": "\"Start a timer for Acme\" ... \"Invoice Acme for this week's hours plus the USB hub receipt.\"",
       "free": "Each child's free tier.",
       "pro": "The $39 bundle key unlocks every child.",
@@ -460,16 +460,16 @@
       "pro": "Unlimited statements, the A4 PDF on the same page layout as your invoices with your logo and no footer credit, the level 3 final demand, and statements_report: every client at once, totalled per currency, ranked by what is overdue rather than by what is large, with the oldest overdue invoice in the whole book named.",
       "storage": "~/.local/share/mcp-servers/statement-of-account/"
     },
-      "cash-book": {
-        "title": "MCP Cash Book",
-        "tagline": "One double-entry ledger derived from the books you already keep, proved to the minor unit.",
-        "does": "Reads six sibling stores read-only -- the invoice ledger, the credit note and purchase order store, the deposit store, the expense ledger, the bank import and the fixed asset register -- and derives a debit and a credit for every movement in a period. Revenue and VAT output come off the invoices, receivables and the payments that clear them, deposits held as the liability they are, expenses by category with the VAT taken OUT of the gross rather than added on top, fixed assets entering service, and depreciation charged by month. The bank import posts nothing: a bank line and a payment record are one transaction seen twice, so cash is posted from the documents and each bank row is matched to a posted cash movement of the same amount, the same direction and a date within three days, as evidence written onto the line as bank_ref. What is left over is the output that matters, because a bank debit with no expense behind it is a payment nobody entered. Nothing is ever balanced with a plug: an entry whose own legs do not add up is posted exactly as the document states it and the difference is raised by name, with the entry, the source server and the source document behind every unit of it. Currencies are never added together, a purchase order is a memo that is never posted, a deposit applied to an invoice moves the liability rather than cash, and the ledger opens at nothing because an opening figure nobody can walk back to a document is the first invented number in a set of books. Every line carries the server, the document id and the ISO date it came from, and no sibling store changes bytes or mtime across any of the six tools.",
-        "for": "Anyone running this suite who has to answer whether the books add up, and anyone who has to hand an accountant a ledger rather than six exports: freelancers and small firms at month end, and bookkeepers who need every figure to name the document it came from.",
-        "example": "\"Build the ledger for June.\" ... \"Does June balance?\" ... \"Show me every line hitting receivables.\" ... \"Close June and tell me what is unposted.\" ... \"Export the June ledger as CSV.\"",
-        "free": "trial_balance and ledger_lines are free and unlimited on every tier: whether the books add up is the question this server exists for, and a free tier that hides the answer is a demo. The meter is on the PERIOD, three distinct periods a calendar month, keyed by from, to and currency, so rebuilding one already in the register is free forever on every tier.",
-        "pro": "Unlimited periods, month_close with its trial balance snapshot and its list of what the month leaves unposted or inconsistent, ledger_export_csv as RFC 4180 text with no file written, and ledger_report with the movement and closing balance per account plus the purchase commitments held as a memo.",
-        "storage": "~/.local/share/mcp-servers/cash-book/"
-      },
+    "cash-book": {
+      "title": "MCP Cash Book",
+      "tagline": "One double-entry ledger derived from the books you already keep, proved to the minor unit.",
+      "does": "Reads six sibling stores read-only -- the invoice ledger, the credit note and purchase order store, the deposit store, the expense ledger, the bank import and the fixed asset register -- and derives a debit and a credit for every movement in a period. Revenue and VAT output come off the invoices, receivables and the payments that clear them, deposits held as the liability they are, expenses by category with the VAT taken OUT of the gross rather than added on top, fixed assets entering service, and depreciation charged by month. The bank import posts nothing: a bank line and a payment record are one transaction seen twice, so cash is posted from the documents and each bank row is matched to a posted cash movement of the same amount, the same direction and a date within three days, as evidence written onto the line as bank_ref. What is left over is the output that matters, because a bank debit with no expense behind it is a payment nobody entered. Nothing is ever balanced with a plug: an entry whose own legs do not add up is posted exactly as the document states it and the difference is raised by name, with the entry, the source server and the source document behind every unit of it. Currencies are never added together, a purchase order is a memo that is never posted, a deposit applied to an invoice moves the liability rather than cash, and the ledger opens at nothing because an opening figure nobody can walk back to a document is the first invented number in a set of books. Every line carries the server, the document id and the ISO date it came from, and no sibling store changes bytes or mtime across any of the six tools.",
+      "for": "Anyone running this suite who has to answer whether the books add up, and anyone who has to hand an accountant a ledger rather than six exports: freelancers and small firms at month end, and bookkeepers who need every figure to name the document it came from.",
+      "example": "\"Build the ledger for June.\" ... \"Does June balance?\" ... \"Show me every line hitting receivables.\" ... \"Close June and tell me what is unposted.\" ... \"Export the June ledger as CSV.\"",
+      "free": "trial_balance and ledger_lines are free and unlimited on every tier: whether the books add up is the question this server exists for, and a free tier that hides the answer is a demo. The meter is on the PERIOD, three distinct periods a calendar month, keyed by from, to and currency, so rebuilding one already in the register is free forever on every tier.",
+      "pro": "Unlimited periods, month_close with its trial balance snapshot and its list of what the month leaves unposted or inconsistent, ledger_export_csv as RFC 4180 text with no file written, and ledger_report with the movement and closing balance per account plus the purchase commitments held as a memo.",
+      "storage": "~/.local/share/mcp-servers/cash-book/"
+    },
     "amortization": {
       "title": "MCP Amortization",
       "tagline": "Loan and lease schedules from the terms of the agreement, to the minor unit.",
@@ -631,19 +631,19 @@
       "guide": "client-statements-and-dunning-from-chat",
       "ttl_days": 30
     },
-      "cash-book": {
-        "date": "2026-09-06",
-        "tokens": [
-          "cash-book",
-          "ledger",
-          "trial-balance",
-          "bookkeeping",
-          "double-entry"
-        ],
-        "note": "Searched the official MCP registry search API for each token on 2026-09-06. Three of the five return 0 results: cash-book, trial-balance and double-entry. bookkeeping returns exactly one row and ledger returns 30, and the ones that are genuinely accounting rather than a substring match on ledger -- ai.craneledger/crane-ledger, io.helloledger/bookkeeping, com.npledger/np-ledger and com.ledgerbeaver/finance -- are all the same shape: a remote streamable-http endpoint in front of a hosted book you keep on their platform, reached with a bearer key and an account. Not one of them was called: probing a metered remote endpoint is a paid API call. The rest of the ledger rows are the word used for something else entirely, tamper-evident action logs, run receipts, congressional trade registers, tariff tables and an EU tutoring platform. This server is not that shape and a comparison page would be dishonest about which one a reader wants: it posts nothing, it stores no book of its own beyond a register of the periods it built, and it derives the whole ledger on the call from six local stores it never writes to. The comparison a reader would actually want is against a spreadsheet, and the measured result of that comparison is the guide /guides/one-ledger-from-every-server rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R18_RESULT.md.",
-        "guide": "one-ledger-from-every-server",
-        "ttl_days": 30
-      },
+    "cash-book": {
+      "date": "2026-09-06",
+      "tokens": [
+        "cash-book",
+        "ledger",
+        "trial-balance",
+        "bookkeeping",
+        "double-entry"
+      ],
+      "note": "Searched the official MCP registry search API for each token on 2026-09-06. Three of the five return 0 results: cash-book, trial-balance and double-entry. bookkeeping returns exactly one row and ledger returns 30, and the ones that are genuinely accounting rather than a substring match on ledger -- ai.craneledger/crane-ledger, io.helloledger/bookkeeping, com.npledger/np-ledger and com.ledgerbeaver/finance -- are all the same shape: a remote streamable-http endpoint in front of a hosted book you keep on their platform, reached with a bearer key and an account. Not one of them was called: probing a metered remote endpoint is a paid API call. The rest of the ledger rows are the word used for something else entirely, tamper-evident action logs, run receipts, congressional trade registers, tariff tables and an EU tutoring platform. This server is not that shape and a comparison page would be dishonest about which one a reader wants: it posts nothing, it stores no book of its own beyond a register of the periods it built, and it derives the whole ledger on the call from six local stores it never writes to. The comparison a reader would actually want is against a spreadsheet, and the measured result of that comparison is the guide /guides/one-ledger-from-every-server rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R18_RESULT.md.",
+      "guide": "one-ledger-from-every-server",
+      "ttl_days": 30
+    },
     "amortization": {
       "date": "2026-09-06",
       "tokens": [
