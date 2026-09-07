@@ -1,0 +1,141 @@
+{
+  "captured_at": "2026-09-07T01:06:14.015850+00:00",
+  "how": "live probes, browser UA on /buy/ to defeat the scripted-UA guard",
+  "products_in_health": 31,
+  "buy_routes_reaching_stripe": 28,
+  "buy_routes": {
+    "time-tracker": {
+      "code": "303",
+      "stripe": true
+    },
+    "price-tracker": {
+      "code": "303",
+      "stripe": true
+    },
+    "spreadsheet": {
+      "code": "303",
+      "stripe": true
+    },
+    "invoice": {
+      "code": "303",
+      "stripe": true
+    },
+    "expense-tracker": {
+      "code": "303",
+      "stripe": true
+    },
+    "currency": {
+      "code": "303",
+      "stripe": true
+    },
+    "docx": {
+      "code": "303",
+      "stripe": true
+    },
+    "timezone": {
+      "code": "303",
+      "stripe": true
+    },
+    "resume": {
+      "code": "303",
+      "stripe": true
+    },
+    "recurring": {
+      "code": "303",
+      "stripe": true
+    },
+    "clauses": {
+      "code": "303",
+      "stripe": true
+    },
+    "calendar": {
+      "code": "303",
+      "stripe": true
+    },
+    "pdf": {
+      "code": "303",
+      "stripe": true
+    },
+    "image": {
+      "code": "303",
+      "stripe": true
+    },
+    "bank-statement": {
+      "code": "303",
+      "stripe": true
+    },
+    "kanban": {
+      "code": "303",
+      "stripe": true
+    },
+    "quotes": {
+      "code": "303",
+      "stripe": true
+    },
+    "barcode": {
+      "code": "303",
+      "stripe": true
+    },
+    "zip": {
+      "code": "303",
+      "stripe": true
+    },
+    "billing-docs": {
+      "code": "303",
+      "stripe": true
+    },
+    "deposits": {
+      "code": "303",
+      "stripe": true
+    },
+    "per-diem": {
+      "code": "303",
+      "stripe": true
+    },
+    "asset-register": {
+      "code": "303",
+      "stripe": true
+    },
+    "statement-of-account": {
+      "code": "303",
+      "stripe": true
+    },
+    "cash-book": {
+      "code": "303",
+      "stripe": true
+    },
+    "amortization": {
+      "code": "303",
+      "stripe": true
+    },
+    "petty-cash": {
+      "code": "303",
+      "stripe": true
+    },
+    "work-order": {
+      "code": "503",
+      "stripe": false
+    },
+    "catalogue": {
+      "code": "503",
+      "stripe": false
+    },
+    "change-order": {
+      "code": "503",
+      "stripe": false
+    },
+    "bundle": {
+      "code": "303",
+      "stripe": true
+    }
+  },
+  "sitemap_urls": 312,
+  "bundle_downloads_all_releases": 5105,
+  "npm_packages": {
+    "mcp-invoice": "npm error code E404",
+    "mcp-time-tracker": "npm error code E404",
+    "mcp-office-suite": "npm error code E404"
+  },
+  "sales": 0,
+  "upgrade_clicks_7d": 152
+}
