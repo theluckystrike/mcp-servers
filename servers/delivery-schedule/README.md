@@ -16,6 +16,14 @@ lateness and every total are worked out on the call, against the date you passed
 
 ## Install
 
+
+**One-click (.mcpb):** download `delivery-schedule.mcpb` from the latest release and double-click it in Claude Desktop:
+https://github.com/theluckystrike/mcp-servers/releases/latest
+
+**Hosted, no install:** point a URL-based client at `https://mcp.zovo.one/mcp/delivery-schedule`. `GET https://mcp.zovo.one/mcp/connect` mints a token and prints a ready URL.
+
+npm publish for `@theluckystrike/mcp-delivery-schedule` is pending, so the `npx` line below returns 404 today.
+
 ### Claude Desktop
 
 `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or

@@ -16,6 +16,14 @@ refused by name.
 
 ## Install
 
+
+**One-click (.mcpb):** download `change-order.mcpb` from the latest release and double-click it in Claude Desktop:
+https://github.com/theluckystrike/mcp-servers/releases/latest
+
+**Hosted, no install:** point a URL-based client at `https://mcp.zovo.one/mcp/change-order`. `GET https://mcp.zovo.one/mcp/connect` mints a token and prints a ready URL.
+
+npm publish for `@theluckystrike/mcp-change-order` is pending, so the `npx` line below returns 404 today.
+
 ### Claude Desktop
 
 `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or
