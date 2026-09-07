@@ -201,6 +201,13 @@ async function run(name) {
       [join(ROOT, "scripts", "sign-license.mjs"), "change-order"],
     ).toString().trim();
   }
+  if (name === "delivery-schedule") {
+    const { execFileSync } = await import("node:child_process");
+    env.MCP_LICENSE_KEY = execFileSync(
+      process.execPath,
+      [join(ROOT, "scripts", "sign-license.mjs"), "delivery-schedule"],
+    ).toString().trim();
+  }
   if (name === "barcode") {
     const { execFileSync } = await import("node:child_process");
     env.MCP_LICENSE_KEY = execFileSync(
@@ -1374,6 +1381,57 @@ async function run(name) {
     resultLine(`  ${pay.invoice_create.tool}: ${pay.invoice_create.unit}  unit_price ${inv.map((i) => i.unit_price).join(" ")}`);
     resultLine(`  ${pay.quote_create.tool}: ${pay.quote_create.unit}  unit_price_minor ${quo.map((q) => q.unit_price_minor).join(" ")}  ready ${pay.quote_create.ready}`);
     resultLine(`  net from each payload's own items: ${netInv} against ${netQuo}, exactly ${netQuo / netInv}x; posted ${pay.posted}`);
+  }
+  if (name === "delivery-schedule") {
+    // The point of this server is that lateness is a reading, not a stored flag. The same
+    // schedule is asked the same question on three different dates and gives three
+    // different answers, without anything being written in between. The profile is seeded
+    // where every other server reads it, so the currency and the client name come from the
+    // same place they always do; nothing else is planted.
+    const { writeFileSync: wf, mkdirSync: mk } = await import("node:fs");
+    const profileDir = join(c.sandbox, "data", "mcp-servers", "profile");
+    mk(profileDir, { recursive: true });
+    wf(join(profileDir, "business.json"), JSON.stringify({ name: "Harbour Studio", currency: "EUR", vat_rate: 23 }, null, 2));
+
+    const create = { reference: "WO-2026-0011", reference_date: "2026-03-02", client: "Harbour Cafe", title: "Website rebuild" };
+    toolLine("delivery_schedule_create", create);
+    const made = await c.call("delivery_schedule_create", create);
+    resultLine(made);
+    await sleep(STEP_DELAY_MS);
+
+    const id = "DS-2026-0001";
+    const items = [
+      { description: "Design sign-off", due_date: "2026-04-10", value_minor: 90000 },
+      { description: "Build, first pass", due_date: "2026-04-20", value_minor: 240000 },
+      { description: "Content load", due_date: "2026-05-01", value_minor: 60000 },
+    ];
+    for (const it of items) {
+      toolLine("deliverable_add", { schedule: id, ...it });
+      resultLine(await c.call("deliverable_add", { schedule: id, ...it }));
+      await sleep(600);
+    }
+
+    // One lands on time and is signed off; one has not moved.
+    const moves = [
+      { schedule: id, deliverable: "D01", status: "delivered", date: "2026-04-09" },
+      { schedule: id, deliverable: "D01", status: "accepted", date: "2026-04-12", note: "Approved on the call" },
+    ];
+    for (const m of moves) {
+      toolLine("deliverable_status", m);
+      resultLine(await c.call("deliverable_status", m));
+      await sleep(600);
+    }
+
+    // The same store, asked on three dates. Nothing is written between these calls.
+    for (const as_of of ["2026-04-15", "2026-04-25", "2026-05-06"]) {
+      toolLine("late_report", { as_of });
+      resultLine(await c.call("late_report", { as_of }));
+      await sleep(STEP_DELAY_MS);
+    }
+
+    // What has actually been accepted, ready to bill, in both scales at once.
+    toolLine("milestone_payload", { schedule: id });
+    resultLine(await c.call("milestone_payload", { schedule: id }));
   }
   await sleep(STEP_DELAY_MS);
   c.close();
