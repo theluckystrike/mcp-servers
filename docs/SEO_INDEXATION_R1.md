@@ -73,3 +73,46 @@ across 49 of the other 311 URLs. 109 URLs received nothing from any browser-shap
 The ten best pages after the home page score 2 or 3 views each. Country split of proven
 browser views is US 107, FR 58, CN 28, IE 19, PL 4, so this is not the operator's own
 traffic.
+
+## Addendum: the registry findability ceiling is not what it looked like
+
+A prior round concluded that registry naming was exhausted at about 51 percent findable
+share, because the registry's `search=` matches the name only and sorts strict ASCII on
+the whole `namespace/local-name` string, so `io.github.theluckystrike` is compared before
+any local name we could choose. That is correct, and no further naming round inside
+`io.github.*` will help.
+
+What that analysis held fixed was the namespace itself. Measured this loop by fully
+paginating the registry and confirming strict ASCII ordering on every token tested:
+
+| Token | First `com.*` row | First `io.*` row | Our current rank |
+|---|---|---|---|
+| excel | 3 | 6 | not on page 1 |
+| pdf | 5 | 47 | not on page 1 |
+| time | 14 | 49 | not on page 1 |
+| invoice | 36 | 52 | 86 |
+
+Simulating where our own entries would sort under a namespace derived from a `.com`
+domain the operator already controls, using the same paginated result sets:
+
+| Token | `com.abwex/<token>` | `com.b2berp/<token>` | Today |
+|---|---|---|---|
+| excel | 3 | 3 | absent |
+| pdf | 5 | 6 | absent |
+| time | 14 | 17 | absent |
+| invoice | 36 | 36 | 86 |
+
+The registry supports DNS-based publisher authentication (`mcp-publisher login dns
+--domain <domain> --private-key <hex>`, ed25519), which proves control of a domain by a
+TXT record. The operator holds 50-plus zones on the same Cloudflare account, including
+abwex.com and b2berp.com, so the TXT record is a single API call and the whole move is
+autonomous.
+
+This does not overturn the earlier finding; it moves the axis. Going from `io.*` to
+`com.a*` is worth roughly 10 to 45 places on these tokens, which is the difference
+between page 5 and page 1.
+
+Recommended as a controlled experiment rather than a migration: publish one genuinely new
+server under the new namespace only, with no duplicate of an existing `io.github` entry,
+then measure its rank on its own tokens. Publishing the whole catalogue twice would risk
+the one channel that currently delivers humans.
