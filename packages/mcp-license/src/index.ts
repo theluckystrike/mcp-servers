@@ -183,7 +183,11 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       return {
         product, tier: r.ok ? "pro" : "free", licenseId: r.payload?.id,
         expires: r.payload ? (r.payload.exp ? new Date(r.payload.exp * 1000).toISOString() : null) : undefined,
-        source: r.source, reason: r.ok ? undefined : r.reason, upgradeUrl,
+        // Tagged so a genuine in-product upgrade click is attributable. Untagged it
+        // arrives as "<id>.unknown" and is indistinguishable from crawler noise; the
+        // conversion audit found 28 distinct .unknown sources for exactly this reason.
+        source: r.source, reason: r.ok ? undefined : r.reason,
+        upgradeUrl: `${upgradeUrl}?src=${encodeURIComponent(`product.${product}.status`)}`,
       };
     },
     activate(key: string) {

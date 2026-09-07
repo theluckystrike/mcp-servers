@@ -983,13 +983,19 @@ ${faqHtml}
         { "@context": "https://schema.org", "@type": "TechArticle", headline: pg.title, description: pg.description, url: pg.canonical, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, publisher: { "@type": "Organization", name: "theluckystrike", url: "https://mcp.zovo.one" } },
       ];
       if (faq) ld.push({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) });
-      const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="${pg.canonical}">` +
+      // The 216 client x product permutations measured 73.6-77.5% text-similar to their
+      // siblings and drew 8 human views in 7 days across all 224 setup URLs, while
+      // Googlebot read sitemap.xml seven times and then crawled 2 of 312 pages. They stay
+      // live and keep passing link value, but they are not offered to a crawler as
+      // separately indexable. See docs/SEO_INDEXATION_R1.md.
+      const robots = parts.length === 3 ? `<meta name="robots" content="noindex,follow">` : "";
+      const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="${pg.canonical}">${robots}` +
         ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
       return new Response(page(pg.title, pg.body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
     }
 
     if (path === "/sitemap.xml") {
-      const urls = ["/", "/bundle", "/changelog", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      const urls = ["/", "/bundle", "/changelog", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     // Ownership / key files. Each one must answer with its own key as the entire body and
