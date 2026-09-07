@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-07T03:57:19.424Z",
+  "generated_at": "2026-09-07T04:26:12.113Z",
   "session": {
-    "count": 60,
+    "count": 61,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -242,6 +242,10 @@
       {
         "at": "2026-09-07T03:57:19.315Z",
         "note": "Sprint close: registry namespace mechanism proven (HTTP domain auth grants a namespace, one Cloudflare DNS token away from a com.* namespace worth 10-45 registry places), llms.txt no longer tells assistant crawlers to run a 404 install command, README generated from data with a drift gate"
+      },
+      {
+        "at": "2026-09-07T04:26:11.950Z",
+        "note": "Sprint: npm proven human-gated by two live OIDC workflow runs; every live URL that printed a 404 install command now discloses it and leads with a working path; hosted endpoints answer directory probes instead of 401; registry namespace mechanism proven and one token away; 4 stale registry rows deprecated"
       }
     ]
   },
@@ -2031,6 +2035,10 @@
       "first_line": "mcp-image: adversarial audit and user-value run"
     },
     {
+      "file": "docs/INSTALL_COPY_R1.md",
+      "first_line": "Install copy, round 1: the site stopped printing an install command that cannot work"
+    },
+    {
       "file": "docs/INSTALL_PATH_R1.md",
       "first_line": "The install path, measured and fixed in principle (loop 29, 2026-09-07)"
     },
@@ -2145,6 +2153,10 @@
     {
       "file": "docs/NPM_AUTH_RESULT.md",
       "first_line": "npm auth acquisition attempt — RESULT"
+    },
+    {
+      "file": "docs/NPM_UNBLOCK_R2.md",
+      "first_line": "npm unblock, round 2 — exhausting every path to a first publish"
     },
     {
       "file": "docs/ORGANIC_R2.md",
