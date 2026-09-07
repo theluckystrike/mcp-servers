@@ -49,10 +49,10 @@ the report. 53 tests, stdio-verified.
 
 Carried deliberately, in the same shape as previous releases:
 
-- delivery-schedule has no demo GIF, no /compare page and no /setup pages. The setup pages
-  are a deliberate omission, not an oversight: that exact page shape was measured this
-  loop as 75 percent duplicate and put behind noindex, so adding eight more of them would
-  work against the change above.
+- delivery-schedule has no /compare page and no /setup pages. The setup pages are a
+  deliberate omission, not an oversight: that exact page shape was measured this loop as
+  75 percent duplicate and put behind noindex, so adding eight more would work against
+  the change above. Its logo and demo GIF were made this loop and are no longer gaps.
 - delivery-schedule is not hosted. It ships stdio and .mcpb only this release.
 - npm remains unpublished for every package, so `npx -y @theluckystrike/mcp-<name>` still
   returns E404. This needs the operator: `npm login --auth-type=web`, then
