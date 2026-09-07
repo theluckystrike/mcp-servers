@@ -24,7 +24,8 @@
           "isRequired": false,
           "isSecret": true
         }
-      ]
+      ],
+      "fileSha256": "fecd67f405eb82c83a777ba1778711fad18b304679e3c6f3ea5f4246a2827201"
     }
   ],
   "remotes": [

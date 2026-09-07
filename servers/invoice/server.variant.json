@@ -24,7 +24,8 @@
           "isRequired": false,
           "isSecret": true
         }
-      ]
+      ],
+      "fileSha256": "5724b5257816b6825a06ad9dfc4b041161671bf93a286a0491e85adb9f753c37"
     }
   ]
 }
