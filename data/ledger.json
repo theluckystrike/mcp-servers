@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-06T08:22:23.388Z",
+  "generated_at": "2026-09-07T01:29:43.033Z",
   "session": {
-    "count": 56,
+    "count": 57,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -226,6 +226,10 @@
       {
         "at": "2026-09-06T08:22:23.182Z",
         "note": "Loop 28: change-order is the thirtieth server (built, wired 20/20, hosted as endpoint 30, audit 18/18 after D-R99 and D-R100); v0.20.0 shipped (31 bundles, 83 manifests, tests 1507/1518, validate 951/951); catalogue hosted round 38 18/18 and D-R97/D-R98 fixed; change-order round 39 11/18 with D-R101 and D-R102 mitigated server-side; every SPEC.md free of em dashes"
+      },
+      {
+        "at": "2026-09-07T01:29:42.831Z",
+        "note": "Loop 29: checkout gate removed (32/32 live), 114 registry manifests repointed to product pages, sitemap 312->96 with permutations noindex, 96 URLs to IndexNow, audience measured honestly"
       }
     ]
   },
@@ -650,6 +654,45 @@
       }
     },
     {
+      "id": "delivery-schedule",
+      "npm_name": "@theluckystrike/mcp-delivery-schedule",
+      "version": "0.20.0",
+      "dir": "servers/delivery-schedule",
+      "tools": [
+        "delivery_schedule_create",
+        "deliverable_add",
+        "deliverable_status",
+        "deliverable_delete",
+        "delivery_schedule_get",
+        "delivery_schedule_list",
+        "delivery_schedule_delete",
+        "late_report",
+        "delivery_schedule_document",
+        "milestone_payload"
+      ],
+      "tool_count": 10,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 53 / # fail 0 / ## failures",
+      "result_status": "DONE",
+      "loc": 1501,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "deposits",
       "npm_name": "@theluckystrike/mcp-deposits",
       "version": "0.20.0",
@@ -901,7 +944,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 434,
+      "loc": 435,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1484,6 +1527,11 @@
         "url": "https://mcp.zovo.one/buy/currency"
       },
       {
+        "id": "delivery-schedule",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/delivery-schedule"
+      },
+      {
         "id": "deposits",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/deposits"
@@ -1603,6 +1651,10 @@
       "first_line": "mcp-asset-register: build"
     },
     {
+      "file": "docs/AUDIENCE_REALITY_R1.md",
+      "first_line": "Audience reality check, loop 29 (2026-09-07)"
+    },
+    {
       "file": "docs/AUDIT.md",
       "first_line": "Adversarial pre-publish audit"
     },
@@ -1683,6 +1735,10 @@
       "first_line": "Checkout audit: what a customer actually reads before paying"
     },
     {
+      "file": "docs/CHECKOUT_R1.md",
+      "first_line": "Checkout round 1: every product reaches a real Stripe checkout (loop 29, 2026-09-07)"
+    },
+    {
       "file": "docs/CLAUSES_AUDIT.md",
       "first_line": "mcp-clauses: adversarial audit and user-value run"
     },
@@ -1713,6 +1769,10 @@
     {
       "file": "docs/COMPARE_RESULT.md",
       "first_line": "COMPARE - head-to-head pages for \"X vs Y\" and \"alternatives\" queries"
+    },
+    {
+      "file": "docs/CONTENT_R1.md",
+      "first_line": "CONTENT_R1 -- 28 new guide URLs, organic content round, 2026-09-07"
     },
     {
       "file": "docs/CONTENT_R10_RESULT.md",
@@ -1799,6 +1859,10 @@
       "first_line": "Conversion instrument: cap message -> click -> checkout session"
     },
     {
+      "file": "docs/CONVERSION_R1.md",
+      "first_line": "Conversion audit, loop 29 (2026-09-07)"
+    },
+    {
       "file": "docs/CURRENCY_AUDIT.md",
       "first_line": "mcp-currency: adversarial audit and user-value run"
     },
@@ -1883,6 +1947,10 @@
       "first_line": "Distribution round 23: wire mcp-change-order into the estate (2026-09-06)"
     },
     {
+      "file": "docs/DIST_R24_RESULT.md",
+      "first_line": "Distribution round 24: npm verdict, the emoji blocker, one new surface (2026-09-07)"
+    },
+    {
       "file": "docs/DIST_R3_RESULT.md",
       "first_line": "Distribution round 3: currency, timezone, docx onto Docker MCP catalog + Cline marketplace"
     },
@@ -1943,6 +2011,10 @@
       "first_line": "mcp-image: adversarial audit and user-value run"
     },
     {
+      "file": "docs/INSTALL_PATH_R1.md",
+      "first_line": "The install path, measured and fixed in principle (loop 29, 2026-09-07)"
+    },
+    {
       "file": "docs/INTEL.md",
       "first_line": "INTEL - what the used servers do that we do not, and the fifth slot"
     },
@@ -1961,6 +2033,10 @@
     {
       "file": "docs/INTEL_R13.md",
       "first_line": "INTEL_R13 -- 30 fresh freelancer/small-business tokens, empty-slot scoring, round 13"
+    },
+    {
+      "file": "docs/INTEL_R14.md",
+      "first_line": "INTEL_R14 -- 30 fresh candidate tokens (round 14) + marginal-server verdict"
     },
     {
       "file": "docs/INTEL_R2.md",
@@ -2001,6 +2077,10 @@
     {
       "file": "docs/LAUNCH_POSTS.md",
       "first_line": "Launch posts"
+    },
+    {
+      "file": "docs/LOOP29_BRIEF.md",
+      "first_line": "Loop 29 brief (2026-09-07)"
     },
     {
       "file": "docs/MARKETPLACES_RESULT.md",
@@ -2299,6 +2379,10 @@
       "first_line": "REVIEW_V5_SONNET"
     },
     {
+      "file": "docs/SEO_INDEXATION_R1.md",
+      "first_line": "Why Google will not index this site (loop 29, 2026-09-07)"
+    },
+    {
       "file": "docs/SETUP_PAGES_RESULT.md",
       "first_line": "Setup pages run - 2026-09-03"
     },
@@ -2321,6 +2405,10 @@
     {
       "file": "docs/TIMEZONE_AUDIT.md",
       "first_line": "mcp-timezone: adversarial audit and user-value run"
+    },
+    {
+      "file": "docs/TRAFFIC_R1.md",
+      "first_line": "Traffic reality, loop 29 (2026-09-07) — agent B, measurement"
     },
     {
       "file": "docs/USER_VALUE.md",

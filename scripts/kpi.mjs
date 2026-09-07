@@ -141,9 +141,11 @@ const regFind = (org.surfaces || []).find((s) => /Official MCP registry/i.test(s
 const traffic = js("data/traffic.json", null);
 const gsc = js("data/gsc.json", null);
 const cov = traffic?.crawler_url_coverage || {};
-const covOf = (n) => { const v = cov[n]; return typeof v === "number" ? v : (v && typeof v.urls === "number" ? v.urls : null); };
-const humanViews7d = traffic?.human_evidence?.render_proven_page_views
-  ?? traffic?.human_evidence?.page_views ?? null;
+const covOf = (n) => { const v = cov[n]; if (typeof v === "number") return v; return v && typeof v.urls_fetched === "number" ? v.urls_fetched : null; };
+// requests_render_proven counts requests from browser UA strings that were confirmed to
+// be real render engines (that exact UA also fetched favicon, cdn-cgi or assets). A
+// spoofed UA that never loads an asset is excluded.
+const humanViews7d = traffic?.human_evidence?.requests_render_proven ?? null;
 const gscImpr = gsc?.mcp_pages?.impressions ?? gsc?.totals?.mcp_impressions ?? (gsc?.status === "OK" ? 0 : null);
 let ghUniques = null;
 try { ghUniques = JSON.parse(sh("gh", ["api", "repos/theluckystrike/mcp-servers/traffic/views"])).uniques; } catch {}
@@ -153,7 +155,7 @@ const kpis = [
   { cat: "Discovery", name: "Registry entries at latest version", value: registryLatest?.entries ?? null, target: registryLatest?.names ?? servers + 1, unit: "of all published names", how: "one registry search per manifest name with version=latest, compared with the release version", why: "The official registry is the index Claude, Cursor and VS Code pickers read." },
   { cat: "Discovery", name: "Registry findable share", value: regFind ? Math.round(regFind.findable * 100) : null, target: 60, unit: "% of tracked tokens", how: "data/organic.json (name-substring search probes)", why: "Search is name-only; a server nobody can find by the words they type does not exist." },
   { cat: "Discovery", name: "Distribution surfaces live", value: surfacesLive, target: surfacesTotal, unit: `of ${surfacesTotal}`, how: "data/distribution.json", why: "Each free registry or catalog is a compounding source of installs." },
-  { cat: "Discovery", name: "Pages indexed on the storefront sitemap", value: sitemapUrls, target: 150, unit: "URLs", how: "curl mcp.zovo.one/sitemap.xml", why: "Long-tail search queries are the only paid-free channel with measured intent." },
+  { cat: "Discovery", name: "URLs offered in the sitemap", value: sitemapUrls, target: null, unit: "URLs", how: "curl mcp.zovo.one/sitemap.xml", why: "Not a score to maximise. It was 312, of which 216 were client-by-product setup permutations measuring 73.6-77.5% similar to each other; Googlebot read the sitemap 7 times and then crawled 2 pages. Cut to 96 on 2026-09-07 and the permutations marked noindex,follow. See docs/SEO_INDEXATION_R1.md." },
   { cat: "Discovery", name: "Google impressions, storefront", value: gscImpr, target: 1, unit: "impressions, 28d", how: "data/gsc.json, Search Console sc-domain:zovo.one filtered to //mcp.zovo.one/ pages, with a positive control on //zovo.one/ returning 63 clicks and 4,392 impressions to prove the filter works", why: "Zero here across 99+ days means Google has never shown this site to anyone. It is the single most important organic number." },
   { cat: "Discovery", name: "Googlebot URL coverage", value: covOf("Googlebot"), target: sitemapUrls, unit: "of the sitemap, 7d", how: "data/traffic.json crawler_url_coverage, Cloudflare GraphQL by user agent", why: "Googlebot fetched robots.txt 4x and sitemap.xml 7x in the same window and then crawled 2 pages. It is declining, not blocked." },
   { cat: "Discovery", name: "ClaudeBot URL coverage", value: covOf("ClaudeBot"), target: sitemapUrls, unit: "of the sitemap, 7d", how: "data/traffic.json crawler_url_coverage", why: "Assistant crawlers have this catalogue even though Google does not. This is the discovery channel that is actually working." },

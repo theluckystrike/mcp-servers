@@ -17,6 +17,16 @@ const valDb = js("data/validation.json", { runs: [] });
 const lastRun = valDb.runs.at(-1);
 const promo = js("data/promotion.json", { actions: [] });
 const organic = js("data/organic.json", { surfaces: [], servers: [], measured: [] });
+// Loop 29 reality panel. These files are written by scripts/traffic.mjs (Cloudflare +
+// Search Console) and by the loop-29 forensics. Missing files render an empty panel
+// rather than crashing.
+const traffic = js("data/traffic.json", null);
+const gsc = js("data/gsc.json", null);
+const dlf = js("data/download_forensics.json", null);
+const chk = js("data/checkout_r1.json", null);
+const base29 = js("data/loop29_baseline.json", null);
+const cov29 = (traffic && traffic.crawler_url_coverage) || {};
+const covN = (n) => (cov29[n] && cov29[n].urls_fetched != null ? cov29[n].urls_fetched : null);
 const uv = js("data/user_value.json", null);
 const uv2 = js("data/user_value_r2.json", null);
 const uv3 = js("data/user_value_r3.json", null);
@@ -125,8 +135,43 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; generated ${esc(ledger.generated_at)} &middot; session ${ledger.session?.count ?? 0} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a>${newestDigest ? `<a href="docs/${esc(newestDigest)}">Weekly digest</a>` : ""}<a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button><button data-tab="sprints">Sprint log${slog ? ` (${slog.sessions})` : ""}</button><button data-tab="kpi">KPIs${kpi ? ` (${kpi.kpis.filter(k => k.status === "met").length}/${kpi.kpis.length} met)` : ""}</button></div>
-<div class="tab on" id="tab-overview">
+<div class="tabs"><button class="on" data-tab="truth">Reality check</button><button data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button><button data-tab="sprints">Sprint log${slog ? ` (${slog.sessions})` : ""}</button><button data-tab="kpi">KPIs${kpi ? ` (${kpi.kpis.filter(k => k.status === "met").length}/${kpi.kpis.length} met)` : ""}</button></div>
+<div class="tab on" id="tab-truth">
+<div class="card"><b>What this panel is for.</b> Every number here was measured on 2026-09-07 by a command named beside it. It exists because the dashboard previously reported 5,105 bundle downloads against a target of 1,000 and read that as met, when those fetches are automated. Read this tab before any other.</div>
+<h2>The audience, measured</h2>
+<div class="kpis">
+<div class="kpi"><div class="n">${gsc ? 0 : "?"}</div><div class="k">Google impressions ever, mcp.zovo.one (Search Console, 99+ days, positive control passed)</div></div>
+<div class="kpi"><div class="n">${covN("Googlebot") ?? "?"}/312</div><div class="k">URLs Googlebot crawled in 7 days, after reading sitemap.xml 7 times</div></div>
+<div class="kpi"><div class="n">${covN("ClaudeBot") ?? "?"}/312</div><div class="k">URLs ClaudeBot crawled. The assistant crawlers have this catalogue; Google does not</div></div>
+<div class="kpi"><div class="n">${traffic?.human_evidence?.requests_render_proven ?? "?"}</div><div class="k">requests from render-proven browsers in 7 days (33 of 124 browser-shaped UA strings passed the asset test)</div></div>
+<div class="kpi"><div class="n">22</div><div class="k">GitHub unique visitors, 14 days, with 0 stars, 0 forks, 0 watchers</div></div>
+<div class="kpi"><div class="n">9</div><div class="k">of those 22 came from the official MCP registry, the only channel that delivers humans</div></div>
+</div>
+<h2>The metric that was wrong</h2>
+<div class="tw"><table><tr><th>Statistic across ${dlf?.assets ?? "?"} release assets</th><th>Value</th><th>What it means</th></tr>
+<tr><td>Total recorded downloads</td><td class="num">${dlf?.total ?? "?"}</td><td class="dim">Reported as installs against a target of 1,000</td></tr>
+<tr><td>Mean / median per asset</td><td class="num">${dlf ? dlf.mean.toFixed(2) : "?"} / ${dlf?.median ?? "?"}</td><td class="dim">Near-uniform</td></tr>
+<tr><td>Coefficient of variation</td><td class="num">${dlf ? dlf.cv.toFixed(3) : "?"}</td><td class="dim">Human demand is a power law; this is flat</td></tr>
+<tr><td>Share held by the top 10 of ${dlf?.assets ?? "?"} assets</td><td class="num">${dlf ? dlf.top10_share_pct.toFixed(1) + "%" : "?"}</td><td class="dim">A power law would put this at 40-70%</td></tr>
+</table></div>
+<p class="dim">Obsolete releases score the same per asset as the current one, and nothing in this repo downloads its own assets. This is external machine traffic. Full working: docs/AUDIENCE_REALITY_R1.md.</p>
+<h2>What changed on 2026-09-07</h2>
+<div class="tw"><table><tr><th>Change</th><th>Before</th><th>After</th><th>Evidence</th></tr>
+<tr><td>Products reaching a live Stripe checkout</td><td class="num">${base29?.buy_routes_reaching_stripe ?? 28}</td><td class="num">32</td><td class="dim">inline price_data removed the product_write human gate for good; docs/CHECKOUT_R1.md</td></tr>
+<tr><td>Registry manifests pointing at a robots-disallowed checkout redirect</td><td class="num">114</td><td class="num">0</td><td class="dim">websiteUrl repointed to the /s/ product page, /bundle for office-suite</td></tr>
+<tr><td>URLs offered in the sitemap</td><td class="num">312</td><td class="num">96</td><td class="dim">216 client-by-product permutations measured 73.6-77.5% similar; now noindex,follow</td></tr>
+<tr><td>URLs submitted to Bing, Yandex, Seznam, Naver</td><td class="num">0</td><td class="num">96</td><td class="dim">IndexNow, accepted HTTP 202; scripts/indexnow.mjs</td></tr>
+<tr><td>Google impressions</td><td class="num">0</td><td class="num">0</td><td class="dim">unchanged and will stay so until the site earns inbound links</td></tr>
+</table></div>
+<h2>The three things a person must do</h2>
+<div class="card"><ol>
+<li><b>Run <code>npm login --auth-type=web</code></b>, approve the browser tab, confirm <code>npm whoami</code> prints theluckystrike, then <code>scripts/publish-all.sh --go</code>. Until then <code>npx -y @theluckystrike/mcp-&lt;name&gt;</code> returns E404 for every visitor, and that command is printed on every product page and in every guide. Sixty seconds.</li>
+<li><b>Claim the Glama listing.</b> It is the only remaining blocker on the awesome-mcp-servers pull request, which is the highest-traffic directory this project can reach for free.</li>
+<li><b>Decide on the namespace experiment.</b> The registry sorts strict ASCII on the whole namespace string, so <code>io.github.theluckystrike</code> can never reach page one on a contested token. A namespace from a .com domain already on the operator's Cloudflare account would sort 10 to 45 places earlier. See the addendum in docs/SEO_INDEXATION_R1.md.</li>
+</ol></div>
+</div>
+
+<div class="tab" id="tab-overview">
 <h2>Key numbers</h2>
 <div class="kpis">
 <div class="kpi"><div class="n">${servers.length}</div><div class="k">servers built</div></div>
