@@ -444,3 +444,111 @@ but returns `10000 Authentication error` on both `POST /zones/<id>/dns_records` 
 2026-04-24. The account is also at its Cloudflare Pages project limit, so a throwaway
 `<name>.pages.dev` cannot be created as a workaround.
 
+
+---
+
+## Glama listing for the four servers in awesome-mcp-servers PR 13473 (directory agent, loop 29, 2026-09-07)
+
+**Why this needs you:** every externally reachable Glama surface was tested this loop and
+there is no unauthenticated way in. The directory API returns HTTP 401 pointing at
+`https://glama.ai/settings/api-keys`; that path 302-redirects to `/sign-up`. The "Add Server"
+button on `https://glama.ai/mcp/servers` is a plain `<button type="button">` with no form
+action, and the only auth modal the page serves an anonymous visitor is `SignUpModal`.
+`/mcp/submit`, `/mcp/add`, `/mcp/docs` and `/api` are all 404. The `glama-ai` GitHub org has
+three repos, none of them the directory, so there is no issue queue to post into. Creating the
+account, and accepting Glama's Terms of Service, is a decision only you can make.
+
+**What is NOT blocked, so you know the scale of this:** `theluckystrike/mcp-statement-of-account`
+is already listed on Glama with a live score badge, crawled 33 minutes after the repo was
+created, with no account and nobody submitting it — `https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account`.
+So this is a "make it happen on demand" step, not a "make it possible" step. Full evidence in
+`docs/GLAMA_R1.md`.
+
+**Payoff if you do it:** it unblocks the last red label on
+`https://github.com/punkpeye/awesome-mcp-servers/pull/13473`, the highest-traffic free MCP
+directory this project can reach (13,000+ entries, ranks for "awesome mcp servers"). It also
+lets you *claim* the two listings that already exist, which Glama's own page says matters —
+it shows "Unclaimed servers have limited discoverability."
+
+### Exact click path
+
+1. Open `https://glama.ai/sign-up`
+2. It offers four ways in, all of which are account creation:
+   - **Continue with GitHub** (OAuth authorisation against github.com/theluckystrike)
+   - **Continue with Google**
+   - **Continue with Discord**
+   - **"or use email"** — two fields only: **Name** (labelled *"Used for billing and display
+     purposes"*) and **Email**
+3. Directly above the submit control: *"By signing up, you agree to the Terms of Service and
+   Privacy Policy."* — `https://glama.ai/policies/terms-of-service`,
+   `https://glama.ai/policies/privacy-policy`. **This is the acceptance an agent cannot make
+   for you.**
+4. Suggested field values if you use the email route:
+   - Name: `theluckystrike`
+   - Email: `support@zovo.one`
+   The GitHub route is better if you are willing to authorise it, because Glama matches
+   listings to the `maintainers` array in `glama.json`, which already contains
+   `theluckystrike` in all 33 repos — so the claim should be automatic.
+
+### Then, once signed in — four submissions, ~2 minutes total
+
+Go to `https://glama.ai/mcp/servers`, click **Add Server**, and submit these four repo URLs
+one at a time:
+
+```
+https://github.com/theluckystrike/mcp-time-tracker
+https://github.com/theluckystrike/mcp-price-tracker
+https://github.com/theluckystrike/mcp-spreadsheet
+https://github.com/theluckystrike/mcp-invoice
+```
+
+Nothing else needs preparing. All four already carry, verified by `curl` on 2026-09-07:
+- `glama.json` at the repo root, exactly matching `https://glama.ai/mcp/schemas/server.json`
+- a root `Dockerfile` (the bot comment on PR 13473 says *"you must add Dockerfile directly to
+  Glama. For checks to pass, we only need the server to start and respond to introspection
+  requests"* — it is already there)
+- public repo, MIT licence, topics `mcp` / `mcp-server` / `model-context-protocol`
+
+While you are there, also **claim** the two listings that already exist (each page has a
+"Looking for Admin?" claim control):
+```
+https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account
+https://glama.ai/mcp/servers/theluckystrike/bln-mcp-grammar-server
+```
+
+### Verify it landed — one command, no account needed
+
+```
+for r in mcp-time-tracker mcp-price-tracker mcp-spreadsheet mcp-invoice; do
+  printf '%-22s %s\n' "$r" "$(curl -sS -o /dev/null -w '%{http_code}' \
+    -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36" \
+    https://glama.ai/mcp/servers/theluckystrike/$r/badges/score.svg)"
+done
+```
+All four currently print `404`. When they print `200`, the badges are live.
+
+### What an agent does after you, with no further human step
+
+Push one commit to `theluckystrike/awesome-mcp-servers` branch `add-theluckystrike-mcp-servers`
+adding the badge to each of the four entries in the exact format the bot asks for:
+```
+[![theluckystrike/mcp-time-tracker MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-time-tracker/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-time-tracker)
+```
+`pull_request_target` on `synchronize` re-runs `check-glama.yml`, which swaps `missing-glama`
+for `has-glama`. Merging is then the maintainer's call — no workflow in that repo automerges,
+so that last step was never automatable and is not something this pack can remove.
+
+### Separate, smaller, and NOT a Glama account problem
+
+Our four remote connectors on Glama — `https://glama.ai/mcp/connectors/io.github.theluckystrike/`
+`bank-statement-csv-categorize-reconcile-ledger`, `deposits`, `excel-spreadsheet-xlsx-csv`,
+`kanban-todo-tasks-projects-board` — all render a red dot titled "Server is not responding".
+They got there free via the official MCP registry, with no Glama account. The cause is ours:
+```
+curl -o /dev/null -w '%{http_code}' https://mcp.zovo.one/mcp/spreadsheet
+-> 401  {"error":"unauthorized","message":"This endpoint needs a token..."}
+```
+Glama's health prober hits the auth wall. Fixing that is an engineering task for whoever owns
+`remote/` and `billing/` — expose an unauthenticated `initialize`/`tools/list` response, or
+register the connector with a token in the URL form the worker already supports
+(`https://mcp.zovo.one/mcp/<name>/t/<token>`). No human login is involved.
