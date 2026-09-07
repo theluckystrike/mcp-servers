@@ -195,6 +195,41 @@
       "status": "submitted",
       "url": "https://github.com/JustInCache/awesome-mcp-collection/pull/44",
       "note": "Round 24 (2026-09-07): new surface, found via `gh search repos awesome-mcp --sort updated`. Active MIT-licensed list (13 stars, not archived), CONTRIBUTING.md sets no star minimum (several existing rows say 'New'/'Community'), plain-table format `| **Name** | [org/repo](url) | Stars | Lang | Description |`. Forked to theluckystrike/awesome-mcp-collection, branch add-theluckystrike-servers, added 4 rows matching the list's own category fit: Time Tracker + Spreadsheet under Productivity & Collaboration, Invoice under Finance & Fintech, Price Tracker under Web & Search, each marked Stars=New (repo has 0 GitHub stars, not overclaimed). PR #44 opened following the repo's own PR description template, state OPEN, mergeable MERGEABLE."
+    },
+    "collabnix-awesome-mcp-lists": {
+      "status": "submitted",
+      "url": "https://github.com/collabnix/awesome-mcp-lists/pull/112",
+      "note": "PR 112 adds one row for mcp-office-suite under Development Tools, leaning on the repo-root Dockerfile since that list is about containerised servers. 34 stars, merged three outside PRs the day before. (2026-09-07)"
+    },
+    "habitoai-awesome-mcp-servers": {
+      "status": "submitted",
+      "url": "https://github.com/habitoai/awesome-mcp-servers/pull/144",
+      "note": "PR 144 adds three Finance entries, alphabetically placed per its CONTRIBUTING. Trap: that README mixes CRLF and LF, so a naive read-write turns a 3-line edit into a 907-insertion diff. (2026-09-07)"
+    },
+    "abordage-awesome-mcp": {
+      "status": "submitted",
+      "url": "https://github.com/abordage/awesome-mcp/pull/106",
+      "note": "PR 106 adds six entries to repositories.yaml only, since the README is generated. Both CI checks pass. (2026-09-07)"
+    },
+    "mcp.directory": {
+      "status": "human-gated",
+      "url": "https://mcp.directory/submit",
+      "note": "Verified free, no account, one required field (a GitHub URL). Left for the operator under the standing rule that he clicks Submit on external forms. (2026-09-07)"
+    },
+    "tolkonepiu-best-of-mcp-servers": {
+      "status": "skipped: per-entry emoji",
+      "url": "https://github.com/tolkonepiu/best-of-mcp-servers",
+      "note": "Would otherwise be the top pick. Its generator stamps every row with quality-medal and status emoji; that is the format, not an option. (2026-09-07)"
+    },
+    "businessmcp.com": {
+      "status": "skipped: paid",
+      "url": "https://businessmcp.com/mcp-servers/submit",
+      "note": "Its own wording is that early submissions are free, which is a tiered fee in waiting. Treated as paid under the hard rule. (2026-09-07)"
+    },
+    "toolsdk-ai-mcp-registry": {
+      "status": "blocked",
+      "url": "https://github.com/toolsdk-ai/toolsdk-mcp-registry",
+      "note": "186 stars and the largest untried list. Requires a published npm or PyPI package, a Docker image, or a public HTTPS endpoint. Nothing is on npm and https://mcp.zovo.one/mcp/<name> answers 401 to an unauthenticated prober. Revisit the moment npm publish clears. (2026-09-07)"
     }
   },
   "per_server": {
