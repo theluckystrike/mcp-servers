@@ -552,3 +552,83 @@ Glama's health prober hits the auth wall. Fixing that is an engineering task for
 `remote/` and `billing/` — expose an unauthenticated `initialize`/`tools/list` response, or
 register the connector with a token in the URL form the worker already supports
 (`https://mcp.zovo.one/mcp/<name>/t/<token>`). No human login is involved.
+
+---
+
+## 0-NPM. npm sign-in — the one human step that unblocks all 33 packages
+
+Appended 2026-09-07 by the npm agent (loop 29). Full evidence: `docs/NPM_UNBLOCK_R2.md`,
+machine-readable: `data/npm_unblock.json`. Nothing above this line was changed.
+
+### Why a human is required
+
+Every `@theluckystrike/mcp-*` package returns HTTP 404 on the registry — none has ever been
+published — so `npx -y @theluckystrike/mcp-<name>` fails for every visitor on **86 live
+mcp.zovo.one URLs**. Publishing needs a token. There is no working token anywhere: the one
+in `~/.npmrc` returns 401, the keychain has no npm item, no `.env` holds one, no `NPM_TOKEN`
+secret exists in any repo, and no browser profile has an npmjs.com session.
+
+npm trusted publishing (OIDC) does **not** rescue this, and the npm CLI version is **not**
+the reason. npm was upgraded 10.9.8 → **12.0.2** (floor is 11.5.1) and the block is
+identical. Proof, GitHub Actions run 34081070341, with npm 12.0.2, node 22.23.2,
+`id-token: write`, `ACTIONS_ID_TOKEN_REQUEST_URL` present and **zero** npmrc files:
+```
+npm error code ENEEDAUTH
+npm error need auth This command requires you to be logged in to https://registry.npmjs.org/
+```
+A trusted publisher can only be attached to a package that already exists (npm/cli#8544,
+still open). The first publish of each package must use a token.
+
+### Exact click path (about two minutes)
+
+1. Open `https://www.npmjs.com/login` in a normal browser window.
+2. Sign in as **theluckystrike**. (If that account does not exist, stop and say so — no
+   agent may create one.) Complete 2FA if prompted.
+3. Go to `https://www.npmjs.com/settings/theluckystrike/tokens`.
+4. Click **Generate New Token** → **Granular Access Token**.
+5. Fill in:
+   - Token name: `mcp-servers-publish`
+   - Expiration: `90 days`
+   - Packages and scopes → **Read and write**, applied to **All packages**
+   - Leave organizations and IP allowlist untouched.
+6. Click **Generate token** and copy the `npm_…` value. It is shown once.
+
+### Exact command after the human step
+
+Paste the token into the terminal (it is never written into this repo by any agent):
+```
+export npm_config_cache=/Users/mike/.npm-cache-local
+export PATH="$HOME/.npm-global/bin:$PATH"     # npm 12.0.2
+npm config set //registry.npmjs.org/:_authToken=npm_PASTE_HERE
+npm whoami                                     # must print: theluckystrike
+```
+Then the whole release, in dependency order, is one command:
+```
+cd ~/mcp-servers
+scripts/publish-all.sh          # dry run first: 33 packages, all reported ok on 2026-09-07
+scripts/publish-all.sh --go     # the real publish
+scripts/registry-check.sh
+```
+
+### How to verify it landed
+
+```
+for p in mcp-license mcp-timezone mcp-invoice mcp-pdf mcp-bank; do
+  printf '%-14s ' "$p"
+  curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://registry.npmjs.org/@theluckystrike/$p"
+done
+```
+All five must flip from `HTTP 404` to `HTTP 200`. Then, as a real end-to-end check:
+```
+npx -y @theluckystrike/mcp-invoice --help
+```
+
+### Optional, and only possible after the first publish
+
+Once a package exists, trusted publishing can replace the token permanently. Per package,
+at `https://www.npmjs.com/package/@theluckystrike/mcp-<name>/access` → **Trusted Publisher**
+→ **GitHub Actions** → repository `theluckystrike/mcp-servers`, workflow filename
+`npm-publish-oidc.yml`. That workflow already exists in the repo, is `workflow_dispatch`
+only, already installs npm@latest and already requests `id-token: write`. After configuring
+it the token can be revoked. This is 33 separate web-UI configurations, so it is worth doing
+only if token rotation becomes a burden.

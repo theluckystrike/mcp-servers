@@ -1,0 +1,193 @@
+{
+  "round": 2,
+  "date": "2026-09-07",
+  "agent": "npm",
+  "verdict": "NOT_PUBLISHED",
+  "single_reason": "No npm credential for account theluckystrike exists anywhere on this machine or in the GitHub org, and npm trusted publishing (OIDC) cannot mint the first one: a trusted publisher can only be attached to a package that already exists on the registry, and all 33 packages return HTTP 404. The first publish of each package requires a token, which requires one human sign-in to npmjs.com.",
+  "npm_cli_upgrade": {
+    "attempted": true,
+    "before": "10.9.8",
+    "after": "12.0.2",
+    "path": "/Users/mike/.npm-global/bin/npm",
+    "node": "v22.23.2",
+    "documented_floors": { "npm": "11.5.1", "node": "22.14.0" },
+    "floors_cleared": true,
+    "changed_the_picture": false,
+    "note": "The version floor was real but never the binding constraint. Cleared locally and on the GitHub Actions runner; the block is unchanged."
+  },
+  "trusted_publishing": {
+    "configurable_from_workflow": false,
+    "configurable_from_repo_settings": false,
+    "requires_web_ui_per_package": true,
+    "requires_package_to_already_exist": true,
+    "sources": [
+      "https://docs.npmjs.com/trusted-publishers",
+      "https://github.com/npm/cli/issues/8544"
+    ],
+    "empirical_runs": [
+      {
+        "run_id": "34080853186",
+        "url": "https://github.com/theluckystrike/mcp-servers/actions/runs/34080853186",
+        "setup_node_registry_url": true,
+        "result": "E404 on PUT https://registry.npmjs.org/@theluckystrike%2fmcp-license",
+        "valid": false,
+        "confound": "actions/setup-node with registry-url wrote NPM_CONFIG_USERCONFIG=$RUNNER_TEMP/.npmrc containing //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}; with no NODE_AUTH_TOKEN secret this expanded to the literal placeholder XXXXX-XXXXX-XXXXX-XXXXX, so npm authenticated with a junk bearer token and never attempted the OIDC exchange. The E404 is a bad-token result, not an OIDC verdict."
+      },
+      {
+        "run_id": "34081070341",
+        "url": "https://github.com/theluckystrike/mcp-servers/actions/runs/34081070341",
+        "setup_node_registry_url": false,
+        "provenance_flag": true,
+        "preconditions": {
+          "npm": "12.0.2",
+          "node": "v22.23.2",
+          "permissions_id_token_write": true,
+          "ACTIONS_ID_TOKEN_REQUEST_URL": "PRESENT",
+          "NPM_CONFIG_USERCONFIG": "unset",
+          "NODE_AUTH_TOKEN": "unset",
+          "npmrc_files_present": []
+        },
+        "result": "ENEEDAUTH - need auth This command requires you to be logged in to https://registry.npmjs.org/",
+        "valid": true,
+        "interpretation": "npm 12.0.2 does not even attempt an OIDC token exchange for a package with no registered trusted publisher."
+      }
+    ]
+  },
+  "credential_hunt": {
+    "npmrc_files_found": 14,
+    "npmrc_files_with_registry_token": 1,
+    "npmrc_with_token": "/Users/mike/.npmrc",
+    "token_status": "DEAD",
+    "token_verification": [
+      "npm 12.0.2 whoami -> E401 401 Unauthorized GET https://registry.npmjs.org/-/whoami",
+      "curl -H 'Authorization: Bearer <redacted>' https://registry.npmjs.org/-/whoami -> HTTP 401 body {}"
+    ],
+    "home_npmrc_modified": false,
+    "transcript_token_candidates": 2,
+    "transcript_tokens_working": 0,
+    "keychain_lookups": 10,
+    "keychain_hits": 0,
+    "env_files_scanned": 40,
+    "env_files_with_npm_credential": 0,
+    "password_managers_installed": [],
+    "github_packages": {
+      "whoami_http": 200,
+      "token_scopes": ["gist", "read:org", "repo", "user", "workflow"],
+      "has_write_packages": false,
+      "usable_as_substitute": false,
+      "why_not": "No write:packages scope, and GitHub Packages npm requires auth even to read, so `npx -y` would still fail for visitors."
+    },
+    "account_probe": {
+      "registry_user_doc_http": 401,
+      "npmjs_profile_http": 403,
+      "scope_search_total": 0,
+      "account_creation": "FORBIDDEN by task hard limits, not attempted"
+    }
+  },
+  "publish_plan": {
+    "script": "scripts/publish-all.sh",
+    "dry_run_executed": true,
+    "go_executed": false,
+    "go_blocked_by": "script gates --go on `npm whoami` succeeding",
+    "packages_total": 33,
+    "packages_dry_run_ok": 33,
+    "packages_with_warnings": 0,
+    "version": "0.21.0",
+    "brief_said_32": true,
+    "count_correction": "33, not 32: the extra package is packages/mcp-license, the runtime dependency every server imports.",
+    "cycle": "@theluckystrike/mcp-license <-> @theluckystrike/mcp-timezone; harmless, npm publish does not resolve a package's own dependencies against the registry",
+    "command_when_unblocked": "export npm_config_cache=/Users/mike/.npm-cache-local && scripts/publish-all.sh --go && scripts/registry-check.sh"
+  },
+  "registry_state": {
+    "checked": ["mcp-license", "mcp-timezone", "mcp-invoice", "mcp-pdf", "mcp-bank"],
+    "http": 404,
+    "scope_search_total": 0
+  },
+  "install_command_inventory": {
+    "measured": "2026-09-07",
+    "edits_made": false,
+    "sitemap_urls": 126,
+    "sitemap_urls_note": "brief said 312; 126 is the measured value today via curl https://mcp.zovo.one/sitemap.xml | grep -o '<loc>' | wc -l",
+    "live_urls_printing_broken_npx": 86,
+    "live_by_family": {
+      "/s/<server>": { "in_sitemap": 32, "printing_npx": 32 },
+      "/guides/<slug>": { "in_sitemap": 63, "printing_npx": 33 },
+      "/compare/<server>": { "in_sitemap": 20, "printing_npx": 19 },
+      "/": { "in_sitemap": 1, "printing_npx": 1 },
+      "/bundle": { "in_sitemap": 1, "printing_npx": 1 },
+      "/setup and /setup/<client>": { "in_sitemap": 8, "printing_npx": 0, "note": "already migrated to the .mcpb route" },
+      "/changelog": { "in_sitemap": 1, "printing_npx": 0 }
+    },
+    "tracked_files_with_command": 101,
+    "total_occurrences": 269,
+    "groups": {
+      "A_page_generators": {
+        "owner": "billing",
+        "files": 5,
+        "occurrences": 67,
+        "fixes_live_urls": 86,
+        "list": {
+          "billing/src/content.js": 35,
+          "billing/src/compare.js": 21,
+          "billing/src/setup.js": 6,
+          "billing/src/index.js": 4,
+          "billing/src/pages.js": 1
+        }
+      },
+      "B_server_docs": {
+        "owner": "servers",
+        "files": 64,
+        "occurrences": 96,
+        "pattern": "servers/<name>/README.md x32 and servers/<name>/llms-install.md x32"
+      },
+      "C_repo_front_door": {
+        "owner": "repo/docs",
+        "files": 3,
+        "occurrences": 58,
+        "list": { "index.html": 33, "README.md": 23, "scripts/render-main.mjs": 2 }
+      },
+      "D_hosted_worker_runtime_strings": {
+        "owner": "remote",
+        "files": 16,
+        "occurrences": 27,
+        "note": "user-facing error messages that tell a blocked hosted-endpoint user to run a command that also fails"
+      },
+      "E_historical_docs_and_data": {
+        "owner": "none",
+        "files": 13,
+        "occurrences": 18,
+        "action": "leave alone; rewriting past loop records would falsify them"
+      }
+    },
+    "replacement_targets": {
+      "mcpb_bundle": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/<name>.mcpb",
+      "bundles_dir_entries": 65,
+      "hosted_endpoint": "https://mcp.zovo.one/mcp/<server>",
+      "hosted_endpoint_token_form": "https://mcp.zovo.one/mcp/<server>/t/<token>",
+      "health_products": 32
+    },
+    "minimum_viable_edit": "5 files in group A, 67 occurrences, removes the broken command from all 86 live URLs"
+  },
+  "dead_ends": [
+    { "path": "npm CLI below the trusted-publishing floor", "evidence": "REFUTED: npm 12.0.2 locally and on the runner; block unchanged" },
+    { "path": "trusted publishing configured from a workflow", "evidence": "run 34081070341: ENEEDAUTH with OIDC present and no npmrc" },
+    { "path": "trusted publishing configured from repo settings", "evidence": "docs give a web-UI-only path; npm/cli#8544 open, no API" },
+    { "path": "trusted publishing for a package that does not exist", "evidence": "npm/cli#8544: the UI requires a package to exist before OIDC can be enabled" },
+    { "path": "reuse existing ~/.npmrc token", "evidence": "HTTP 401 from /-/whoami via npm 12 and via curl" },
+    { "path": "token in another project's .npmrc", "evidence": "14 .npmrc files, 13 hold no credential" },
+    { "path": "token in macOS keychain", "evidence": "10 security find-* lookups, all not found" },
+    { "path": "token in an env file", "evidence": "40 .env files, zero matches" },
+    { "path": "token in a password manager", "evidence": "op, gopass, pass, bw all absent" },
+    { "path": "historical token in a transcript", "evidence": "2 unique candidates, both HTTP 401" },
+    { "path": "NPM_TOKEN as a GitHub secret", "evidence": "gh secret list empty on all 10 repos; Actions secrets are write-only" },
+    { "path": "publish to GitHub Packages instead", "evidence": "no write:packages scope; GH Packages needs auth to read so npx -y still fails" },
+    { "path": "npm login --auth-type=web auto-approved", "evidence": "no npmjs.com session in any browser profile; approval page needs a human" },
+    { "path": "create an npm account", "evidence": "FORBIDDEN by task hard limits, not attempted" }
+  ],
+  "artifacts": {
+    "workflow": ".github/workflows/npm-publish-oidc.yml",
+    "workflow_trigger": "workflow_dispatch only, never fires on push or tag",
+    "doc": "docs/NPM_UNBLOCK_R2.md",
+    "human_step": "docs/HUMAN_GATED_PACK.md section 0-NPM (appended)"
+  }
+}
