@@ -2,13 +2,13 @@
 
 ![office-suite demo](../../assets/demo-office-suite.gif)
 
-One install for the whole freelancer office. This MCP server proxies four sibling servers -- **time-tracker**, **price-tracker**, **spreadsheet** and **invoice** -- so a client gets every tool from all four behind a single config entry instead of four. Under the hood it starts each sibling as its own stdio child process, forwards `tools/call`, `resources/*` and `prompts/*` to whichever child owns the name, and merges their license state into one `license_status` / `license_activate` pair. Nothing is re-implemented: each child server runs exactly as it does standalone, with its own local JSON storage.
+One install for the whole freelancer office. This MCP server proxies all 31 sibling servers in this repository, so a client gets every one of their 292 tools behind a single config entry instead of 31. The child list is published at runtime as the `office://tools_map` resource, which is the only figure to trust: it is read from the running server, not from this file. Under the hood it starts each sibling as its own stdio child process, forwards `tools/call`, `resources/*` and `prompts/*` to whichever child owns the name, and merges their license state into one `license_status` / `license_activate` pair. Nothing is re-implemented: each child server runs exactly as it does standalone, with its own local JSON storage.
 
 **Every tool of time-tracker, price-tracker, spreadsheet and invoice, one `claude mcp add`.**
 
 ## 60-second install
 
-npm publish for `@theluckystrike/mcp-office-suite` (and its four dependencies) is pending. Until then, the `.mcpb` one-click bundle or a clone+build is the working path -- both are verified below. This server is packaged as `office-suite.mcpb` on release v0.2.1 and is listed on the official MCP registry (`io.github.theluckystrike/office-suite-time-invoice-expense-excel-price`).
+npm publish for `@theluckystrike/mcp-office-suite` (and its dependencies) is pending. Until then, the `.mcpb` one-click bundle or a clone+build is the working path -- both are verified below. This server is packaged as `office-suite.mcpb` on release v0.2.1 and is listed on the official MCP registry (`io.github.theluckystrike/office-suite-time-invoice-expense-excel-price`).
 
 **One-click (.mcpb):** download `office-suite.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
@@ -54,17 +54,17 @@ npm install
 npm run build
 ```
 
-`npm run build` (no `-w`) is required here -- it builds `mcp-license` and all four sibling servers that office-suite spawns as children, then office-suite itself. Then point your client's `command` at `node` with one arg: the absolute path to `servers/office-suite/dist/index.js`.
+`npm run build` (no `-w`) is required here -- it builds `mcp-license` and every sibling server that office-suite spawns as a child, then office-suite itself. Then point your client's `command` at `node` with one arg: the absolute path to `servers/office-suite/dist/index.js`.
 
 To run every server in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key -- it is forwarded to every connected child. Activation is all-or-nothing: the reply is an error unless **every** child accepted the key, and it prints a per-child table (`OK` / `FAILED` with each child's own message) so a bundle that is half Pro cannot look like a success.
 
-## Why one server instead of four
+## Why one server instead of thirty-one
 
-Aggregation is what usage rewards in this category: the most-used server we track is a tool-aggregator gateway with 2,530 tools and 419,019 uses, 7.5x the next server and 30x the cohort median. A user who wants "office stuff" should not have to add four separate MCP servers to one client config. Installing this one gets every tool below.
+Aggregation is what usage rewards in this category: the most-used server we track is a tool-aggregator gateway with 2,530 tools and 419,019 uses, 7.5x the next server and 30x the cohort median. A user who wants "office stuff" should not have to add thirty-one separate MCP servers to one client config. Installing this one gets every tool below.
 
 ## Tools
 
-Tool names are passed through unchanged from each child. If this bundle ever proxies two children that register the same tool name, both are exposed with a `<child>_<tool>` prefix instead -- this has not happened yet among the four servers below.
+Tool names are passed through unchanged from each child. If this bundle ever proxies two children that register the same tool name, both are exposed with a `<child>_<tool>` prefix instead -- the current renamed pairs are listed under Renamed tools below.
 
 ### time-tracker
 
@@ -138,9 +138,9 @@ Two children can register the same tool name -- invoice and docx both have `busi
 
 ## Free vs Pro
 
-Each child server keeps its own free tier exactly as documented in its own README (see `servers/time-tracker/README.md`, `servers/price-tracker/README.md`, `servers/spreadsheet/README.md`, `servers/invoice/README.md`). This bundle changes nothing about those limits -- it only changes how many config entries it takes to reach all four.
+Each child server keeps its own free tier exactly as documented in its own README (see each `servers/<name>/README.md`). This bundle changes nothing about those limits -- it only changes how many config entries it takes to reach all of them.
 
-A single **bundle** Pro key ($39 one-time, lifetime) unlocks Pro on every server in the bundle, instead of buying each server's $19 key separately. Activate it once here and it is forwarded to all four children.
+A single **bundle** Pro key ($39 one-time, lifetime) unlocks Pro on every server in the bundle, instead of buying each server's $19 key separately. Activate it once here and it is forwarded to every child.
 
 **Get Pro:** https://mcp.zovo.one/buy/bundle
 
@@ -153,7 +153,7 @@ Each child runs as its own stdio process. Two things the proxy does on their beh
 
 ## Privacy
 
-Every child server stores its data locally, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/<name>/` per server. This bundle adds no storage of its own and sends nothing anywhere; it only pipes stdio between your MCP client and the four child processes it starts on your own machine.
+Every child server stores its data locally, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/<name>/` per server. This bundle adds no storage of its own and sends nothing anywhere; it only pipes stdio between your MCP client and the child processes it starts on your own machine.
 
 ## expense-tracker
 

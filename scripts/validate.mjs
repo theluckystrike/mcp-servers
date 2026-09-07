@@ -2607,24 +2607,21 @@ async function billing() {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
     for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
     // work-order is the one server in the list that must NOT answer 303. Its PRODUCTS entry
-    // carries the literal "PENDING_HUMAN" instead of a price id, because the Stripe key in
-    // the keychain lost product_write on 2026-09-06 and no price could be minted
-    // (docs/HUMAN_GATED_PACK.md). Handing that string to Stripe would 400 and the buyer
-    // would read "Checkout could not start", which reads as an outage rather than as a shop
-    // that is not open yet; worse, a 303 here would be this validator reporting a checkout
-    // that does not exist. So the route answers 503 with the bundle link before any Stripe
-    // call, and this assertion is the one that fails the day someone wires a broken price id
-    // in without minting the product. Flip it back to the 303 loop above once the price id
-    // lands.
-    { const r = await fetch("https://mcp.zovo.one/buy/work-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const body = r.status === 503 ? await r.text() : ""; ok("buy/work-order -> 503, not 303: PRODUCTS.price is PENDING_HUMAN so no Stripe call is made", r.status === 503 && r.headers.get("x-mcp-buy") === "price-pending-human" && /Checkout for this server is not yet open/.test(body) && /\/buy\/bundle/.test(body) && !/checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
+    // 2026-09-07: these three were held at 503 because the Stripe key had lost
+    // product_write and no price id could be minted. That gate is gone. Checkout Sessions
+    // accept inline price_data, which needs only checkout_session_write, so a PRODUCTS row
+    // with usd and name is priced at session time with no human step. These assertions now
+    // check the opposite of what they used to: a real Stripe redirect. They fail the day
+    // one of these products silently loses its checkout again.
+    { const r = await fetch("https://mcp.zovo.one/buy/work-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const loc = r.headers.get("location") || ""; ok("buy/work-order -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(loc), `${r.status} ${loc.slice(0, 42)}`); }
     // catalogue is the second such server, for the same reason and on the same date: the
     // key still lacks product_write, so PRODUCTS["catalogue"].price is the literal
     // "PENDING_HUMAN" too. Same assertion, same reason to keep it out of the 303 loop.
-    { const r = await fetch("https://mcp.zovo.one/buy/catalogue", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const body = r.status === 503 ? await r.text() : ""; ok("buy/catalogue -> 503, not 303: PRODUCTS.price is PENDING_HUMAN so no Stripe call is made", r.status === 503 && r.headers.get("x-mcp-buy") === "price-pending-human" && /Checkout for this server is not yet open/.test(body) && /\/buy\/bundle/.test(body) && !/checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
+    { const r = await fetch("https://mcp.zovo.one/buy/catalogue", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const loc = r.headers.get("location") || ""; ok("buy/catalogue -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(loc), `${r.status} ${loc.slice(0, 42)}`); }
     // change-order is the third, same reason, same date: PRODUCTS["change-order"].price is
     // the literal "PENDING_HUMAN" until a human mints the Stripe product. Same assertion,
     // same reason to keep it out of the 303 loop.
-    { const r = await fetch("https://mcp.zovo.one/buy/change-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const body = r.status === 503 ? await r.text() : ""; ok("buy/change-order -> 503, not 303: PRODUCTS.price is PENDING_HUMAN so no Stripe call is made", r.status === 503 && r.headers.get("x-mcp-buy") === "price-pending-human" && /Checkout for this server is not yet open/.test(body) && /\/buy\/bundle/.test(body) && !/checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
+    { const r = await fetch("https://mcp.zovo.one/buy/change-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const loc = r.headers.get("location") || ""; ok("buy/change-order -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(loc), `${r.status} ${loc.slice(0, 42)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
