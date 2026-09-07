@@ -391,3 +391,34 @@ loop coordinator to route to the agent that owns `scripts/` and `servers/*/src`.
 
 **Verify it landed:** `npm view @theluckystrike/mcp-invoice` should return real package
 metadata instead of 404, and `npx -y @theluckystrike/mcp-invoice` should run the server.
+
+---
+
+## GSC service-account key lives on iCloud Desktop and keeps going dataless (agent B, loop 29, 2026-09-07)
+
+**Status this loop: RECOVERED, but it will break again.**
+
+`~/Desktop/keys/gsc-sa-key.json` is the only copy of the Google Search Console
+service-account key. It was `compressed,dataless` at the start of this loop; a bounded
+`cat` on it timed out. `brctl download` returned exit 0 immediately without materialising
+it, and the file only became readable several minutes later. Prior loops recorded it as
+permanently unrecoverable and abandoned Search Console on that basis, which cost this
+project the "mcp.zovo.one has zero Google impressions" finding for weeks.
+
+Note for any agent probing this: `wc -c` **cannot** detect a dataless file — it answers
+from `stat()`. Use `ls -lO <path> | grep dataless`, or a `cat` under a timeout.
+
+**Exact human step (one command, ~5 seconds, must be run by the operator):**
+
+```
+mkdir -p ~/.config/gsc && cp ~/Desktop/keys/gsc-sa-key.json ~/.config/gsc/sa-key.json && chmod 600 ~/.config/gsc/sa-key.json
+```
+
+`~/.config` is not iCloud-synced, so the copy cannot be evicted. Run it while the file
+is still readable — it is readable right now. After that, agents should read
+`GSC_KEY=~/.config/gsc/sa-key.json` (`scripts/traffic.mjs` already honours the `GSC_KEY`
+env var) and stop touching the Desktop copy.
+
+The same applies to the other six dataless files in `~/Desktop/keys/`: `empire.env`,
+`gh-secrets.sh`, `ic-license-private.pkcs8.b64`, `load.sh`, `README.md`,
+`setup.applescript`.

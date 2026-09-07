@@ -71,7 +71,7 @@ or tag all run on the free tier too; the limit is that every read (report, invoi
 CSV export) is clamped to the last 7 days, and only two projects can carry an hourly rate. Pro ($19 once,
 lifetime) opens the full history and unlimited rated projects. The full comparison is in
 <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>. Product page:
-<a href="/s/time-tracker">MCP Time Tracker</a>. There are nineteen of these MCP servers in total; one
+<a href="/s/time-tracker">MCP Time Tracker</a>. There are thirty-one of these MCP servers in total; one
 lifetime key covering all of them, this one included, is $39.</p>
 
 <h2>Connect without installing</h2>
@@ -3385,21 +3385,43 @@ ${FOOT}`,
 
   "one-install-office-suite": {
     title: "One install, every server: the office-suite bundle",
-    description: "One stdio server proxies all twenty sibling servers as 198 tools in one tools/list. What it is, the .mcpb and the npx line, the four prefixed tool names, and the six-prompt cross-server audit that scored 13 of 18 against the earlier nineteen-server, 186-tool build.",
+    description: "One stdio server proxies 31 sibling servers as 292 tools in one tools/list, measured off a built v0.20.0 bundle on 2026-09-07. What it is, how to install it, the four prefixed tool names, and when a single server is the better choice.",
     html: `<h1>One install, every server: the office-suite bundle</h1>
-<p>Twenty servers in this collection each do one job: time tracking, invoicing, quotes, expenses,
-spreadsheets, prices, currency, a Word proposal, contract clauses, a resume, PDF merges, an .ics
-calendar, a kanban board, image resize, bank CSV reconciliation, barcodes and SEPA payment QR codes,
-safe zip archives, and credit notes and purchase orders against those same invoices. Adding all
-twenty to a client one at a time is twenty config entries, twenty absolute paths, twenty things to
-remember are running. <strong>office-suite</strong> is the same twenty servers behind one config
-entry: it starts each one as its own child process over stdio, forwards every tool, resource and
-prompt call to whichever child owns the name, and merges their license state into one pair of tools,
-<code>license_status</code> and <code>license_activate</code>. Nothing is reimplemented. Each child
+<p><strong>One config entry, 31 servers, 292 tools.</strong> That is what office-suite is, and both
+numbers were read off a built v0.20.0 bundle on 2026-09-07 rather than off any document: one MCP
+client connected over stdio, one <code>tools/list</code> returning 292 distinct names, and the
+bundle's own <code>office://tools_map</code> resource naming 31 children and mapping 290 of those
+tools to the child that owns them. The remaining two are the merged <code>license_status</code> and
+<code>license_activate</code> pair, which is one pair for the whole bundle instead of one per child.</p>
+<p>The 31 children are: time-tracker, price-tracker, spreadsheet, invoice, expense-tracker, currency,
+docx, timezone, resume, recurring, clauses, pdf, calendar, kanban, image, bank-statement, quotes,
+barcode, zip, billing-docs, deposits, per-diem, asset-register, statement-of-account, cash-book,
+amortization, petty-cash, work-order, catalogue, change-order and delivery-schedule.</p>
+<p>Adding all 31 to a client one at a time is 31 config entries and 31 absolute paths. The bundle
+starts each one as its own child process over stdio, forwards every tool, resource and prompt call to
+whichever child owns the name, and merges their license state. Nothing is reimplemented. Each child
 keeps its own local JSON storage, exactly as it does standalone.</p>
 
 <h2>Install it</h2>
-<p>One command for Claude Code:</p>
+<p>The npm packages are not published yet, so the working paths are the one-click bundle and a clone
+and build. A probe of <code>registry.npmjs.org</code> on 2026-09-07 returned no versions for the
+<code>@theluckystrike/mcp-*</code> packages, which matches the npm status section of the repository
+README.</p>
+<p><strong>One click.</strong> Download <code>office-suite.mcpb</code> from the
+<a href="https://github.com/theluckystrike/mcp-servers/releases/latest">latest release</a> and
+double-click it in Claude Desktop. It runs on the Node runtime Claude Desktop ships with, so nothing
+about your own PATH matters.</p>
+<p><strong>Clone and build.</strong> This one needs a full build rather than a per-server one,
+because the bundle spawns every child:</p>
+<pre><code>git clone https://github.com/theluckystrike/mcp-servers.git
+cd mcp-servers
+npm install
+npm run build
+
+claude mcp add --scope user office-suite -- \
+  node /absolute/path/to/mcp-servers/servers/office-suite/dist/index.js</code></pre>
+<p>The <code>npx</code> line below starts working the moment npm publish succeeds, and nothing else
+about it changes:</p>
 <pre><code>claude mcp add office-suite -- npx -y @theluckystrike/mcp-office-suite</code></pre>
 <p>Cursor, VS Code, Windsurf and Cline read the same shape of config. Add this block to the client's
 own MCP config file and restart it:</p>
@@ -3418,19 +3440,22 @@ opening it shows an installation dialog. There is no account, no API key and no 
 child runs locally over stdio and writes to its own folder under
 <code>~/.local/share/mcp-servers/&lt;name&gt;/</code>.</p>
 
-<h2>198 tools in one namespace, and the four names that collided</h2>
-<p>Read live off a built bundle on 2026-09-05: the twenty children's own <code>tools/list</code> calls
+<h2>292 tools in one namespace, and the four names that collided</h2>
+<p>Read live off a built bundle on 2026-09-07: the 31 children's own <code>tools/list</code> calls
 sum to more names than a client ever sees, because each child also registers its own
-<code>license_status</code> and <code>license_activate</code> pair. The bundle merges those twenty
-pairs down to one, and what is left after that merge is <strong>198 tools</strong> on the bundle's
-own <code>tools/list</code>. Out of those 198 names, exactly four needed disambiguating: invoice and
+<code>license_status</code> and <code>license_activate</code> pair. The bundle merges those 31 pairs
+down to one, and what is left after that merge is <strong>292 tools</strong> on the bundle's own
+<code>tools/list</code>. Out of those 292 names, exactly four needed disambiguating: invoice and
 docx both register a tool called <code>business_set</code>, and expense-tracker and bank-statement
 both register one called <code>category_rules</code>. The bundle exposes all four, prefixed with the
 server they came from: <code>invoice_business_set</code>, <code>docx_business_set</code>,
 <code>expense-tracker_category_rules</code> and <code>bank-statement_category_rules</code>. It
 rewrites each child's own reply so a message that said "run business_set" or "run category_rules"
-says the name you can actually call. Every other tool keeps its bare name unchanged.
-Twenty servers, and the bundle had to rename exactly two collisions, four tool names in total.</p>
+says the name you can actually call. Every other tool keeps its bare name unchanged. Thirty-one
+servers, and the bundle had to rename exactly two collisions, four tool names in total. The full
+mapping is published as the <code>office://tools_map</code> resource, exposed name to
+<code>child.tool</code>, with the renamed pairs listed separately, which is where both figures on this
+page came from.</p>
 
 <h2>Six sentences that each need two or more children, measured</h2>
 <p>An audit ran the real Claude CLI against the built bundle with all 186 tools on an explicit
@@ -3481,8 +3506,8 @@ list of clients or contacts before writing to it, not a wrong pick. This was mea
 against the nineteen-server build with 186 tools, 1.7x the 108 tools measured when this bundle held
 five children; tool selection did not get worse: 20 of 20 correct against 50 of 51 at the smaller
 count. The total score was 13 of 18 across six prompts, 226.5 seconds of wall clock. The bundle has
-since grown to twenty servers and 198 tools; that growth has not been re-measured against this
-six-prompt audit.</p>
+since grown to 31 servers and 292 tools, measured 2026-09-07; that growth has not been re-measured
+against this six-prompt audit.</p>
 <p>Three defects came out of the same round and are already fixed in the shipped server: a URL handed
 to a tool that expects a local file path used to be silently resolved against the server's own
 working directory and fail with a path that never existed; <code>find_meeting_slots</code> now always
@@ -3492,12 +3517,12 @@ fact you already gave, instead of reading as a dead end that buys a confirmation
 
 <h2>When to install single servers instead</h2>
 <p>The bundle is not always the right size. Windsurf's Cascade agent caps out at 100 tools across
-every enabled server, so 198 tools in one entry does not fit at all; installing only the two or three
+every enabled server, so 292 tools in one entry is nearly three times the ceiling; installing only the two or three
 single servers you actually use, at 9 to 16 tools each, leaves room for the rest of that budget. The
 same logic applies anywhere the count matters more than the config-entry count: a project that only
 ever needs the time tracker and the invoice server gets the same free tier and the same tools either
 way, with fewer license checks and no dormant sibling processes started for the servers it never
-calls. Ten of the nineteen children went untouched by the 2026-09-04 audit's six sentences entirely,
+calls. Ten of the nineteen children present at the time went untouched by the 2026-09-04 audit's six sentences entirely,
 which is the concrete argument for installing single servers when you know in advance which two or
 three you will actually use, and the bundle when you do not, or when the client charges per
 config entry rather than per tool.</p>
@@ -3511,11 +3536,12 @@ so a bundle that is half Pro cannot look like a full success. Full detail on
 <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>.</p>
 ${FOOT}`,
     faq: [
-      { q: "What exactly is office-suite?", a: "One MCP server, run over stdio, that starts all twenty sibling servers as child processes and proxies their tools, resources and prompts under one connection. Each child stores its data exactly as it does standalone; the bundle adds no storage of its own." },
-      { q: "How many tools does it expose?", a: "198, read live off the built bundle on 2026-09-05. Every child also registers its own license_status/license_activate pair; the bundle merges those twenty pairs down to one, and 198 is what is left on the bundle's own tools/list after that merge." },
-      { q: "Which tool names needed a prefix?", a: "Four out of 198: invoice and docx both register business_set, and expense-tracker and bank-statement both register category_rules. The bundle exposes invoice_business_set, docx_business_set, expense-tracker_category_rules and bank-statement_category_rules, and rewrites each child's own replies to match. Every other tool keeps its bare name." },
-      { q: "Does adding more children make tool selection worse?", a: "Not as of the last measurement. A six-prompt audit needing two or more children per sentence, run on 2026-09-04 against the nineteen-server build with 186 tools, put 20 of 20 tool calls in the correct child and the correct tool, against 50 of 51 at 108 tools with five children. Every remaining defect was a tool declining to say something it already knew, not a wrong pick. The bundle has since grown to twenty servers and 198 tools; that growth has not been re-measured against this audit." },
-      { q: "When should I install a single server instead of the whole bundle?", a: "When a client caps total tools, such as Windsurf's Cascade agent at 100, 198 tools does not fit in one entry at all. It is also the better choice when you already know you only need two or three of the twenty: same free tier, fewer license checks, no dormant sibling processes started for servers you never call." },
+      { q: "What exactly is office-suite?", a: "One MCP server, run over stdio, that starts all 31 sibling servers as child processes and proxies their tools, resources and prompts under one connection. Each child stores its data exactly as it does standalone; the bundle adds no storage of its own." },
+      { q: "How many tools does it expose?", a: "292 distinct names on one tools/list, and 31 children, both read off a built v0.20.0 bundle on 2026-09-07 by connecting an MCP client to it. The bundle's office://tools_map resource maps 290 of those to the child that owns them; the other two are the merged license_status and license_activate pair, one for the whole bundle rather than one per child. If a page or a README anywhere gives a different figure, this measurement is the one to trust, because it came from the running server." },
+      { q: "Which tool names needed a prefix?", a: "Four out of 292: invoice and docx both register business_set, and expense-tracker and bank-statement both register category_rules. The bundle exposes invoice_business_set, docx_business_set, expense-tracker_category_rules and bank-statement_category_rules, and rewrites each child's own replies to match. Every other tool keeps its bare name. That list is the renamed array of office://tools_map, read on 2026-09-07." },
+      { q: "Does adding more children make tool selection worse?", a: "Not as of the last measurement. A six-prompt audit needing two or more children per sentence, run on 2026-09-04 against the nineteen-server build with 186 tools, put 20 of 20 tool calls in the correct child and the correct tool, against 50 of 51 at 108 tools with five children. Every remaining defect was a tool declining to say something it already knew, not a wrong pick. The bundle has since grown to 31 servers and 292 tools, measured 2026-09-07; that growth has not been re-measured against this audit." },
+      { q: "When should I install a single server instead of the whole bundle?", a: "When a client caps total tools, such as Windsurf's Cascade agent at 100, 292 tools in one entry is nearly three times the ceiling. It is also the better choice when you already know you only need two or three of the 31: same free tier, fewer license checks, no dormant sibling processes started for servers you never call." },
+      { q: "How do I buy it?", a: "One bundle key, 39 dollars once, at /buy/office-suite, which routes to the same bundle checkout as /bundle. It activates Pro on every child at once instead of buying each server's own 19 dollar key, and activation is all-or-nothing with a per-child OK or FAILED table printed, so a bundle that is half Pro cannot look like a full success." },
     ],
   },
   "month-end-close-with-mcp-servers": {
@@ -3528,7 +3554,7 @@ laptop that has to go on the fixed asset register, a trip allowance, and at the 
 you can send the client without checking it twice. Every one of those steps lives in a different
 place, and the reason month end takes a day is that the places disagree.</p>
 <p>This guide is one month, closed in nine sentences, through the <a href="/guides/one-install-office-suite-bundle">office-suite
-bundle</a>: one stdio server, twenty-four child servers, 224 tools on a single connection, one shared
+bundle</a>: one stdio server, thirty-one child servers, 292 tools on a single connection, one shared
 business profile. It is not a worked example written afterwards. Every prompt below is quoted exactly
 as it was typed, and every figure is the figure that run produced, read back off the stores on disk.
 The full measurement is in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md">the round 27 audit</a>:
@@ -3677,7 +3703,7 @@ the same time. Full detail on <a href="/guides/mcp-server-free-vs-pro">free vers
 to the minor unit with the invoice, the credit note and the deposit that produced it.</p>
 ${FOOT}`,
     faq: [
-      { q: "Do I need all twenty-four servers to close a month like this?", a: "No. Eight children did the whole month: invoice, billing-docs, deposits, bank-statement, expense-tracker, asset-register, per-diem and statement-of-account. The bundle is one config entry for all twenty-four, which is convenient when you do not know in advance which you will need; installing those eight singly gives the same free tier and the same answers." },
+      { q: "Do I need all twenty-four servers to close a month like this?", a: "No. Eight children did the whole month: invoice, billing-docs, deposits, bank-statement, expense-tracker, asset-register, per-diem and statement-of-account. The bundle is one config entry for all 31, which is convenient when you do not know in advance which you will need; installing those eight singly gives the same free tier and the same answers." },
       { q: "Does the order of the steps matter?", a: "Two places. The credit note has to name an invoice that exists, and the statement has to be built last, because it reads the invoice, credit note and deposit stores as they stand when you ask. Everything else is independent. Reconciling before you log receipts is fine and is what this run did: the reconciliation is what tells you which receipts are missing." },
       { q: "What was the closing balance and how is it made up?", a: "EUR 496.30. Invoice INV-2026-0001 at EUR 1,107.00, less credit note CN-2026-0001 at EUR 110.70, less the EUR 500.00 retainer DEP-2026-0001 applied as a payment. Opening balance was EUR 0.00 because the stores started empty." },
       { q: "Why did the retainer step report a different figure?", a: "Because the invoice store does not know credit notes exist. deposit_apply reported a balance of EUR 607.00, which is the invoice total less the payment only. statement-of-account nets the credit note and returns EUR 496.30, so the document you send a client is correct; it is the mid-month balance question that is not. This is recorded as an open defect in the round 27 audit." },
@@ -3685,9 +3711,1723 @@ ${FOOT}`,
       { q: "Are these figures reproducible?", a: "The prompts, the profile, the fixture and the full method are in docs/USER_VALUE_R27.md in the repository, and every figure quoted here was read back off the stores on disk or off a direct tool probe rather than off the model's prose. The run scored 26 of 27 across the nine prompts on 2026-09-05." },
     ],
   },
+  "mcp-server-not-showing-up-in-claude-desktop": {
+    title: "MCP server not showing up in Claude Desktop: the six checks that find it",
+    description: "Your config looks right and the tools are still missing. Run these six checks in order: JSON key, absolute path, PATH inheritance, restart depth, log file, tool ceiling.",
+    html: `<h1>MCP server not showing up in Claude Desktop</h1>
+<p>Six things break this, and they break it silently. Work down the list in order; the first four
+account for nearly everything, and none of them produce an error message you would ever see.</p>
+<ol>
+<li><strong>The top-level key.</strong> Claude Desktop reads <code>mcpServers</code>. VS Code reads
+<code>servers</code>. A block copied from a VS Code README parses as valid JSON, contributes nothing,
+and reports no problem.</li>
+<li><strong>Absolute paths.</strong> Every path in <code>claude_desktop_config.json</code> has to be
+absolute. A relative path resolves against a working directory you did not choose.</li>
+<li><strong>Where <code>npx</code> lives.</strong> A stdio server launched by Claude Desktop inherits
+a limited subset of your shell environment. If node came from nvm, asdf or Homebrew, the bare word
+<code>npx</code> is not on the inherited PATH. Paste what <code>which npx</code> prints.</li>
+<li><strong>Quit, do not reload.</strong> Closing the window leaves the app running. Quit it fully
+and start it again.</li>
+<li><strong>Read the log.</strong> Claude Desktop writes one file per server. On macOS look in
+<code>~/Library/Logs/Claude/</code> for <code>mcp-server-&lt;name&gt;.log</code>. A server that died
+during startup says so there.</li>
+<li><strong>Trailing comma.</strong> JSON has no tolerance for one, and an unparseable config file
+means every server disappears at once, not just the one you were editing.</li>
+</ol>
+
+<h2>A config that works</h2>
+<p>On macOS this file is at <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>,
+on Windows at <code>%APPDATA%\\Claude\\claude_desktop_config.json</code>. Settings, then the Developer
+tab, then Edit Config creates it if it is not there.</p>
+<pre><code>{
+  "mcpServers": {
+    "invoice": {
+      "command": "/Users/you/.nvm/versions/node/v22.14.0/bin/node",
+      "args": ["/Users/you/mcp-servers/servers/invoice/dist/index.js"]
+    }
+  }
+}</code></pre>
+<p>Absolute node, absolute script, no shell involved. That form survives all three of the failures
+above at once.</p>
+
+<h2>The install that skips the file entirely</h2>
+<p>Claude Desktop takes <code>.mcpb</code> bundles, which are a zip of the server plus its manifest,
+and it ships its own Node runtime, so nothing about your PATH matters. Download a bundle from the
+<a href="https://github.com/theluckystrike/mcp-servers/releases/latest">latest release</a> and double
+click it. The v0.20.0 release carries 31 of them, one per server, measured with
+<code>gh api repos/theluckystrike/mcp-servers/releases/latest</code> on 2026-09-07.</p>
+<p>If you built a bundle yourself, it goes in through Settings, Extensions, Advanced settings,
+Extension Developer, Install Extension.</p>
+
+<h2>Still nothing?</h2>
+<p>Two cases the list above does not cover. First, the tool ceiling: some clients cap how many tools
+they will surface at once, so a large bundle can crowd out a small server. The office-suite bundle in
+this repository exposes every child at once, which is convenient and is also the fastest way to hit
+that ceiling; install the two or three servers you actually use instead. Second, a server that starts
+and then exits: that is a crash, not a config problem, and the log file names it.</p>
+<p>You can also sidestep local processes completely. <a href="/mcp/connect">mcp/connect</a> mints a
+free anonymous token and prints an HTTPS URL per server that any client taking a remote URL will
+accept. Nothing is installed and no PATH is consulted.</p>
+
+<h2>Client by client</h2>
+<p>The config path, the key name and the one caveat that bites for each client are on the
+<a href="/setup">setup pages</a>, one per client and server, with the client's own documentation URL
+and the date it was read.</p>
+${FOOT}`,
+    faq: [
+      { q: "Where is the Claude Desktop log file?", a: "macOS: ~/Library/Logs/Claude/, with one mcp-server-<name>.log per configured server plus mcp.log for the client side. Windows: %APPDATA%\\Claude\\logs\\. A server that fails at startup writes its stderr there, which is usually a missing binary or a stack trace from the server itself." },
+      { q: "Why does npx work in my terminal but not in Claude Desktop?", a: "Because the app does not run your shell profile. Your terminal PATH is built by .zshrc or .bash_profile; a stdio server spawned by a GUI app inherits a smaller, platform-dependent environment. Run `which npx` and paste the absolute result into the command field." },
+      { q: "Do I have to restart after every config change?", a: "In Claude Desktop, yes, and it has to be a full quit rather than closing the window. Claude Code does not need one at all: the entry is live in the next session and /mcp reconnects on demand. Cursor picks the server up when its Customize page next lists it." },
+      { q: "Is there a way to test the server without a client at all?", a: "Yes. Run the server binary directly from a terminal and it speaks JSON-RPC over stdio. If it prints a startup banner and waits, the server is fine and the problem is in the client config. If it exits, you have the error text in front of you." },
+      { q: "Which install path actually works for these servers today?", a: "The .mcpb bundle or a clone and build. The npm packages are not published yet: a probe of registry.npmjs.org on 2026-09-07 returned no versions for @theluckystrike/mcp-invoice, mcp-time-tracker, mcp-spreadsheet, mcp-zip, mcp-pdf or mcp-quotes, which matches the npm status section of the repository README. The hosted URLs need no install." },
+    ],
+  },
+  "where-is-claude-desktop-config-json": {
+    title: "Where is claude_desktop_config.json, and what goes in it",
+    description: "The exact path on macOS and Windows, how to open it without hunting, the minimum valid contents, and the two mistakes that make a correct file do nothing.",
+    html: `<h1>Where is claude_desktop_config.json</h1>
+<table>
+<tr><th>macOS</th><td><code>~/Library/Application Support/Claude/claude_desktop_config.json</code></td></tr>
+<tr><th>Windows</th><td><code>%APPDATA%\\Claude\\claude_desktop_config.json</code></td></tr>
+<tr><th>Linux</th><td>No published path. The documentation lists macOS and Windows only.</td></tr>
+</table>
+<p>Do not go looking for it in Finder. Open Claude Desktop, go to Settings, click the Developer tab in
+the left sidebar, and click Edit Config. That opens the file in your editor and creates it first if it
+does not exist, which is the usual reason a search turns up nothing.</p>
+
+<h2>The minimum that works</h2>
+<pre><code>{
+  "mcpServers": {
+    "zip": {
+      "command": "/opt/homebrew/bin/node",
+      "args": ["/Users/you/mcp-servers/servers/zip/dist/index.js"]
+    }
+  }
+}</code></pre>
+<p>One object, one key, one server. Add a second server as a sibling of <code>"zip"</code>, not as a
+second <code>mcpServers</code> block. Environment variables go in an <code>"env"</code> object next to
+<code>"command"</code>.</p>
+
+<h2>Two mistakes that leave no trace</h2>
+<p><strong>Relative paths.</strong> Everything in this file must be absolute. There is no project
+directory to resolve against.</p>
+<p><strong>A bare command name.</strong> <code>"command": "npx"</code> works only if npx sits on the
+limited PATH a GUI app inherits. On a machine where node came from nvm or Homebrew, it does not.
+<code>which node</code> in a terminal prints the string to paste.</p>
+<p>Both disappear if you use a <code>.mcpb</code> bundle instead: Claude Desktop unpacks it, records
+it as an extension, and runs it with its own bundled Node. The
+<a href="https://github.com/theluckystrike/mcp-servers/releases/latest">latest release</a> has one per
+server, 31 in v0.20.0.</p>
+
+<h2>The same file under other names</h2>
+<table>
+<tr><th>Client</th><th>File</th><th>Top-level key</th></tr>
+<tr><td>Claude Desktop</td><td>claude_desktop_config.json</td><td><code>mcpServers</code></td></tr>
+<tr><td>Claude Code</td><td>.mcp.json at the repo root, or ~/.claude.json</td><td><code>mcpServers</code></td></tr>
+<tr><td>Cursor</td><td>.cursor/mcp.json, or ~/.cursor/mcp.json</td><td><code>mcpServers</code></td></tr>
+<tr><td>VS Code</td><td>.vscode/mcp.json</td><td><code>servers</code></td></tr>
+<tr><td>Windsurf</td><td>~/.codeium/windsurf/mcp_config.json</td><td><code>mcpServers</code></td></tr>
+<tr><td>Cline</td><td>~/.cline/mcp.json for the CLI; the panel for the extension</td><td><code>mcpServers</code></td></tr>
+</table>
+<p>Note the VS Code row. It is the one client that does not use <code>mcpServers</code>, and a config
+pasted from anywhere else parses cleanly and contributes zero servers. Every row here was read off the
+client's own documentation on 2026-09-02 and is recorded with its source URL in
+<code>billing/src/setup.js</code>.</p>
+<p>Per-server, per-client pages with the full block to paste are at <a href="/setup">setup</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "The Developer tab is not in my Settings.", a: "It appears in the desktop app only, not on claude.ai. If you are looking at the web app there is no local config file at all; use a hosted server URL instead, which the Claude connector dialog accepts directly." },
+      { q: "Can I keep the file in a git repo and symlink it?", a: "It has been reported that Claude Desktop replaces a symlinked claude_desktop_config.json with a regular file when it writes, so the link does not survive. Keep the source of truth elsewhere and copy it in." },
+      { q: "How do I add environment variables?", a: "An \"env\" object next to \"command\", holding string values only. Numbers and booleans have to be quoted. For these servers the only one that matters is MCP_LICENSE_KEY, and leaving it out is what runs the free tier." },
+      { q: "Does the server name in the config matter?", a: "It is the label the client shows and the prefix it puts on tool names, so keep it short and stable. Changing it later is safe: the servers store their data under a fixed directory in ~/.local/share/mcp-servers/, keyed by the server, not by whatever you called it in the config." },
+    ],
+  },
+  "claude-mcp-add-command-reference": {
+    title: "claude mcp add: every flag, and the scope that silently loses your server",
+    description: "The full syntax of claude mcp add, what the double dash is for, why local scope is the default and how it makes a working server vanish, and the read-back commands.",
+    html: `<h1>claude mcp add, in full</h1>
+<pre><code>claude mcp add &lt;name&gt; [flags] -- &lt;command&gt; [args...]</code></pre>
+<p>The <code>--</code> is load-bearing. It separates Claude Code's own options from the command line
+that starts the server. Leave it out and <code>--transport</code> or <code>--env</code> belonging to
+the server gets eaten by the CLI, or the reverse.</p>
+<pre><code>claude mcp add zip -- node /Users/you/mcp-servers/servers/zip/dist/index.js</code></pre>
+
+<h2>The flag that costs people an hour</h2>
+<p><code>--scope</code> defaults to <code>local</code>, which means private to you and to the
+directory you ran the command in. Run it in <code>~</code>, then open a project folder, and the tools
+are simply absent. No error, no warning, nothing in <code>/mcp</code>.</p>
+<table>
+<tr><th>Scope</th><th>Written to</th><th>Who sees it</th></tr>
+<tr><td><code>local</code> (default)</td><td>~/.claude.json</td><td>You, in that one directory</td></tr>
+<tr><td><code>project</code></td><td>.mcp.json at the repo root</td><td>Anyone who checks out the repo</td></tr>
+<tr><td><code>user</code></td><td>~/.claude.json</td><td>You, in every project</td></tr>
+</table>
+<p>If you want a server everywhere, say so:</p>
+<pre><code>claude mcp add --scope user invoice -- node /Users/you/mcp-servers/servers/invoice/dist/index.js</code></pre>
+
+<h2>The other flags</h2>
+<table>
+<tr><td><code>--transport</code>, <code>-t</code></td><td><code>stdio</code>, <code>http</code> or <code>sse</code>. Defaults to stdio.</td></tr>
+<tr><td><code>--env KEY=value</code></td><td>One per variable, before the <code>--</code>.</td></tr>
+<tr><td><code>--header</code>, <code>-H</code></td><td>For an HTTP server. Repeatable.</td></tr>
+<tr><td><code>add-json &lt;name&gt; '&lt;json&gt;'</code></td><td>Takes a whole config object, which is the fastest way to paste a block out of a README.</td></tr>
+</table>
+
+<h2>Reading it back</h2>
+<pre><code>claude mcp list          # every server and whether it connected
+claude mcp get zip       # one server, with a health check
+claude mcp remove zip    # take it out again</code></pre>
+<p>Inside a session, <code>/mcp</code> shows what is connected and reconnects one on demand. There is
+no restart step in Claude Code at all, which is the main practical difference from Claude Desktop.</p>
+
+<h2>Adding a remote server with no local process</h2>
+<pre><code>claude mcp add --transport http invoice https://mcp.zovo.one/mcp/invoice/t/YOUR_TOKEN</code></pre>
+<p>Get the token and the ready-made URL for each server from
+<a href="/mcp/connect">mcp/connect</a>. The free anonymous token allows 600 calls an hour and keeps
+your data space for 30 days, refreshed for another 30 on every write, which the connect page states on
+its face. Nothing is installed and no build step is involved.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why does claude mcp list show my server but the tools are missing in the session?", a: "list reports the entry, not a successful handshake. `claude mcp get <name>` runs a health check and is the one that tells you whether the process started and answered. If it started and answered but the tools are still absent, you are in a different directory from the one that holds a local-scope entry." },
+      { q: "What is the difference between .mcp.json and ~/.claude.json?", a: ".mcp.json at a repository root is project scope, meant to be committed so a team shares the same servers. ~/.claude.json holds both local scope, which is keyed by directory, and user scope, which is not. Project scope is the one to use when the server is part of how the repo is worked on." },
+      { q: "Can I edit .mcp.json by hand?", a: "Yes, and the shape is the same mcpServers object Claude Desktop uses, so a block from any README drops straight in. The CLI is just a writer for it. What the CLI adds is the health check on read-back." },
+      { q: "How do I set a license key?", a: "--env MCP_LICENSE_KEY=MCPL1.... before the double dash. Leave it unset and the server runs its free tier, which for most of these servers is a real working tier rather than a trial: per-server limits are listed in data/facts.json in the repository and summarised on the free versus Pro guide." },
+    ],
+  },
+  "mcp-on-windows-paths-and-npx": {
+    title: "MCP servers on Windows: spawn npx ENOENT, backslashes and the PATH",
+    description: "Why spawn npx ENOENT happens on Windows, the cmd wrapper that fixes it, how to escape backslashes in JSON, and the install path that avoids all of it.",
+    html: `<h1>MCP servers on Windows</h1>
+<p>Three Windows-only failures account for most of it. Here they are with the fix next to each.</p>
+
+<h2>1. spawn npx ENOENT</h2>
+<p>On Windows, <code>npx</code> is not an executable. It is <code>npx.cmd</code>, a batch shim, and
+Node's process spawner will not run a batch file unless it goes through the shell. The client tries to
+execute a file called exactly <code>npx</code>, finds none, and reports ENOENT.</p>
+<pre><code>{
+  "mcpServers": {
+    "zip": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@scope/some-mcp-server"]
+    }
+  }
+}</code></pre>
+<p><code>cmd /c</code> is the wrapper. The same shape works for <code>npm</code>, <code>yarn</code>
+and <code>pnpm</code>, all of which are <code>.cmd</code> shims on Windows.</p>
+
+<h2>2. Backslashes in JSON</h2>
+<p>A Windows path pasted into JSON has to have every backslash doubled, because a single backslash
+starts an escape sequence. <code>C:\\Users\\you</code> in JSON is written
+<code>C:\\\\Users\\\\you</code>. Forward slashes also work and are less error-prone:
+<code>C:/Users/you/mcp-servers/servers/zip/dist/index.js</code> is valid on Windows and needs no
+escaping at all.</p>
+
+<h2>3. The config file is not where you think</h2>
+<p><code>%APPDATA%\\Claude\\claude_desktop_config.json</code>. Paste that into the Explorer address bar
+rather than expanding it by hand. Logs sit next door in <code>%APPDATA%\\Claude\\logs\\</code>, one
+file per server, and that is where a startup crash prints its reason.</p>
+
+<h2>The path that avoids all three</h2>
+<p>A <code>.mcpb</code> bundle is a zip of the server plus a manifest, and Claude Desktop opens one
+with an install dialog and runs it on its own bundled Node. There is no cmd wrapper, no PATH question
+and no JSON to escape. Download from the
+<a href="https://github.com/theluckystrike/mcp-servers/releases/latest">latest release</a>; v0.20.0
+carries 31 bundles, one per server, which is what
+<code>gh api repos/theluckystrike/mcp-servers/releases/latest</code> returned on 2026-09-07.</p>
+<p>Building from source on Windows works the same way it does elsewhere:</p>
+<pre><code>git clone https://github.com/theluckystrike/mcp-servers.git
+cd mcp-servers
+npm install
+npm run build -w packages/mcp-license -w servers/invoice</code></pre>
+<p>Then point <code>command</code> at your node executable and <code>args</code> at
+<code>servers/invoice/dist/index.js</code>, both absolute, both with forward slashes.</p>
+
+<h2>File paths inside a conversation</h2>
+<p>These servers read and write real files, so the paths you say out loud matter too. A drive letter
+path is fine. What does not work is a bare <code>http://</code> argument where a file is expected: it
+resolves as a relative filesystem path rather than being downloaded. That behaviour was found and
+recorded during a scored run and is written up in <code>docs/USER_VALUE_R27.md</code> as defect D-R83.
+Download the file first, then hand over the local path.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is WSL an option?", a: "It works, with one catch: a server running inside WSL sees the Linux filesystem, so /mnt/c/Users/you/... is how it reaches your Windows files, and any path you say in the conversation has to be in that form. If most of your files live on the Windows side, running the server natively is less friction." },
+      { q: "Why does the same config work on my Mac and not on Windows?", a: "Almost always the cmd shim. macOS npx is a real executable that the spawner can exec directly; Windows npx is npx.cmd and needs cmd /c. Backslash escaping is the second most common cause, and it produces a JSON parse error that takes out every server in the file at once, not just the one you edited." },
+      { q: "Do these servers work on Windows at all?", a: "Yes. They are TypeScript compiled to plain JavaScript with no native modules, so the same dist/index.js runs on all three platforms. Storage goes to the platform data directory rather than a hardcoded Unix path. The full suite of 1,518 tests, of which 1,507 pass, 0 fail and 11 are skipped, is recorded in data/tests.json at release v0.20.0." },
+      { q: "What about Claude Desktop on Linux?", a: "There is no published Linux path for claude_desktop_config.json because the documentation lists macOS and Windows only. On Linux, use Claude Code, Cursor, VS Code or Cline, all of which are documented cross-platform, or connect to a hosted URL." },
+    ],
+  },
+  "install-mcp-servers-without-npm": {
+    title: "Installing these MCP servers when npx does not work yet",
+    description: "The npm packages are not published. The three paths that do work today: the .mcpb one-click bundle, a clone and build, and a hosted URL that installs nothing.",
+    html: `<h1>Installing these servers when npx does not work yet</h1>
+<p>Straight answer first. The npm packages are not published. A probe of
+<code>registry.npmjs.org</code> on 2026-09-07 returned no versions for
+<code>@theluckystrike/mcp-invoice</code>, <code>mcp-time-tracker</code>, <code>mcp-spreadsheet</code>,
+<code>mcp-zip</code>, <code>mcp-pdf</code> or <code>mcp-quotes</code>. That matches the npm status
+section of the repository README: the publish token on the account is dead and re-authenticating it
+needs a browser login by a human. The <code>npx -y @theluckystrike/mcp-...</code> lines printed
+throughout the READMEs start working the moment that happens, and nothing else about them changes.</p>
+<p>Three paths work today.</p>
+
+<h2>1. The one-click bundle</h2>
+<p>An <code>.mcpb</code> file is a zip holding the built server and its manifest. Claude Desktop opens
+one with an install dialog and runs it on the Node runtime it ships with, so your own PATH, your nvm
+version and your JSON escaping never enter into it.</p>
+<ol>
+<li>Open the <a href="https://github.com/theluckystrike/mcp-servers/releases/latest">latest release</a>.</li>
+<li>Download the bundle you want, for example <code>invoice.mcpb</code>.</li>
+<li>Double click it. Claude Desktop shows an install dialog.</li>
+</ol>
+<p>Release v0.20.0 carries 31 bundles, one per server plus the office-suite bundle. Across all releases
+the assets have been downloaded 5,314 times, counted by summing
+<code>download_count</code> over <code>gh api repos/theluckystrike/mcp-servers/releases --paginate</code>
+on 2026-09-07.</p>
+
+<h2>2. Clone and build</h2>
+<pre><code>git clone https://github.com/theluckystrike/mcp-servers.git
+cd mcp-servers
+npm install
+npm run build -w packages/mcp-license -w servers/invoice</code></pre>
+<p>Swap <code>servers/invoice</code> for whichever you want, or list several after more
+<code>-w</code> flags. The license package has to be in the list because every server links against
+it. The result is <code>servers/invoice/dist/index.js</code>, which you point a client at:</p>
+<pre><code>claude mcp add --scope user invoice -- node /absolute/path/to/mcp-servers/servers/invoice/dist/index.js</code></pre>
+<p>For Claude Desktop, the same two strings go into <code>command</code> and <code>args</code>, both
+absolute.</p>
+
+<h2>3. A URL, with nothing installed</h2>
+<p>Every server also runs behind streamable HTTP. Open <a href="/mcp/connect">mcp/connect</a> and it
+mints a free anonymous token and prints a ready URL per server. Paste one into any client that takes a
+remote server URL, which includes the Claude connector dialog and several IDE pickers. There is no
+header to set, because the token is already in the path.</p>
+<p>The connect page states the free terms on its face: 600 calls an hour, the same free-tier server
+limits as a local install, and a data space kept for 30 days and refreshed for another 30 on every
+write. Reloading that page mints a new token and a new empty data space, so keep the URL if you want
+to keep the data. Anyone holding the URL holds the data space, so treat it as a secret.</p>
+
+<h2>Which one to pick</h2>
+<table>
+<tr><th>Situation</th><th>Path</th></tr>
+<tr><td>Claude Desktop, no terminal</td><td>.mcpb bundle</td></tr>
+<tr><td>Claude Code or Cursor, node already set up</td><td>clone and build</td></tr>
+<tr><td>claude.ai in a browser, or a locked-down machine</td><td>hosted URL</td></tr>
+<tr><td>Files on your own disk have to stay there</td><td>bundle or build, never the hosted URL</td></tr>
+</table>
+<p>That last row is the one that decides it for most people. The local servers make no network call at
+all for anything except live rates and price pages; the hosted ones necessarily see what you send
+them.</p>
+${FOOT}`,
+    faq: [
+      { q: "When will npx work?", a: "When someone runs npm login --auth-type=web once from the publishing account in a browser. It is listed as a human-gated step in the repository README alongside the Smithery CLI login. No date is promised here, because promising one would be inventing it." },
+      { q: "Is the .mcpb bundle the same code as the source?", a: "Yes. The release workflow builds each server from the repository and packs dist plus the manifest. The version in the bundle name matches the git tag, so invoice.mcpb from v0.20.0 is servers/invoice at v0.20.0." },
+      { q: "Do I need to rebuild when I pull?", a: "Yes, npm run build -w again for the servers you use. dist is build output, not tracked source. If a build fails after a pull, run npm install first, because a new server may have added a dependency." },
+      { q: "Can I use the hosted URL and a local install at the same time?", a: "You can, but they are separate data spaces. A local install writes under ~/.local/share/mcp-servers/, and the hosted token has its own store on the server side. An invoice created in one is not visible in the other, and there is no sync between them." },
+    ],
+  },
+  "cursor-mcp-json-setup": {
+    title: "Cursor MCP setup: mcp.json, the required type field, and where the servers appear",
+    description: "The two locations for .cursor/mcp.json, the type field the current docs mark as required, envFile being stdio-only, and how to tell whether Cursor started the server.",
+    html: `<h1>Cursor MCP setup</h1>
+<p>Cursor reads <code>mcp.json</code> from one of two places, and which one you pick decides who gets
+the server.</p>
+<table>
+<tr><th>This project only</th><td><code>&lt;project&gt;/.cursor/mcp.json</code></td></tr>
+<tr><th>Every project</th><td><code>~/.cursor/mcp.json</code></td></tr>
+</table>
+<p>A working entry, with the field people leave out:</p>
+<pre><code>{
+  "mcpServers": {
+    "time-tracker": {
+      "type": "stdio",
+      "command": "/opt/homebrew/bin/node",
+      "args": ["/Users/you/mcp-servers/servers/time-tracker/dist/index.js"]
+    }
+  }
+}</code></pre>
+<p>The current field table marks <code>type</code> as required, with <code>stdio</code> for a server
+Cursor launches itself. Write it out rather than relying on <code>command</code> and <code>args</code>
+alone.</p>
+
+<h2>Where to look after you save</h2>
+<p>The Customize page in the sidebar is where servers are installed and managed, and it lists the
+server with its tools once the process has started. The older Tools and MCP settings pane is not where
+the current documentation sends you. If the server is listed but has no tools under it, it started and
+then failed the handshake, which is a different problem from not starting at all.</p>
+
+<h2>envFile is stdio only</h2>
+<p>An <code>env</code> object next to <code>command</code> is read inline. <code>envFile</code> is
+accepted for stdio servers only: a remote HTTP or SSE server does not read it, and its credentials
+belong in headers in the config instead. This is the documented restriction, and it is easy to trip
+over when you convert a local entry into a remote one and the key silently stops being sent.</p>
+
+<h2>A remote server instead</h2>
+<pre><code>{
+  "mcpServers": {
+    "invoice": {
+      "type": "http",
+      "url": "https://mcp.zovo.one/mcp/invoice/t/YOUR_TOKEN"
+    }
+  }
+}</code></pre>
+<p><a href="/mcp/connect">mcp/connect</a> prints the URL with the token already in the path, so there
+is no header to configure and nothing to install. Free terms are on that page: 600 calls an hour and a
+data space kept 30 days, refreshed on every write.</p>
+
+<h2>What you can do once it is connected</h2>
+<p>With the time tracker connected, this is a real session:</p>
+<pre class="prompt">Start a timer for Acme, task API refactor.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>Then, later, "stop the timer and tell me how long I worked", and at the end of the week "how many
+hours did I put into Acme, grouped by task". The free tier gives unlimited timers and entries, with
+reads clamped to the last seven days and hourly rates on two projects, which is the split recorded in
+<code>data/facts.json</code>. There are 11 tools on that server, counted from
+<code>data/tools.json</code>.</p>
+<p>Per-server Cursor pages with the exact block for each of the 30 servers are under
+<a href="/setup/cursor">setup/cursor</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Project mcp.json or the home one?", a: "Project, when the server is part of how this repo is worked on and you want it committed for the team. Home, when it is your own tooling and you want it in every window. Both files are read; the project one wins for a name that appears in both." },
+      { q: "Cursor lists the server but no tools show up.", a: "The process started and the handshake did not finish. Run the same command in a terminal and watch stderr. With these servers, the usual cause is a dist directory that was never built, so node exits immediately with a module-not-found error." },
+      { q: "Is there a tool limit in Cursor?", a: "Cursor's own documentation is the place to check for a current number, and it changes. What is safe to say is that some clients do cap the number of tools they surface at once, and the office-suite bundle in this repository exposes every child server's tools in one connection, which makes it the fastest way to reach any such cap. Installing the two or three servers you use avoids the question." },
+      { q: "Does the free tier need an account?", a: "No. A local install has no account, no key and no login: leave MCP_LICENSE_KEY unset and the free tier is what runs. The hosted URLs mint an anonymous token with no sign-up either." },
+    ],
+  },
+  "mcp-servers-that-work-offline": {
+    title: "Which MCP servers work with no network at all",
+    description: "A per-server list of what makes a network call and what does not, why that matters for client data, and how to verify the claim yourself rather than take it on trust.",
+    html: `<h1>MCP servers that work with no network at all</h1>
+<p>Of the 30 servers in this repository, 28 make no network call of any kind. Two do, and both only
+because the thing they answer lives on someone else's server: the currency server fetches European
+Central Bank reference rates, and the price tracker fetches the shop page whose price you asked about.
+Everything else reads and writes files on your machine and talks to nothing.</p>
+
+<h2>The list</h2>
+<table>
+<tr><th>Network calls</th><th>Servers</th></tr>
+<tr><td>None</td><td>time-tracker, spreadsheet, invoice, expense-tracker, docx, timezone, resume, recurring, clauses, calendar, pdf, image, bank-statement, kanban, quotes, barcode, zip, billing-docs, deposits, per-diem, asset-register, statement-of-account, cash-book, amortization, petty-cash, work-order, catalogue, change-order</td></tr>
+<tr><td>Fetches a public rate table</td><td>currency (ECB reference rates, cached locally)</td></tr>
+<tr><td>Fetches a page you name</td><td>price-tracker (the product page you asked about)</td></tr>
+</table>
+
+<h2>Why this is the question to ask</h2>
+<p>An MCP server runs as a process on your machine with whatever access you gave it, and the tools it
+exposes are called by a model rather than by you. If the server also has a network connection, the
+data flowing through it can leave, and no amount of reading the README will tell you it did not.
+Cutting the network is the only check that does not depend on trust.</p>
+<p>These servers are also unmetered offline. There is no license server to phone: a Pro key is an
+Ed25519 signature the server verifies locally, so an activated install works on a plane and stays
+activated. There is no telemetry endpoint and no usage counter that needs to reach anything.</p>
+
+<h2>Verify it rather than believe it</h2>
+<p>On macOS, Little Snitch or the built-in firewall in block-all mode will show you. On Linux:</p>
+<pre><code>sudo unshare -n node /path/to/mcp-servers/servers/invoice/dist/index.js</code></pre>
+<p>That runs the server in a network namespace with no interfaces. Drive it from a client and every
+tool on the invoice server still answers. Try the same with the currency server and
+<code>rates_latest</code> fails, which is the expected and honest result: it needs the ECB.</p>
+<p>The other check is the source. Every server is TypeScript in <code>servers/&lt;name&gt;/src</code>
+in a public repository, and a grep for <code>fetch</code>, <code>http</code> or <code>https</code>
+across a server's source is a five-second audit that does not require reading any of it.</p>
+
+<h2>Where the data goes instead</h2>
+<p>Under <code>~/.local/share/mcp-servers/&lt;server&gt;/</code>, or the platform equivalent, as plain
+JSON. You can read it with any editor, back it up with anything, and delete it by deleting the folder.
+The file-handling servers, spreadsheet, pdf, image and zip, keep nothing at all beyond a recent-files
+list: they work on the files you name and leave the results where you asked for them.</p>
+<p>The one exception to all of this is the hosted endpoints. <a href="/mcp/connect">mcp/connect</a>
+gives you a URL instead of an install, and a hosted server necessarily sees what you send it. That is
+a genuine trade and the page says which one you are making.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does the currency server work offline once it has rates?", a: "Partly. It caches what it fetched under ~/.local/share/mcp-servers/currency/, so a conversion at a rate already in the cache answers with no network. A rate it has never seen cannot be invented, and it says so rather than guessing." },
+      { q: "Does a Pro key need to check in?", a: "No. The key is verified with an offline Ed25519 signature check inside the server. There is no activation server, no seat count and no expiry ping. An air-gapped machine activates from the key string alone." },
+      { q: "What about the price tracker, is it scraping?", a: "It fetches the one product page URL you give it and reads the price out of JSON-LD, microdata, Open Graph tags or common price markup. It follows no links, crawls nothing, and refuses a redirect that leaves the product page rather than reporting the price of whatever it landed on. Pages that block bots are handled by typing the price in by hand." },
+      { q: "Can I run these on a machine with no internet from the start?", a: "Yes, if you get the code there. Clone and build on a connected machine, copy the repository directory across, and the built dist runs. The .mcpb bundle is a single self-contained file and copies across just as easily." },
+    ],
+  },
+  "vat-and-reverse-charge-invoices-from-chat": {
+    title: "Invoicing an EU client with reverse charge, from a chat message",
+    description: "Per-line VAT rates, the client VAT id on the document, one tax line per rate, and the one judgement the server will not make for you.",
+    html: `<h1>Reverse charge invoices from chat</h1>
+<p>Tax rate on this server is per line item, not per invoice. A 23 percent domestic line and a zero
+rated reverse charge line sit on the same document, the totals block prints one tax line per distinct
+rate, and the total adds up. That is the whole mechanism.</p>
+<p>What the server does not do is decide whether reverse charge applies to your sale. That depends on
+where both parties are established, what you sold, and whether the customer is VAT registered, and no
+tool in this repository is going to guess it. You decide; the server prints what you decided,
+correctly and consistently.</p>
+
+<h2>Set up the two parties once</h2>
+<pre class="prompt">Set my business profile: Nova Studio, Warsaw, VAT id PL1234567890, default currency EUR, default tax rate 23, payment terms 14 days.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>That is <code>business_set</code>. It also takes an IBAN, a bank name, a logo path and an invoice
+prefix. Anything it does not recognise is reported back to you rather than dropped quietly, so a typo
+in a field name surfaces immediately.</p>
+<pre class="prompt">Add a client: Beta GmbH, Musterstrasse 1 Berlin, VAT id DE811234567, email billing@beta.example.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>client_add</code>. The client VAT id is the field that matters here: it is what gets printed
+on the document, which is the point of recording it. An identical record is refused by name rather
+than stored twice.</p>
+
+<h2>The invoice</h2>
+<pre class="prompt">Invoice Beta GmbH for 20 hours of development at 90 EUR, zero rated, reverse charge, due in 14 days.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>invoice_create</code> with the line carrying <code>tax_rate: 0</code>. The number is allocated
+in sequence as <code>INV-YYYY-NNNN</code> and is never reused. Subtotal 1,800.00 EUR, tax 0.00, total
+1,800.00 EUR, with Beta's VAT id in the BILL TO block.</p>
+<p>Mixing rates on one document works the same way. Twelve hours at 23 percent and eight hours at
+zero produce two tax lines, and the arithmetic is done in integer minor units with each line rounded
+once and then summed, so the printed total equals the sum of the printed lines. There is no floating
+point drift between what the PDF shows and what the client pays.</p>
+
+<h2>What one invoice cannot do</h2>
+<p>Carry two currencies. Items may each declare a currency, and a mix is refused rather than billed as
+if it were one. If you have USD hours and a EUR receipt to bill together, convert first and issue in
+one currency. The currency server's <code>fx_rates_for</code> gives you European Central Bank
+reference rates to do it with, and <code>invoice_from_hours</code> takes
+<code>target_currency</code> plus <code>fx_rates</code> so the rate you used is the rate on the
+document.</p>
+
+<h2>Free tier</h2>
+<p>Three invoices per calendar month, and the PDF carries a small footer line. The overdue report is
+free. Pro at 19 dollars once removes the invoice cap and the footer and allows a logo and a custom
+prefix. Those figures are from <code>data/facts.json</code> in the repository. Ten tools on this
+server, counted from <code>data/tools.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does it check whether my client's VAT id is valid?", a: "No. It stores the string you gave it and prints it. There is no VIES lookup, because the server makes no network calls at all. Validate the id yourself before you rely on zero rating." },
+      { q: "Can I put the reverse charge wording on the invoice?", a: "Put it in the line description, which is free text and prints on the document. There is no dedicated legal-notice field, so the honest answer is that you supply the wording your jurisdiction requires rather than the server supplying it for you." },
+      { q: "What if the client is not VAT registered?", a: "Then charge your domestic rate on the line and the invoice prints one tax line at that rate. Nothing about the mechanism changes; only the number you put in tax_rate does." },
+      { q: "Does the same work on quotes?", a: "Yes. The quotes server carries VAT, discounts and multiple currencies on the same engine, holds the client VAT id, and quote_accept turns an accepted quote into the invoice without retyping the lines. Its free tier is 5 open quotes at a time with unlimited pasteable text quotes." },
+    ],
+  },
+  "quote-to-cash-in-claude": {
+    title: "Quote, deposit, invoice, statement: the whole cycle in one conversation",
+    description: "A worked run through four servers: price a job, take a retainer, bill it, apply the retainer, and produce the statement that says what is actually owed.",
+    html: `<h1>From quote to cash, in one conversation</h1>
+<p>Four servers, five steps, and every figure below came off a scored run recorded in
+<code>docs/USER_VALUE_R27.md</code> on 2026-09-05. The prompts are quoted as they were typed.</p>
+
+<h2>1. Price it</h2>
+<pre class="prompt">Quote Acme for 20 hours of design at 90 EUR plus 23 percent VAT, valid 30 days.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><strong>quotes</strong>, <code>quote_create</code>. The free tier holds five open quotes at a time
+and unlimited pasteable text quotes, which is a real pipeline rather than a demo.
+<code>quote_send_text</code> gives you the block to paste into an email.</p>
+
+<h2>2. They say yes</h2>
+<pre class="prompt">Acme accepted the quote. Turn it into an invoice.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>quote_accept</code>, then <strong>invoice</strong> and <code>invoice_create</code>. The lines
+carry over. In the recorded run the equivalent step produced INV-2026-0001 at EUR 1,107.00, due
+2026-09-19.</p>
+
+<h2>3. Take the retainer</h2>
+<pre class="prompt">Acme paid a 500 EUR retainer today. Record it.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><strong>deposits</strong>, <code>deposit_record</code>. DEP-2026-0001, EUR 500.00 held.
+<code>deposit_apply</code> then puts it against the invoice as a payment, leaving EUR 496.30 really
+outstanding once a credit note in the same run is accounted for.</p>
+
+<h2>4. Something changed</h2>
+<pre class="prompt">Credit one hour back to Acme on INV-2026-0001.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><strong>billing-docs</strong>, <code>credit_note_create</code>. CN-2026-0001, EUR -110.70. Same
+engine as the invoices, same numbering discipline.</p>
+
+<h2>5. What do they actually owe</h2>
+<pre class="prompt">Give me Acme's statement of account for September 2026 and show me the aging on what they still owe.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><strong>statement-of-account</strong>, <code>statement_build</code> then
+<code>statement_aging</code>. Opening 0.00, invoiced 1,107.00, paid 500.00, credited 110.70, closing
+<strong>EUR 496.30</strong>, all of it in the 0 to 30 day bucket, 11 days past the due date.</p>
+
+<h2>The defect worth knowing about</h2>
+<p>Mid-cycle, <code>deposit_apply</code> reported a balance of EUR 607.00, because the invoice store
+does not know credit notes exist. The statement nets the credit note and returns EUR 496.30. The
+document you send a client is right; the mid-month balance question is the one that is not. This is
+recorded as open defect D-R96 in <code>docs/USER_VALUE_R27.md</code>, and it is written here rather
+than left for you to find.</p>
+
+<h2>What this costs</h2>
+<p>Every step above ran with no license key set. The caps you meet next are the PDFs and the
+cross-client reports: <code>statement_pdf</code>, <code>credit_note_pdf</code> and
+<code>deposits_report</code>. One bundle key at 39 dollars, paid once, covers every server. Per-server
+free tiers are listed in <code>data/facts.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Do the four servers share a client list?", a: "They share a profile file for the issuer details, and each keeps its own records. A client added on the invoice server is not automatically on the quotes server. In practice you say the client name and the servers resolve it, which is why the recorded run needed no ids typed by hand." },
+      { q: "How many tool calls does a cycle like this take?", a: "The nine-step month in docs/USER_VALUE_R27.md took 17 tool calls and 118.6 seconds end to end, scoring 26 of 27 on correctness of server, tool and figure. A five-step cycle is proportionally less; the number is not fixed because the model sometimes splits a request into a report call and a document call." },
+      { q: "Can I do this without the deposits server?", a: "Yes. invoice_mark_paid records a payment in full or in part and reports the balance due. The deposits server exists for money held before there is an invoice to put it against, which is what a retainer or a security deposit is." },
+      { q: "What happens when the free invoice cap runs out mid-month?", a: "The fourth invoice in a calendar month is refused by name with the reason. Nothing already created is locked away: lists, PDFs of existing invoices, the overdue report and every read stay available. The cap is on creating new documents, not on reaching the ones you have." },
+    ],
+  },
+  "project-profitability-hours-versus-budget": {
+    title: "Is this project making money? Hours against costs, without a spreadsheet",
+    description: "Put tracked hours and logged costs side by side for one client, work out what is left, and see the two numbers that make a profitable project look unprofitable.",
+    html: `<h1>Is this project actually making money</h1>
+<p>Two servers hold the answer and neither of them computes it for you, which is worth knowing before
+you start. The time tracker holds what the project earned. The expense tracker holds what it cost.
+Ask each, then subtract.</p>
+
+<h2>What it earned</h2>
+<pre class="prompt">How many hours did I put into Acme this month, grouped by task, with amounts?</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>report</code> on the time tracker returns totals in hours and money, grouped by project, day,
+task or tag. Money is computed from seconds and the rate in one rounding step, then summed, so the
+total equals the sum of the lines. On the free tier reads are clamped to the last 7 days, which is
+enough for a weekly check and not enough for a month; that limit and the two-rated-projects limit are
+in <code>data/facts.json</code>.</p>
+
+<h2>What it cost</h2>
+<pre class="prompt">Show me the expense summary for Acme this month, grouped by category.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>expense_summary</code> groups by category, project, month or merchant, always per currency
+and never mixing currencies into one number. Free covers the last 30 days and 3 projects.</p>
+
+<h2>The two numbers that distort it</h2>
+<p><strong>Rebillable costs counted as costs.</strong> A 400 EUR stock photo licence you will invoice
+back to the client is not a project cost; it is a pass-through. The expense tracker holds a billable
+flag for exactly this, and <code>expense_to_invoice</code> previews the unbilled billable expenses of
+a project as invoice line items, with an optional markup. Until you separate them, every rebillable
+purchase makes the project look worse than it is.</p>
+<p><strong>Unbilled hours.</strong> Hours tracked and never invoiced are revenue you have not got.
+<code>entry_mark_billed</code> closes tracked hours against an invoice number, so a report can tell
+tracked from billed. If nothing is ever marked, every report reads as though the whole month was paid.</p>
+
+<h2>A worked shape</h2>
+<table>
+<tr><th>Line</th><th>EUR</th><th>Where it came from</th></tr>
+<tr><td>Hours billed, 20 at 90</td><td>1,800.00</td><td>time-tracker <code>report</code></td></tr>
+<tr><td>Rebilled costs</td><td>420.00</td><td>expense-tracker, billable, rebilled</td></tr>
+<tr><td>Own costs</td><td>-260.00</td><td>expense-tracker, not billable</td></tr>
+<tr><td>Cost of the rebilled items</td><td>-420.00</td><td>the same purchases, at cost</td></tr>
+<tr><td><strong>Left</strong></td><td><strong>1,540.00</strong></td><td></td></tr>
+</table>
+<p>Rebilled costs appear twice on purpose, once as revenue and once as cost, and net to zero unless
+you added a markup. If they only appear once, the project is either 420 EUR better or 420 EUR worse
+than it looks, depending which side you dropped.</p>
+
+<h2>Keeping the hours honest in the first place</h2>
+<p>The kanban server has <code>task_start_timer</code> and <code>task_log_time</code>, which push time
+into the time tracker from the board rather than from memory. A task you moved to done with no time
+against it is the usual source of a project that mysteriously earned nothing. Free tier there is 3
+projects and 200 open tasks.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is there one tool that returns profit?", a: "No, and there is no plan to pretend otherwise. Profit depends on what you count as a project cost, whether you allocate overhead, and how you treat unbilled time. Two honest reports you subtract yourself beat one number computed from assumptions you did not make." },
+      { q: "Can I compare across currencies?", a: "Not inside one number. Both servers group per currency and refuse to add them. Convert deliberately with the currency server's fx_rates_for, which returns European Central Bank reference rates, and state the rate you used. The free currency tier covers history up to 90 days." },
+      { q: "How do I handle a fixed-price project?", a: "Track the hours anyway, with a rate set, and treat the reported amount as what the work would have earned hourly. The gap between that and the fixed price is the thing you actually want to know, and it is invisible if you do not track the hours because the price was fixed." },
+      { q: "What is the smallest version of this?", a: "One prompt a week: 'hours on every project this week with amounts'. On the free tier that is exactly the window reads are clamped to, so it costs nothing and needs no key." },
+    ],
+  },
+  "self-employed-tax-year-pack-from-chat": {
+    title: "Building a tax year pack for your accountant from chat",
+    description: "The six things an accountant asks a sole trader for, which server holds each, and how to hand the whole year over as one archive.",
+    html: `<h1>A tax year pack, assembled from chat</h1>
+<p>An accountant asks a sole trader for roughly six things. Here is which server holds each, and the
+one prompt that produces it.</p>
+<table>
+<tr><th>What they ask for</th><th>Server</th><th>Tool</th></tr>
+<tr><td>Sales, invoice by invoice</td><td>invoice</td><td><code>invoice_list</code></td></tr>
+<tr><td>Purchases with VAT split out</td><td>expense-tracker</td><td><code>expense_export</code></td></tr>
+<tr><td>The bank, categorised</td><td>bank-statement</td><td><code>statement_export</code></td></tr>
+<tr><td>Mileage and travel</td><td>expense-tracker, per-diem</td><td><code>mileage_add</code>, <code>trip_export</code></td></tr>
+<tr><td>Fixed assets and depreciation</td><td>asset-register</td><td><code>asset_schedule</code></td></tr>
+<tr><td>What clients still owe at year end</td><td>statement-of-account</td><td><code>statement_aging</code></td></tr>
+</table>
+
+<h2>The order that saves you a second pass</h2>
+<p>Import the bank first, because it is the only record that is complete. Everything else is a record
+of what you remembered to write down.</p>
+<pre class="prompt">Import this bank CSV export and categorise it, then reconcile it against my logged expenses for the year.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>statement_import</code>, then <code>reconcile_expenses</code>. That second call is the useful
+one: it names the bank debits with no receipt behind them, which is your list of missing paperwork.
+In the recorded run in <code>docs/USER_VALUE_R27.md</code> a 41-transaction Revolut export produced 33
+August debits and EUR 1,283.73 unreceipted. On the free tier reconciliation runs 31 days at a time,
+so a year is twelve calls rather than one.</p>
+
+<h2>Then fill the gaps and export</h2>
+<pre class="prompt">Log these two: 12.30 EUR at Adobe, software, and 48.00 EUR at the print shop, billable to Acme.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>expense_add</code>. A stored <code>vat_rate</code> splits the gross on the receipt into net
+and VAT by rounding the VAT rather than the net, so net plus VAT equals the gross exactly. An expense
+with no rate holds a gross amount and is flagged as VAT unknown rather than silently taxed at a
+default, which is the behaviour that stops a rate you set in March from rewriting what a receipt in
+January meant.</p>
+<pre class="prompt">Export every expense for the year to CSV, then show me the aging on unpaid invoices as at 31 December.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+
+<h2>Hand it over as one file</h2>
+<pre class="prompt">Zip everything in my exports folder into accounts-2026.zip.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>The zip server packs a folder with a glob and refuses nothing quietly. Free is 20 archives a
+calendar month at up to 25 MB and 200 entries each, and reading an archive is never metered on any
+tier. If the accountant sends one back, <code>zip_list</code> tells you what is inside before you
+unpack it, including the absolute paths, the dot-dot entries and the symlinks that a careless archive
+can carry.</p>
+
+<h2>What this does not do</h2>
+<p>It does not file anything, compute your tax, or know your allowances. There is no tax engine in
+this repository and there is not going to be a claim that there is. What it gives you is the six
+exports in a shape a human accountant can read, produced from records you kept as you went rather
+than reconstructed in April.</p>
+${FOOT}`,
+    faq: [
+      { q: "Which free tiers run out first over a whole year?", a: "The read windows. The time tracker clamps reads to 7 days on free, the expense tracker to 30, and bank reconciliation runs 31 days at a time. Creating records is unlimited on both trackers, so a year of data accumulates fine on free; it is pulling the year back out in one call that needs Pro. Per-server figures are in data/facts.json." },
+      { q: "Does the asset register know my country's depreciation rates?", a: "It ships rate tables the tax authorities published, and every answer names the rate, the instrument and its effective date. Schedules are free and unlimited on every tier, deliberately, because the rates are public regulation. The free cap is on the size of the register, 10 assets." },
+      { q: "Can it produce a profit and loss?", a: "The cash-book server builds a double-entry ledger from the books the other servers already keep, and trial_balance and ledger_lines are free and unlimited. It writes into none of those books and there is no way to type an entry into it, so it can only tell you whether what you recorded adds up. That is a different thing from a filed set of accounts." },
+      { q: "How do I make sure the mileage figures are right?", a: "Pass your own rate. The bundled table holds one flat approximation per region, PL 1.15 PLN per km, UK 0.45 GBP per mile, US 0.70 USD per mile, EU 0.30 EUR per km, each with the assumption it makes written next to it, and every reply repeats that it is an approximation. rate_per_km overrides it with your exact scheme." },
+    ],
+  },
+  "mileage-log-for-tax-from-chat": {
+    title: "Keeping a mileage log in chat, with the rate you actually claim",
+    description: "Log a trip in one sentence, why the bundled rates are labelled approximations, and how to pass your own rate so the number matches your scheme.",
+    html: `<h1>A mileage log you will actually keep</h1>
+<pre class="prompt">Log 84 km to the Krakow site visit yesterday for Acme, billable.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>That is <code>mileage_add</code> on the expense tracker. It prices the trip from a rate table and
+writes it as an expense with a project and a billable flag, so it flows into the same summaries and
+the same rebill as everything else you spent.</p>
+
+<h2>Read the rate it used</h2>
+<p>Every reply names the rate and repeats a caveat, in this form:</p>
+<pre><code>(table rate PL 1.15 PLN/km, an approximation; pass rate_per_km for your exact scheme)</code></pre>
+<p>That is deliberate. The bundled table holds one flat rate per region and each row states what it
+assumes:</p>
+<table>
+<tr><th>Region</th><th>Rate</th><th>Assumes</th></tr>
+<tr><td>PL</td><td>1.15 PLN/km</td><td>A car over 900 cm3. The limit is 0.89 PLN/km at or below that, with separate motorcycle and moped rates.</td></tr>
+<tr><td>UK</td><td>0.45 GBP/mile</td><td>A car, inside the first 10,000 business miles of the tax year. HMRC pays less above that, and different rates for motorcycles and bicycles.</td></tr>
+<tr><td>US</td><td>0.70 USD/mile</td><td>The IRS business standard rate for one calendar year. It is reissued annually and has changed mid-year.</td></tr>
+<tr><td>EU</td><td>0.30 EUR/km</td><td>A generic per-kilometre allowance. There is no single EU rate; each member state sets its own.</td></tr>
+</table>
+<p>There are no year, vehicle or threshold tables behind those numbers, and that is a design decision
+stated in the server's own README: a table that looks authoritative and is a year stale is worse than
+one that says what it is.</p>
+
+<h2>Claim your real rate</h2>
+<pre class="prompt">Log 84 km for Acme at 0.89 PLN per km.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>rate_per_km</code> overrides the table for the unit you passed, which is the supported way to
+claim an engine class, a mid-year rate, or the band above 10,000 miles. With no region, miles take the
+US rate and kilometres the EU rate.</p>
+
+<h2>One refusal that saves real money</h2>
+<p><code>currency</code> is accepted only together with <code>rate_per_km</code>. Relabelling a table
+rate of PLN 1.15 per km as EUR 1.15 per km converts nothing and books roughly four times the real
+cost, so that call is refused rather than answered. Money is <code>round(distance * rate)</code> in
+the rate's own currency, and currencies are never added together in a summary.</p>
+
+<h2>Getting it onto an invoice</h2>
+<p>A billable mileage line is picked up by <code>expense_to_invoice</code> along with everything else
+billable on that project, as <code>invoice_create</code> line items, grouped per currency because one
+invoice carries one currency. That call marks nothing as rebilled. Create the invoice, then call
+<code>expense_mark_rebilled</code> with the invoice number, which is required. The two-step exists so
+a preview can never quietly close out expenses against an invoice that was not issued.</p>
+
+<h2>Free tier</h2>
+<p>Logging expenses, mileage and receipts is unlimited on both tiers. The free limits are on reading
+back: list and summary cover the last 30 days, 3 projects, 5 merchant rules, CSV export up to 200 rows
+and never a partial file. <code>expense_to_invoice</code> handles 20 items at a time on free, markup
+included. From <code>data/facts.json</code> and <code>servers/expense-tracker/README.md</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does it track the route or the odometer?", a: "Neither. You say the distance. There is no GPS, no map lookup and no network call anywhere in this server, which is why it can run with the network off entirely." },
+      { q: "Can I log a round trip?", a: "Say the total distance. There is no outbound and return concept, because for the claim it makes no difference. What does matter is logging it the same day: the free read window is 30 days, and a trip you never wrote down is not recoverable from anything the server holds." },
+      { q: "How do I separate a personal detour?", a: "Log only the business distance. The server records what you tell it and does not audit it. If you need the working shown, put it in the description field, which is free text and survives into the CSV export." },
+      { q: "What about per diems for the same trip?", a: "That is a different server. per-diem prices the daily subsistence allowance on the Polish delegation regulation, the HMRC benchmark scale rates or the US GSA CONUS standard, with the partial-day rule and meal deductions shown next to the figure. Rate lookups and calculations are unlimited on every tier there, deliberately, because the tables are public regulation." },
+    ],
+  },
+  "reconcile-a-bank-export-with-your-invoices": {
+    title: "Reconciling a bank CSV against what you invoiced and spent",
+    description: "Import any bank export, let rules categorise it, and get the list of debits with no receipt behind them. A worked run with real figures.",
+    html: `<h1>Reconciling a bank export in chat</h1>
+<p>The bank statement is the only complete record you have. Everything else is a record of what you
+remembered to write down, which is why reconciliation is the step that finds the missing paperwork
+rather than the step that confirms it is all there.</p>
+
+<h2>Import</h2>
+<pre class="prompt">Import ~/Downloads/revolut-main.csv as my main account.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>statement_import</code>. It sniffs the delimiter and the header row, which is what makes an
+export from any bank work rather than one specific format. A run recorded in
+<code>docs/USER_VALUE_R27.md</code> on 2026-09-05 imported a 4,422-byte Revolut export and read
+<strong>41 transactions</strong>, of which 33 were August debits.</p>
+<p>One thing that trips people: hand it a local path. A bare <code>http://</code> argument where a
+file is expected resolves as a relative filesystem path rather than being downloaded. That is recorded
+as defect D-R83 in the same document. Download first, then say the path.</p>
+
+<h2>Categorise once, not every month</h2>
+<pre class="prompt">Anything from Adobe is software, anything from PKP is travel, and anything from Zabka is subsistence.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>category_rules</code>. Rules are matched on the merchant text and applied to new imports, so
+the second month is mostly automatic. Free tier holds 5 rules across 2 accounts with 12 months of
+transactions.</p>
+
+<h2>The call that earns its keep</h2>
+<pre class="prompt">Reconcile August against my logged expenses and tell me what has no receipt.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>reconcile_expenses</code>. In that recorded run it returned <strong>EUR 1,283.73
+unreceipted</strong> across the August debits. That number is the point of the exercise: it is the
+list of things you spent money on and never logged, sorted so you can work down it.</p>
+<p>On the free tier reconciliation runs 31 days at a time. A year is twelve calls, which is tedious
+and works. Pro removes the window.</p>
+
+<h2>Find the subscriptions you forgot</h2>
+<pre class="prompt">What is recurring on this account?</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>recurring_detect</code> looks for repeated charges. Free covers the last 3 months and reports
+5 charges, which in practice is enough to find the two you were not thinking about.</p>
+
+<h2>Matching money in against invoices</h2>
+<p>The bank server categorises and reconciles spending. For money coming in, the pairing is manual and
+deliberate: <code>transactions_search</code> finds the credit, and <code>invoice_mark_paid</code> on
+the invoice server records it in full or in part and reports the balance due. There is no automatic
+matcher, because a payment that is 3 EUR short of an invoice is either a bank fee or a dispute, and
+guessing which one costs more than asking.</p>
+<p>Ten tools on this server, counted from <code>data/tools.json</code>. Free and Pro splits from
+<code>data/facts.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Which banks does the CSV importer handle?", a: "It is format-agnostic rather than bank-specific: it sniffs the delimiter and guesses the header row, then maps date, description and amount. Exports that split debit and credit into two columns, and exports that use a single signed column, both work. A format it cannot read fails loudly with the row it choked on rather than importing half a file." },
+      { q: "Does anything get uploaded?", a: "No. The server makes no network call at all. Transactions live under ~/.local/share/mcp-servers/bank-statement/ as plain JSON, and you can delete the folder to delete the data." },
+      { q: "Can I import the same file twice?", a: "Importing overlapping ranges is the normal case, since bank exports usually overlap at the edges. Check the imported count against the file's own row count on the first import so you know what a clean number looks like for your bank, then compare on later ones." },
+      { q: "What does reconciliation actually compare?", a: "Bank debits against expenses logged on the expense tracker over the same window, by amount and date proximity. What it returns is the unmatched side: debits with nothing logged against them. It does not create expenses for you, because a bank line has no VAT rate, no project and no billable flag, and inventing those is how a ledger stops being true." },
+    ],
+  },
+  "rebill-client-expenses-with-a-markup": {
+    title: "Rebilling client expenses, with a markup and the VAT handled honestly",
+    description: "Turn logged billable costs into invoice lines, add a markup, keep multi-currency purchases from being folded into one wrong number, and close them out correctly.",
+    html: `<h1>Rebilling what a project cost you</h1>
+<pre class="prompt">Show me Acme's unbilled billable expenses as invoice lines with a 10 percent markup.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>expense_to_invoice</code>. It returns the project's unbilled billable expenses in exactly the
+line-item shape <code>invoice_create</code> expects, per currency, with your markup applied. It marks
+nothing as rebilled, and there is no option to make it, which is the design decision that matters
+here.</p>
+
+<h2>Why the preview and the close-out are separate</h2>
+<p>Because you can preview and then not issue the invoice. If the preview closed expenses out, a
+conversation you abandoned would leave real costs marked as billed and invisible to the next preview.
+So the sequence is fixed: preview, create the invoice, then</p>
+<pre class="prompt">Mark those expenses rebilled against INV-2026-0007.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>expense_mark_rebilled</code>, and <code>invoice_number</code> is required. Marking by ids is
+the precise route. Marking by project and date range additionally requires a currency, so invoicing
+the EUR group cannot accidentally close the PLN one.</p>
+
+<h2>Currencies do not get folded together</h2>
+<p>One invoice carries one currency. A week of USD hours, a EUR receipt and a GBP mileage line comes
+back as three groups, each with its own <code>expense_ids</code>, and you pass one group. To get a
+single invoice, supply <code>target_currency</code> and your own <code>fx_rates</code>, which puts the
+rate you used on the record instead of a rate the server picked. The currency server's
+<code>fx_rates_for</code> returns European Central Bank reference rates in that shape; free covers
+history up to 90 days.</p>
+
+<h2>The VAT rule that stops double taxing</h2>
+<p>A stored rate of <code>0</code> is a rate, not a gap: an exempt receipt stays exempt. An expense
+recorded with no rate at all holds a gross amount and is rebilled as-is with
+<code>tax_rate: 0</code> and a description saying so, precisely so a default rate on the invoice
+cannot tax a receipt that already included tax. To split those older lines anyway, pass
+<code>assume_vat_rate</code> and they come back flagged <code>[vat assumed 23%]</code>.</p>
+<p>The <code>expense_settings</code> default is applied when the expense is inserted and never
+retroactively at rebill time. Changing that default in March does not rewrite what a receipt entered
+in January meant.</p>
+
+<h2>A worked line</h2>
+<table>
+<tr><th></th><th>EUR</th></tr>
+<tr><td>Stock photo licence, logged gross</td><td>48.00</td></tr>
+<tr><td>VAT split at 23 percent</td><td>net 39.02, VAT 8.98</td></tr>
+<tr><td>Rebilled net with 10 percent markup</td><td>42.92</td></tr>
+<tr><td>On the invoice at 23 percent</td><td>52.79 gross</td></tr>
+</table>
+<p>The split rounds the VAT rather than the net, so net plus VAT is exactly the gross and a half-cent
+of VAT rounds up instead of disappearing.</p>
+
+<h2>Free tier</h2>
+<p>Logging is unlimited. <code>expense_to_invoice</code> handles 20 items at a time on free, markup
+included; Pro removes the item cap and adds xlsx export and unlimited projects and rules. Twelve tools
+on this server, counted from <code>data/tools.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can I rebill at cost with no markup?", a: "Yes, that is the default. Markup is a parameter you pass, not a setting that lurks. Passing zero and passing nothing produce the same lines." },
+      { q: "What if I already invoiced some of them?", a: "The preview only returns unbilled billable expenses, so anything already closed out with expense_mark_rebilled is excluded. That is the whole reason the marker exists rather than a date cutoff, which would break the moment you invoiced out of order." },
+      { q: "Can I unmark something?", a: "expense_update with rebilled: false clears both the marker and the invoice number. Changing the amount, currency or VAT rate of an already-rebilled expense is refused unless you pass unlink_rebill: true, because the invoice charged something else and quietly diverging from it is worse than a refusal." },
+      { q: "Does the markup show on the invoice?", a: "No. It comes through in the line amount, not as a separate line, which is normally what you want. If you need it visible, put it in the line description before you create the invoice, which is free text." },
+    ],
+  },
+  "chase-unpaid-invoices-without-a-crm": {
+    title: "Chasing an unpaid invoice: aging, then the letter",
+    description: "Find out who owes what and for how long, then get the chaser drafted at the tone you actually want, all on the free tier.",
+    html: `<h1>Chasing an unpaid invoice</h1>
+<p>Two questions, in this order. Who owes me money, and how do I ask for it.</p>
+
+<h2>Who owes what</h2>
+<pre class="prompt">Show me the aging on everything outstanding as at today.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>statement_aging</code> on the statement-of-account server, for one client or for everyone. It
+buckets what is owed into 0 to 30, 31 to 60, 61 to 90 and over 90 days as at any date you name, and
+names the oldest overdue invoice.</p>
+<p>This tool is free and unlimited on every tier, for one client or for all of them, and the reason is
+stated in the server's own material: who owes me money is the question this server exists for, and a
+free tier that hides it is a demo rather than a tool. The metered thing is the document that goes to a
+client, five distinct statements a calendar month, counted by client, period and currency, so
+rebuilding one already in the register is free forever.</p>
+<p>The invoice server has a second, narrower view: <code>overdue_report</code> lists unpaid invoices
+past due with days overdue and outstanding totals per currency, and it is free too.</p>
+
+<h2>The letter</h2>
+<pre class="prompt">Draft a firm chaser to Acme for the two invoices in the 31 to 60 bucket.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>dunning_text</code>. Friendly and firm are free. The level 3 final demand is Pro, along with
+the A4 statement PDF and <code>statements_report</code>, which ranks every client by what is overdue
+rather than by what is large and names the oldest overdue invoice in the whole book.</p>
+
+<h2>The document that ends the argument</h2>
+<pre class="prompt">Build Acme's statement of account for the year to date and give me the text version.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>statement_build</code> then <code>statement_text</code>. A statement is not an invoice
+reprint: it is opening balance, everything invoiced, everything paid, everything credited, closing
+balance. In the recorded run in <code>docs/USER_VALUE_R27.md</code> that came to opening 0.00,
+invoiced 1,107.00, paid 500.00, credited 110.70, closing <strong>EUR 496.30</strong>.</p>
+<p>Note what that closing balance did that nothing else in the run managed: it netted a credit note
+the invoice store could not see. <code>deposit_apply</code> in the same run reported EUR 607.00 for
+the same client. The document you send is right where the mid-month balance question is not, and that
+gap is recorded as open defect D-R96 rather than left for a client to find.</p>
+
+<h2>Before you send it</h2>
+<p>Check the invoice was actually receivable. A missing address in the BILL TO block, a wrong VAT id
+or a due date the client never agreed to are all reasons a chaser gets ignored rather than paid.
+<code>invoice_get</code> returns the full stored record for one number, and
+<code>client_add</code> fills in an address on a client that was created from a bare name.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does it send the email?", a: "No. It writes the text and you send it. There is no mail integration and no network call anywhere in this server, which also means no chaser goes out because a model decided it should." },
+      { q: "What counts as a distinct statement against the free cap of five?", a: "A combination of client, period and currency. Rebuilding a statement already in the register costs nothing on any tier, so regenerating the same document after a payment lands is free. Five genuinely different statements a calendar month is the limit." },
+      { q: "Can I age as at a past date?", a: "Yes, statement_aging takes the as-at date. Ageing as at the last day of a quarter is the usual reason, and it produces different buckets from ageing today, which is the point." },
+      { q: "Which tools here are free?", a: "statement_aging for everyone, statement_text, dunning_text at friendly and firm, and the invoice server's overdue_report. Pro buys the PDF on your invoice layout, the final demand, and statements_report across all clients. Figures from data/facts.json." },
+    ],
+  },
+  "price-a-job-with-a-rate-card-and-a-change-order": {
+    title: "Pricing a job from a rate card, and what to do when the scope changes",
+    description: "Keep one price list the quote and the invoice both read, then handle scope changes as documents with a running contract value instead of an argument.",
+    html: `<h1>One rate card, and a paper trail when the job grows</h1>
+<p>Two problems here and they are the same problem. Prices typed fresh into every quote drift, and
+scope that changes in a phone call does not appear on the invoice. Both are fixed by writing it down
+once in a place the other servers can read.</p>
+
+<h2>The price list</h2>
+<pre class="prompt">Set a SKU: DEV-HOUR, senior development hour, 90 EUR. And DESIGN-HOUR at 75 EUR.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>sku_set</code> on the catalogue server. <code>lines_resolve</code> is what the quote and the
+invoice call to turn a code and a quantity into a priced line, and it is free on every tier, along
+with <code>price_list_text</code> and every other text answer. Withholding resolution would withhold
+the one thing the sibling servers came for.</p>
+<p>Free is 25 SKUs, the one standard price tier, and unlimited rate cards. Pro adds price tiers, so
+trade and wholesale are a second column rather than a second catalogue, plus the A4 price list PDF and
+a report of which rows a later row already replaces.</p>
+<p>One behaviour worth knowing: <code>sku_delete</code> is free on every tier, and a code that has
+already priced a line, or that a rate card points at, is refused by name with the number of times it
+was used and the last resolution id. A code printed on a document you sent somebody is a fact about
+that document, not a row you can quietly remove.</p>
+
+<h2>The job</h2>
+<pre class="prompt">Raise a work order for Acme: 12 DEV-HOUR and 4 DESIGN-HOUR, scheduled Thursday.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>The work-order server prices the job the way the invoice will. Free holds five open work orders,
+which is a one-van trade, with 200 lines each on every tier. The cap counts open jobs rather than jobs
+ever raised, so finishing one frees its slot. The text completion report is free, because handing the
+customer what was done is the thing the job was for.</p>
+
+<h2>Then the scope changes</h2>
+<pre class="prompt">Raise a change order against that job: 6 more DEV-HOUR, reason client added a second language.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>The change-order server holds it as a document against the original quote or work order, with the
+reason, the price delta and the client approval state. <code>contract_value</code> is free on every
+tier and returns the running value derived from what the client actually approved, which is the
+number the whole thing exists to produce.</p>
+<p>Free is five open change orders, counted as the ones the client has not answered yet, so approving,
+rejecting or voiding one frees its slot. Pro adds <code>change_order_document</code>, a plain-text
+document with every line, its reason, the contract value before and after, and an approval block to
+sign, plus <code>change_order_invoice_payload</code>, which hands the approved delta straight to
+<code>invoice_create</code> with VAT at the profile rate and the rounding drift asserted to zero.</p>
+
+<h2>A duplicate is refused before the cap</h2>
+<p>On both the work-order and change-order servers, a byte-identical document is refused before the
+free cap is consulted, and the refusal names the id already holding it rather than offering an
+upgrade. It burns neither a slot nor a document number. The adversarial test suite asserts that the
+refusal text does not contain the words "free tier", because a duplicate is one job filed twice far
+more often than it is two jobs.</p>
+<p>All free and Pro figures on this page are from <code>data/facts.json</code>. Tool counts from
+<code>data/tools.json</code>: 12 on catalogue, 12 on work-order, 11 on change-order.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can the invoice read the price list directly?", a: "lines_resolve returns the priced lines and you pass them to invoice_create. There is no hidden coupling between the stores, which is deliberate: an invoice is a record of what you charged, and a price list that changed afterwards must not be able to rewrite it." },
+      { q: "What happens to a SKU whose price changes?", a: "Set the new price and the newer row is what resolves from then on. Documents already issued keep the price they were issued at, because they hold resolved lines rather than a reference. catalogue_report on Pro lists which rows a later row already replaces." },
+      { q: "Do I need the work-order server for desk work?", a: "No. It exists for jobs with a site, a schedule and a sign-off, which is trades and field work. For desk work the quote is the job document and change orders attach to the quote instead." },
+      { q: "Why is contract_value free?", a: "Because the running value is the thing the change orders exist to answer, and withholding it would withhold the record rather than a convenience. The same reasoning puts trial_balance, statement_aging, loan_schedule and the petty cash reconcile on the free tier of their own servers." },
+    ],
+  },
+  "set-a-freelance-hourly-rate-from-your-own-numbers": {
+    title: "Working out your hourly rate from what you actually billed",
+    description: "Three measurements you already have if you tracked time, what they mean together, and the honest reason no tool here computes a rate for you.",
+    html: `<h1>Your hourly rate, from your own numbers</h1>
+<p>The rate you quote and the rate you earn are different numbers, and the gap between them is made of
+hours you tracked and never billed. If you have been tracking time, you can measure both today. There
+is no calculator in this repository that will do it for you, because the inputs are judgement calls
+and a tool that hides them behind a single figure would be lying about how confident it is.</p>
+
+<h2>Measurement one: what you billed</h2>
+<pre class="prompt">Give me invoice lines for Acme in August.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>invoice_summary</code> on the time tracker returns one line per task with hours, rate and
+amount, plus a total. That total is billed revenue for the period. It is a Pro tool; the free
+<code>report</code> gives you totals in hours and money over the last 7 days, which is enough to
+sample a week and multiply.</p>
+
+<h2>Measurement two: what you worked</h2>
+<pre class="prompt">How many hours did I track last week across every project?</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>report</code> with no project filter. Compare it with measurement one. The difference is
+unbilled time, and for most people it is between a fifth and a third of the week. Whatever it is for
+you, it is the number that turns a 90 EUR quoted rate into something else entirely.</p>
+
+<h2>Measurement three: what it cost you to work</h2>
+<pre class="prompt">Expense summary for this month, grouped by category, excluding anything billable.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>expense_summary</code>. Exclude the billable ones, because those are pass-throughs, not the
+cost of being in business. Software, hardware, the accountant, the desk. Free covers 30 days.</p>
+
+<h2>Putting them together</h2>
+<table>
+<tr><th>Line</th><th>Where</th></tr>
+<tr><td>Billed in the month</td><td>invoice_summary or report</td></tr>
+<tr><td>less own costs</td><td>expense_summary, non-billable only</td></tr>
+<tr><td>= what the month left you</td><td></td></tr>
+<tr><td>divided by hours tracked</td><td>report, every project</td></tr>
+<tr><td>= what an hour of work is actually worth</td><td></td></tr>
+</table>
+<p>Two things this leaves out on purpose. Tax, because it depends on your jurisdiction and your
+structure and nothing here knows either. Unpaid invoices, because billed is not banked:
+<code>statement_aging</code> tells you what is still outstanding, and a month with a large receivable
+in it did not leave you what the arithmetic says.</p>
+
+<h2>Making the next measurement easier</h2>
+<p><code>project_set_rate</code> puts a rate on a project so every entry prices itself. On the free
+tier two projects can carry rates, which covers the case where you want to compare your main client
+against everything else. Set the rate before you track, not after: an entry priced at zero and
+corrected later is a manual edit you will forget to make.</p>
+<p>Free and Pro splits from <code>data/facts.json</code>. Eleven tools on the time tracker, counted
+from <code>data/tools.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why is invoice_summary a Pro tool when report is free?", a: "The free tier clamps every read to the last 7 days, and an invoice summary over 7 days is not useful for billing a month. Grouping by project, day and task, and the money arithmetic itself, are free. The stated split is in data/facts.json." },
+      { q: "What is a realistic utilisation figure?", a: "This page will not invent one. Measure yours: tracked hours against billed hours for one month, from the two reports above. A figure you measured beats a benchmark somebody else's survey produced from a different market." },
+      { q: "Should I track non-billable work?", a: "Track it, on a project called something like admin. Otherwise the tracked total is only the billable part and the utilisation measurement above cannot be made at all. Timers are unlimited on the free tier, so the extra project costs nothing except the rate slot, and admin does not need a rate." },
+      { q: "Can it tell me what to charge?", a: "No, and nothing in this repository will claim to. What it can tell you is what you charged, what you worked and what it cost, which are the three facts every rate-setting method needs and most people are guessing at." },
+    ],
+  },
+  "csv-to-excel-and-back-in-claude": {
+    title: "Converting CSV to xlsx and back without opening Excel",
+    description: "One tool call each way, what survives the round trip and what does not, the delimiter and header guessing that makes messy exports work, and the free row limits.",
+    html: `<h1>CSV to xlsx and back, in one call</h1>
+<pre class="prompt">Convert ~/Downloads/orders.csv to xlsx and save it next to the original.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>sheet_convert</code>. It reads xlsx, xlsm, xlsb, ods, csv and tsv, and writes the format you
+ask for. The source is never overwritten unless you say so.</p>
+<p>The other direction is the same call with the formats swapped, and it is the one that usually
+matters, because most tools that want a data file want CSV and most people are sent xlsx.</p>
+
+<h2>What survives, and what does not</h2>
+<table>
+<tr><th>Survives CSV to xlsx</th><th>Lost going xlsx to CSV</th></tr>
+<tr><td>Every value, as text or number</td><td>Formulas, which become their last computed value</td></tr>
+<tr><td>The header row</td><td>Formatting, colours, column widths</td></tr>
+<tr><td>Row and column order</td><td>Every sheet but the one you converted</td></tr>
+<tr><td>Unicode, including names with accents</td><td>Merged cells, which flatten</td></tr>
+</table>
+<p>None of that is a defect in the converter. CSV is a text format with no concept of a formula, a
+second sheet or a colour, and a converter that pretended otherwise would be inventing data.</p>
+
+<h2>The part that handles real exports</h2>
+<p>Exports out of accounting software and bank portals are rarely clean. Two behaviours cover most of
+it. The delimiter is sniffed, so a semicolon-separated European export is read correctly rather than
+landing in one column. The header row is guessed, so a file with a title line, a blank line and then
+the real headers is read from the right row instead of treating "Sales report Q3" as a column name.</p>
+<p>Check what it found before you trust it:</p>
+<pre class="prompt">Open orders.xlsx and tell me what is in it.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>sheet_info</code> returns the sheets, the dimensions and the header it detected. Thirty
+seconds here saves a conversion that silently offset every row by one.</p>
+
+<h2>Doing work in between</h2>
+<p>Converting is rarely the actual goal. <code>sheet_query</code> filters, sorts and groups with a
+safe expression language that does no eval, <code>sheet_add_column</code> writes a computed column
+such as <code>[Qty] * [Unit Price]</code>, and <code>sheet_write</code> saves the result wherever you
+name.</p>
+<pre class="prompt">In orders.xlsx keep the open orders over 5 units, add a Total column of Qty times Unit Price, sort by Total descending and save it as orders-open.csv.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+
+<h2>Free limits, and the one that matters</h2>
+<p>Reading, querying, stats and find work on files up to 5,000 rows. Writes go up to 500 rows, and
+never a partial file above that: a write that would exceed the limit is refused rather than producing
+a truncated file that looks complete. That refusal is the important half. A silently truncated
+spreadsheet is the kind of error that gets discovered by an accountant three months later.</p>
+<p>Pro removes both limits. Figures from <code>data/facts.json</code>; there are 7 tools on this
+server, counted from <code>data/tools.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does it need Excel or LibreOffice installed?", a: "No. It parses and writes the formats directly in JavaScript. Nothing is launched, nothing is uploaded, and it runs the same on a machine that has never had an office suite on it." },
+      { q: "Can it write multiple sheets into one xlsx?", a: "A conversion produces one sheet from one source. To assemble several, write each and combine them in a tool that does workbooks. What the server does well is the single-table case, which is what almost every data export actually is." },
+      { q: "My CSV has European decimal commas.", a: "The delimiter sniffing handles the column separator. Decimal commas inside values are a separate question and depend on the file: check with sheet_info and a small sheet_read before converting a large file, because a value read as text rather than a number will sort and sum wrongly rather than error." },
+      { q: "What happens to a file bigger than 5,000 rows on the free tier?", a: "The read is refused with the row count, rather than answering from the first 5,000. Refusing is the honest behaviour: an answer computed from part of a file is worse than no answer, because you cannot tell by looking that it happened." },
+    ],
+  },
+  "answer-questions-about-a-spreadsheet-without-formulas": {
+    title: "Asking a spreadsheet questions in plain language",
+    description: "Filter, group and total a sheet by describing what you want, with a safe expression language that runs no eval, and the check that stops you trusting a wrong answer.",
+    html: `<h1>Asking a spreadsheet a question</h1>
+<pre class="prompt">In orders.xlsx, what did each region sell in Q3, totalled, sorted highest first?</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>That is <code>sheet_query</code>: filters, sorts, group by, and sum, average, min and max per
+group. No formula written, no pivot table built, and nothing typed into a cell.</p>
+
+<h2>Why it is a safe expression language and not eval</h2>
+<p>The filters and computed columns are parsed and evaluated by the server's own small expression
+engine. It has no access to the filesystem, the network or the process, because there is no
+<code>eval</code> and no shell anywhere in the path. A model that decides to filter on something
+strange produces a wrong answer at worst, not a command that runs.</p>
+<p>Column references are bracketed, so <code>[Qty] * [Unit Price]</code> is a computed column and
+<code>[Status] = "open" and [Qty] &gt; 5</code> is a filter. That is the whole syntax you ever need to
+know, and mostly you do not, because you describe what you want and the model writes it.</p>
+
+<h2>The check to run first, every time</h2>
+<pre class="prompt">Open orders.xlsx and tell me what is in it.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>sheet_info</code> returns the sheets, the dimensions and the header row it guessed. On an
+export with a title line and a blank row above the real headers, the guess is doing real work, and it
+is worth seeing what it decided before you build an answer on it. <code>sheet_stats</code> per column
+is the second check: a numeric column that reports as text is the reason a total came back wrong.</p>
+
+<h2>Finding one thing</h2>
+<pre class="prompt">Find every row in clients.xlsx that mentions Beta GmbH.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>sheet_find</code> searches values across the sheet and returns the rows with their numbers,
+so you can go and look at the source. It searches what is in the cells, not what a formula would have
+produced elsewhere.</p>
+
+<h2>Writing the answer back</h2>
+<p><code>sheet_add_column</code> adds a computed column and <code>sheet_write</code> saves to a path
+you name. The source is not overwritten unless you tell it to be, which is the default that stops a
+question from destroying the file it was asked about.</p>
+
+<h2>Free limits</h2>
+<p>Read, query, stats and find on files up to 5,000 rows. Writes up to 500 rows, and never a partial
+file above that: the write is refused rather than truncated. Pro removes both. From
+<code>data/facts.json</code>.</p>
+<p>Nothing is uploaded. The server works on the files you name and stores nothing else, which is the
+practical difference from pasting a sheet into a chat window.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can it read a formula's result?", a: "It reads the cached value the file stores, which is what the formula last computed when the file was saved. It does not recalculate. A file saved by a tool that did not write cached values will read as blank in those cells, and sheet_info plus sheet_stats will show you that before you build on it." },
+      { q: "Does it handle multiple sheets?", a: "sheet_info lists them and the read and query tools take a sheet name. Queries run against one sheet at a time; there is no join across sheets, which is a real limitation and not a temporary one." },
+      { q: "Is my file uploaded anywhere?", a: "No. The server makes no network call of any kind. It opens the path you gave it, answers, and keeps a recent-files list and nothing else. That list is the only thing it stores." },
+      { q: "How big can a file be?", a: "Free reads up to 5,000 rows and refuses above that with the row count rather than answering from a slice. Pro has no row limit, and the practical ceiling becomes memory. A 200,000-row file is a database question rather than a spreadsheet question." },
+    ],
+  },
+  "combine-receipts-into-one-pdf-for-your-accountant": {
+    title: "Merging a folder of receipts into one PDF from chat",
+    description: "Merge, check the page count, stamp what is paid, and hand over a single file. Every step runs locally with no upload, and most of it is free.",
+    html: `<h1>A folder of receipts, one PDF</h1>
+<pre class="prompt">Merge every PDF in ~/Documents/receipts/august into one file called august-receipts.pdf.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>pdf_merge</code>. Free merges up to 5 files at a time, which for a month of receipts usually
+means merging in batches and then merging the results, and that works because the output of a merge is
+just another PDF. Pro removes the count.</p>
+
+<h2>Check before you send</h2>
+<pre class="prompt">How many pages is august-receipts.pdf and what is on the first one?</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>pdf_count</code> and <code>pdf_text</code>, both free and unmetered.
+<code>pdf_text</code> pulls the text layer, which on a receipt printed to PDF is the whole receipt and
+on a phone photo saved as PDF is nothing at all. If it comes back empty, that page is an image and no
+text tool in this repository will read it: there is no OCR here, and there is not going to be a claim
+that there is.</p>
+
+<h2>Marking things up</h2>
+<pre class="prompt">Stamp august-receipts.pdf as PAID.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>pdf_stamp</code> with PAID or DRAFT is free. Custom stamp text and colours, and the business
+watermark, are Pro. Edits on the free tier work on files up to 30 pages.</p>
+
+<h2>Splitting the other way</h2>
+<p><code>pdf_split</code> takes one file apart, <code>pdf_pages</code> pulls out a range, and
+<code>pdf_rotate</code> fixes the scan that came in sideways. Page reordering is Pro. The usual reason
+to split is that a scanner produced one 40-page file containing eleven separate documents, and each
+of them needs to go somewhere different.</p>
+
+<h2>Nothing leaves the machine</h2>
+<p>The PDF server is pure JavaScript with no network call at all. Receipts frequently carry a home
+address, a card's last four digits and a client name, and an online merge tool sees all of it. This
+one opens the paths you named and writes the file you asked for.</p>
+
+<h2>Then send the whole month</h2>
+<pre class="prompt">Zip the merged PDF and the CSV exports into accounts-august.zip.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>The zip server packs a folder with a glob. Free is 20 archives a calendar month at up to 25 MB and
+200 entries, and reading an archive is never metered on any tier. All figures on this page come from
+<code>data/facts.json</code>; there are 10 tools on the PDF server, counted from
+<code>data/tools.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can it read a scanned receipt?", a: "Only if the scan carries a text layer, which many scanners add and phone cameras do not. pdf_text returns what is there and nothing when there is nothing. There is no OCR in this repository." },
+      { q: "Does merging change the pages?", a: "No. The pages are copied as they are, in the order you named the files. Nothing is recompressed and no quality is lost, which also means the merged file is roughly the sum of the inputs in size." },
+      { q: "What is the 30-page free limit exactly?", a: "It applies to edits: stamping, rotating, splitting. Info, page count, text extraction and merging up to 5 files are not affected by page count. The distinction is that reading a document is not metered and rewriting one is." },
+      { q: "Can I do the same for images?", a: "The image server resizes, converts, compresses, crops and strips metadata, up to 4 megapixels and batches of 5 on free. Stripping metadata is the one to know about for receipts: a phone photo carries GPS coordinates until something removes them." },
+    ],
+  },
+  "split-a-scanned-pdf-into-separate-documents": {
+    title: "Splitting one big scan into separate documents",
+    description: "Find the boundaries with the text layer, pull out page ranges, rotate the sideways ones, and name the results. What to do when the scan has no text at all.",
+    html: `<h1>One 40-page scan, eleven documents</h1>
+<p>A batch scanner produces one file. The documents inside it need to go to different places. Here is
+the sequence that takes it apart without opening anything.</p>
+
+<h2>1. Find out what is in there</h2>
+<pre class="prompt">How many pages is scan-2026-09.pdf, and pull the text off each page.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>pdf_count</code> then <code>pdf_text</code>, both free and unmetered. The text layer is what
+tells you where one invoice ends and the next begins, because every first page carries a document
+number and a date and the continuation pages do not.</p>
+<p>If <code>pdf_text</code> comes back empty, stop. The scan is images and there is no OCR in this
+repository. The honest options are rescanning with text recognition on, or splitting by page number
+after looking at the file yourself.</p>
+
+<h2>2. Pull out the ranges</h2>
+<pre class="prompt">Extract pages 1 to 3 of scan-2026-09.pdf as acme-invoice-0912.pdf.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>pdf_pages</code> for a range you name, <code>pdf_split</code> to break the file apart wholesale.
+Free covers edits on files up to 30 pages, so a 40-page scan needs Pro, or a first split into halves
+using page ranges, which is itself an edit and subject to the same limit. That is a real friction and
+it is better said than discovered.</p>
+
+<h2>3. Fix the ones that came in sideways</h2>
+<pre class="prompt">Rotate page 4 of acme-invoice-0912.pdf 90 degrees clockwise.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>pdf_rotate</code>. Free. Page reordering is Pro.</p>
+
+<h2>4. File them</h2>
+<p>Once each document is its own file, the rest of the collection can take over. A supplier invoice
+becomes a purchase order receipt with <code>purchase_order_receive</code> on the billing-docs server.
+A receipt becomes an expense with <code>receipt_attach</code>, which stores the path and a sha256 of
+the file so an audit can prove the document has not changed since you attached it. That hash is worth
+knowing about: it is the difference between a receipt you filed and a receipt you can defend.</p>
+
+<h2>What this cannot do</h2>
+<p>It cannot tell you what a page says if the page is a photograph. It cannot find document boundaries
+by looking at the layout. It cannot rename files from their contents on its own, although the model
+reading <code>pdf_text</code> output can suggest names and you can accept them. Everything here works
+on the text layer or on page numbers, and being clear about that is more useful than a claim that
+would fail on the first sideways receipt.</p>
+<p>Free and Pro figures from <code>data/facts.json</code>. Ten tools on the PDF server, from
+<code>data/tools.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "How do I know whether my scanner adds a text layer?", a: "Run pdf_text on one page. Text comes back, or nothing does. That takes one call and settles it, and it is free on every tier." },
+      { q: "Can it split on a keyword rather than a page number?", a: "Not as one call. The model reads pdf_text, works out which pages start a new document, and then issues pdf_pages calls for each range. That is two steps rather than one and it works, provided there is a text layer." },
+      { q: "Is the original modified?", a: "No. Every operation writes a new file at the path you name. The source is left as it was, which matters when the source is the only copy of something a client sent." },
+      { q: "What about password-protected PDFs?", a: "A file that needs a password to open cannot be read, and the tool says so rather than returning empty pages. Remove the protection in whatever produced it first." },
+    ],
+  },
+  "send-a-month-of-paperwork-as-one-zip": {
+    title: "Sending a month of paperwork as one archive, safely",
+    description: "Pack a folder with a glob, and check an archive somebody sent you before you unpack it: absolute paths, dot-dot entries, symlinks and the 200 MB file inside a 199 KB zip.",
+    html: `<h1>A month of paperwork, one archive</h1>
+<pre class="prompt">Zip everything in ~/Documents/accounts/2026-08 into august.zip, but leave out the drafts folder.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>Packing takes a glob, so <code>**/*.pdf</code> or everything except a subfolder both work. Free is
+20 archives a calendar month at up to 25 MB and 200 entries each. Pro removes all three.</p>
+
+<h2>The half that matters more</h2>
+<p>Reading an archive is never metered, on any tier. Neither are the guards. When somebody sends you a
+zip:</p>
+<pre class="prompt">What is inside invoices.zip? Do not unpack it yet.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>zip_list</code> tells you before anything touches your disk:</p>
+<ul>
+<li><strong>Absolute paths.</strong> An entry named <code>/etc/something</code> wants to write outside
+where you unpacked it.</li>
+<li><strong>Dot-dot entries.</strong> The classic traversal: <code>../../.ssh/authorized_keys</code>
+looks harmless in a listing you never read.</li>
+<li><strong>Symlinks.</strong> A link that points somewhere real turns a later write into a write to
+that target.</li>
+<li><strong>Duplicate names.</strong> Two entries with one name means whichever is extracted second
+wins, and you cannot tell from the outside which that is.</li>
+<li><strong>The compression ratio.</strong> An entry that claims 200 MB inside a 199 KB file is a zip
+bomb, and it is reported as a number rather than discovered as a full disk.</li>
+</ul>
+<p>These checks run on every tier because a guard behind a paywall is not a guard.</p>
+
+<h2>Reading one file out without unpacking</h2>
+<pre class="prompt">Read the README out of that archive.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>zip_extract_text</code> pulls one entry's text without writing anything to disk. Useful for
+checking a manifest, and useful for the case where you want one file out of an archive of two hundred.
+<code>zip_extract</code> unpacks properly when you have decided to.</p>
+
+<h2>A realistic accountant handover</h2>
+<ol>
+<li>Export expenses to CSV with <code>expense_export</code>, capped at 200 rows on free and never
+partial.</li>
+<li>Export the bank with <code>statement_export</code>.</li>
+<li>Merge the receipts into one PDF with <code>pdf_merge</code>.</li>
+<li>Zip the folder.</li>
+</ol>
+<p>Four calls, one file, and nothing uploaded at any step. The zip server makes no network call of any
+kind, and neither do the three servers feeding it.</p>
+<p>Free tiers from <code>data/facts.json</code>. Seven tools on this server, from
+<code>data/tools.json</code>. Across all releases the packaged bundles have been downloaded 5,314
+times, counted with
+<code>gh api repos/theluckystrike/mcp-servers/releases --paginate</code> on 2026-09-07; zip.mcpb is
+the single most downloaded of them at 50 in v0.20.0 alone.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does it handle rar or 7z?", a: "No, zip only. Those formats need their own decoders and neither ships here. An archive it cannot read is refused by name rather than half-read." },
+      { q: "Can it password-protect an archive?", a: "No. Zip encryption comes in several incompatible flavours with a long history of weak ones, and shipping a checkbox that produces the weak kind would be worse than not offering it. Encrypt the file with a tool built for it if that is the requirement." },
+      { q: "What counts against the 20 archives a month?", a: "Creating one. Listing, extracting text and extracting files are unlimited on every tier, as are all the safety checks. So receiving and inspecting archives never runs out; only making them does." },
+      { q: "What happens at the 25 MB free limit?", a: "The archive is refused with the size, rather than produced and truncated. The same principle runs through this collection: a partial file that looks complete is the worst possible output, so the servers refuse instead." },
+    ],
+  },
+  "mcp-servers-in-vs-code-copilot-agent-mode": {
+    title: "MCP servers in VS Code: the one-word mistake that breaks every config",
+    description: "The key is servers, not mcpServers. Plus where the file goes, the trust prompt, the inputs array for secrets, and the newer Agent Host that reads a different file.",
+    html: `<h1>MCP servers in VS Code</h1>
+<p>The top-level key is <code>servers</code>. Every other client here uses <code>mcpServers</code>. A
+config pasted from a Claude Desktop or Cursor README parses as valid JSON, contributes zero servers,
+and gives you no error to read. It is the most expensive one-word mistake in this whole area.</p>
+
+<h2>The file</h2>
+<table>
+<tr><th>This workspace</th><td><code>&lt;workspace&gt;/.vscode/mcp.json</code></td></tr>
+<tr><th>Every workspace</th><td>The user profile mcp.json, opened by the <strong>MCP: Open User Configuration</strong> command</td></tr>
+</table>
+<pre><code>{
+  "servers": {
+    "spreadsheet": {
+      "command": "/opt/homebrew/bin/node",
+      "args": ["/Users/you/mcp-servers/servers/spreadsheet/dist/index.js"]
+    }
+  }
+}</code></pre>
+<p><strong>MCP: Add Server</strong> in the command palette walks through it and asks whether the
+target is Workspace or Global, which is less error-prone than writing the file.
+<strong>MCP: List Servers</strong> shows the state of each entry, and is where you look when tools do
+not appear.</p>
+
+<h2>The trust prompt</h2>
+<p>VS Code asks you to confirm you trust the server and its capabilities before it starts. Nothing
+runs until you answer. If a server seems to be doing nothing at all, check for an unanswered prompt
+before you check anything else.</p>
+
+<h2>Secrets</h2>
+<p>An <code>inputs</code> array holds them, referenced from a server entry as
+<code>{input:id}</code> with a dollar sign in front. That keeps a key out of a file you might commit.
+For these servers the only variable that exists is <code>MCP_LICENSE_KEY</code>, and leaving it out is
+what runs the free tier, so most people need no inputs array at all.</p>
+<p>One platform note from the documentation: <code>"sandboxEnabled": true</code> is macOS and Linux
+only.</p>
+
+<h2>The newer Agent Host</h2>
+<p>It reads a workspace <code>.mcp.json</code> rather than <code>.vscode/mcp.json</code>. If you are
+in it, the file you carefully edited is not the file being read, and there is no message saying so.
+Check which one you are running before debugging the config.</p>
+
+<h2>Something to do once it works</h2>
+<pre class="prompt">Open orders.xlsx and show me the open orders over 5 units, sorted by amount.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>The spreadsheet server reads xlsx, xlsm, xlsb, ods, csv and tsv, guesses the header row on messy
+exports, and answers with a safe expression language that runs no eval. Free covers read, query, stats
+and find on files up to 5,000 rows, and writes up to 500 rows with a refusal rather than a truncated
+file above that. From <code>data/facts.json</code>.</p>
+<p>Per-server VS Code pages with the exact block for each of the 30 servers are under
+<a href="/setup/vscode">setup/vscode</a>. The client facts on this page were read off the VS Code
+documentation on 2026-09-02 and are recorded with their source URL in
+<code>billing/src/setup.js</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Workspace file or user file?", a: "Workspace when the server is part of how this repository is worked on and you want it committed. User when it is your own tooling and you want it everywhere. Both are read." },
+      { q: "MCP: List Servers shows my server as stopped.", a: "Either the trust prompt is unanswered, or the process exited. Run the same command and args in a terminal: a server that starts prints a banner and waits, and one that exits shows you the reason on stderr. With these servers the usual cause is a dist directory that was never built." },
+      { q: "Does GitHub Copilot need to be configured separately?", a: "The MCP configuration is at the editor level rather than per chat participant. What varies by client is whether agent-style tool calling is available in the mode you are in, so check the mode you are chatting in if the server is running and the tools are still not offered." },
+      { q: "Can I use a remote server URL instead?", a: "Yes, and it avoids the build step entirely. mcp/connect on this site mints a free anonymous token and prints an HTTPS URL per server, with the token already in the path so there is no header to configure." },
+    ],
+  },
+  "mcp-servers-in-windsurf-and-cline": {
+    title: "MCP servers in Windsurf and Cline: two defaults that waste an afternoon",
+    description: "Windsurf's config applies to the legacy Cascade agent only and caps tools at 100. Cline falls back to the legacy SSE transport when type is omitted. Both fail quietly.",
+    html: `<h1>Windsurf and Cline</h1>
+<p>Both work. Both have one non-obvious default that produces a correct-looking config doing nothing,
+and neither tells you.</p>
+
+<h2>Windsurf: the file applies to the legacy agent</h2>
+<p>The file is <code>~/.codeium/windsurf/mcp_config.json</code> on macOS, Windows and Linux, with
+<code>mcpServers</code> as the key. Reach it from the MCPs icon at the top right of the Cascade panel,
+or Devin Settings, Cascade, MCP Servers. The documentation now lives under the Devin Desktop product
+name and the Windsurf docs URL redirects there.</p>
+<p>Here is the catch. <code>mcp_config.json</code> applies to the legacy Cascade agent only. The Devin
+Local agent, which is the default for new tabs, takes its servers from the Devin CLI config files
+instead. So a perfectly correct entry in this file can be entirely invisible in a fresh tab, with no
+error anywhere.</p>
+<p>The second hard number is a ceiling: Cascade reaches at most 100 tools at once, and every enabled
+server spends from it. That matters here specifically, because the office-suite bundle in this
+repository exposes every child server's tools through one connection. One <code>tools/list</code>
+against a built v0.20.0 bundle on 2026-09-07 returned <strong>292 tools from 31 child
+servers</strong>. In Windsurf that one entry is nearly three times the ceiling on its own. Install
+the two or three servers you actually use.</p>
+<pre><code>{
+  "mcpServers": {
+    "invoice": {
+      "command": "/opt/homebrew/bin/node",
+      "args": ["/Users/you/mcp-servers/servers/invoice/dist/index.js"]
+    }
+  }
+}</code></pre>
+<p>Windsurf also documents an install deeplink of its own,
+<code>windsurf://windsurf-mcp-registry?serverName=&lt;server-name&gt;</code>.</p>
+
+<h2>Cline: type selects the transport, and omitting it picks the old one</h2>
+<p>Cline is the one client here with an unsafe transport default. <code>type</code> selects the
+transport, and leaving it out falls back to the legacy SSE transport. Point a streamable HTTP endpoint
+at it without <code>type</code> and you will spend an afternoon debugging a server that is fine.</p>
+<pre><code>{
+  "mcpServers": {
+    "invoice": {
+      "type": "streamableHttp",
+      "url": "https://mcp.zovo.one/mcp/invoice/t/YOUR_TOKEN"
+    }
+  }
+}</code></pre>
+<p>For a local server, <code>~/.cline/mcp.json</code> for the CLI. The editor extension keeps its
+settings JSON reachable from the panel rather than by path: the MCP Servers icon in the top toolbar,
+the Configure tab, then Configure MCP Servers near the bottom. From a terminal,
+<code>cline mcp</code> opens an interactive wizard and <code>cline config mcp --json</code> reads or
+writes the same thing non-interactively.</p>
+<p>Local entries also carry <code>disabled</code> and an <code>autoApprove</code> array. The second
+one is worth setting deliberately: it decides which tools run without asking you first.</p>
+<p>No full-app restart in Cline. The MCP settings actions include restarting an unresponsive server
+if its tools do not appear.</p>
+
+<h2>Where the URLs come from</h2>
+<p><a href="/mcp/connect">mcp/connect</a> mints a free anonymous token and prints a ready URL per
+server, token already in the path. Free terms are stated there: 600 calls an hour, free-tier server
+limits, and a data space kept 30 days and refreshed for another 30 on every write.</p>
+<p>Client facts on this page were read off each client's own documentation on 2026-09-02 and are
+recorded with their source URLs in <code>billing/src/setup.js</code>. Per-server pages are under
+<a href="/setup/windsurf">setup/windsurf</a> and <a href="/setup/cline">setup/cline</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Which Windsurf agent am I in?", a: "New tabs default to the Devin Local agent, and Cascade is the legacy one that reads mcp_config.json. If the file is correct and the tools are absent in a fresh tab, that is the first thing to check rather than the last." },
+      { q: "How do I stay under Windsurf's 100-tool ceiling?", a: "Count what you have enabled. The servers in this repository run from 6 tools on per-diem and asset-register to 15 on kanban, counted in data/tools.json, so three or four servers is comfortable and the 292-tool office-suite bundle is not." },
+      { q: "What is autoApprove for?", a: "A per-server list of tool names Cline may call without asking. Read-only tools are reasonable candidates. Anything that writes a file, issues a document or spends a free-tier slot is worth leaving off it, because the point of the prompt is that you see the call before it happens." },
+      { q: "Does Cline support stdio servers?", a: "Yes, with command and args like every other client, and an env object next to command. type matters most for remote servers, where the fallback to legacy SSE is what bites." },
+    ],
+  },
+  "local-mcp-servers-versus-hosted-connectors": {
+    title: "Local MCP server or hosted URL: which one, and what you give up",
+    description: "The same servers run both ways here. A straight comparison of what each can reach, what each costs you, and the cases where only one of them is defensible.",
+    html: `<h1>Local server or hosted URL</h1>
+<p>Every server in this repository runs both ways: as a local process your client starts, and as an
+HTTPS endpoint you paste a URL for. They are the same code. What differs is what each can reach and
+who sees the data.</p>
+
+<table>
+<tr><th></th><th>Local (stdio)</th><th>Hosted (HTTPS)</th></tr>
+<tr><td>Install</td><td>.mcpb bundle, or clone and build</td><td>Nothing. Paste a URL.</td></tr>
+<tr><td>Reads your files</td><td>Yes, any path you name</td><td>No. It cannot see your disk.</td></tr>
+<tr><td>Data lives</td><td>~/.local/share/mcp-servers/, plain JSON</td><td>On the server, keyed to your token</td></tr>
+<tr><td>Network calls</td><td>None, for 28 of the 30 servers</td><td>Every call, by definition</td></tr>
+<tr><td>Rate limit</td><td>None</td><td>600 calls an hour on the free anonymous token</td></tr>
+<tr><td>Retention</td><td>Until you delete the folder</td><td>30 days, refreshed for another 30 on every write</td></tr>
+<tr><td>Works in claude.ai</td><td>No</td><td>Yes</td></tr>
+<tr><td>Works offline</td><td>Yes</td><td>No</td></tr>
+</table>
+
+<h2>The row that decides it</h2>
+<p>Reading your files. The spreadsheet, PDF, image and zip servers exist to work on files on your
+disk, and a hosted endpoint cannot see your disk. Nothing about that is a limitation to be engineered
+away: it is what remote means. If your task starts with a file path, it has to run locally.</p>
+<p>The record-keeping servers are the opposite case. The invoice, quotes, deposits, statement,
+time-tracker and expense servers hold their own data, so a hosted install of those is genuinely usable
+from a browser with nothing installed at all.</p>
+
+<h2>What the hosted token is</h2>
+<p>Open <a href="/mcp/connect">mcp/connect</a> and it mints one, in the form
+<code>anon_</code> plus 32 hex characters, and prints a ready URL per server with the token in the
+path. There is no header to configure and no sign-up. Two things that page states plainly and this one
+repeats: anyone holding the URL holds that data space, so treat it as a secret; and reloading the page
+mints a new token and a new empty space, so keep the URL if you want to keep the data.</p>
+
+<h2>What local costs you</h2>
+<p>A build step, today. The npm packages are not published: a probe of
+<code>registry.npmjs.org</code> on 2026-09-07 returned no versions for the packages, matching the npm
+status section of the repository README. So it is the <code>.mcpb</code> bundle, which is a double
+click in Claude Desktop and needs no terminal, or a clone and <code>npm run build</code>. Once built
+there is no update mechanism beyond pulling and rebuilding.</p>
+
+<h2>The two commands, side by side</h2>
+<pre><code># local: a process your client starts
+claude mcp add --scope user invoice -- \
+  node /absolute/path/to/mcp-servers/servers/invoice/dist/index.js
+
+# hosted: a URL, nothing installed
+claude mcp add --transport http invoice \
+  https://mcp.zovo.one/mcp/invoice/t/YOUR_TOKEN</code></pre>
+<p>Same server, same tools, same free tier. The first can open a file on your disk and the second
+cannot.</p>
+
+<h2>Both at once</h2>
+<p>You can, and they are separate data spaces. An invoice created locally is not visible through the
+hosted URL and there is no sync between them. Pick one per server and stay with it, or you will be
+looking for a document in the wrong store.</p>
+
+<h2>The licence works in both</h2>
+<p>A Pro key is an Ed25519 signature verified locally inside the server, with no activation server to
+reach. That means an air-gapped local install activates from the key string alone, and the hosted
+endpoints accept the same key in place of the anonymous token. One purchase, either deployment.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is the hosted version slower?", a: "It adds a network round trip per tool call, which is real but small next to the model's own latency. A scored nine-step run against the local stdio bundle took 17 tool calls in 118.6 seconds, recorded in docs/USER_VALUE_R27.md, and almost all of that time was the model rather than the servers." },
+      { q: "What happens after 30 days?", a: "The data space expires. Every write refreshes it for another 30 days, so an actively used token does not lapse. A token you used once in March is gone by May, deliberately: the alternative is holding strangers' invoice data forever." },
+      { q: "Can I move data from hosted to local?", a: "Use the export tools. expense_export, statement_export, export_csv on the time tracker and ledger_export_csv all produce text you can carry across. There is no store-level migration, and the export path is the honest one because it produces something you can read and check." },
+      { q: "Which is more private?", a: "Local, without qualification. 28 of the 30 servers make no network call at all, and you can prove it by running one in a network namespace with no interfaces and watching every tool still answer. A hosted server necessarily sees what you send it, and no policy statement changes that." },
+    ],
+  },
+  "free-mcp-servers-for-freelancers": {
+    title: "What these 30 MCP servers actually do on the free tier",
+    description: "The free tier per server, with the specific limit rather than the word free, and the five tools that are unlimited on every tier because metering them would be dishonest.",
+    html: `<h1>What the free tier really gives you</h1>
+<p>Free tier is a word people use to mean anything from a full product to a countdown. Here is the
+actual limit for each server, taken from <code>data/facts.json</code> in the repository. No account,
+no login, no key: leave <code>MCP_LICENSE_KEY</code> unset and this is what runs.</p>
+<pre><code>claude mcp add --scope user time-tracker -- \
+  node /absolute/path/to/mcp-servers/servers/time-tracker/dist/index.js</code></pre>
+<p>No key on that line, so the free tier is what starts. <code>license_status</code> on any server
+reports which mode it is in if you want it confirmed rather than assumed.</p>
+
+<h2>Unlimited on every tier, deliberately</h2>
+<p>Five tools are never metered, and the reasoning is written into each server's own material.</p>
+<table>
+<tr><td><code>statement_aging</code></td><td>Who owes me money is the question that server exists for.</td></tr>
+<tr><td><code>trial_balance</code></td><td>Whether the books add up is the question that server exists for.</td></tr>
+<tr><td><code>loan_schedule</code></td><td>The payment and the interest are the answer, not the teaser.</td></tr>
+<tr><td><code>perdiem_calc</code></td><td>The tables are public regulation. Metering the reading of a regulation is charging for the tax authority's work.</td></tr>
+<tr><td><code>reconcile</code> (petty cash)</td><td>Whether the cash matches the paperwork is the whole point of a float.</td></tr>
+</table>
+<p>The same principle puts <code>contract_value</code>, <code>asset_schedule</code>,
+<code>lines_resolve</code>, <code>overdue_report</code> and every zip safety check on the free tier
+too.</p>
+
+<h2>The limits, server by server</h2>
+<table>
+<tr><th>Server</th><th>Free tier</th></tr>
+<tr><td>time-tracker</td><td>Unlimited timers and entries; reads cover the last 7 days; 2 rated projects</td></tr>
+<tr><td>invoice</td><td>3 invoices a calendar month; overdue report free; small PDF footer</td></tr>
+<tr><td>expense-tracker</td><td>Unlimited logging; reads cover 30 days; 3 projects, 5 rules, 200-row CSV</td></tr>
+<tr><td>spreadsheet</td><td>Read and query files up to 5,000 rows; writes up to 500</td></tr>
+<tr><td>quotes</td><td>5 open quotes; unlimited text quotes, accept, decline, revise</td></tr>
+<tr><td>pdf</td><td>Merge up to 5 files; edits on files up to 30 pages; PAID and DRAFT stamps</td></tr>
+<tr><td>bank-statement</td><td>2 accounts, 12 months, 5 rules; reconcile 31 days at a time</td></tr>
+<tr><td>kanban</td><td>3 projects, 200 open tasks</td></tr>
+<tr><td>zip</td><td>20 archives a month, 25 MB, 200 entries; reading never metered</td></tr>
+<tr><td>image</td><td>Images up to 4 megapixels, batches of 5</td></tr>
+<tr><td>currency</td><td>Latest rates and conversion; history up to 90 days</td></tr>
+<tr><td>docx</td><td>Unlimited create and read; 3 proposals or contracts a month</td></tr>
+<tr><td>timezone</td><td>Slots for up to 3 participants over 5 days; 5 contacts; 3 ics a month</td></tr>
+<tr><td>calendar</td><td>2 calendars, windows up to 31 days, exports up to 50 events</td></tr>
+<tr><td>resume</td><td>Modern-style resume and exports; 3 cover letters a month</td></tr>
+<tr><td>clauses</td><td>Starter set plus 10 own clauses; assemble up to 8</td></tr>
+<tr><td>recurring</td><td>3 active schedules, 30-day view</td></tr>
+<tr><td>price-tracker</td><td>Unlimited price checks; 3 watches, 30 observations each</td></tr>
+<tr><td>barcode</td><td>20 codes a month, SVG at any size, every symbology</td></tr>
+<tr><td>billing-docs</td><td>5 documents a month; text exports never metered</td></tr>
+<tr><td>deposits</td><td>5 recorded a month; applying, refunds and balances unlimited</td></tr>
+<tr><td>statement-of-account</td><td>5 distinct statements a month; aging and dunning free</td></tr>
+<tr><td>per-diem</td><td>Rate lookups unlimited; 5 trips saved a month</td></tr>
+<tr><td>asset-register</td><td>Schedules unlimited; 10 assets in the register</td></tr>
+<tr><td>cash-book</td><td>Trial balance unlimited; 3 periods a month</td></tr>
+<tr><td>amortization</td><td>Schedules unlimited; 3 loans held</td></tr>
+<tr><td>petty-cash</td><td>Reconcile unlimited; 1 float, 20 vouchers a month</td></tr>
+<tr><td>work-order</td><td>5 open work orders, 200 lines each</td></tr>
+<tr><td>change-order</td><td>5 open change orders; contract value free</td></tr>
+<tr><td>catalogue</td><td>25 SKUs, one price tier, unlimited rate cards and text answers</td></tr>
+</table>
+
+<h2>The pattern in the caps</h2>
+<p>Look at what is metered. It is nearly always creating a document that goes to somebody else, or
+holding more records than a one-person business holds. It is almost never reading back what you
+already put in, and it is never a safety check. Where a cap counts open items rather than items ever
+created, finishing one frees the slot, which is true on quotes, work orders and change orders.</p>
+<p>A byte-identical duplicate is refused before the cap is consulted on several servers, so filing the
+same thing twice by accident costs you nothing and the refusal names the id already holding it rather
+than offering an upgrade.</p>
+
+<h2>If you outgrow it</h2>
+<p>19 dollars once for one server, 39 dollars once for all of them. One-time, not a subscription, and
+the key is an Ed25519 signature the server verifies locally with no activation server to phone. Prices
+from <code>data/facts.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is there a trial that expires?", a: "No. There is no clock anywhere in these servers. The free tier is the free tier in month one and in month twelve, and an install with no key never stops working." },
+      { q: "What happens when I hit a cap?", a: "The call is refused by name with the reason and the number. Nothing already created becomes unreachable: reads, lists, exports of existing records and every free tool keep working. The cap is on adding, not on reaching what you have." },
+      { q: "Do the servers phone home to count usage?", a: "No. There is no network call in 28 of the 30 servers at all, and the two that make one fetch European Central Bank rates or a product page you named. Counters are local files. Deleting the data folder resets a monthly counter, which is a consequence of not having a server and is stated rather than hidden." },
+      { q: "Can I try Pro before buying?", a: "There is no trial key. What there is instead is a free tier designed so the thing each server exists to answer is free: aging, trial balance, loan schedules, per diem calculation and the petty cash reconciliation are all unmetered on purpose. You can judge the answers before you pay for the documents." },
+    ],
+  },
+  "choosing-an-mcp-server-for-invoicing": {
+    title: "Choosing an MCP server for invoicing: the seven questions worth asking",
+    description: "The registry holds 91 rows matching invoice. Here is what separates them, what to check before you install one, and an honest account of where this one sits.",
+    html: `<h1>Choosing an invoicing MCP server</h1>
+<p>The official MCP registry fills a whole page of 100 rows for <code>invoice</code> and reports a
+cursor for more behind it, and returns 91 complete for <code>invoicing</code>. Both measured on
+2026-09-07 with
+<code>GET registry.modelcontextprotocol.io/v0/servers?search=&lt;token&gt;&amp;limit=100</code>,
+reading <code>metadata.count</code> and <code>metadata.nextCursor</code>. That is a crowded token, and
+most of the difference between those rows is not visible from a name.</p>
+<p>Run it yourself before you install anything:</p>
+<pre><code>curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=invoice&amp;limit=100" \
+  | python3 -c "import sys,json;m=json.load(sys.stdin)['metadata'];print(m['count'], bool(m.get('nextCursor')))"</code></pre>
+<p>A full page of 100 with a cursor means the number is a floor rather than a total.</p>
+<p>Seven questions separate them. Ask them of anything, including this one.</p>
+
+<h2>1. Does it need an account somewhere else?</h2>
+<p>Many invoicing servers are API wrappers around a SaaS product. They are useful if you already pay
+for that product and useless if you do not, and the README does not always lead with it. Look for an
+API key in the config block. No key means no external account.</p>
+
+<h2>2. Where does the money arithmetic happen?</h2>
+<p>Floating point money is the classic defect and it survives testing, because it only shows up on
+particular values. Ask whether amounts are held in integer minor units and whether each line is
+rounded once before summing. In this one they are, so the printed total equals the sum of the printed
+lines and there is no drift between the PDF and what the client pays.</p>
+
+<h2>3. Can it put more than one tax rate on a document?</h2>
+<p>A single invoice-level rate breaks the moment you have a zero-rated reverse charge line next to a
+domestic one. Per-line rates with one tax line per distinct rate in the totals block is the shape that
+survives a real client mix.</p>
+
+<h2>4. Are invoice numbers allocated, or generated?</h2>
+<p>A number derived from a timestamp or a hash is not a sequence, and most jurisdictions expect a
+sequence with no gaps and no reuse. <code>INV-YYYY-NNNN</code> allocated in order, never reused, is
+the answer to look for.</p>
+
+<h2>5. Does the PDF go anywhere?</h2>
+<p>Rendering server-side means your client list and your rates went to somebody's machine. Local
+rendering means they did not. This one renders with pdfkit in-process and makes no network call at
+all.</p>
+
+<h2>6. What happens when you hit the free limit?</h2>
+<p>The failure mode matters more than the number. A cap that locks you out of invoices you already
+created is a hostage situation. Here the cap is 3 new invoices a calendar month; lists, PDFs of
+existing invoices and the overdue report keep working.</p>
+
+<h2>7. Is there anything to read about how it fails?</h2>
+<p>A project that publishes its defects is telling you it looked. This repository records
+<code>docs/USER_VALUE_R27.md</code> with two open defects named in it, D-R95 where a hand-written
+<code>vat_rate</code> silently produced a zero-VAT invoice, and D-R96 where <code>invoice_get</code>
+reported a balance that ignored a credit note. Both are written down rather than waiting to be found.
+The test suite is 1,518 tests with 1,507 passing, 0 failing and 11 skipped at release v0.20.0, from
+<code>data/tests.json</code>.</p>
+
+<h2>Where this one is weak</h2>
+<p>It is a fair question and the answer should not be nothing. There is no VAT id validation, because
+the server makes no network calls. There is no OCR, so a supplier invoice arrives as a PDF and leaves
+as a PDF. One invoice carries one currency, and a mix is refused rather than converted. The npm
+packages are not published yet, so installing means a bundle or a build. And it does not decide
+whether reverse charge applies to your sale; you decide and it prints what you decided.</p>
+<p>Product page: <a href="/s/invoice">MCP Invoice</a>. The full comparison against other named
+servers is at <a href="/compare/invoice">compare/invoice</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "How do I check how crowded a token is myself?", a: "curl the registry servers endpoint with search=<token> and limit=100, then read metadata.count and metadata.nextCursor. A full page with a cursor means the count is a floor, not a total. Search is a substring match on the name only, not on descriptions, so a count also includes accidental matches and is an upper bound on real competitors." },
+      { q: "Does a high count mean avoid the category?", a: "For picking a server, no: it means read carefully. For building one, it is a real signal, and it is exactly how the server choices in this repository were made. data/intel_r13.json records 30 tokens probed with their counts and a build or no-build decision against a stated rule." },
+      { q: "What should I install first to try one out?", a: "Whatever answers a question you have today. For invoicing, set the business profile and issue one real invoice for a client you actually have. Three a month is free, which is enough to find out whether the PDF is good enough to send before anything is paid." },
+      { q: "Is a local server slower than a hosted one?", a: "Faster, usually, because there is no network round trip. The cost of local is the install; the cost of hosted is that it cannot see your files and it can see your data." },
+    ],
+  },
+  "do-you-need-an-mcp-server-or-just-a-prompt": {
+    title: "When you need an MCP server, and when a prompt is enough",
+    description: "Four tests that decide it. Most tasks people reach for a server for are prompt-shaped, and installing one for those makes the answer worse rather than better.",
+    html: `<h1>Server or prompt</h1>
+<p>Adding an MCP server costs you a config entry, a process, some of your client's tool budget, and a
+new place for something to go wrong. Sometimes that is obviously worth it. Often the task is
+prompt-shaped and a server makes the answer worse. Four tests decide it.</p>
+
+<h2>1. Does it need to remember?</h2>
+<p>A conversation forgets. If the task is "what did I bill Acme in August", something has to have been
+recording since August, and no prompt can produce that after the fact. Timers, invoices, expenses,
+deposits and ledgers are all this shape. Anything where the value is in the accumulated record needs a
+server.</p>
+<p>If the task is "rewrite this paragraph", nothing needs to be remembered and a server adds
+nothing.</p>
+
+<h2>2. Does it have to be exactly right?</h2>
+<p>A model doing arithmetic in prose is usually right and occasionally not, and you cannot tell which
+from looking at the output. Money is the case where that is unacceptable. On this collection, amounts
+are integer minor units, each line is rounded once and then summed, and the total of a report equals
+the sum of the lines you can see. That is a property of the code, not of the model's attention that
+day.</p>
+<p>Ask: if this number were wrong by a cent, would anyone care? If yes, it belongs in code.</p>
+
+<h2>3. Does it touch a file or a format?</h2>
+<p>Reading an xlsx, merging PDFs, writing a real .docx, making a zip, generating a QR code. A model
+can describe all of these and produce none of them. This is the clearest case for a server, and it is
+also where a hosted endpoint fails, since a remote server cannot see your disk.</p>
+
+<h2>4. Will you do it more than a handful of times?</h2>
+<p>A one-off conversion is faster done by hand than by installing anything. The threshold is roughly
+weekly. Below that, the install is the expensive part.</p>
+
+<h2>What this means in practice</h2>
+<table>
+<tr><th>Task</th><th>Verdict</th></tr>
+<tr><td>Draft a client email</td><td>Prompt</td></tr>
+<tr><td>Summarise a document you pasted</td><td>Prompt</td></tr>
+<tr><td>Work out what you billed last month</td><td>Server: it has to have been recording</td></tr>
+<tr><td>Make an invoice PDF</td><td>Server: a model cannot produce a file</td></tr>
+<tr><td>Decide what to charge a new client</td><td>Prompt, informed by a server's report</td></tr>
+<tr><td>Read a 4,000-row spreadsheet</td><td>Server: pasting it costs more than it is worth</td></tr>
+<tr><td>Convert 80 EUR to PLN</td><td>Server, if the rate has to be defensible; prompt if it does not</td></tr>
+<tr><td>Rename some files</td><td>Neither. Use the shell.</td></tr>
+</table>
+
+<h2>The cost of installing too many</h2>
+<p>Tool budgets are real. Windsurf's Cascade reaches at most 100 tools at once, and every enabled
+server spends from it. The office-suite bundle here exposes every child at once, and one
+<code>tools/list</code> against a built v0.20.0 bundle on 2026-09-07 returned <strong>292 tools from
+31 child servers</strong>. That is convenient when you do not know in advance what you will need, and
+it is over every client ceiling named on this site.</p>
+<p>A model also chooses worse from a longer list. Two servers you use daily beat twenty you installed
+because they were free. Count what you have before you add another:</p>
+<pre><code>claude mcp list</code></pre>
+<p>Every entry there is spending from your client's tool budget in every conversation, including the
+ones where you needed none of them.</p>
+
+<h2>How to decide in one minute</h2>
+<p>Write down the question you actually have. If answering it requires a fact from before this
+conversation, a file on your disk, or a number that has to be exact, install something. Otherwise, ask
+the question.</p>
+${FOOT}`,
+    faq: [
+      { q: "How many servers is too many?", a: "Count tools rather than servers. The ones here run from 6 tools on per-diem and asset-register to 15 on kanban, counted in data/tools.json. Three or four servers is comfortable in every client listed on the setup pages. The 292-tool office-suite bundle is not." },
+      { q: "Can I install a server and only enable it sometimes?", a: "In most clients, yes. Cline has a disabled flag per server, VS Code lists servers so you can stop one, and Claude Code's local scope is per directory, so a server added in one project is absent in another. That last one is a feature once you know about it and a mystery until you do." },
+      { q: "Does a server make the model smarter?", a: "No. It makes the model able to do things, and it makes certain answers exact rather than plausible. Those are different from being smarter and it is worth being clear about which one you needed." },
+      { q: "What is the smallest useful setup?", a: "One server that answers a question you have weekly. For most freelancers that is the time tracker, because the record only exists if something was recording, and the free tier gives unlimited timers and entries with reads over the last 7 days." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Practical guides: billable hours, invoice PDFs, retainers on a schedule, expenses, Excel, prices, ECB rates, Word proposals, clauses, resumes, PDF merges, .ics calendars, kanban boards, image resize, bank CSV reconciliation, quotes, estimates, SEPA payment QR codes, safe zip archives, credit notes and purchase orders, travel allowances, fixed assets and depreciation, client statements and dunning, loan and lease schedules, petty cash floats on the imprest system, and the one-install office-suite bundle.",
+  description: "Sixty-two guides: getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline, and then doing real work with it. Billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.",
 };
