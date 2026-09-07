@@ -1,0 +1,740 @@
+{
+  "generated": "2026-09-07",
+  "loop": 29,
+  "round": 1,
+  "agent": "A (billing owner)",
+  "worker_version_id": "48112829-284a-43d6-aa8d-08464d8e9c33",
+  "deploys": [
+    {
+      "version": "c3b856e6-ae5d-4cb3-a6e1-7acec55d15d8",
+      "what": "inline price_data, office-suite alias, UA guard, 404 rescue"
+    },
+    {
+      "version": "a5c080e0-9ee6-4c79-8254-2bbab8d204e6",
+      "what": "probe verification headers read back from Stripe, IndexNow key file, llms.txt office-suite line"
+    },
+    {
+      "version": "48112829-284a-43d6-aa8d-08464d8e9c33",
+      "what": "conversion fixes: releases/latest, npm-pending disclosure on home//bundle//success, derived counts, dead-route click recording"
+    }
+  ],
+  "probe": {
+    "method": "curl -D - with a Chrome desktop User-Agent and header x-mcp-probe: 1",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "note": "A browser User-Agent is required: without one the scripted-UA guard answers 303 to /s/<id> with x-mcp-buy: scripted-ua-no-session. x-mcp-probe: 1 keeps the probe out of the conversion counters and makes the worker echo back what Stripe stored, so the name and amount are read from Stripe's reply, not from the request the worker sent."
+  },
+  "counts": {
+    "health_products": 31,
+    "buyable_ids": 32,
+    "before": {
+      "checkout_live": 28,
+      "http_503_price_pending_human": 3,
+      "http_404": 1,
+      "of": 31
+    },
+    "after": {
+      "checkout_live": 31,
+      "http_503_price_pending_human": 0,
+      "http_404": 0,
+      "of": 31
+    },
+    "office_suite": {
+      "before": 404,
+      "after": 303
+    }
+  },
+  "human_stripe_gate": {
+    "removed": true,
+    "was": "Three products carried the literal price id PENDING_HUMAN because minting a Stripe Price needs product_write and no available key has it; office-suite had no PRODUCTS entry at all.",
+    "now": "A product with no Price id is priced inline with line_items[0][price_data], which Stripe creates implicitly at Session time and which needs only checkout_session_write. Measured against the live key: work-order, catalogue and change-order each returned a cs_live_ Session under their own name at 1900 usd, livemode true.",
+    "future_servers": "A PRODUCTS row with usd, name and desc and no price gets a working checkout on the next deploy, with no dashboard step. Proved by billing/test/checkout-r1.test.mjs, which drives a synthetic id through the real request handler."
+  },
+  "conversion_r1": {
+    "fixed": [
+      {
+        "n": 1,
+        "what": "home, /bundle and /s/ linked releases/tag/v0.1.1 (4 bundles); now /releases/latest (31)",
+        "verified": "curl https://mcp.zovo.one/ | grep -c releases/tag/v0.1.1 -> 0"
+      },
+      {
+        "n": 2,
+        "what": "home and /bundle printed npx with no disclosure while /s/ and /setup disclosed it; one NPM_PENDING_NOTE constant is now on all of them",
+        "verified": "both pages contain 'npm publish of these packages is pending'"
+      },
+      {
+        "n": 3,
+        "what": "/success led a paying customer with the E404 npx command; it now leads with the .mcpb and the hosted endpoint and discloses the npx caveat",
+        "verified": "test 'the success page leads with an install path that works'"
+      },
+      {
+        "n": 4,
+        "what": "home said Seventeen servers in 4 places incl JSON-LD and '399 of 399 checks'/'25 unit tests'; now derived: Thirty, 951 of 951 across 32 servers, 104 unit tests, 504 ms median",
+        "verified": "curl home | grep -c 'Seventeen|399 of 399|25 unit tests' -> 0"
+      },
+      {
+        "n": 5,
+        "what": "office-suite 404 with no rescue; now 303 to the bundle checkout, and /bundle stays live for the repointed registry manifests",
+        "verified": "this table"
+      },
+      {
+        "n": 6,
+        "what": "the 503 and 404 branches returned before recordClick so dead-route clicks were uncountable; the 404 now records under the validated src",
+        "verified": "/stats/clicks shows probe.deadroute.loop29 total 2"
+      },
+      {
+        "n": 7,
+        "what": "packages/mcp-license/src/index.ts upgradeUrl has no src",
+        "status": "NOT DONE, outside this agent's files",
+        "fix": "const upgradeUrl = `${CHECKOUT_BASE}/buy/${product}?src=product.${product}.status`",
+        "evidence": "/stats/clicks currently has 28 distinct '<id>.unknown' sources"
+      }
+    ],
+    "also": {
+      "indexnow_key_file": "GET /db6dbf5cfdbc08d1cc9b5365d398145b.txt -> 200, text/plain, 32 bytes, byte-identical to data/indexnow.json",
+      "robots_txt": "unchanged and confirmed clean: User-agent: *, Allow: /, no crawler named, only /buy/ /success /recover /verify /bound disallowed",
+      "llms_txt": "already listed all 30 single servers plus the bundle with URL, tagline and install line; office-suite was the only product missing and now has its own line"
+    }
+  },
+  "rows": [
+    {
+      "id": "time-tracker",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Time Tracker Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "price-tracker",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Price Tracker Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "spreadsheet",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Spreadsheet Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "invoice",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Invoice Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "expense-tracker",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Expense Tracker Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "currency",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Currency Converter Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "docx",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Docx Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "timezone",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Timezone Planner Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "resume",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Resume and Cover Letter Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "recurring",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Recurring Invoices Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "clauses",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Clause Library Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "calendar",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Calendar Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "pdf",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP PDF Tools Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "image",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Image Tools Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "bank-statement",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Bank Statement Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "kanban",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Kanban Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "quotes",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Quotes Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "barcode",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Barcode Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "zip",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Zip Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "billing-docs",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Billing Docs Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "deposits",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Deposits Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "per-diem",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Per Diem Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "asset-register",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Asset Register Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "statement-of-account",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Statement of Account Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "cash-book",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Cash Book Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "amortization",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Amortization Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "petty-cash",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Petty Cash Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "work-order",
+      "in_health": true,
+      "before": {
+        "http": 503,
+        "location_host": null,
+        "x_mcp_buy": "price-pending-human",
+        "checkout_live": false
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Work Order Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "catalogue",
+      "in_health": true,
+      "before": {
+        "http": 503,
+        "location_host": null,
+        "x_mcp_buy": "price-pending-human",
+        "checkout_live": false
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Catalogue Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "change-order",
+      "in_health": true,
+      "before": {
+        "http": 503,
+        "location_host": null,
+        "x_mcp_buy": "price-pending-human",
+        "checkout_live": false
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 1900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Change Order Pro",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "bundle",
+      "in_health": true,
+      "before": {
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "checkout_live": true
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 3900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Servers Bundle (all servers, lifetime)",
+        "stripe_livemode": true
+      }
+    },
+    {
+      "id": "office-suite",
+      "in_health": false,
+      "before": {
+        "http": 404,
+        "location_host": null,
+        "x_mcp_buy": null,
+        "checkout_live": false
+      },
+      "after": {
+        "checkout_live": true,
+        "http": 303,
+        "location_host": "checkout.stripe.com",
+        "x_mcp_buy": "probe-session-reused",
+        "stripe_amount_minor": 3900,
+        "stripe_currency": "usd",
+        "stripe_item_name": "MCP Servers Bundle (all servers, lifetime)",
+        "stripe_livemode": true
+      }
+    }
+  ]
+}

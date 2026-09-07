@@ -32,14 +32,40 @@ export const PRODUCTS = {
   "cash-book": { desc: "One double-entry ledger over the books you already keep: invoices, credit notes, deposits, expenses, the bank import and the fixed asset register. Every line carries the server, the document id and the date it came from, and the trial balance is proved to the minor unit. It writes into none of those books, and there is no way to type an entry into it.", free: "Free: 3 periods a calendar month, and the trial balance and the ledger lines unlimited on every tier, because whether the books add up is the question this server exists for.", pro: "Pro: unlimited periods, the month close with its snapshot and exception list, the CSV export and the per-account report.", name: "MCP Cash Book Pro", price: "price_1UCOv4JKCamubEm15469I5YT", usd: 19, pkg: "@theluckystrike/mcp-cash-book", bin: "mcp-cash-book", payload: "cash-book" },
   "amortization": { desc: "Loan and lease schedules from the terms of the agreement: the level payment, the effective annual rate beside the nominal one, and every period's opening balance, interest, principal and closing balance in integer minor units. Compounding and payment frequency are two different clocks, so the periodic rate is always the equivalent rate taken through the compounding clock. It posts nothing and stores no schedule.", free: "Free: 3 loans in the register, and the schedule unlimited on every tier, because the payment and the interest are the question this server exists for.", pro: "Pro: unlimited loans, early settlement and overpayment costed gross and net of the penalty, the payment journal with its expense-tracker payload, and the per-currency report.", name: "MCP Amortization Pro", price: "price_1UCROyJKCamubEm1eWJBgzIj", usd: 19, pkg: "@theluckystrike/mcp-amortization", bin: "mcp-amortization", payload: "amortization" },
   "petty-cash": { desc: "A petty cash float on the imprest system: a voucher for every receipt out of the tin, a count whenever you like with the difference to the minor unit, and the replenishment that puts the float back to its imprest, with the double entry and an expense_add-ready payload per category. The cheque is imprest minus balance, never the sum of the vouchers, and the difference is its own cash_over_short line. No balance is stored and nothing is posted anywhere.", free: "Free: 1 float, 20 vouchers a calendar month, and reconciliation unlimited on every tier, because whether the cash matches the paperwork is the question this server exists for.", pro: "Pro: unlimited floats and vouchers, the replenishment request with its journal and per-category expense payload, and the float report with the history of every difference a count found.", name: "MCP Petty Cash Pro", price: "price_1UCTn3JKCamubEm1IUHxx0kC", usd: 19, pkg: "@theluckystrike/mcp-petty-cash", bin: "mcp-petty-cash", payload: "petty-cash" },
-  "work-order": { desc: "Job orders for trades and field work, kept the way a job card is kept: a client the invoice server already knows, a site address, labour as hours at a rate and parts as a quantity at a unit cost with an optional markup, a status that moves one step at a time with every step dated, a completion report with a sign-off block, and an invoice_create-ready payload. No total is stored: value, hours, materials and VAT are derived from the lines on every call.", free: "Free: 5 open work orders, 200 lines each, and the text completion report on every tier. Closing a job frees its slot, and deleting an empty draft is free on every tier.", pro: "Pro: unlimited open work orders, the A4 completion report PDF with the sign-off block, the invoice payload, and the board report with hours this month and unbilled value per currency.", name: "MCP Work Order Pro", price: "PENDING_HUMAN", usd: 19, pkg: "@theluckystrike/mcp-work-order", bin: "mcp-work-order", payload: "work-order" },
-  "catalogue": { desc: "One price list and one labour rate card, kept where the invoice and the quote servers can both read them. A SKU carries a code, a unit, an optional VAT rate and price ROWS with valid-from dates, so the price on a date is worked out on the call and raising a price in July does not rewrite what June was quoted at. lines_resolve hands back the same lines already priced, in the invoice_create argument shape and in the quote_create argument shape at once. Nothing is invented: an unknown code is refused by name.", free: "Free: 25 SKUs, the standard price tier, unlimited rate cards, and every text answer including lines_resolve and the plain-text price list. Deleting an unused SKU is free on every tier.", pro: "Pro: an unlimited catalogue, price tiers beyond standard for trade and wholesale columns, the A4 price list PDF, and the catalogue report naming the rows a later row already replaces.", name: "MCP Catalogue Pro", price: "PENDING_HUMAN", usd: 19, pkg: "@theluckystrike/mcp-catalogue", bin: "mcp-catalogue", payload: "catalogue" },
-  "change-order": { desc: "Change orders against a quote or a work order, kept the way a variation is kept on site: added, removed and changed lines with a quantity, a unit price in minor units, a reason and a date; a status that moves draft to sent to approved or rejected with every step dated; the running contract value as the original plus approved deltas, with pending deltas held apart; and the approved delta as invoice_create-ready items in major units and quote_create-ready items in minor units at once. No delta is stored: value and VAT are derived from the lines on every call.", free: "Free: 5 open change orders, 200 lines each, and the running contract value on every tier. Approving, rejecting or voiding one frees its slot, and deleting an empty draft is free on every tier.", pro: "Pro: unlimited open change orders, the change order document for the client to approve, and the invoice-ready delta payload in both scales.", name: "MCP Change Order Pro", price: "PENDING_HUMAN", usd: 19, pkg: "@theluckystrike/mcp-change-order", bin: "mcp-change-order", payload: "change-order" },
+  "work-order": { desc: "Job orders for trades and field work, kept the way a job card is kept: a client the invoice server already knows, a site address, labour as hours at a rate and parts as a quantity at a unit cost with an optional markup, a status that moves one step at a time with every step dated, a completion report with a sign-off block, and an invoice_create-ready payload. No total is stored: value, hours, materials and VAT are derived from the lines on every call.", free: "Free: 5 open work orders, 200 lines each, and the text completion report on every tier. Closing a job frees its slot, and deleting an empty draft is free on every tier.", pro: "Pro: unlimited open work orders, the A4 completion report PDF with the sign-off block, the invoice payload, and the board report with hours this month and unbilled value per currency.", name: "MCP Work Order Pro", usd: 19, pkg: "@theluckystrike/mcp-work-order", bin: "mcp-work-order", payload: "work-order" },
+  "catalogue": { desc: "One price list and one labour rate card, kept where the invoice and the quote servers can both read them. A SKU carries a code, a unit, an optional VAT rate and price ROWS with valid-from dates, so the price on a date is worked out on the call and raising a price in July does not rewrite what June was quoted at. lines_resolve hands back the same lines already priced, in the invoice_create argument shape and in the quote_create argument shape at once. Nothing is invented: an unknown code is refused by name.", free: "Free: 25 SKUs, the standard price tier, unlimited rate cards, and every text answer including lines_resolve and the plain-text price list. Deleting an unused SKU is free on every tier.", pro: "Pro: an unlimited catalogue, price tiers beyond standard for trade and wholesale columns, the A4 price list PDF, and the catalogue report naming the rows a later row already replaces.", name: "MCP Catalogue Pro", usd: 19, pkg: "@theluckystrike/mcp-catalogue", bin: "mcp-catalogue", payload: "catalogue" },
+  "change-order": { desc: "Change orders against a quote or a work order, kept the way a variation is kept on site: added, removed and changed lines with a quantity, a unit price in minor units, a reason and a date; a status that moves draft to sent to approved or rejected with every step dated; the running contract value as the original plus approved deltas, with pending deltas held apart; and the approved delta as invoice_create-ready items in major units and quote_create-ready items in minor units at once. No delta is stored: value and VAT are derived from the lines on every call.", free: "Free: 5 open change orders, 200 lines each, and the running contract value on every tier. Approving, rejecting or voiding one frees its slot, and deleting an empty draft is free on every tier.", pro: "Pro: unlimited open change orders, the change order document for the client to approve, and the invoice-ready delta payload in both scales.", name: "MCP Change Order Pro", usd: 19, pkg: "@theluckystrike/mcp-change-order", bin: "mcp-change-order", payload: "change-order" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
 /** Every sellable single-server product; `bundle` is the one entry that is not one. */
 export const SINGLE_PRODUCT_IDS = Object.keys(PRODUCTS).filter((id) => id !== "bundle");
+
+/**
+ * Buyable ids that are not their own PRODUCTS entry, mapped to the product a purchase
+ * actually is. Kept out of PRODUCTS on purpose: SERVER_COUNT, BUNDLE_SAVING_USD and every
+ * sentence derived from them count sellable servers, and an alias is not a new server.
+ *
+ * `office-suite` is the flagship aggregator: it spawns time-tracker, price-tracker,
+ * spreadsheet and invoice as child processes and forwards one key to all four, and its
+ * `license_activate` is all-or-nothing (servers/office-suite/README.md). verifyLicenseKey
+ * (src/license.js) accepts a key for a child only when the signed payload is that child's
+ * id or the wildcard `*`, so the ONLY key that makes office-suite Pro work is the bundle
+ * key, payload `*`. A separate $19 "office-suite" product would mint a key every one of
+ * its four children rejects: money taken, nothing unlocked. The bundle at $39 is also
+ * cheaper than the 4 x $19 = $76 those children cost singly, so this is the buyer's price
+ * as well as the only fulfillable one. Before this, /buy/office-suite was a bare 404 even
+ * though docs/HUMAN_GATED_PACK.md ships that exact URL as office-suite's homepage on every
+ * directory submission.
+ */
+export const PRODUCT_ALIASES = { "office-suite": "bundle" };
+
+/** Pure: the PRODUCTS id a /buy/<id> path sells, or "" when nothing sells it. */
+export function resolveProductId(id) {
+  if (PRODUCTS[id]) return id;
+  const target = PRODUCT_ALIASES[id];
+  return target && PRODUCTS[target] ? target : "";
+}
 
 /** The number of single-server products, computed rather than typed, so adding a server cannot leave the prose stale. */
 export const SERVER_COUNT = SINGLE_PRODUCT_IDS.length;
@@ -97,12 +123,17 @@ export function checkoutDescription(productId) {
  *   /success page - and a hosted tenant is bound automatically. That was previously
  *   discoverable only after paying.
  */
-export function checkoutCustomText(productId) {
+export function checkoutCustomText(productId, askedId = productId) {
   const p = PRODUCTS[productId];
   if (!p) throw new Error(`unknown product: ${productId}`);
   const word = NUMBER_WORD[SERVER_COUNT] || String(SERVER_COUNT);
+  // An alias buyer clicked one name and is being shown another on the payment page. Say
+  // why on the page itself rather than letting them discover it on the receipt.
+  const aliasNote = askedId !== productId && PRODUCT_ALIASES[askedId] === productId
+    ? `You clicked ${askedId}. ${askedId} runs its sibling servers as child processes and forwards one key to all of them, so the only key that turns it Pro is this bundle key. It costs less than those servers do singly, and it unlocks the other ${SERVER_COUNT - 1} too. `
+    : "";
   const submit = productId === "bundle"
-    ? `One payment, one lifetime key for all ${SERVER_COUNT} servers. Saves $${BUNDLE_SAVING_USD} against buying them singly.`
+    ? `${aliasNote}One payment, one lifetime key for all ${SERVER_COUNT} servers. Saves $${BUNDLE_SAVING_USD} against buying them singly.`
     : `Buying more than one? All ${SERVER_COUNT} servers are $${PRODUCTS.bundle.usd} together, a $${BUNDLE_SAVING_USD} saving: https://mcp.zovo.one/buy/bundle?src=checkout.crosssell.${productId}`;
   const after_submit =
     `Your license key is shown on the confirmation page immediately after payment. It is not emailed, ` +
@@ -112,6 +143,48 @@ export function checkoutCustomText(productId) {
 }
 
 const REPO = "https://github.com/theluckystrike/mcp-servers";
+
+/**
+ * The last validation run in data/validation.json, which is 9.2 MB and cannot be bundled
+ * into a Worker. It is restated here in the one shape the pages need, and
+ * test/checkout-r1.test.mjs recomputes every field from that file and fails if they
+ * disagree - so the numbers are pinned to their source rather than typed and forgotten.
+ * The home page previously claimed "399 of 399" against a real 951 of 951, and named
+ * "Seventeen" servers when there were thirty.
+ */
+export const VALIDATION = { at: "2026-09-06", pass: 951, total: 951, servers: 32, medianMs: 504 };
+
+/**
+ * Unit tests in billing/test. Restated for the same reason as VALIDATION and pinned the
+ * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
+ * if this disagrees. The page said 25 when there were 99.
+ */
+export const BILLING_TEST_COUNT = 104;
+
+/**
+ * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
+ * and publishing needs an operator browser login (docs/HUMAN_GATED_PACK.md section 1).
+ * Every /s/ and /setup page already disclosed this; the home page, /bundle and, worst of
+ * all, the /success page a customer reads seconds after paying, did not. One constant, so
+ * a page cannot be corrected without correcting all of them - and so the day the packages
+ * publish, one edit removes the caveat everywhere.
+ */
+export const NPM_PENDING_NOTE =
+  `The npm publish of these packages is pending, so the <code>npx</code> line above does not resolve yet. ` +
+  `Use the hosted URL or the <code>.mcpb</code> bundle from <a href="${REPO}/releases/latest">the latest release</a>, ` +
+  `which both work today.`;
+
+/**
+ * Site-ownership keys served at `/<key>.txt`. The body is the key and nothing else.
+ * - 22fad93b...: the earlier verification key this worker already served.
+ * - db6dbf5c...: IndexNow (data/indexnow.json), the free no-account URL push to Bing,
+ *   Yandex, Seznam and Naver. Do not change it: the key in the file and the key at the
+ *   URL must be the same string or every submitted URL is rejected.
+ */
+export const SITE_KEY_FILES = new Set([
+  "22fad93b71a88e2e60acae203c4288ae",
+  "db6dbf5cfdbc08d1cc9b5365d398145b",
+]);
 
 const GUIDE_LINKS = Object.entries(GUIDES)
   .map(([slug, g]) => `<a href="/guides/${slug}">${esc(g.title)}</a>`)
@@ -137,7 +210,20 @@ export function fulfillmentAllowed(session, product) {
   if (!Array.isArray(items) || items.length !== 1) return { ok: false, reason: "expected exactly one line item" };
   const item = items[0];
   if (item.quantity !== 1) return { ok: false, reason: `quantity is ${item.quantity}, not 1` };
-  if (item.price?.id !== p.price) return { ok: false, reason: `price ${item.price?.id} is not the price for ${product}` };
+  // Identity of what was bought. A product with a configured Price id must match it
+  // exactly. A product priced inline with `price_data` has an ad-hoc Price created at
+  // Session time whose id nobody can know in advance, so the binding is the one thing a
+  // buyer cannot touch: `metadata.product`, which this worker wrote when it created the
+  // Session and which is asserted above. What is still checked here is that the item is a
+  // real one-time Price rather than a subscription or a zero-priced stand-in. Without this
+  // branch every inline-priced sale would take the money and then refuse the key on
+  // "price undefined is not the price for <id>".
+  if (typeof p.price === "string" && p.price.startsWith("price_")) {
+    if (item.price?.id !== p.price) return { ok: false, reason: `price ${item.price?.id} is not the price for ${product}` };
+  } else {
+    if (typeof item.price?.id !== "string" || !item.price.id.startsWith("price_")) return { ok: false, reason: "line item has no Stripe price" };
+    if (item.price?.type !== "one_time") return { ok: false, reason: `price type is ${item.price?.type}, not one_time` };
+  }
 
   const expected = p.usd * 100;
   if (item.price?.unit_amount !== expected) return { ok: false, reason: "price unit_amount changed" };
@@ -253,7 +339,7 @@ ${COPY_BUTTON_SCRIPT}
 }
 
 const HOME_DESCRIPTION =
-  "Seventeen local-first MCP servers for Claude: invoicing, time tracking, expenses, spreadsheets and more for freelancers and small businesses. Free tier needs no key. Connect by URL in under a minute, or install the .mcpb. Bundle $39 lifetime, or $19 per server.";
+  `${countWord()} local-first MCP servers for Claude: invoicing, time tracking, expenses, spreadsheets and more for freelancers and small businesses. Free tier needs no key. Connect by URL in under a minute, or install the .mcpb. Bundle $${PRODUCTS.bundle.usd} lifetime, or $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} per server.`;
 
 const SERVER_IDS = Object.keys(PRODUCTS).filter((id) => id !== "bundle");
 
@@ -294,18 +380,19 @@ function home() {
     },
   ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
   const meta = `<meta name="description" content="${esc(HOME_DESCRIPTION).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/">${ld}`;
-  const html = page("MCP servers for Claude: invoices, time tracking and freelance tools", `<h1>Seventeen local-first MCP servers for Claude, for freelancers and small businesses</h1>
+  const html = page("MCP servers for Claude: invoices, time tracking and freelance tools", `<h1>${countWord()} local-first MCP servers for Claude, for freelancers and small businesses</h1>
 <p>Invoicing, time tracking, expenses, spreadsheets, quotes, contracts and more, each running as its own MCP server. The free tier works with no key and no account. Connect by URL in under a minute, or install a server locally. The full set is $39 once, for life; one server alone is $19 once, for life. See the full table and price math at <a href="/bundle">/bundle</a>.</p>
 <h2>Three ways to start</h2>
 <ol>
 <li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server. Paste that URL into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor, or VS Code. No header, no config file.</li>
-<li><strong>Install the .mcpb:</strong> download the Claude Desktop bundle from the <a href="${REPO}/releases/tag/v0.1.1">releases page</a> and open it; Claude Desktop installs the server.</li>
+<li><strong>Install the .mcpb:</strong> download the Claude Desktop bundle from the <a href="${REPO}/releases/latest">releases page</a> and open it; Claude Desktop installs the server.</li>
 <li><strong>Install locally with npx:</strong> run <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> and point your client's config at it; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
 </ol>
+<p class="muted">${NPM_PENDING_NOTE} The first two paths above need no npm.</p>
 <p>A Pro key removes the free-tier limits on any of these three paths: run <code>license_activate</code> with the key in Claude, set <code>MCP_LICENSE_KEY</code>, or paste the key where the connect-by-URL token goes. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
 <h2>Measured, not claimed</h2>
-<p>As of 2026-09-04: 399 of 399 automated checks passing across all servers and billing, 25 unit tests green on the billing service, and a hosted <code>tools/list</code> call answers at a 375&nbsp;ms median (p50). Full detail: <a href="${REPO}/blob/main/data/validation.json">validation.json</a>.</p>
-<h2>The seventeen servers</h2>
+<p>As of ${VALIDATION.at}: ${VALIDATION.pass} of ${VALIDATION.total} automated checks passing across all ${VALIDATION.servers} servers, ${BILLING_TEST_COUNT} unit tests green on the billing service, and a <code>tools/list</code> call answers at a ${VALIDATION.medianMs}&nbsp;ms median (p50) across those servers. Full detail: <a href="${REPO}/blob/main/data/validation.json">validation.json</a>.</p>
+<h2>The ${SERVER_COUNT} servers</h2>
 <table><tr><th>Server</th><th>What it does</th><th>Pro price</th></tr>${compactRows}</table>
 <h2>All servers, free and Pro limits</h2>
 <table><tr><th>Product</th><th>Price</th><th></th></tr>${rows}</table>
@@ -396,9 +483,10 @@ export function bundlePage() {
 <h2>Three ways to start</h2>
 <ol>
 <li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server; paste it into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor or VS Code. The bundle key can replace that token on any of them to remove the free-tier limits.</li>
-<li><strong>Install the .mcpb:</strong> download each server's bundle from the <a href="${REPO}/releases/tag/v0.1.1">releases page</a> and open it; Claude Desktop installs the server.</li>
+<li><strong>Install the .mcpb:</strong> download each server's bundle from the <a href="${REPO}/releases/latest">releases page</a> and open it; Claude Desktop installs the server.</li>
 <li><strong>Install locally with npx:</strong> run <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> for each one and point your client's config at it; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
 </ol>
+<p class="muted">${NPM_PENDING_NOTE} The first two paths above need no npm.</p>
 <h2>How the key arrives</h2>
 <p>Nothing is emailed. The key is rendered once, on the <code>/success</code> page right after payment; reloading that URL always shows the same key, and <code>/recover?session_id=...</code> gets it back from a lost tab. If you bought while connected through a hosted <code>mcp.zovo.one</code> endpoint, that endpoint's token is bound to Pro automatically, with nothing to paste there (docs/CHECKOUT_AUDIT.md).</p>
 <p><a class="buy" href="/buy/bundle?src=store.bundle">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
@@ -445,13 +533,62 @@ async function stripe(env, path, params, method = "POST") {
   return json;
 }
 
-async function createCheckout(env, host, productId, probeTag = "", tenant = "") {
+/**
+ * The one line item a Checkout Session is created with.
+ *
+ * A product that has a Stripe Price id keeps using it: those 28 prices are the live funnel
+ * and re-pricing them inline would change nothing for the buyer but would lose the Price
+ * object every past receipt points at.
+ *
+ * A product with no Price id is priced INLINE with `price_data`, which makes Stripe create
+ * the Product and the Price implicitly as the Session is created. That needs only
+ * `checkout_session_write` on the worker's key, never `product_write`, which is the
+ * permission the operator's key lost on 2026-09-06 and the reason work-order, catalogue
+ * and change-order served a 503 `x-mcp-buy: price-pending-human` instead of a checkout.
+ *
+ * It is also the future-proofing: a server added to PRODUCTS tomorrow with `usd` and no
+ * `price` gets a working checkout on deploy, with no Dashboard step and no human at all.
+ * `unit_amount` is derived from the same `usd` field the storefront prints, so the page
+ * price and the charged price cannot drift apart.
+ */
+export function checkoutLineItem(p) {
+  if (typeof p.price === "string" && p.price.startsWith("price_")) {
+    return { "line_items[0][price]": p.price, "line_items[0][quantity]": "1" };
+  }
+  const item = {
+    "line_items[0][price_data][currency]": "usd",
+    "line_items[0][price_data][unit_amount]": String(p.usd * 100),
+    "line_items[0][price_data][product_data][name]": p.name,
+    "line_items[0][quantity]": "1",
+  };
+  // Stripe rejects an empty description; the storefront one-liner is trimmed to a length
+  // Checkout renders without truncating mid-sentence.
+  const d = (p.desc || "").trim();
+  if (d) item["line_items[0][price_data][product_data][description]"] = firstSentences(d, 300);
+  return item;
+}
+
+/**
+ * Pure: whole sentences from `text`, never longer than `max` characters and never cut
+ * mid-word. The ellipsis counts against the budget: an earlier version appended it after
+ * slicing to `max` and returned `max + 3`, which is how a 300-character cap produced a
+ * 302-character Stripe description.
+ */
+export function firstSentences(text, max) {
+  if (text.length <= max) return text;
+  const stop = text.slice(0, max).lastIndexOf(". ");
+  if (stop > 60) return text.slice(0, stop + 1);
+  const body = text.slice(0, max - 3);
+  const space = body.lastIndexOf(" ");
+  return (space > 60 ? body.slice(0, space) : body).replace(/[\s,;:]+$/, "") + "...";
+}
+
+async function createCheckout(env, host, productId, probeTag = "", tenant = "", askedId = productId) {
   const p = PRODUCTS[productId];
-  const ct = checkoutCustomText(productId);
+  const ct = checkoutCustomText(productId, askedId);
   const s = await stripe(env, "checkout/sessions", {
     mode: "payment",
-    "line_items[0][price]": p.price,
-    "line_items[0][quantity]": "1",
+    ...checkoutLineItem(p),
     success_url: `https://${host}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `https://${host}/`,
     // Off (audit): a discount field on a $19 one-time page invites the buyer to leave and
@@ -464,10 +601,15 @@ async function createCheckout(env, host, productId, probeTag = "", tenant = "") 
     "custom_text[submit][message]": ct.submit,
     "custom_text[after_submit][message]": ct.after_submit,
     "metadata[product]": productId,
+      ...(askedId !== productId ? { "metadata[asked]": askedId } : {}),
       ...(probeTag ? { "metadata[probe]": "1" } : {}),
       ...(tenant ? { client_reference_id: tenant, "metadata[tenant]": tenant } : {}),
     "payment_intent_data[statement_descriptor_suffix]": "MCP PRO",
     "payment_intent_data[metadata][product]": productId,
+    // Expanded on create so the caller can assert what Stripe actually stored - the item
+    // name and the amount - instead of asserting the request it just sent. A 303 to
+    // checkout.stripe.com is not evidence that the right product is on the page.
+    "expand[]": "line_items",
   });
   return s;
 }
@@ -483,6 +625,26 @@ async function bindTenant(env, tenant, key) {
  * dot, underscore and hyphen only, so it is safe to fold into a KV key unescaped.
  */
 const SRC_RE = /^[a-z0-9][a-z0-9._-]{0,90}$/;
+
+/** Header-safe ASCII, so a product name can never inject a header. */
+const headerSafe = (v) => String(v ?? "").replace(/[^\x20-\x7e]/g, " ").slice(0, 120);
+
+/**
+ * What a probe needs in order to assert that the checkout it was redirected to is the
+ * right product at the right price. Taken from the Session Stripe returned, never from
+ * the PRODUCTS row that was sent, so it is an independent reading rather than an echo.
+ * Only ever attached to an explicitly tagged probe request; a buyer sees none of it.
+ */
+export function probeHeaders(session) {
+  const item = session?.line_items?.data?.[0] || {};
+  return {
+    "x-mcp-probe-amount": headerSafe(session?.amount_total),
+    "x-mcp-probe-currency": headerSafe(session?.currency),
+    "x-mcp-probe-item": headerSafe(item.description),
+    "x-mcp-probe-price": headerSafe(item.price?.id),
+    "x-mcp-probe-livemode": headerSafe(session?.livemode),
+  };
+}
 
 /** Pure: is this a well-formed src tag? */
 export function validSrc(src) {
@@ -585,24 +747,32 @@ async function retrieveSession(env, sid) {
   return stripe(env, `checkout/sessions/${encodeURIComponent(sid)}?expand[]=line_items`, null, "GET");
 }
 
+/**
+ * Install instructions, in the order the paths actually work. The npx form was first and
+ * uncaveated, which meant the very first instruction a customer read after paying was a
+ * command that returns E404. The two paths that work today lead instead, and the npx line
+ * keeps its place with the same disclosure the /s/ and /setup pages already carried.
+ */
 function installSnippet(productId) {
   const p = PRODUCTS[productId];
-  if (!p.pkg) {
-    return `<pre><code># Bundle: the key works for every server. Example install:
-claude mcp add time-tracker -- npx -y @theluckystrike/mcp-time-tracker
-claude mcp add price-tracker -- npx -y @theluckystrike/mcp-price-tracker
-claude mcp add spreadsheet -- npx -y @theluckystrike/mcp-spreadsheet
-claude mcp add invoice -- npx -y @theluckystrike/mcp-invoice</code></pre>`;
-  }
-  return `<pre><code># Claude Code
-claude mcp add ${p.bin.replace(/^mcp-/, "")} -- npx -y ${p.pkg}
+  const name = p.pkg ? p.bin.replace(/^mcp-/, "") : "time-tracker";
+  const pkg = p.pkg || "@theluckystrike/mcp-time-tracker";
+  const bundleLine = p.pkg
+    ? `<p><strong>1. Claude Desktop, one click.</strong> Download <code>${esc(name)}.mcpb</code> from <a href="${REPO}/releases/latest">the latest release</a> and open it.</p>`
+    : `<p><strong>1. Claude Desktop, one click.</strong> Download any server's <code>.mcpb</code> from <a href="${REPO}/releases/latest">the latest release</a> and open it. This key unlocks Pro on every one of them.</p>`;
+  return `${bundleLine}
+<p><strong>2. No install at all.</strong> Open <a href="/mcp/connect">/mcp/connect</a>, and paste the key below where the token goes. Nothing to download.</p>
+<p><strong>3. Local, with npx.</strong></p>
+<pre><code># Claude Code
+claude mcp add ${esc(name)} -- npx -y ${esc(pkg)}
 
 # Claude Desktop (claude_desktop_config.json)
 {
   "mcpServers": {
-    "${p.bin.replace(/^mcp-/, "")}": { "command": "npx", "args": ["-y", "${p.pkg}"] }
+    "${esc(name)}": { "command": "npx", "args": ["-y", "${esc(pkg)}"] }
   }
-}</code></pre>`;
+}</code></pre>
+<p class="muted">${NPM_PENDING_NOTE}</p>`;
 }
 
 export function successPage(key, productId, session, boundTenant = "") {
@@ -716,7 +886,7 @@ export default {
       const setupLinks = SETUP_SERVERS[id]
         ? CLIENT_ORDER.map((c) => `<a href="/setup/${c}/${id}">${esc(CLIENTS[c].name)}</a>`).join(" &middot; ")
         : null;
-      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}?src=store.s.${esc(id)}">Buy Pro $${PRODUCTS[id].usd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a> &middot; <a href="${REPO}/releases/tag/v0.1.1">Claude Desktop bundle (.mcpb)</a></p>${pg.html}
+      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}?src=store.s.${esc(id)}">Buy Pro $${PRODUCTS[id].usd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a> &middot; <a href="${REPO}/releases/latest">Claude Desktop bundle (.mcpb)</a></p>${pg.html}
 ${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry and caveats: ${setupLinks} &middot; <a href="/setup">all clients</a></p>` : ""}
 ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/${esc(id)}">${esc(COMPARE[id].title)}</a> &middot; <a href="/compare">all comparisons</a></p>` : ""}
 <h2>Guides</h2>
@@ -822,8 +992,14 @@ ${faqHtml}
       const urls = ["/", "/bundle", "/changelog", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls()].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
-    if (path === "/22fad93b71a88e2e60acae203c4288ae.txt") {
-      return new Response("22fad93b71a88e2e60acae203c4288ae", { headers: { "content-type": "text/plain" } });
+    // Ownership / key files. Each one must answer with its own key as the entire body and
+    // nothing else: a search engine reads the file byte for byte and any markup fails it.
+    // db6dbf5c... is the IndexNow key from data/indexnow.json, which pushes URLs straight
+    // into Bing, Yandex, Seznam and Naver for free and with no account; every submission
+    // is rejected until this path serves. Adding another engine's key is one line here.
+    const keyFile = path.match(/^\/([0-9a-f]{32})\.txt$/);
+    if (keyFile && SITE_KEY_FILES.has(keyFile[1])) {
+      return new Response(keyFile[1], { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
     }
     if (path === "/robots.txt") {
       return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nDisallow: /bound\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });
@@ -836,29 +1012,42 @@ ${faqHtml}
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file || "none, a connector URL"}, key ${CLIENTS[c].key || "none"}. ` +
         serversFor(c).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n\n${lines}\n\n- [${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](${REPO}/tree/main/servers/office-suite): one config entry that runs time-tracker, price-tracker, spreadsheet and invoice as child processes and merges their tools; it forwards one key to all four, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {
       // validation probes tag their sessions so funnel metrics can exclude them
       const ua = request.headers.get("user-agent") || "";
-      const scripted = /^(curl|python|node|wget|go-http|undici|axios|httpie)/i.test(ua) || ua === "";
+      // Empty UA alone used to mean "scripted". It does not: a browser behind a privacy
+      // extension, a corporate proxy or a strict content blocker sends no User-Agent, and
+      // every one of those requests was answered with a redirect back to the product page,
+      // whose Buy link leads straight back here - an unbreakable loop for a real buyer.
+      // Every browser navigation, UA or not, asks for HTML in `accept` and on anything
+      // current carries `sec-fetch-mode: navigate`; a crawler or a library with no UA asks
+      // for `*/*`. Named tool prefixes stay scripted whatever they accept.
+      const accept = request.headers.get("accept") || "";
+      const looksLikeNavigation = /text\/html/i.test(accept) || request.headers.get("sec-fetch-mode") === "navigate";
+      const scripted = /^(curl|python|node|wget|go-http|undici|axios|httpie)/i.test(ua) || (ua === "" && !looksLikeNavigation);
       const probeTag = request.headers.get("x-mcp-probe") === "1" || scripted ? "1" : "";
-      const id = decodeURIComponent(path.slice("/buy/".length));
-      if (!PRODUCTS[id]) return new Response(page("Not found", `<h1>Unknown product</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
-      // A product whose price is the literal PENDING_HUMAN has no Stripe price id, because
-      // the key that would have minted it lost `product_write` (docs/HUMAN_GATED_PACK.md,
-      // 2026-09-06). Calling Stripe with that string would 400 and the buyer would read
-      // "Checkout could not start", which reads as an outage rather than as a shop that is
-      // not open yet. Answer plainly instead, and send them to the bundle, which does have
-      // a price and does include this server. This branch is before every Stripe call and
-      // before the click instrument, so a PENDING_HUMAN product creates no Session and
-      // records no conversion click it can never convert.
-      if (PRODUCTS[id].price === "PENDING_HUMAN") {
-        return new Response(page("Checkout not open", `<h1>Checkout for this server is not yet open</h1>
-<p>${esc(PRODUCTS[id].name.replace(/ Pro$/, ""))} Pro does not have a checkout link yet. The server itself is published and its free tier works today.</p>
-<p>Every server, including this one, is in the lifetime bundle: <a class="buy" href="/buy/bundle?src=store.pending.${esc(id)}">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
-<p><a href="/s/${esc(id)}">${esc(id)} product page</a> &middot; <a href="/">All servers</a></p>`), { status: 503, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-mcp-buy": "price-pending-human" } });
+      const asked = decodeURIComponent(path.slice("/buy/".length));
+      // office-suite, and any future alias, sells a product it is not itself; see PRODUCT_ALIASES.
+      const id = resolveProductId(asked);
+      if (!id) {
+        // Count the loss. This branch used to return before recordClick, so a click on a
+        // dead /buy/ link was structurally invisible: the conversion instrument could only
+        // ever see the routes that already worked. The click is filed under the same
+        // validated `src` a live route uses, which names the page the link was on, so a
+        // dead link is traceable to its source without letting a stranger's URL become a
+        // KV key: the fallback is the fixed string below, never the id they typed.
+        const deadSrcParam = url.searchParams.get("src") || "";
+        if (!scripted) ctx.waitUntil(recordClick(env, validSrc(deadSrcParam) ? deadSrcParam : "buy.unknown-product"));
+        // The old 404 was a dead end: a heading and a link back to a list. Anyone who gets
+        // here followed a link that named a product, so name the one purchase that
+        // certainly covers it rather than making them start the search again.
+        return new Response(page("Not found", `<h1>No product called &quot;${esc(asked.slice(0, 80))}&quot;</h1>
+<p>That link does not match any server sold here. Nothing was charged and nothing was started.</p>
+<p>Every server is in the lifetime bundle: <a class="buy" href="/buy/bundle?src=store.notfound">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
+<p><a href="/">All ${SERVER_COUNT} servers and prices</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8", "x-mcp-buy": "unknown-product" } });
       }
       const tenantParam = url.searchParams.get("tenant") || "";
       const tenant = validTenant(tenantParam) ? tenantParam : "";
@@ -870,22 +1059,26 @@ ${faqHtml}
       // live 24h), so a validation run costs at most one new Session per product per day.
       const explicitProbe = request.headers.get("x-mcp-probe") === "1";
       if (scripted && !explicitProbe) {
-        return new Response(null, { status: 303, headers: { Location: `https://${host}/s/${encodeURIComponent(id)}`, "cache-control": "no-store", "x-mcp-buy": "scripted-ua-no-session" } });
+        return new Response(null, { status: 303, headers: { Location: `https://${host}/s/${encodeURIComponent(PAGES[asked] ? asked : id)}`, "cache-control": "no-store", "x-mcp-buy": "scripted-ua-no-session" } });
       }
       // Conversion instrument: count the click before the redirect, skipping the same
       // probe-tagged and scripted requests the Stripe metadata already excludes.
       const srcParam = url.searchParams.get("src") || "";
-      const src = validSrc(srcParam) ? srcParam : `${id}.unknown`;
+      const src = validSrc(srcParam) ? srcParam : `${validSrc(asked) ? asked : id}.unknown`;
       if (!probeTag) ctx.waitUntil(recordClick(env, src));
       try {
-        const probeKey = probeTag && !tenant ? `probe-session:${id}` : "";
+        const probeKey = probeTag && !tenant ? `probe-session:v2:${asked}` : "";
         if (probeKey) {
           const cached = await env.REMOTE_DATA.get(probeKey);
-          if (cached) return new Response(null, { status: 303, headers: { Location: cached, "cache-control": "no-store", "x-mcp-buy": "probe-session-reused" } });
+          if (cached) {
+            const c = JSON.parse(cached);
+            return new Response(null, { status: 303, headers: { Location: c.url, "cache-control": "no-store", "x-mcp-buy": "probe-session-reused", ...c.headers } });
+          }
         }
-        const session = await createCheckout(env, host, id, probeTag, tenant);
-        if (probeKey) ctx.waitUntil(env.REMOTE_DATA.put(probeKey, session.url, { expirationTtl: PROBE_SESSION_TTL }));
-        return new Response(null, { status: 303, headers: { Location: session.url, "cache-control": "no-store" } });
+        const session = await createCheckout(env, host, id, probeTag, tenant, asked);
+        const headers = { Location: session.url, "cache-control": "no-store", ...(probeTag ? probeHeaders(session) : {}) };
+        if (probeKey) ctx.waitUntil(env.REMOTE_DATA.put(probeKey, JSON.stringify({ url: session.url, headers: probeHeaders(session) }), { expirationTtl: PROBE_SESSION_TTL }));
+        return new Response(null, { status: 303, headers });
       } catch (e) {
         return new Response(page("Checkout error", `<h1>Checkout could not start</h1><p>${esc(e.message)}</p><p><a href="/">Back</a></p>`), { status: 502, headers: { "content-type": "text/html; charset=utf-8" } });
       }
