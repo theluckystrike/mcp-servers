@@ -61,6 +61,9 @@ export const SINGLE_PRODUCT_IDS = Object.keys(PRODUCTS).filter((id) => id !== "b
  */
 export const PRODUCT_ALIASES = { "office-suite": "bundle" };
 
+/** Ed25519 public key for MCP registry domain verification (see /.well-known/mcp-registry-auth). */
+const MCP_REGISTRY_AUTH = "v=MCPv1; k=ed25519; p=KY+O0ut45badUE3n6TtwlXj09gkKnTd+/pkY56Y0A9Q=";
+
 /** Pure: the PRODUCTS id a /buy/<id> path sells, or "" when nothing sells it. */
 export function resolveProductId(id) {
   if (PRODUCTS[id]) return id;
@@ -1005,6 +1008,15 @@ ${faqHtml}
       const urls = ["/", "/bundle", "/changelog", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
+    // MCP registry domain verification. The registry fetches
+    // https://<domain>/.well-known/mcp-registry-auth and reads one line holding an Ed25519
+    // public key, which lets a publisher claim the namespace derived from that domain.
+    // Served here because this worker answers on both mcp.zovo.one and the workers.dev
+    // hostname, so one deploy proves control of both.
+    if (path === "/.well-known/mcp-registry-auth") {
+      return new Response(MCP_REGISTRY_AUTH + "\n", { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
+    }
+
     // Ownership / key files. Each one must answer with its own key as the entire body and
     // nothing else: a search engine reads the file byte for byte and any markup fails it.
     // db6dbf5c... is the IndexNow key from data/indexnow.json, which pushes URLs straight

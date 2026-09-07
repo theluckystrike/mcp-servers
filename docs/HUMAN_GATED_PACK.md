@@ -422,3 +422,25 @@ env var) and stop touching the Desktop copy.
 The same applies to the other six dataless files in `~/Desktop/keys/`: `empire.env`,
 `gh-secrets.sh`, `ic-license-private.pkcs8.b64`, `load.sh`, `README.md`,
 `setup.applescript`.
+
+## Cloudflare token for the registry namespace (2026-09-07)
+
+One action, about two minutes, and it unlocks the largest measured discovery gain available
+to this project. See docs/NAMESPACE_R1.md for the arithmetic.
+
+At https://dash.cloudflare.com/profile/api-tokens create a token with a single permission,
+**Zone -> DNS -> Edit**, scoped to one zone (b2berp.com is the recommended choice, or
+bestremotetools.com if a tools framing is preferred). Then add it to the shell profile as
+
+    export CLOUDFLARE_DNS_TOKEN=...
+
+and an agent can run `scripts/namespace-claim.sh b2berp.com` unattended. Everything else in
+the chain is already proven working: HTTP domain verification succeeded end to end on
+2026-09-07 and the registry granted publish rights on the namespace derived from the domain.
+
+Why a new token is needed: the existing CLOUDFLARE_API_TOKEN reads zones and deploys Workers
+but returns `10000 Authentication error` on both `POST /zones/<id>/dns_records` and
+`POST /zones/<id>/workers/routes`. The wrangler OAuth token has `zone:read` only and expired
+2026-04-24. The account is also at its Cloudflare Pages project limit, so a throwaway
+`<name>.pages.dev` cannot be created as a workaround.
+
