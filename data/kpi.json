@@ -73,13 +73,13 @@
     },
     {
       "cat": "Discovery",
-      "name": "Human page views, storefront",
+      "name": "Human requests, storefront (assets included)",
       "value": 512,
-      "target": 500,
-      "unit": "views, 7d",
-      "how": "data/traffic.json human_evidence, browser user agents confirmed by a render-engine test (did that exact UA ever fetch favicon, cdn-cgi or assets); 33 of 124 browser-shaped UA strings passed",
+      "target": 5000,
+      "unit": "requests, 7d",
+      "how": "data/traffic.json human_evidence.requests_render_proven. Requests, not page views: it counts every asset fetch too. The page-view figure behind it is 218 in 7 days, 64 excluding the home page, spread over 49 of the other 311 URLs, with 109 URLs drawing nothing from any browser-shaped agent (docs/TRAFFIC_R1.md). 33 of 124 browser-shaped UA strings passed the render test.",
       "why": "The honest size of the audience. A spoofed UA that never loads an asset is not a person.",
-      "status": "met"
+      "status": "progress"
     },
     {
       "cat": "Discovery",
