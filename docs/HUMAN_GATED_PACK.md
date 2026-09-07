@@ -632,3 +632,54 @@ at `https://www.npmjs.com/package/@theluckystrike/mcp-<name>/access` → **Trust
 only, already installs npm@latest and already requests `id-token: write`. After configuring
 it the token can be revoked. This is 33 separate web-UI configurations, so it is worth doing
 only if token rotation becomes a burden.
+
+---
+
+## mcp.directory — free web form, no account, but you click Submit (directory agent, loop 29, 2026-09-07)
+
+**Why this needs you:** nothing about this one is gated — no login, no account, no fee. It is
+here only because of the standing rule on this machine that the operator clicks Submit on
+external web forms. An agent could technically POST it; it will not.
+
+**Why it is worth your two minutes:** `https://mcp.directory/` ranks on the first page for
+"mcp servers list" and "mcp server directory", carries 3,000+ servers, and the form's only
+required field is a GitHub repo URL — it scrapes everything else itself.
+
+**Verified 2026-09-07 by fetching `https://mcp.directory/submit`:**
+- form fields: **GitHub Repository URL (required)**, npm package (optional), PyPI package
+  (optional), Short description (optional, `maxLength=100`), Your email (optional)
+- submit control: `<button type="submit">Submit for Review</button>`
+- no sign-in, sign-up, account or login control anywhere on the page
+- no fee, pricing, paid listing, featured slot or paid review mentioned anywhere in the
+  page HTML (grepped for `price|pricing|paid|fee|featured|$<digits>` — the only `fee` hits
+  are the word "feedback")
+- the page's own description of what happens next: it pulls name, description, stars,
+  language, license and README from GitHub, auto-detects tools by analysing the MCP
+  implementation, generates install configs for the major clients, and reviews "within
+  24 hours"
+
+### Exact steps
+
+1. Open `https://mcp.directory/submit`
+2. Paste a repo URL into **GitHub Repository URL** and leave everything else blank —
+   the description and packages are optional and it scrapes the README anyway.
+3. Optionally put `support@zovo.one` in **Your Email** so you get the review notification.
+4. Click **Submit for Review**.
+5. Repeat for as many of the 33 mirror repos as you have patience for. Highest value first:
+
+```
+https://github.com/theluckystrike/mcp-office-suite
+https://github.com/theluckystrike/mcp-invoice
+https://github.com/theluckystrike/mcp-time-tracker
+https://github.com/theluckystrike/mcp-spreadsheet
+https://github.com/theluckystrike/mcp-price-tracker
+https://github.com/theluckystrike/mcp-expense-tracker
+https://github.com/theluckystrike/mcp-pdf
+https://github.com/theluckystrike/mcp-docx
+```
+
+Do **not** submit `https://github.com/theluckystrike/mcp-servers` as the first one — it is a
+monorepo and the scraper will read it as a single server. Submit the per-server mirrors.
+
+**Verify it landed:** search `https://mcp.directory/` for `theluckystrike` after 24 hours, or
+try `https://mcp.directory/servers/theluckystrike/mcp-invoice`.

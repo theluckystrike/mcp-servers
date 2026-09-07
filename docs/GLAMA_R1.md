@@ -372,3 +372,110 @@ Recording these so no future loop re-spends the calls:
   from this project is on npm under those names, so npm is not how the one listing happened.
 - "Glama might have a public GitHub issue tracker for submissions" — **no.** The `glama-ai`
   org has three repos and none of them is the directory.
+
+---
+
+## 7. The alternative to awesome-mcp-servers — what was submitted instead
+
+The value of `punkpeye/awesome-mcp-servers` is that it ranks, not its name. Searching
+"mcp servers list directory" and "best mcp server directory submit your server free" returns
+pulsemcp, mcp.so, mcp.directory, zplatform.ai, mcpserverfinder, aiagentslist, aixploria and
+mcpservers.org. Everything on that list that this project can reach for free was already
+tried in earlier rounds — mcp.so is `skipped: paid`, pulsemcp / cursor.directory /
+mcpserverfinder are recorded blocked, mcpservers.org and mcpmarket.com are submitted.
+
+So this round went after **active awesome-lists that merge outside PRs**, verified one by one
+with `gh repo view` and `gh pr list --state merged`, and one high-ranking web form.
+
+### Submitted this round — three PRs, all under github.com/theluckystrike
+
+| List | Stars | Last push | Merges outside PRs? | PR opened |
+|---|---|---|---|---|
+| `collabnix/awesome-mcp-lists` | 34 | 2026-09-07T03:15Z | yes — #110, #109, #107 all merged 2026-09-06 | **[#112](https://github.com/collabnix/awesome-mcp-lists/pull/112)** |
+| `habitoai/awesome-mcp-servers` | 19 | 2026-08-22 | yes — #120, #119, #104, #99 merged 2026-08-22 | **[#144](https://github.com/habitoai/awesome-mcp-servers/pull/144)** |
+| `abordage/awesome-mcp` | 20 | 2026-09-06T09:10Z | yes — #95, #94, #93, #92 merged Aug 2026 | **[#106](https://github.com/abordage/awesome-mcp/pull/106)** |
+
+None are archived. None charge anything. None require an account or a Glama badge. Every one
+was checked against the project's hard no-emoji rule before drafting, and all three carry
+**zero per-entry emoji** — the only glyph `abordage` renders per row is `☆` for the star
+count, which is machine-appended by its build pipeline, not authored by the contributor.
+
+**1. `collabnix/awesome-mcp-lists` #112** — "A Curated List of containerised MCP Servers".
+One table row added as `| 23 |` at the end of **Containerised MCP Servers → Development
+Tools**, matching the section's existing `| N | **name** | description | [GitHub](url) |`
+format. Entry is `theluckystrike/mcp-office-suite`, chosen because this list is specifically
+about containerised servers and that mirror repo has a root `Dockerfile` (verified,
+`raw.githubusercontent.com/theluckystrike/mcp-office-suite/main/Dockerfile` → 200). One line
+added, nothing else touched. This is the best of the three: collabnix has real domain
+authority and merged three external PRs the day before.
+
+**2. `habitoai/awesome-mcp-servers` #144** — three entries into **Finance**, each placed in
+correct alphabetical position as its `CONTRIBUTING.md` requires, in the exact
+`- [Project Name](link) - Brief description` format it specifies:
+`mcp-bank-statement` before *Bankless Onchain MCP*, `mcp-expense-tracker` before
+*Freqtrade-MCP*, `mcp-invoice` before *Jupiter MCP*. Three added lines.
+
+*Trap hit and fixed here:* that README has **mixed CRLF and LF line endings** (904 CRLF,
+917 LF). A first pass with plain `open(p, encoding='utf-8')` silently normalised every CRLF
+to LF and produced a 907-insertion / 904-deletion diff that touched the whole file. Reading
+and writing with `newline=''` brought it back to a clean 3-line diff. **Any future agent
+editing a third-party README must open with `newline=''` and check `git diff --stat` before
+committing.**
+
+**3. `abordage/awesome-mcp` #106** — six entries, YAML only. Its `CONTRIBUTING.md` says in
+bold *"DO NOT edit the README.md directly"* because the README is generated daily, so only
+`repositories.yaml` was touched: three under Finance → Accounting & Budgeting
+(`mcp-invoice`, `mcp-expense-tracker`, `mcp-cash-book`), one under Finance → Payments &
+Banking (`mcp-bank-statement`), two under Productivity → Documents (`mcp-pdf`, `mcp-docx`).
+12 added lines, nothing removed or reordered, and the result re-parses under
+`yaml.safe_load`. All six repo URLs return 200.
+
+### Human-gated, written into HUMAN_GATED_PACK.md
+
+**`https://mcp.directory/submit`** — the best-ranking surface found this round that is not
+already tried. Free, and genuinely **needs no account**: the only required field is a GitHub
+repository URL, with optional npm package, PyPI package, a 100-character description and an
+email. Submit control is `<button type="submit">Submit for Review</button>`. No fee, pricing,
+featured slot or paid review appears anywhere in the page HTML. It is human-gated purely by
+the operator's standing rule that he clicks Submit on external forms himself.
+
+### Explicitly skipped, with the reason
+
+- **`tolkonepiu/best-of-mcp-servers`** — would otherwise have been the top pick (PR to a
+  `projects.yaml`, weekly rebuild, ~400 servers, ranks in search). **Hard skip on the
+  no-emoji rule:** the best-of generator stamps every row with per-entry emoji (🥇🥈🥉 quality
+  medals, ⭐️, 🐣 new, 💤 inactive, 💀 dead, 📈📉 trending, ➕ recently added, ❗️). It is the
+  format, not an option.
+- **`businessmcp.com/mcp-servers/submit`** — `skipped: paid`. Its own wording is that
+  *"early submissions are free"*, which is a tiered fee in waiting. Not verified free today,
+  so treated as paid under the hard rule.
+- **`toolsdk-ai/toolsdk-mcp-registry`** — 186 stars, the largest untried PR list, but its
+  `CONTRIBUTING.md` requires every entry to name a **published** npm/PyPI package or Docker
+  image, or an official public HTTPS Streamable HTTP endpoint. Nothing from this project is
+  on npm (`registry.npmjs.org/mcp-<name>` → 404) and `https://mcp.zovo.one/mcp/<name>`
+  returns 401, so an entry would be rejected on the source requirement. **Revisit the moment
+  the npm publish blocker in `HUMAN_GATED_PACK.md` clears** — at that point this is the
+  single highest-value list left.
+- **`wundercorp/awesome-mcp`** — clean and PR-friendly, but hard rule of **one MCP server per
+  pull request** plus a required `node scripts/validate-catalog.mjs` and
+  `generate-readme.mjs` regeneration per PR. Viable, just expensive; left for a round with
+  budget for 31 PRs.
+- **`ever-works/awesome-mcp-servers-data`** — free and PR-based, but its entry schema carries
+  a `featured: false` field and the list is generated by a commercial directory builder.
+  Listing looks free; **do not buy the `featured` flag if it turns out to be sold.**
+- **`mcpserverspot.com/submit`** — form exists and states no fee, but the page is
+  JS-rendered and it could not be confirmed whether it gates on login. Unverified, not acted
+  on.
+
+### Note for whoever owns data/distribution.json
+
+This agent was scoped to the `glama` and `awesome-mcp-servers` entries only and did not add
+the three new surfaces to that file. They need entries adding, all dated 2026-09-07:
+
+- `collabnix-awesome-mcp-lists` — status `submitted`, https://github.com/collabnix/awesome-mcp-lists/pull/112
+- `habitoai-awesome-mcp-servers` — status `submitted`, https://github.com/habitoai/awesome-mcp-servers/pull/144
+- `abordage-awesome-mcp` — status `submitted`, https://github.com/abordage/awesome-mcp/pull/106
+- `mcp.directory` — status `human-gated: operator clicks Submit`, https://mcp.directory/submit
+- `tolkonepiu-best-of-mcp-servers` — status `skipped: per-entry emoji`
+- `businessmcp.com` — status `skipped: paid`
+- `toolsdk-ai-mcp-registry` — status `blocked: requires a published package or a public endpoint; revisit after the npm publish unblocks`
