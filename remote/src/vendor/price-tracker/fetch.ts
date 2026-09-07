@@ -114,7 +114,7 @@ export function guardTarget(u: URL): void {
   if (blocked) {
     throw new FetchError(
       `${u.hostname} is not a public address, so this hosted endpoint will not fetch it. ` +
-      "Track a public product page instead, or run the price tracker locally over stdio (npx -y @theluckystrike/mcp-price-tracker), where it can reach your own network.");
+      "Track a public product page instead, or install the price tracker locally, where it can reach your own network: download price-tracker.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.");
   }
 }
 

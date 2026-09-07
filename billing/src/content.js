@@ -4,6 +4,81 @@
 // The FAQ section, the related links and the footer are appended by index.js.
 const FOOT = "";
 const BASE = "https://mcp.zovo.one";
+const RELEASES = "https://github.com/theluckystrike/mcp-servers/releases/latest";
+
+/**
+ * The servers that answer at https://mcp.zovo.one/mcp/<name>, read off the SERVERS map in
+ * remote/src/index.ts (30 of them). office-suite spawns every sibling as a local child
+ * process, so it has no hosted form; delivery-schedule has no endpoint yet. A guide about
+ * either one gets the bundle and the clone, and is not offered a URL that would 404.
+ */
+const HOSTED_IDS = new Set([
+  "time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency",
+  "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image",
+  "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem",
+  "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash",
+  "work-order", "catalogue", "change-order",
+]);
+
+/**
+ * The install block every guide shares.
+ *
+ * Each guide used to open with `claude mcp add <slug> -- npx -y @theluckystrike/mcp-<slug>`
+ * and a Claude Desktop or Cursor config block whose `"command"` was `"npx"`. Nothing has ever
+ * been published to npm - registry.npmjs.org returns no versions for any @theluckystrike/mcp-*
+ * package, probed 2026-09-07 - so that block does not start a server. Anyone who copied it got
+ * a client that failed to boot, which makes it a defect in the product's first instruction
+ * rather than a wording preference.
+ *
+ * So the paths that work today come first: the one-click .mcpb bundle, the hosted URL where
+ * there is one, and a clone and build for a client with no bundle installer. The npx form stays
+ * last and marked, because it is the line that becomes correct the day the publish happens, with
+ * nothing else about it changing.
+ *
+ * Pass one slug, or an array when a guide needs a pair of servers side by side.
+ */
+function install(slug) {
+  const ids = Array.isArray(slug) ? slug : [slug];
+  const many = ids.length > 1;
+  const width = Math.max(...ids.map((id) => id.length));
+  const hosted = ids.filter((id) => HOSTED_IDS.has(id));
+  const files = ids.map((id) => `<code>${id}.mcpb</code>`).join(" and ");
+  const addLines = ids
+    .map((id) => `claude mcp add --scope user ${id.padEnd(width)} -- node /absolute/path/to/mcp-servers/servers/${id}/dist/index.js`)
+    .join("\n");
+  const npxLines = ids
+    .map((id) => `claude mcp add ${id.padEnd(width)} -- npx -y @theluckystrike/mcp-${id}`)
+    .join("\n");
+  const jsonEntries = ids
+    .map((id) => `    "${id}": {\n      "command": "node",\n      "args": ["/absolute/path/to/mcp-servers/servers/${id}/dist/index.js"]\n    }`)
+    .join(",\n");
+  const hostedBlock = hosted.length === 0 ? "" : `
+<p><strong>Or a URL, with nothing installed.</strong> <a href="/mcp/connect">/mcp/connect</a> mints a free
+anonymous token and prints the ready line${hosted.length > 1 ? "s" : ""}:</p>
+<pre><code>${hosted.map((id) => `claude mcp add --transport http ${id.padEnd(width)} https://mcp.zovo.one/mcp/${id}/t/&lt;token&gt;`).join("\n")}</code></pre>`;
+  return `<p><strong>One click, no JSON.</strong> Download ${files} from the
+<a href="${RELEASES}">latest release</a> and open ${many ? "them" : "it"} in Claude Desktop. ${many ? "They run" : "It runs"} on the
+Node runtime Claude Desktop ships with, so your own PATH and node version never come into it.</p>${hostedBlock}
+<p><strong>Or from a clone,</strong> for a client with no bundle installer. Build once, then point the
+client at the built file:</p>
+<pre><code>git clone https://github.com/theluckystrike/mcp-servers.git
+cd mcp-servers &amp;&amp; npm install
+npm run build -w packages/mcp-license ${ids.map((id) => `-w servers/${id}`).join(" ")}
+
+${addLines}</code></pre>
+<p>Claude Desktop, Cursor, Windsurf and Cline take the same two strings as JSON, in
+<code>claude_desktop_config.json</code> or the client's own MCP config file:</p>
+<pre><code>{
+  "mcpServers": {
+${jsonEntries}
+  }
+}</code></pre>
+<p>The npm packages are not published yet, so the <code>npx</code> form below returns a 404 today. It is
+kept because it is what that config becomes the day the publish lands, with nothing else changed;
+<a href="/guides/install-mcp-servers-without-npm">installing these servers when npx does not work yet</a>
+has the whole picture.</p>
+<pre><code>${npxLines}</code></pre>`;
+}
 
 export const GUIDES = {
   "track-time-in-claude-code": {
@@ -17,21 +92,9 @@ say "start a timer for Acme, task API refactor", keep working, and later ask for
 Entries are plain JSON under your home directory. Nothing is uploaded.</p>
 
 <h2>Install it</h2>
-<p>One command for Claude Code:</p>
-<pre><code>claude mcp add time-tracker -- npx -y @theluckystrike/mcp-time-tracker</code></pre>
-<p>Cursor reads the same kind of config. Add this to <code>~/.cursor/mcp.json</code> (or the project-level
-<code>.cursor/mcp.json</code>), then restart Cursor:</p>
-<pre><code>{
-  "mcpServers": {
-    "time-tracker": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-time-tracker"]
-    }
-  }
-}</code></pre>
-<p>Claude Desktop uses <code>claude_desktop_config.json</code> with exactly the same block. There is no
-account, no API key and no login step: the server runs locally over stdio and writes to
-<code>~/.local/share/mcp-servers/time-tracker/</code>.</p>
+${install("time-tracker")}
+<p>Whichever path you take, there is no account, no API key and no login step. The server runs locally
+over stdio and writes to <code>~/.local/share/mcp-servers/time-tracker/</code>.</p>
 
 <h2>The four things you actually do</h2>
 <p><strong>Start and stop a timer.</strong> Say "start tracking time on the Acme website project". Only one
@@ -105,16 +168,7 @@ hours of API work at 90 EUR plus a 300 EUR setup fee, 23% VAT, due in 14 days, a
 The MCP Invoice server allocates the number, computes the tax lines and renders an A4 PDF on your disk.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add invoice -- npx -y @theluckystrike/mcp-invoice</code></pre>
-<p>For Cursor or Claude Desktop, the same server as a config block:</p>
-<pre><code>{
-  "mcpServers": {
-    "invoice": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-invoice"]
-    }
-  }
-}</code></pre>
+${install("invoice")}
 
 <h2>Set your business once</h2>
 <p>The issuer block printed at the top of every invoice comes from one call. Say it in free text: your
@@ -201,16 +255,7 @@ four purpose-built tools instead: describe the file, query it, add a computed co
 opens xlsx, xlsm, xlsb, ods, csv and tsv.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add spreadsheet -- npx -y @theluckystrike/mcp-spreadsheet</code></pre>
-<p>Cursor, in <code>~/.cursor/mcp.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "spreadsheet": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-spreadsheet"]
-    }
-  }
-}</code></pre>
+${install("spreadsheet")}
 
 <h2>Start with sheet_info</h2>
 <p>"Open sales.xlsx and tell me what is in it" runs <code>sheet_info</code>: sheet names, row and column
@@ -280,15 +325,7 @@ and a history to compare against. This guide covers what the server does well an
 two places where it will disappoint you.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add price-tracker -- npx -y @theluckystrike/mcp-price-tracker</code></pre>
-<pre><code>{
-  "mcpServers": {
-    "price-tracker": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-price-tracker"]
-    }
-  }
-}</code></pre>
+${install("price-tracker")}
 
 <h2>price_check: what does this cost right now</h2>
 <p>Paste a product URL and ask what it costs. <code>price_check</code> fetches the page and extracts the
@@ -434,21 +471,9 @@ VAT already split out, categorised from a rule you set once, and marked ready to
 plain JSON file on your own machine.</p>
 
 <h2>Install it</h2>
-<p>One command for Claude Code:</p>
-<pre><code>claude mcp add expense-tracker -- npx -y @theluckystrike/mcp-expense-tracker</code></pre>
-<p>Cursor reads the same kind of config. Add this to <code>~/.cursor/mcp.json</code> (or the project-level
-<code>.cursor/mcp.json</code>), then restart Cursor:</p>
-<pre><code>{
-  "mcpServers": {
-    "expense-tracker": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-expense-tracker"]
-    }
-  }
-}</code></pre>
-<p>Claude Desktop uses <code>claude_desktop_config.json</code> with the same block. There is no account, no
-API key and no login step: the server runs locally over stdio and writes to
-<code>~/.local/share/mcp-servers/expense-tracker/</code>.</p>
+${install("expense-tracker")}
+<p>Whichever path you take, there is no account, no API key and no login step. The server runs locally
+over stdio and writes to <code>~/.local/share/mcp-servers/expense-tracker/</code>.</p>
 
 <h2>Log a receipt and watch the VAT split</h2>
 <p>Every amount you say is the gross figure printed on the receipt. <code>vat_rate</code> does the rest:
@@ -551,18 +576,8 @@ foreign exchange reference rates, states the rate date in every answer, and need
 account and no rate limit, because the ECB publishes the files openly.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add currency -- npx -y @theluckystrike/mcp-currency</code></pre>
-<p>Cursor and Claude Desktop take the same server as a config block:</p>
-<pre><code>{
-  "mcpServers": {
-    "currency": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-currency"]
-    }
-  }
-}</code></pre>
-<p>The npm publish of the package is pending, so until it lands use the <code>.mcpb</code> bundle from
-the latest release or a clone and build. Exact config paths per client are on the
+${install("currency")}
+<p>Exact config paths per client are on the
 <a href="/setup/claude-desktop/currency">setup pages</a>.</p>
 
 <h2>Why the ECB series and not a rate API</h2>
@@ -646,19 +661,8 @@ It writes Word files rather than PDFs on purpose, because the client is going to
 four and you want them to be able to make it.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add docx -- npx -y @theluckystrike/mcp-docx</code></pre>
-<p>Cursor and Claude Desktop take the same server as a config block:</p>
-<pre><code>{
-  "mcpServers": {
-    "docx": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-docx"]
-    }
-  }
-}</code></pre>
-<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
-release or a clone and build. Per client paths are on the
-<a href="/setup/claude-code/docx">setup pages</a>.</p>
+${install("docx")}
+<p>Per client paths are on the <a href="/setup/claude-code/docx">setup pages</a>.</p>
 
 <h2>Set the letterhead once</h2>
 <p><code>business_set</code> stores the sender block printed on every document: name, address, email,
@@ -752,19 +756,8 @@ their own working hours, the exact daily overlap, the dates the clocks change, a
 it.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add timezone -- npx -y @theluckystrike/mcp-timezone</code></pre>
-<p>Cursor and Claude Desktop take the same server as a config block:</p>
-<pre><code>{
-  "mcpServers": {
-    "timezone": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-timezone"]
-    }
-  }
-}</code></pre>
-<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
-release or a clone and build. Per client paths are on the
-<a href="/setup/cursor/timezone">setup pages</a>.</p>
+${install("timezone")}
+<p>Per client paths are on the <a href="/setup/cursor/timezone">setup pages</a>.</p>
 
 <h2>The overlap is not a constant, and March proves it</h2>
 <p>Take the pair a lot of European freelancers actually work: Warsaw and New York, both on 09:00 to
@@ -861,20 +854,10 @@ posting. MCP Resume and Cover Letter exists to make that impossible: you store y
 every output is assembled from those facts and nothing else.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add resume -- npx -y @theluckystrike/mcp-resume</code></pre>
-<p>Cursor and Claude Desktop take the same server as a config block:</p>
-<pre><code>{
-  "mcpServers": {
-    "resume": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-resume"]
-    }
-  }
-}</code></pre>
-<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
-release or a clone and build. Per client paths are on the
-<a href="/setup/claude-code/resume">setup pages</a>. The document engine is shared with
-<a href="/s/docx">MCP Docx</a> rather than duplicated, so a clone build lists both.</p>
+${install("resume")}
+<p>Per client paths are on the <a href="/setup/claude-code/resume">setup pages</a>. The document engine
+is shared with <a href="/s/docx">MCP Docx</a> rather than duplicated, so a clone build wants both in the
+<code>-w</code> list.</p>
 
 <h2>Store the profile once</h2>
 <p><code>profile_set</code> takes name, email, phone, location, links, a summary, skills, roles with
@@ -970,20 +953,12 @@ you ask, it creates the invoices that have actually fallen due as real records i
 <a href="/s/invoice">the invoice server</a>, with its number series, its client list and its A4 PDF.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add recurring -- npx -y @theluckystrike/mcp-recurring</code></pre>
-<pre><code>{
-  "mcpServers": {
-    "recurring": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-recurring"]
-    }
-  }
-}</code></pre>
-<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
-release or a clone and build; build <code>servers/invoice</code> first, because the engine is imported
-from it. Per client paths are on the <a href="/setup/claude-code/recurring">setup pages</a>. Install the
-invoice server too: this one has no <code>business_set</code> of its own on purpose, so there is exactly
-one issuer profile to keep correct.</p>
+${install("recurring")}
+<p>A clone build wants <code>servers/invoice</code> in the <code>-w</code> list too, because the
+invoicing engine is imported from it rather than duplicated. Per client paths are on the
+<a href="/setup/claude-code/recurring">setup pages</a>. Install the invoice server as well: this one has
+no <code>business_set</code> of its own on purpose, so there is exactly one issuer profile to keep
+correct.</p>
 
 <h2>One schedule, then nothing</h2>
 <pre><code>schedule_create {
@@ -1100,19 +1075,9 @@ returned in the tool's own JSON response, so it cannot be lost by choosing a dif
 Treat what comes out as the draft you take to a lawyer, not the contract you send to a client.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add clauses -- npx -y @theluckystrike/mcp-clauses</code></pre>
-<pre><code>{
-  "mcpServers": {
-    "clauses": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-clauses"]
-    }
-  }
-}</code></pre>
-<p>The npm publish is pending, so until it lands use the <code>.mcpb</code> bundle from the latest
-release or a clone and build. Per client paths are on the
-<a href="/setup/cursor/clauses">setup pages</a>. The document engine is shared with
-<a href="/s/docx">MCP Docx</a>, so a clone build lists both.</p>
+${install("clauses")}
+<p>Per client paths are on the <a href="/setup/cursor/clauses">setup pages</a>. The document engine is
+shared with <a href="/s/docx">MCP Docx</a>, so a clone build wants both in the <code>-w</code> list.</p>
 
 <h2>What ships in the box</h2>
 <p>Twenty-five starter clauses across eleven categories, in assembly order: scope (scope of work,
@@ -1284,17 +1249,7 @@ web tool you do not run. MCP PDF Tools does the job in the chat, on your machine
 with no native dependency.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add pdf -- npx -y @theluckystrike/mcp-pdf</code></pre>
-<p>Cursor's <code>.cursor/mcp.json</code> and Claude Desktop's <code>claude_desktop_config.json</code> take the
-same block:</p>
-<pre><code>{
-  "mcpServers": {
-    "pdf": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-pdf"]
-    }
-  }
-}</code></pre>
+${install("pdf")}
 <p>Nothing is uploaded. The server reads and writes files where you point it and makes no network request
 of any kind, not even to check a licence key, which is verified offline.</p>
 
@@ -1391,11 +1346,10 @@ the same way on Pro. Then:</p>
 <pre><code>ics_import {path: "~/Downloads/mike@example.com.ics", name: "work"}</code></pre>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add calendar -- npx -y @theluckystrike/mcp-calendar</code></pre>
-<p>Cursor and Claude Desktop take the same block, with <code>"calendar"</code> as the key under
-<code>mcpServers</code>. There is exactly one network call in the whole server, and only when you pass a
-<code>url</code> yourself, with a 12-second timeout, a 5 MB cap, and a refusal on loopback and
-private-network addresses.</p>
+${install("calendar")}
+<p>There is exactly one network call in the whole server, and only when you pass a <code>url</code>
+yourself, with a 12-second timeout, a 5 MB cap, and a refusal on loopback and private-network
+addresses.</p>
 
 <h2>Recurrence, properly expanded</h2>
 <p>The parser was written against real exports, not just the RFC 5545 spec: line folding across CRLF, bare
@@ -1465,19 +1419,8 @@ does not start a timer itself, it hands back the exact project and task name for
 <code>timer_start</code>, so the hours you log are never a re-typed guess at what the task was called.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add kanban -- npx -y @theluckystrike/mcp-kanban</code></pre>
-<p>Cursor reads the same shape of config from <code>.cursor/mcp.json</code> (or the project-level file),
-then restart Cursor:</p>
-<pre><code>{
-  "mcpServers": {
-    "kanban": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-kanban"]
-    }
-  }
-}</code></pre>
-<p>Claude Desktop takes the identical block in <code>claude_desktop_config.json</code>. No account, no
-API key: the server runs locally over stdio and writes to
+${install("kanban")}
+<p>No account, no API key on any of those paths: the server runs locally over stdio and writes to
 <code>~/.local/share/mcp-servers/kanban/</code>.</p>
 
 <h2>What a task actually carries</h2>
@@ -1550,19 +1493,9 @@ with your business name, and strip the EXIF and GPS block a phone camera writes 
 network call of any kind, not even for licensing.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add image -- npx -y @theluckystrike/mcp-image</code></pre>
-<p>Cursor reads the same block from <code>.cursor/mcp.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "image": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-image"]
-    }
-  }
-}</code></pre>
-<p>Claude Desktop takes the identical block in <code>claude_desktop_config.json</code>. Data lives under
-<code>~/.local/share/mcp-servers/image/</code>: a register of the last 500 operations, not your images,
-which stay where you put them.</p>
+${install("image")}
+<p>Data lives under <code>~/.local/share/mcp-servers/image/</code>: a register of the last 500
+operations, not your images, which stay where you put them.</p>
 
 <h2>Why "compress" means something different for a PNG</h2>
 <p>The tool most people reach for first is <code>image_compress</code>, and the surprising part is that
@@ -1634,18 +1567,8 @@ already cover. Nothing is uploaded. The file is read once, on your machine, into
 <code>~/.local/share/mcp-servers/bank-statement/</code>.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add bank-statement -- npx -y @theluckystrike/mcp-bank-statement</code></pre>
-<p>Cursor, in <code>~/.cursor/mcp.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "bank-statement": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-bank-statement"]
-    }
-  }
-}</code></pre>
-<p>Claude Desktop and the other clients take the same block under their own config file; see the
-<a href="/setup">setup pages</a> for the exact file and key per client.</p>
+${install("bank-statement")}
+<p>See the <a href="/setup">setup pages</a> for the exact config file and key per client.</p>
 
 <h2>Seven shapes of the same CSV</h2>
 <p><code>statement_import</code> ships a profile for Revolut, Wise, mBank, PKO BP, ING and N26, plus a
@@ -1763,16 +1686,7 @@ that same quote into a real invoice in the <a href="/s/invoice">invoice server</
 client list, same number series. Nothing is uploaded; everything lives in plain JSON on your machine.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add quotes -- npx -y @theluckystrike/mcp-quotes</code></pre>
-<p>Cursor and Claude Desktop take the same block, under their own config file:</p>
-<pre><code>{
-  "mcpServers": {
-    "quotes": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-quotes"]
-    }
-  }
-}</code></pre>
+${install("quotes")}
 <p>Build <code>servers/invoice</code> first if you are running from source: the money, VAT, client and
 numbering engine is imported from it rather than duplicated, which is also why a quote and the invoice it
 becomes round to the same numbers. See the <a href="/setup">setup pages</a> for the exact file and key per
@@ -1900,9 +1814,8 @@ draws anything, and can pull the beneficiary's IBAN and name straight from the s
 payment QR code on invoice INV-2026-0007" is one call.</p>
 
 <h2>Install</h2>
-<pre><code>claude mcp add barcode -- npx -y @theluckystrike/mcp-barcode</code></pre>
-<p>Cursor, Claude Desktop and the rest take the same block, under their own config file. See the
-<a href="/setup">setup pages</a> for the exact path and key per client.</p>
+${install("barcode")}
+<p>See the <a href="/setup">setup pages</a> for the exact config path and key per client.</p>
 
 <h2>The eleven EPC069-12 fields, in order</h2>
 <p>The record is not a struct with named keys; it is plain text lines joined by newlines, and a scanner
@@ -2020,14 +1933,7 @@ conversation you are already in, and every one of those questions is answered by
 central directory, before a single byte is decompressed.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add zip -- npx -y @theluckystrike/mcp-zip</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "zip": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-zip"] }
-  }
-}</code></pre>
+${install("zip")}
 <p>Nothing to sign up for and no network call of any kind: this server has no <code>fetch</code>, no HTTP
 client and no telemetry anywhere in it.</p>
 
@@ -2115,16 +2021,7 @@ the invoices and clients the <a href="/s/invoice">MCP Invoice</a> server already
 with no network call anywhere in it.</p>
 
 <h2>Install it beside the invoice server</h2>
-<pre><code>claude mcp add invoice -- npx -y @theluckystrike/mcp-invoice
-claude mcp add deposits -- npx -y @theluckystrike/mcp-deposits</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "invoice": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-invoice"] },
-    "deposits": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-deposits"] }
-  }
-}</code></pre>
+${install(["invoice", "deposits"])}
 <p>Both read one data directory and one business profile, so your name, address, VAT id and default currency
 are set once. Deposits holds no copy of the money, currency or client code: it imports
 <code>currencyDecimals</code>, <code>formatMoney</code>, <code>findClient</code>, <code>getInvoices</code>
@@ -2224,17 +2121,7 @@ files inside the package, keeps a register of what you bought, and returns the s
 entry and the gain or loss when you sell. There is no network call anywhere in it.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add asset-register -- npx -y @theluckystrike/mcp-asset-register</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "asset-register": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-asset-register"]
-    }
-  }
-}</code></pre>
+${install("asset-register")}
 <p>It reads the same shared business profile as the invoice and expense servers, so your default currency is
 set once. The scheme is derived from that currency rather than guessed from an address line, and every answer
 that uses a derived scheme says in words that it derived it.</p>
@@ -2359,14 +2246,7 @@ three of those schemes as files inside the package, prices a trip against one of
 and every deduction next to the number that produced it. There is no network call anywhere in it.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add per-diem -- npx -y @theluckystrike/mcp-per-diem</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "per-diem": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-per-diem"] }
-  }
-}</code></pre>
+${install("per-diem")}
 <p>It reads the same business profile as <a href="/s/invoice">MCP Invoice</a> and
 <a href="/s/expense-tracker">MCP Expense Tracker</a>, so the traveller's name and your default currency are
 set once, and it borrows its datetime and zone handling from <a href="/s/timezone">MCP Timezone</a> rather
@@ -2477,17 +2357,7 @@ trial balance proved to zero to the minor unit. It writes into none of them, and
 an entry into it.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add cash-book -- npx -y @theluckystrike/mcp-cash-book</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "cash-book": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-cash-book"]
-    }
-  }
-}</code></pre>
+${install("cash-book")}
 <p>It reads <a href="/s/invoice">mcp-invoice</a>, <a href="/s/billing-docs">mcp-billing-docs</a>,
 <a href="/s/deposits">mcp-deposits</a>, <a href="/s/expense-tracker">mcp-expense-tracker</a>,
 <a href="/s/bank-statement">mcp-bank-statement</a> and <a href="/s/asset-register">mcp-asset-register</a>.
@@ -2605,17 +2475,7 @@ Amortization</a> server derives that table from the terms, in integer minor unit
 reaching the balloon, or zero, exactly. It stores no schedule and it posts nothing anywhere.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add amortization -- npx -y @theluckystrike/mcp-amortization</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "amortization": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-amortization"]
-    }
-  }
-}</code></pre>
+${install("amortization")}
 <p>It reads no other server's store and writes into none. Its own register is two files: the agreements and an
 id counter.</p>
 
@@ -2711,17 +2571,7 @@ a status that moves one dated step at a time, a completion report with a sign-of
 <code>invoice_create</code>-ready payload at the end. It stores no total and posts nothing anywhere.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add work-order -- npx -y @theluckystrike/mcp-work-order</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "work-order": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-work-order"]
-    }
-  }
-}</code></pre>
+${install("work-order")}
 <p>It writes only its own directory. It reads two files it does not own, both read-only and both
 best-effort: the shared business profile, for the currency, the VAT rate and the business name on the
 completion report, and the invoice server's client records, so a job carries the same customer the invoice
@@ -2822,10 +2672,9 @@ a unit, an optional VAT rate, and prices with the day each one comes into force.
 quote, stores no current price, and invents nothing.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add catalogue -- npx -y @theluckystrike/mcp-catalogue</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>mcpServers</code>. Put it at the same scope as <code>mcp-invoice</code> and <code>mcp-quotes</code>:
-the whole point is that all three read one price list.</p>
+${install("catalogue")}
+<p>Put it at the same scope as <code>mcp-invoice</code> and <code>mcp-quotes</code>: the whole point is
+that all three read one price list.</p>
 
 <h2>The measured thing: the same price is 100x apart in the two payloads</h2>
 <p>This is the decision the whole server rests on, and it is not a style preference. The invoice server's
@@ -2923,11 +2772,10 @@ in the client's words, the day it was sent and the day it was answered. It store
 invoice, and invents nothing.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add change-order -- npx -y @theluckystrike/mcp-change-order</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>mcpServers</code>. Put it at the same scope as <code>mcp-invoice</code>: the VAT rate, the currency
-and the name on the document come from the shared business profile that server writes, and the payload
-this server builds is that server's argument shape.</p>
+${install("change-order")}
+<p>Put it at the same scope as <code>mcp-invoice</code>: the VAT rate, the currency and the name on the
+document come from the shared business profile that server writes, and the payload this server builds is
+that server's argument shape.</p>
 
 <h2>The measured thing: a changed line is two items, not one</h2>
 <p>A line that goes from 3 x EUR 450.00 to 5 x EUR 420.00 is worth +EUR 750.00. The tempting payload is one
@@ -3023,17 +2871,7 @@ receipt, a count whenever you like with the difference to the minor unit, and a 
 the count rather than from the paperwork. It stores no balance and posts nothing anywhere.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add petty-cash -- npx -y @theluckystrike/mcp-petty-cash</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "petty-cash": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-petty-cash"]
-    }
-  }
-}</code></pre>
+${install("petty-cash")}
 <p>It reads no other server's store and writes into none. Its own store is three files: the floats, the
 vouchers and an id counter.</p>
 
@@ -3143,17 +2981,7 @@ books you already keep, ages what is still open, and drafts the chaser when it i
 and writes into none of them.</p>
 
 <h2>Install it</h2>
-<pre><code>claude mcp add statement-of-account -- npx -y @theluckystrike/mcp-statement-of-account</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "statement-of-account": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-statement-of-account"]
-    }
-  }
-}</code></pre>
+${install("statement-of-account")}
 <p>It reads the invoice ledger from <a href="/s/invoice">mcp-invoice</a>, the credit notes from
 <a href="/s/billing-docs">mcp-billing-docs</a> and the deposits from <a href="/s/deposits">mcp-deposits</a>,
 plus the shared business profile for the bank details a chaser prints. Only the first of those is required:
@@ -3277,16 +3105,7 @@ Billing Docs server writes both against the invoices and clients the
 it.</p>
 
 <h2>Install it beside the invoice server</h2>
-<pre><code>claude mcp add invoice -- npx -y @theluckystrike/mcp-invoice
-claude mcp add billing-docs -- npx -y @theluckystrike/mcp-billing-docs</code></pre>
-<p>Cursor, in <code>.cursor/mcp.json</code>, and Claude Desktop with the same block under
-<code>claude_desktop_config.json</code>:</p>
-<pre><code>{
-  "mcpServers": {
-    "invoice": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-invoice"] },
-    "billing-docs": { "command": "npx", "args": ["-y", "@theluckystrike/mcp-billing-docs"] }
-  }
-}</code></pre>
+${install(["invoice", "billing-docs"])}
 <p>Both read one data directory and one business profile, so your name, address, VAT id and default currency
 are set once. Billing Docs holds no copy of the money, VAT or currency code: it imports
 <code>computeTotals</code>, <code>currencyDecimals</code> and <code>formatMoney</code> from the invoice
@@ -3420,24 +3239,21 @@ npm run build
 
 claude mcp add --scope user office-suite -- \
   node /absolute/path/to/mcp-servers/servers/office-suite/dist/index.js</code></pre>
-<p>The <code>npx</code> line below starts working the moment npm publish succeeds, and nothing else
-about it changes:</p>
-<pre><code>claude mcp add office-suite -- npx -y @theluckystrike/mcp-office-suite</code></pre>
-<p>Cursor, VS Code, Windsurf and Cline read the same shape of config. Add this block to the client's
-own MCP config file and restart it:</p>
+<p>Cursor, Claude Desktop, Windsurf and Cline take those same two strings as JSON, under
+<code>mcpServers</code>:</p>
 <pre><code>{
   "mcpServers": {
     "office-suite": {
-      "command": "npx",
-      "args": ["-y", "@theluckystrike/mcp-office-suite"]
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-servers/servers/office-suite/dist/index.js"]
     }
   }
 }</code></pre>
-<p>Claude Desktop takes the same block in <code>claude_desktop_config.json</code>, or skips JSON
-entirely: <code>office-suite.mcpb</code> is a one-click bundle attached to
-<a href="https://github.com/theluckystrike/mcp-servers/releases/latest">the latest release</a>, and
-opening it shows an installation dialog. There is no account, no API key and no login step: every
-child runs locally over stdio and writes to its own folder under
+<p>The <code>npx</code> line below returns a 404 today, for the reason above. It is what that config
+becomes the day the publish lands, with nothing else changed:</p>
+<pre><code>claude mcp add office-suite -- npx -y @theluckystrike/mcp-office-suite</code></pre>
+<p>There is no account, no API key and no login step on any of these paths: every child runs locally
+over stdio and writes to its own folder under
 <code>~/.local/share/mcp-servers/&lt;name&gt;/</code>.</p>
 
 <h2>292 tools in one namespace, and the four names that collided</h2>
@@ -3564,7 +3380,13 @@ The full measurement is in <a href="https://github.com/theluckystrike/mcp-server
 <p>One config entry, and one shared business profile written once. The profile is what stops you
 repeating yourself: the VAT rate, the payment terms, the timezone and the IBAN are stated once and
 every child server reads them.</p>
-<pre><code>claude mcp add office -- npx -y @theluckystrike/mcp-office-suite</code></pre>
+<p>One click: download <code>office-suite.mcpb</code> from
+<a href="${RELEASES}">the latest release</a> and open it in Claude Desktop. From a clone, build the whole
+repository once (the bundle spawns every child) and add it by path:</p>
+<pre><code>claude mcp add --scope user office-suite -- node /absolute/path/to/mcp-servers/servers/office-suite/dist/index.js</code></pre>
+<p>The <code>npx</code> line the READMEs print is not live yet, because nothing is published to npm.
+<a href="/guides/install-mcp-servers-without-npm">Installing these servers when npx does not work yet</a>
+has the two paths that are.</p>
 <p>The profile used for this run: Nova Studio, Europe/Warsaw, EUR, 23 percent, 14 day payment terms,
 IBAN PL61109010140000071219812874. Set it once with "set my business details" and it lands in
 <code>mcp-servers/profile/business.json</code>, where every server in the bundle looks for it. One

@@ -134,7 +134,7 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
       if (after > TENANT_MAX_BYTES) {
         return fail(
           `that would put this token at ${(after / 1048576).toFixed(2)} MB of loaded sheets and the hosted cap is ${TENANT_MAX_BYTES / 1048576} MB. ` +
-          `Nothing was loaded. Drop a sheet with sheet_unload, send fewer columns or rows, or run the server locally where there is no cap: npx -y @theluckystrike/mcp-spreadsheet`);
+          `Nothing was loaded. Drop a sheet with sheet_unload, send fewer columns or rows, or install the spreadsheet server locally, where there is no cap: download spreadsheet.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.`);
       }
 
       const replaced = c.files.has(path);

@@ -77,7 +77,7 @@ export function stageImageBuffer(name: string, buf: Buffer): { path: string; for
   if (buf.length > MAX_UPLOAD_BYTES) {
     throw new Error(
       `that image is ${(buf.length / 1048576).toFixed(2)} MB and the hosted cap is ${MAX_UPLOAD_BYTES / 1048576} MB per file. ` +
-      `Nothing was stored. Run the server locally over stdio (npx -y @theluckystrike/mcp-image), where there is no cap.`);
+      `Nothing was stored. To work on images this size, install the image server locally: download image.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop, where there is no cap.`);
   }
   const path = `${UPLOAD_ROOT}${base}${kind!.ext}`;
   const c = ctx();

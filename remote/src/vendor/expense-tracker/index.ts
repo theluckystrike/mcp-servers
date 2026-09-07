@@ -47,7 +47,7 @@ const text = (max = MAX_TEXT) => z.string().max(max, `must be ${max} characters 
 
 /** Existence, type and size checked before the file is read, so a huge path cannot exhaust memory. */
 function hashReceipt(_p: string): { path: string; sha256: string } | { error: string } {
-  return { error: "attach receipts locally; hosted mode stores no files. Run this server over stdio (npx -y @theluckystrike/mcp-expense-tracker) to hash and store receipt files, or put the receipt reference in the expense note." };
+  return { error: "attach receipts locally; hosted mode stores no files. Install the expense-tracker server locally to hash and store receipt files - download expense-tracker.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop - or put the receipt reference in the expense note." };
 }
 
 function expandPath(p: string): string {
@@ -384,7 +384,7 @@ server.registerTool("expense_delete", {
 
 server.registerTool("receipt_attach", {
   title: "Attach a receipt",
-  description: "Not available on the hosted endpoint: it has no filesystem, so there is no receipt file to read or hash. Attach receipts locally with the stdio server (npx -y @theluckystrike/mcp-expense-tracker), or record the receipt reference in the expense note.",
+  description: "Not available on the hosted endpoint: it has no filesystem, so there is no receipt file to read or hash. Attach receipts on a local install instead - download expense-tracker.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop - or record the receipt reference in the expense note.",
   inputSchema: { id: text(64).describe("Expense id from expense_add or expense_list"), path: text(4096).describe("Path to the receipt file. It must already exist; a leading ~ is expanded. The path and its sha256 are stored on the expense") },
 }, async (a) => {
   try {

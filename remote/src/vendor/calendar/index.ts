@@ -362,8 +362,8 @@ server.registerTool("ics_import", {
     throw new Error(
       "this hosted endpoint has no filesystem, so there is no file at " + JSON.stringify(a.path.trim()) + " to read. " +
       "Paste the calendar's contents instead - ics_import {text: \"BEGIN:VCALENDAR...\", name: \"work\"} - or give a " +
-      "public feed with ics_import {url, name} (Pro), or run the server locally over stdio " +
-      "(npx -y @theluckystrike/mcp-calendar), where a path works.");
+      "public feed with ics_import {url, name} (Pro), or install the calendar server locally, where a path " +
+      "works: download calendar.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.");
   } else {
     raw = String(a.text);
     source = "text";

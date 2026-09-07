@@ -184,9 +184,9 @@
       "6 cases"
     ],
     [
-      "Fresh-machine npx start < 5 s",
+      "Fresh-machine start < 5 s (.mcpb bundle, or node dist/index.js from a clone)",
       "docs/AUDIT.md section 1",
-      "after every publish"
+      "per release; the npx form of this gate cannot run until the first npm publish"
     ],
     [
       "Abuse probes (bad input, 1 MB strings, traversal, 0-byte files)",

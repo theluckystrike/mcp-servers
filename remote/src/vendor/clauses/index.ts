@@ -354,7 +354,7 @@ server.registerTool("clause_import", {
   try {
     const file = expandPath(a.path);
     if (!existsSync(file)) return fail(`this hosted endpoint has no filesystem, so there is no file at ${JSON.stringify(a.path)} to import. ` +
-      "Add clauses one at a time with clause_add, or run the server locally over stdio (npx -y @theluckystrike/mcp-clauses) to import a file.");
+      "Add clauses one at a time with clause_add, or install the clauses server locally to import a file: download clauses.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.");
     const isJson = file.toLowerCase().endsWith(".json");
     if (isJson && !gate.isPro()) {
       return ok("JSON import and export are Pro features. Markdown import works in the free tier. " + gate.upgradeText("JSON import and export", "clause_import"));

@@ -499,7 +499,7 @@ const FONTS: [number, string][] = [];   // jimp/fonts cannot be loaded here (see
 
 server.registerTool("image_watermark", {
   title: "Watermark an image with text",
-  description: "Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Run the server locally over stdio (npx -y @theluckystrike/mcp-image) to watermark, or upload an image you have already watermarked.",
+  description: "Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Watermark on a local install instead - download image.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop - or upload an image you have already watermarked.",
   inputSchema: {
     path: pathArg,
     text: z.string().optional().describe("The watermark text. Default: the business name from the shared profile. Custom text is Pro"),
@@ -513,8 +513,8 @@ server.registerTool("image_watermark", {
   return fail(
     "watermarking is not available on this hosted endpoint. The text is drawn with jimp's bundled bitmap fonts, " +
     "which are .fnt files loaded from a real filesystem, and this endpoint has none - nothing was written. " +
-    "Run the server locally over stdio (npx -y @theluckystrike/mcp-image), where image_watermark works, " +
-    "or draw the text yourself and upload the finished image.");
+    "Install the image server locally, where image_watermark works - download image.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest " +
+    "and open it in Claude Desktop - or draw the text yourself and upload the finished image.");
   // eslint-disable-next-line no-unreachable
   const reservations: Reservation[] = [];
   try {

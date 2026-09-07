@@ -60,7 +60,7 @@ export function stagePdfBuffer(name: string, buf: Buffer): string {
   if (buf.length > MAX_UPLOAD_BYTES) {
     throw new Error(
       `that PDF is ${(buf.length / 1048576).toFixed(2)} MB and the hosted cap is ${MAX_UPLOAD_BYTES / 1048576} MB per file. ` +
-      `Nothing was stored. Run the server locally over stdio (npx -y @theluckystrike/mcp-pdf), where there is no cap.`);
+      `Nothing was stored. To work on PDFs this size, install the pdf server locally: download pdf.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop, where there is no cap.`);
   }
   const c = ctx();
   writeFileSync(path, BIN + buf.toString("base64"));

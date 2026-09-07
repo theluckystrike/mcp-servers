@@ -78,8 +78,8 @@ export function stageBankUpload(name: string, content?: string, contentB64?: str
   if (bytes > MAX_UPLOAD_BYTES) {
     throw new Error(
       `that statement is ${(bytes / 1048576).toFixed(2)} MB and the hosted cap is ${MAX_UPLOAD_BYTES / 1048576} MB per file. ` +
-      "Nothing was stored. Split the export by month, or run the server locally over stdio " +
-      "(npx -y @theluckystrike/mcp-bank-statement), where there is no cap.");
+      "Nothing was stored. Split the export by month, or install the bank-statement server locally: " +
+      "download bank-statement.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop, where there is no cap.");
   }
   const c = ctx();
   // Replace any other extension stored under the same name, so a name is one file.

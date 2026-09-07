@@ -14,6 +14,32 @@ const t = (rows) =>
   rows.body.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("\n") +
   `\n</tbody>\n</table>`;
 
+const RELEASES = "https://github.com/theluckystrike/mcp-servers/releases/latest";
+
+/**
+ * Our own install lines on a comparison page.
+ *
+ * Every one of these pages used to open with `claude mcp add <slug> -- npx -y
+ * @theluckystrike/mcp-<slug>` and nothing else. Nothing has been published to npm, so that
+ * command returns 404 for every reader: the page compared us honestly on tools and licence
+ * and then handed over an install line that cannot work, which is worse than any of the
+ * facts in the table above it. The competitor install lines on these pages are their own
+ * published commands and are left exactly as they were.
+ *
+ * The two paths that work today lead. The npx line stays last, marked, because it is the
+ * line that becomes correct the day the publish lands and nothing else about it changes.
+ * Every slug passed here is one of the 30 endpoints in remote/src/index.ts SERVERS, so the
+ * hosted URL is real for all of them.
+ */
+const ours = (slug) => `<p>Ours, one click: download <code>${slug}.mcpb</code> from
+<a href="${RELEASES}">the latest release</a> and open it in Claude Desktop. No JSON, no terminal.</p>
+<p>Or by URL, with nothing installed. <a href="/mcp/connect">/mcp/connect</a> mints a free token and
+prints the ready line:</p>
+<pre><code>claude mcp add --transport http ${slug} https://mcp.zovo.one/mcp/${slug}/t/&lt;token&gt;</code></pre>
+<p>The npm package is not published yet, so the line below returns a 404 today. It is here because it
+is what the config becomes the day that changes:</p>
+<pre><code>claude mcp add ${slug} -- npx -y @theluckystrike/mcp-${slug}</code></pre>`;
+
 export const COMPARE = {
   "time-tracker": {
     title: "MCP Time Tracker vs clockify-mcp and timesheet-mcp: which MCP server to pick",
@@ -72,8 +98,7 @@ of 9. Two defects that round 5 and earlier rounds found in this server, a droppe
 project name that split in two, are fixed in the shipped build.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add time-tracker -- npx -y @theluckystrike/mcp-time-tracker</code></pre>
+${ours("time-tracker")}
 <p>clockify-mcp:</p>
 <pre><code>pip install clockify-mcp
 claude mcp add clockify -e CLOCKIFY_API_KEY=your-key -- clockify-mcp</code></pre>
@@ -143,8 +168,7 @@ validate.mjs probe suite is at 121 of 121. In user value round 5, the price watc
 was driven through the real Claude CLI and scored 3 of 3. The five suites together are 144 tests.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add price-tracker -- npx -y @theluckystrike/mcp-price-tracker</code></pre>
+${ours("price-tracker")}
 <p>keepa-mcp:</p>
 <pre><code>claude mcp add keepa -e KEEPA_API_KEY=your_key -- npx -y keepa-mcp</code></pre>
 <p>pricetrack-mcp:</p>
@@ -217,8 +241,7 @@ equals 1,537.50, but 245 of 250 VAT cells carried more than two decimals and 5 o
 were written as strings rather than numbers. Both are recorded as open defects rather than hidden.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add spreadsheet -- npx -y @theluckystrike/mcp-spreadsheet</code></pre>
+${ours("spreadsheet")}
 <p>agent-spreadsheet:</p>
 <pre><code>npm i -g agent-spreadsheet
 claude mcp add spreadsheet-agent -- agent-spreadsheet-mcp --transport stdio</code></pre>
@@ -294,8 +317,7 @@ arithmetic end to end: 12 hours at 90 EUR plus a 300 EUR setup fee at 23 percent
 1,697.40 EUR from a plain sentence.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add invoice -- npx -y @theluckystrike/mcp-invoice</code></pre>
+${ours("invoice")}
 <p>einvoice-mcp:</p>
 <pre><code>npm install -g einvoice-mcp
 claude mcp add einvoice -- einvoice-mcp</code></pre>
@@ -367,8 +389,7 @@ driven through the real Claude CLI with no tool names mentioned, covering a fore
 with a metric mileage claim and a no-receipt audit, and both scored full marks, 6 of 6.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add expense-tracker -- npx -y @theluckystrike/mcp-expense-tracker</code></pre>
+${ours("expense-tracker")}
 <p>Expense Budget Tracker:</p>
 <pre><code>claude mcp add --transport http expense-budget https://mcp.expense-budget-tracker.com/mcp</code></pre>
 <p>Expense by Labnotes:</p>
@@ -443,8 +464,7 @@ missing. The refusal path was checked too: a history window past the free 90 day
 the exact narrower call to make, rather than truncating the table or returning a transport error.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add currency -- npx -y @theluckystrike/mcp-currency</code></pre>
+${ours("currency")}
 <p>exchange-mcp:</p>
 <pre><code>claude mcp add --transport http exchange https://exchange-mcp--stockvibes07.run.tools</code></pre>
 <p>tcmb_mcp:</p>
@@ -523,8 +543,7 @@ The known cost is stated on the page and in the README: a paragraph mixing bold 
 placeholder comes back in the first run's formatting.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add docx -- npx -y @theluckystrike/mcp-docx</code></pre>
+${ours("docx")}
 <p>@docx-mcp/docx-mcp:</p>
 <pre><code>claude mcp add docx-mcp -- npx -y @docx-mcp/docx-mcp</code></pre>
 <p>@usejunior/docx-mcp:</p>
@@ -604,8 +623,7 @@ end of the month. Place names resolve through a table of 510 entries, each verif
 rather than a guess.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add timezone -- npx -y @theluckystrike/mcp-timezone</code></pre>
+${ours("timezone")}
 <p>meeting-mcp:</p>
 <pre><code>claude mcp add --transport http meeting https://meeting-mcp--stockvibes07.run.tools</code></pre>
 <p>timezone-toolkit:</p>
@@ -691,8 +709,7 @@ came back at 75% with a required keyword missing. Real profiles are too thin, no
 <code>tailor_to_job</code> reports the gap rather than filling it.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add resume -- npx -y @theluckystrike/mcp-resume</code></pre>
+${ours("resume")}
 <p>cv-forge:</p>
 <pre><code>npm install -g cv-forge
 claude mcp add cv-forge -- cv-forge</code></pre>
@@ -785,7 +802,15 @@ month's length without carrying the clamp forward, so a 31st retainer bills on 2
 to 31 March instead of moving permanently to the 28th.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
+<p>Ours, one click: download <code>recurring.mcpb</code> and <code>invoice.mcpb</code> from
+<a href="${RELEASES}">the latest release</a> and open both in Claude Desktop. The pair share one
+invoice store, so the schedule writes into the same number series the invoice server reads.</p>
+<p>Or by URL, with nothing installed. <a href="/mcp/connect">/mcp/connect</a> mints one token that
+works for both:</p>
+<pre><code>claude mcp add --transport http recurring https://mcp.zovo.one/mcp/recurring/t/&lt;token&gt;
+claude mcp add --transport http invoice   https://mcp.zovo.one/mcp/invoice/t/&lt;token&gt;</code></pre>
+<p>The npm packages are not published yet, so the two lines below return a 404 today. They are here
+because they are what the config becomes the day that changes:</p>
 <pre><code>claude mcp add recurring -- npx -y @theluckystrike/mcp-recurring
 claude mcp add invoice   -- npx -y @theluckystrike/mcp-invoice</code></pre>
 <p>invovate-mcp-server:</p>
@@ -886,8 +911,7 @@ template, not legal advice, have a qualified lawyer review this document before 
 here has been reviewed by a lawyer in any jurisdiction.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add clauses -- npx -y @theluckystrike/mcp-clauses</code></pre>
+${ours("clauses")}
 <p>OpenAgreements, local or hosted:</p>
 <pre><code>claude mcp add open-agreements -- npx -y @open-agreements/contract-templates-mcp
 claude mcp add --transport http open-agreements https://openagreements.org/api/mcp</code></pre>
@@ -957,8 +981,7 @@ encrypted-file refusal, the operations register and the shared business profile.
 publishes a test count in its README or npm record.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add pdf -- npx -y @theluckystrike/mcp-pdf</code></pre>
+${ours("pdf")}
 <p>pdf-mcp:</p>
 <pre><code>claude mcp add pdf-mcp -- npx -y mcp-pdf</code></pre>
 <p>DocWand has no install line: it is a remote connector URL, <code>https://mcp.docwand.app/mcp</code>,
@@ -1027,8 +1050,7 @@ folding, escaping, DST, RECURRENCE-ID overrides), free/busy computation and conf
 competitor publishes a test count in its README or npm record.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add calendar -- npx -y @theluckystrike/mcp-calendar</code></pre>
+${ours("calendar")}
 <p>mcp-ical:</p>
 <pre><code>claude mcp add ical -- npx -y @voxxit/mcp-ical</code></pre>
 <p>google-calendar-mcp:</p>
@@ -1101,8 +1123,7 @@ exactly 41, which is what the advisory lock around the file-backed counter is th
 competitor's README states a test count or a concurrency guarantee for its own storage.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add kanban -- npx -y @theluckystrike/mcp-kanban</code></pre>
+${ours("kanban")}
 <p>KanbanThing:</p>
 <pre><code>claude mcp add --transport http kanbanthing https://www.kanbanthing.com/mcp</code></pre>
 <p>SwiftKanban CLI:</p>
@@ -1176,8 +1197,7 @@ that stops a batch from clobbering itself under concurrent writers. Neither comp
 entry states a test count.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add image -- npx -y @theluckystrike/mcp-image</code></pre>
+${ours("image")}
 <p>Pictomancer:</p>
 <pre><code>claude mcp add --transport http pictomancer https://api.pictomancer.ai/mcp</code></pre>
 <p>Image Resize API:</p>
@@ -1256,8 +1276,7 @@ the transactions that file contains. Neither MainBook's nor bankstatementparser-
 count.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add bank-statement -- npx -y @theluckystrike/mcp-bank-statement</code></pre>
+${ours("bank-statement")}
 <p>MainBook:</p>
 <pre><code>uvx mainbook-mcp auth login
 claude mcp add-json mainbook '{"command":"uvx","args":["mainbook-mcp","~/Downloads"]}'</code></pre>
@@ -1338,8 +1357,7 @@ default then changed to 8% before the client answers, and the accepted invoice s
 count or an acceptance-time pricing rule to compare against.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add quotes -- npx -y @theluckystrike/mcp-quotes</code></pre>
+${ours("quotes")}
 <p>SendQuoteNow (remote, once an API key is minted from its dashboard):</p>
 <pre><code>claude mcp add-json sendquotenow '{"type":"http","url":"https://sendquotenow.com/mcp","headers":{"X-API-Key":"sqn_live_..."}}'</code></pre>
 <p>estimate-invoice is enabled from inside its own product, under its "external AI connection" settings
@@ -1416,8 +1434,7 @@ codes were drawn against a stated allowance of 20, fixed by making the count and
 step. Neither competitor's public material documents an adversarial test count of any kind.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add barcode -- npx -y @theluckystrike/mcp-barcode</code></pre>
+${ours("barcode")}
 <p>qrcode (remote, no key):</p>
 <pre><code>claude mcp add-json qrcode '{"type":"http","url":"https://gateway.pipeworx.io/qrcode/mcp"}'</code></pre>
 <p>Barcode Generator API (remote, x402 client required to pay the per-call price):</p>
@@ -1454,7 +1471,7 @@ and a saved trip record. It has no network call and no US non-standard-locality 
 <tr><td>What it looks up</td><td>Prices one trip's allowance: amount per day and total, with the partial-day fraction and meal deductions the scheme applies</td><td>GSA Per Diem API rates by city, state or ZIP, an M&amp;IE meal-tier breakdown, a trip cost estimate and a multi-city comparison</td></tr>
 <tr><td>Schemes covered</td><td>Three: Polish delegation regulation (domestic and 34 countries), HMRC UK benchmark scale rates, US GSA CONUS standard</td><td>One: US GSA Per Diem (CONUS), including the non-standard-area rates by city/state/ZIP, not only the standard rate</td></tr>
 <tr><td>Network or bundled</td><td>Bundled JSON tables read from disk. No network call anywhere in the server</td><td>Network. Every lookup calls <code>api.gsa.gov</code> live over the api.data.gov gateway</td></tr>
-<tr><td>Install path</td><td><code>npx -y @theluckystrike/mcp-per-diem</code>, no account, no key</td><td><code>uvx gsa-perdiem-mcp</code>. Works with the shared DEMO_KEY (about 10 requests/hour across every user of it) or a free personal api.data.gov key (1,000 requests/hour)</td></tr>
+<tr><td>Install path</td><td>One-click <code>per-diem.mcpb</code> bundle, or a hosted URL from <code>/mcp/connect</code>. No account, no key. The <code>npx</code> package is not published yet</td><td><code>uvx gsa-perdiem-mcp</code>. Works with the shared DEMO_KEY (about 10 requests/hour across every user of it) or a free personal api.data.gov key (1,000 requests/hour)</td></tr>
 <tr><td>Price</td><td>Free tier unlimited on rate lookups and calculations, 5 trips saved a month; Pro $19 once, or $39 for the bundle</td><td>Free. No pricing tier in its README</td></tr>
 <tr><td>Licence</td><td>MIT</td><td>MIT</td></tr>
 </tbody>
@@ -1487,8 +1504,7 @@ path-traversal fix and 23 P1 silent-wrong-data fixes, and points to its own <cod
 the record.</p>
 
 <h2>Install lines</h2>
-<p>Ours, Claude Code:</p>
-<pre><code>claude mcp add per-diem -- npx -y @theluckystrike/mcp-per-diem</code></pre>
+${ours("per-diem")}
 <p>gsa-perdiem-mcp, with a personal api.data.gov key (recommended):</p>
 <pre><code>claude mcp add gsa-perdiem -e PERDIEM_API_KEY=your-key -- uvx gsa-perdiem-mcp</code></pre>
 <p>Exact config file paths per client are on the <a href="/setup">setup pages</a>, and the longer

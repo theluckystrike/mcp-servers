@@ -243,7 +243,7 @@ server.registerTool("profile_set", {
       ? `\n\nThe accent colour is stored but the free tier prints the default colour. ${gate.upgradeText("letterhead colours", "profile_set")}` : "";
     return ok(`Profile "${normalizeVariant(a.variant)}" stored: ${p.experience.length} roles, ${bullets} bullets, ` +
       `${p.skills?.length ?? 0} skills, ${p.education.length} education entries. ` +
-      `Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, and kept for 30 days, refreshed for another 30 on every write. Run the resume server locally over stdio (npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${sourced}${note}${changes}${p.email ? "" : emailNote()}`);
+      `Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, and kept for 30 days, refreshed for another 30 on every write. Install the resume server locally if you would rather it never left your machine: download resume.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.${sourced}${note}${changes}${p.email ? "" : emailNote()}`);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 

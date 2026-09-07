@@ -379,7 +379,7 @@ server.registerTool("zip_extract", {
     return fail(
       `that selects ${selected.filter((e) => !e.is_dir).length} entries and this hosted endpoint publishes one download link per entry, ` +
       `so it extracts at most ${MAX_EXTRACT_ENTRIES} per call. Nothing was extracted. Narrow it with patterns and run it again, ` +
-      `or run the server over stdio (npx -y @theluckystrike/mcp-zip), where the files go to a directory.`);
+      `or install the zip server locally, where the files go to a directory: download zip.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.`);
   }
 
   // Every guard below is decided from the central directory, before one byte is inflated.
@@ -625,8 +625,9 @@ server.registerTool("zip_bundle_month", {
       `this tool bundles the output FOLDERS the sibling servers write on a local install, and this hosted endpoint has none: ` +
       `/mcp/invoice, /mcp/quotes, /mcp/expense-tracker, /mcp/docx and /mcp/resume hand their documents back as one-hour download ` +
       `links and keep no folder to read, so nothing was written for ${month}.\n\n${where}\n\n` +
-      "Upload the documents you want bundled with zip_upload and pack them with zip_create, or run the server locally over stdio " +
-      "(npx -y @theluckystrike/mcp-zip) beside the other servers, where the folders are real.");
+      "Upload the documents you want bundled with zip_upload and pack them with zip_create, or install the zip server " +
+      "locally beside the other servers, where the folders are real: download zip.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest " +
+      "and open it in Claude Desktop.");
   }
   const total = files.reduce((s, f) => s + f.size, 0);
   if (a.dry_run) {

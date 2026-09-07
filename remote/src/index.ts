@@ -80,6 +80,9 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  */
 const BUILD_VERSION = "2026-09-06.1";
 
+/** Where the one-click .mcpb bundles live. The install path that works today. */
+const RELEASES = "https://github.com/theluckystrike/mcp-servers/releases/latest";
+
 interface ServerCfg {
   factory: () => McpServer;
   /** Which finished atomic writes become one-hour download links. */
@@ -1219,10 +1222,67 @@ function indexDoc(base: string) {
       download_ttl_seconds: DOWNLOAD_TTL,
       idle_data_retention_days: SWEEP_AFTER_DAYS,
     },
-    stdio_install: "claude mcp add <name> -- npx -y @theluckystrike/mcp-<name>",
+    // Nothing is published to npm, so `npx -y @theluckystrike/mcp-<name>` returns 404 for
+    // everyone who reads this document. It used to be the first install line here. The two
+    // that work today lead; the npx form stays last, labelled, because it is the line that
+    // becomes correct the day the publish happens and nothing else about it changes.
+    one_click_install: `download <name>.mcpb from ${RELEASES} and open it in Claude Desktop; no JSON and no terminal`,
+    stdio_install: "git clone https://github.com/theluckystrike/mcp-servers.git, npm install, npm run build -w packages/mcp-license -w servers/<name>, then: claude mcp add <name> -- node /absolute/path/to/mcp-servers/servers/<name>/dist/index.js",
+    stdio_install_npm_pending: "claude mcp add <name> -- npx -y @theluckystrike/mcp-<name> - NOT WORKING YET: no @theluckystrike package is published, so this returns 404. Use one_click_install or stdio_install.",
     remote_install: 'claude mcp add --transport http <name> https://mcp.zovo.one/mcp/<name> --header "Authorization: Bearer <token>"',
     remote_install_no_header: "claude mcp add --transport http <name> https://mcp.zovo.one/mcp/<name>/t/<token>",
     source: "https://github.com/theluckystrike/mcp-servers",
+  };
+}
+
+/**
+ * What one endpoint says to a request that carries no credential at all.
+ *
+ * Every one of these endpoints used to answer a bare `GET /mcp/<server>` with 401. That is
+ * the correct answer to a client whose token is wrong, and the wrong answer to the two
+ * callers who actually send it: a directory's health prober, and a person who pasted the
+ * URL into a browser. The Glama directory mirrors four of these servers from the official
+ * MCP registry and displayed all four with a red "Server is not responding" badge, sourced
+ * from exactly this 401; one awesome-list rejects entries whose public endpoint does not
+ * answer; and Cloudflare logged 24,330 401 responses on this hostname in a single week,
+ * making it the most common thing the domain said to anyone.
+ *
+ * So a credential-free GET now describes the server and says where a token comes from.
+ * The authorisation boundary does not move: POST is untouched, a GET that carries an
+ * Authorization header still goes through authenticate() (which is also what the
+ * Streamable HTTP event stream sends), and so does a GET carrying a token in the URL, so
+ * an invalid or expired token is refused exactly as before.
+ *
+ * Nothing here is typed twice. Every field is lifted from indexDoc(), which is the same
+ * document /mcp already serves, so the public description of a server cannot drift from
+ * the index's description of it.
+ */
+function publicEndpointDoc(base: string, product: string) {
+  const doc = indexDoc(base);
+  const e = (doc.endpoints as Record<string, unknown>[]).find((x) => x.name === product) ?? {};
+  const tools = (e.tools as string[] | undefined) ?? [];
+  const prose = (e.how as string | undefined) ?? (e.notes as string | undefined) ?? "";
+  return {
+    ok: true,
+    name: product,
+    url: `${base}/mcp/${product}`,
+    protocol: doc.protocol,
+    transport: doc.transport,
+    build: BUILD_VERSION,
+    // The first sentence of the endpoint's own `how`, or its `notes` when it has none.
+    summary: prose.split(/(?<=\.)\s/)[0] || `${tools.length} MCP tools over streamable HTTP.`,
+    tool_count: tools.length,
+    tools,
+    free_limits: (e.free_limits as string | undefined) ?? "",
+    authentication: {
+      note: "This GET is public so a health check and a browser both get an answer. The JSON-RPC traffic is POST and still needs a token.",
+      get_a_free_token: `GET ${base}/mcp/token`,
+      ready_made_urls: `GET ${base}/mcp/connect`,
+      header_form: "Authorization: Bearer <token>",
+      url_form: `${base}/mcp/${product}/t/<token>`,
+    },
+    index: `${base}/mcp`,
+    source: doc.source,
   };
 }
 
@@ -1644,6 +1704,14 @@ export default {
     const cfg = product ? SERVERS[product] : undefined;
     if (!product || !cfg) {
       return json({ error: "not_found", index: `${base}/mcp` }, 404);
+    }
+
+    // A GET or HEAD with no credential in the header AND none in the URL is not a failed
+    // authentication, it is a health check or a person opening the link: answer it. See
+    // publicEndpointDoc() for the measured reason this exists. Everything that carries a
+    // credential, and every POST, falls through to authenticate() unchanged.
+    if ((req.method === "GET" || req.method === "HEAD") && !req.headers.get("authorization") && !urlToken) {
+      return json(publicEndpointDoc(base, product), 200, { "cache-control": "public, max-age=300" });
     }
 
     const auth = await authenticate(req, env, product, urlToken, urlTokenForm);

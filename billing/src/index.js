@@ -179,9 +179,10 @@ export const BILLING_TEST_COUNT = 104;
  * publish, one edit removes the caveat everywhere.
  */
 export const NPM_PENDING_NOTE =
-  `The npm publish of these packages is pending, so the <code>npx</code> line above does not resolve yet. ` +
-  `Use the hosted URL or the <code>.mcpb</code> bundle from <a href="${REPO}/releases/latest">the latest release</a>, ` +
-  `which both work today.`;
+  `The npm publish of these packages is pending, so <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> returns 404 ` +
+  `for everyone, and a client config whose <code>"command"</code> is <code>"npx"</code> will not start a server. ` +
+  `Use the hosted URL, the <code>.mcpb</code> bundle from <a href="${REPO}/releases/latest">the latest release</a>, ` +
+  `or a clone and build, which all work today.`;
 
 /**
  * Site-ownership keys served at `/<key>.txt`. The body is the key and nothing else.
@@ -391,13 +392,14 @@ function home() {
   const meta = `<meta name="description" content="${esc(HOME_DESCRIPTION).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/">${ld}`;
   const html = page("MCP servers for Claude: invoices, time tracking and freelance tools", `<h1>${countWord()} local-first MCP servers for Claude, for freelancers and small businesses</h1>
 <p>Invoicing, time tracking, expenses, spreadsheets, quotes, contracts and more, each running as its own MCP server. The free tier works with no key and no account. Connect by URL in under a minute, or install a server locally. The full set is $39 once, for life; one server alone is $19 once, for life. See the full table and price math at <a href="/bundle">/bundle</a>.</p>
-<h2>Three ways to start</h2>
+<h2>Four ways to start, three of which work today</h2>
 <ol>
 <li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server. Paste that URL into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor, or VS Code. No header, no config file.</li>
 <li><strong>Install the .mcpb:</strong> download the Claude Desktop bundle from the <a href="${REPO}/releases/latest">releases page</a> and open it; Claude Desktop installs the server.</li>
-<li><strong>Install locally with npx:</strong> run <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> and point your client's config at it; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
+<li><strong>Install from a clone:</strong> <code>git clone</code>, <code>npm install</code>, <code>npm run build -w packages/mcp-license -w servers/&lt;server&gt;</code>, then point your client's <code>command</code> at <code>node</code> and its one argument at the built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
+<li><strong>Install with npx, not yet:</strong> <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
 </ol>
-<p class="muted">${NPM_PENDING_NOTE} The first two paths above need no npm.</p>
+<p class="muted">${NPM_PENDING_NOTE} The first three paths above need no npm.</p>
 <p>A Pro key removes the free-tier limits on any of these three paths: run <code>license_activate</code> with the key in Claude, set <code>MCP_LICENSE_KEY</code>, or paste the key where the connect-by-URL token goes. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
 <h2>Measured, not claimed</h2>
 <p>As of ${VALIDATION.at}: ${VALIDATION.pass} of ${VALIDATION.total} automated checks passing across all ${VALIDATION.servers} servers, ${BILLING_TEST_COUNT} unit tests green on the billing service, and a <code>tools/list</code> call answers at a ${VALIDATION.medianMs}&nbsp;ms median (p50) across those servers. Full detail: <a href="${REPO}/blob/main/data/validation.json">validation.json</a>.</p>
@@ -490,13 +492,14 @@ export function bundlePage() {
 <p><a class="buy" href="/buy/bundle?src=store.bundle">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
 <h2>The ${SERVER_COUNT} servers</h2>
 <table><tr><th>Server</th><th>What it does</th><th>Free tier</th></tr>${rows}</table>
-<h2>Three ways to start</h2>
+<h2>Four ways to start, three of which work today</h2>
 <ol>
 <li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server; paste it into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor or VS Code. The bundle key can replace that token on any of them to remove the free-tier limits.</li>
 <li><strong>Install the .mcpb:</strong> download each server's bundle from the <a href="${REPO}/releases/latest">releases page</a> and open it; Claude Desktop installs the server.</li>
-<li><strong>Install locally with npx:</strong> run <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> for each one and point your client's config at it; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
+<li><strong>Install from a clone:</strong> build once with <code>npm run build</code> and point each client entry's <code>command</code> at <code>node</code> and its one argument at that server's built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
+<li><strong>Install with npx, not yet:</strong> <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
 </ol>
-<p class="muted">${NPM_PENDING_NOTE} The first two paths above need no npm.</p>
+<p class="muted">${NPM_PENDING_NOTE} The first three paths above need no npm.</p>
 <h2>How the key arrives</h2>
 <p>Nothing is emailed. The key is rendered once, on the <code>/success</code> page right after payment; reloading that URL always shows the same key, and <code>/recover?session_id=...</code> gets it back from a lost tab. If you bought while connected through a hosted <code>mcp.zovo.one</code> endpoint, that endpoint's token is bound to Pro automatically, with nothing to paste there (docs/CHECKOUT_AUDIT.md).</p>
 <p><a class="buy" href="/buy/bundle?src=store.bundle">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>

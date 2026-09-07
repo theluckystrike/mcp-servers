@@ -332,12 +332,13 @@ function patchExpenseIndex(src) {
   //    stored path that this endpoint can never verify again is worse than a refusal.
   src = must(src, /function hashReceipt\(p: string\)[\s\S]*?\n\}\n/,
     'function hashReceipt(_p: string): { path: string; sha256: string } | { error: string } {\n' +
-    '  return { error: "attach receipts locally; hosted mode stores no files. Run this server over stdio ' +
-    '(npx -y @theluckystrike/mcp-expense-tracker) to hash and store receipt files, or put the receipt reference in the expense note." };\n' +
+    '  return { error: "attach receipts locally; hosted mode stores no files. Install the expense-tracker server ' +
+    'locally to hash and store receipt files - download expense-tracker.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in ' +
+    'Claude Desktop - or put the receipt reference in the expense note." };\n' +
     '}\n', "expense hashReceipt");
   src = must(src,
     'description: "Call this tool to attach a receipt file to a stored expense. Returns the stored path and sha256. The file must exist; it is hashed so a later audit can prove the file has not changed.",',
-    'description: "Not available on the hosted endpoint: it has no filesystem, so there is no receipt file to read or hash. Attach receipts locally with the stdio server (npx -y @theluckystrike/mcp-expense-tracker), or record the receipt reference in the expense note.",',
+    'description: "Not available on the hosted endpoint: it has no filesystem, so there is no receipt file to read or hash. Attach receipts on a local install instead - download expense-tracker.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop - or record the receipt reference in the expense note.",',
     "expense receipt_attach description");
   // 2. XLSX.writeFile reaches for node's fs itself; write the buffer through the shim.
   src = must(src, '        XLSX.writeFile(wb, tmp, { bookType: "xlsx" });',
@@ -508,8 +509,8 @@ function patchPriceFetch(src) {
     "price-tracker finalUrl");
 
   return `${ssrfGuard(
-    "Track a public product page instead, or run the price tracker locally over stdio " +
-    "(npx -y @theluckystrike/mcp-price-tracker), where it can reach your own network.")}\n${src}`;
+    "Track a public product page instead, or install the price tracker locally, where it can reach your own " +
+    "network: download price-tracker.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.")}\n${src}`;
 }
 
 const ssrfGuard = (refusal) => `/**
@@ -904,8 +905,9 @@ function patchResumeIndex(src) {
   // field it took from the shared business profile, between the stored line and ${note}.
   src = must(src, "`Stored under ${dataDir()}; nothing leaves this machine.${sourced}${note}${changes}",
     "`Stored for your token on this hosted endpoint (mcp.zovo.one), not on your own machine, " +
-    "and kept for 30 days, refreshed for another 30 on every write. Run the resume server locally over stdio " +
-    "(npx -y @theluckystrike/mcp-resume) if you would rather it never left your machine.${sourced}${note}${changes}",
+    "and kept for 30 days, refreshed for another 30 on every write. Install the resume server locally if you " +
+    "would rather it never left your machine: download resume.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop." +
+    "${sourced}${note}${changes}",
     "resume profile_set storage line");
 
   src = must(src, "gate.registerTools(server);",
@@ -941,7 +943,7 @@ function patchClausesIndex(src) {
   // clause_import wants a file on the caller's disk; there is none here.
   src = must(src, "    if (!existsSync(file)) return fail(`no such file: ${file}`);",
     "    if (!existsSync(file)) return fail(`this hosted endpoint has no filesystem, so there is no file at ${JSON.stringify(a.path)} to import. ` +\n" +
-    "      \"Add clauses one at a time with clause_add, or run the server locally over stdio (npx -y @theluckystrike/mcp-clauses) to import a file.\");",
+    "      \"Add clauses one at a time with clause_add, or install the clauses server locally to import a file: download clauses.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.\");",
     "clauses clause_import message");
 
   // clause_export and both assembly outputs become one-hour download links.
@@ -1155,8 +1157,8 @@ function patchCalendarFetch(src) {
 `, "calendar fetch redirect loop");
 
   return `import { Buffer } from "node:buffer";\n${ssrfGuard(
-    "Paste the calendar's contents as text instead (ics_import {text, name}), or run the calendar server " +
-    "locally over stdio (npx -y @theluckystrike/mcp-calendar), where it can reach your own network.")}\n${src}`;
+    "Paste the calendar's contents as text instead (ics_import {text, name}), or install the calendar server " +
+    "locally, where it can reach your own network: download calendar.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.")}\n${src}`;
 }
 
 function patchCalendarIndex(src) {
@@ -1187,8 +1189,8 @@ function patchCalendarIndex(src) {
     throw new Error(
       "this hosted endpoint has no filesystem, so there is no file at " + JSON.stringify(a.path.trim()) + " to read. " +
       "Paste the calendar's contents instead - ics_import {text: \\"BEGIN:VCALENDAR...\\", name: \\"work\\"} - or give a " +
-      "public feed with ics_import {url, name} (Pro), or run the server locally over stdio " +
-      "(npx -y @theluckystrike/mcp-calendar), where a path works.");
+      "public feed with ics_import {url, name} (Pro), or install the calendar server locally, where a path " +
+      "works: download calendar.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.");
 `, "calendar ics_import path branch");
 
   src = must(src,
@@ -1387,14 +1389,14 @@ function patchImageIndex(src) {
   return fail(
     "watermarking is not available on this hosted endpoint. The text is drawn with jimp's bundled bitmap fonts, " +
     "which are .fnt files loaded from a real filesystem, and this endpoint has none - nothing was written. " +
-    "Run the server locally over stdio (npx -y @theluckystrike/mcp-image), where image_watermark works, " +
-    "or draw the text yourself and upload the finished image.");
+    "Install the image server locally, where image_watermark works - download image.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest " +
+    "and open it in Claude Desktop - or draw the text yourself and upload the finished image.");
   // eslint-disable-next-line no-unreachable
   const reservations: Reservation[] = [];
   try {`, "image watermark refusal");
   src = must(src,
     /(registerTool\("image_watermark",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"(?:[^"\\]|\\.)*"/,
-    '$1"Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Run the server locally over stdio (npx -y @theluckystrike/mcp-image) to watermark, or upload an image you have already watermarked."',
+    '$1"Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Watermark on a local install instead - download image.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop - or upload an image you have already watermarked."',
     "image watermark description");
 
   // The prompt suggested a folder beside the input; there are no folders here.
@@ -2004,7 +2006,8 @@ function collect(a: { paths?: string[]; dir?: string; patterns?: string[]; exclu
     '    return fail(\n' +
     '      `that selects ${selected.filter((e) => !e.is_dir).length} entries and this hosted endpoint publishes one download link per entry, ` +\n' +
     '      `so it extracts at most ${MAX_EXTRACT_ENTRIES} per call. Nothing was extracted. Narrow it with patterns and run it again, ` +\n' +
-    '      `or run the server over stdio (npx -y @theluckystrike/mcp-zip), where the files go to a directory.`);\n' +
+    '      `or install the zip server locally, where the files go to a directory: download zip.mcpb from ' +
+    'https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.`);\n' +
     '  }\n\n' +
     '  // Every guard below is decided from the central directory, before one byte is inflated.',
     "zip zip_extract entry cap");
@@ -2054,8 +2057,9 @@ function collect(a: { paths?: string[]; dir?: string; patterns?: string[]; exclu
     '      `this tool bundles the output FOLDERS the sibling servers write on a local install, and this hosted endpoint has none: ` +\n' +
     '      `/mcp/invoice, /mcp/quotes, /mcp/expense-tracker, /mcp/docx and /mcp/resume hand their documents back as one-hour download ` +\n' +
     '      `links and keep no folder to read, so nothing was written for ${month}.\\n\\n${where}\\n\\n` +\n' +
-    '      "Upload the documents you want bundled with zip_upload and pack them with zip_create, or run the server locally over stdio " +\n' +
-    '      "(npx -y @theluckystrike/mcp-zip) beside the other servers, where the folders are real.");',
+    '      "Upload the documents you want bundled with zip_upload and pack them with zip_create, or install the zip server " +\n' +
+    '      "locally beside the other servers, where the folders are real: download zip.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest " +\n' +
+    '      "and open it in Claude Desktop.");',
     "zip zip_bundle_month empty message");
 
   // The register is a per-token document, not a directory anyone can open.

@@ -30,7 +30,7 @@ export const CLIENTS = {
     cli: null,
     oneClick: "There is also an install that involves no JSON: an .mcpb bundle, the format the documentation renamed from .dxt, is a zip of the server and its manifest, and opening one with Claude shows an installation dialog. A bundle you built yourself goes in through Settings, Extensions, Advanced settings, the Extension Developer section, Install Extension.",
     restart: "Save, then completely quit Claude Desktop and start it again. A window reload is not enough.",
-    caveat: "Two documented facts decide whether the entry works: every path in claude_desktop_config.json must be absolute, and a stdio server started here inherits only a limited, platform-dependent subset of environment variables. If node came from nvm or homebrew, paste what `which npx` prints instead of the bare word. The .mcpb route avoids both: Claude Desktop ships a built-in Node.js environment.",
+    caveat: "Two documented facts decide whether the entry works: every path in claude_desktop_config.json must be absolute, and a stdio server started here inherits only a limited, platform-dependent subset of environment variables. If node came from nvm or homebrew, paste what `which node` prints instead of the bare word. The .mcpb route avoids both: Claude Desktop ships a built-in Node.js environment.",
     caveatShort: "paths must be absolute and env inheritance is limited",
     envNote: "Environment variables go in an \"env\" object next to \"command\".",
   },
@@ -145,13 +145,23 @@ export const CLIENTS = {
 export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
- * twenty child processes and has no single connector URL. */
+ * 31 child processes and has no single connector URL. */
 const WEB_EXCLUDED = ["office-suite"];
 export function serversFor(clientId) {
   return clientId === "claude-web" ? SERVER_ORDER.filter((id) => !WEB_EXCLUDED.includes(id)) : SERVER_ORDER;
 }
 
 /** Servers. Prompts are lines from each README's "What you can say" table. */
+/**
+ * `hosted` is the endpoint's own name at https://mcp.zovo.one/mcp/<name>, or null when the
+ * server has none. It held three different things at once and two of them were wrong:
+ * eight servers carried a full URL, which hostedBlock() then pasted into
+ * `${BASE}/mcp/${s.hosted}` and printed as https://mcp.zovo.one/mcp/https://mcp.zovo.one/mcp/asset-register,
+ * and fifteen servers that are hosted said null, so their setup page told a visitor to
+ * install locally because there was no endpoint. Read against the SERVERS map in
+ * remote/src/index.ts on 2026-09-07: 30 endpoints are live, and office-suite is the only
+ * entry here without one, because it spawns every sibling as a local child process.
+ */
 export const SETUP_SERVERS = {
   "time-tracker": {
     title: "MCP Time Tracker",
@@ -249,7 +259,7 @@ export const SETUP_SERVERS = {
     toolCount: "10 tools",
     pkg: "@theluckystrike/mcp-currency",
     sPage: "/s/currency",
-    hosted: null,
+    hosted: "currency",
     tagline: "ECB reference rates with the rate date on every answer.",
     does: "It caches the European Central Bank's daily and historical euro reference rates, converts between any currencies the ECB quotes through EUR cross rates, and emits the exact fx_rates object the expense tracker needs to rebill a project in one currency.",
     prompts: [
@@ -267,7 +277,7 @@ export const SETUP_SERVERS = {
     toolCount: "10 tools",
     pkg: "@theluckystrike/mcp-docx",
     sPage: "/s/docx",
-    hosted: null,
+    hosted: "docx",
     tagline: "Real Word documents from chat: proposals, contracts, quotes.",
     does: "It writes .docx files from sections or from markdown, generates priced proposals and freelance service agreements with reference numbers that never repeat, reads an existing Word file back as text and outline, and fills {{placeholders}} in a template while keeping its styles.",
     prompts: [
@@ -285,7 +295,7 @@ export const SETUP_SERVERS = {
     toolCount: "11 tools",
     pkg: "@theluckystrike/mcp-timezone",
     sPage: "/s/timezone",
-    hosted: null,
+    hosted: "timezone",
     tagline: "Find meeting slots inside everyone's working hours.",
     does: "It converts times between IANA zones with DST read from the ICU data in your Node build, ranks meeting slots where every participant is inside their own working hours, computes the daily overlap and clock changes, and writes .ics files.",
     prompts: [
@@ -303,7 +313,7 @@ export const SETUP_SERVERS = {
     toolCount: "10 tools",
     pkg: "@theluckystrike/mcp-resume",
     sPage: "/s/resume",
-    hosted: null,
+    hosted: "resume",
     tagline: "Resumes and cover letters as Word files, from one stored profile.",
     does: "It keeps one structured profile, writes the resume as .docx trimmed to a page budget with the posting's keywords bolded where you actually have them, drafts a one-page cover letter whose every proof line is a verbatim bullet from that profile, and reports the gaps against a job description instead of filling them in.",
     prompts: [
@@ -321,7 +331,7 @@ export const SETUP_SERVERS = {
     toolCount: "13 tools",
     pkg: "@theluckystrike/mcp-recurring",
     sPage: "/s/recurring",
-    hosted: null,
+    hosted: "recurring",
     tagline: "Retainers and subscriptions billed on a schedule you set once.",
     does: "It stores a billing schedule per client, weekly, monthly, quarterly, yearly or every N days, shows what falls due, and generates exactly one invoice per schedule per period into the invoice server's own store with its number series and its A4 PDF.",
     prompts: [
@@ -339,7 +349,7 @@ export const SETUP_SERVERS = {
     toolCount: "12 tools",
     pkg: "@theluckystrike/mcp-clauses",
     sPage: "/s/clauses",
-    hosted: null,
+    hosted: "clauses",
     tagline: "Reusable contract clauses, searched and assembled into Word.",
     does: "It ships 25 generic freelance clauses across 11 categories, each holding {{variables}}, lets you add and rank-search your own, lists which variables a selection still needs, and assembles the picked clauses into a numbered .docx or markdown document that opens with a not-legal-advice line.",
     prompts: [
@@ -358,15 +368,15 @@ export const SETUP_SERVERS = {
     pkg: "@theluckystrike/mcp-office-suite",
     sPage: null,
     hosted: null,
-    tagline: "One config entry that exposes every tool of all twenty servers.",
-    does: "It starts all twenty sibling servers as child processes and exposes every tool, resource and prompt under one server, with one license pair. Only two of the 198 tool names collided and needed a server-name prefix: invoice_business_set and docx_business_set.",
+    tagline: "One config entry that exposes every tool of all 31 sibling servers.",
+    does: "It starts all 31 sibling servers as child processes and exposes every tool, resource and prompt under one server, with one license pair. Four of the 292 tool names collided and needed a server-name prefix: business_set from invoice and docx, and category_rules from expense-tracker and bank-statement.",
     prompts: [
       ["Log 3 hours today on Nova design and invoice them at EUR 90.", "entry_add then invoice_from_hours"],
       ["Resize this logo to 512px and put it on a PAID stamp on invoice INV-2026-0001's PDF.", "image_resize, invoice_pdf, pdf_stamp: three children"],
       ["Zip this month's invoices and quotes.", "zip_bundle_month, one call"],
     ],
     free: "each child keeps its own free tier.",
-    pro: "One $39 bundle key activates Pro on all twenty children at once.",
+    pro: "One $39 bundle key activates Pro on all 31 children at once.",
     measured: "A six-prompt audit needing two or more children per sentence put 186 tools on one allowlist, the CLI's own file and web tools denied. Result: 20 of 20 tool calls landed in the correct child and the correct tool, zero wrong-server picks, 13 of 18 scored, against 50 of 51 correct at 108 tools when this bundle held five children.",
   },
   pdf: {
@@ -375,7 +385,7 @@ export const SETUP_SERVERS = {
     toolCount: "12 tools",
     pkg: "@theluckystrike/mcp-pdf",
     sPage: "/s/pdf",
-    hosted: null,
+    hosted: "pdf",
     tagline: "Merge, split, stamp and read PDFs, pure JavaScript, no upload.",
     does: "It merges and splits PDFs, extracts and reorders pages, rotates a sideways scan, stamps PAID or DRAFT or any text, watermarks the business name and VAT id from the shared profile, and reads text back best effort with no OCR.",
     prompts: [
@@ -393,7 +403,7 @@ export const SETUP_SERVERS = {
     toolCount: "12 tools",
     pkg: "@theluckystrike/mcp-calendar",
     sPage: "/s/calendar",
-    hosted: null,
+    hosted: "calendar",
     tagline: "Read .ics calendars: events, free and busy, conflicts, exports.",
     does: "It imports a .ics export from Google, Apple or Outlook, expands recurring series correctly across DST, lists events, computes free and busy blocks, flags overlapping events across every imported calendar, exports a selection, and turns a meeting into a time entry.",
     prompts: [
@@ -411,7 +421,7 @@ export const SETUP_SERVERS = {
     toolCount: "16 tools",
     pkg: "@theluckystrike/mcp-kanban",
     sPage: "/s/kanban",
-    hosted: null,
+    hosted: "kanban",
     tagline: "A task board per project that hands off to the time tracker.",
     does: "It keeps tasks per project in columns with due dates, estimates, priorities and tags, shows the board, overdue items and a weekly review of planned versus done, and starts a time-tracker timer from a task with the link recorded on it.",
     prompts: [
@@ -429,7 +439,7 @@ export const SETUP_SERVERS = {
     toolCount: "12 tools",
     pkg: "@theluckystrike/mcp-image",
     sPage: "/s/image",
-    hosted: null,
+    hosted: "image",
     tagline: "Resize, convert, compress and watermark images, pure JavaScript.",
     does: "It reads PNG, JPEG, BMP, GIF and TIFF, resizes with inside, cover or exact fit, converts formats, compresses with a byte report, crops, batches thumbnails, strips metadata by re-encoding, and watermarks with the shared business name or custom text.",
     prompts: [
@@ -447,7 +457,7 @@ export const SETUP_SERVERS = {
     toolCount: "11 tools",
     pkg: "@theluckystrike/mcp-bank-statement",
     sPage: "/s/bank-statement",
-    hosted: null,
+    hosted: "bank-statement",
     tagline: "Bank CSV exports categorised, summarised and reconciled with expenses.",
     does: "It reads a bank CSV export from Revolut, Wise, mBank, PKO BP, ING, N26 or a generic debit/credit layout, finds the header row under any preamble, parses amounts in the file's own locale, and dedupes on re-import so a second import of the same file adds nothing.",
     prompts: [
@@ -465,7 +475,7 @@ export const SETUP_SERVERS = {
     toolCount: "11 tools",
     pkg: "@theluckystrike/mcp-quotes",
     sPage: "/s/quotes",
-    hosted: null,
+    hosted: "quotes",
     tagline: "A priced, VAT-correct quote from chat, turned into an invoice with one call.",
     does: "It quotes a client with line items, VAT and a validity window, sends the quote as pasteable text, tracks it as open, accepted, declined or expired, and turns an accepted quote into a real invoice in the shared invoice store using the quote's own stored lines rather than recomputed prices.",
     prompts: [
@@ -501,7 +511,7 @@ export const SETUP_SERVERS = {
     toolCount: "14 tools",
     pkg: "@theluckystrike/mcp-billing-docs",
     sPage: "/s/billing-docs",
-    hosted: null,
+    hosted: "billing-docs",
     tagline: "Credit notes and purchase orders written against the invoices the invoice server already holds, with the VAT unwound at the rate you charged.",
     does: "It credits an invoice in full, by a gross amount or by named lines and quantities, storing every money field negative in minor units so a period's documents sum to the net of what was billed, and it refuses to give back more than the invoice's remaining creditable amount. It also raises purchase orders to suppliers with line items, VAT, currency and an expected delivery date, receives them in full or in part, and reports credited and on-order totals per currency alongside deliveries past their date.",
     prompts: [
@@ -519,7 +529,7 @@ export const SETUP_SERVERS = {
     toolCount: "10 tools",
     pkg: "@theluckystrike/mcp-deposits",
     sPage: "/s/deposits",
-    hosted: null,
+    hosted: "deposits",
     tagline: "Security and retainer deposits held per client, applied to the invoices the invoice server already holds.",
     does: "It records a deposit when the money arrives, in minor units and in the currency it arrived in, then answers for it: what is held per client and per currency, since when, and what has already gone. Applying a deposit to an invoice writes the payment onto that invoice under both locks, adding to what was already paid rather than replacing it, and it can never pay out more than the deposit still holds or more than the invoice still owes. Refunds hand the money back without touching the invoice, and the statement is one client in one currency, as text or as an A4 PDF that matches the invoice and credit note beside it.",
     prompts: [
@@ -537,7 +547,7 @@ export const SETUP_SERVERS = {
     toolCount: "8 tools",
     pkg: "@theluckystrike/mcp-per-diem",
     sPage: "/s/per-diem",
-    hosted: null,
+    hosted: "per-diem",
     tagline: "Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them.",
     does: "It prices one business trip against a bundled rate table and shows the arithmetic that produced the number: the allowance per day, the partial-day fraction the scheme's own ladder gave, every deduction for a meal somebody else paid for, and the total in the scheme's own currency. Three schemes ship with it, the Polish delegation regulation at home and per country, the HMRC benchmark scale rates for travel inside the UK, and the US GSA CONUS standard M&IE with the lodging cap. Start and end are instants rather than wall clocks, so a trip across a clock change is 23 or 25 hours, and the Polish 24-hour period and the US calendar day give different and equally correct answers to the same trip. Trips can be saved under a name with a TRIP-YYYY-NNNN id, listed with a total per currency, reported per scheme and per month, and handed to the expense tracker as ready-made expense_add arguments. The tables are files inside the package rather than a feed, so the same trip priced twice gives the same answer, and every rate carries its authority, instrument, source URL and effective date.",
     prompts: [
@@ -555,7 +565,7 @@ export const SETUP_SERVERS = {
     toolCount: "8 tools",
     pkg: "@theluckystrike/mcp-asset-register",
     sPage: "/s/asset-register",
-    hosted: "https://mcp.zovo.one/mcp/asset-register",
+    hosted: "asset-register",
     tagline: "A fixed asset register that depreciates on the rates the tax authorities actually publish, with the schedule, the journal and the gain on sale.",
     does: "You give it what you bought, what it cost, when it went into use and which category it falls in; it gives back the rate, the useful life, the convention, the full schedule year by year or month by month, one month's journal entry, and the gain or loss when you sell. Three tables ship with it: the Polish annual rates from the annex to the CIT and PIT acts keyed to the KST classification, 33 rows with the declining-balance eligibility of each and the art. 16k switch to straight line; the UK capital allowance pools at 18 and 6 percent with the annual investment allowance; and the US MACRS GDS half-year percentages for 3, 5 and 7 year property exactly as IRS Pub 946 Table A-1 publishes them. The convention belongs to the table rather than to the caller, so Poland charges from the month AFTER the asset enters the register and an asset in service on 15 March starts on 1 April with year one at nine twelfths, the MACRS percentages already carry the half-year convention, and a UK writing down allowance is a pool allowance that is not prorated by month at all. The same asset gives three different year-one figures under the three schemes and all three are right. Money is integer minor units end to end and the schedule is allocated by cumulative rounding, so the periods sum to cost less residual to the minor unit and the months sum to their own year. The tables are files inside the package rather than a feed, and every rate carries its authority, instrument, source URL and effective date.",
     prompts: [
@@ -573,7 +583,7 @@ export const SETUP_SERVERS = {
     toolCount: "8 tools",
     pkg: "@theluckystrike/mcp-statement-of-account",
     sPage: "/s/statement-of-account",
-    hosted: "https://mcp.zovo.one/mcp/statement-of-account",
+    hosted: "statement-of-account",
     tagline: "The one document that answers what a client actually owes you, aged as at any date you name, with the chaser drafted.",
     does: "It reads the three books this collection already keeps, the invoice ledger, the credit notes and the deposits, and turns them into a statement of account for a period: the balance carried at the start, every invoice issued, every payment received, every credit note given, the deposits applied broken out of the receipts rather than added on top of them, and the balance at the end. The movements come back in date order and the opening balance plus their sum is the closing balance, so the document reconciles line by line rather than only at the bottom. statement_aging splits what is still open into 0-30, 31-60, 61-90 and over 90 days past the due date AS AT the date you ask for, which means an invoice issued after that date is not on the books, a payment made after it has not happened, and a credit note issued after it has not been given. Due today is not overdue: day zero sits in a not-yet-due line reported beside the four buckets rather than hidden inside them. On the invoice the paid_minor field is the authority and the payment rows are only the attribution, so money that a deposit application put on an invoice without writing a payment row still appears, and when the two books disagree the difference is reported by name rather than scaled away. It writes into no book it reports on: the bytes and the mtimes of the sibling stores are unchanged across all six tools, and the only file it owns is a register of the statements it built. Nothing here invents a late fee, an interest rate or a legal cost, and a dunning letter escalates in tone and never in figures.",
     prompts: [
@@ -591,7 +601,7 @@ export const SETUP_SERVERS = {
     toolCount: "8 tools",
     pkg: "@theluckystrike/mcp-cash-book",
     sPage: "/s/cash-book",
-    hosted: "https://mcp.zovo.one/mcp/cash-book",
+    hosted: "cash-book",
     tagline: "One double-entry ledger derived from the books you already keep, proved to zero to the minor unit, with every line naming the document it came from.",
     does: "It reads six books this collection already keeps, all read-only: the invoice ledger, the credit notes and purchase orders, the deposits, the expense ledger, the bank import and the fixed asset register. For a period in one currency it derives a debit and a credit for every movement in them. Revenue and VAT output come off the invoices, receivables and the payments that clear them, deposits held as the liability they actually are, expenses by category with the VAT taken OUT of the gross rather than added on top of it, fixed assets as they enter service, and depreciation charged by month. The bank import posts nothing at all, which is the decision the whole ledger rests on: a bank line and a payment record are not two transactions, they are one transaction seen twice, so cash is posted from the documents, which are the only rows that carry a second leg, and each bank row is matched to a posted cash movement of the same amount, the same direction and a date within three days, written onto the line as evidence. What is left unmatched is the output that matters, because a bank debit with no expense behind it is a payment nobody entered. Nothing is ever balanced with a plug: an entry whose own legs do not add up is posted exactly as the document states it and the difference is raised by name, with the entry, the source server and the source document behind every unit of it, because a trial balance can only find a broken document if it is allowed to come out non-zero. Currencies are never added together, a purchase order stays a memo and is never posted, a deposit applied to an invoice moves the liability rather than cash, and the ledger opens at nothing, since an opening figure nobody can walk back to a document is the first invented number in a set of books. Every line carries the server, the document id and the ISO date it came from, and the bytes and mtimes of all six sibling stores are unchanged across all six tools.",
     prompts: [
@@ -609,7 +619,7 @@ export const SETUP_SERVERS = {
     toolCount: "8 tools",
     pkg: "@theluckystrike/mcp-amortization",
     sPage: "/s/amortization",
-    hosted: "https://mcp.zovo.one/mcp/amortization",
+    hosted: "amortization",
     tagline: "Loan and lease schedules derived from the terms of the agreement, in integer minor units, closing exactly on the balloon or on zero.",
     does: "You give it what the agreement says: the principal in minor units, the nominal annual rate in basis points, how often interest compounds, how often a payment falls due, the term in periods, annuity or straight principal, any arrangement fee, any balloon and the drawdown date. It derives the level payment, the effective annual rate beside the nominal one, and the schedule period by period, opening balance, payment, interest, principal, closing balance, every figure a whole minor unit. Compounding and payment frequency are two different clocks here, which is the decision most of the arithmetic rests on: the rate for one payment period is the equivalent rate taken through the compounding clock rather than the nominal rate divided by the number of payments, and on a quarterly-paid, monthly-compounded loan that difference is worth about 1.0 percent of the whole interest bill, in the lender's favour, and is invisible in the quote. The payment never varies: rounding the level payment once leaves the closing balance a few units from zero after a chain of subtractions, and that residual goes into the final period's interest and principal SPLIT rather than into the payment, because the payment is what the borrower is contractually due to pay and the split is not. A level payment rounded once can also clear the debt before the declared term ends, and the schedule stops where the debt does rather than filling out the term with periods that charge negative interest on a balance already gone. Early settlement and partial overpayment are costed gross and net of the penalty, and a penalty larger than the interest saved is reported as a COST rather than as a smaller saving. The journal debits interest expense and loan liability and credits cash in the cash book's own account ids, and the expense payload carries the interest ALONE. Nothing is posted from here, no schedule is stored, currencies are never added together, and month arithmetic clamps rather than rolling forward.",
     prompts: [
@@ -627,7 +637,7 @@ export const SETUP_SERVERS = {
     toolCount: "10 tools",
     pkg: "@theluckystrike/mcp-work-order",
     sPage: "/s/work-order",
-    hosted: "https://mcp.zovo.one/mcp/work-order",
+    hosted: "work-order",
     tagline: "Job orders for trades and field work: parts and labour as they happen, a status that moves one dated step at a time, a completion report, and an invoice payload that needs no retyping.",
     does: "You raise a work order against a client, and the client is the one the invoice server already knows, looked up by name in its own records rather than spelled a second way here, so the job and the invoice carry the same customer. It gets a site address, the date it was asked for, what the job is and how urgent, and a WO-YYYY-NNNN number. Then you log what the job actually uses as it goes: labour as hours at an hourly rate, parts as a quantity at a unit cost in minor units with an optional markup percent. The markup goes on the UNIT cost and never on the line total, which sounds like a detail and is the decision the whole server rests on, because the invoice server rounds a unit price into minor units first and computes the line from that stored value: the marked-up unit is the only basis an invoice can reproduce. The status moves one step at a time, draft to scheduled to in progress to done to invoiced, each step stamped with its own date and a note, and a skipped step is refused naming the step that IS next, because a job that went from scheduled straight to invoiced was never marked done, so no completion report was ever produced and nothing in the record says the day the work finished. Backwards is refused too: a job that has to go back is a new work order, and the history of the first one has to stay true. Nothing is stored twice: the value, the hours, the materials and the VAT are derived from the lines on every call, because a stored total is a second copy of what the lines already decide and the copy is the one that gets believed after somebody edits a line. Hours are counted on the LINE date rather than the order date, so a February call worked in March logs its hours in March. When the job is done you hand the customer a completion report with the hours, the materials, the totals and a sign-off block, and take work_order_invoice_payload straight to invoice_create: it posts nothing, marks nothing, and its totals are computed by the invoice server's own function over the very items it is handing you, so there is no second implementation to disagree.",
     prompts: [
@@ -645,7 +655,7 @@ export const SETUP_SERVERS = {
     toolCount: "10 tools",
     pkg: "@theluckystrike/mcp-catalogue",
     sPage: "/s/catalogue",
-    hosted: "https://mcp.zovo.one/mcp/catalogue",
+    hosted: "catalogue",
     tagline: "One price list and one labour rate card, kept where the invoice and the quote can both read them, with the price on a date worked out on the call.",
     does: "You give a product a code, a name, a unit, an optional VAT rate and a price in minor units with the day that price comes into force, and you give a role an hourly rate the same way. Then you hand the catalogue a list of what a customer had, and it hands back the line items already priced. A SKU holds its price ROWS rather than a current price, and the price on a date is the latest valid-from at or before it, worked out on the call, so putting a price up in July does not rewrite what June was quoted at, and sku_get names the row it picked, how many rows it considered and any later row already booked, which turns a question about a figure on an old invoice into one line of one file rather than an argument. A date before every row has no price and that is a refusal naming the earliest row and the day it starts, because filling it with the earliest row reprices history: a job done in December 2024 would be billed at the January 2025 price and would reconcile perfectly against a price list that did not exist yet. One row per currency, tier and valid-from date, and setting that key again REPLACES the row and says what it was and what it became, because two rows on one key make the price that day a coin toss decided by array order. Nothing is invented: no fallback, no profile default rate, no nearest match. An unknown code, or a code with no price in the currency and tier you asked for, is refused by name, because the invented number would be printed on a document a customer pays from. It creates no invoice and no quote of its own: lines_resolve returns the arguments and says posted false, and you run invoice_create in the invoice server or quote_create in the quotes server.",
     prompts: [
@@ -663,7 +673,7 @@ export const SETUP_SERVERS = {
     toolCount: "9 tools",
     pkg: "@theluckystrike/mcp-change-order",
     sPage: "/s/change-order",
-    hosted: "https://mcp.zovo.one/mcp/change-order",
+    hosted: "change-order",
     tagline: "Change orders against a quote or a work order, with the running contract value built from what the client actually approved.",
     does: "You raise a change order against a quote or a work order, naming the client, the change in one line and, on the first one for that reference, the original contract value in minor units. Then you add the lines: added work with a quantity and a unit price, removed work the same way, and a changed line with what it was and what it is now. You move it to sent on the day it goes out, and to approved or rejected on the day the client answers, each step dated and a step dated before the last one refused. contract_value then answers the question the whole thing exists for: the original, plus the deltas the client APPROVED, equals the value today, with the draft and sent deltas shown apart and never added in. The original value is stated once per reference and inherited by every later change order, and a different figure is refused by name, because a contract with two original values has two running values and the customer sees whichever was typed last. No delta is stored: the delta, the VAT and the running value are derived from the lines on every call with the invoice server's own arithmetic. Lines go only on a draft; a sent change order that needs another line is voided and raised again, so the client's approval always refers to what they were sent, and a draft cannot be approved directly because approval is the client's answer to something they were sent. Once approved, the delta comes back as invoice_create items in major units and quote_create items in minor units in one call, and a changed line comes back as two items, the reversal and the revised line, never one net item, so both figures reproduce on a calculator from the change order the client signed. It creates no invoice and no quote of its own: the payload says posted false, and you run invoice_create in the invoice server.",
     prompts: [
@@ -681,7 +691,7 @@ export const SETUP_SERVERS = {
     toolCount: "9 tools",
     pkg: "@theluckystrike/mcp-petty-cash",
     sPage: "/s/petty-cash",
-    hosted: "https://mcp.zovo.one/mcp/petty-cash",
+    hosted: "petty-cash",
     tagline: "A petty cash float on the imprest system: vouchers out of the tin, a count that reconciles them to the minor unit, and the replenishment that puts the float back.",
     does: "You open a tin with an imprest amount and a custodian, and then you type the receipts as they come: amount in whole minor units, date, category, description, payee, receipt reference. Whenever you count the cash, reconcile tells you what the paperwork said the tin should hold, what you actually counted, the difference to the minor unit, and every voucher that count covers, all marked reconciled. A count is treated as a FACT, so it moves the book balance: the difference is carried forward as an over or short rather than re-reported at every later count, which is what makes a tin that is short by a little every month readable as a run rather than as one number. When the tin runs low, replenish_request works out what the cheque has to be, and this is the decision the whole server rests on: it is imprest minus balance, never the sum of the vouchers. The two differ by exactly what the counts found over or short. The difference comes back as its own cash_over_short journal line rather than folded into an expense category where it would look like postage, and under the imprest system the petty_cash account does not move at a replenishment at all: the journal credits cash and debits the expenses per category, in the cash book's own account ids, so a category spelled Office Supplies, office supplies and OFFICE SUPPLIES is one account and not three. A voucher larger than the balance on its own date is refused, and so is a back-dated one that would make any LATER day negative, which the at-the-date check alone does not catch. A reconciled voucher cannot be deleted, because the cash it took out was already counted. No balance is stored anywhere: every balance is derived on the call from the imprest, the top-ups, the vouchers and what each count found.",
     prompts: [
@@ -699,7 +709,7 @@ export const SETUP_SERVERS = {
     toolCount: "9 tools",
     pkg: "@theluckystrike/mcp-zip",
     sPage: "/s/zip",
-    hosted: null,
+    hosted: "zip",
     tagline: "Pack, list and unpack zip archives locally, with traversal, symlink and bomb guards read from the header before anything is inflated.",
     does: "It packs files or a directory tree with glob patterns into a new .zip, lists an archive's entries with sizes and ratios while flagging absolute paths, .., symlinks, encrypted entries and duplicate names, unpacks with a dry run and a skip_unsafe option, reads one text entry inline without unpacking anything, and bundles a calendar month of invoices, quotes and exports from the sibling servers into one file.",
     prompts: [
@@ -809,16 +819,16 @@ const ANGLE = {
     cline: "Put clause_search, clause_list, clause_get and variables_list in autoApprove and keep clause_delete out of it: a deleted starter clause is not re-seeded on the next call.",
   },
   "office-suite": {
-    "claude-desktop": "One entry in claude_desktop_config.json instead of twenty, which matters more here than anywhere else: this is the client where each extra server is another absolute path to get right, and a six-prompt audit at 186 tools put all 20 tool calls in the correct child, zero wrong-server picks.",
-    "claude-code": "One `claude mcp add` instead of twenty, and one bundle key. The audited round that asked for a logo resize, an invoice PDF and a PAID stamp in one sentence, three children at once, called the right tool in the right child every time.",
-    cursor: "Twenty servers' worth of tools arrive as one entry, so mcp.json holds one object with one required type field instead of twenty, and the Customize page lists one server to enable or disable. Only two of the 198 names needed a server-name prefix to stay unique: invoice_business_set, docx_business_set.",
-    vscode: "One entry under the servers key, one trust prompt to answer, and 198 tools arrive as one group in the tools picker, which is easier to switch on and off per chat than twenty separate ones.",
-    windsurf: "One entry rather than twenty does not mean one entry fits: 198 tools is past Cascade's ceiling of 100 on its own, so this bundle is the wrong shape here. Install the two or three single servers you actually use instead, 9 to 16 tools each.",
-    cline: "One entry with one autoApprove array covering 198 tools. Set that array deliberately rather than emptying it, ideally per child if the interface allows it: it now spans twenty servers that write invoices, quotes, spreadsheets, PDFs, images, bank ledgers and calendars.",
+    "claude-desktop": "One entry in claude_desktop_config.json instead of 31, which matters more here than anywhere else: this is the client where each extra server is another absolute path to get right, and a six-prompt audit at 186 tools put all 20 tool calls in the correct child, zero wrong-server picks.",
+    "claude-code": "One `claude mcp add` instead of 31, and one bundle key. The audited round that asked for a logo resize, an invoice PDF and a PAID stamp in one sentence, three children at once, called the right tool in the right child every time.",
+    cursor: "Thirty-one servers' worth of tools arrive as one entry, so mcp.json holds one object with one required type field instead of 31, and the Customize page lists one server to enable or disable. Only four of the 292 names needed a server-name prefix to stay unique: invoice_business_set and docx_business_set, expense-tracker_category_rules and bank-statement_category_rules.",
+    vscode: "One entry under the servers key, one trust prompt to answer, and 292 tools arrive as one group in the tools picker, which is easier to switch on and off per chat than 31 separate ones.",
+    windsurf: "One entry rather than 31 does not mean one entry fits: 292 tools is far past Cascade's ceiling of 100 on its own, so this bundle is the wrong shape here. Install the two or three single servers you actually use instead, 9 to 16 tools each.",
+    cline: "One entry with one autoApprove array covering 292 tools. Set that array deliberately rather than emptying it, ideally per child if the interface allows it: it now spans 31 servers that write invoices, quotes, spreadsheets, PDFs, images, bank ledgers and calendars.",
   },
   pdf: {
     "claude-desktop": "Claude Desktop has no filesystem sandbox of its own restricting where pdf_stamp or pdf_merge can write, so the out_path you give is exactly where the file lands, absolute path required like every other entry in this config.",
-    "claude-code": "Merging or stamping a PDF sits well next to the rest of a terminal workflow: `claude mcp add pdf -- npx -y @theluckystrike/mcp-pdf --scope project` puts it in the repository the invoices or contracts already live in.",
+    "claude-code": "Merging or stamping a PDF sits well next to the rest of a terminal workflow: `claude mcp add --scope project pdf -- node /absolute/path/to/mcp-servers/servers/pdf/dist/index.js` puts it in the repository the invoices or contracts already live in.",
     cursor: "The pattern that saves the most time here is asking in the same chat that just generated a docx proposal: print it, then merge it with a signed cover page before it goes out.",
     vscode: "In agent mode pdf_merge and pdf_stamp are tools the agent can reach mid-task, so \"stamp this PAID, then attach it to the release notes\" is one instruction instead of a manual export step.",
     windsurf: "Twelve tools out of Cascade's 100-tool ceiling is a cheap seat for something used a few times a week rather than continuously, unlike a timer or a spreadsheet tool held open all day.",
@@ -826,7 +836,7 @@ const ANGLE = {
   },
   calendar: {
     "claude-desktop": "The .ics file you exported has to reach Claude Desktop's sandboxed process, so give ics_import an absolute path under your home directory rather than a relative one, the same rule every path in this config follows.",
-    "claude-code": "Importing a calendar once and asking free_busy questions in the same session as a repo's billing work is the point: `claude mcp add calendar -- npx -y @theluckystrike/mcp-calendar --scope project` keeps the import local to that project.",
+    "claude-code": "Importing a calendar once and asking free_busy questions in the same session as a repo's billing work is the point: `claude mcp add --scope project calendar -- node /absolute/path/to/mcp-servers/servers/calendar/dist/index.js` keeps the import local to that project.",
     cursor: "The useful chain here starts with a calendar question and ends in the time tracker: \"what did I do this week\" through events_list, then event_to_time_entry for the calls that were billable.",
     vscode: "In agent mode, free_busy and conflicts are tools the agent can call mid-task, so scheduling a follow-up around what is already on the calendar is one instruction rather than a manual lookup first.",
     windsurf: "Twelve tools against Cascade's 100-tool ceiling, and this one is read from a file you re-import occasionally rather than a service polled continuously, so it costs little to leave enabled.",
@@ -834,7 +844,7 @@ const ANGLE = {
   },
   kanban: {
     "claude-desktop": "The board sits open in the same window all day, so \"what's overdue\" and \"start the timer on NOVA-3\" are the two questions worth asking here before you touch anything else, since both read the same file this client already has a path to.",
-    "claude-code": "Give the board the repository's own name as its project so `task_add` in that directory files against the right board automatically, and `claude mcp add kanban -- npx -y @theluckystrike/mcp-kanban --scope project` keeps that mapping in the repo rather than only on your machine.",
+    "claude-code": "Give the board the repository's own name as its project so `task_add` in that directory files against the right board automatically, and `claude mcp add --scope project kanban -- node /absolute/path/to/mcp-servers/servers/kanban/dist/index.js` keeps that mapping in the repo rather than only on your machine.",
     cursor: "The pattern worth building is a chat that starts with \"what's on the nova board\" and ends with \"start the timer on the one I'm about to work on,\" so the task you picked and the task the timer bills are the same string, not two names that drifted apart.",
     vscode: "In agent mode task_add and task_done are tools the agent can reach mid-task, so \"mark NOVA-3 done and log 40 minutes\" is one instruction instead of opening the board separately to close it out.",
     windsurf: "Sixteen tools against Cascade's ceiling of 100, and a board is read constantly through a work session, so it earns its seat more than a server you touch once a week.",
@@ -842,7 +852,7 @@ const ANGLE = {
   },
   image: {
     "claude-desktop": "Give it an absolute path to the photo, the same rule every entry in this config follows, and the resized or watermarked copy lands next to the original where Finder can find it without a terminal in between.",
-    "claude-code": "Preparing images for a repository's docs or a release asset is a build step you already run from here, so `claude mcp add image -- npx -y @theluckystrike/mcp-image --scope project` keeps the tool scoped to the project whose images it is touching.",
+    "claude-code": "Preparing images for a repository's docs or a release asset is a build step you already run from here, so `claude mcp add --scope project image -- node /absolute/path/to/mcp-servers/servers/image/dist/index.js` keeps the tool scoped to the project whose images it is touching.",
     cursor: "The chain worth building is compress, then thumbnail: get a hero image under the size budget the site enforces, then batch the rest of the folder into the same shape in one sentence.",
     vscode: "In agent mode image_resize and image_convert are reachable mid-task, so \"shrink the screenshots in this PR to 1200 wide before I commit\" runs as one instruction rather than a manual export pass.",
     windsurf: "Twelve tools against Cascade's ceiling of 100, and no network call of any kind, so a server touching client photos costs nothing to leave enabled and sends nothing anywhere.",
@@ -850,7 +860,7 @@ const ANGLE = {
   },
   "bank-statement": {
     "claude-desktop": "The CSV your bank emails or you export from its web app is already sitting in Downloads, so point statement_import at the absolute path and the categorised month is the very next message, no terminal in between.",
-    "claude-code": "Month-end reconciliation for a project's own account is repo-shaped work, so `claude mcp add bank-statement -- npx -y @theluckystrike/mcp-bank-statement --scope project` keeps the ledger scoped to the project it is reconciling.",
+    "claude-code": "Month-end reconciliation for a project's own account is repo-shaped work, so `claude mcp add --scope project bank-statement -- node /absolute/path/to/mcp-servers/servers/bank-statement/dist/index.js` keeps the ledger scoped to the project it is reconciling.",
     cursor: "The chain worth building here is import, then reconcile: bring in the export, then ask which of this month's expense-tracker receipts never showed up as a bank line, in the same chat you were already using for the client's invoice.",
     vscode: "In agent mode statement_import and statement_summary are tools the agent can call mid-task, so \"pull in this export and tell me if anything looks uncategorised\" runs as one instruction rather than a separate spreadsheet pass.",
     windsurf: "Eleven tools against Cascade's ceiling of 100, and a bank export is read in one sitting a few times a month rather than polled continuously, so it costs little to leave enabled between statements.",
@@ -858,7 +868,7 @@ const ANGLE = {
   },
   quotes: {
     "claude-desktop": "A quote is written in the evening or between calls, in the client people already have open for exactly that kind of task, and quote_send_text hands back plain text ready to paste into whatever mail app is next to it.",
-    "claude-code": "Quoting and invoicing share one data directory across two servers, so `claude mcp add quotes -- npx -y @theluckystrike/mcp-quotes --scope project` next to the invoice server in the same project keeps a client's whole paper trail, quote through paid invoice, in one repo-scoped place.",
+    "claude-code": "Quoting and invoicing share one data directory across two servers, so `claude mcp add --scope project quotes -- node /absolute/path/to/mcp-servers/servers/quotes/dist/index.js` next to the invoice server in the same project keeps a client's whole paper trail, quote through paid invoice, in one repo-scoped place.",
     cursor: "The chain worth building is quote, then accept: price the work in the same chat you are about to start it in, and when the client answers, \"they said yes, invoice it\" is the next message rather than a context switch to a separate billing tool.",
     vscode: "In agent mode quote_create and quote_accept are tools the agent can reach mid-task, so \"quote this scope change and, if they say yes on the call, invoice it\" is one instruction spanning two calls instead of a manual step in between.",
     windsurf: "Eleven tools against Cascade's ceiling of 100, and a quote is written a handful of times a week rather than polled continuously, so it costs little to leave enabled alongside the invoice server it hands off to.",
@@ -971,7 +981,7 @@ const ANGLE = {
 };
 
 /** One sentence per server for the claude-web (claude.ai / Claude Desktop connector) client.
- * office-suite is excluded: it starts twenty child processes, not one URL. */
+ * office-suite is excluded: it starts 31 child processes, not one URL. */
 const WEB_ANGLE = {
   "time-tracker": "This is the client with no terminal and no filesystem of its own, so the free tier's history window matters more here than anywhere else: a report is read in the chat, not exported to a file you would open elsewhere.",
   "price-tracker": "A watch runs server-side against a URL you gave it, which is exactly the shape a browser tab full of Claude.ai can hold without a local process: no install, no machine that has to stay on.",
@@ -1013,7 +1023,7 @@ const FAQ = {
     },
     {
       q: "I added it and " + s.title + " does not appear.",
-      a: "In order: did you fully quit and restart, not just close the window? Is every path absolute? And is the command resolvable, given the limited environment a stdio server inherits here? If node came from nvm, paste what which npx prints.",
+      a: "In order: did you fully quit and restart, not just close the window? Is every path absolute? And is the command resolvable, given the limited environment a stdio server inherits here? If node came from nvm, paste what which node prints.",
     },
     {
       q: "Can I install it without editing JSON?",
@@ -1033,9 +1043,7 @@ const FAQ = {
       q: "Can I use " + s.title + " without installing anything?",
       a: s.hosted
         ? "Yes: claude mcp add --transport http " + s.hosted + " https://mcp.zovo.one/mcp/" + s.hosted + " --header \"Authorization: Bearer <token>\". Mint a free token at https://mcp.zovo.one/mcp/token or use a Pro key. -t and -H are the short forms."
-        : s.slug === "office-suite"
-          ? "Not this one; it starts twenty child processes, so it runs locally over stdio. Three of the servers behind it (time-tracker, price-tracker, invoice) are hosted at https://mcp.zovo.one/mcp if you want a no-install route."
-          : "Not yet. " + s.title + " runs locally over stdio, which is also how it reads and writes files on your disk. The hosted endpoints at https://mcp.zovo.one/mcp currently cover time-tracker, price-tracker and invoice.",
+        : "Not this one. The office suite starts every sibling server as its own child process, so it runs locally over stdio. Thirty of those children are hosted individually at https://mcp.zovo.one/mcp/<name> if you want a no-install route; open https://mcp.zovo.one/mcp/connect and it prints a ready URL for each.",
     },
   ],
   cursor: (s) => [
@@ -1125,13 +1133,26 @@ function fitDesc(d) {
   return out;
 }
 
+const RELEASES = "https://github.com/theluckystrike/mcp-servers/releases/latest";
+
+/**
+ * The config block for this client, with a command that actually starts a server.
+ *
+ * It used to emit `"command": "npx", "args": ["-y", "@theluckystrike/mcp-<name>"]`. Nothing
+ * has ever been published to npm - registry.npmjs.org returns no versions for any
+ * @theluckystrike package, probed 2026-09-07 - so every visitor who pasted that block got a
+ * client that could not start the server, with no error worth reading. `node` plus the
+ * absolute path to a built file works today, on every one of these clients, which is why it
+ * is what the page prints. npxJson() below still shows the npx form, labelled, so the page
+ * is already correct the day the publish happens.
+ */
 function serverJson(clientId, s) {
   const c = CLIENTS[clientId];
   const typeLine = clientId === "cursor" ? '\n      "type": "stdio",' : "";
   const extra = clientId === "cline" ? ',\n      "disabled": false,\n      "autoApprove": []' : "";
   const inner = `{${typeLine}
-      "command": "npx",
-      "args": ["-y", "${s.pkg}"]${extra}
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-servers/servers/${s.slug}/dist/index.js"]${extra}
     }`;
   return `{
   "${c.key}": {
@@ -1140,34 +1161,99 @@ function serverJson(clientId, s) {
 }`;
 }
 
-function installBlock(clientId, s) {
+/** The same block in the npm form: correct the day the packages publish, dead until then. */
+function npxJson(clientId, s) {
   const c = CLIENTS[clientId];
+  return `{
+  "${c.key}": {
+    "${s.slug}": {
+      "command": "npx",
+      "args": ["-y", "${s.pkg}"]
+    }
+  }
+}`;
+}
+
+/**
+ * The one-click route. `.mcpb` is a Claude Desktop extension format, so it leads the page for
+ * that client and is offered as an aside everywhere else: for a reader on the Cursor or
+ * Windsurf page it is still the fastest way to get the server running at all, and the config
+ * block below is what their own client needs.
+ */
+function bundleBlock(clientId, s) {
+  if (clientId === "claude-desktop") {
+    return `<p><strong>One click, no JSON.</strong> Download <code>${s.slug}.mcpb</code> from the
+<a href="${RELEASES}">latest release</a> and open it. Claude Desktop installs it as an extension and runs
+it on the Node runtime it ships with, so neither your PATH nor your node version comes into it, and there
+is no file to edit. Everything below is the manual route, for when you want the entry in the config file
+itself.</p>`;
+  }
+  return `<p>If you also run Claude Desktop, the shortest path there is one click: <code>${s.slug}.mcpb</code>
+from the <a href="${RELEASES}">latest release</a> opens as an extension, with no JSON and no terminal.
+${CLIENTS[clientId].name} reads its own config, so here it is:</p>`;
+}
+
+/** Build it from a clone. Two absolute strings, and they are the ones serverJson prints. */
+function buildBlock(s) {
+  return `<p>The <code>node</code> command above wants a built file. From a clone, once:</p>
+<pre><code>git clone https://github.com/theluckystrike/mcp-servers.git
+cd mcp-servers &amp;&amp; npm install
+npm run build -w packages/mcp-license -w servers/${s.slug}</code></pre>
+<p>That writes <code>servers/${s.slug}/dist/index.js</code>, and its absolute path is the one argument
+the config needs.</p>`;
+}
+
+/** The npx form, kept visible and marked, in the voice the /setup pages already use. */
+function npmPendingBlock(clientId, s, commandForm) {
+  return `<p>The npm packages are not published yet, so the form below returns a 404 today. It is here
+because it is what the entry becomes the day the publish lands, with nothing else changed:</p>
+<pre><code>${commandForm ? esc(commandForm) : esc(npxJson(clientId, s))}</code></pre>`;
+}
+
+function installBlock(clientId, s) {
+  const dist = `/absolute/path/to/mcp-servers/servers/${s.slug}/dist/index.js`;
   if (clientId === "claude-code") {
-    return `<pre><code>claude mcp add ${s.slug} -- npx -y ${esc(s.pkg)}
+    return `${bundleBlock(clientId, s)}
+<p>From the terminal, against a built file:</p>
+<pre><code>claude mcp add --scope user ${s.slug} -- node ${dist}
 claude mcp list    # health-check it before the first prompt
 
-# or --scope project, committed to .mcp.json for the team</code></pre>`;
+# or --scope project, committed to .mcp.json for the team</code></pre>
+${buildBlock(s)}
+${npmPendingBlock(clientId, s, `claude mcp add ${s.slug} -- npx -y ${s.pkg}`)}`;
   }
   if (clientId === "vscode") {
-    return `<pre><code>// .vscode/mcp.json  (the key is "servers")
+    return `${bundleBlock(clientId, s)}
+<pre><code>// .vscode/mcp.json  (the key is "servers")
 ${esc(serverJson(clientId, s))}</code></pre>
 <p>Or from a terminal:</p>
-<pre><code>code --add-mcp '{"name":"${s.slug}","command":"npx","args":["-y","${esc(s.pkg)}"]}'</code></pre>`;
+<pre><code>code --add-mcp '{"name":"${s.slug}","command":"node","args":["${dist}"]}'</code></pre>
+${buildBlock(s)}
+${npmPendingBlock(clientId, s, `code --add-mcp '{"name":"${s.slug}","command":"npx","args":["-y","${s.pkg}"]}'`)}`;
   }
   if (clientId === "claude-desktop") {
-    return `<pre><code>${esc(serverJson(clientId, s))}</code></pre>
-<p>If node came from nvm, asdf or homebrew, replace <code>"npx"</code> with the absolute path that <code>which npx</code> prints:</p>
-<pre><code>"command": "/Users/you/.nvm/versions/node/v22.14.0/bin/npx"</code></pre>`;
+    return `${bundleBlock(clientId, s)}
+<p>The config block, which needs both strings absolute:</p>
+<pre><code>${esc(serverJson(clientId, s))}</code></pre>
+<p>If node came from nvm, asdf or homebrew, use the absolute path that <code>which node</code> prints
+rather than the bare word, because a stdio server started by this app inherits a limited PATH:</p>
+<pre><code>"command": "/Users/you/.nvm/versions/node/v22.14.0/bin/node"</code></pre>
+${buildBlock(s)}
+${npmPendingBlock(clientId, s)}`;
   }
-  return `<pre><code>${esc(serverJson(clientId, s))}</code></pre>`;
+  return `${bundleBlock(clientId, s)}
+<p>The config block:</p>
+<pre><code>${esc(serverJson(clientId, s))}</code></pre>
+${buildBlock(s)}
+${npmPendingBlock(clientId, s)}`;
 }
 
 function hostedBlock(clientId, s) {
   if (!s.hosted) {
     if (s.slug !== "office-suite") {
-      return `<p>There is no hosted endpoint for this one yet. ${esc(s.title)} runs locally over stdio with the config above, which is also the only form in which it reads and writes files on your own disk. Three of the servers in this collection are served at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP: time-tracker, price-tracker and invoice.</p>`;
+      return `<p>There is no hosted endpoint for this one yet. ${esc(s.title)} runs locally over stdio with the config above, which is also the only form in which it reads and writes files on your own disk. Thirty of the servers in this collection are served at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP; <a href="${BASE}/mcp/connect">${BASE}/mcp/connect</a> lists them and prints a ready URL for each.</p>`;
     }
-    return `<p>The suite starts twenty child processes, so it has no hosted form. Three of the twenty (time-tracker, price-tracker, invoice) are served at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP instead: mint a free token with <code>curl ${BASE}/mcp/token</code>, or use a Pro key as the bearer.</p>`;
+    return `<p>The suite starts 31 child processes, so it has no hosted form of its own. Thirty of those 31 are served individually at <code>${BASE}/mcp/&lt;name&gt;</code> over MCP streamable HTTP instead, one connection each: <a href="${BASE}/mcp/connect">${BASE}/mcp/connect</a> mints a free token and prints a ready URL per server, or use a Pro key as the bearer.</p>`;
   }
   const url = `${BASE}/mcp/${s.hosted}`;
   const lead = `<p>The same server runs at <code>${url}</code> over MCP streamable HTTP, no install. Mint a free token with <code>curl ${BASE}/mcp/token</code>, or use a Pro key. It has no filesystem, so a file comes back as a one-hour download link.</p>`;
@@ -1275,7 +1361,7 @@ ${faq.map((f) => `<h3>${esc(f.q)}</h3>\n<p>${esc(f.a)}</p>`).join("\n")}
 <table><tr><th>Scope</th><th>Path</th></tr>${pathRows}</table>
 ${installBlock(clientId, s)}
 <p>${esc(c.restart)}</p>
-<p class="muted">The npm publish of <code>${esc(s.pkg)}</code> is pending; until then use the <code>.mcpb</code> bundle or a clone and build from <a href="${REPO}/releases/latest">the latest release</a>.</p>
+<p class="muted">Nothing is published to npm yet, so the working install paths are the ones above: the <code>.mcpb</code> bundle from <a href="${REPO}/releases/latest">the latest release</a>, a clone and build, or the hosted URL.</p>
 
 <h2>No install: the hosted endpoint</h2>
 ${hostedBlock(clientId, s)}

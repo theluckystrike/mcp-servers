@@ -115,7 +115,7 @@ export function guardTarget(u: URL): void {
   if (blocked) {
     throw new FetchError(
       `${u.hostname} is not a public address, so this hosted endpoint will not fetch it. ` +
-      "Paste the calendar's contents as text instead (ics_import {text, name}), or run the calendar server locally over stdio (npx -y @theluckystrike/mcp-calendar), where it can reach your own network.");
+      "Paste the calendar's contents as text instead (ics_import {text, name}), or install the calendar server locally, where it can reach your own network: download calendar.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop.");
   }
 }
 
