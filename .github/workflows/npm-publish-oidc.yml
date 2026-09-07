@@ -27,22 +27,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # NOTE: deliberately NO `registry-url:` here. With registry-url,
+      # actions/setup-node writes $RUNNER_TEMP/.npmrc containing
+      # //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN} and points
+      # NPM_CONFIG_USERCONFIG at it; with no NODE_AUTH_TOKEN secret that
+      # expands to the literal placeholder XXXXX-XXXXX-XXXXX-XXXXX, so npm
+      # authenticates with a junk bearer token and never attempts the OIDC
+      # exchange. Run 34080853186 hit exactly that confound. Omitting
+      # registry-url leaves npm with no credential at all, which is the
+      # condition under which npm 11.5.1+ performs the OIDC token exchange.
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
 
       - name: Upgrade npm past the trusted-publishing floor (11.5.1)
         run: |
           npm install -g npm@latest
           echo "npm $(npm -v) / node $(node -v)"
 
-      - name: Show that no npm auth token is present
+      - name: Prove there is no npm credential and OIDC is available
         run: |
-          echo "--- npm whoami (expected to fail; OIDC does not create a session) ---"
+          echo "NPM_CONFIG_USERCONFIG=[${NPM_CONFIG_USERCONFIG:-unset}]"
+          echo "NODE_AUTH_TOKEN=[${NODE_AUTH_TOKEN:+SET}${NODE_AUTH_TOKEN:-unset}]"
+          echo "ACTIONS_ID_TOKEN_REQUEST_URL=[${ACTIONS_ID_TOKEN_REQUEST_URL:+PRESENT}${ACTIONS_ID_TOKEN_REQUEST_URL:-ABSENT}]"
+          echo "--- every npmrc npm can see ---"
+          for f in ~/.npmrc "$RUNNER_TEMP/.npmrc" ./.npmrc; do
+            [ -f "$f" ] && { echo "### $f"; sed -E 's/(_authToken=)(.{0,6}).*/\1\2...REDACTED/' "$f"; } || echo "### $f (absent)"
+          done
+          echo "--- npm whoami (expected E401; OIDC does not create a session) ---"
           npm whoami || true
-          echo "--- ~/.npmrc as written by setup-node ---"
-          sed -E 's/(_authToken=)(.{0,6}).*/\1\2...REDACTED/' ~/.npmrc || true
 
       - name: PROBE - OIDC first publish of one package
         id: probe
@@ -51,7 +64,7 @@ jobs:
           cd packages/mcp-license 2>/dev/null || cd servers/mcp-license
           pwd
           set -o pipefail
-          npm publish --access public 2>&1 | tee /tmp/probe.log
+          npm publish --access public --provenance 2>&1 | tee /tmp/probe.log
 
       - name: Probe verdict
         run: |
@@ -71,7 +84,7 @@ jobs:
             esac
             [ "$name" = "@theluckystrike/mcp-license" ] && continue
             echo "=== publishing $name ==="
-            (cd "$d" && npm publish --access public) || echo "FAILED: $name"
+            (cd "$d" && npm publish --access public --provenance) || echo "FAILED: $name"
           done
 
       - name: Verify on the registry
