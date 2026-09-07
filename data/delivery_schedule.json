@@ -1,0 +1,357 @@
+{
+  "server": "delivery-schedule",
+  "package": "@theluckystrike/mcp-delivery-schedule",
+  "version": "0.20.0",
+  "built_at": "2026-09-07",
+  "built_by": "loop 29 agent E",
+  "plan": "docs/PLAN_V26.md item 1 (INTEL_R13 slot, score 55.25, 0 competing registry servers)",
+  "status": "DONE, stdio only. Not hosted: no remotes.json, no /mcp/delivery-schedule endpoint.",
+  "registry_names": [
+    "io.github.theluckystrike/delivery-schedule",
+    "io.github.theluckystrike/deliverable-tracker",
+    "io.github.theluckystrike/milestone-schedule"
+  ],
+  "tools": [
+    {
+      "name": "delivery_schedule_create",
+      "tier": "free",
+      "description": "Open a delivery schedule against a quote, work order or change order and return its DS-YYYY-NNNN number: the reference, its own date, the client, a title and the currency. Free tier: 3 open."
+    },
+    {
+      "name": "deliverable_add",
+      "tier": "free",
+      "description": "Add one deliverable to a schedule: what it is, the day it is due, and its value in whole minor units when it is separately priced. It starts as planned. Free on every tier."
+    },
+    {
+      "name": "deliverable_status",
+      "tier": "free",
+      "description": "Record a dated move on one deliverable: planned to in progress, to delivered, and delivered to accepted with the acceptance note. Accepting something never delivered is refused. Free."
+    },
+    {
+      "name": "deliverable_delete",
+      "tier": "free",
+      "description": "Delete a deliverable added by mistake. Only one still planned with nothing recorded against it can go: once it has been started or handed over it has a history. Free on every tier."
+    },
+    {
+      "name": "delivery_schedule_get",
+      "tier": "free",
+      "description": "Show one schedule in full as at a date: every deliverable with its due date, status, delivered and accepted dates, acceptance note and value, plus what is late as at that date. Free."
+    },
+    {
+      "name": "delivery_schedule_list",
+      "tier": "free",
+      "description": "List delivery schedules with their counts as at a date: what is late, what is still owed and what has been accepted. Filter by client, by reference and by whether the job is complete. Free."
+    },
+    {
+      "name": "delivery_schedule_delete",
+      "tier": "free",
+      "description": "Delete a delivery schedule opened by mistake. Only one with no deliverables can go: once it carries one, it carries a record of what was owed. Free on every tier."
+    },
+    {
+      "name": "late_report",
+      "tier": "free",
+      "description": "What has slipped as at a date you name: every deliverable still owed whose due date has passed, worst first, with the value at risk per currency and what was delivered late for the record. Free."
+    },
+    {
+      "name": "delivery_schedule_document",
+      "tier": "pro",
+      "description": "Render one schedule as a plain-text document for the client: every deliverable with its due date, status, delivered and accepted dates and value, the counts as at a date, and a sign-off block. Pro."
+    },
+    {
+      "name": "milestone_payload",
+      "tier": "pro",
+      "description": "Build the delivered-and-accepted deliverables as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing. Pro."
+    },
+    {
+      "name": "license_status",
+      "tier": "free",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "tier": "free",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "tool_count": 12,
+  "resources": [
+    "deliveryschedule://contract"
+  ],
+  "prompts": [
+    "run_the_schedule"
+  ],
+  "model": {
+    "stored_statuses": [
+      "planned",
+      "in_progress",
+      "delivered",
+      "accepted"
+    ],
+    "derived_lateness_states": [
+      "not_yet_due",
+      "due_today",
+      "late",
+      "delivered_on_time",
+      "delivered_late"
+    ],
+    "transitions": {
+      "planned": [
+        "in_progress",
+        "delivered"
+      ],
+      "in_progress": [
+        "delivered"
+      ],
+      "delivered": [
+        "accepted"
+      ],
+      "accepted": []
+    },
+    "late_rule": "late once as_of is PAST the due date and nothing was delivered by then; due on as_of is due_today, not late",
+    "stored_nothing_derived": [
+      "status",
+      "lateness",
+      "days_late",
+      "delivered_date",
+      "accepted_date",
+      "totals"
+    ],
+    "date_floor": "no due date and no status move may fall before the schedule reference_date",
+    "one_schedule_per_reference": true,
+    "unpriced_deliverable": "value_minor omitted means not separately priced; counted apart, never summed as zero, excluded by name from the milestone payload",
+    "money": "integer minor units; computeTotals/currencyDecimals/formatMoney/daysBetween imported from @theluckystrike/mcp-invoice/lib, no arithmetic restated"
+  },
+  "free_tier": {
+    "open_schedules": 3,
+    "free_tools": [
+      "delivery_schedule_create",
+      "deliverable_add",
+      "deliverable_status",
+      "deliverable_delete",
+      "delivery_schedule_get",
+      "delivery_schedule_list",
+      "delivery_schedule_delete",
+      "late_report",
+      "license_status",
+      "license_activate"
+    ],
+    "pro_tools": [
+      "delivery_schedule_document",
+      "milestone_payload"
+    ],
+    "ways_back_under_the_cap": [
+      "accept the last deliverable, which completes the schedule",
+      "delivery_schedule_delete on an empty schedule"
+    ]
+  },
+  "caps": {
+    "deliverables_per_schedule": 200,
+    "rows_per_answer": 500,
+    "max_minor": 1000000000000,
+    "max_vat_percent": 1000
+  },
+  "storage": {
+    "dir": "${XDG_DATA_HOME:-~/.local/share}/mcp-servers/delivery-schedule/",
+    "files": [
+      "schedules.json",
+      "counter.json"
+    ],
+    "reads_not_owned": [
+      "mcp-servers/profile/business.json"
+    ],
+    "writes_siblings": false
+  },
+  "tests": {
+    "command": "npm test -w servers/delivery-schedule",
+    "pass": 53,
+    "fail": 0,
+    "skipped": 0,
+    "duration_ms": 4316,
+    "suites": {
+      "unit": 13,
+      "adversarial": 19,
+      "contract": 14,
+      "concurrency": 4,
+      "timezone": 3
+    }
+  },
+  "stdio_probe": {
+    "method": "sequential JSON-RPC over stdio against dist/index.js, each response awaited before the next request",
+    "protocol_version": "2024-11-05",
+    "server_info": {
+      "name": "mcp-delivery-schedule",
+      "version": "0.20.0"
+    },
+    "tools_listed": 12,
+    "stdout_lines": 21,
+    "stdout_all_jsonrpc": true,
+    "stderr": "mcp-delivery-schedule 0.20.0 ready; store at <XDG_DATA_HOME>/mcp-servers/delivery-schedule",
+    "files_written": [
+      "mcp-servers/delivery-schedule/schedules.json",
+      "mcp-servers/delivery-schedule/counter.json"
+    ],
+    "late_report_by_as_of": [
+      {
+        "as_of": "2026-04-19",
+        "late": 0,
+        "due_today": 0,
+        "delivered_late": 0,
+        "not_yet_due": 3,
+        "value_at_risk_minor": null
+      },
+      {
+        "as_of": "2026-04-22",
+        "late": 1,
+        "late_ids": [
+          "D02"
+        ],
+        "days_late": 2,
+        "due_today": 0,
+        "delivered_late": 0,
+        "not_yet_due": 2,
+        "value_at_risk_minor": 47988,
+        "currency": "EUR"
+      },
+      {
+        "as_of": "2026-05-01",
+        "late": 0,
+        "due_today": 1,
+        "due_today_ids": [
+          "D03"
+        ],
+        "delivered_late": 1,
+        "not_yet_due": 1,
+        "value_at_risk_minor": null
+      },
+      {
+        "as_of": "2026-05-05",
+        "late": 1,
+        "late_ids": [
+          "D03"
+        ],
+        "days_late": 4,
+        "due_today": 0,
+        "delivered_late": 1,
+        "not_yet_due": 1,
+        "value_at_risk_minor": 210000,
+        "currency": "EUR"
+      }
+    ],
+    "milestone_payload": {
+      "as_of": "2026-05-05",
+      "items": [
+        "D01",
+        "D02"
+      ],
+      "net_minor": 137988,
+      "vat_minor": 31737,
+      "total_minor": 169725,
+      "rounding_drift_minor": 0,
+      "posted": false,
+      "invoice_create_major": [
+        900,
+        479.88
+      ],
+      "quote_create_minor": [
+        90000,
+        47988
+      ],
+      "excluded_not_yet_accepted": [
+        "D03",
+        "D04"
+      ]
+    },
+    "refusals_proved": [
+      "accepting a deliverable that was never delivered",
+      "a delivery dated before the reference document own date"
+    ]
+  },
+  "defects": [
+    {
+      "id": "D-DS1",
+      "found_by": "test/adversarial.test.mjs",
+      "severity": "correctness",
+      "what": "nextDeliverableId allocated from deliverables.length, so deleting D04 handed D04 to the next deliverable added",
+      "why_it_matters": "a schedule document or a client email naming D04 would point at a different piece of work, with nothing on the record saying so",
+      "fix": "per-schedule deliverable_counter that only goes up, plus a scan of the ids already present; a gap in the D series is now the record that one was removed",
+      "regression_tests": [
+        "deliverable id after a delete is D05",
+        "deliverable_counter is 30 after 30 deliverables raced from two processes"
+      ],
+      "status": "fixed"
+    }
+  ],
+  "estate_registration": {
+    "done": [
+      "scripts/build-mcpb.sh SERVERS",
+      "scripts/build-mcpb.sh DISPLAY_NAME",
+      "scripts/build-mcpb.sh KEYWORDS",
+      "scripts/sync-mirrors.sh ALL_SERVERS",
+      "scripts/sync-mirrors.sh topics_for",
+      "scripts/build-pages.mjs ids",
+      "scripts/gen-spec.mjs SERVERS + CURATED",
+      "servers/office-suite/src/index.ts CHILDREN",
+      "servers/invoice/src/index.ts PROFILE_READERS",
+      "data/tools.json",
+      "data/facts.json"
+    ],
+    "outstanding": [
+      {
+        "check": "product",
+        "owner": "billing owner (agent A)",
+        "what": "billing/src/index.js PRODUCTS[\"delivery-schedule\"], $19, price PENDING_HUMAN until a Stripe key with product_write mints it"
+      },
+      {
+        "check": "setup",
+        "owner": "billing owner (agent A)",
+        "what": "billing/src/setup.js SETUP_SERVERS + an ANGLE entry for the six clients"
+      },
+      {
+        "check": "estate bundle copy",
+        "owner": "billing owner (agent A)",
+        "what": "PRODUCTS.bundle description now names 30 servers and a $531 saving; with 31 servers it is thirty-one and $550"
+      },
+      {
+        "check": "compare",
+        "owner": "content owner (agent C)",
+        "what": "billing/src/compare.js COMPARE entry, or a dated data/facts.json compare_none note"
+      },
+      {
+        "check": "guide",
+        "owner": "content owner (agent C)",
+        "what": "a guide in billing/src/content.js that mentions delivery-schedule"
+      },
+      {
+        "check": "gif",
+        "owner": "assets",
+        "what": "assets/demo-delivery-schedule.gif"
+      },
+      {
+        "check": "logo",
+        "owner": "assets",
+        "what": "assets/delivery-schedule-logo.png"
+      },
+      {
+        "check": "hosting",
+        "owner": "distribution owner (agent D) / Extension 22",
+        "what": "remotes.json, remote/src/index.ts SERVERS + vendor wiring, data/distribution.json per_server.delivery-schedule.hosted, WEB_ANGLE. Deliberately NOT done here: two agents editing remote/src/index.ts in one tree would conflict"
+      }
+    ]
+  },
+  "release_check": {
+    "command": "node scripts/release-check.mjs",
+    "delivery_schedule_pass": 16,
+    "delivery_schedule_fail": 6,
+    "note": "the 6 are the rows above, all owned by other agents"
+  },
+  "validate": {
+    "command": "node scripts/validate.mjs",
+    "run": 50,
+    "at": "2026-09-07T01:28:06.700Z",
+    "pass": 948,
+    "total": 951,
+    "note": "all 30 stdio servers and the remote endpoint are green. The 3 failures are in the billing section on the live worker and are not from this server: buy/work-order, buy/catalogue and buy/change-order now answer 303 with x-mcp-buy: probe-session-reused where the assertion expects 503 price-pending-human. delivery-schedule is not in validate PROBES, so this run does not cover it; the stdio probe above does."
+  },
+  "paid_apis_used": false,
+  "paid_submissions": "none"
+}

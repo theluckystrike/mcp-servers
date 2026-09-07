@@ -41,7 +41,7 @@ mkdir -p "$BUNDLES"
 MCPB="npx -y @anthropic-ai/mcpb"
 LIC_SRC="$ROOT/packages/mcp-license"
 
-SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order"
+SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule"
 
 declare -A DISPLAY_NAME=(
   [time-tracker]="Time Tracker"
@@ -74,6 +74,7 @@ declare -A DISPLAY_NAME=(
   [work-order]="Work Order"
   [catalogue]="Catalogue"
   [change-order]="Change Order"
+  [delivery-schedule]="Delivery Schedule"
 )
 
 declare -A KEYWORDS=(
@@ -107,6 +108,7 @@ declare -A KEYWORDS=(
   [work-order]='["mcp","model-context-protocol","work-order","job-card","field-service","trades","labour","invoicing"]'
   [catalogue]='["mcp","model-context-protocol","catalogue","price-list","rate-card","pricing","sku","invoicing"]'
   [change-order]='["mcp","model-context-protocol","change-order","variation-order","scope-change","contract-value","quotes","invoicing"]'
+  [delivery-schedule]='["mcp","model-context-protocol","delivery-schedule","deliverables","milestones","due-dates","acceptance","invoicing"]'
 )
 
 # ------------------------------------------------------------------ helpers

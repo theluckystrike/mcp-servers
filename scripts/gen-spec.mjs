@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SERVERS = [
-  "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "catalogue", "change-order", "clauses", "currency", "deposits", "docx",
+  "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "catalogue", "change-order", "clauses", "currency", "delivery-schedule", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "petty-cash", "price-tracker", "recurring",
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone", "work-order",
 ].sort();
@@ -107,6 +107,34 @@ const CURATED = {
       "THE PRICE LIST PDF PRINTS EVERY LINE AT A QUANTITY OF ONE and labels the figure at the bottom as the sum of one of each, not a quotation. A price list has no total of its own, and printing one as though it were a document total would put a number on a customer's desk that means nothing.",
       "THE NAME ON THE PRICE LIST COMES FROM THE SHARED PROFILE, NOT FROM THE INVOICE SERVER'S `getBusiness()`, because that function's `dataDir()` CREATES `mcp-servers/invoice/` as a side effect of a read. The contract suite asserts the only sibling path this process touches is the shared profile file.",
       "The A4 price list is `renderDocPdf` from `@theluckystrike/mcp-billing-docs/lib`, the same page a credit note and a purchase order use, so a price list and the invoice it becomes are recognisably one document family.",
+    ],
+  },
+  "delivery-schedule": {
+    summary: "Dated deliverables against a quote, a work order or a change order: what is being handed over, the day it is due, its value in whole minor units when it is separately priced, and a dated status history that runs planned to in progress to delivered to accepted with the client's acceptance note on the accepted move. A late report for any date the caller names, worst first, with the value at risk per currency. The delivered-and-accepted milestones as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units at once. No status, no lateness and no total is stored.",
+    storageFiles: [
+      ["schedules.json", "the schedules, each carrying its reference, that document's date, its deliverables with their due dates, values and dated status histories, and nothing derived from them"],
+      ["counter.json", "the DS number series, per year of the reference date"],
+    ],
+    primaryFile: "schedules.json",
+    caps: [
+      "`FREE_OPEN_SCHEDULES` = 3 OPEN schedules on free, where open means at least one deliverable is not yet accepted. Accepting the last deliverable completes a schedule and frees its slot without deleting it, and an empty schedule can be deleted; both are free on every tier.",
+      "`delivery_schedule_document` and `milestone_payload` are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_DELIVERABLES` = 200 deliverables on one schedule; `MAX_MINOR` = 1e12 per money field; `MAX_VAT` = 1000 percent.",
+      "`MAX_ROWS` = 500 rows per section of one `late_report` answer and 500 schedules in one `delivery_schedule_list` answer. A cut list reports `truncated` true, the number of rows left out, and the fact that the counts above it are still complete.",
+    ],
+    extra: [
+      "LATE IS NOT A STATUS, IT IS A READING. The four stored statuses are planned, in progress, delivered and accepted; late, due today, not yet due, delivered on time and delivered late are derived from the due date and the `as_of` the CALLER passes. A stored late flag is a fact about the afternoon somebody last ran the report and goes on being reported after the work lands. The same deliverable reads late at one `as_of` and delivered late at another, from one unchanged store, and the unit suite asserts all three readings.",
+      "A DELIVERABLE IS LATE ONLY ONCE `as_of` IS PAST ITS DUE DATE. One due on `as_of` is `due_today`, which is the same rule the statement server ages an invoice by, so a deliverable and an invoice due on one day never disagree about whether that day has run out. Every comparison is between two YYYY-MM-DD strings and every day count is the difference of two UTC midnights, so the answer does not move with the machine's timezone; a suite replays every call under four zones fourteen hours apart and asserts the responses are byte-identical.",
+      "THE STATUS AS AT A DATE IS THE LAST DATED MOVE AT OR BEFORE IT. A delivery dated after `as_of` has not happened yet, so `delivered_date` is null and the deliverable is still owed. Nothing is stored for it: `statusAsOf` reads the history, and the current status is the same function read at a date later than any schedule can carry.",
+      "NOTHING MAY PREDATE THE REFERENCE DOCUMENT. The date on the quote, work order or change order is stated once on the schedule, and a due date or a status move dated before it is refused: nothing can be owed, or delivered, before the document that ordered it exists. A move dated before the previous move on the same deliverable is refused too, so the history reads as a timeline; the same day is allowed.",
+      "ACCEPTING SOMETHING THAT WAS NEVER DELIVERED IS REFUSED BY NAME. Acceptance is the client's answer to a handover, and a deliverable accepted on a day nothing was handed over has no delivered date to bill from. Accepted is final and nothing moves back: work the client sent back is a new deliverable with its own due date, so the record keeps both the miss and the fix.",
+      "A DELIVERABLE WITH NO VALUE IS NOT WORTH ZERO. It is one whose price was never stated here, usually because the job is a lump sum. It is counted apart wherever a total is printed, and `milestone_payload` lists it under `excluded.accepted_but_unpriced` rather than billing it as zero. When every accepted deliverable is unpriced the payload refuses rather than emitting an invoice for nothing.",
+      "THE TWO SIBLING SERVERS TAKE THE SAME MILESTONE IN DIFFERENT SCALES, AND THE GAP IS EXACTLY 100x. `invoice_create`'s item carries `unit_price` in MAJOR units; `quote_create`'s item carries `unit_price_minor` in MINOR units. So the store holds MINOR units and `milestone_payload` builds BOTH payloads itself in one call with the scale printed against each. The unit suite re-derives the net from each payload's own items and asserts the quotient is 100. No description carries a bare minor-unit figure, because one lands beside a MAJOR unit price on the customer's own document.",
+      "THE MONEY IS THE INVOICE SERVER'S OWN. `computeTotals`, `currencyDecimals`, `formatMoney` and `daysBetween` are imported from `@theluckystrike/mcp-invoice/lib` and no arithmetic is restated here, so the payload's totals ARE what `invoice_create` will compute rather than a second implementation that agrees today.",
+      "ONE REFERENCE CARRIES ONE SCHEDULE. A second against the same quote or work order is refused by name, because two schedules give two answers to what is late on it and the caller sees whichever they happened to open. The refusal is checked BEFORE the free cap, so it names an id rather than selling an upgrade.",
+      "A DELIVERABLE ID IS NEVER REISSUED. The D series is allocated from a per-schedule counter that only goes up, not from the deliverable count, so deleting D04 does not hand D04 to a different piece of work. A gap in the series is the record that one was removed.",
+      "VALUE IS NEVER SUMMED ACROSS CURRENCIES. This server holds no exchange rate, so `value_at_risk` is a row per currency and a single figure over two of them is never printed.",
+      "NO SIBLING STORE IS OPENED. The reference is a name and its date is stated here; the quotes, work-order and change-order `dataDir()` functions create a directory on read, and a schedule that refused to exist until its reference could be found on this machine would refuse every job quoted on another one. `milestone_payload` returns arguments and says `posted: false`; it creates no invoice and no quote.",
     ],
   },
   "change-order": {
