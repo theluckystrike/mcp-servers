@@ -13,6 +13,27 @@ longer needs the `invoice-logo.png` placeholder earlier rounds used.
 
 ---
 
+
+## Read this first: the whole list, ranked, as at 2026-09-07
+
+Everything below this section is detail and history. These are the only actions that need a
+person, in the order that returns the most. Each one is minutes, not hours, and each is
+written out in full further down.
+
+| # | Action | Time | What it unblocks | Section |
+|---|---|---|---|---|
+| 1 | `npm login --auth-type=web`, then `scripts/publish-all.sh --go` | ~2 min | The install command printed on 86 of the 126 live pages currently returns 404. Also unblocks 32 registry manifest variants that fail validation, and the largest untried awesome-list, which requires a published package. | 0-NPM |
+| 2 | Create a Cloudflare API token with Zone → DNS → Edit, export it as `CLOUDFLARE_DNS_TOKEN` | ~2 min | A `com.*` registry namespace. Measured: the same servers would rank 3rd, 2nd and 3rd on schedule, delivery and excel instead of 60th, 25th and off page one. `scripts/namespace-claim.sh <domain>` then runs unattended. | Cloudflare token for the registry namespace |
+| 3 | Sign up to Glama with GitHub, then Add Server four times | ~2 min | The last CI blocker on the awesome-mcp-servers pull request. Note that Glama also indexes on its own: it listed one mirror repo 33 minutes after that repo was created, so this may resolve itself. `node scripts/glama-watch.mjs` says how many are in. | Glama listing |
+| 4 | Submit the GitHub URL at https://mcp.directory/submit | ~1 min | One more free directory. No account, one field. | Glama listing, final subsection |
+| 5 | Copy the Search Console key off the iCloud Desktop | ~1 min | Stops the organic measurement going dark again the next time iCloud evicts it. | GSC service-account key |
+
+Two things that look like human steps and are not, so do not spend time on them. The Stripe
+product_write gap is closed: checkout sessions carry inline price data now, so every current
+and future server gets a working checkout with no dashboard step. And the registry publish
+loop is fully scripted: `mcp-publisher login github --token "$(gh auth token)"` authenticates
+with no browser, so releases publish themselves.
+
 ## 0. Per-server field reference (used by every section below)
 
 | Server | Short desc (<=100 chars, registry-safe) | Long description | Category | Homepage |
