@@ -10,12 +10,15 @@
     "kpi_headline": "Bundle downloads 5,105 / target 1,000 = met"
   },
   "after": {
-    "buy_routes_reaching_stripe": 32,
-    "buyable_ids": 32,
-    "sitemap_urls": 96,
+    "buy_routes_reaching_stripe": 33,
+    "buyable_ids": 33,
+    "sitemap_urls": 126,
     "manifests_pointing_at_buy_redirect": 0,
-    "urls_submitted_to_search_engines": 96,
-    "kpi_headline": "Release asset fetches (mostly automated), no target; organic measured for the first time"
+    "urls_submitted_to_search_engines": 126,
+    "kpi_headline": "Release asset fetches (mostly automated), no target; organic measured for the first time",
+    "servers": 31,
+    "product_pages": 32,
+    "guides": 63
   },
   "measured_audience": {
     "google_impressions_ever": 0,
@@ -30,5 +33,21 @@
     "npm login --auth-type=web, then scripts/publish-all.sh --go. Until then npx -y @theluckystrike/mcp-<name> is E404 on every page.",
     "Glama listing claim: the only remaining blocker on the awesome-mcp-servers PR.",
     "Decision on the registry namespace experiment (docs/SEO_INDEXATION_R1.md addendum)."
+  ],
+  "shipped": [
+    "Stripe product_write human gate removed permanently: Checkout Sessions now price inline, so every current and future server gets a checkout with no dashboard step. 28 of 31 buyable ids reached Stripe before; 33 of 33 do now, including office-suite which was a bare 404.",
+    "A defect that would have taken money and withheld the licence key on every inline-priced sale, found and fixed before any sale existed.",
+    "All 114 registry manifests repointed from the robots-disallowed /buy/ redirect to the /s/ product page. Ships with the next release; the registry rejects a same-version republish.",
+    "Sitemap cut from 312 URLs to a curated set; the 216 client-by-product permutations now carry noindex,follow and stay live for users.",
+    "IndexNow set up and every sitemap URL submitted to Bing, Yandex, Seznam and Naver, accepted HTTP 200.",
+    "Organic traffic measured for the first time: Cloudflare GraphQL plus Search Console, both wired into a repeatable script.",
+    "delivery-schedule built as the 31st server, 53 tests, stdio-verified, with an id-reuse defect found and fixed.",
+    "28 new guides, and the estate-wide office-suite figures corrected to the measured 31 children and 292 tools.",
+    "KPI set corrected so crawler fetches are no longer reported as a met install target."
+  ],
+  "did_not_do": [
+    "v0.21.0 release and the registry republish, which is what actually delivers the manifest fix.",
+    "Setup pages for delivery-schedule: deliberately skipped, since the same page shape was just measured as 75% duplicate and marked noindex.",
+    "The git-install fallback for npm: recipe proven and documented, not rolled out, because it force-pushes 31 mirrors and npm login supersedes it."
   ]
 }

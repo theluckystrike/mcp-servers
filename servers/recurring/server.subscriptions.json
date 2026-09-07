@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/subscriptions",
   "description": "Recurring subscriptions billing: schedule once, auto-generate due invoice PDFs.",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,9 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.20.0/recurring.mcpb",
-      "version": "0.20.0",
-      "fileSha256": "1e2cfbbc446fa9ab0680222f8f91769f8c7961431492a8cd31c6cf30df378377",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/recurring.mcpb",
+      "version": "0.21.0",
       "transport": {
         "type": "stdio"
       },

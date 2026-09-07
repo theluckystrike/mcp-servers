@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-delivery-schedule",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Dated deliverables against a quote or work order: due dates, sign-off, what is late, milestones.",
   "type": "module",
   "bin": {
@@ -51,10 +51,10 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/delivery-schedule",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-invoice": "^0.20.0",
-    "@theluckystrike/mcp-license": "^0.20.0",
-    "@theluckystrike/mcp-quotes": "^0.20.0",
-    "@theluckystrike/mcp-timezone": "^0.20.0",
+    "@theluckystrike/mcp-invoice": "^0.21.0",
+    "@theluckystrike/mcp-license": "^0.21.0",
+    "@theluckystrike/mcp-quotes": "^0.21.0",
+    "@theluckystrike/mcp-timezone": "^0.21.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

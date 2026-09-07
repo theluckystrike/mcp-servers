@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-change-order",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Change orders against a quote or work order: deltas, approval, running contract value.",
   "type": "module",
   "bin": {
@@ -51,10 +51,10 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/change-order",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-invoice": "^0.20.0",
-    "@theluckystrike/mcp-license": "^0.20.0",
-    "@theluckystrike/mcp-quotes": "^0.20.0",
-    "@theluckystrike/mcp-timezone": "^0.20.0",
+    "@theluckystrike/mcp-invoice": "^0.21.0",
+    "@theluckystrike/mcp-license": "^0.21.0",
+    "@theluckystrike/mcp-quotes": "^0.21.0",
+    "@theluckystrike/mcp-timezone": "^0.21.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {
