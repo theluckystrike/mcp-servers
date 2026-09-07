@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/delivery-schedule"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/delivery-schedule",
+  "websiteUrl": "https://mcp.zovo.one/s/delivery-schedule",
   "packages": [
     {
       "registryType": "mcpb",
