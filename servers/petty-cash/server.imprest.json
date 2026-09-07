@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/petty-cash"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/petty-cash",
+  "websiteUrl": "https://mcp.zovo.one/s/petty-cash",
   "packages": [
     {
       "registryType": "mcpb",

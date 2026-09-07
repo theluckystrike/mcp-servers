@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/image"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/image",
+  "websiteUrl": "https://mcp.zovo.one/s/image",
   "packages": [
     {
       "registryType": "npm",

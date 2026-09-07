@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/catalogue"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/catalogue",
+  "websiteUrl": "https://mcp.zovo.one/s/catalogue",
   "packages": [
     {
       "registryType": "mcpb",

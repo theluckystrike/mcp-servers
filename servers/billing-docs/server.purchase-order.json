@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/billing-docs"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/billing-docs",
+  "websiteUrl": "https://mcp.zovo.one/s/billing-docs",
   "packages": [
     {
       "registryType": "mcpb",

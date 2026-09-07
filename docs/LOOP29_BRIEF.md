@@ -34,3 +34,15 @@ ALWAYS probe /buy/ with `-A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) App
 5. Do not run `npx wrangler deploy` unless you are the billing owner (agent A).
 6. Never `git push --force`, never rewrite history, never delete another agent's work.
 7. If blocked by a human step, write it to docs/HUMAN_GATED_PACK.md and keep going.
+
+## CORRECTION added mid-loop: our own probes contaminate the click metric
+
+The conversion audit proved that the scripted-UA guard in billing/src/index.js is
+start-anchored (`/^(curl|python|node|...)/i`), so the browser User-Agent this brief told
+every agent to send walks straight past it and is recorded as a real upgrade click.
+Between the 2026-09-06T08:21Z KPI snapshot (152 clicks) and 2026-09-07T01:06Z the counter
+rose to 293. A large share of that rise is this loop's own agents.
+
+RULE from now on: when probing a /buy/ route, always append `?src=probe` so the click is
+tagged and can be excluded. Better still, probe with `-I` where you only need the status
+and Location. Never quote the raw click count as evidence of human demand.

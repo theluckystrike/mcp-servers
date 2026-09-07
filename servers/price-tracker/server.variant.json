@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/price-tracker"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/price-tracker",
+  "websiteUrl": "https://mcp.zovo.one/s/price-tracker",
   "packages": [
     {
       "registryType": "mcpb",

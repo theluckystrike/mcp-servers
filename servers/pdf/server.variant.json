@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/pdf"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/pdf",
+  "websiteUrl": "https://mcp.zovo.one/s/pdf",
   "packages": [
     {
       "registryType": "mcpb",

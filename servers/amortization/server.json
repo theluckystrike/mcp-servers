@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/amortization"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/amortization",
+  "websiteUrl": "https://mcp.zovo.one/s/amortization",
   "packages": [
     {
       "registryType": "npm",

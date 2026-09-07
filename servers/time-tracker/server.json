@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/time-tracker"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/time-tracker",
+  "websiteUrl": "https://mcp.zovo.one/s/time-tracker",
   "packages": [
     {
       "registryType": "npm",

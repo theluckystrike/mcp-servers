@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/timezone"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/timezone",
+  "websiteUrl": "https://mcp.zovo.one/s/timezone",
   "packages": [
     {
       "registryType": "npm",

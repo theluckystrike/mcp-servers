@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/resume"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/resume",
+  "websiteUrl": "https://mcp.zovo.one/s/resume",
   "packages": [
     {
       "registryType": "npm",

@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/currency"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/currency",
+  "websiteUrl": "https://mcp.zovo.one/s/currency",
   "packages": [
     {
       "registryType": "npm",

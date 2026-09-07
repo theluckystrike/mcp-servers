@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/quotes"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/quotes",
+  "websiteUrl": "https://mcp.zovo.one/s/quotes",
   "packages": [
     {
       "registryType": "mcpb",

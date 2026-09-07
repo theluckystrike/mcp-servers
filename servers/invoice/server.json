@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/invoice"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/invoice",
+  "websiteUrl": "https://mcp.zovo.one/s/invoice",
   "packages": [
     {
       "registryType": "npm",

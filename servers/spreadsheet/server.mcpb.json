@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/spreadsheet"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/spreadsheet",
+  "websiteUrl": "https://mcp.zovo.one/s/spreadsheet",
   "packages": [
     {
       "registryType": "mcpb",

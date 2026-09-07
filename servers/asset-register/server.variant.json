@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/asset-register"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/asset-register",
+  "websiteUrl": "https://mcp.zovo.one/s/asset-register",
   "packages": [
     {
       "registryType": "mcpb",

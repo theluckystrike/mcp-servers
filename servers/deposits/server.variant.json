@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/deposits"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/deposits",
+  "websiteUrl": "https://mcp.zovo.one/s/deposits",
   "packages": [
     {
       "registryType": "mcpb",

@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/clauses"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/clauses",
+  "websiteUrl": "https://mcp.zovo.one/s/clauses",
   "packages": [
     {
       "registryType": "mcpb",

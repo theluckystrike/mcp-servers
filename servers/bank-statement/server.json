@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/bank-statement"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/bank-statement",
+  "websiteUrl": "https://mcp.zovo.one/s/bank-statement",
   "packages": [
     {
       "registryType": "npm",

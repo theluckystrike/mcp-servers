@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/docx"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/docx",
+  "websiteUrl": "https://mcp.zovo.one/s/docx",
   "packages": [
     {
       "registryType": "npm",

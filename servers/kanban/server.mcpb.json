@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/kanban"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/kanban",
+  "websiteUrl": "https://mcp.zovo.one/s/kanban",
   "packages": [
     {
       "registryType": "mcpb",

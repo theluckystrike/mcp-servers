@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/office-suite"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/bundle",
+  "websiteUrl": "https://mcp.zovo.one/bundle",
   "packages": [
     {
       "registryType": "npm",

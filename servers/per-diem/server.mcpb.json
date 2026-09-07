@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/per-diem"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/per-diem",
+  "websiteUrl": "https://mcp.zovo.one/s/per-diem",
   "packages": [
     {
       "registryType": "mcpb",

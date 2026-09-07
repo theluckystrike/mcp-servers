@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/cash-book"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/cash-book",
+  "websiteUrl": "https://mcp.zovo.one/s/cash-book",
   "packages": [
     {
       "registryType": "mcpb",

@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/statement-of-account"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/statement-of-account",
+  "websiteUrl": "https://mcp.zovo.one/s/statement-of-account",
   "packages": [
     {
       "registryType": "mcpb",

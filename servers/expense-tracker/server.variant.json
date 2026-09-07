@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/expense-tracker"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/expense-tracker",
+  "websiteUrl": "https://mcp.zovo.one/s/expense-tracker",
   "packages": [
     {
       "registryType": "mcpb",

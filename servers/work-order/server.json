@@ -8,7 +8,7 @@
     "source": "github",
     "subfolder": "servers/work-order"
   },
-  "websiteUrl": "https://mcp.zovo.one/buy/work-order",
+  "websiteUrl": "https://mcp.zovo.one/s/work-order",
   "packages": [
     {
       "registryType": "npm",
