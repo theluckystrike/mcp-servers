@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-change-order",
   "display_name": "Change Order",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Change orders against a quote or work order: deltas, approval, running contract value.",
   "author": {
     "name": "theluckystrike",

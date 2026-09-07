@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-amortization",
   "display_name": "Amortization",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Loan and lease schedules: payment, interest, early settlement and the journal, to the minor unit.",
   "author": {
     "name": "theluckystrike",

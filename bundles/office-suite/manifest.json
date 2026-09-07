@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
@@ -1124,6 +1124,46 @@
     {
       "name": "change_order_invoice_payload",
       "description": "Build the approved delta as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing and creates nothing. Pro."
+    },
+    {
+      "name": "delivery_schedule_create",
+      "description": "Open a delivery schedule against a quote, work order or change order and return its DS-YYYY-NNNN number: the reference, its own date, the client, a title and the currency. Free tier: 3 open."
+    },
+    {
+      "name": "deliverable_add",
+      "description": "Add one deliverable to a schedule: what it is, the day it is due, and its value in whole minor units when it is separately priced. It starts as planned. Free on every tier."
+    },
+    {
+      "name": "deliverable_status",
+      "description": "Record a dated move on one deliverable: planned to in progress, to delivered, and delivered to accepted with the acceptance note. Accepting something never delivered is refused. Free."
+    },
+    {
+      "name": "deliverable_delete",
+      "description": "Delete a deliverable added by mistake. Only one still planned with nothing recorded against it can go: once it has been started or handed over it has a history. Free on every tier."
+    },
+    {
+      "name": "delivery_schedule_get",
+      "description": "Show one schedule in full as at a date: every deliverable with its due date, status, delivered and accepted dates, acceptance note and value, plus what is late as at that date. Free."
+    },
+    {
+      "name": "delivery_schedule_list",
+      "description": "List delivery schedules with their counts as at a date: what is late, what is still owed and what has been accepted. Filter by client, by reference and by whether the job is complete. Free."
+    },
+    {
+      "name": "delivery_schedule_delete",
+      "description": "Delete a delivery schedule opened by mistake. Only one with no deliverables can go: once it carries one, it carries a record of what was owed. Free on every tier."
+    },
+    {
+      "name": "late_report",
+      "description": "What has slipped as at a date you name: every deliverable still owed whose due date has passed, worst first, with the value at risk per currency and what was delivered late for the record. Free."
+    },
+    {
+      "name": "delivery_schedule_document",
+      "description": "Render one schedule as a plain-text document for the client: every deliverable with its due date, status, delivered and accepted dates and value, the counts as at a date, and a sign-off block. Pro."
+    },
+    {
+      "name": "milestone_payload",
+      "description": "Build the delivered-and-accepted deliverables as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing. Pro."
     }
   ],
   "keywords": [

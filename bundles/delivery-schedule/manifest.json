@@ -1,0 +1,99 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-delivery-schedule",
+  "display_name": "Delivery Schedule",
+  "version": "0.21.0",
+  "description": "Dated deliverables against a quote or work order: due dates, sign-off, what is late, milestones.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "delivery_schedule_create",
+      "description": "Open a delivery schedule against a quote, work order or change order and return its DS-YYYY-NNNN number: the reference, its own date, the client, a title and the currency. Free tier: 3 open."
+    },
+    {
+      "name": "deliverable_add",
+      "description": "Add one deliverable to a schedule: what it is, the day it is due, and its value in whole minor units when it is separately priced. It starts as planned. Free on every tier."
+    },
+    {
+      "name": "deliverable_status",
+      "description": "Record a dated move on one deliverable: planned to in progress, to delivered, and delivered to accepted with the acceptance note. Accepting something never delivered is refused. Free."
+    },
+    {
+      "name": "deliverable_delete",
+      "description": "Delete a deliverable added by mistake. Only one still planned with nothing recorded against it can go: once it has been started or handed over it has a history. Free on every tier."
+    },
+    {
+      "name": "delivery_schedule_get",
+      "description": "Show one schedule in full as at a date: every deliverable with its due date, status, delivered and accepted dates, acceptance note and value, plus what is late as at that date. Free."
+    },
+    {
+      "name": "delivery_schedule_list",
+      "description": "List delivery schedules with their counts as at a date: what is late, what is still owed and what has been accepted. Filter by client, by reference and by whether the job is complete. Free."
+    },
+    {
+      "name": "delivery_schedule_delete",
+      "description": "Delete a delivery schedule opened by mistake. Only one with no deliverables can go: once it carries one, it carries a record of what was owed. Free on every tier."
+    },
+    {
+      "name": "late_report",
+      "description": "What has slipped as at a date you name: every deliverable still owed whose due date has passed, worst first, with the value at risk per currency and what was delivered late for the record. Free."
+    },
+    {
+      "name": "delivery_schedule_document",
+      "description": "Render one schedule as a plain-text document for the client: every deliverable with its due date, status, delivered and accepted dates and value, the counts as at a date, and a sign-off block. Pro."
+    },
+    {
+      "name": "milestone_payload",
+      "description": "Build the delivered-and-accepted deliverables as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "delivery-schedule",
+    "deliverables",
+    "milestones",
+    "due-dates",
+    "acceptance",
+    "invoicing"
+  ]
+}

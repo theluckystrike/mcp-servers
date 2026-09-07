@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-catalogue",
   "display_name": "Catalogue",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "A price list and rate card the quotes and invoice servers read by SKU.",
   "author": {
     "name": "theluckystrike",

@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-cash-book",
   "display_name": "Cash Book",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "One double-entry ledger derived from your invoices, bank, expenses, deposits and assets.",
   "author": {
     "name": "theluckystrike",

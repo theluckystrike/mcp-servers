@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-asset-register",
   "display_name": "Asset Register",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Fixed assets and depreciation on bundled Polish KST, HMRC and IRS MACRS tables.",
   "author": {
     "name": "theluckystrike",
