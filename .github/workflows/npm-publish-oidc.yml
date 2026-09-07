@@ -1,0 +1,83 @@
+name: npm publish (OIDC trusted publishing probe)
+
+# Manual only. Never fires on push or tag.
+#
+# Purpose: empirically test whether npm trusted publishing (OIDC) can perform the
+# FIRST-EVER publish of a package that does not yet exist on the registry. No
+# NPM_TOKEN secret exists in this repository (`gh secret list` is empty), so this
+# job has exactly one credential: the GitHub Actions OIDC id-token. If npm accepts
+# it, every @theluckystrike/mcp-* package is published; if it rejects it, the exact
+# registry error is captured as the evidence for docs/NPM_UNBLOCK_R2.md.
+#
+# Publish order note: `npm publish` never resolves a package's own dependencies
+# against the registry, so the mcp-license <-> mcp-timezone dependency cycle
+# documented in scripts/publish-all.sh does not constrain publish order. The loop
+# below is plain alphabetical and is correct for that reason.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write   # required for npm trusted publishing (OIDC)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Upgrade npm past the trusted-publishing floor (11.5.1)
+        run: |
+          npm install -g npm@latest
+          echo "npm $(npm -v) / node $(node -v)"
+
+      - name: Show that no npm auth token is present
+        run: |
+          echo "--- npm whoami (expected to fail; OIDC does not create a session) ---"
+          npm whoami || true
+          echo "--- ~/.npmrc as written by setup-node ---"
+          sed -E 's/(_authToken=)(.{0,6}).*/\1\2...REDACTED/' ~/.npmrc || true
+
+      - name: PROBE - OIDC first publish of one package
+        id: probe
+        continue-on-error: true
+        run: |
+          cd packages/mcp-license 2>/dev/null || cd servers/mcp-license
+          pwd
+          set -o pipefail
+          npm publish --access public 2>&1 | tee /tmp/probe.log
+
+      - name: Probe verdict
+        run: |
+          echo "probe outcome: ${{ steps.probe.outcome }}"
+          echo "--- probe log ---"
+          cat /tmp/probe.log || true
+
+      - name: Publish every remaining package (only if the probe succeeded)
+        if: steps.probe.outcome == 'success'
+        run: |
+          for d in packages/* servers/*; do
+            [ -f "$d/package.json" ] || continue
+            name=$(node -p "require('./$d/package.json').name")
+            case "$name" in
+              @theluckystrike/*) ;;
+              *) continue ;;
+            esac
+            [ "$name" = "@theluckystrike/mcp-license" ] && continue
+            echo "=== publishing $name ==="
+            (cd "$d" && npm publish --access public) || echo "FAILED: $name"
+          done
+
+      - name: Verify on the registry
+        if: always()
+        run: |
+          for p in mcp-license mcp-timezone mcp-invoice mcp-pdf mcp-bank; do
+            printf '%-14s ' "$p"
+            curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://registry.npmjs.org/@theluckystrike/$p"
+          done
