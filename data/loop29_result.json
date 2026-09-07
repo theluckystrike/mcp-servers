@@ -61,5 +61,16 @@
     "manifest_variants_that_cannot_publish": 32,
     "why_they_cannot": "they declare an npm package that has never been published; each shares a name with a manifest that did publish, so no server is missing",
     "trap": "gh release create was killed by a 2-minute timeout and left an untagged DRAFT. Its assets 404 publicly, and the registry refuses a manifest whose bundle is not publicly reachable. A control fetch of a v0.20.0 asset returned 200 while v0.21.0 returned 404, which is what proved it was the release and not the network."
+  },
+  "sprint_followup": {
+    "namespace": {
+      "mechanism": "PROVEN: mcp-publisher login http on a controlled domain granted publish on dev.workers.lipmichal.mcp-billing/*",
+      "blocked_by": "the Cloudflare token cannot write DNS records or Workers routes; the account is at its Pages project limit",
+      "rank_gain_measured": "com.* would rank 3/2/3/6/17/36 on schedule/delivery/excel/pdf/time/invoice against io.github at 60/25/101/101/101/86",
+      "human_step": "one Cloudflare API token with Zone > DNS > Edit, then scripts/namespace-claim.sh <domain>"
+    },
+    "registry_cleanup": "4 stale v0.1.1 rows deprecated; 85 active rows all at 0.21.0, 81 pointing at /s/ product pages and 1 at /bundle",
+    "llms_txt": "stopped instructing assistant crawlers to run an install command that returns 404; ClaudeBot fetched 311 of 312 URLs in the measured week so this is the artifact the working channel reads",
+    "readme": "volatile sections generated from data with a release gate that was control-tested against a deliberately drifted badge"
   }
 }
