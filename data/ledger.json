@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-07T02:16:17.195Z",
+  "generated_at": "2026-09-07T03:57:19.424Z",
   "session": {
-    "count": 59,
+    "count": 60,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -238,6 +238,10 @@
       {
         "at": "2026-09-07T02:16:17.016Z",
         "note": "Loop 29: v0.21.0 shipped. Checkout gate removed (33/33 live), 85 registry names repointed from the robots-disallowed /buy/ redirect to product pages, sitemap curated and submitted to IndexNow, organic measured for the first time: 0 Google impressions ever, ClaudeBot crawls 311 of 312."
+      },
+      {
+        "at": "2026-09-07T03:57:19.315Z",
+        "note": "Sprint close: registry namespace mechanism proven (HTTP domain auth grants a namespace, one Cloudflare DNS token away from a com.* namespace worth 10-45 registry places), llms.txt no longer tells assistant crawlers to run a 404 install command, README generated from data with a drift gate"
       }
     ]
   },
@@ -2007,6 +2011,10 @@
       "first_line": "Free directory submissions (forms + PR lists) — RESULT"
     },
     {
+      "file": "docs/GLAMA_R1.md",
+      "first_line": "Glama round 1 — is the awesome-mcp-servers PR really hard-blocked?"
+    },
+    {
       "file": "docs/GSC_RESULT.md",
       "first_line": "status: DONE"
     },
@@ -2101,6 +2109,10 @@
     {
       "file": "docs/MIRRORS_RESULT.md",
       "first_line": "MIRRORS_RESULT.md -- one public repo per server, 2026-09-02"
+    },
+    {
+      "file": "docs/NAMESPACE_R1.md",
+      "first_line": "The registry namespace experiment (2026-09-07)"
     },
     {
       "file": "docs/NAMING_R2_RESULT.md",
