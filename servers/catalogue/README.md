@@ -12,6 +12,8 @@ valid-from date; the price on a date is worked out on the call, so raising a pri
 does not rewrite what June's job was quoted at. An unknown code comes back as a refusal
 naming the code, never as a guessed price.
 
+npm publish for `@theluckystrike/mcp-catalogue` is pending, so `npx -y @theluckystrike/mcp-catalogue` returns 404 today. Until then, the `.mcpb` one-click bundle or a clone+build is the working path.
+
 ## Install
 
 ### Claude Desktop

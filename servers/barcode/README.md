@@ -7,6 +7,8 @@ Everything is drawn on your machine: no upload, no account, no API key, and no n
 
 ![barcode demo](../../assets/demo-barcode.gif)
 
+npm publish for `@theluckystrike/mcp-barcode` is pending, so `npx -y @theluckystrike/mcp-barcode` returns 404 today. Until then, the `.mcpb` one-click bundle or a clone+build is the working path.
+
 ## Install
 
 Claude Desktop, `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or
