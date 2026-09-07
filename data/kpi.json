@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T01:27:45.580Z",
+  "generated_at": "2026-09-07T01:30:05.008Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -33,13 +33,13 @@
     },
     {
       "cat": "Discovery",
-      "name": "Pages indexed on the storefront sitemap",
-      "value": 312,
-      "target": 150,
+      "name": "URLs offered in the sitemap",
+      "value": 96,
+      "target": null,
       "unit": "URLs",
       "how": "curl mcp.zovo.one/sitemap.xml",
-      "why": "Long-tail search queries are the only paid-free channel with measured intent.",
-      "status": "met"
+      "why": "Not a score to maximise. It was 312, of which 216 were client-by-product setup permutations measuring 73.6-77.5% similar to each other; Googlebot read the sitemap 7 times and then crawled 2 pages. Cut to 96 on 2026-09-07 and the permutations marked noindex,follow. See docs/SEO_INDEXATION_R1.md.",
+      "status": "measured"
     },
     {
       "cat": "Discovery",
@@ -54,32 +54,32 @@
     {
       "cat": "Discovery",
       "name": "Googlebot URL coverage",
-      "value": null,
-      "target": 312,
+      "value": 2,
+      "target": 96,
       "unit": "of the sitemap, 7d",
       "how": "data/traffic.json crawler_url_coverage, Cloudflare GraphQL by user agent",
       "why": "Googlebot fetched robots.txt 4x and sitemap.xml 7x in the same window and then crawled 2 pages. It is declining, not blocked.",
-      "status": "unmeasured"
+      "status": "progress"
     },
     {
       "cat": "Discovery",
       "name": "ClaudeBot URL coverage",
-      "value": null,
-      "target": 312,
+      "value": 311,
+      "target": 96,
       "unit": "of the sitemap, 7d",
       "how": "data/traffic.json crawler_url_coverage",
       "why": "Assistant crawlers have this catalogue even though Google does not. This is the discovery channel that is actually working.",
-      "status": "unmeasured"
+      "status": "met"
     },
     {
       "cat": "Discovery",
       "name": "Human page views, storefront",
-      "value": null,
+      "value": 512,
       "target": 500,
       "unit": "views, 7d",
       "how": "data/traffic.json human_evidence, browser user agents confirmed by a render-engine test (did that exact UA ever fetch favicon, cdn-cgi or assets); 33 of 124 browser-shaped UA strings passed",
       "why": "The honest size of the audience. A spoofed UA that never loads an asset is not a person.",
-      "status": "unmeasured"
+      "status": "met"
     },
     {
       "cat": "Discovery",
@@ -134,7 +134,7 @@
     {
       "cat": "Activation",
       "name": "Hosted tenants with stored data",
-      "value": 441,
+      "value": 443,
       "target": 100,
       "unit": "tenants",
       "how": "wrangler kv key list --remote (prefix tok)",
@@ -144,12 +144,11 @@
     {
       "cat": "Activation",
       "name": "Hosted downloads served",
-      "value": 86,
+      "value": 28,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-07T01:25:43.989Z",
+      "how": "wrangler kv key list --remote (prefix dl)",
       "why": "A produced document is a completed job, not just a call.",
-      "stale": true,
       "status": "progress"
     },
     {
@@ -195,12 +194,12 @@
     {
       "cat": "Reliability",
       "name": "Live validation checks passing",
-      "value": "951/951",
+      "value": "948/951",
       "target": "all",
       "unit": "checks",
       "how": "node scripts/validate.mjs",
       "why": "Stdio, hosted and billing exercised end to end on every change.",
-      "status": "met"
+      "status": "progress"
     },
     {
       "cat": "Reliability",
@@ -215,7 +214,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 277,
+      "value": 275,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -236,7 +235,7 @@
     {
       "cat": "Monetization",
       "name": "Checkout sessions from humans (last 100)",
-      "value": 36,
+      "value": 35,
       "target": 50,
       "unit": "sessions",
       "how": "stripe checkout sessions list --live, metadata.probe absent",
@@ -276,7 +275,7 @@
     {
       "cat": "Monetization",
       "name": "Click to checkout-session ratio",
-      "value": 12,
+      "value": 11.7,
       "target": 40,
       "unit": "% (sessions per 100 clicks)",
       "how": "100 * checkout sessions from humans (last 100, Stripe) / upgrade link clicks (7d, /stats/clicks) - the two windows differ (last 100 ever vs last 7 days), so this is an approximation, not the true window-matched ratio",
@@ -289,14 +288,14 @@
       "value": 0,
       "target": 20,
       "unit": "tenants",
-      "how": "Stripe-bound tenants (REMOTE_DATA bind: prefix, 0) plus distinct lic: tenant ids whose key the billing worker minted (LICENSES session:*, 0 keys). EXCLUDED: the 2598 raw lic: documents are per (key, server) pairs, not tenants (247 distinct ids), and 247 of those ids are validation probes signed locally by scripts/sign-license.mjs, never bought.",
+      "how": "Stripe-bound tenants (REMOTE_DATA bind: prefix, 0) plus distinct lic: tenant ids whose key the billing worker minted (LICENSES session:*, 0 keys). EXCLUDED: the 2625 raw lic: documents are per (key, server) pairs, not tenants (248 distinct ids), and 248 of those ids are validation probes signed locally by scripts/sign-license.mjs, never bought.",
       "why": "Real Pro usage on hosted. The old count read every lic: document, so one validation run over 16 servers looked like 16 paying tenants.",
       "detail": {
-        "lic_keys": 2598,
-        "lic_distinct_ids": 247,
+        "lic_keys": 2625,
+        "lic_distinct_ids": 248,
         "minted_key_ids": 0,
         "stripe_bound_tenants": 0,
-        "probe_ids_excluded": 247
+        "probe_ids_excluded": 248
       },
       "status": "zero"
     }
@@ -304,25 +303,26 @@
   "raw": {
     "stripe": {
       "sessions_last100": 100,
-      "probe_sessions": 64,
-      "human_sessions": 36,
+      "probe_sessions": 65,
+      "human_sessions": 35,
       "paid": 0,
       "note": "sessions created before 2026-09-03 08:55 UTC predate probe tagging and are excluded",
       "untagged_before_tagging": 0
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 3759,
+      "total": 3819,
       "by": {
         "anon": 116,
         "click": 224,
-        "lic": 2598,
-        "meta": 310,
+        "dl": 28,
+        "lic": 2625,
+        "meta": 311,
         "mint": 1,
         "probe-session": 64,
-        "rl": 3,
+        "rl": 5,
         "shared": 2,
-        "tok": 441
+        "tok": 443
       },
       "names": [
         "anon:02c50e96aa9d19a4a25e3517797e3e72:pdf",
@@ -665,6 +665,34 @@
         "click:zip.unknown:2026-09-06",
         "click:zip.unknown:2026-09-07",
         "click:zip.unknown:total",
+        "dl:052b0562752652e9c29a4cd053eeccbb",
+        "dl:2056704451bad65fedc7160525f97aa1",
+        "dl:321e074b72150b535041ff1b9b530802",
+        "dl:3398753c46c0094bc3e45ef9f1662c7f",
+        "dl:37bca6f5e51c2c343598d181b792b828",
+        "dl:3b4780315485970142b34d07a992f345",
+        "dl:41a1441d840a4e2d931254a720572eab",
+        "dl:421cf75cc17d172a3052eb01d7ebd124",
+        "dl:44cf0528113c5f239e2e9262c4d697f2",
+        "dl:4e2b2627dca1f74fd0c1e893717a8392",
+        "dl:58d85b710d8388ae968f892db05ec8b3",
+        "dl:5b2ac89f2d6e22174356ef37eb49b6e5",
+        "dl:6c88c20cf0bea2487ef04d2a05972851",
+        "dl:7f8de6f2a5af6bb6640520114cb5dd36",
+        "dl:8cfc67f12cd0ecfb2ee1ebb9e44422e9",
+        "dl:8ff0add9afac4eb31c522cf1fe42431d",
+        "dl:950071714be8463fa62e8c3b1c4a49c7",
+        "dl:9cb17c32af300c3c09efc69e60a8f4be",
+        "dl:a31483a69af1fcc9f280f2ac57f535be",
+        "dl:a9047c36a79bb338083f2958a4520a8e",
+        "dl:ac8566bbb322432b89491c0bb785bec7",
+        "dl:b4fefb3cfd13c7a90f5dc5b4b3efa850",
+        "dl:b5361f2f39f460e0901f7b1622b0fb42",
+        "dl:bf3205973b095e87a6c237a542bdbdc8",
+        "dl:ca9434d8af8afea495ba09a24e6e8a5a",
+        "dl:d0472a359eba28b095ca6b4fd8603eab",
+        "dl:e21606fd315466ed9c2cd54773057327",
+        "dl:f4022e7990c0504b6d7c7dd2c9cfce64",
         "lic:0178bc0e2835:docx",
         "lic:0178bc0e2835:expense-tracker",
         "lic:0178bc0e2835:spreadsheet",
@@ -1779,6 +1807,33 @@
         "lic:6fa79a533823:statement-of-account",
         "lic:6fa79a533823:time-tracker",
         "lic:6fa79a533823:zip",
+        "lic:703e7e1a9f10:amortization",
+        "lic:703e7e1a9f10:asset-register",
+        "lic:703e7e1a9f10:bank-statement",
+        "lic:703e7e1a9f10:barcode",
+        "lic:703e7e1a9f10:billing-docs",
+        "lic:703e7e1a9f10:calendar",
+        "lic:703e7e1a9f10:cash-book",
+        "lic:703e7e1a9f10:catalogue",
+        "lic:703e7e1a9f10:change-order",
+        "lic:703e7e1a9f10:deposits",
+        "lic:703e7e1a9f10:docx",
+        "lic:703e7e1a9f10:expense-tracker",
+        "lic:703e7e1a9f10:image",
+        "lic:703e7e1a9f10:invoice",
+        "lic:703e7e1a9f10:kanban",
+        "lic:703e7e1a9f10:pdf",
+        "lic:703e7e1a9f10:per-diem",
+        "lic:703e7e1a9f10:petty-cash",
+        "lic:703e7e1a9f10:profile",
+        "lic:703e7e1a9f10:quotes",
+        "lic:703e7e1a9f10:recurring",
+        "lic:703e7e1a9f10:resume",
+        "lic:703e7e1a9f10:spreadsheet",
+        "lic:703e7e1a9f10:statement-of-account",
+        "lic:703e7e1a9f10:time-tracker",
+        "lic:703e7e1a9f10:work-order",
+        "lic:703e7e1a9f10:zip",
         "lic:753cbdcd8d08:billing-docs",
         "lic:753cbdcd8d08:deposits",
         "lic:753cbdcd8d08:invoice",
@@ -3416,6 +3471,7 @@
         "meta:lic:6b3c88d40a9c",
         "meta:lic:6f92fc29818d",
         "meta:lic:6fa79a533823",
+        "meta:lic:703e7e1a9f10",
         "meta:lic:753cbdcd8d08",
         "meta:lic:771ce515670a",
         "meta:lic:777eca5884d1",
@@ -3641,6 +3697,8 @@
         "rl:anon:1c065bd0618ba66a91cb5e43bd151533:496873",
         "rl:anon:8624ae36e890cf01063424f836855743:496872",
         "rl:lic:0b52d37f804c:496873",
+        "rl:lic:40c24aca5cff:496873",
+        "rl:lic:703e7e1a9f10:496873",
         "shared:ecb:daily",
         "shared:ecb:history",
         "tok:anon_023af6cc32d5ee32f1623f70519b5a74",
@@ -3776,6 +3834,7 @@
         "tok:anon_4f589f3be4d83212b5436be935aa1aa8",
         "tok:anon_4fe4ee5715fb7af342dc1cbc49a7ebef",
         "tok:anon_4feea96b5e61109e25cc7a9580d49170",
+        "tok:anon_4ffc7cb0a2a400778a95999404f1f847",
         "tok:anon_507f84d05ee65a199923d904c474ce57",
         "tok:anon_50c68184542a8c6dc28a8f0308626d58",
         "tok:anon_51dc9687c110317d76668a6d217e85a7",
@@ -3981,6 +4040,7 @@
         "tok:anon_c52b13c508893222f552ecbcd7a729f3",
         "tok:anon_c5717a65713aa2bea87aa160138b6444",
         "tok:anon_c5f8a6282bc03bc2c23c33d2f8d7270e",
+        "tok:anon_c78420af390e93d164520d81f7fc9168",
         "tok:anon_c78e5e7732f9730ca4190c1f4536ec9c",
         "tok:anon_c7a03ed0142fc441e4f0125b0e72ff67",
         "tok:anon_c83e517de5599168387655fe38a6b2e6",
@@ -4094,18 +4154,18 @@
       "failed": false
     },
     "pro_tenants": {
-      "lic_keys": 2598,
-      "lic_distinct_ids": 247,
+      "lic_keys": 2625,
+      "lic_distinct_ids": 248,
       "minted_key_ids": 0,
       "stripe_bound_tenants": 0,
-      "probe_ids_excluded": 247
+      "probe_ids_excluded": 248
     },
     "latency": {
-      "p50_ms": 277,
+      "p50_ms": 275,
       "samples": [
-        1369,
-        276,
-        277
+        1368,
+        275,
+        274
       ]
     },
     "registry": {
@@ -4114,6 +4174,6 @@
       "release": "0.20.0",
       "hosted": 30
     },
-    "sitemap_urls": 312
+    "sitemap_urls": 96
   }
 }
