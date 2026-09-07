@@ -1,0 +1,34 @@
+{
+  "loop": 29,
+  "date": "2026-09-07",
+  "before": {
+    "buy_routes_reaching_stripe": 28,
+    "buyable_ids": 31,
+    "sitemap_urls": 312,
+    "manifests_pointing_at_buy_redirect": 114,
+    "urls_submitted_to_search_engines": 0,
+    "kpi_headline": "Bundle downloads 5,105 / target 1,000 = met"
+  },
+  "after": {
+    "buy_routes_reaching_stripe": 32,
+    "buyable_ids": 32,
+    "sitemap_urls": 96,
+    "manifests_pointing_at_buy_redirect": 0,
+    "urls_submitted_to_search_engines": 96,
+    "kpi_headline": "Release asset fetches (mostly automated), no target; organic measured for the first time"
+  },
+  "measured_audience": {
+    "google_impressions_ever": 0,
+    "googlebot_urls_7d": 2,
+    "claudebot_urls_7d": 311,
+    "render_proven_browser_requests_7d": 512,
+    "github_uniques_14d": 22,
+    "github_stars": 0,
+    "sales": 0
+  },
+  "human_gated": [
+    "npm login --auth-type=web, then scripts/publish-all.sh --go. Until then npx -y @theluckystrike/mcp-<name> is E404 on every page.",
+    "Glama listing claim: the only remaining blocker on the awesome-mcp-servers PR.",
+    "Decision on the registry namespace experiment (docs/SEO_INDEXATION_R1.md addendum)."
+  ]
+}

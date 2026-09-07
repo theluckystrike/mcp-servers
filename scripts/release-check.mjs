@@ -310,9 +310,15 @@ check("product", "Stripe PRODUCTS", (s) => {
   // closes it. It prints as a named gap and /buy/<server> answers 503 with the bundle link
   // rather than calling Stripe with a string Stripe would reject.
   if (p.price === "PENDING_HUMAN") {
-    return gap(`no Stripe price id: PRODUCTS["${s}"].price is the literal "PENDING_HUMAN". A human with a Stripe key carrying product_write must create the product (name "${p.name}", metadata payload ${p.payload}) and a $${p.usd} price, then replace that literal. Until then /buy/${s} answers 503 with the bundle link. See docs/HUMAN_GATED_PACK.md`);
+    return gap(`PRODUCTS["${s}"].price is still the literal "PENDING_HUMAN". That literal is obsolete: delete it. A row with usd and name and no price now takes the inline price_data path.`);
   }
-  if (!p.price || !/^price_/.test(p.price)) return "no Stripe price id";
+  // 2026-09-07: a price id is no longer required. Checkout Sessions accept inline
+  // price_data (currency, unit_amount, product_data.name), which Stripe turns into a
+  // product and price at session time and which needs only checkout_session_write, never
+  // product_write. That removed the human gate that had held work-order, catalogue and
+  // change-order at HTTP 503. A row is complete when it can be priced, by an id or inline.
+  if (p.price && !/^price_/.test(p.price)) return `price is set but is not a Stripe price id: ${JSON.stringify(p.price)}`;
+  if (!p.price && !(Number.isFinite(p.usd) && p.name)) return "no price id and no usd+name to price inline";
   return true;
 });
 
