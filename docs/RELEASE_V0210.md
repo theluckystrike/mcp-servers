@@ -1,6 +1,6 @@
 # Release v0.21.0 (2026-09-07)
 
-status: in progress
+status: done
 
 ## What this release is for
 
@@ -58,3 +58,29 @@ Carried deliberately, in the same shape as previous releases:
 - npm remains unpublished for every package, so `npx -y @theluckystrike/mcp-<name>` still
   returns E404. This needs the operator: `npm login --auth-type=web`, then
   `scripts/publish-all.sh --go`. The pages that print that command now disclose it.
+
+## Shipped
+
+- Release https://github.com/theluckystrike/mcp-servers/releases/tag/v0.21.0, 32 assets,
+  every bundle manifest at 0.21.0 and every published digest equal to the local bundle.
+- 85 distinct registry names live at 0.21.0, verified by a `version=latest` search.
+  81 of 89 returned rows now point at `/s/<server>` and one at `/bundle`. The 7 still on
+  `/buy/` are 4 deprecated 0.1.1 short names and the 3 delivery-schedule manifests, whose
+  product page did not exist when the estate-wide repoint ran; their source is corrected
+  and lands next release.
+- 32 manifest variants could not publish: they declare an npm package that has never been
+  published, so the registry's own validation rejects them. Each shares a name with a
+  manifest that did publish, so no server is missing from the registry. They will validate
+  once the operator runs `npm login --auth-type=web`.
+
+## A trap worth recording
+
+`gh release create` with 32 assets exceeded a two-minute command timeout and left an
+**untagged draft**. A draft's assets return 404 to anyone unauthenticated, and the registry
+refuses any manifest whose bundle is not publicly reachable, so the first publish run failed
+32 times with a message about the bundle rather than about the release. What proved the
+cause was a control: fetching a v0.20.0 asset over the same connection returned 200 while
+the v0.21.0 asset returned 404. An unauthenticated fetch of a draft asset returns a 9-byte
+body, which is easy to mistake for a corrupt file; `gh release download` returned the
+correct bytes throughout. Publish the draft with `gh release edit <tag> --draft=false
+--tag <tag>`, wait for the asset URL to answer 200, and only then publish manifests.

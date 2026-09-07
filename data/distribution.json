@@ -19,7 +19,7 @@
     "registry": {
       "status": "published",
       "url": "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike",
-      "note": "83 manifests at v0.20.0 (30 servers + office-suite, stdio-only, templates and name variants), verified by fully qualified name via the search API after each release; 30 hosted via remotes[]"
+      "note": "85 distinct names live at v0.21.0, verified by a version=latest search after the release. All of them now carry websiteUrl https://mcp.zovo.one/s/<server> (office-suite points at /bundle, which is what it sells) instead of https://mcp.zovo.one/buy/<server>, which robots.txt Disallows and which 303s a browser straight into Stripe. The registry is the only channel measurably delivering humans (19 views from 9 uniques in 14 days), so it was dropping every one of them on a payment form and passing no link value. 32 manifest variants still fail to publish: they declare an npm package that does not exist, and they will validate only after the operator runs npm login. Every one of those 32 shares a name with a manifest that did publish, so no server is missing from the registry."
     },
     "smithery": {
       "status": "blocked",
@@ -39,7 +39,7 @@
     "awesome-mcp-servers": {
       "status": "blocked",
       "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13473",
-      "note": "PR 13473 open: 4 entries (Workplace & Productivity: time-tracker, spreadsheet; Finance & Fintech: invoice; E-Commerce: price-tracker); as of 2026-09-03 CI applied labels missing-glama, valid-name, missing-emoji -- 2 bot comments (glama-check: must be listed+passing on Glama with a score badge per entry; emoji-check: each entry needs a permitted category emoji). Hard blocker: none of the 4 servers are on Glama at all yet | Round 7 check: PR #13473 state OPEN, same 2 bot comments verbatim confirmed present (glama-check: requires Glama listing + score badge per entry; emoji-check: requires a permitted category emoji per entry) -- no maintainer human comment, no new activity, still hard-blocked on Glama listing which has not happened. | Round 24 (2026-09-07): fixed the emoji-check. Forked branch add-theluckystrike-mcp-servers, added the permitted category emoji (📇 TypeScript/JS, 🏠 Local Service) to all four entries (commit 8554ddb), pushed, and posted a PR comment explaining the fix and the remaining blocker. Re-checked labels: has-emoji now green, valid-name green, missing-glama still red (unchanged) -- confirmed only the Glama blocker remains, exactly as the bot's two original comments predicted. Glama itself is still unclaimed (none of the four servers has a score badge; claiming needs a Glama account login, tracked under the glama surface and docs/HUMAN_GATED_PACK.md section 6)."
+      "note": "PR 13473 open: 4 entries (Workplace & Productivity: time-tracker, spreadsheet; Finance & Fintech: invoice; E-Commerce: price-tracker); as of 2026-09-03 CI applied labels missing-glama, valid-name, missing-emoji -- 2 bot comments (glama-check: must be listed+passing on Glama with a score badge per entry; emoji-check: each entry needs a permitted category emoji). Hard blocker: none of the 4 servers are on Glama at all yet | Round 7 check: PR #13473 state OPEN, same 2 bot comments verbatim confirmed present (glama-check: requires Glama listing + score badge per entry; emoji-check: requires a permitted category emoji per entry) -- no maintainer human comment, no new activity, still hard-blocked on Glama listing which has not happened. | Round 24 (2026-09-07): fixed the emoji-check. Forked branch add-theluckystrike-mcp-servers, added the permitted category emoji (\ud83d\udcc7 TypeScript/JS, \ud83c\udfe0 Local Service) to all four entries (commit 8554ddb), pushed, and posted a PR comment explaining the fix and the remaining blocker. Re-checked labels: has-emoji now green, valid-name green, missing-glama still red (unchanged) -- confirmed only the Glama blocker remains, exactly as the bot's two original comments predicted. Glama itself is still unclaimed (none of the four servers has a score badge; claiming needs a Glama account login, tracked under the glama surface and docs/HUMAN_GATED_PACK.md section 6)."
     },
     "mcp.so": {
       "status": "skipped: paid",
@@ -159,7 +159,7 @@
     "yuzehao2023-awesome-mcp-servers": {
       "status": "submitted",
       "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
-      "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name — url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
+      "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name \u2014 url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review."
     },
     "mcpstar-awesome-dxt-mcp": {
       "status": "skipped: no populated list to append to",

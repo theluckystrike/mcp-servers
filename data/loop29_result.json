@@ -18,7 +18,8 @@
     "kpi_headline": "Release asset fetches (mostly automated), no target; organic measured for the first time",
     "servers": 31,
     "product_pages": 32,
-    "guides": 63
+    "guides": 63,
+    "registry_names_at_latest": 85
   },
   "measured_audience": {
     "google_impressions_ever": 0,
@@ -46,8 +47,19 @@
     "KPI set corrected so crawler fetches are no longer reported as a met install target."
   ],
   "did_not_do": [
-    "v0.21.0 release and the registry republish, which is what actually delivers the manifest fix.",
     "Setup pages for delivery-schedule: deliberately skipped, since the same page shape was just measured as 75% duplicate and marked noindex.",
-    "The git-install fallback for npm: recipe proven and documented, not rolled out, because it force-pushes 31 mirrors and npm login supersedes it."
-  ]
+    "The git-install fallback for npm: recipe proven and documented, not rolled out, because it force-pushes 31 mirrors and npm login supersedes it.",
+    "Hosting delivery-schedule on the remote worker: it ships stdio and .mcpb this release."
+  ],
+  "release": {
+    "tag": "v0.21.0",
+    "url": "https://github.com/theluckystrike/mcp-servers/releases/tag/v0.21.0",
+    "assets": 32,
+    "servers": 31,
+    "registry_names_at_latest": 85,
+    "registry_rows_pointing_at_product_page": "81 of 89 to /s/, 1 to /bundle; 7 remain on /buy/ and 4 of those are deprecated 0.1.1 short names",
+    "manifest_variants_that_cannot_publish": 32,
+    "why_they_cannot": "they declare an npm package that has never been published; each shares a name with a manifest that did publish, so no server is missing",
+    "trap": "gh release create was killed by a 2-minute timeout and left an untagged DRAFT. Its assets 404 publicly, and the registry refuses a manifest whose bundle is not publicly reachable. A control fetch of a v0.20.0 asset returned 200 while v0.21.0 returned 404, which is what proved it was the release and not the network."
+  }
 }

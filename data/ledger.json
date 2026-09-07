@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-07T01:48:01.051Z",
+  "generated_at": "2026-09-07T02:16:17.195Z",
   "session": {
-    "count": 58,
+    "count": 59,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -234,6 +234,10 @@
       {
         "at": "2026-09-07T01:48:00.882Z",
         "note": "Loop 29 close: v0.21.0 in progress"
+      },
+      {
+        "at": "2026-09-07T02:16:17.016Z",
+        "note": "Loop 29: v0.21.0 shipped. Checkout gate removed (33/33 live), 85 registry names repointed from the robots-disallowed /buy/ redirect to product pages, sitemap curated and submitted to IndexNow, organic measured for the first time: 0 Google impressions ever, ClaudeBot crawls 311 of 312."
       }
     ]
   },
