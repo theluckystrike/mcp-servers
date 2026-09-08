@@ -24,7 +24,8 @@
       }
     },
     "scope_correction": "registry SEARCH only. No client picker inherits the ASCII sort: VS Code, Goose, Dify, Smithery and Windsurf each re-rank by their own rule.",
-    "rolled_out": "one server, deliberately. Publishing the fleet under an AI-tools-review brand is a branding decision, not a technical one."
+    "rolled_out": "one server, deliberately. Publishing the fleet under an AI-tools-review brand is a branding decision, not a technical one.",
+    "hard_constraint": "The registry binds each hosted endpoint URL to exactly one server name, so the 30 hosted servers cannot be published under two namespaces. There is no A/B test; any move is a migration. That makes the rollout a publisher-identity decision, not a technical one."
   },
   "distribution": {
     "awesome_mcp_servers": "PR 13473 was closed for adding multiple servers. Four single-server PRs opened; 13963 is the first fully green entry this project has ever put in front of that maintainer, with a live Glama badge.",
@@ -79,7 +80,10 @@
     "504_spike": "Investigated and dismissed: 1,794 on 2026-09-07 against ~300 on neighbouring days, spread evenly across every /buy/ route. That was this loop's own verification sweeps. Checkout answers in 0.8s today and 504s are back to 271."
   },
   "docker": {
-    "pr_4892": "closed by us, correctly",
-    "why_no_replacement": "no Dockerfile in the project builds: packages/mcp-license and servers/timezone import each other, so every linear workspace build fails whichever order it takes. Proven by building both orders. Fixing that cycle is the unblock."
+    "pr_4892": "closed by us, correctly: it added sixteen servers to a repo whose forty most recent merges each added one",
+    "defect_one_monorepo": "packages/mcp-license and servers/timezone import each other, so every linear container build fails whichever order it takes. Proven by building both orders. NOT fixed: it is a change to a package all 31 servers depend on.",
+    "defect_two_mirrors": "FIXED. All 31 mirror repos shipped the monorepo Dockerfile verbatim, including a COPY of a servers/ directory a mirror does not have, so no mirror could build. scripts/sync-mirrors.sh now writes a self-contained one.",
+    "verified": "docker build on the timezone mirror produced a 324 MB image and docker run -i answered initialize with serverInfo mcp-timezone and tools/list with 11 tools",
+    "first_candidate": "timezone, on build evidence: it built in about four minutes while barcode was still inside its final npm install after twelve"
   }
 }

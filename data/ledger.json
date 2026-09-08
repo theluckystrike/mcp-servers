@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-08T08:48:07.860Z",
+  "generated_at": "2026-09-08T09:58:04.381Z",
   "session": {
-    "count": 63,
+    "count": 64,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -254,6 +254,10 @@
       {
         "at": "2026-09-08T08:48:07.594Z",
         "note": "Loop 30 close: namespace claimed and measured live; hosted endpoints answer discovery without a token, which unblocks every URL-checking directory; registry confirmed the growing channel and crawlers saturated"
+      },
+      {
+        "at": "2026-09-08T09:58:04.181Z",
+        "note": "Loop 30 close: namespace claimed and measured, and the registry proved it cannot be A/B tested; hosted endpoints answer discovery; mirror Dockerfiles fixed and verified by a real docker run"
       }
     ]
   },
@@ -2017,6 +2021,10 @@
     {
       "file": "docs/DIST_R9_RESULT.md",
       "first_line": "Round 9: wire mcp-barcode into the estate, demo GIF, Docker MCP catalog + Cline marketplace"
+    },
+    {
+      "file": "docs/DOCKER_BUILD_R1.md",
+      "first_line": "Why no Docker image could be built, and what now builds (2026-09-08)"
     },
     {
       "file": "docs/DOCX_AUDIT.md",
