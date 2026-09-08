@@ -1042,6 +1042,25 @@ ${faqHtml}
     // SWEEP_AFTER_DAYS 35 in remote/src/index.ts, and the session:<id> record in this
     // worker. Required by at least one directory before it will list a hosted server, and
     // overdue for anything that takes a payment. Keep it in step with those constants.
+    // Discovery files that real software asks for and this host answered with 404.
+    // Measured over 2026-09-01 to 09-08 on mcp.zovo.one: /.well-known/glama.json 509
+    // requests, /favicon.ico 596. Those two are answered here. The OAuth documents
+    // (/.well-known/oauth-protected-resource 1,369 and oauth-authorization-server 923)
+    // are deliberately NOT answered: these endpoints use a bearer token minted at
+    // /mcp/token, not OAuth, and serving a well-formed OAuth document would send a client
+    // into a flow that does not exist. A 404 there is the correct signal and the client
+    // falls back, which is what we want.
+    if (path === "/.well-known/glama.json") {
+      return new Response(JSON.stringify({ $schema: "https://glama.ai/mcp/schemas/server.json", maintainers: ["theluckystrike"] }, null, 2) + "\n",
+        { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
+    if (path === "/favicon.ico" || path === "/favicon.svg") {
+      // Inline so there is no second request and no asset host to keep alive.
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#18202e"/><rect x="14" y="16" width="26" height="5" rx="2.5" fill="#ebf0f8"/><rect x="14" y="29" width="36" height="5" rx="2.5" fill="#96a3b8"/><rect x="14" y="42" width="20" height="5" rx="2.5" fill="#f0b040"/></svg>`;
+      return new Response(svg, { headers: { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" } });
+    }
+
     if (path === "/privacy") {
       const body = `<p><a href="/">All servers</a> &middot; <a href="/bundle">Bundle</a> &middot; <a href="${REPO}">Source</a></p>
 <h1>Privacy</h1>

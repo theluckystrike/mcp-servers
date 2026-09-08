@@ -1391,6 +1391,10 @@ function rpcEnvelope(body: string): { method: string | null; id: unknown; hasId:
  * Methods that cannot touch a tenant document. They are answered without hydrating KV at
  * all - three reads saved on the two calls every client makes before it does any work.
  */
+/** Calls per hour an unauthenticated discovery probe may make. Generous enough for any
+ * directory health check, small enough that it is not a free anonymous tier. */
+const DISCOVERY_LIMIT = 120;
+
 const DATALESS_METHODS = new Set(["tools/list", "initialize", "notifications/initialized", "ping", "prompts/list", "resources/list", "resources/templates/list"]);
 
 /* ------------------------------------------------------------ connect page */
@@ -1714,12 +1718,9 @@ export default {
       return json(publicEndpointDoc(base, product), 200, { "cache-control": "public, max-age=300" });
     }
 
-    const auth = await authenticate(req, env, product, urlToken, urlTokenForm);
-    if (auth instanceof Response) return auth;
-    const limited = await rateLimit(env, auth, ctx, product);
-    if (limited) return limited;
-
-    // Body cap and batch rejection happen before anything is parsed as JSON-RPC.
+    // Body cap and batch rejection happen before anything is parsed as JSON-RPC. This runs
+    // BEFORE authenticate() so the JSON-RPC method is known: a request that only asks what
+    // this server is does not need a token (see DISCOVERY below).
     let request = req;
     let bodyText = "";
     if (req.method === "POST") {
@@ -1742,6 +1743,38 @@ export default {
     }
 
     const rpc = rpcEnvelope(bodyText);
+
+    // DISCOVERY WITHOUT A TOKEN.
+    //
+    // Directories health-check the exact URL they list. A bare POST used to answer 401,
+    // so Glama published four of these servers with a red "Server is not responding"
+    // badge, Docker's type:remote entry was unusable and at least one large list rejected
+    // an entry outright. The endpoints were healthy the whole time; they simply refused to
+    // say so.
+    //
+    // This is safe rather than a loosening, and the proof is already in this file:
+    // DATALESS_METHODS are exactly the methods that cannot read or write a tenant
+    // document, and a few lines below every one of them is served with `files` set to an
+    // empty Map. Nothing about any user is in scope. The tool schema they return is
+    // already public in the registry manifests and on the website.
+    //
+    // Everything that touches data still needs a token: tools/call, resources/read and
+    // the rest fall through to authenticate() unchanged, and a token that is present but
+    // wrong is still rejected rather than downgraded to this path.
+    const hasCredential = Boolean(req.headers.get("authorization")) || Boolean(urlToken);
+    const isDiscovery = req.method === "POST" && !hasCredential
+      && rpc.method !== null && DATALESS_METHODS.has(rpc.method);
+
+    let auth: Auth;
+    if (isDiscovery) {
+      auth = { tenant: `discovery:${req.headers.get("cf-connecting-ip") ?? "unknown"}`, isPro: false, kind: "anon", limit: DISCOVERY_LIMIT };
+    } else {
+      const authed = await authenticate(req, env, product, urlToken, urlTokenForm);
+      if (authed instanceof Response) return authed;
+      auth = authed;
+    }
+    const limited = await rateLimit(env, auth, ctx, product);
+    if (limited) return limited;
 
     // tools/list is answered from module scope: no KV read, no McpServer, no transport.
     // A paginated request (params.cursor) is not cached and takes the full path.
