@@ -167,7 +167,10 @@ async function cloudflare() {
   // silently under-count every per-path figure. The guard below is NOT relaxed: a slice that
   // still saturates is halved and re-pulled, and if a slice under an hour is still at the cap
   // the script dies rather than write under-counted numbers.
-  const ROW_CAP = 10000;
+  // 10,000 is the API's own row cap. TRAFFIC_ROW_CAP lowers it ONLY so the saturation guard
+  // can be control-tested (a guard that has never been seen to fire is not known to work):
+  //   TRAFFIC_ROW_CAP=500 node scripts/traffic.mjs --no-gsc   -> must exit 2 and write nothing.
+  const ROW_CAP = Number(process.env.TRAFFIC_ROW_CAP) || 10000;
   const SLICE_ROWS = [];         // proof: rows returned per slice, all must be < ROW_CAP
   const PATH_UA_DIMS = 'clientRequestPath userAgent clientCountryName';
   const PATH_UA_EXTRA = 'sum { visits edgeResponseBytes } avg { sampleInterval }';
