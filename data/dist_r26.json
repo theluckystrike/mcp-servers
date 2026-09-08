@@ -1,0 +1,191 @@
+{
+  "round": 26,
+  "loop": 30,
+  "date": "2026-09-08",
+  "agent": "directory",
+  "external_calls_used_approx": 95,
+  "external_calls_budget": 120,
+  "trigger": {
+    "repo": "punkpeye/awesome-mcp-servers",
+    "pr": 13473,
+    "state": "closed",
+    "closed_at": "2026-09-07T14:47:53Z",
+    "closed_by": "punkpeye",
+    "reason_verbatim": "Hey, this PR adds multiple servers. Please submit one server per PR so we can review and integrate each one individually. Feel free to open separate PRs - thanks!",
+    "evidence_command": "gh api repos/punkpeye/awesome-mcp-servers/issues/13473/timeline --jq '.[] | select(.event==\"closed\")'"
+  },
+  "glama_index_state": {
+    "indexed_count": 1,
+    "mirror_repo_count": 33,
+    "indexed": ["mcp-statement-of-account"],
+    "badge_url": "https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/badges/score.svg",
+    "badge_http": 200,
+    "badge_content_type": "image/svg+xml",
+    "badge_bytes": 4560,
+    "probed_404": ["mcp-invoice","mcp-spreadsheet","mcp-time-tracker","mcp-price-tracker","mcp-bank-statement","mcp-expense-tracker","mcp-pdf","mcp-docx","mcp-kanban","mcp-barcode","mcp-zip","mcp-calendar"],
+    "evidence_command": "curl -A '<Chrome UA>' -o /dev/null -w '%{http_code}' https://glama.ai/mcp/servers/theluckystrike/<repo>/badges/score.svg",
+    "unchanged_since": "2026-09-05"
+  },
+  "prs_opened_this_round": [
+    {
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13963",
+      "repo": "punkpeye/awesome-mcp-servers",
+      "number": 13963,
+      "server": "mcp-statement-of-account",
+      "section": "Finance & Fintech",
+      "emoji": ["📇", "🏠"],
+      "glama_badge_included": true,
+      "glama_badge_verified_http": 200,
+      "state": "OPEN",
+      "labels": ["has-emoji", "valid-name", "has-glama"],
+      "checks": {"check-submission": "SUCCESS", "welcome": "SKIPPED"},
+      "diff_lines_added": 1,
+      "maintainer_comment": null
+    },
+    {
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13964",
+      "repo": "punkpeye/awesome-mcp-servers",
+      "number": 13964,
+      "server": "mcp-spreadsheet",
+      "section": "Data Science Tools",
+      "emoji": ["📇", "🏠"],
+      "glama_badge_included": false,
+      "glama_badge_verified_http": 404,
+      "state": "OPEN",
+      "labels": ["missing-glama", "has-emoji", "valid-name"],
+      "checks": {"check-submission": "SUCCESS", "welcome": "SKIPPED"},
+      "diff_lines_added": 1,
+      "maintainer_comment": null
+    },
+    {
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13965",
+      "repo": "punkpeye/awesome-mcp-servers",
+      "number": 13965,
+      "server": "mcp-pdf",
+      "section": "Other Tools and Integrations",
+      "emoji": ["📇", "🏠"],
+      "glama_badge_included": false,
+      "glama_badge_verified_http": 404,
+      "state": "OPEN",
+      "labels": ["missing-glama", "has-emoji", "valid-name"],
+      "checks": {"check-submission": "SUCCESS", "welcome": "SKIPPED"},
+      "diff_lines_added": 1,
+      "maintainer_comment": null
+    },
+    {
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/13966",
+      "repo": "punkpeye/awesome-mcp-servers",
+      "number": 13966,
+      "server": "mcp-barcode",
+      "section": "Other Tools and Integrations",
+      "emoji": ["📇", "🏠"],
+      "glama_badge_included": false,
+      "glama_badge_verified_http": 404,
+      "state": "OPEN",
+      "labels": ["missing-glama", "has-emoji", "valid-name"],
+      "checks": {"check-submission": "SUCCESS", "welcome": "SKIPPED"},
+      "diff_lines_added": 1,
+      "maintainer_comment": null
+    }
+  ],
+  "prs_chased": [
+    {
+      "url": "https://github.com/collabnix/awesome-mcp-lists/pull/112",
+      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN",
+      "checks": {}, "maintainer_comment": null, "action": "none needed; not bumped"
+    },
+    {
+      "url": "https://github.com/habitoai/awesome-mcp-servers/pull/144",
+      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN",
+      "checks": {"CodeRabbit": "SUCCESS"},
+      "maintainer_comment": null,
+      "review_findings": 2,
+      "action": "both findings verified against servers/ source, both correct, both fixed and pushed; answered at https://github.com/habitoai/awesome-mcp-servers/pull/144#issuecomment-5580044279",
+      "fixes": [
+        {"was": "and rebills straight into an invoice.", "now": "and prepares billable expenses as invoice line items.", "why": "expense_to_invoice previews line items only; marking rebilled is expense_mark_rebilled (servers/expense-tracker/src/index.ts:937)"},
+        {"was": "clients, gap-free sequential numbering,", "now": "clients, sequential numbering with numbers never reused,", "why": "counter.json is written at servers/invoice/src/index.ts:580 before invoices.json at :597, so a crash burns a number"}
+      ]
+    },
+    {
+      "url": "https://github.com/abordage/awesome-mcp/pull/106",
+      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN",
+      "checks": {"Validate changed files": "SUCCESS", "validate": "SUCCESS"},
+      "maintainer_comment": null, "action": "none needed; not bumped"
+    },
+    {
+      "url": "https://github.com/docker/mcp-registry/pull/4892",
+      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "BLOCKED",
+      "review_decision": "REVIEW_REQUIRED", "checks": {},
+      "maintainer_comment": null,
+      "action": "not bumped; split offer already made 2026-09-04 and unanswered",
+      "finding": "every merged server-add in that repo is a single server; this PR adds sixteen. Same defect that closed punkpeye#13473. Recommend closing and reopening as single-server PRs next loop.",
+      "evidence_command": "gh pr list --repo docker/mcp-registry --state merged --limit 40 --search 'add in:title'"
+    },
+    {
+      "url": "https://github.com/mgoldsborough/awesome-mcpb/pull/11",
+      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "UNSTABLE",
+      "checks": {"Awesome Lint": "action_required"},
+      "maintainer_comment": null,
+      "action": "not actionable: first-time-contributor workflow approval gate, only the maintainer can release it",
+      "evidence_command": "gh api 'repos/mgoldsborough/awesome-mcpb/actions/runs?event=pull_request&per_page=5'"
+    },
+    {"url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473", "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN", "maintainer_comment": null, "action": "none needed"},
+    {"url": "https://github.com/mctrinh/awesome-mcp-servers/pull/112", "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN", "maintainer_comment": null, "action": "none needed"},
+    {"url": "https://github.com/MobinX/awesome-mcp-list/pull/420", "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN", "maintainer_comment": null, "action": "none needed"},
+    {"url": "https://github.com/JustInCache/awesome-mcp-collection/pull/44", "state": "OPEN", "mergeable": "UNKNOWN", "merge_state": "UNKNOWN", "maintainer_comment": null, "action": "none needed"}
+  ],
+  "issues_opened_this_round": [
+    {
+      "url": "https://github.com/chatmcp/mcpso/issues/3998",
+      "surface": "mcp.so",
+      "server": "mcp-statement-of-account",
+      "free": true,
+      "caveat": "30 of the 30 most recently closed submission issues were closed by their own author; no maintainer triage observed. Do not file more."
+    }
+  ],
+  "new_surfaces": [
+    {
+      "name": "allmcps.com",
+      "url": "https://allmcps.com/submit",
+      "status": "human-gated: operator submits the free form",
+      "free": true,
+      "paid_upsell": "Verify + badge / Premium unlocks a dofollow link; free listing uses nofollow",
+      "gate": "requires a contact email and an ownership claim after approval",
+      "written_to": "docs/HUMAN_GATED_PACK.md"
+    },
+    {
+      "name": "modelcontextprotocol/servers",
+      "url": "https://github.com/modelcontextprotocol/servers",
+      "status": "closed",
+      "stars": 90151,
+      "reason": "CONTRIBUTING.md: third-party list retired in favour of the MCP Server Registry; 'We don't accept: New server implementations'. Already published to that registry.",
+      "do_not_retry": true
+    },
+    {
+      "name": "appcypher/awesome-mcp-servers",
+      "status": "dead",
+      "reason": "isArchived=true, pushed 2026-05-06",
+      "stars": 5766,
+      "do_not_retry": true
+    },
+    {
+      "name": "wong2/awesome-mcp-servers",
+      "status": "not applicable",
+      "reason": "issues disabled (hasIssuesEnabled=false) and repos/wong2/awesome-mcp-servers/pulls returns 404; no contribution route",
+      "stars": 4292,
+      "do_not_retry": true
+    }
+  ],
+  "skipped_paid": [
+    {"name": "mcp.so form", "url": "https://mcp.so/submit?type=server", "fee": "$39 one-time publishing fee", "verbatim": "Paid submission $39 one-time publishing fee"},
+    {"name": "businessmcp.com", "url": "https://businessmcp.com/mcp-servers/submit", "reason": "carried over from round 25; 'early submissions are free' is a tiered fee in waiting"}
+  ],
+  "totals": {
+    "list_prs_open_after_this_round": 13,
+    "prs_opened_this_round": 4,
+    "issues_opened_this_round": 1,
+    "prs_all_green": 1,
+    "maintainer_responses_this_round": 0,
+    "fabricated_badges": 0
+  }
+}

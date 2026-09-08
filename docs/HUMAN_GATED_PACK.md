@@ -704,3 +704,84 @@ monorepo and the scraper will read it as a single server. Submit the per-server 
 
 **Verify it landed:** search `https://mcp.directory/` for `theluckystrike` after 24 hours, or
 try `https://mcp.directory/servers/theluckystrike/mcp-invoice`.
+
+---
+
+## allmcps.com — free listing, one web form, operator clicks Submit (added round 26, 2026-09-08)
+
+Found this round. Not previously in `data/distribution.json`. Free tier is real: the page
+says *"Free listing review for Model Context Protocol servers"* and *"Free listings use
+nofollow on website links. Verify + badge (or Premium) unlocks a dofollow reciprocal link."*
+So the listing itself costs nothing; only the dofollow link is upsold. Recorded as
+human-gated, not paid.
+
+Evidence:
+
+```
+curl -sL -A "<Chrome UA>" -o /tmp/all.html -w '%{http_code}' https://allmcps.com/submit
+-> 200, final URL https://allmcps.com/submit
+grep -oiE '<(form|input|button|select|textarea)[^>]{0,180}' /tmp/all.html
+-> <form class="submit-form"> with name=url, name=name, name=email (required),
+   name=websiteUrl, name=description (required), name=category (required),
+   name=tagsInputRaw, name=licenseInputRaw, name=supportUrlInputRaw,
+   name=remoteEndpointUrlInputRaw, and a checked name=newsletterOptIn checkbox
+```
+
+Why it is gated and not just done: the form requires a **contact email**, and approval is
+followed by *"you claim ownership after approval"*, which is an account. Standing operator
+rule is that he clicks Submit on external forms himself.
+
+### Exact steps
+
+1. Open `https://allmcps.com/submit`.
+2. Step 1, paste the repo URL and press **Auto-prefill form**.
+3. Step 2, check the prefilled name/description, set **Category**, put
+   `support@zovo.one` in **Contact email**.
+4. **Untick "Keep me posted with the AllMCPs newsletter"** — it is ticked by default.
+5. Optional fields worth filling: Website URL `https://mcp.zovo.one`, License `MIT`,
+   Hosted MCP endpoint `https://mcp.zovo.one/mcp/<name>`.
+6. Click Submit. Repeat per server; this list is one server per submission.
+
+Highest value first, and put the Glama-graded one first because it is the only one with an
+external quality signal to show:
+
+```
+https://github.com/theluckystrike/mcp-statement-of-account   category: Finance & Fintech
+https://github.com/theluckystrike/mcp-spreadsheet            category: Data Platforms
+https://github.com/theluckystrike/mcp-pdf                    category: File Systems
+https://github.com/theluckystrike/mcp-barcode                category: Developer Tools
+https://github.com/theluckystrike/mcp-invoice                category: Finance & Fintech
+https://github.com/theluckystrike/mcp-office-suite           category: Workplace & Productivity
+```
+
+**Verify it landed:** search `https://allmcps.com/` for `theluckystrike` after review.
+
+---
+
+## mcp.so — the $39 form is the real path; the free queue looks unattended (round 26)
+
+Correction to the round 25 record, which said only `skipped: paid`. Both halves are now
+measured.
+
+**The web form is paid, confirmed verbatim.** `https://mcp.so/submit` redirects to
+`https://mcp.so/submit?type=server` and the page text reads *"Paid submission $39 one-time
+publishing fee / Publish immediately without review / Verified badge / Featured and priority
+placement / Dofollow project link"*. That stays `skipped: paid`.
+
+**There is also a free GitHub-issue queue, and it is open.** `chatmcp/mcpso` takes
+submissions as issues; the round-26 agent filed one for free:
+`https://github.com/chatmcp/mcpso/issues/3998`.
+
+**But measure before trusting it.** Of the 30 most recently closed issues on that repo,
+**30 of 30 were closed by their own author**, not by a maintainer:
+
+```
+gh api "repos/chatmcp/mcpso/issues?state=closed&per_page=30" \
+  --jq '.[] | select(.pull_request == null) | "\(.number) author=\(.user.login) closed_by=\(.closed_by.login)"'
+-> every row has author == closed_by
+```
+
+Issue numbers were at 3995 within hours of 3977, so the queue is receiving several
+submissions a day and nobody is triaging them. Treat a free mcp.so listing as unlikely, and
+do **not** spend a future loop filing more issues there. If the operator ever wants mcp.so,
+the honest options are the $39 fee (blocked by the no-paid rule) or nothing.
