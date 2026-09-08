@@ -88,3 +88,45 @@ compete with each other in the same sorted list. Publish one server under the ne
 only, leave it a fortnight, and compare its measured rank and its referral traffic against
 the `io.github` row for the same server. `data/traffic.json` and the GitHub referrer API
 both already separate registry-sourced visits, so the comparison is measurable.
+
+## Result: claimed and measured live, 2026-09-08
+
+The blocker described above was worked around without the Cloudflare DNS token.
+
+`bestremotetools.com` is a Cloudflare Pages site with its Git provider connected, so the
+verification file could be added by committing to its repository and letting the platform
+build, with no DNS write and no risk of replacing a live site. It is a Jekyll site, and
+Jekyll excludes dot-directories by default, so `.well-known` also had to be named in an
+`include:` list in `_config.yml`. Two files, seven added lines.
+
+    $ curl https://bestremotetools.com/.well-known/mcp-registry-auth
+    v=MCPv1; k=ed25519; p=KY+O0ut45badUE3n6TtwlXj09gkKnTd+/pkY56Y0A9Q=
+
+    $ mcp-publisher login http --domain bestremotetools.com --private-key <hex>
+    ✓ Successfully logged in
+    granted: ['com.bestremotetools/*']
+
+The site was verified unharmed afterwards: 1,317 sitemap URLs, six spot-checked pages all
+200, robots.txt and sitemap.xml intact. `/topics/` returns 404 both before and after, because
+no index page for it has ever existed in the repository.
+
+One server was then published under the new namespace as a controlled experiment,
+`com.bestremotetools/delivery-schedule-milestones-late-report` at 0.21.0, pointing at the
+same bundle and the same product page as its `io.github` twin. Ranks measured by fully
+paginating the live registry, same server, same day, two namespaces:
+
+| Token | `com.bestremotetools` | `io.github.theluckystrike` | Rows on page one |
+|---|---|---|---|
+| schedule | 3 | 21 | 63 |
+| delivery | 2 | 26 | 28 |
+| milestone | 1 | 3 | 3 |
+| late | 6 | absent | 100 |
+
+So the simulated gain was real and slightly understated. On "delivery" the same server moves
+from 26th to 2nd. On "late" it appears on page one where it did not appear at all.
+
+This does not yet mean the catalogue should be migrated. What it means is that the axis is
+open, it costs nothing, and the decision is now an ordinary product decision rather than a
+credential problem. The next question is whether `com.bestremotetools` is the right publisher
+identity to carry the fleet, or whether a domain closer to the product should be used the
+same way. The mechanism works on any domain whose Pages project is git-connected.
