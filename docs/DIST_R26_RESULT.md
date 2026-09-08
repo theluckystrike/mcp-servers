@@ -320,3 +320,125 @@ purpose; **no future loop should file more.**
 3. **docker#4892 needs a decision, not a bump.** See section 4.
 4. Do not re-test: `modelcontextprotocol/servers` (retired), `appcypher` (archived), `wong2`
    (no contribution route), the mcp.so free queue (unattended).
+
+---
+
+# Addendum — the Docker follow-up (2026-09-08, authorised mid-loop)
+
+Task: close `docker/mcp-registry#4892` and resubmit as one single-server PR, choosing the
+server whose Dockerfile can most convincingly be shown to build and run.
+
+**#4892 is closed.** Comment:
+`https://github.com/docker/mcp-registry/pull/4892#issuecomment-5581945842`
+
+**No replacement PR was opened, and that is a deliberate call I am flagging rather than
+burying.** I went to prove the Dockerfile builds, as instructed. It does not. Neither does
+any other one in this project, and the remote fallback is also shut. Submitting on either
+path would put something in Docker's queue that fails their own validation, which is the same
+mistake as pasting a badge that renders broken — the exact thing this loop existed to avoid.
+
+Three blockers, each measured, none of them mine to fix.
+
+## Blocker 1 — no `servers/*/Dockerfile` in the monorepo can build
+
+`packages/mcp-license` and `servers/timezone` import each other:
+
+```
+packages/mcp-license/src/profile.ts:5
+  import { resolveZone } from "@theluckystrike/mcp-timezone/lib";
+servers/timezone/src/index.ts:8
+  import { createLicenseGate, ... } from "@theluckystrike/mcp-license";
+```
+
+Every Dockerfile builds them with a linear `npm run build --workspace` sequence, so whichever
+goes first cannot resolve the other's declarations. Both orders were built for real:
+
+```
+docker buildx build -f servers/barcode/Dockerfile .     # order: timezone, license, barcode
+-> src/index.ts(8,87): error TS2307: Cannot find module '@theluckystrike/mcp-license'
+   npm error workspace @theluckystrike/mcp-timezone@0.21.0
+
+docker buildx build -f servers/invoice/Dockerfile .     # order: license, invoice
+-> src/profile.ts(5,29): error TS2307: Cannot find module '@theluckystrike/mcp-timezone/lib'
+   npm error workspace @theluckystrike/mcp-license@0.21.0
+```
+
+`dist/` is gitignored (`.gitignore:3`), so the image has to compile from source and cannot
+sidestep this. Surveying the build order across all 32 Dockerfiles, 15 use `timezone,license`
+and 17 use `license,...`; **the cycle means both groups fail**, so this is not a per-file
+ordering bug that can be fixed by swapping two lines.
+
+Present at current `main` (`8408830b`) **and** at `8f37031e`, the commit #4892 pinned. So
+every one of that PR's sixteen entries would have failed Docker's build.
+
+## Blocker 2 — the mirror repos ship a Dockerfile that cannot apply to them
+
+Each `theluckystrike/mcp-<name>` mirror carries the monorepo Dockerfile verbatim, including
+`COPY packages ./packages` and `COPY servers ./servers`, but a mirror repo has neither
+directory at its root:
+
+```
+git clone --depth 1 https://github.com/theluckystrike/mcp-invoice && docker buildx build .
+-> ERROR: failed to compute cache key: "/servers": not found
+```
+
+The frustrating part is that the mirror is otherwise ready to go. Its `package.json` declares
+`"@theluckystrike/mcp-license": "file:vendor/mcp-license"` and `vendor/mcp-license/dist/`
+is prebuilt and committed. A correct six-line Dockerfile against a mirror repo would build
+today with no cycle to break. That is a mirror-pipeline fix, not mine.
+
+## Blocker 3 — the hosted endpoints cannot be listed as remote servers either
+
+Docker's registry takes `type: remote` entries with no Dockerfile at all, which would have
+routed around blockers 1 and 2 entirely. It does not work, and the mid-loop correction I was
+given needs one amendment.
+
+An unauthenticated **GET** does return 200 and does self-describe as streamable-http:
+
+```
+curl https://mcp.zovo.one/mcp/invoice
+-> 200 {"ok":true,"protocol":"MCP streamable HTTP (2025-06-18)","transport":"streamable-http",
+        "tool_count":12,...}
+```
+
+But that is a description page, not a reachable MCP endpoint. Actual MCP traffic is rejected:
+
+```
+curl -X POST https://mcp.zovo.one/mcp/invoice \
+  -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{...}}'
+-> HTTP 401
+   www-authenticate: Bearer realm="mcp.zovo.one", error="invalid_token"
+   {"error":"unauthorized","message":"This endpoint needs a token..."}
+```
+
+Probed across eight servers — invoice, spreadsheet, barcode, pdf, timezone, currency, image,
+statement-of-account — **401 on every one**; delivery-schedule is 404. So a `type: remote`
+entry would hand Docker's reviewers a URL that 401s on the first handshake.
+
+This is the same 401 that makes Glama mark our four connectors *"Server is not responding"*
+(round 25). It is now blocking a second directory, which raises its priority: it is not a
+cosmetic health-check nit, it is the thing standing between this project and every
+directory that lists by URL instead of by package.
+
+## What I did instead, and what the next loop should do
+
+Closed #4892 with a short factual comment that names the build defect as ours, says we are
+resubmitting one server per PR, and does not ask the maintainers for anything. Leaving it
+open was the worse option on its own merits: sixteen servers in one PR against a repo where
+all forty checked merges are single-server, **and** sixteen entries that cannot build.
+
+The next loop opens the replacement PR once **either** of these is true, and neither is a
+directory-agent task:
+
+1. The `mcp-license` ↔ `mcp-timezone` cycle is broken (drop the `resolveZone` import from
+   the license package, or move the shared table into a third leaf package, or switch to tsc
+   project references). Then rebuild `servers/<name>/Dockerfile` locally until `docker run`
+   answers `tools/list`, and submit that one server. `barcode` remains the best candidate on
+   the merits — no network, no host mounts, no required secret — once it compiles.
+2. Or one read-only endpoint is exposed unauthenticated, at which point a `type: remote`
+   entry needs no Dockerfile and is three files.
+
+Cap stays at two PRs on that repository. Do not resubmit until `docker run` has been seen to
+list tools locally; the whole point of closing #4892 was to stop submitting things that were
+never checked end to end.

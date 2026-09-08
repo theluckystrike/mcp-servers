@@ -17,12 +17,27 @@
   "glama_index_state": {
     "indexed_count": 1,
     "mirror_repo_count": 33,
-    "indexed": ["mcp-statement-of-account"],
+    "indexed": [
+      "mcp-statement-of-account"
+    ],
     "badge_url": "https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/badges/score.svg",
     "badge_http": 200,
     "badge_content_type": "image/svg+xml",
     "badge_bytes": 4560,
-    "probed_404": ["mcp-invoice","mcp-spreadsheet","mcp-time-tracker","mcp-price-tracker","mcp-bank-statement","mcp-expense-tracker","mcp-pdf","mcp-docx","mcp-kanban","mcp-barcode","mcp-zip","mcp-calendar"],
+    "probed_404": [
+      "mcp-invoice",
+      "mcp-spreadsheet",
+      "mcp-time-tracker",
+      "mcp-price-tracker",
+      "mcp-bank-statement",
+      "mcp-expense-tracker",
+      "mcp-pdf",
+      "mcp-docx",
+      "mcp-kanban",
+      "mcp-barcode",
+      "mcp-zip",
+      "mcp-calendar"
+    ],
     "evidence_command": "curl -A '<Chrome UA>' -o /dev/null -w '%{http_code}' https://glama.ai/mcp/servers/theluckystrike/<repo>/badges/score.svg",
     "unchanged_since": "2026-09-05"
   },
@@ -33,12 +48,22 @@
       "number": 13963,
       "server": "mcp-statement-of-account",
       "section": "Finance & Fintech",
-      "emoji": ["📇", "🏠"],
+      "emoji": [
+        "📇",
+        "🏠"
+      ],
       "glama_badge_included": true,
       "glama_badge_verified_http": 200,
       "state": "OPEN",
-      "labels": ["has-emoji", "valid-name", "has-glama"],
-      "checks": {"check-submission": "SUCCESS", "welcome": "SKIPPED"},
+      "labels": [
+        "has-emoji",
+        "valid-name",
+        "has-glama"
+      ],
+      "checks": {
+        "check-submission": "SUCCESS",
+        "welcome": "SKIPPED"
+      },
       "diff_lines_added": 1,
       "maintainer_comment": null
     },
@@ -48,12 +73,22 @@
       "number": 13964,
       "server": "mcp-spreadsheet",
       "section": "Data Science Tools",
-      "emoji": ["📇", "🏠"],
+      "emoji": [
+        "📇",
+        "🏠"
+      ],
       "glama_badge_included": false,
       "glama_badge_verified_http": 404,
       "state": "OPEN",
-      "labels": ["missing-glama", "has-emoji", "valid-name"],
-      "checks": {"check-submission": "SUCCESS", "welcome": "SKIPPED"},
+      "labels": [
+        "missing-glama",
+        "has-emoji",
+        "valid-name"
+      ],
+      "checks": {
+        "check-submission": "SUCCESS",
+        "welcome": "SKIPPED"
+      },
       "diff_lines_added": 1,
       "maintainer_comment": null
     },
@@ -63,12 +98,22 @@
       "number": 13965,
       "server": "mcp-pdf",
       "section": "Other Tools and Integrations",
-      "emoji": ["📇", "🏠"],
+      "emoji": [
+        "📇",
+        "🏠"
+      ],
       "glama_badge_included": false,
       "glama_badge_verified_http": 404,
       "state": "OPEN",
-      "labels": ["missing-glama", "has-emoji", "valid-name"],
-      "checks": {"check-submission": "SUCCESS", "welcome": "SKIPPED"},
+      "labels": [
+        "missing-glama",
+        "has-emoji",
+        "valid-name"
+      ],
+      "checks": {
+        "check-submission": "SUCCESS",
+        "welcome": "SKIPPED"
+      },
       "diff_lines_added": 1,
       "maintainer_comment": null
     },
@@ -78,12 +123,22 @@
       "number": 13966,
       "server": "mcp-barcode",
       "section": "Other Tools and Integrations",
-      "emoji": ["📇", "🏠"],
+      "emoji": [
+        "📇",
+        "🏠"
+      ],
       "glama_badge_included": false,
       "glama_badge_verified_http": 404,
       "state": "OPEN",
-      "labels": ["missing-glama", "has-emoji", "valid-name"],
-      "checks": {"check-submission": "SUCCESS", "welcome": "SKIPPED"},
+      "labels": [
+        "missing-glama",
+        "has-emoji",
+        "valid-name"
+      ],
+      "checks": {
+        "check-submission": "SUCCESS",
+        "welcome": "SKIPPED"
+      },
       "diff_lines_added": 1,
       "maintainer_comment": null
     }
@@ -91,31 +146,56 @@
   "prs_chased": [
     {
       "url": "https://github.com/collabnix/awesome-mcp-lists/pull/112",
-      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN",
-      "checks": {}, "maintainer_comment": null, "action": "none needed; not bumped"
+      "state": "OPEN",
+      "mergeable": "MERGEABLE",
+      "merge_state": "CLEAN",
+      "checks": {},
+      "maintainer_comment": null,
+      "action": "none needed; not bumped"
     },
     {
       "url": "https://github.com/habitoai/awesome-mcp-servers/pull/144",
-      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN",
-      "checks": {"CodeRabbit": "SUCCESS"},
+      "state": "OPEN",
+      "mergeable": "MERGEABLE",
+      "merge_state": "CLEAN",
+      "checks": {
+        "CodeRabbit": "SUCCESS"
+      },
       "maintainer_comment": null,
       "review_findings": 2,
       "action": "both findings verified against servers/ source, both correct, both fixed and pushed; answered at https://github.com/habitoai/awesome-mcp-servers/pull/144#issuecomment-5580044279",
       "fixes": [
-        {"was": "and rebills straight into an invoice.", "now": "and prepares billable expenses as invoice line items.", "why": "expense_to_invoice previews line items only; marking rebilled is expense_mark_rebilled (servers/expense-tracker/src/index.ts:937)"},
-        {"was": "clients, gap-free sequential numbering,", "now": "clients, sequential numbering with numbers never reused,", "why": "counter.json is written at servers/invoice/src/index.ts:580 before invoices.json at :597, so a crash burns a number"}
+        {
+          "was": "and rebills straight into an invoice.",
+          "now": "and prepares billable expenses as invoice line items.",
+          "why": "expense_to_invoice previews line items only; marking rebilled is expense_mark_rebilled (servers/expense-tracker/src/index.ts:937)"
+        },
+        {
+          "was": "clients, gap-free sequential numbering,",
+          "now": "clients, sequential numbering with numbers never reused,",
+          "why": "counter.json is written at servers/invoice/src/index.ts:580 before invoices.json at :597, so a crash burns a number"
+        }
       ]
     },
     {
       "url": "https://github.com/abordage/awesome-mcp/pull/106",
-      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN",
-      "checks": {"Validate changed files": "SUCCESS", "validate": "SUCCESS"},
-      "maintainer_comment": null, "action": "none needed; not bumped"
+      "state": "OPEN",
+      "mergeable": "MERGEABLE",
+      "merge_state": "CLEAN",
+      "checks": {
+        "Validate changed files": "SUCCESS",
+        "validate": "SUCCESS"
+      },
+      "maintainer_comment": null,
+      "action": "none needed; not bumped"
     },
     {
       "url": "https://github.com/docker/mcp-registry/pull/4892",
-      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "BLOCKED",
-      "review_decision": "REVIEW_REQUIRED", "checks": {},
+      "state": "OPEN",
+      "mergeable": "MERGEABLE",
+      "merge_state": "BLOCKED",
+      "review_decision": "REVIEW_REQUIRED",
+      "checks": {},
       "maintainer_comment": null,
       "action": "not bumped; split offer already made 2026-09-04 and unanswered",
       "finding": "every merged server-add in that repo is a single server; this PR adds sixteen. Same defect that closed punkpeye#13473. Recommend closing and reopening as single-server PRs next loop.",
@@ -123,16 +203,48 @@
     },
     {
       "url": "https://github.com/mgoldsborough/awesome-mcpb/pull/11",
-      "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "UNSTABLE",
-      "checks": {"Awesome Lint": "action_required"},
+      "state": "OPEN",
+      "mergeable": "MERGEABLE",
+      "merge_state": "UNSTABLE",
+      "checks": {
+        "Awesome Lint": "action_required"
+      },
       "maintainer_comment": null,
       "action": "not actionable: first-time-contributor workflow approval gate, only the maintainer can release it",
       "evidence_command": "gh api 'repos/mgoldsborough/awesome-mcpb/actions/runs?event=pull_request&per_page=5'"
     },
-    {"url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473", "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN", "maintainer_comment": null, "action": "none needed"},
-    {"url": "https://github.com/mctrinh/awesome-mcp-servers/pull/112", "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN", "maintainer_comment": null, "action": "none needed"},
-    {"url": "https://github.com/MobinX/awesome-mcp-list/pull/420", "state": "OPEN", "mergeable": "MERGEABLE", "merge_state": "CLEAN", "maintainer_comment": null, "action": "none needed"},
-    {"url": "https://github.com/JustInCache/awesome-mcp-collection/pull/44", "state": "OPEN", "mergeable": "UNKNOWN", "merge_state": "UNKNOWN", "maintainer_comment": null, "action": "none needed"}
+    {
+      "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
+      "state": "OPEN",
+      "mergeable": "MERGEABLE",
+      "merge_state": "CLEAN",
+      "maintainer_comment": null,
+      "action": "none needed"
+    },
+    {
+      "url": "https://github.com/mctrinh/awesome-mcp-servers/pull/112",
+      "state": "OPEN",
+      "mergeable": "MERGEABLE",
+      "merge_state": "CLEAN",
+      "maintainer_comment": null,
+      "action": "none needed"
+    },
+    {
+      "url": "https://github.com/MobinX/awesome-mcp-list/pull/420",
+      "state": "OPEN",
+      "mergeable": "MERGEABLE",
+      "merge_state": "CLEAN",
+      "maintainer_comment": null,
+      "action": "none needed"
+    },
+    {
+      "url": "https://github.com/JustInCache/awesome-mcp-collection/pull/44",
+      "state": "OPEN",
+      "mergeable": "UNKNOWN",
+      "merge_state": "UNKNOWN",
+      "maintainer_comment": null,
+      "action": "none needed"
+    }
   ],
   "issues_opened_this_round": [
     {
@@ -177,8 +289,17 @@
     }
   ],
   "skipped_paid": [
-    {"name": "mcp.so form", "url": "https://mcp.so/submit?type=server", "fee": "$39 one-time publishing fee", "verbatim": "Paid submission $39 one-time publishing fee"},
-    {"name": "businessmcp.com", "url": "https://businessmcp.com/mcp-servers/submit", "reason": "carried over from round 25; 'early submissions are free' is a tiered fee in waiting"}
+    {
+      "name": "mcp.so form",
+      "url": "https://mcp.so/submit?type=server",
+      "fee": "$39 one-time publishing fee",
+      "verbatim": "Paid submission $39 one-time publishing fee"
+    },
+    {
+      "name": "businessmcp.com",
+      "url": "https://businessmcp.com/mcp-servers/submit",
+      "reason": "carried over from round 25; 'early submissions are free' is a tiered fee in waiting"
+    }
   ],
   "totals": {
     "list_prs_open_after_this_round": 13,
@@ -186,6 +307,58 @@
     "issues_opened_this_round": 1,
     "prs_all_green": 1,
     "maintainer_responses_this_round": 0,
-    "fabricated_badges": 0
+    "fabricated_badges": 0,
+    "docker_prs_open": 0,
+    "docker_prs_closed_by_us": 1
+  },
+  "docker_followup": {
+    "date": "2026-09-08",
+    "authorised_by": "coordinator mid-loop message",
+    "action_taken": "closed docker/mcp-registry#4892 with a factual comment; deliberately did NOT open a replacement PR",
+    "close_comment": "https://github.com/docker/mcp-registry/pull/4892#issuecomment-5581945842",
+    "replacement_pr": null,
+    "why_no_replacement": "both of Docker's submission paths are provably broken today; a PR on either would fail Docker's own validation",
+    "defect_1_local_containerized": {
+      "severity": "blocker",
+      "summary": "circular type dependency between packages/mcp-license and servers/timezone means no Dockerfile in the monorepo can build",
+      "detail": "packages/mcp-license/src/profile.ts:5 imports @theluckystrike/mcp-timezone/lib, while servers/timezone/src/index.ts:8 imports @theluckystrike/mcp-license. Every servers/*/Dockerfile runs a linear `npm run build --workspace` sequence, so whichever is built first fails with TS2307.",
+      "evidence_barcode": "docker buildx build -f servers/barcode/Dockerfile . -> src/index.ts(8,87): error TS2307: Cannot find module '@theluckystrike/mcp-license' (order timezone,license)",
+      "evidence_invoice": "docker buildx build -f servers/invoice/Dockerfile . -> src/profile.ts(5,29): error TS2307: Cannot find module '@theluckystrike/mcp-timezone/lib' (order license,invoice)",
+      "scope": "all 32 servers/*/Dockerfile; dist/ is gitignored (.gitignore:3) so the image must compile from source",
+      "present_at_commits": [
+        "8408830b298e60f643f3e4918a0bca8ad7242352 (main 2026-09-07)",
+        "8f37031e265b59cf9c0c9c0bddb089b6f320d7b9 (the commit PR 4892 pinned)"
+      ],
+      "owner": "servers/ owner; NOT fixed by the directory agent, which is forbidden to edit servers/*"
+    },
+    "defect_2_mirror_repos": {
+      "severity": "blocker",
+      "summary": "every mirror repo ships the monorepo Dockerfile verbatim, referencing packages/ and servers/ directories the mirror does not contain",
+      "evidence": "git clone theluckystrike/mcp-invoice && docker buildx build . -> ERROR: failed to compute cache key: \"/servers\": not found",
+      "irony": "the mirror repo is otherwise self-contained: package.json declares \"@theluckystrike/mcp-license\": \"file:vendor/mcp-license\" and vendor/mcp-license/dist is prebuilt and committed, so a correct 6-line Dockerfile would build",
+      "owner": "mirror pipeline owner"
+    },
+    "defect_3_remote_path": {
+      "severity": "blocker",
+      "summary": "the hosted endpoints cannot be listed as no-OAuth remote servers because MCP traffic is 401",
+      "correction": "an unauthenticated GET returns 200 with a JSON self-description including \"transport\": \"streamable-http\", but that is a description page, not a working MCP endpoint",
+      "evidence": "POST {jsonrpc:2.0,method:initialize} -> HTTP 401, www-authenticate: Bearer realm=\"mcp.zovo.one\", error=\"invalid_token\"",
+      "probed_401": [
+        "invoice",
+        "spreadsheet",
+        "barcode",
+        "pdf",
+        "timezone",
+        "currency",
+        "image",
+        "statement-of-account"
+      ],
+      "probed_404": [
+        "delivery-schedule"
+      ],
+      "note": "this is the same 401 that makes Glama mark our four connectors 'Server is not responding' (round 25 finding)",
+      "owner": "remote/ and billing/ owner"
+    },
+    "next_loop_task": "Fix defect 1 (reorder or break the license<->timezone cycle, e.g. build the shared lib without the timezone import, or add a tsc project-references build) and rebuild servers/barcode/Dockerfile locally until `docker run` lists tools. Then open ONE docker/mcp-registry PR for that server. Alternatively fix defect 3 by exposing one unauthenticated read-only endpoint and submit it as type: remote, which needs no Dockerfile at all. Cap remains two PRs on that repository."
   }
 }
