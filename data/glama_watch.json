@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-08T05:48:30.525Z",
+  "at": "2026-09-08T09:22:20.791Z",
   "checked": 33,
   "listed": [
     "mcp-statement-of-account"
@@ -7,8 +7,5 @@
   "absent_count": 32,
   "badge_url_pattern": "https://glama.ai/mcp/servers/theluckystrike/<repo>/badges/score.svg",
   "control": "mcp-statement-of-account",
-  "note": "The awesome-mcp-servers CI gate is satisfied by a badge URL on any entry in the PR. Add badges as soon as one of the four repos in PR 13473 appears here.",
-  "negative_results": [
-    "Fetching an unindexed servers page or badge URL does NOT trigger indexing. Tested 2026-09-08: fetched the four PR-13473 repos, all 404, re-checked after and still 404. Do not retry this."
-  ]
+  "note": "The awesome-mcp-servers CI gate is satisfied by a badge URL on any entry in the PR. Add badges as soon as one of the four repos in PR 13473 appears here."
 }
