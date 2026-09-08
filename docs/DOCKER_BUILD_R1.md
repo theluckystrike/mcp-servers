@@ -56,3 +56,16 @@ is to break the `mcp-license` and `mcp-timezone` cycle, most cleanly by moving `
 and its place table below both of them or by making the licence package's use of it lazy.
 That is a change to a package every server depends on and was not attempted at the end of a
 long session.
+
+## Which server to submit first
+
+`timezone` built in about four minutes to a 324 MB image and answered `tools/list` with 11
+tools. `barcode`, which an earlier round suggested as the best candidate because it needs no
+network, no mounts and no secret, was still inside its final `npm install --omit=dev` after
+twelve minutes: its dependency tree is materially heavier. On build evidence rather than on
+runtime requirements, **timezone is the first server to submit**, and it is also the
+cleanest to explain: no network, no credentials, a 490-place table compiled in.
+
+The rule for the next round stays the same. Open the single pull request only after
+`docker run -i` on that exact image has answered `initialize` and `tools/list`.
+
