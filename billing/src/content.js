@@ -5247,9 +5247,1252 @@ ${FOOT}`,
       { q: "What is the smallest useful setup?", a: "One server that answers a question you have weekly. For most freelancers that is the time tracker, because the record only exists if something was recording, and the free tier gives unlimited timers and entries with reads over the last 7 days." },
     ],
   },
+  "mcp-client-config-file-locations": {
+    title: "MCP config file locations and JSON keys, every client",
+    description: "The file each MCP client reads, the top-level JSON key it expects, and the path on each operating system. Read off each vendor's own documentation on 2026-09-08 and dated.",
+    html: `<h1>Where each MCP client keeps its config, and the key it expects</h1>
+<p>Every row below was read off the client's own documentation on 2026-09-08. The source URL is in
+the last column. Where a vendor publishes no path for an operating system, the cell says so rather
+than guessing.</p>
+
+<table>
+<thead><tr><th>Client</th><th>File</th><th>Top-level key</th><th>Where</th><th>Source, read 2026-09-08</th></tr></thead>
+<tbody>
+<tr>
+  <td>Claude Desktop</td>
+  <td><code>claude_desktop_config.json</code></td>
+  <td><code>mcpServers</code></td>
+  <td>macOS <code>~/Library/Application Support/Claude/claude_desktop_config.json</code><br>Windows <code>%APPDATA%\\Claude\\claude_desktop_config.json</code><br>Linux: no path published</td>
+  <td>modelcontextprotocol.io/docs/develop/connect-local-servers</td>
+</tr>
+<tr>
+  <td>Claude Code</td>
+  <td><code>.mcp.json</code> and <code>~/.claude.json</code></td>
+  <td><code>mcpServers</code></td>
+  <td>project scope: <code>.mcp.json</code> at the repository root<br>local and user scope: <code>~/.claude.json</code></td>
+  <td>docs.claude.com/en/docs/claude-code/mcp</td>
+</tr>
+<tr>
+  <td>Cursor</td>
+  <td><code>mcp.json</code></td>
+  <td><code>mcpServers</code></td>
+  <td>this project: <code>.cursor/mcp.json</code><br>everywhere: <code>~/.cursor/mcp.json</code></td>
+  <td>cursor.com/docs/context/mcp</td>
+</tr>
+<tr>
+  <td>VS Code</td>
+  <td><code>mcp.json</code></td>
+  <td><strong><code>servers</code></strong></td>
+  <td>workspace: <code>.vscode/mcp.json</code><br>user profile: opened by the <code>MCP: Open User Configuration</code> command, not documented as a path</td>
+  <td>code.visualstudio.com/docs/copilot/customization/mcp-servers</td>
+</tr>
+<tr>
+  <td>Windsurf, legacy Cascade agent</td>
+  <td><code>mcp_config.json</code></td>
+  <td><code>mcpServers</code></td>
+  <td><code>~/.codeium/windsurf/mcp_config.json</code></td>
+  <td>docs.devin.ai/desktop/cascade/mcp</td>
+</tr>
+<tr>
+  <td>Cline</td>
+  <td><code>mcp.json</code></td>
+  <td><code>mcpServers</code></td>
+  <td>CLI: <code>~/.cline/mcp.json</code><br>editor extension: reached from the panel, MCP Servers icon, Configure tab, Configure MCP Servers. No path is published for it.</td>
+  <td>docs.cline.bot/mcp/mcp-overview</td>
+</tr>
+<tr>
+  <td>Claude.ai and Claude Desktop connectors</td>
+  <td>none</td>
+  <td>none</td>
+  <td>A form, not a file: Connectors, Add custom connector, then a name and a remote MCP server URL</td>
+  <td>support.claude.com/en/articles/11175166</td>
+</tr>
+</tbody>
+</table>
+
+<h2>The one row that costs people an afternoon</h2>
+<p>VS Code is the only client here whose top-level key is <code>servers</code>. Six of the seven use
+<code>mcpServers</code>. A block copied from a Claude Desktop or Cursor README into
+<code>.vscode/mcp.json</code> is valid JSON, contributes no servers, and produces no error message.</p>
+<pre><code>{
+  "servers": {
+    "invoice": {
+      "command": "node",
+      "args": ["/Users/you/mcp-servers/servers/invoice/dist/index.js"]
+    }
+  }
+}</code></pre>
+<p>VS Code also accepts MCP servers in a dev container, under
+<code>customizations.vscode.mcp.servers</code> in <code>devcontainer.json</code>, which is the same
+key one level down.</p>
+
+<h2>Home-relative paths and Windows</h2>
+<p>Cursor, Windsurf and Cline document one path each, written home-relative with a tilde. That is the
+path on every operating system they support; the tilde resolves to the user's home directory, which on
+Windows is what <code>%USERPROFILE%</code> expands to. Only Claude Desktop publishes two genuinely
+different strings, and it publishes none for Linux, because its documentation lists macOS and Windows
+as the supported platforms.</p>
+
+<h2>Where these paths are not the answer</h2>
+<p>Two clients here have a second configuration surface that the file does not cover.</p>
+<p>Windsurf's <code>mcp_config.json</code> applies to the legacy Cascade agent only. The Devin Local
+agent, which is the default for new tabs, reads the Devin CLI config files instead, so a correct entry
+in this file can be absent in a fresh tab.</p>
+<p>Claude Code rarely wants the file edited by hand. <code>claude mcp add</code> writes it,
+<code>claude mcp list</code> and <code>claude mcp get &lt;name&gt;</code> read it back with a health
+check, and <code>claude mcp add-json &lt;name&gt; '&lt;json&gt;'</code> takes a whole config object.
+Which file it writes depends on <code>--scope</code>, and the default is local.</p>
+
+<h2>Checking a path rather than trusting one</h2>
+<p>A reference table ages. These two commands do not:</p>
+<pre><code>ls -l ~/Library/Application\\ Support/Claude/claude_desktop_config.json
+python3 -c 'import json,sys;json.load(open(sys.argv[1]))' ~/.cursor/mcp.json</code></pre>
+<p>The second one matters more than it looks. A trailing comma makes the whole file unparseable, and
+most clients respond to an unparseable config by loading no servers at all rather than by telling you
+which line is wrong.</p>
+
+<p>This table exists because it is the data the 30 MCP servers on this site had to get right to ship a
+per-client install page for each one. The per-client pages are under
+<a href="/setup/claude-desktop">setup</a>, and the source rows with their caveats live in
+<code>billing/src/setup.js</code> in the repository.</p>
+${FOOT}`,
+    faq: [
+      { q: "Which clients use mcpServers and which use servers?", a: "Claude Desktop, Claude Code, Cursor, Windsurf and Cline use mcpServers. VS Code uses servers. That is the only split among the six file-based clients checked on 2026-09-08." },
+      { q: "Is there a Linux path for Claude Desktop?", a: "None is published. The documentation at modelcontextprotocol.io names macOS and Windows as the platforms, and gives a path for each. Anything you find for Linux comes from a community build, not from the vendor." },
+      { q: "Where is the VS Code user-level mcp.json?", a: "The documentation does not give a path for it. It gives a command instead: MCP: Open User Configuration from the command palette, which opens the file in the active profile. MCP: Open Workspace Folder Configuration opens the workspace one." },
+      { q: "Do these files support environment variable expansion?", a: "It varies and it is worth checking before relying on it. Claude Code expands ${VAR} and ${VAR:-default} in command, args, env, url and headers. Cursor resolves ${env:NAME} and ${userHome} in command, args, env, url and headers. VS Code uses an inputs array and ${input:id} for secrets. Claude Desktop documents an env object with literal values." },
+      { q: "Why does the same server need a different file in every client?", a: "Because the protocol standardises the wire, not the client. MCP defines how a client and a server talk once they are connected; where a client stores the list of servers to launch is a product decision each vendor made separately." },
+    ],
+  },
+  "why-an-mcp-server-does-not-appear": {
+    title: "Why an MCP server does not appear, in order of likelihood",
+    description: "Twelve causes, each with the exact symptom it produces. Almost all of them fail silently, which is why the order matters more than the list.",
+    html: `<h1>An MCP server that does not appear: the causes, in order</h1>
+<p>Work down this list. It is ordered so that the checks which cost seconds come before the ones that
+cost minutes, and each entry names the exact symptom, because nearly every failure here is silent.
+A client that loads no servers looks identical to a client with no servers configured.</p>
+
+<h2>1. The top-level key is wrong</h2>
+<p><strong>Symptom:</strong> the file parses, the client starts, no server is listed, no error appears
+anywhere.</p>
+<p>VS Code expects <code>servers</code>. Claude Desktop, Claude Code, Cursor, Windsurf and Cline expect
+<code>mcpServers</code>. A block copied from the wrong README is valid JSON that contributes nothing.
+Full table at <a href="/guides/mcp-client-config-file-locations">MCP config file locations</a>.</p>
+
+<h2>2. The file has a syntax error</h2>
+<p><strong>Symptom:</strong> every server disappears at once, including ones that worked yesterday.</p>
+<p>A trailing comma after the last entry is the usual cause. If the count went from three servers to
+zero rather than from three to two, suspect the file rather than the entry you just added.</p>
+<pre><code>python3 -c 'import json,sys;json.load(open(sys.argv[1]))' ~/.cursor/mcp.json</code></pre>
+
+<h2>3. You are in a different directory than the one you added it in</h2>
+<p><strong>Symptom:</strong> <code>claude mcp list</code> shows the server in one folder and not in
+another.</p>
+<p>Claude Code's default scope is <code>local</code>: private to you and to the directory you ran the
+command in. <code>--scope user</code> makes it available in every project;
+<code>--scope project</code> writes <code>.mcp.json</code> for the whole repository.</p>
+
+<h2>4. The project server is waiting for approval</h2>
+<p><strong>Symptom:</strong> Claude Code prints <code>⏸ Pending approval (run \`claude\` to approve)</code>
+in <code>claude mcp list</code> and <code>claude mcp get &lt;name&gt;</code>.</p>
+<p>A server defined in a repository's <code>.mcp.json</code> is not started until you approve it
+interactively. That is deliberate: a cloned repository must not be able to run code on your machine by
+committing a config file. As of Claude Code v2.1.196 the approval is read only from settings files that
+are not checked into the repository, until you trust the workspace by running <code>claude</code> in it
+and accepting the trust dialog.</p>
+
+<h2>5. A remote server was written without a type</h2>
+<p><strong>Symptom, Claude Code:</strong> a named error. An entry with a <code>url</code> and no
+<code>type</code> is read as a stdio server, the server is skipped, and Claude Code reports that the
+entry has a <code>url</code> but no type.</p>
+<p><strong>Symptom, Cline:</strong> no error at all. Omitting <code>type</code> falls back to the
+legacy SSE transport, so a streamable HTTP endpoint fails to connect while looking correctly
+configured.</p>
+<pre><code>{ "type": "http", "url": "https://example.com/mcp" }</code></pre>
+<p>Claude Code accepts <code>streamable-http</code> as an alias for <code>http</code>, so a config
+copied from a server's own documentation works unchanged.</p>
+
+<h2>6. The command is not on the client's PATH</h2>
+<p><strong>Symptom:</strong> <code>spawn npx ENOENT</code>, or <code>spawn node ENOENT</code>, in the
+client's log. On Claude Desktop that is <code>~/Library/Logs/Claude/mcp-server-&lt;name&gt;.log</code>
+on macOS and <code>%APPDATA%\\Claude\\logs</code> on Windows.</p>
+<p>A stdio server launched by a desktop application inherits only a limited, platform-dependent subset
+of environment variables, and that subset frequently does not include the PATH your shell has. If node
+came from nvm or homebrew, paste what <code>which node</code> prints instead of the bare word. GitHub's
+issue search returned 1,428 results for the exact phrase <code>"spawn npx ENOENT"</code> on 2026-09-08,
+which is the single most common shape of this failure.</p>
+
+<h2>7. The path is relative</h2>
+<p><strong>Symptom:</strong> the same ENOENT, or a server that starts and immediately exits.</p>
+<p>Claude Desktop's documentation requires every path in <code>claude_desktop_config.json</code> to be
+absolute. The working directory a desktop client launches a subprocess from is not the one you think
+it is.</p>
+
+<h2>8. The client was not fully restarted</h2>
+<p><strong>Symptom:</strong> the config is correct and the server list has not changed.</p>
+<p>Claude Desktop needs a complete quit and relaunch; reloading the window is not enough. Claude Code
+picks the entry up in the next session, and <code>/mcp</code> reconnects one on demand. Cline and
+Windsurf refresh from their own panels without an application restart.</p>
+
+<h2>9. You are in the wrong agent</h2>
+<p><strong>Symptom:</strong> Windsurf shows the server in one tab and not in a new one.</p>
+<p><code>~/.codeium/windsurf/mcp_config.json</code> applies to the legacy Cascade agent only. The Devin
+Local agent, the default for new tabs, reads the Devin CLI config files instead.</p>
+
+<h2>10. The tool ceiling is full</h2>
+<p><strong>Symptom:</strong> the server connects, and some of its tools are missing.</p>
+<p>Windsurf's Cascade reaches at most 100 tools at once and every enabled server spends from it. Claude
+Code imposes no fixed per-server cap; its documentation says the practical limit is the context window
+budget, and with tool search enabled only tool names and server instructions load at session start.</p>
+
+<h2>11. The server writes something that is not MCP to stdout</h2>
+<p><strong>Symptom:</strong> the connection drops during startup, sometimes with a JSON parse error in
+the log.</p>
+<p>The stdio binding is explicit: the server MUST NOT write anything to stdout that is not a valid MCP
+message. A stray <code>console.log</code>, a banner, or a dependency's progress bar corrupts the
+stream. Logging goes to stderr, which clients may capture, forward or ignore, and which the
+specification says should not be read as an error signal on its own.</p>
+
+<h2>12. Two definitions of the same server, and the other one won</h2>
+<p><strong>Symptom:</strong> the server appears, and it is the wrong version of it.</p>
+<p>Claude Code connects once, using the definition from the highest-precedence source, and does not
+merge fields across scopes. The order is local, then project, then user, then plugin-provided servers,
+then claude.ai connectors. Scopes match duplicates by name; plugins and connectors match by endpoint.</p>
+
+<h2>What to run first</h2>
+<pre><code>claude mcp list          # Claude Code, with a health check per server
+/mcp                     # inside a session, shows what is connected
+tail -f ~/Library/Logs/Claude/mcp.log     # Claude Desktop, macOS</code></pre>
+<p>In Cursor, open the Output panel and select MCP Logs from the dropdown. In VS Code, run
+<code>MCP: List Servers</code>. In Cline, the MCP settings actions include restarting an unresponsive
+server.</p>
+
+<p>Every symptom above came from the vendor's own documentation, read on 2026-09-08, or from the
+stdio transport binding in the MCP specification revision 2026-07-28. The 30 servers published from
+this repository hit most of them at least once while being packaged for six clients; the per-client
+caveats are recorded with their source URLs in <code>billing/src/setup.js</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "The client shows the server but no tools. What is that?", a: "Usually the server started and then failed during initialisation, or it is filling a tool ceiling. Read the per-server log first: on Claude Desktop, mcp-server-<name>.log holds the server's stderr, and a stdio server may use stderr for all of its logging, so that file is not limited to errors." },
+      { q: "Why is there almost never an error message?", a: "Because most of these are not errors from the client's point of view. A config with the wrong top-level key is a valid config describing zero servers. A local-scope entry in another directory is correctly absent. The client is doing what it was told." },
+      { q: "Does restarting the machine help?", a: "Only by accident, when it happens to reload a client that was holding a stale config. Nothing on this list is fixed by a reboot, and starting there costs you the two minutes in which the log would have told you the answer." },
+      { q: "How do I tell a client problem from a server problem?", a: "Run the server yourself from a terminal with the exact command and arguments in the config. If it starts and speaks when you send it an initialize message, the problem is in the client's config or environment. If it does not, it is the server." },
+    ],
+  },
+  "how-mcp-registry-search-works": {
+    title: "How MCP registry search actually works, measured",
+    description: "The official registry matches names only and sorts strict ASCII on the whole namespace and name. Your publisher namespace decides your rank, not your server's name. Measured live on 2026-09-08.",
+    html: `<h1>Registry search sorts on your namespace, not your name</h1>
+<p>The official MCP registry's <code>search=</code> parameter matches the server <em>name</em> only,
+and returns matches in strict ASCII order on the whole <code>namespace/local-name</code> string. Your
+namespace is the first thing compared, so it decides your position before any word you chose for the
+server is looked at.</p>
+<p>Here is the measurement. The same server, published under two namespaces on 2026-09-08:</p>
+<table>
+<thead><tr><th>Search token</th><th><code>com.bestremotetools/...</code></th><th><code>io.github.theluckystrike/...</code></th><th>Servers matching</th></tr></thead>
+<tbody>
+<tr><td><code>schedule</code></td><td><strong>3</strong></td><td>15</td><td>22</td></tr>
+<tr><td><code>delivery</code></td><td><strong>2</strong></td><td>17</td><td>18</td></tr>
+</tbody>
+</table>
+<p>Same code, same description, same local name. Twelve places on one token and fifteen on the other,
+bought entirely by the two letters at the front of the namespace. Reproduce it:</p>
+<pre><code>curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=schedule&amp;limit=100&amp;version=latest' \\
+  | python3 -c 'import json,sys; [print(i,r["server"]["name"]) for i,r in enumerate(json.load(sys.stdin)["servers"],1)]'</code></pre>
+
+<h2>How to prove the sort rather than assume it</h2>
+<p>An ordering claim is testable in one line: read the names back and compare them to their own sorted
+copy. On 2026-09-08 that returned <code>True</code> for every result set checked, including a
+6,000-row full pagination of the whole registry.</p>
+<pre><code>names == sorted(names)   # True on schedule, delivery, and 6,000 paginated rows</code></pre>
+<p>Strict ASCII means uppercase sorts before lowercase, and digits before letters. It also means the
+comparison never reaches your local name until the namespaces are equal.</p>
+
+<h2>What that implies for a namespace</h2>
+<p>Reversed-domain namespaces cluster by their first label. In a 6,000-row pagination on 2026-09-08 the
+first label distribution was <code>ai</code> 3,853, <code>app</code> 1,204, <code>co</code> 349,
+<code>cloud</code> 128, then a long tail. Sixty paginated calls of 100 rows each reached
+<code>co.pipeboard/tiktok-ads-mcp</code> and the cursor was still set, so the registry never got past
+the letter c.</p>
+<p>So <code>io.github.&lt;user&gt;</code>, which is what the GitHub login flow grants and what most
+first-time publishers use, sorts after every <code>ai.</code>, <code>app.</code>, <code>com.</code>,
+<code>dev.</code> and <code>io.a</code> through <code>io.f</code> namespace that matches the same token.
+On a token with more than about twenty matches, that is page two.</p>
+
+<h2>Getting a namespace that is not io.github</h2>
+<p>The registry derives your namespace from a domain you prove you control. Two methods are documented,
+and both were run from this project:</p>
+<ul>
+<li><strong>DNS</strong>: <code>mcp-publisher login dns --domain &lt;domain&gt; --private-key &lt;hex&gt;</code>,
+an ed25519 key proved by a TXT record.</li>
+<li><strong>HTTP</strong>: <code>mcp-publisher login http --domain &lt;domain&gt; --private-key &lt;hex&gt;</code>,
+the same key proved by serving one file at <code>/.well-known/mcp-registry-auth</code> whose body is
+<code>v=MCPv1; k=ed25519; p=&lt;base64 public key&gt;</code>.</li>
+</ul>
+<p>The HTTP method needs no DNS credential at all, which matters if the account holding your domain
+cannot mint a DNS-edit token. Serving that one static file from anything already attached to the
+domain is enough. The granted token then carries a permission on
+<code>&lt;reversed domain&gt;/*</code>, and everything you publish under it inherits the sort position
+of that namespace.</p>
+
+<h2>The trap in the row count</h2>
+<p><code>/v0/servers</code> returns one row per published <em>version</em>, not one per server. The
+token <code>schedule</code> returns 63 rows and 22 servers. Add <code>&amp;version=latest</code> to get
+one row per server. Any count you quote without that parameter is a version count wearing a server
+count's clothes.</p>
+
+<h2>What this does not buy you</h2>
+<p>Rank in a name-substring search is findability inside one directory, not demand. This project holds
+85 active registry rows and the registry is the only channel that has demonstrably sent it humans:
+9 of 22 unique visitors in fourteen days, measured in <code>data/traffic.json</code>. That is a real
+channel and a small one. Ranking third instead of fifteenth multiplies a small number.</p>
+
+<p>Everything above was measured against the live API on 2026-09-08 from this repository, which
+publishes 30 MCP servers and used both login methods while working it out. The full working, including
+the ranks the same servers took under six candidate namespaces, is in <code>docs/NAMESPACE_R1.md</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does the registry search descriptions or keywords?", a: "Not through search=. It matches the name. A server whose description is a perfect answer to a query and whose name does not contain the token does not come back at all, which is why the local name still matters even though the namespace outranks it." },
+      { q: "Can I change my namespace later?", a: "You can publish under a new one, but the old rows do not move. Publishing the whole catalogue twice puts your own entries in competition with each other in the same sorted list, so the safer move is one server under the new namespace, measured against the old row for the same server." },
+      { q: "Why is version=latest not the default?", a: "The endpoint is a version log, not a catalogue. It is the right shape for a client resolving a specific version and the wrong shape for counting anything. One publisher in the sample had 739 version rows for a single server." },
+      { q: "Is ASCII order the same as alphabetical?", a: "Close but not identical. Uppercase letters sort before all lowercase ones and digits sort before both, so a namespace starting with a digit or a capital would sort ahead of every lowercase one. Nothing stops that, and nobody appears to be doing it." },
+      { q: "How many servers does a token typically match?", a: "It varies by two orders of magnitude. On 2026-09-08 delivery matched 18 servers and schedule 22, while invoice filled a page of 100 with the cursor still set. Check before you name anything: the count is one API call." },
+    ],
+  },
+  "what-is-in-the-mcp-registry": {
+    title: "What is actually in the MCP registry: 6,000 rows counted",
+    description: "A full pagination of the official registry on 2026-09-08. One row per version not per server, hosted servers outnumbering installable ones six to one, and streamable HTTP at 29 times SSE.",
+    html: `<h1>What a full pagination of the MCP registry returns</h1>
+<p>Sixty paginated calls of 100 rows each against
+<code>registry.modelcontextprotocol.io/v0/servers</code> on 2026-09-08 returned 6,000 rows containing
+<strong>2,211 distinct servers</strong>. The cursor was still set at row 6,000, which stood at
+<code>co.pipeboard/tiktok-ads-mcp</code>, so this is the first 6,000 rows in ASCII order and not the
+whole registry. Every figure below describes that sample and says so.</p>
+
+<h2>The first thing the numbers show</h2>
+<p>Rows are versions. 6,000 rows, 2,211 names, and exactly 2,211 of those rows carry
+<code>isLatest: true</code>. One server, <code>ai.bowmark/bowmark</code>, accounted for 739 rows on its
+own: 739 distinct version strings from 1.0.0 to 8.99.1, which is 12.3 percent of the entire sample from
+a single publisher republishing one server.</p>
+<p>So any count taken off this endpoint without <code>&amp;version=latest</code> is inflated, and not
+evenly: it is inflated by whoever has the busiest release pipeline.</p>
+
+<h2>Hosted servers now outnumber installable ones</h2>
+<p>Of the 2,211 latest rows:</p>
+<table>
+<thead><tr><th>Declares</th><th>Servers</th></tr></thead>
+<tbody>
+<tr><td>A remote endpoint (<code>remotes</code>)</td><td>1,985</td></tr>
+<tr><td>An installable package (<code>packages</code>)</td><td>311</td></tr>
+<tr><td>Both</td><td>97</td></tr>
+<tr><td>Neither</td><td>12</td></tr>
+</tbody>
+</table>
+<p>Six hosted servers for every installable one. That is a different registry from the one most
+tutorials describe, where an MCP server is a local subprocess you launch with <code>npx</code>.</p>
+
+<h2>Transport, and how dead SSE is</h2>
+<p>Across the same 2,211 latest rows, the declared remote transports were <strong>streamable-http
+1,986</strong> and <strong>sse 68</strong>. Streamable HTTP replaced HTTP+SSE in protocol version
+2025-03-26, and the registry's own data now shows a 29 to 1 split. If you are building a remote server,
+SSE is a compatibility path, not a choice.</p>
+
+<h2>What people package, when they package</h2>
+<table>
+<thead><tr><th>Package registry</th><th>Servers (latest rows)</th></tr></thead>
+<tbody>
+<tr><td>npm</td><td>259</td></tr>
+<tr><td>PyPI</td><td>41</td></tr>
+<tr><td>OCI</td><td>15</td></tr>
+<tr><td>mcpb</td><td>9</td></tr>
+<tr><td>NuGet</td><td>1</td></tr>
+</tbody>
+</table>
+<p>Nine servers in the sample declare an <code>mcpb</code> package, the one-click Claude Desktop bundle
+format. That is 0.4 percent of the sample, against 1,985 that publish a URL.</p>
+
+<h2>Concentration</h2>
+<p>The 2,211 servers came from 1,539 distinct namespaces, so the median publisher has one server. The
+concentration is at the top: <code>ai.smithery</code> held 213 distinct servers, <code>app.wishpool</code>
+125 and <code>ai.getvda</code> 94. By row count rather than server count the picture inverts, because
+of the republishing effect above: <code>ai.bowmark</code> 739 rows, <code>ai.smithery</code> 288,
+<code>ai.intuitek.the-stall</code> 204.</p>
+
+<h2>Deprecation</h2>
+<p>18 of the 2,211 latest rows carry status <code>deprecated</code>, the rest <code>active</code>. The
+registry marks them rather than removing them, so a client reading the list must filter, and a human
+reading a directory built on this data may not be shown the flag at all.</p>
+
+<h2>The sample is a prefix, and that matters</h2>
+<p>Because results come back in strict ASCII order on the namespace, the first 6,000 rows are
+namespaces <code>ac.</code> through <code>co.</code>. The first-label counts in the sample were
+<code>ai</code> 3,853, <code>app</code> 1,204, <code>co</code> 349 and <code>cloud</code> 128. Any
+namespace beginning <code>dev.</code>, <code>io.</code> or <code>me.</code> is absent from it entirely,
+including every <code>io.github.*</code> server, which is what the GitHub login flow grants and what
+most individual publishers use. So treat these ratios as describing commercially published servers, and
+expect the <code>io.github</code> tail to be more package-shaped and less hosted.</p>
+
+<h2>Reproducing it</h2>
+<pre><code>curl -s 'https://registry.modelcontextprotocol.io/v0/servers?limit=100' | jq '.metadata'
+# {"nextCursor": "...", "count": 100}
+# follow nextCursor until it is absent; add &version=latest for one row per server</code></pre>
+<p>Two things to know before you spend the calls. <code>metadata.count</code> is the size of the page
+you were handed, not a total, so a count of 100 with a cursor set is a floor. And there is no totals
+endpoint: <code>/v0/stats</code> returns 404 and <code>/v0/health</code> returns only a status and a
+GitHub client id, both checked on 2026-09-08.</p>
+
+<p>This count was run from a repository that publishes 30 MCP servers and has 85 active rows in the
+same registry, so the motive was practical rather than academic: knowing whether a name is contested is
+one API call, and knowing what the whole list looks like turned out to be sixty.</p>
+${FOOT}`,
+    faq: [
+      { q: "How many MCP servers are in the registry in total?", a: "More than 2,211, and this measurement cannot say how many more. Sixty paginated calls covered namespaces ac. through co. and the cursor was still set. What the sample does establish is the shape: mostly hosted, mostly streamable HTTP, one server per publisher at the median." },
+      { q: "Why is the row count so much higher than the server count?", a: "The endpoint returns every published version. In this sample 6,000 rows collapsed to 2,211 servers, and a single server accounted for 739 of the extra rows. Pass version=latest to collapse them." },
+      { q: "Does a registry entry mean the server works?", a: "No. The registry records what a publisher declared, not what runs. 18 entries in the sample are marked deprecated and still returned. Nothing in the API tests an endpoint or installs a package." },
+      { q: "Is the registry the same thing as a directory site?", a: "No, though most directories are built on it. The registry is an API with a strict-ASCII name search. Directory sites add their own ranking, badges and editorial, which is why the same server can be prominent on one and invisible on the other." },
+    ],
+  },
+  "stdio-or-streamable-http": {
+    title: "stdio or streamable HTTP: which MCP transport, and what breaks",
+    description: "The two standard MCP transports, what each one actually is on the wire, the failure each one has that the other does not, and how to choose. From specification revision 2026-07-28.",
+    html: `<h1>stdio or streamable HTTP</h1>
+<p>Choose stdio when the server needs the user's machine: their files, their clipboard, their local
+database, their credentials already on disk. Choose streamable HTTP when the server needs something you
+run: your API, your data, your rate limits, your ability to fix a bug without asking anyone to
+reinstall. Everything else follows from that.</p>
+
+<h2>What each one is</h2>
+<p><strong>stdio.</strong> The client launches the server as a subprocess and talks to it over the
+subprocess's standard streams. One newline-delimited JSON-RPC message per line, stdin in, stdout out.
+There is no header layer at all; the protocol version and client capabilities travel inline in
+<code>_meta.io.modelcontextprotocol/*</code> in the message body.</p>
+<p><strong>Streamable HTTP.</strong> The server is an independent process exposing a single endpoint
+that accepts POST. Every client message is its own HTTP POST. The server answers each request with
+either one JSON object or an SSE stream scoped to that request, carrying progress notifications and
+then the final response. It was introduced in protocol version 2025-03-26 to replace the HTTP+SSE
+transport from 2024-11-05.</p>
+
+<h2>The comparison that decides it</h2>
+<table>
+<thead><tr><th></th><th>stdio</th><th>Streamable HTTP</th></tr></thead>
+<tbody>
+<tr><td>Who runs it</td><td>the user, as a child process</td><td>you, on a host</td></tr>
+<tr><td>Reaches local files</td><td>yes</td><td>no</td></tr>
+<tr><td>Concurrent users</td><td>one per launched process</td><td>many on one deployment</td></tr>
+<tr><td>Ship a fix</td><td>the user reinstalls</td><td>you deploy</td></tr>
+<tr><td>Secrets live</td><td>on the user's disk, in their config</td><td>on your host</td></tr>
+<tr><td>Install cost to the user</td><td>a runtime, a path, a config entry</td><td>a URL</td></tr>
+<tr><td>Cost to you when nobody uses it</td><td>nothing</td><td>the host bill</td></tr>
+<tr><td>Cancellation</td><td>a <code>notifications/cancelled</code> notification</td><td>close the request's response stream</td></tr>
+</tbody>
+</table>
+
+<h2>What breaks on stdio</h2>
+<p><strong>Anything you print.</strong> The specification is explicit: the server MUST NOT write
+anything to stdout that is not a valid MCP message. One stray <code>console.log</code>, one dependency
+banner, one progress bar, and the client is parsing your greeting as JSON-RPC. Logging goes to stderr,
+which the client MAY capture, forward or ignore, and which clients are told not to read as an error
+signal on its own.</p>
+<p><strong>The environment.</strong> A desktop application launching a subprocess passes on a limited,
+platform-dependent subset of environment variables. The PATH your shell has is frequently not the PATH
+your client has, which is why <code>spawn npx ENOENT</code> is the single most common MCP failure
+report: GitHub's issue search returned 1,428 results for that exact phrase on 2026-09-08. Absolute
+paths fix it.</p>
+<p><strong>Shutdown.</strong> The client closes your stdin and waits. A server that does not exit on
+EOF gets escalated to SIGTERM and then SIGKILL on POSIX, or TerminateProcess on Windows. Honour EOF and
+you never meet the escalation.</p>
+
+<h2>What breaks on streamable HTTP</h2>
+<p><strong>Origin, and DNS rebinding.</strong> Servers MUST validate the <code>Origin</code> header and
+answer an invalid one with 403. A local HTTP server without that check can be driven by any web page
+the user has open. Bind to 127.0.0.1 rather than 0.0.0.0 when running locally.</p>
+<p><strong>Client transport defaults.</strong> Cline falls back to the legacy SSE transport when
+<code>type</code> is omitted, so a correct streamable HTTP endpoint fails against a config that looks
+right. Claude Code reads a JSON entry that has a <code>url</code> but no <code>type</code> as a stdio
+server, skips it, and says so. Claude Code accepts <code>streamable-http</code> as an alias for
+<code>http</code>, so a config copied from a server's own docs works unchanged.</p>
+<p><strong>The revision boundary.</strong> Revision 2026-07-28 removed the GET stream endpoint and
+removed protocol-level sessions from streamable HTTP. Server-to-client interactions such as sampling,
+elicitation and roots are now embedded in results as input requests rather than sent as separate
+requests on a stream. A client written against 2025-03-26 through 2025-11-25 expects the old behaviour,
+so a server that must serve both needs the compatibility path described in the specification's
+backward compatibility section.</p>
+
+<h2>The headers a streamable HTTP request carries</h2>
+<pre><code>POST /mcp HTTP/1.1
+Content-Type: application/json
+MCP-Protocol-Version: 2026-07-28
+Mcp-Method: tools/call
+Mcp-Name: get_weather</code></pre>
+<p><code>Mcp-Method</code> is required on all requests and <code>Mcp-Name</code> on
+<code>tools/call</code>, <code>resources/read</code> and <code>prompts/get</code>. They mirror fields
+that are already in the body, so an intermediary can route and inspect without parsing JSON. The body
+stays the source of truth. Clients MUST send an <code>Accept</code> header listing both
+<code>application/json</code> and <code>text/event-stream</code>, because either can come back.</p>
+
+<h2>What the registry chose</h2>
+<p>Counted on 2026-09-08 across 2,211 distinct servers in a paginated sample of the official registry:
+1,985 declare a remote endpoint and 311 declare an installable package. Among the remote transports,
+streamable-http appeared 1,986 times and sse 68. So the published population has already moved to
+hosted servers over streamable HTTP, whatever the tutorials still show.</p>
+
+<h2>You can do both</h2>
+<p>97 servers in that sample declare both, which is the honest answer for most tools: the same handlers
+behind two entry points. This repository's 30 servers run as stdio subprocesses from a bundle and as
+streamable HTTP endpoints from one worker, off the same code. The only part that genuinely differs is
+where the data lives, and that is a product decision rather than a transport one.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is SSE still a valid MCP transport?", a: "HTTP+SSE was the 2024-11-05 transport and streamable HTTP replaced it in 2025-03-26. Streamable HTTP still uses SSE for a response stream, so the technology is not gone, but a server whose transport type is sse is speaking the old binding. In the registry sample it was 68 servers against 1,986." },
+      { q: "Can a stdio server be remote?", a: "Not as launched, but the framing travels. The specification says the stdio wire format is just newline-delimited JSON-RPC over a reliable bidirectional byte stream, and that custom transports over Unix domain sockets or TCP SHOULD reuse it rather than inventing framing. Only the process lifecycle rules are specific to standard streams." },
+      { q: "Which one should a first server be?", a: "stdio, unless the server needs a secret you cannot give away. It has no hosting bill, no auth to design and no uptime to hold, and you can convert it later because the handlers do not change." },
+      { q: "Does streamable HTTP still have sessions?", a: "Not at the protocol level after revision 2026-07-28, which removed them along with the GET stream endpoint. Anything you were storing per session now needs to be carried in the request or held by your own application." },
+      { q: "How do I cancel a long tool call?", a: "It differs by transport, which is easy to miss. On stdio the client sends notifications/cancelled with the request id. On streamable HTTP it closes the request's response stream, and no cancellation message is sent at all." },
+    ],
+  },
+  "mcp-protocol-versions": {
+    title: "MCP protocol versions: what each one changed",
+    description: "The version identifiers are dates, the current one is 2026-07-28, and negotiation happens per request rather than per connection. What changed, and how to tell which version you are speaking.",
+    html: `<h1>MCP protocol versions</h1>
+<p>MCP versions are dates in <code>YYYY-MM-DD</code> form, and the date is the last time a backwards
+incompatible change was made, not the last release. The current protocol version is
+<strong>2026-07-28</strong>, read off modelcontextprotocol.io/specification/versioning on 2026-09-08.
+Backwards compatible improvements ship without moving the number.</p>
+
+<h2>Where the version lives</h2>
+<p>Every request declares its own version in the
+<code>io.modelcontextprotocol/protocolVersion</code> key of its <code>_meta</code> field, and the
+server accepts or rejects each request independently. On streamable HTTP the same value is mirrored
+into the <code>MCP-Protocol-Version</code> header so an intermediary can read it without parsing the
+body. Clients and servers MAY support several versions at once.</p>
+<p>That is a real change in shape. Earlier revisions established a connection-scoped session with an
+<code>initialize</code> handshake, and negotiated once. Now the unit of negotiation is the request.</p>
+
+<h2>What changed in 2026-07-28</h2>
+<ul>
+<li>The GET stream endpoint was removed from streamable HTTP.</li>
+<li>Protocol-level sessions were removed from streamable HTTP.</li>
+<li>Server-to-client interactions, meaning sampling, elicitation and roots, are embedded in results as
+input requests under the multi round-trip request model rather than sent as separate JSON-RPC requests
+on a stream. In revisions 2025-03-26 through 2025-11-25 a server could send such requests on an SSE
+stream; it cannot now.</li>
+<li>Servers no longer initiate JSON-RPC requests at all. The specification states the only two message
+directions: client requests and notifications to the server, server responses and notifications to the
+client.</li>
+</ul>
+
+<h2>The versions people still run into</h2>
+<table>
+<thead><tr><th>Version</th><th>What it is remembered for</th></tr></thead>
+<tbody>
+<tr><td><code>2024-11-05</code></td><td>The HTTP+SSE transport, two endpoints, replaced in 2025-03-26.</td></tr>
+<tr><td><code>2025-03-26</code></td><td>Streamable HTTP introduced. A server supporting older clients MAY read a request with no <code>MCP-Protocol-Version</code> header as this version.</td></tr>
+<tr><td><code>2025-06-18</code></td><td>Introduced the <code>MCP-Protocol-Version</code> header. Before it, there was no header to omit.</td></tr>
+<tr><td><code>2026-07-28</code></td><td>Current. Sessions and the GET stream removed; per-request negotiation.</td></tr>
+</tbody>
+</table>
+<p>The header rule is the one worth writing down. A server that supports pre-2025-06-18 clients MAY
+treat a request with no <code>MCP-Protocol-Version</code> header as 2025-03-26. A server that does not
+support them MUST reject a request without the header. Both are conformant, which means the same
+missing header produces a working connection against one server and a rejection against another.</p>
+
+<h2>Deprecation, and how long you have</h2>
+<p>Features can be marked Deprecated without being removed. A deprecated feature documents a migration
+path or states that none is needed, and stays in the specification for at least twelve months, or at
+least ninety days under the expedited-removal exception, before it is eligible for removal. Revisions
+themselves are marked Draft, Current or Final; a Final revision will not change again.</p>
+
+<h2>How to tell what you are speaking</h2>
+<pre><code># streamable HTTP: the header is on the request, so read your own client's
+curl -i -X POST https://example.com/mcp \\
+  -H 'Content-Type: application/json' \\
+  -H 'Accept: application/json, text/event-stream' \\
+  -H 'MCP-Protocol-Version: 2026-07-28' \\
+  -H 'Mcp-Method: tools/list' \\
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'</code></pre>
+<p>On stdio there is no header to read, so the version is in the body of every message you send. If you
+are debugging a version mismatch on stdio, log the <code>_meta</code> block rather than looking for an
+envelope that does not exist.</p>
+
+<h2>Why this bites server authors more than client authors</h2>
+<p>A client ships as one product and can decide which version it speaks. A published server is called
+by clients of several eras at once. This repository's 30 servers are reachable from Claude Desktop,
+Claude Code, Cursor, VS Code, Windsurf, Cline and the claude.ai connector form, and those do not move in
+step. The compatibility matrix in the specification's backward compatibility section is the thing to
+read before you assume the version you developed against is the one arriving.</p>
+${FOOT}`,
+    faq: [
+      { q: "Do I have to support old versions?", a: "No, and the specification makes both choices conformant. A server that rejects a request with no MCP-Protocol-Version header is correct; so is one that reads it as 2025-03-26. Pick one deliberately and document it, because callers cannot tell which you chose except by being rejected." },
+      { q: "Does the version number change on every release?", a: "No. It moves only when a backwards incompatible change lands, which is why the dates are months apart. A specification update that adds something compatible keeps the same identifier." },
+      { q: "What replaced the initialize handshake?", a: "Per-request negotiation. Each request carries its protocol version and client capabilities in its _meta field, and the server accepts or rejects it on its own. Earlier revisions set that up once per connection, and the backward compatibility rules describe how each side detects which era the other is from." },
+      { q: "Where does the MCP-Protocol-Version header apply?", a: "Streamable HTTP only. It mirrors a body field so intermediaries can route without parsing. stdio has no header layer, so the same information lives only in _meta." },
+    ],
+  },
+  "mcp-server-json-fields-by-client": {
+    title: "Every field in an MCP server config entry, by client",
+    description: "command, args, env, envFile, type, url, headers, timeout, disabled, autoApprove and the variable syntax each client accepts. Read off six vendors' documentation on 2026-09-08.",
+    html: `<h1>The fields in an MCP server entry, and which client reads them</h1>
+<p>There is no shared schema for a server entry. Every client invented its own field set on top of the
+same two ideas, a command to launch or a URL to call. This is what each one documents, read on
+2026-09-08.</p>
+
+<table>
+<thead><tr><th>Field</th><th>Claude Desktop</th><th>Claude Code</th><th>Cursor</th><th>VS Code</th><th>Windsurf</th><th>Cline</th></tr></thead>
+<tbody>
+<tr><td><code>command</code></td><td>yes</td><td>yes</td><td>yes, required for stdio</td><td>yes</td><td>yes</td><td>yes</td></tr>
+<tr><td><code>args</code></td><td>yes</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+<tr><td><code>env</code></td><td>yes</td><td>yes, or <code>--env</code></td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+<tr><td><code>type</code></td><td>not documented</td><td>yes, <code>http</code> / <code>streamable-http</code> / <code>ws</code></td><td><strong>required</strong></td><td>yes</td><td>documented as stdio, HTTP and SSE</td><td>yes, and the default is the trap</td></tr>
+<tr><td><code>url</code></td><td>not applicable</td><td>yes</td><td>yes</td><td>yes</td><td><code>serverUrl</code> or <code>url</code></td><td>yes</td></tr>
+<tr><td><code>headers</code></td><td>not applicable</td><td>yes, or <code>--header</code></td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+<tr><td><code>envFile</code></td><td>no</td><td>no</td><td>yes, <strong>stdio only</strong></td><td>no</td><td>no</td><td>no</td></tr>
+<tr><td><code>timeout</code></td><td>no</td><td>yes, milliseconds, per server</td><td>no</td><td>no</td><td>no</td><td>set in MCP settings</td></tr>
+<tr><td><code>disabled</code></td><td>no</td><td>toggled, stored in <code>~/.claude.json</code></td><td>no</td><td>stored outside <code>mcp.json</code></td><td>toggled per tool</td><td>yes, in the entry</td></tr>
+<tr><td><code>autoApprove</code></td><td>no</td><td>no</td><td>no</td><td>no</td><td>no</td><td>yes, an array of tool names</td></tr>
+<tr><td><code>inputs</code></td><td>no</td><td>no</td><td>no</td><td>yes, top-level, with <code>&#36;{input:id}</code></td><td>no</td><td>no</td></tr>
+<tr><td><code>sandboxEnabled</code></td><td>no</td><td>no</td><td>no</td><td>yes, macOS and Linux</td><td>no</td><td>no</td></tr>
+</tbody>
+</table>
+
+<h2>Variable syntax, which is where configs stop being portable</h2>
+<table>
+<thead><tr><th>Client</th><th>Syntax</th><th>Fields it expands in</th></tr></thead>
+<tbody>
+<tr><td>Claude Code</td><td><code>&#36;{VAR}</code> and <code>&#36;{VAR:-default}</code></td><td>command, args, env, url, headers</td></tr>
+<tr><td>Cursor</td><td><code>&#36;{env:NAME}</code>, <code>&#36;{userHome}</code>, <code>&#36;{workspaceFolder}</code></td><td>command, args, env, url, headers</td></tr>
+<tr><td>Windsurf</td><td><code>&#36;{env:VAR}</code> and <code>&#36;{file:/path/to/file}</code></td><td>command, args, env, serverUrl, url, headers</td></tr>
+<tr><td>VS Code</td><td><code>&#36;{input:id}</code> against a top-level <code>inputs</code> array</td><td>server configuration values</td></tr>
+<tr><td>Claude Desktop</td><td>none documented</td><td>literal values in <code>env</code></td></tr>
+</tbody>
+</table>
+<p>Windsurf's <code>&#36;{env:VAR}</code> resolves to an empty string when the variable is unset, and its
+<code>&#36;{file:...}</code> is left as-is when the file cannot be read. Both are worth knowing before
+you debug an authentication failure: the config did what it was told and told you nothing.</p>
+
+<h2>The four fields that produce silent failures</h2>
+<p><strong><code>type</code>, omitted.</strong> Cline falls back to the legacy SSE transport. Claude
+Code reads an entry with a <code>url</code> and no <code>type</code> as a stdio server, skips it, and
+reports that the entry has a url but no type. Cursor's field table marks it required outright.</p>
+<p><strong><code>command</code>, bare.</strong> Cursor's documentation is precise about this: the
+command must be available on your system path or contain its full path. The path a desktop client has
+is not the path your shell has.</p>
+<p><strong><code>envFile</code>, on a remote server.</strong> Cursor supports it for stdio servers only.
+An HTTP or SSE server does not read it, and the fix is interpolation from the shell environment
+instead.</p>
+<p><strong>The top-level key.</strong> Not a field, but the same class of failure. VS Code expects
+<code>servers</code>; the other five expect <code>mcpServers</code>. Table at
+<a href="/guides/mcp-client-config-file-locations">MCP config file locations</a>.</p>
+
+<h2>One entry, written for each client</h2>
+<pre><code>// Claude Desktop, Cursor, Windsurf, Cline, Claude Code
+{ "mcpServers": { "invoice": {
+    "type": "stdio",
+    "command": "/opt/homebrew/bin/node",
+    "args": ["/Users/you/mcp-servers/servers/invoice/dist/index.js"]
+} } }
+
+// VS Code
+{ "servers": { "invoice": {
+    "command": "/opt/homebrew/bin/node",
+    "args": ["/Users/you/mcp-servers/servers/invoice/dist/index.js"]
+} } }</code></pre>
+<p><code>type: "stdio"</code> is harmless in the clients that do not require it and required in Cursor,
+so writing it always is one less thing to remember.</p>
+
+<h2>Where these came from</h2>
+<p>Claude Desktop from modelcontextprotocol.io/docs/develop/connect-local-servers, Claude Code from
+docs.claude.com/en/docs/claude-code/mcp, Cursor from cursor.com/docs/context/mcp, VS Code from
+code.visualstudio.com/docs/copilot/customization/mcp-servers, Windsurf from
+docs.devin.ai/desktop/cascade/mcp, Cline from docs.cline.bot/mcp/mcp-overview. All read 2026-09-08. A
+blank cell means the vendor does not document the field, not that it is known to be unsupported.</p>
+<p>The 30 MCP servers published from this repository ship a per-client config block for each of these,
+generated from one table so a field cannot drift on one page and not the others; the source rows are in
+<code>billing/src/setup.js</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is there a standard schema for a client config file?", a: "No. The specification standardises the wire protocol, not the client's server list. The shared shape is a map of server names to objects with command and args or url, and everything past that is per vendor." },
+      { q: "Can I use one file for several clients?", a: "Only by symlinking, and only among the five that use mcpServers with the same field names. VS Code's servers key rules it out, and any entry using a client-specific variable syntax stops being portable the moment it is expanded." },
+      { q: "What does autoApprove actually skip?", a: "The confirmation prompt before a tool call, per tool name, in Cline. Read-only tools are reasonable candidates. Anything that writes a file, sends a request or spends money is worth leaving off it, because seeing the call before it happens is the point of the prompt." },
+      { q: "Which fields hold secrets safely?", a: "None of them hold a secret safely as a literal. VS Code's inputs array and every client's variable interpolation exist so the value stays outside a file that gets committed. Cursor's envFile is the same idea for stdio servers." },
+    ],
+  },
+  "mcp-config-scopes-and-precedence": {
+    title: "MCP config scopes: which definition wins when a server is defined twice",
+    description: "Claude Code resolves five sources in a fixed order and does not merge fields. Cursor, VS Code and Cline each have a project and a global layer. What each one does with a duplicate.",
+    html: `<h1>When the same MCP server is defined twice</h1>
+<p>Claude Code connects once, using the definition from the highest-precedence source, and uses that
+entry whole: fields are not merged across scopes. The order, from the documentation on 2026-09-08:</p>
+<ol>
+<li>Local scope</li>
+<li>Project scope</li>
+<li>User scope</li>
+<li>Plugin-provided servers</li>
+<li>claude.ai connectors</li>
+</ol>
+<p>The three scopes match duplicates <em>by name</em>. Plugins and connectors match <em>by
+endpoint</em>, so one pointing at the same URL or command as a server above it is treated as a
+duplicate of it even under a different name.</p>
+
+<h2>What each Claude Code scope means</h2>
+<table>
+<thead><tr><th>Scope</th><th>Written to</th><th>Visible in</th></tr></thead>
+<tbody>
+<tr><td><code>local</code> (default)</td><td><code>~/.claude.json</code></td><td>only you, only the directory you added it in</td></tr>
+<tr><td><code>project</code></td><td><code>.mcp.json</code> at the repository root</td><td>everyone who clones the repository, after approval</td></tr>
+<tr><td><code>user</code></td><td><code>~/.claude.json</code></td><td>only you, every project</td></tr>
+</tbody>
+</table>
+<p>The default being <code>local</code> is the most common reason a server that was definitely added is
+definitely not there. It is per directory. <code>-s</code> is the short form of <code>--scope</code>.</p>
+<pre><code>claude mcp add --scope user invoice -- node /abs/path/dist/index.js
+claude mcp list      # run it in the directory you are missing the server from</code></pre>
+
+<h2>Project scope has a consent gate, and it is not a bug</h2>
+<p>A server defined in a repository's <code>.mcp.json</code> is not started until you approve it. Until
+then <code>claude mcp list</code> and <code>claude mcp get &lt;name&gt;</code> show it as pending
+approval and do not connect to it. As of v2.1.196, those two commands read <code>.mcp.json</code>
+approvals only from settings files that are not checked into the repository, until you trust the
+workspace by running <code>claude</code> in it and accepting the trust dialog. A cloned repository
+cannot approve its own servers: <code>enableAllProjectMcpServers</code> or
+<code>enabledMcpjsonServers</code> committed to the project's <code>.claude/settings.json</code> is
+ignored in an untrusted folder.</p>
+<p>That is the right default. A config file in a repository is an instruction to run a program, and
+cloning a repository should not be enough to do it.</p>
+
+<h2>Enabled and disabled are stored somewhere else</h2>
+<p>Toggling a server off in Claude Code records the choice per project in <code>~/.claude.json</code>,
+in one of two lists covering disjoint sets of servers: <code>disabledMcpServers</code>, an opt-out list
+for user-configured and plugin servers, and a separate pair,
+<code>enabledMcpjsonServers</code> and <code>disabledMcpjsonServers</code>, which control approval of
+servers defined in a project's <code>.mcp.json</code>. Those two mechanisms are unrelated, which is why
+a server can be both approved and disabled, or neither.</p>
+<p>VS Code does the same thing for a different reason: the enabled state is stored separately from the
+server configuration in <code>mcp.json</code>, so turning a server off locally does not modify a file
+your team shares.</p>
+
+<h2>The other clients</h2>
+<table>
+<thead><tr><th>Client</th><th>Project layer</th><th>Global layer</th></tr></thead>
+<tbody>
+<tr><td>Cursor</td><td><code>.cursor/mcp.json</code></td><td><code>~/.cursor/mcp.json</code></td></tr>
+<tr><td>VS Code</td><td><code>.vscode/mcp.json</code></td><td>user profile, via <code>MCP: Open User Configuration</code></td></tr>
+<tr><td>Cline</td><td>none documented</td><td><code>~/.cline/mcp.json</code> for the CLI, panel settings for the extension</td></tr>
+<tr><td>Windsurf</td><td>none documented</td><td><code>~/.codeium/windsurf/mcp_config.json</code></td></tr>
+<tr><td>Claude Desktop</td><td>none</td><td><code>claude_desktop_config.json</code></td></tr>
+</tbody>
+</table>
+<p>VS Code adds two more surfaces on top: an <code>MCP: Add Server</code> flow that asks whether the
+target is Workspace or Global, servers installed into the user profile from the Extensions view, and
+<code>customizations.vscode.mcp.servers</code> inside a dev container definition, which VS Code writes
+into the container's configuration when the container is created. Sessions running on Agent Host do not
+read <code>.vscode/mcp.json</code> directly; VS Code forwards the configuration to it, except servers
+that need interactive input.</p>
+
+<h2>The check that answers it in one command</h2>
+<pre><code>claude mcp get &lt;name&gt;</code></pre>
+<p>It shows the definition Claude Code resolved and runs a health check against it. If the entry that
+comes back is not the one you edited, you edited a lower-precedence copy, and no amount of editing that
+file will change anything.</p>
+<p>This page was written while packaging 30 MCP servers for six clients; the per-client scope facts and
+their source URLs are recorded in <code>billing/src/setup.js</code>, read from each vendor's own
+documentation on 2026-09-08.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why is local the default scope in Claude Code?", a: "Because the safe default for a command that launches a program is the narrowest one. It costs a flag to widen and costs nothing to be wrong, whereas a user-scope default would put every experiment into every project you open." },
+      { q: "Can a repository force its MCP servers on someone who clones it?", a: "No. Project-scoped servers from .mcp.json wait for approval, and since v2.1.196 the approval is not read from files inside the repository until you have trusted the workspace yourself." },
+      { q: "If I define a server in both project and user scope, do the fields merge?", a: "No. The documentation is explicit that the entire entry from the highest-precedence source is used. A user-scope entry with an env block and a project-scope entry without one does not produce a merged entry; one of them is used whole." },
+      { q: "Do plugin servers and connectors collide with mine?", a: "They can, and they match differently. Named scopes deduplicate by name, while plugins and connectors deduplicate by endpoint, so a connector pointing at the same URL as your server is treated as the same server even if you called it something else." },
+    ],
+  },
+  "mcp-server-logs-and-what-they-say": {
+    title: "Where each MCP client writes its logs",
+    description: "Claude Desktop writes mcp.log and one file per server. Cursor has an MCP Logs output channel. Claude Code has a health check. The exact paths and commands, verified 2026-09-08.",
+    html: `<h1>Where the MCP logs are</h1>
+<table>
+<thead><tr><th>Client</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>Claude Desktop, macOS</td><td><code>~/Library/Logs/Claude/mcp.log</code> and <code>~/Library/Logs/Claude/mcp-server-&lt;name&gt;.log</code></td></tr>
+<tr><td>Claude Desktop, Windows</td><td><code>%APPDATA%\\Claude\\logs</code>, same two file shapes</td></tr>
+<tr><td>Claude Code</td><td><code>claude mcp get &lt;name&gt;</code> for a health check, <code>/mcp</code> in a session for connection state</td></tr>
+<tr><td>Cursor</td><td>Output panel, Cmd+Shift+U or Ctrl+Shift+U, then MCP Logs in the dropdown</td></tr>
+<tr><td>VS Code</td><td><code>MCP: List Servers</code>, or right-click the server in the Extensions view under MCP SERVERS - INSTALLED</td></tr>
+<tr><td>Cline</td><td>MCP settings actions, which include restarting an unresponsive server</td></tr>
+</tbody>
+</table>
+<p>Verified against each vendor's own documentation on 2026-09-08.</p>
+
+<h2>The two Claude Desktop files do different jobs</h2>
+<p><code>mcp.log</code> holds general logging about MCP connections and connection failures. That is
+where a launch failure appears, and where <code>spawn npx ENOENT</code> shows up.</p>
+<p><code>mcp-server-&lt;name&gt;.log</code> holds the stderr output of that one server. The
+documentation makes a point of saying these files are not limited to errors, because a stdio server may
+legitimately use stderr for all of its logging. A large file here is not a symptom.</p>
+<pre><code>tail -f ~/Library/Logs/Claude/mcp.log
+tail -f ~/Library/Logs/Claude/mcp-server-invoice.log</code></pre>
+
+<h2>Why stderr and not stdout</h2>
+<p>Because stdout is the wire. The stdio binding says the server MUST NOT write anything to stdout that
+is not a valid MCP message, and that the client MAY capture, forward or ignore stderr and SHOULD NOT
+assume stderr output indicates an error. So a server logs to stderr because stdout is already carrying
+JSON-RPC, and a client keeps stderr because it is the only place a crashing server can say anything.</p>
+<p>This is the single most useful thing to know when a connection dies during startup. A JSON parse
+error in <code>mcp.log</code> usually means the server printed something friendly.</p>
+
+<h2>When there is no log to read</h2>
+<p>Reproduce the launch yourself, with the exact command and arguments from the config:</p>
+<pre><code>node /Users/you/mcp-servers/servers/invoice/dist/index.js
+# then paste one line and press enter:
+{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}</code></pre>
+<p>A server that answers here and not in the client has an environment or path problem, not a code
+problem. A server that does not answer here was never going to work.</p>
+
+<h2>Output size limits, which look like truncation bugs</h2>
+<p>Claude Code warns when any MCP tool output exceeds 10,000 tokens and refuses past a default maximum
+of 25,000, adjustable with <code>MAX_MCP_OUTPUT_TOKENS</code>. A tool returning a large CSV or a whole
+PDF's text will meet that before it meets any limit of yours. It is documented behaviour, not a
+failure, and it does not appear in a log file.</p>
+
+<h2>The MCP Inspector</h2>
+<p>The specification site lists an Inspector under its developer tools, alongside a debugging guide. It
+speaks to a server directly, so it separates "the server is wrong" from "the client's config is wrong"
+without involving a client at all. That is the same separation the manual launch above achieves, with a
+UI instead of a pasted JSON line.</p>
+
+<p>These paths were collected while shipping 30 MCP servers to six clients, where the per-server stderr
+file is what turns a silent absence into a one-line answer. The per-client install pages are under
+<a href="/setup/claude-desktop">setup</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is there a Linux log path for Claude Desktop?", a: "None is published, because no Linux path is published for the application at all. Its documentation lists macOS and Windows." },
+      { q: "My server's log file is huge. Is that a problem?", a: "Not by itself. mcp-server-<name>.log is that server's stderr, and the documentation says stdio servers may use stderr for all logging, so the file grows in normal operation. Read the last lines rather than the size." },
+      { q: "Where does Claude Code keep MCP logs on disk?", a: "The documentation points at commands rather than files: claude mcp get <name> for a per-server health check and /mcp inside a session for connection state. Treat those as the supported surface." },
+      { q: "Nothing is in any log and the server is absent. What then?", a: "That is usually a config that was never read: the wrong top-level key, the wrong scope, or an unparseable file. There is no log entry for a server the client never knew about. The ordered list is at /guides/why-an-mcp-server-does-not-appear." },
+    ],
+  },
+  "shipping-an-mcp-server-bundle-or-hosted-url": {
+    title: "Shipping an MCP server: a bundle to download or a URL to paste",
+    description: "The two ways a stranger can start using your MCP server with no terminal. What each one costs you, what each one can reach, and the case where only one of them works.",
+    html: `<h1>Two ways to ship an MCP server to someone who will not open a terminal</h1>
+<p>A bundle is a file they double-click. A hosted URL is a line they paste. Both were walked end to end
+from a stranger's position on 2026-09-08, with no repository access and no credentials, and both work.
+The write-up of that walk is <code>docs/NEW_USER_E2E_R1.md</code> in this repository.</p>
+
+<table>
+<thead><tr><th></th><th>Bundle (<code>.mcpb</code>)</th><th>Hosted URL</th></tr></thead>
+<tbody>
+<tr><td>What the user does</td><td>downloads a file, opens it, clicks install</td><td>pastes a URL into a connector form</td></tr>
+<tr><td>Runtime they need</td><td>none; Claude Desktop ships a Node.js runtime</td><td>none</td></tr>
+<tr><td>Reaches their files</td><td>yes</td><td>no</td></tr>
+<tr><td>Their data lives</td><td>on their disk</td><td>on your host</td></tr>
+<tr><td>Works offline</td><td>yes</td><td>no</td></tr>
+<tr><td>Shipping a fix</td><td>they download again</td><td>you deploy</td></tr>
+<tr><td>Your cost at zero users</td><td>nothing</td><td>the host bill</td></tr>
+<tr><td>Clients that take it</td><td>Claude Desktop</td><td>every client with a URL field</td></tr>
+<tr><td>Download size</td><td>megabytes; 7,023,082 bytes for the invoice server here</td><td>a URL</td></tr>
+</tbody>
+</table>
+
+<h2>What the bundle path actually looks like</h2>
+<p>Measured on 2026-09-08 by fetching the public release asset and booting it the way the client does:
+<code>invoice.mcpb</code> came back HTTP 200 at 7,023,082 bytes, unzipped, answered
+<code>initialize</code> with <code>{"name":"mcp-invoice","version":"0.21.0"}</code> and listed 13
+tools. No install step, no npm, no path configuration.</p>
+<p>The size is the price. A bundle carries the server and its whole dependency tree, because the point
+is that nothing is resolved on the user's machine. The 32 bundles in this repository's v0.21.0 release
+total 222,294,768 bytes, a mean of 6.6 MB each. Compare that with a package reference, which is a line
+of JSON and a resolution failure waiting for someone whose PATH is different from yours.</p>
+
+<h2>What the hosted path actually looks like</h2>
+<p><code>GET /mcp/connect</code> returned HTTP 200 with 36 ready-to-paste URLs, one per hosted server,
+and a POST to one of them with no headers and no key returned 13 tools. The token sits in the URL path,
+so there is nothing to type into an advanced settings box. On Claude.ai and Claude Desktop connectors
+that matters more than it sounds: the add-connector form asks for a name and a URL, and its advanced
+section is for OAuth client credentials, not for a bearer token.</p>
+<p>Hosting has one consequence people underrate. Every user's data is now your problem: your storage,
+your retention policy, your breach. The servers here answer that by holding a 30-day data space per
+anonymous token, refreshed on every write, and by saying so on the page that mints the token. A local
+bundle needs no such policy because there is nothing of theirs on your side.</p>
+
+<h2>Which to choose</h2>
+<p><strong>Bundle</strong> when the server's value is the user's own machine: their spreadsheets, their
+invoices, their photos, their local database. Also when the tool must work on a plane, and when you do
+not want to be the custodian of anything.</p>
+<p><strong>Hosted</strong> when the server's value is something only you can reach: your API, your
+dataset, your model, your rate limit. Also when you expect to fix bugs weekly, because the alternative
+is asking every user to download 7 MB again.</p>
+<p><strong>Both</strong> is common and cheap if the handlers are transport-agnostic. In a paginated
+sample of the official registry on 2026-09-08, 97 of 2,211 servers declared both a remote endpoint and
+an installable package. The 30 servers here do both from one codebase; what differs is where the data
+sits, not the tool implementations.</p>
+
+<h2>The path most tutorials show, and why it is the weakest of the three</h2>
+<p>A <code>command: "npx"</code> entry with a package name is the most-copied MCP install line and the
+most fragile. It needs a Node.js runtime the client can find, network access at launch, and a package
+that resolves. Two of those fail routinely under a desktop client, which passes on only a limited,
+platform-dependent subset of environment variables to a subprocess. <code>spawn npx ENOENT</code>
+returned 1,428 results in GitHub's issue search on 2026-09-08.</p>
+<p>It is still the right default for developers, who have a terminal and will read an error. It is the
+wrong default for the person you are trying to reach with a download link.</p>
+
+<h2>The measured caveat</h2>
+<p>Neither path is a distribution strategy. Everything above works today for a stranger, and this site
+still measured 22 unique visitors in fourteen days. A working install path removes a reason not to
+start; it does not create the visit. Registry entries and directory listings did that here, and one
+channel accounted for 9 of those 22.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can a bundle be installed anywhere except Claude Desktop?", a: "Not as a double-click. Other clients take a command and args, so the same server ships to them as a path to a built file or a package. The bundle format solves the no-terminal case for one client, which is the client most non-developers are using." },
+      { q: "Does a hosted server have to require a login?", a: "No, and requiring one costs you most of the people who would have tried it. The endpoints here answer an unauthenticated POST and meter by an anonymous token minted in one GET. Authentication becomes necessary when the data behind the server is worth stealing." },
+      { q: "How big is too big for a bundle?", a: "The constraint is patience, not a documented limit. The bundles here run around 6.6 MB on average with a full dependency tree, which downloads in seconds. If yours is much larger, the dependency tree is the thing to look at rather than the format." },
+      { q: "Which one gets picked when both are offered?", a: "Unmeasured here, and worth being honest about. This project offers both on every product page and has no data separating which one strangers choose, because the counts are too small to say anything." },
+    ],
+  },
+  "what-is-inside-an-mcpb-bundle": {
+    title: "What is inside a .mcpb MCP bundle",
+    description: "A .mcpb is a zip with a manifest.json and the whole server. The manifest fields, the ${__dirname} substitution, how user config reaches the server, and measured sizes from 32 real bundles.",
+    html: `<h1>Inside a .mcpb bundle</h1>
+<p>A <code>.mcpb</code> is an ordinary zip. Unzip one and the top level holds
+<code>manifest.json</code> and a <code>server/</code> directory containing the built server and its
+entire <code>node_modules</code> tree. Nothing is resolved at install time, which is the whole point:
+the user needs no runtime, no package manager and no PATH.</p>
+<pre><code>$ unzip -l barcode.mcpb | head
+    3464  manifest.json
+   28942  server/index.js
+     761  server/lib.js
+   80732  server/node_modules/.package-lock.json
+   ...</code></pre>
+
+<h2>The manifest</h2>
+<pre><code>{
+  "manifest_version": "0.2",
+  "name": "mcp-barcode",
+  "display_name": "Barcode",
+  "version": "0.21.0",
+  "description": "...",
+  "author": { "name": "theluckystrike", "url": "https://github.com/theluckystrike" },
+  "repository": { "type": "git", "url": "https://github.com/theluckystrike/mcp-servers" },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["&#36;{__dirname}/server/index.js"],
+      "env": { "MCP_LICENSE_KEY": "&#36;{user_config.license_key}" }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key. Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [ { "name": "qr_create", "description": "..." } ],
+  "keywords": ["mcp", "model-context-protocol", "qr", "barcode"]
+}</code></pre>
+<p>That is a real manifest from this repository's v0.21.0 release, trimmed only in the tools array.</p>
+
+<h2>The two substitutions that do the work</h2>
+<p><code>&#36;{__dirname}</code> expands to wherever the client unpacked the bundle. This is what makes
+the absolute-path problem disappear. Every other client config format needs the user to write an
+absolute path themselves, and getting it wrong is the second most common install failure after a
+missing runtime.</p>
+<p><code>&#36;{user_config.&lt;key&gt;}</code> pulls a value the user typed into the install dialog into
+the server's environment. Each key in <code>user_config</code> declares a type, a title, a description,
+whether it is <code>required</code>, and whether it is <code>sensitive</code>, which is what keeps a
+licence key or an API token out of a plain text file and out of your logs.</p>
+<p>The <code>tools</code> array is declarative. It lets the install dialog show what the server will be
+able to do before anything runs, which is the only chance a non-developer gets to refuse.</p>
+
+<h2>Measured sizes</h2>
+<p>The 32 bundles in the v0.21.0 release of this repository total 222,294,768 bytes, a mean of 6.6 MB.
+The largest inspected here, <code>barcode.mcpb</code>, is 14 MB; <code>invoice.mcpb</code> is 7,023,082
+bytes. The variance is dependencies, not code: the server entry point in that barcode bundle is 28,942
+bytes and everything else is <code>node_modules</code>.</p>
+
+<h2>How rare this format still is</h2>
+<p>In a paginated sample of the official MCP registry on 2026-09-08, covering 2,211 distinct servers,
+<strong>9</strong> declared an <code>mcpb</code> package. npm had 259, PyPI 41, OCI 15 and NuGet 1,
+while 1,985 servers skipped packaging entirely and published a URL. So the one distribution format
+aimed at people without a terminal is used by roughly one server in 250.</p>
+
+<h2>Building one</h2>
+<pre><code>npx -y @anthropic-ai/mcpb pack &lt;dir&gt;</code></pre>
+<p>The directory needs a <code>manifest.json</code> and the built server beside it. The part that takes
+the time is vendoring: anything your server imports has to be inside the zip, including workspace
+packages that are not published anywhere. In this repository that meant resolving the whole internal
+package closure into <code>server/node_modules/</code> and merging their runtime dependencies into one
+temporary <code>package.json</code> so a single install covers everything.</p>
+
+<h2>Where it goes</h2>
+<p>Claude Desktop's documentation describes opening a bundle to get an installation dialog, and a
+bundle you built yourself goes in through Settings, Extensions, Advanced settings, the Extension
+Developer section, Install Extension. The format was previously named <code>.dxt</code>; that rename is
+recorded with its source URL in <code>billing/src/setup.js</code>, read off the vendor documentation on
+2026-09-02.</p>
+<p>A bundle downloaded from a public GitHub release, opened with no terminal involved, was verified
+working from a stranger's position on 2026-09-08 in <code>docs/NEW_USER_E2E_R1.md</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is a .mcpb signed?", a: "Nothing in the manifest carries a signature, so trust comes from where you downloaded it. Publishing bundles as release assets on the repository that contains the source is what lets someone check that the two match." },
+      { q: "Can one bundle contain several servers?", a: "The manifest names one entry point, so a bundle is one server. A server that spawns siblings as child processes is still one entry point from the client's side, which is how a suite ships as a single install." },
+      { q: "Why is it so much bigger than the source?", a: "Because the dependency tree is inside it. A bundle trades bytes for the two failures it removes: no runtime resolution and no absolute path for the user to get wrong." },
+      { q: "Does the user config get written into the config file?", a: "It goes into the server's environment through the ${user_config.key} substitution in mcp_config.env. Marking a field sensitive is what keeps it out of plain text, which matters for licence keys and API tokens." },
+    ],
+  },
+  "licensing-a-paid-mcp-server": {
+    title: "Charging for an MCP server: how licensing actually works",
+    description: "There is no billing in the MCP protocol, so a paid tier is something you build. Offline key verification, where the gate goes, what the refusal must say, and what it measured.",
+    html: `<h1>Charging for an MCP server</h1>
+<p>MCP has no concept of a customer, a plan or a payment. The protocol negotiates capabilities and
+carries tool calls. Everything about who is allowed to do what is yours to build, and the shape you
+choose is visible to the user at the exact moment they are refused, which makes it a product decision
+rather than a plumbing one.</p>
+
+<h2>The three shapes, and what each costs</h2>
+<table>
+<thead><tr><th>Shape</th><th>Needs a server of yours</th><th>Works offline</th><th>What you learn about usage</th></tr></thead>
+<tbody>
+<tr><td>Offline signed key</td><td>only to sell the key</td><td>yes</td><td>nothing</td></tr>
+<tr><td>Phone-home key check</td><td>yes, on every start</td><td>no</td><td>everything</td></tr>
+<tr><td>Hosted server with a token</td><td>yes, always</td><td>no</td><td>everything</td></tr>
+</tbody>
+</table>
+<p>The trade is exact: the more you learn about usage, the less the tool can be trusted with private
+data and the more of it stops working when you do. For a local server that reads someone's invoices, an
+offline key is the only one of the three that is honest.</p>
+
+<h2>An offline key, concretely</h2>
+<p>A key is a signed statement, not a secret. The format used across the 30 servers here is
+<code>MCPL1.&lt;payload&gt;.&lt;signature&gt;</code>, base64url, Ed25519. The payload names the product
+and an optional expiry:</p>
+<pre><code>{ "v": 1, "p": "invoice", "id": "&lt;license id&gt;", "iat": 1757000000 }
+// "p": "*" covers every product in the bundle
+// "exp" absent means lifetime
+// "h" holds a sha256(email) prefix, so a key can be traced to an order</code></pre>
+<p>Verification is a signature check against a public key compiled into the server. No network request
+is made and no identifier leaves the machine. The private key never ships; it lives on the machine that
+signs orders.</p>
+<pre><code>node scripts/sign-license.mjs invoice buyer@example.com
+MCPL1.eyJ2IjoxLCJwIjoi...</code></pre>
+<p>Two details worth copying. Validate the payload's <em>shape</em> after checking the signature, not
+before, and reject anything whose fields are missing or the wrong type: a valid signature over a
+malformed payload is still malformed. And compare the product field explicitly, so a key for one server
+does not silently work on another.</p>
+
+<h2>Where the key comes from at runtime</h2>
+<p>Lookup order here: the <code>MCP_LICENSE_KEY</code> environment variable, then
+<code>&#36;{XDG_CONFIG_HOME:-~/.config}/mcp-servers/license.json</code>, then the free tier. The
+environment variable first is what lets a bundle's install dialog pass a key straight through, using
+the manifest's <code>user_config</code> substitution, with nothing for the user to save. The file is
+written with mode 0600 through a per-process temporary file and a rename, so two servers activating at
+once cannot clobber each other.</p>
+
+<h2>The gate is a message, not a boolean</h2>
+<p>This is the part people get wrong, and it is the only part the customer ever sees. A refusal that
+says "upgrade to Pro" has told them nothing. A refusal measured from a stranger's install on
+2026-09-08 said:</p>
+<blockquote>You have already created 3 invoices in 2026-09. The free tier allows 3 invoices per calendar
+month.</blockquote>
+<p>and then named the price, said the licence is one-time and lifetime, gave the exact next command, and
+stated that keys verify offline with nothing sent anywhere. Four facts, at the moment they are relevant,
+to someone who has already found the tool useful enough to hit the limit.</p>
+<p>The free tier has to do real work for that to land. Here reads are never metered and writes are,
+which means a server someone was sent a file for always works, and only producing new documents counts.</p>
+
+<h2>Make the click attributable</h2>
+<p>Every upgrade link carries <code>?src=&lt;product&gt;.&lt;tool&gt;</code>, so a click can be traced
+to the cap message that produced it. Without that tag, "nobody read the message" and "everybody read it
+and did not care" are the same number, which is zero. With it they are different numbers.</p>
+<p>What it measured here: 65 upgrade-link clicks in the seven days to 2026-09-05, and not one through a
+bundle source, because no cap message carried a bundle link at all. The cheaper option was named in
+prose with nothing to click. That defect is invisible without the tag and obvious with it.</p>
+
+<h2>The honest result</h2>
+<p>Pricing here is one-time and lifetime, 19 dollars for a single server and 39 for all 30. Every step
+of the funnel has been verified working from a stranger's position: the free tier does real work, the
+refusal explains itself, the link redirects to a live Stripe checkout. Sales to date: zero. The
+constraint was never the gate. It was that 22 people reached the project in fourteen days.</p>
+<p>That is worth saying plainly, because most writing on monetising a developer tool is written by
+people with traffic, and the advice reads differently when you have none. Build the gate so it is
+honest and attributable, then spend the rest of your time on being found.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can an offline key be shared?", a: "Yes, and there is no way to stop it without phoning home. Binding a key to a hashed email and putting a licence id in the payload gives you traceability after the fact, which is the realistic ceiling. Anything stronger costs you the offline guarantee, which is often the reason someone chose a local tool." },
+      { q: "Should the free tier be a trial or a permanent limit?", a: "A permanent limit is easier to defend and easier to explain. A trial makes the tool stop working for someone who is not ready to decide, and the message they see at that moment is that it broke." },
+      { q: "Where does the gate belong in the code?", a: "At the call site of the capability being sold, not at startup. A server that refuses to start without a key cannot demonstrate anything, and a user who never sees the tool work has no reason to buy." },
+      { q: "Does anything in MCP help with payment?", a: "No. The protocol has no billing, entitlement or identity concept, and nothing in the current revision suggests it will. Licensing sits entirely in your server's own code." },
+      { q: "How do you verify a key without a network?", a: "Compile the public half of a signing keypair into the server and check the signature locally. The key is a signed claim rather than a lookup token, so verifying it needs no service and works on a plane." },
+    ],
+  },
+  "mcp-tool-description-and-output-limits": {
+    title: "How much text an MCP server may return, and how much it may describe",
+    description: "Tool descriptions truncate at 2KB in Claude Code, output warns at 10,000 tokens and stops at 25,000 by default, and Windsurf caps at 100 tools. The documented numbers, and what to do about them.",
+    html: `<h1>The size limits an MCP server runs into</h1>
+<p>Four numbers decide whether a server behaves well inside a client, and none of them are in the
+protocol. They are client policy, documented separately by each vendor, read on 2026-09-08.</p>
+
+<table>
+<thead><tr><th>Limit</th><th>Value</th><th>Client</th></tr></thead>
+<tbody>
+<tr><td>Tool description and server instructions</td><td>truncated at 2KB each</td><td>Claude Code</td></tr>
+<tr><td>Tool output warning</td><td>10,000 tokens</td><td>Claude Code</td></tr>
+<tr><td>Tool output maximum</td><td>25,000 tokens, <code>MAX_MCP_OUTPUT_TOKENS</code> to change</td><td>Claude Code</td></tr>
+<tr><td>Tools available at once</td><td>100</td><td>Windsurf, Cascade</td></tr>
+</tbody>
+</table>
+
+<h2>The 2KB one is the one that changes how you write</h2>
+<p>Claude Code truncates tool descriptions and server instructions at 2KB each, and its guidance is to
+put critical details near the start. That is a hard constraint on the only text the model reads before
+deciding whether to call your tool. Everything that matters, and particularly what the tool must
+<em>not</em> be used for, goes in the first sentence.</p>
+<p>With tool search enabled, only tool names and server instructions load at session start, and the
+full definitions are fetched when needed. That makes the server instructions field more important, not
+less: it is what the model searches against. Claude Code's own advice to server authors is to say what
+category of tasks the tools handle, when to search for them, and the key capabilities.</p>
+
+<h2>The output limits, and the failure they look like</h2>
+<p>A tool returning a whole CSV, a full PDF text extraction or an unbounded list will meet 25,000
+tokens before it meets any limit of yours, and the result looks to the user like your server truncating.
+It is not; it is documented client behaviour, and it does not appear in any log.</p>
+<p>The fixes, in the order worth trying: return a summary with a count and offer detail on request;
+paginate with an explicit cursor argument; write the full result to a file and return the path. The
+third is underused and often the right answer, because the user wanted the file more than they wanted
+the bytes in the conversation.</p>
+<p>Two escape hatches exist on the client side. <code>MAX_MCP_OUTPUT_TOKENS</code> raises the ceiling
+for a session. A tool that sets <code>anthropic/maxResultSizeChars</code> uses that value instead for
+text content regardless of the environment variable, though tools returning image data stay subject to
+the token limit.</p>
+
+<h2>The tool count, and why more servers make a model worse</h2>
+<p>Windsurf's Cascade reaches at most 100 tools at once and every enabled server spends from it. Claude
+Code imposes no fixed per-server cap; its documentation says the practical limit is the context window
+budget.</p>
+<p>The number that makes this concrete: one <code>tools/list</code> against the office-suite bundle in
+this repository on 2026-09-07 returned <strong>292 tools from 31 child servers</strong>. That single
+entry is nearly three times Windsurf's ceiling on its own. Convenient when you do not know in advance
+what you will need, and unusable as a default.</p>
+<p>A model also chooses worse from a longer list, which is the cost nobody bills you for. Two servers
+you use daily beat twenty you installed because they were free.</p>
+<pre><code>claude mcp list   # every entry here spends budget in every conversation</code></pre>
+
+<h2>What this means for a server you are writing</h2>
+<ul>
+<li>Fewer, wider tools beat many narrow ones. Each tool costs description budget and choice quality.</li>
+<li>Put the disqualifying condition first in the description, not the capability. The model needs to
+know when <em>not</em> to call it.</li>
+<li>Bound every return by default and let the caller ask for more.</li>
+<li>Offer a file path as an output option for anything that can be large.</li>
+<li>Write server instructions as if they are the only thing read, because with tool search enabled they
+nearly are.</li>
+</ul>
+<p>Sources: docs.claude.com/en/docs/claude-code/mcp for the 2KB, 10,000 and 25,000 figures and the tool
+search behaviour, docs.devin.ai/desktop/cascade/mcp for the 100-tool ceiling, both read 2026-09-08.
+The 292-tool measurement is from this repository's own bundle.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is there a protocol-level limit on tool output?", a: "No. The specification does not bound a result's size, so every number here is a client policy that can differ between clients and change between versions. Design for the tightest one you know about rather than for the protocol." },
+      { q: "How many tools should one server expose?", a: "Few enough that a person could read the list. The servers in this repository run from 6 to 15 tools each, which sits comfortably inside every documented ceiling when three or four are installed together." },
+      { q: "What happens when a description is truncated?", a: "The model sees the first 2KB. Nothing errors and nothing warns, so a long description simply loses its ending, which is where people tend to put the caveats." },
+      { q: "Does returning a file path count against the output limit?", a: "Barely, which is the point. A path is a few dozen characters and the content stays on disk where the user can open it with a tool that is better at it than a chat window." },
+    ],
+  },
+  "mcp-server-security-review": {
+    title: "What to check before letting an MCP server run",
+    description: "An MCP server is a program with your file access and your credentials. The specification's own requirements, the client consent gates, and the checks worth doing on someone else's server.",
+    html: `<h1>Reviewing an MCP server before you run it</h1>
+<p>A stdio MCP server is a program the client launches with your user account. It can read what you can
+read and delete what you can delete. VS Code's own documentation puts it plainly: local MCP servers can
+run arbitrary code on your machine. Everything below follows from that being literally true.</p>
+
+<h2>What the specification requires of a server</h2>
+<p>For streamable HTTP, these are stated as requirements rather than suggestions:</p>
+<ul>
+<li>Servers MUST validate the <code>Origin</code> header on all incoming connections, and MUST answer
+an invalid one with HTTP 403 Forbidden.</li>
+<li>When running locally, servers SHOULD bind only to <code>127.0.0.1</code> rather than
+<code>0.0.0.0</code>.</li>
+<li>Servers SHOULD implement proper authentication for all connections.</li>
+</ul>
+<p>The reason is named in the specification: without these, an attacker can use DNS rebinding to
+interact with a local MCP server from a remote website. A local server with no Origin check is
+reachable by any page the user has open.</p>
+
+<h2>The consent gates the clients give you</h2>
+<table>
+<thead><tr><th>Client</th><th>Gate</th></tr></thead>
+<tbody>
+<tr><td>VS Code</td><td>Asks you to confirm you trust the server and its capabilities before it starts. Nothing runs until you answer.</td></tr>
+<tr><td>Claude Code</td><td>A project-scoped server from <code>.mcp.json</code> waits for approval, and since v2.1.196 the approval is not read from files inside the repository until you trust the workspace yourself.</td></tr>
+<tr><td>Claude Desktop</td><td>An <code>.mcpb</code> install dialog lists the tools declared in the manifest before installing.</td></tr>
+<tr><td>Cline</td><td>Tool calls are confirmed unless the tool name is in that server's <code>autoApprove</code> array.</td></tr>
+<tr><td>Windsurf</td><td>Tools are toggled per server on its settings page.</td></tr>
+</tbody>
+</table>
+<p>Two of these are worth using deliberately rather than clicking through. <code>autoApprove</code>
+decides which tools run without you seeing the call, so read-only tools are reasonable candidates and
+anything that writes, sends or spends is not. And VS Code offers <code>"sandboxEnabled": true</code>
+for local stdio servers on macOS and Linux, restricting a server to the file paths and network domains
+you permit, with a top-level <code>sandbox</code> object for the rules.</p>
+
+<h2>Checks worth doing on someone else's server</h2>
+<ol>
+<li><strong>Read the tool list before the README.</strong> The tools are the capability surface. A
+server whose description says "read your calendar" and whose tool list includes a generic shell
+execution tool is a different program from the one described.</li>
+<li><strong>Find out where it sends things.</strong> Grep the source for the HTTP client it uses. A
+tool that claims to work locally and opens a socket is the single highest-value thing to catch.</li>
+<li><strong>Check what it writes, and where.</strong> A path built from a tool argument without
+normalisation is a directory traversal waiting for a plausible-looking filename.</li>
+<li><strong>Check the input bounds.</strong> Anything that unpacks an archive, parses a document or
+follows a link handles input the user did not write. Refusal ratios and total-size ceilings belong
+there.</li>
+<li><strong>Prefer a pinned version to a floating one.</strong> An install line that resolves the
+latest package at every launch is a supply chain you re-accept every morning.</li>
+</ol>
+
+<h2>Untrusted input is the part people skip</h2>
+<p>Most review attention goes to the server's own code. The larger surface is usually the data it is
+pointed at, because that comes from someone else. The zip server in this repository refuses an archive
+on the declared total size and the compression ratio read from the central directory, before anything is
+inflated: a 500 MB decompression bomb is refused in 3 ms with nothing written and the output directory
+not even created. A library that hands back a decompressed map has already inflated the bomb by the
+time you can inspect it.</p>
+<p>The ratio ceiling is set at 100x rather than 50x for a measured reason: a real monthly export of
+plain-text records compressed at 1,022x in testing, so a ceiling tuned comfortably below a bomb would
+refuse ordinary work, and the user would learn to pass an override on everything. A guard people
+routinely disable is not a guard.</p>
+
+<h2>What to check on your own server</h2>
+<ul>
+<li>Nothing but MCP messages on stdout. A stray print corrupts the stream, and the specification
+forbids it.</li>
+<li>Secrets read from the environment or a mode-0600 file, never from a committed config.</li>
+<li>Every path argument normalised and confined before it is opened.</li>
+<li>Every size and count bounded, with the refusal decided before the work.</li>
+<li>Exit cleanly on stdin EOF, so the client never has to escalate to SIGKILL.</li>
+</ul>
+<p>Sources: the streamable HTTP transport binding of specification revision 2026-07-28 for the Origin,
+binding and authentication requirements; each vendor's own documentation, read 2026-09-08, for the
+consent gates. The archive figures are measured in <code>servers/zip/README.md</code> in this
+repository, whose 30 servers run 1,518 tests with 1,507 passing and 0 failing at v0.20.0, recorded in
+<code>data/tests.json</code>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is a hosted MCP server safer than a local one?", a: "It is safer for your machine and worse for your data. A remote server cannot read your disk, and everything you send it is now on someone else's. Which risk you prefer depends on whether the sensitive thing is the machine or the content." },
+      { q: "Does the protocol authenticate anything?", a: "Not by itself. The transport binding says servers SHOULD implement proper authentication and requires Origin validation, and OAuth is layered on by clients for remote servers. A stdio server has no authentication at all, because it is already running as you." },
+      { q: "What is DNS rebinding in this context?", a: "A remote page resolving a hostname to 127.0.0.1 so that a request from that page reaches a service listening on your machine. Validating Origin and rejecting anything unexpected with 403 is the defence the specification requires, which is why it is a MUST rather than a suggestion." },
+      { q: "Should I autoApprove read-only tools?", a: "It is the defensible case, and it is worth being sure they are read-only first. A tool that fetches a URL is not read-only in the sense that matters, because the argument decides where the request goes." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Sixty-two guides: getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline, and then doing real work with it. Billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.",
+  description: "Seventy-six guides: how MCP itself works, from config file locations and transports to protocol versions, registry search and shipping a server; getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline, and then doing real work with it. then real work with one: billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.",
 };

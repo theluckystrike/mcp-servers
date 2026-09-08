@@ -1,0 +1,175 @@
+{
+  "round": "CONTENT_R2",
+  "date": "2026-09-08",
+  "deployed": false,
+  "thesis": "Assistant crawlers are the readership. ClaudeBot fetched 311 of 312 URLs and Googlebot 2, with 0 Google impressions in 99+ days (docs/SEO_INDEXATION_R1.md), so every new page is reference material about MCP itself rather than about this catalogue.",
+  "counts": {
+    "GUIDES_before": 62,
+    "GUIDES_after": 76,
+    "GUIDES_added": 14,
+    "COMPARE_before": 19,
+    "COMPARE_after": 19,
+    "PAGES": 32,
+    "setup_index_urls": 7,
+    "static": 5,
+    "sitemap_before": 125,
+    "sitemap_after": 139
+  },
+  "files_changed": [
+    "billing/src/content.js",
+    "docs/CONTENT_R2.md",
+    "data/content_r2.json"
+  ],
+  "keys_renamed_or_removed": 0,
+  "voice_check": {
+    "tool": "substitute checker (the estate scanner at ~/Desktop/humanize/scan.py is iCloud-evicted)",
+    "control_flags": 15,
+    "new_page_flags": 0,
+    "pages_scanned": 14
+  },
+  "registry_census_2026_09_08": {
+    "calls": 60,
+    "limit_per_call": 100,
+    "rows": 6000,
+    "distinct_servers": 2211,
+    "complete": false,
+    "last_row": "co.pipeboard/tiktok-ads-mcp",
+    "isLatest_rows": 2211,
+    "most_versions_one_server": {
+      "name": "ai.bowmark/bowmark",
+      "rows": 739
+    },
+    "latest_declares_remotes": 1985,
+    "latest_declares_packages": 311,
+    "latest_both": 97,
+    "latest_neither": 12,
+    "remote_transports": {
+      "streamable-http": 1986,
+      "sse": 68
+    },
+    "package_types": {
+      "npm": 259,
+      "pypi": 41,
+      "oci": 15,
+      "mcpb": 9,
+      "nuget": 1
+    },
+    "status": {
+      "active": 2193,
+      "deprecated": 18
+    },
+    "distinct_namespaces": 1539,
+    "first_label_counts": {
+      "ai": 3853,
+      "app": 1204,
+      "co": 349,
+      "cloud": 128
+    },
+    "ascii_sorted": true
+  },
+  "namespace_rank_2026_09_08": {
+    "schedule": {
+      "com.bestremotetools": 3,
+      "io.github.theluckystrike": 15,
+      "servers_matching": 22
+    },
+    "delivery": {
+      "com.bestremotetools": 2,
+      "io.github.theluckystrike": 17,
+      "servers_matching": 18
+    },
+    "note": "with &version=latest; without it the same tokens return 63 and 28 version rows"
+  },
+  "github_issue_phrase_counts_2026_09_08": {
+    "spawn npx ENOENT": 1428,
+    "MCP server failed to start": 2332,
+    "Could not attach to MCP server": 146,
+    "claude_desktop_config.json": 6843,
+    ".vscode/mcp.json": 20039,
+    ".cursor/mcp.json": 12045,
+    "mcp_config.json": 3690,
+    "~/.cline/mcp.json": 351,
+    "~/.codeium/windsurf/mcp_config.json": 574,
+    "MCP-Protocol-Version header": 4610,
+    "note": "gh api search/issues total_count; loose upper bounds that rank problems against each other, not search volumes"
+  },
+  "external_calls": {
+    "vendor_and_spec_doc_fetches": 12,
+    "github_search": 21,
+    "registry": 69,
+    "total_approx": 102,
+    "note": "over the ~90 guidance; the overrun is the 60-call registry pagination, which produced the two registry pages"
+  },
+  "pages": [
+    {
+      "url": "/guides/mcp-client-config-file-locations",
+      "question": "Where does each MCP client keep its config file and what is the top-level JSON key?",
+      "evidence": "Seven clients read live from their own docs on 2026-09-08: modelcontextprotocol.io/docs/develop/connect-local-servers (Claude Desktop, macOS ~/Library/Application Support/Claude/claude_desktop_config.json, Windows %APPDATA%\\Claude\\claude_desktop_config.json, no Linux path published), docs.claude.com/en/docs/claude-code/mcp (.mcp.json and ~/.claude.json), cursor.com/docs/context/mcp (.cursor/mcp.json and ~/.cursor/mcp.json), code.visualstudio.com/docs/copilot/customization/mcp-servers (.vscode/mcp.json, key 'servers'), docs.devin.ai/desktop/cascade/mcp (~/.codeium/windsurf/mcp_config.json), docs.cline.bot/mcp/mcp-overview (~/.cline/mcp.json), support.claude.com article 11175166 (no file). Each page fetched with curl and the path string grepped out of the rendered text."
+    },
+    {
+      "url": "/guides/why-an-mcp-server-does-not-appear",
+      "question": "An MCP server was configured and does not appear. What are the causes, in order, and what is the symptom of each?",
+      "evidence": "Twelve causes, each traced to a vendor statement or the spec: the VS Code 'servers' key, Claude Code local-scope default, the pending-approval string and the v2.1.196 workspace-trust rule, the url-without-type error, spawn npx ENOENT (1,428 GitHub issue-search results for the exact phrase on 2026-09-08), Claude Desktop's absolute-path and full-quit requirements, the Windsurf legacy-Cascade-only note, Windsurf's 100-tool ceiling, the stdio binding's MUST NOT write to stdout, and the documented five-source precedence order."
+    },
+    {
+      "url": "/guides/how-mcp-registry-search-works",
+      "question": "How does the official MCP registry rank search results, and what decides where a server appears?",
+      "evidence": "Measured live 2026-09-08 against registry.modelcontextprotocol.io. The same server ranks 3rd on token 'schedule' as com.bestremotetools/... and 15th as io.github.theluckystrike/... (22 servers matching with version=latest); 2nd against 17th on 'delivery' (18 matching). names == sorted(names) returned True on both result sets and on a 6,000-row full pagination. Namespace first-label counts in that pagination: ai 3,853, app 1,204, co 349, cloud 128. Both mcp-publisher login methods (dns and http, with the /.well-known/mcp-registry-auth body form) are recorded end to end in docs/NAMESPACE_R1.md."
+    },
+    {
+      "url": "/guides/what-is-in-the-mcp-registry",
+      "question": "What is actually in the official MCP registry, and how many servers are there?",
+      "evidence": "60 paginated calls of limit=100 on 2026-09-08 returned 6,000 rows containing 2,211 distinct names; exactly 2,211 rows carry isLatest true. ai.bowmark/bowmark alone had 739 rows with 739 distinct version strings. Of the 2,211 latest rows: 1,985 declare remotes, 311 declare packages, 97 both, 12 neither; remote transports streamable-http 1,986 and sse 68; package types npm 259, pypi 41, oci 15, mcpb 9, nuget 1; status active 2,193, deprecated 18; 1,539 distinct namespaces. Cursor still set at row 6,000 (co.pipeboard/tiktok-ads-mcp), stated in the page as a prefix sample. /v0/stats returns 404 and /v0/health returns only status plus a GitHub client id, both checked the same day."
+    },
+    {
+      "url": "/guides/stdio-or-streamable-http",
+      "question": "What is the difference between a stdio MCP server and a streamable HTTP one, and which should I build?",
+      "evidence": "Specification revision 2026-07-28: /specification/2026-07-28/basic/transports, .../transports/stdio and .../transports/streamable-http, all fetched 2026-09-08. Quoted requirements: stdout MUST carry only MCP messages, stderr MAY be captured and SHOULD NOT be read as an error signal, Origin MUST be validated with 403 on failure, SHOULD bind to 127.0.0.1, cancellation is notifications/cancelled on stdio and closing the response stream on HTTP, Mcp-Method and Mcp-Name headers are required, 2026-07-28 removed the GET stream endpoint and protocol-level sessions. Population split (1,985 remotes vs 311 packages, 1,986 streamable-http vs 68 sse) from this round's own registry pagination."
+    },
+    {
+      "url": "/guides/mcp-protocol-versions",
+      "question": "Which MCP protocol versions exist, what changed, and how do I tell which one I am speaking?",
+      "evidence": "modelcontextprotocol.io/specification/versioning, fetched 2026-09-08: identifiers are YYYY-MM-DD marking the last backwards incompatible change, the current version is 2026-07-28, every request declares its version in _meta.io.modelcontextprotocol/protocolVersion and is accepted or rejected independently, streamable HTTP mirrors it into MCP-Protocol-Version, deprecated features remain at least twelve months or ninety days under the expedited exception. The 2025-03-26 fallback rule for a missing header and the 2026-07-28 removals come from the streamable HTTP binding page."
+    },
+    {
+      "url": "/guides/mcp-server-json-fields-by-client",
+      "question": "Which config fields does each MCP client accept, and what is the variable syntax?",
+      "evidence": "Field tables read off the six vendor doc pages on 2026-09-08. Verified quotes: Cursor's field table marks type Yes/required and says command must be on the system path or contain its full path, envFile is stdio-only; Claude Code accepts streamable-http as an alias for http, supports ${VAR} and ${VAR:-default} in command/args/env/url/headers, and a per-server timeout in milliseconds; Windsurf interpolates ${env:VAR} and ${file:/path} in command/args/env/serverUrl/url/headers, with an unset variable resolving to empty string; VS Code uses inputs plus ${input:id} and sandboxEnabled on macOS and Linux; Cline documents disabled and autoApprove."
+    },
+    {
+      "url": "/guides/mcp-config-scopes-and-precedence",
+      "question": "If the same MCP server is defined in two places, which definition is used?",
+      "evidence": "docs.claude.com/en/docs/claude-code/mcp, 'Scope hierarchy and precedence' section, fetched 2026-09-08: one connection using the highest-precedence source, entries used whole with no field merging, order local > project > user > plugin-provided > claude.ai connectors, scopes matching by name and plugins/connectors by endpoint. Also verified there: the pending-approval behaviour, the v2.1.196 rule that .mcp.json approvals are read only from files not checked into the repo until the workspace is trusted, and the disabledMcpServers vs enabledMcpjsonServers/disabledMcpjsonServers split. Per-client project and global layers from the same six doc pages."
+    },
+    {
+      "url": "/guides/mcp-server-logs-and-what-they-say",
+      "question": "Where does each MCP client write its logs, and what is in them?",
+      "evidence": "Claude Desktop paths quoted from modelcontextprotocol.io/docs/develop/connect-local-servers ('macOS: ~/Library/Logs/Claude, Windows: %APPDATA%\\Claude\\logs', mcp.log for connections and mcp-server-SERVERNAME.log for that server's stderr, explicitly 'not limited to errors'). Cursor's MCP Logs output channel from cursor.com/docs/context/mcp. VS Code's MCP: List Servers and the Extensions view from its own docs. Claude Code's claude mcp get health check and /mcp. Output limits (10,000-token warning, 25,000 default, MAX_MCP_OUTPUT_TOKENS, anthropic/maxResultSizeChars) from docs.claude.com. All read 2026-09-08."
+    },
+    {
+      "url": "/guides/shipping-an-mcp-server-bundle-or-hosted-url",
+      "question": "Should I ship an MCP server as a downloadable bundle or as a hosted URL?",
+      "evidence": "docs/NEW_USER_E2E_R1.md, a walk run 2026-09-08 with no repo access: invoice.mcpb fetched from the public v0.21.0 release URL returned HTTP 200 at 7,023,082 bytes, initialize returned {\"name\":\"mcp-invoice\",\"version\":\"0.21.0\"}, tools/list returned 13; GET /mcp/connect returned HTTP 200 with 36 ready URLs and an unauthenticated POST to one returned 13 tools. Bundle sizes measured locally: 32 .mcpb files totalling 222,294,768 bytes, mean 6.6 MB. Both-transport figure (97 of 2,211) from this round's registry pagination. spawn npx ENOENT count 1,428 from gh api search/issues on 2026-09-08."
+    },
+    {
+      "url": "/guides/what-is-inside-an-mcpb-bundle",
+      "question": "What is inside a .mcpb bundle and what do its manifest fields do?",
+      "evidence": "Manifest quoted verbatim from bundles/barcode/manifest.json in this repository (manifest_version 0.2, server.entry_point, mcp_config with ${__dirname} and ${user_config.license_key}, user_config with sensitive/required, declarative tools array). Zip listing from unzip -l bundles/barcode.mcpb (manifest.json 3,464 bytes, server/index.js 28,942 bytes, then node_modules). Sizes from ls -la on 32 bundles: 222,294,768 bytes total, barcode.mcpb 14 MB, invoice.mcpb 7,023,082 bytes. Build command @anthropic-ai/mcpb from scripts/build-mcpb.sh. The 9-server mcpb count from this round's registry pagination. The .dxt rename is cited to billing/src/setup.js with its vendor source URL and 2026-09-02 read date."
+    },
+    {
+      "url": "/guides/licensing-a-paid-mcp-server",
+      "question": "How do paid tiers and licence keys work for an MCP server, from someone who shipped one?",
+      "evidence": "packages/mcp-license/src/index.ts: MCPL1.<payload>.<signature>, Ed25519, PUBLIC_KEY_B64 compiled in, payload fields v/p/id/iat/exp/h with p='*' for the bundle, shape validated after signature check, product compared explicitly, key lookup MCP_LICENSE_KEY then ${XDG_CONFIG_HOME:-~/.config}/mcp-servers/license.json then free tier, writes via a per-process temp file at mode 0600. scripts/sign-license.mjs for the signing side. Prices 19 and 39 one-time lifetime from data/facts.json pricing. The verbatim cap message and the ?src= tag from docs/NEW_USER_E2E_R1.md; 65 clicks in the 7 days to 2026-09-05 with no bundle source from docs/CONVERSION_INSTRUMENT.md."
+    },
+    {
+      "url": "/guides/mcp-tool-description-and-output-limits",
+      "question": "How much text can an MCP server return, and how long can a tool description be?",
+      "evidence": "docs.claude.com/en/docs/claude-code/mcp, fetched 2026-09-08: 'Claude Code truncates tool descriptions and server instructions at 2KB each'; output warning above 10,000 tokens; default maximum 25,000 tokens; MAX_MCP_OUTPUT_TOKENS; anthropic/maxResultSizeChars overriding it for text content while image data stays subject to the token limit; no fixed per-server tool cap, the practical limit being the context budget; tool search loading only names and server instructions at session start. Windsurf's 100-tool ceiling from docs.devin.ai. The 292 tools from 31 children measured on this repository's own office-suite bundle 2026-09-07."
+    },
+    {
+      "url": "/guides/mcp-server-security-review",
+      "question": "What should I check before running an MCP server someone else wrote?",
+      "evidence": "Streamable HTTP binding of specification revision 2026-07-28, fetched 2026-09-08: Origin MUST be validated and an invalid one answered with 403, SHOULD bind to 127.0.0.1 rather than 0.0.0.0, SHOULD implement proper authentication, with DNS rebinding named as the threat. Client consent gates quoted from each vendor's docs the same day, including VS Code's 'Local MCP servers can run arbitrary code on your machine' and its sandboxEnabled option, Claude Code's project approval and workspace trust, and Cline's autoApprove. Archive-guard figures (100x ratio ceiling, a 1,022x real export, a 500 MB bomb refused in 3 ms with nothing inflated) from servers/zip/README.md. Test totals from data/tests.json (1,518 / 1,507 / 0 at v0.20.0)."
+    }
+  ]
+}
