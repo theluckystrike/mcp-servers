@@ -54,5 +54,32 @@
     "what": "wrongful-death-settlement-calculator and settlement-formula both 404, and sitemap.xml 404s",
     "cause": "published to live but never committed; a later repo deploy rebuilt without them",
     "recoverable": "no. Not in the repo, no local copy, no Wayback snapshot."
+  },
+  "measurement": {
+    "verdict": "The registry is the growing channel. The assistant-crawler channel is saturated at 100% of the sitemap and has produced 3 user-initiated fetches and 0 referrals in six days.",
+    "registry_growth": {
+      "github_uniques_14d": "9 -> 10",
+      "github_views_14d": "19 -> 21",
+      "storefront_registry_referred_requests": "22 -> 30, with two new sources"
+    },
+    "google": {
+      "urls_inspected": 126,
+      "in_index": 0,
+      "ever_crawled": 0,
+      "discovered_not_indexed": 66,
+      "unknown": 60,
+      "read": "Google has now discovered half the sitemap but crawls none of it. That is the signature of a domain with no inbound links, which is what this loop started fixing."
+    },
+    "indexnow": "Yandex responded: YandexBot arrived 23 minutes after submission with a 40-request burst and covered 112 of 126 URLs. Bing showed no step change. Seznam and Naver, nothing.",
+    "unmeasurable": "A visit that follows an assistant recommending a server in a chat carries no referer and cannot be distinguished from the 92,220 no-referer requests. That path is unmeasured, not zero."
+  },
+  "defects_fixed": {
+    "hosted_discovery_401": "A bare POST to a hosted endpoint answered 401, so every directory that health-checks a URL marked these servers dead. Glama published four connectors as 'Server is not responding'. initialize and tools/list now answer 200 without a token; tools/call and a wrong token still 401; validation 951/951.",
+    "missing_discovery_files": "/.well-known/glama.json was requested 509 times and 404d; the favicon 596 times. Both now served. The OAuth documents are deliberately left 404 because these endpoints are not OAuth and a well-formed document would send clients into a flow that does not exist.",
+    "504_spike": "Investigated and dismissed: 1,794 on 2026-09-07 against ~300 on neighbouring days, spread evenly across every /buy/ route. That was this loop's own verification sweeps. Checkout answers in 0.8s today and 504s are back to 271."
+  },
+  "docker": {
+    "pr_4892": "closed by us, correctly",
+    "why_no_replacement": "no Dockerfile in the project builds: packages/mcp-license and servers/timezone import each other, so every linear workspace build fails whichever order it takes. Proven by building both orders. Fixing that cycle is the unblock."
   }
 }
