@@ -1,0 +1,159 @@
+{
+  "round": "INBOUND_LINKS_R1",
+  "loop": 30,
+  "date": "2026-09-08",
+  "target": "https://mcp.zovo.one",
+  "instruments": {
+    "gsc": "node scripts/traffic.mjs style JWT against ~/Desktop/keys/gsc-sa-key.json; POST https://www.googleapis.com/webmasters/v3/sites/<prop>/searchAnalytics/query, dataState:final",
+    "gsc_window": { "start": "2026-08-09", "end": "2026-09-06", "days": 28 },
+    "pages_projects": "npx wrangler pages project list (run from /Users/mike/mcp-servers)",
+    "live_fetch": "curl -s -m 25 -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'"
+  },
+
+  "verify_command": "for r in $(jq -r '.expected_links[] | select(.status==\"live\") | .url + \" \" + .href + \" \" + (.expected_count|tostring)' data/inbound_links.json | tr ' ' '|'); do u=${r%%|*}; rest=${r#*|}; h=${rest%%|*}; n=${rest##*|}; b=$(curl -sL -m 30 -A 'Mozilla/5.0 (compatible; Googlebot/2.1)' \"$u\"); c=$(printf '%s' \"$b\" | /usr/bin/grep -ao \"href=\\\"$h\\\"\" | wc -l | tr -d ' '); [ \"$c\" = \"$n\" ] && echo \"OK   $u\" || echo \"FAIL $u expected $n got $c\"; done",
+  "verify_note": "One pass over every expected placement. A FAIL means the link was removed by a later deploy of that site, which has already happened twice. Use /usr/bin/grep, not grep: a shell function on this machine shadows grep and swallows its output.",
+
+  "expected_links": [
+    { "domain": "claudhq.com", "url": "https://claudhq.com/mcp-troubleshooting-common-errors/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "Zovo's MCP server list", "placement": "contextual, body, Error 9 Package Not Found", "added_round": "R1_inbound_loop30", "status": "live", "verified": "2026-09-08" },
+    { "domain": "claudhq.com", "url": "https://claudhq.com/claude-code-mcp-tool-categories-guide/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "Zovo's MCP server catalogue", "placement": "contextual, body, after the category decision table", "added_round": "R1_inbound_loop30", "status": "live", "verified": "2026-09-08" },
+    { "domain": "claudflow.com", "url": "https://claudflow.com/guides/mcp-server-integration-guide.html", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "Zovo's MCP server catalogue", "placement": "contextual, body, after the three-category table", "added_round": "R1_inbound_loop30", "status": "live", "verified": "2026-09-08" },
+    { "domain": "bestremotetools.com", "url": "https://bestremotetools.com/how-to-build-custom-mcp-servers-for-claude", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "Zovo's MCP server catalogue", "placement": "contextual, body, second paragraph of the build guide", "added_round": "R1_inbound_loop30", "status": "live", "verified": "2026-09-08", "note": "trailing-slash form 308-redirects to this canonical URL; the sitemap lists the trailing-slash form" },
+
+    { "domain": "ukmoneycalc.com", "url": "https://ukmoneycalc.com/", "href": "https://mcp.zovo.one/s/invoice", "expected_count": 1, "placement": "sitewide footer block", "added_round": "BACKLINKS_RESULT (R1)", "status": "live", "verified": "2026-09-08" },
+    { "domain": "ukmoneycalc.com", "url": "https://ukmoneycalc.com/", "href": "https://mcp.zovo.one/s/time-tracker", "expected_count": 1, "placement": "sitewide footer block", "added_round": "BACKLINKS_RESULT (R1)", "status": "live", "verified": "2026-09-08" },
+    { "domain": "ukmoneycalc.com", "url": "https://ukmoneycalc.com/", "href": "https://mcp.zovo.one/s/expense-tracker", "expected_count": 1, "placement": "sitewide footer block", "added_round": "BACKLINKS_RESULT (R1)", "status": "live", "verified": "2026-09-08" },
+    { "domain": "statewage.com", "url": "https://statewage.com/", "href": "https://mcp.zovo.one/s/invoice", "expected_count": 1, "placement": "sitewide footer block", "added_round": "BACKLINKS_RESULT (R1)", "status": "live", "verified": "2026-09-08" },
+    { "domain": "statewage.com", "url": "https://statewage.com/", "href": "https://mcp.zovo.one/s/time-tracker", "expected_count": 1, "placement": "sitewide footer block", "added_round": "BACKLINKS_RESULT (R1)", "status": "live", "verified": "2026-09-08" },
+    { "domain": "statewage.com", "url": "https://statewage.com/", "href": "https://mcp.zovo.one/s/expense-tracker", "expected_count": 1, "placement": "sitewide footer block", "added_round": "BACKLINKS_RESULT (R1)", "status": "live", "verified": "2026-09-08" },
+    { "domain": "ml0x.com", "url": "https://ml0x.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "sitewide footer nav", "added_round": "BACKLINKS_R2_RESULT", "status": "live", "verified": "2026-09-08" },
+    { "domain": "heytensor.com", "url": "https://heytensor.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "sitewide cross-site block", "added_round": "BACKLINKS_R2_RESULT", "status": "live", "verified": "2026-09-08" },
+    { "domain": "kickllm.com", "url": "https://kickllm.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "sitewide cross-site block", "added_round": "BACKLINKS_R2_RESULT", "status": "live", "verified": "2026-09-08" },
+    { "domain": "toolsthatrank.com", "url": "https://toolsthatrank.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "sitewide footer nav", "added_round": "BACKLINKS_R2_RESULT", "status": "live", "verified": "2026-09-08" },
+    { "domain": "aiwebsitepipeline.com", "url": "https://aiwebsitepipeline.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "sitewide footer nav", "added_round": "BACKLINKS_R2_RESULT", "status": "live", "verified": "2026-09-08" },
+    { "domain": "lakelevelnow.com", "url": "https://lakelevelnow.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "sitewide footer nav", "added_round": "BACKLINKS_R2_RESULT", "status": "live", "verified": "2026-09-08" },
+    { "domain": "dscrradar.com", "url": "https://dscrradar.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "footer Site column, shipped by live-mirror deploy", "added_round": "BACKLINKS_R3_RESULT", "status": "live", "verified": "2026-09-08", "fragile": true, "fragile_reason": "shipped by mirror deploy, not by a repo commit; the repo is behind live, so any repo deploy removes it" },
+    { "domain": "zovo.one", "url": "https://zovo.one/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "sitewide footer nav", "added_round": "BACKLINKS_R2_RESULT", "status": "live", "verified": "2026-09-08" },
+
+    { "domain": "deepvalueradar.com", "url": "https://deepvalueradar.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "sitewide footer nav", "added_round": "BACKLINKS_R2_RESULT", "status": "lost", "verified": "2026-09-08", "last_seen_live": "2026-09-06 (BACKLINKS_R4_RESULT)", "bytes_when_live": 1028619, "bytes_now": 1089666, "cause": "the site was rebuilt and redeployed from its repo after the link was added; the autocycle regenerates dist and overwrites it" },
+    { "domain": "worthmyclaim.com", "url": "https://worthmyclaim.com/", "href": "https://mcp.zovo.one", "expected_count": 1, "anchor_text": "MCP servers for Claude", "placement": "footer About column, shipped by live-mirror deploy", "added_round": "BACKLINKS_R3_RESULT", "status": "lost", "verified": "2026-09-08", "last_seen_live": "2026-09-06 (BACKLINKS_R4_RESULT)", "bytes_when_live": 21650, "bytes_now": 24381, "cause": "a later deploy replaced the live-mirror deploy; the same deploy also removed a live page, /wrongful-death-settlement-calculator/, which now returns 404 and is absent from sitemap-0.xml" }
+  ],
+
+  "collateral_damage_found": [
+    {
+      "site": "worthmyclaim.com",
+      "url": "https://worthmyclaim.com/wrongful-death-settlement-calculator/",
+      "http": 404,
+      "was": "HTTP 200, verified live in BACKLINKS_R3_RESULT 2026-09-04 and recorded shipped 2026-08-29",
+      "sitemap": "absent from https://worthmyclaim.com/sitemap-0.xml, which now lists 36 URLs",
+      "note": "not caused by this round; this round never touched worthmyclaim.com. Reported because it is the exact failure the R2/R3 rounds predicted for that site: its GitHub repo is behind live, so deploying the repo deletes live pages."
+    }
+  ],
+
+  "changed_this_round": [
+    {
+      "site": "claudhq.com",
+      "repo": "theluckystrike/claudhq.com",
+      "deploy": "GitHub Pages, push to main",
+      "commit": "739f229",
+      "build": "repos/theluckystrike/claudhq.com/pages/builds/latest -> status built, error null, commit 739f229805fb92d3789b965a9f322fe353dc2bbe",
+      "drift_check": "repo byte-identical to live before patch on both target pages and on /",
+      "pages_changed": [
+        { "url": "https://claudhq.com/mcp-troubleshooting-common-errors/", "bytes_before": 16926, "bytes_after": 17350, "delta": 424, "http_after": 200 },
+        { "url": "https://claudhq.com/claude-code-mcp-tool-categories-guide/", "bytes_before": 39880, "bytes_after": 40303, "delta": 423, "http_after": 200 }
+      ],
+      "control_pages": [
+        { "url": "https://claudhq.com/", "bytes": 11026, "http": 200, "sha256_12": "4364733542c4", "result": "identical" },
+        { "url": "https://claudhq.com/mcp-config/", "bytes": 70173, "http": 200, "sha256_12": "8a99bf8b73a5", "result": "identical" },
+        { "url": "https://claudhq.com/claude-code-not-working-vscode/", "bytes": 20811, "http": 200, "sha256_12": "93f55edfd0d7", "result": "identical" },
+        { "url": "https://claudhq.com/jira-mcp-server-claude-code-integration-guide/", "bytes": 32597, "http": 200, "sha256_12": "49294e8f6959", "result": "identical" },
+        { "url": "https://claudhq.com/sitemap.xml", "bytes": 17839, "http": 200, "sha256_12": "8cf04028629e", "result": "identical" },
+        { "url": "https://claudhq.com/robots.txt", "bytes": 64, "http": 200, "sha256_12": "c301b0285f24", "result": "identical" }
+      ]
+    },
+    {
+      "site": "claudflow.com",
+      "repo": "theluckystrike/claudflow.com",
+      "deploy": "GitHub Pages, push to main",
+      "commit": "a1b17a8",
+      "build": "repos/theluckystrike/claudflow.com/pages/builds/latest -> status built, error null, commit a1b17a8d9f356b3749a90f7d7b20ffbd416ff7c2",
+      "drift_check": "repo byte-identical to live before patch (54738 repo / 54908 live, constant 170-byte GitHub Pages delta also present on the unmodified control fetch)",
+      "pages_changed": [
+        { "url": "https://claudflow.com/guides/mcp-server-integration-guide.html", "bytes_before": 54908, "bytes_after": 55325, "delta": 417, "http_after": 200 }
+      ],
+      "control_pages": [
+        { "url": "https://claudflow.com/", "bytes": 21517, "http": 200, "result": "identical" },
+        { "url": "https://claudflow.com/guides/claude-code-workflow-automation.html", "bytes": 87581, "http": 200, "result": "identical" },
+        { "url": "https://claudflow.com/answers/", "bytes": 7788, "http": 200, "result": "identical" },
+        { "url": "https://claudflow.com/research/workflow-automation-patterns.html", "bytes": 25053, "http": 200, "result": "identical" },
+        { "url": "https://claudflow.com/sitemap.xml", "bytes": 5507, "http": 200, "result": "identical" },
+        { "url": "https://claudflow.com/robots.txt", "bytes": 66, "http": 200, "result": "identical" }
+      ]
+    },
+    {
+      "site": "bestremotetools.com",
+      "repo": "theluckystrike/ai-tools-compared",
+      "deploy": "Cloudflare Pages, git provider connected, Jekyll build",
+      "commit": "de01820",
+      "build": "pages/projects/ai-tools-compared/deployments -> de018200 deploy success 2026-09-08T08:22:55Z",
+      "drift_check": "the deployment serving live was commit 4865e724, which is the HEAD of the clone that was patched; four distinctive sentences from the repo article were confirmed present in the live HTML",
+      "pages_changed": [
+        { "url": "https://bestremotetools.com/how-to-build-custom-mcp-servers-for-claude", "bytes_before": 62432, "bytes_after": 62832, "delta": 400, "http_after": 200 }
+      ],
+      "control_pages": [
+        { "url": "https://bestremotetools.com/", "bytes": 25991, "http": 200, "result": "identical" },
+        { "url": "https://bestremotetools.com/claude-mcp-server-connection-failed-fix-2026/", "bytes": 26933, "http": 200, "result": "identical" },
+        { "url": "https://bestremotetools.com/topics/ai-coding-assistants-comparison/", "bytes": 42641, "http": 200, "result": "identical" },
+        { "url": "https://bestremotetools.com/claude-code-runbook-documentation-guide/", "bytes": 28992, "http": 200, "result": "same byte count, sha differs only in Cloudflare's rotating data-cfemail email-obfuscation token; benign" },
+        { "url": "https://bestremotetools.com/robots.txt", "bytes": 1955, "http": 200, "result": "identical" }
+      ],
+      "sitemap": { "urls_before": 1317, "urls_after": 1317 }
+    }
+  ],
+
+  "candidates": [
+    { "domain": "claudhq.com", "topic": "Claude Code tools and error fixes", "topical_fit": "direct", "gsc_clicks_28d": 4, "gsc_impressions_28d": 1061, "deploy": "GitHub Pages push", "mcp_pages": 7, "verdict": "PICKED" },
+    { "domain": "claudflow.com", "topic": "AI workflow builder, prompt chains", "topical_fit": "direct", "gsc_clicks_28d": 16, "gsc_impressions_28d": 2425, "deploy": "GitHub Pages push", "mcp_pages": 1, "verdict": "PICKED" },
+    { "domain": "bestremotetools.com", "topic": "AI coding tool comparisons", "topical_fit": "direct", "gsc_clicks_28d": null, "gsc_impressions_28d": null, "gsc_note": "no GSC property; indexation confirmed independently by a site-restricted web search returning many live URLs", "deploy": "Cloudflare Pages, git connected", "mcp_pages": 15, "sitemap_urls": 1317, "verdict": "PICKED" },
+    { "domain": "claudkit.com", "topic": "Claude API playground", "topical_fit": "adjacent", "gsc_clicks_28d": 1, "gsc_impressions_28d": 127, "deploy": "GitHub Pages push", "mcp_pages": 0, "verdict": "REJECTED", "reason": "grep for 'MCP server' and 'model context protocol' across all 55 pages returned zero hits; there is no page where the link would be honest" },
+    { "domain": "claudecodeguides.com", "topic": "Claude Code guides, 3816 articles", "topical_fit": "direct", "gsc_clicks_28d": null, "gsc_impressions_28d": null, "deploy": "Cloudflare Pages, git connected", "verdict": "REJECTED", "reason": "repo carries DO_NOT_TOUCH.md recording a Google quality demotion, 96 percent traffic loss from 91 clicks/day to 0, and a prune of 1676 articles; it has no GSC property so current standing is unmeasurable. A link from a site under quality recovery is worth little and touching it carries risk that is not mine to take" },
+    { "domain": "gpt0x.com", "topic": "AI model database and comparisons", "topical_fit": "adjacent", "gsc_clicks_28d": 1, "gsc_impressions_28d": 5780, "deploy": "GitHub Pages push", "mcp_pages": 0, "verdict": "REJECTED", "reason": "model pricing and capability comparison, no MCP or tooling surface; no honest placement" },
+    { "domain": "kickllm.com", "topic": "LLM cost and latency benchmarks", "topical_fit": "adjacent", "gsc_clicks_28d": 26, "gsc_impressions_28d": 11298, "deploy": "GitHub Pages push", "verdict": "REJECTED for a new link", "reason": "already carries a footer link. Its indexed pages are LLM pricing and speed benchmarks; a link to an MCP server catalogue from a pricing benchmark would not help a reader" },
+    { "domain": "heytensor.com", "topic": "PyTorch shape and tensor tools", "topical_fit": "weak", "gsc_clicks_28d": 6, "gsc_impressions_28d": 10108, "deploy": "GitHub Pages push", "verdict": "REJECTED for a new link", "reason": "already carries a footer link; indexed pages are PyTorch shape errors, not MCP" },
+    { "domain": "ml0x.com", "topic": "ML training tools", "topical_fit": "weak", "gsc_clicks_28d": 31, "gsc_impressions_28d": 2351, "deploy": "GitHub Pages push", "verdict": "REJECTED for a new link", "reason": "already carries a footer link; no MCP surface" },
+    { "domain": "belikenative.com", "topic": "AI writing Chrome extension", "topical_fit": "weak", "gsc_clicks_28d": 1068, "gsc_impressions_28d": 329175, "deploy": "WordPress, REST only, Elementor dual-layer", "verdict": "REJECTED", "reason": "by far the largest traffic in the estate and also the live revenue asset. Off-topic for developer MCP tooling, and it has no git-commit deploy path, so no clearly safe autonomous edit exists. Correct answer is to write the plan and not do it" },
+    { "domain": "lockml.com", "topic": "ML model security checklist", "topical_fit": "weak", "gsc_clicks_28d": 4, "gsc_impressions_28d": 841, "verdict": "REJECTED", "reason": "no MCP surface, negligible traffic" },
+    { "domain": "invokebot.com", "topic": "webhook request builder", "topical_fit": "weak", "gsc_clicks_28d": 0, "gsc_impressions_28d": 184, "verdict": "REJECTED", "reason": "developer tool but no MCP or Claude surface, and near-zero impressions" },
+    { "domain": "epochpilot.com", "topic": "epoch and timezone converter", "topical_fit": "weak", "gsc_clicks_28d": 0, "gsc_impressions_28d": 760, "verdict": "REJECTED", "reason": "same" },
+    { "domain": "enhio.com", "topic": "readability analyzer", "topical_fit": "none", "gsc_clicks_28d": 5, "gsc_impressions_28d": 2601, "verdict": "REJECTED", "reason": "off topic" },
+    { "domain": "ml3x.com", "topic": "matrix math calculators", "topical_fit": "none", "gsc_clicks_28d": 0, "gsc_impressions_28d": 943, "verdict": "REJECTED", "reason": "off topic" },
+    { "domain": "bugbountyreality.com", "topic": "security research operations", "topical_fit": "none", "gsc_clicks_28d": 3, "gsc_impressions_28d": 1505, "verdict": "REJECTED", "reason": "off topic" },
+    { "domain": "ingredientcalculator.com", "topic": "cooking conversions", "topical_fit": "none", "gsc_clicks_28d": 209, "gsc_impressions_28d": 34381, "verdict": "REJECTED", "reason": "highest-traffic non-AI site in the estate and still wrong; traffic does not make an off-topic link legitimate" },
+    { "domain": "lakelevelnow.com", "topic": "reservoir levels", "topical_fit": "none", "gsc_clicks_28d": 212, "gsc_impressions_28d": 24881, "verdict": "REJECTED for a new link", "reason": "already carries a footer link from an earlier round; off topic, would not be added today" },
+    { "domain": "goldgramprice.com", "topic": "gold prices", "topical_fit": "none", "gsc_clicks_28d": 9, "gsc_impressions_28d": 8708, "verdict": "REJECTED", "reason": "off topic" },
+    { "domain": "recipetool.net", "topic": "recipes", "topical_fit": "none", "gsc_clicks_28d": 42, "gsc_impressions_28d": 6261, "verdict": "REJECTED", "reason": "off topic" },
+    { "domain": "englishlearner.org", "topic": "English learning", "topical_fit": "none", "gsc_clicks_28d": 108, "gsc_impressions_28d": 1984, "verdict": "REJECTED", "reason": "off topic" }
+  ],
+
+  "not_done": [
+    {
+      "item": "restore the deepvalueradar.com link",
+      "why_not": "deepvalueradar is not a git-connected Pages project and its dist is regenerated by the autocycle, which is what removed the link. Re-adding it to the built output would be removed again by the next cycle",
+      "next_steps": "add the anchor to the Astro layout component in theluckystrike/deepvalueradar rather than to dist, commit, then run the repo's own documented deploy and confirm the anchor survives one full autocycle run"
+    },
+    {
+      "item": "restore the worthmyclaim.com link and investigate the 404 page",
+      "why_not": "the site lost a live page as well as the link, so the repo-versus-live drift there is now actively destructive and larger than a link task. Touching it without resolving that drift risks deleting more",
+      "next_steps": "first establish why /wrongful-death-settlement-calculator/ 404s and whether the page source still exists anywhere; reconcile theluckystrike/worthmyclaim with live before any further deploy; only then re-add the link, as a repo commit rather than a mirror deploy"
+    },
+    {
+      "item": "a link from belikenative.com",
+      "why_not": "largest traffic in the estate, but a live revenue asset with no git-commit deploy path",
+      "next_steps": "if it is ever wanted, do it as a single WP REST edit to one genuinely relevant post, with the before and after HTML captured, and never through Elementor's dual-layer write path"
+    },
+    {
+      "item": "a link from claudecodeguides.com",
+      "why_not": "site is under Google quality recovery with unmeasurable current standing",
+      "next_steps": "add claudecodeguides.com as a GSC property first, measure 28 days, and only place a link if impressions have recovered"
+    }
+  ]
+}
