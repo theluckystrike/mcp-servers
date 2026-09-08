@@ -1,0 +1,9 @@
+{
+  "at": "2026-09-08T08:30:08.665Z",
+  "gallery": "https://api.mcp.github.com/v0/servers",
+  "pages": 3,
+  "total_rows": 250,
+  "control": "microsoft/markitdown",
+  "ours": [],
+  "note": "Registry-backed and syncs from the official MCP registry. No submission path exists; appearing is a ranked cut. If ours is non-empty, VS Code users can now find these servers in the built-in picker."
+}
