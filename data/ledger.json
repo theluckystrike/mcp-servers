@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-07T04:26:12.113Z",
+  "generated_at": "2026-09-08T08:33:18.463Z",
   "session": {
-    "count": 61,
+    "count": 62,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -246,6 +246,10 @@
       {
         "at": "2026-09-07T04:26:11.950Z",
         "note": "Sprint: npm proven human-gated by two live OIDC workflow runs; every live URL that printed a 404 install command now discloses it and leads with a working path; hosted endpoints answer directory probes instead of 401; registry namespace mechanism proven and one token away; 4 stale registry rows deprecated"
+      },
+      {
+        "at": "2026-09-08T08:33:18.249Z",
+        "note": "Loop 30: registry namespace claimed and measured live (3rd vs 15th on schedule); first green PR in awesome-mcp-servers; 3 Goose PRs; 4 verified inbound links; 14 reference guides; privacy page"
       }
     ]
   },
@@ -1759,6 +1763,10 @@
       "first_line": "mcp-clauses: adversarial audit and user-value run"
     },
     {
+      "file": "docs/CLIENT_GALLERIES_R1.md",
+      "first_line": "Client galleries round 1: the in-product picker as a distribution surface (2026-09-08)"
+    },
+    {
       "file": "docs/CODEX_REVIEW.md",
       "first_line": "1. `packages/mcp-license/src/index.ts:94-96` — P0 — Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."
     },
@@ -1829,6 +1837,10 @@
     {
       "file": "docs/CONTENT_R19_RESULT.md",
       "first_line": "Content round 19: /compare/per-diem, closing the compare_none note - 2026-09-05"
+    },
+    {
+      "file": "docs/CONTENT_R2.md",
+      "first_line": "CONTENT_R2 — 14 reference pages about MCP, organic content round 2, 2026-09-08"
     },
     {
       "file": "docs/CONTENT_R20_RESULT.md",
@@ -1971,6 +1983,10 @@
       "first_line": "Distribution round 24: npm verdict, the emoji blocker, one new surface (2026-09-07)"
     },
     {
+      "file": "docs/DIST_R26_RESULT.md",
+      "first_line": "Distribution round 26 — one server per PR, and the first honestly green Glama gate"
+    },
+    {
       "file": "docs/DIST_R3_RESULT.md",
       "first_line": "Distribution round 3: currency, timezone, docx onto Docker MCP catalog + Cline marketplace"
     },
@@ -2033,6 +2049,10 @@
     {
       "file": "docs/IMAGE_AUDIT.md",
       "first_line": "mcp-image: adversarial audit and user-value run"
+    },
+    {
+      "file": "docs/INBOUND_LINKS_R1.md",
+      "first_line": "Inbound links round 1 - loop 30 - 2026-09-08"
     },
     {
       "file": "docs/INSTALL_COPY_R1.md",
@@ -2111,6 +2131,10 @@
       "first_line": "Loop 29 brief (2026-09-07)"
     },
     {
+      "file": "docs/LOOP30_BRIEF.md",
+      "first_line": "Loop 30 brief (2026-09-08)"
+    },
+    {
       "file": "docs/MARKETPLACES_RESULT.md",
       "first_line": "Marketplaces: Docker MCP catalog + Cline marketplace"
     },
@@ -2149,6 +2173,10 @@
     {
       "file": "docs/NAMING_RESULT.md",
       "first_line": "NAMING_RESULT.md — registry name rewrite, 2026-09-02"
+    },
+    {
+      "file": "docs/NEW_USER_E2E_R1.md",
+      "first_line": "The whole product, walked as a stranger would (2026-09-08)"
     },
     {
       "file": "docs/NPM_AUTH_RESULT.md",

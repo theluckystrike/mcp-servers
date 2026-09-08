@@ -1,0 +1,58 @@
+{
+  "loop": 30,
+  "date": "2026-09-08",
+  "headline": "The registry namespace lever was reported yesterday as needing a human. It did not. It is claimed, measured and live.",
+  "namespace": {
+    "claimed": "com.bestremotetools/*",
+    "how": "served /.well-known/mcp-registry-auth from a git-connected Cloudflare Pages site, no DNS token, no human step",
+    "measured_live": {
+      "schedule": {
+        "new": 3,
+        "old": "15-21"
+      },
+      "delivery": {
+        "new": 2,
+        "old": "17-26"
+      },
+      "milestone": {
+        "new": 1,
+        "old": 3
+      },
+      "late": {
+        "new": 6,
+        "old": "absent"
+      }
+    },
+    "scope_correction": "registry SEARCH only. No client picker inherits the ASCII sort: VS Code, Goose, Dify, Smithery and Windsurf each re-rank by their own rule.",
+    "rolled_out": "one server, deliberately. Publishing the fleet under an AI-tools-review brand is a branding decision, not a technical one."
+  },
+  "distribution": {
+    "awesome_mcp_servers": "PR 13473 was closed for adding multiple servers. Four single-server PRs opened; 13963 is the first fully green entry this project has ever put in front of that maintainer, with a live Glama badge.",
+    "goose": "three PRs open on block/goose, one server each, every endpoint tested as a stranger first",
+    "vscode_gallery": "registry-backed and syncs from the official registry, 250 rows, none ours. No submission path exists; it is a ranked cut and now a watched surface.",
+    "list_prs_open": 13
+  },
+  "inbound_links": {
+    "new": 4,
+    "sites": [
+      "claudhq.com",
+      "claudflow.com",
+      "bestremotetools.com"
+    ],
+    "verified": "all four independently re-fetched and confirmed",
+    "premise_was_stale": "the brief said 2 sites linked; 12 did",
+    "regression_found": "2 of those 12 vanished within 48 hours because they were written into build output rather than repo source"
+  },
+  "storefront": {
+    "sitemap": 141,
+    "guides": 76,
+    "new_reference_pages": 14,
+    "privacy_page": "added, with real retention figures and a contact route that exists"
+  },
+  "damage_found_elsewhere": {
+    "site": "worthmyclaim.com",
+    "what": "wrongful-death-settlement-calculator and settlement-formula both 404, and sitemap.xml 404s",
+    "cause": "published to live but never committed; a later repo deploy rebuilt without them",
+    "recoverable": "no. Not in the repo, no local copy, no Wayback snapshot."
+  }
+}
