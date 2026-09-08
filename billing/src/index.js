@@ -1013,7 +1013,7 @@ ${faqHtml}
     }
 
     if (path === "/sitemap.xml") {
-      const urls = ["/", "/bundle", "/changelog", "/guides", "/compare", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      const urls = ["/", "/bundle", "/changelog", "/guides", "/compare", "/privacy", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     // MCP registry domain verification. The registry fetches
@@ -1037,6 +1037,66 @@ ${faqHtml}
     if (path === "/robots.txt") {
       return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nDisallow: /bound\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });
     }
+    // A factual data inventory, not boilerplate. Every retention figure below is the
+    // constant the code actually uses: ANON_TTL 30 days, DOWNLOAD_TTL 1 hour and
+    // SWEEP_AFTER_DAYS 35 in remote/src/index.ts, and the session:<id> record in this
+    // worker. Required by at least one directory before it will list a hosted server, and
+    // overdue for anything that takes a payment. Keep it in step with those constants.
+    if (path === "/privacy") {
+      const body = `<p><a href="/">All servers</a> &middot; <a href="/bundle">Bundle</a> &middot; <a href="${REPO}">Source</a></p>
+<h1>Privacy</h1>
+<p class="muted">Last updated 8 September 2026. This describes what the software does, checked against the source it is generated from. The code is public, so every claim here can be verified in ${REPO}.</p>
+
+<h2>If you run a server on your own machine</h2>
+<p>Nothing leaves it. The stdio servers read and write only under your own data directory,
+<code>\${XDG_DATA_HOME:-~/.local/share}/mcp-servers/&lt;server&gt;/</code>. They make no network calls in
+normal use, send no telemetry, and have no account. A Pro licence key is verified offline with an
+Ed25519 signature, so activating one contacts nothing. The two exceptions are a server whose whole
+job is to fetch something you asked for, such as exchange rates or a product page, and those fetch
+only what the call names.</p>
+
+<h2>If you use a hosted endpoint</h2>
+<p>The hosted endpoints at <code>mcp.zovo.one/mcp/&lt;server&gt;</code> hold data, because they have to.
+What is kept, and for how long:</p>
+<table>
+<tr><th>What</th><th>Why</th><th>Kept for</th></tr>
+<tr><td>An anonymous token, <code>anon_&lt;32 hex&gt;</code></td><td>Separates your data from another caller's. No name, no email, no account.</td><td>30 days, refreshed on each use</td></tr>
+<tr><td>The documents your calls create, such as invoices or timesheets</td><td>They are the point of the server</td><td>Deleted 35 days after the last touch</td></tr>
+<tr><td>A download link for a file a tool produced</td><td>To hand you the PDF or CSV</td><td>1 hour</td></tr>
+<tr><td>Rate-limit counters</td><td>To keep one caller from exhausting the endpoint</td><td>2 hours</td></tr>
+</table>
+<p>Anyone holding your token can read your data, so treat the token as the secret it is. A shared
+cache of European Central Bank reference rates is read-only and common to everyone; nothing about
+you is written into it.</p>
+
+<h2>If you buy a licence</h2>
+<p>Payment is taken by Stripe. The card never touches this site; the checkout page is Stripe's own.
+After a successful payment this site stores one record against the Stripe session id: the licence key
+it issued, the product, and the email address Stripe collected for the receipt. That email is kept so a
+buyer who loses the key can recover it at <code>/recover</code>. Nothing is emailed from here, and the
+address is not used for anything else. The licence key itself can carry a twelve character hash prefix
+derived from the email; it does not contain the address.</p>
+
+<h2>Traffic</h2>
+<p>This site runs on Cloudflare, which logs requests as any web host does. This site additionally counts
+clicks on upgrade links, by source label only, to tell a stalled funnel from an unread message. That count
+carries no identifier of any kind and cannot be tied to a person.</p>
+
+<h2>Deleting your data</h2>
+<p>For a hosted endpoint, stop using the token and everything under it is deleted after 35 days; there is
+nothing to ask for. For a purchase record, or anything else, open an issue at
+<a href="${REPO}/issues">${REPO}/issues</a> and say which Stripe session id it concerns. That is the
+contact route for this project and it is read. There is no support mailbox, and this page will not
+pretend otherwise.</p>
+
+<h2>What this page is not</h2>
+<p>It is a description of behaviour written by the person who wrote the code, not legal advice, and not a
+contract. Where it and the source disagree, the source is right and this page is a bug.</p>`;
+      const meta = `<meta name="description" content="What the MCP servers and the hosted endpoints store, and for how long. Local servers keep everything on your machine.">`
+        + `<link rel="canonical" href="https://mcp.zovo.one/privacy">`;
+      return new Response(page("Privacy", body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
     if (path === "/llms.txt") {
       // Every install line here used to print `npx -y @theluckystrike/mcp-<name>`, which
       // returns E404 because nothing has been published to npm. This file is the artifact
