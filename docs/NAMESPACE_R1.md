@@ -130,3 +130,42 @@ open, it costs nothing, and the decision is now an ordinary product decision rat
 credential problem. The next question is whether `com.bestremotetools` is the right publisher
 identity to carry the fleet, or whether a domain closer to the product should be used the
 same way. The mechanism works on any domain whose Pages project is git-connected.
+
+## The constraint that settles the rollout question (2026-09-08)
+
+An attempt to expand the experiment to three more servers failed, and the failure is the
+most useful thing learned about this axis.
+
+    $ mcp-publisher publish com.bestremotetools/pdf-merge-split-stamp-extract-pages
+    400: remote URL https://mcp.zovo.one/mcp/pdf is already used by server
+         io.github.theluckystrike/pdf-merge-split-stamp-extract-pages
+
+The same for billing-docs and invoice. **The registry binds each hosted endpoint URL to
+exactly one server name.** So for the thirty hosted servers the new namespace cannot be
+added alongside the old one and measured; the old row would have to be given up first.
+
+That explains why the delivery-schedule experiment worked at all: it ships stdio and .mcpb
+only, with no remotes block, so it had no endpoint URL to collide with.
+
+Three consequences, and they change the recommendation.
+
+1. There is no A/B test available for the hosted fleet. Any move is a migration, and
+   migrating back is another one.
+2. The measured gains stand and are large: on the tokens probed today `pdf` would go from
+   86th to 5th, `vat` from 64th to 3rd, `billing` from 28th to 1st, and `invoice` from 62nd
+   to 32nd. Those are the numbers a decision should be made on.
+3. The decision is now unambiguously a judgement about publisher identity rather than a
+   technical one, because the only way to take the gain is to publish the whole fleet under
+   a domain that is not the product's own. `bestremotetools.com` is a genuine property of
+   the operator's and an AI-tools site, so it is defensible, but it is not `zovo.one`, and
+   every client picker would show it as the publisher.
+
+Note that `one.zovo`, the namespace the product's own domain would give, sorts AFTER
+`io.github` and is therefore worse than what is published today. There is no
+identity-matching domain that also sorts early, unless one is acquired or an existing
+early-sorting domain is repointed.
+
+Recommendation unchanged in shape but now firmer: leave the fleet on `io.github` until the
+operator decides, and treat `com.bestremotetools/delivery-schedule-milestones-late-report`
+as the standing measurement of what the axis is worth. If registry referrals to that one
+server outgrow the rest per-server over the next fortnight, the migration pays for itself.
