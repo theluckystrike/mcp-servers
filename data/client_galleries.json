@@ -1,0 +1,349 @@
+{
+ "updated_at": "2026-09-08",
+ "round": "CLIENT_GALLERIES_R1",
+ "owner_doc": "docs/CLIENT_GALLERIES_R1.md",
+ "headline_findings": {
+  "vscode_gallery_is_registry_backed": true,
+  "vscode_gallery_contains_our_servers": false,
+  "vscode_gallery_total_rows": 250,
+  "official_registry_active_rows": 85,
+  "official_registry_deprecated_rows": 4,
+  "our_rows_with_hosted_remotes": 30,
+  "client_galleries_inherit_registry_ascii_sort": false,
+  "clients_where_we_are_already_visible_without_submitting": [],
+  "submissions_made_this_round": 3,
+  "paid_surfaces_encountered": 0
+ },
+ "ordering_semantics": {
+  "question": "Do registry-backed client pickers inherit the official registry's strict ASCII sort on the full namespaced name?",
+  "answer": "No. Measured on every gallery with an observable order.",
+  "per_gallery": {
+   "github_vscode": {
+    "order": "popularity/activity",
+    "evidence": "page-1 API order starts microsoft/markitdown, io.github.netdata/mcp-server, io.github.upstash/context7; names==sorted(names) is False and case-insensitive sorted is False"
+   },
+   "goose": {
+    "order": "render-time localeCompare on the human display name",
+    "evidence": "documentation/src/pages/extensions/index.tsx sorts (a,b)=>a.name.localeCompare(b.name); underlying servers.json array is not itself sorted"
+   },
+   "dify": {
+    "order": "install_count DESC",
+    "evidence": "marketplace advanced-search API takes sort_by=install_count; mcp query returned 141214 then 117999 installs"
+   },
+   "smithery": {
+    "order": "relevance/fuzzy",
+    "evidence": "q=theluckystrike returned dizpers/polystrike first"
+   },
+   "windsurf": {
+    "order": "verified-publisher tier above any name sort",
+    "evidence": "docs: 'Official MCPs will show up with a blue checkmark'"
+   }
+  },
+  "consequence": "The io.github.* naming ceiling in data/registry_rank.json is a registry-search problem only. The namespace claim should be justified on registry search alone; it does not move any client picker."
+ },
+ "hosted_endpoints": {
+  "count_declared_in_registry": 30,
+  "url_pattern": "https://mcp.zovo.one/mcp/<server>",
+  "auth": "Authorization: Bearer <token>; free anonymous token from GET https://mcp.zovo.one/mcp/token or the browser page https://mcp.zovo.one/mcp/connect. No account, no card, no email.",
+  "verified_as_stranger_2026_09_08": {
+   "invoice": {
+    "get": 200,
+    "initialize": 200,
+    "serverInfo": "mcp-invoice 0.21.0"
+   },
+   "time-tracker": {
+    "get": 200,
+    "initialize": 200,
+    "serverInfo": "mcp-time-tracker 0.21.0"
+   },
+   "spreadsheet": {
+    "get": 200,
+    "initialize": 200,
+    "serverInfo": "mcp-spreadsheet 0.21.0"
+   }
+  },
+  "note": "POST with no token returns 401 by design; that is correct protocol behaviour, not a fault. The /mcp/<server>/t/<token> ready URLs were deliberately NOT published: that page states the token is the data space and the URLs must stay private."
+ },
+ "clients": {
+  "vscode": {
+   "has_gallery": true,
+   "registry_backed": true,
+   "already_visible": false,
+   "submission_path": "None. Inclusion is GitHub's own selection out of the official MCP registry; no form, no PR, no request path.",
+   "autonomous_today": false,
+   "status": "blocked_by_curation",
+   "evidence": [
+    "python3 -c \"import json;print(json.load(open('/Applications/Visual Studio Code.app/Contents/Resources/app/product.json'))['mcpGallery'])\" -> serviceUrl https://api.mcp.github.com (VS Code 1.129.0)",
+    "curl -s https://api.mcp.github.com/ -> sync.enabled true, strategy v2, pipeline_status complete, last_oss_snapshot_at 2026-09-08T04:58:17Z",
+    "enumerated all 3 pages of /v0/servers?limit=100 -> metadata.total 250, 'theluckystrike' hits 0",
+    "curl -s https://main.vscode-cdn.net/mcp/servers.json (gzip) -> 37 hand-curated entries, ours absent"
+   ],
+   "note": "Two surfaces. The MCP gallery is registry-backed but holds a 250-row slice of the official registry. Falsified the obvious exclusion theories: zero-star repos ARE included; 233 distinct repos across 250 rows with two repos contributing 8 each, so multi-server-per-repo is fine; 14 mcpb package URLs on page 1, so the format survives the sync; and our invoice row is 0.21.0/active with a remote, published before the snapshot. Remaining HYPOTHESIS, not proven: the 250 is a popularity-ranked cut and we sit below it. Action is a standing watch, not a submission. The VS Code extension marketplace is a separate surface needing an Azure DevOps account (human-gated)."
+  },
+  "cursor": {
+   "has_gallery": false,
+   "registry_backed": false,
+   "already_visible": null,
+   "submission_path": "cursor.directory/plugins/new (third-party community site). First-party cursor/mcp-servers repo is ARCHIVED.",
+   "autonomous_today": false,
+   "status": "no_path",
+   "evidence": [
+    "grep of /Applications/Cursor.app product.json -> extensionsGallery present, NO mcpGallery key (v3.14.7)",
+    "grep of Cursor app bundle -> only https://cursor.com/docs/mcp and an OAuth callback URL",
+    "gh repo view cursor/mcp-servers --json isArchived -> true, last push 2026-03-19",
+    "WebFetch https://cursor.directory/plugins/new -> HTTP 429, fields unverified"
+   ],
+   "note": "No in-app gallery in the installed version. cursor.directory could not be probed (429), so its exact gate is unverified and it is recorded in the human-gated pack rather than asserted."
+  },
+  "cline": {
+   "has_gallery": true,
+   "registry_backed": false,
+   "already_visible": false,
+   "submission_path": "GitHub issue on cline/mcp-marketplace, one server per issue. Already used in earlier rounds.",
+   "autonomous_today": false,
+   "status": "submitted_awaiting_maintainer",
+   "evidence": [
+    "gh issue list --repo cline/mcp-marketplace --author theluckystrike --state all --limit 40 -> 30 issues, all OPEN, 0 comments",
+    "gh issue list --repo cline/mcp-marketplace --state closed --limit 10 -> queue does move (#2437 closed 2026-09-05, #2315 closed 2026-08-24)",
+    "curl -s https://api.cline.bot/v1/mcp/marketplace -> 199 items, 'theluckystrike' in catalog: False"
+   ],
+   "note": "Own API, not registry-backed. 30 submissions already queued from earlier rounds; queue demonstrably moves. No further autonomous action - chasing 30 open issues would be maintainer spam."
+  },
+  "windsurf": {
+   "has_gallery": true,
+   "registry_backed": false,
+   "already_visible": null,
+   "submission_path": "None documented. Enterprise custom registries are a per-customer self-hosted feed, not a listing.",
+   "autonomous_today": false,
+   "status": "no_path",
+   "evidence": [
+    "docs.windsurf.com/windsurf/cascade/mcp 307 -> docs.devin.ai/desktop/cascade/mcp",
+    "docs quote: 'Official MCPs will show up with a blue checkmark' (curated tier)",
+    "docs quote: 'Custom registries must follow the official MCP registry schema' (enterprise-scoped)",
+    "windsurf.com/api/mcp/servers -> HTTP 200 content-type text/html (SPA shell, NOT a catalogue); server.codeium.com/api/mcp/servers -> 404"
+   ],
+   "note": "No public catalogue endpoint exists, so our presence is unknowable rather than known-absent. The only place the official-registry investment is reusable is inside a customer's own enterprise org."
+  },
+  "zed": {
+   "has_gallery": true,
+   "registry_backed": false,
+   "already_visible": false,
+   "submission_path": "New per-server Rust/WASM extension repo plus a PR to zed-industries/extensions (extensions.toml, 1467 submodule entries).",
+   "autonomous_today": false,
+   "status": "deliberately_skipped",
+   "evidence": [
+    "docs/src/extensions/mcp-extensions.md: 'We plan to deprecate MCP server extensions in favor of the official MCP registry ... To keep your MCP server available in Zed, publish it to the official registry as well.'",
+    "zed-industries/zed#59351 'Migrate MCP extensions to use the MCP registry' OPEN, updated 2026-06-15",
+    "grep -ic 'theluckystrike|zovo' extensions.toml -> 0"
+   ],
+   "note": "DELIBERATE NO-OP, recorded so a future round does not mistake the open PR path for an opportunity. Zed's own docs name the official registry as the migration target and tell maintainers to publish there instead - which we already do. Current mechanism also restricts to binaries or NPM, which mcpb is neither. Action: watch #59351."
+  },
+  "continue": {
+   "has_gallery": false,
+   "registry_backed": false,
+   "already_visible": null,
+   "submission_path": "None - the hub is gone.",
+   "autonomous_today": false,
+   "status": "dead",
+   "evidence": [
+    "dig +short hub.continue.dev -> empty (NXDOMAIN)",
+    "curl https://continue.dev -> <title>Continue (acquired by Cursor)</title>"
+   ],
+   "note": "Remove from the target list. The continuedev/continue repo is still pushed but the hub that hosted MCP blocks no longer resolves."
+  },
+  "jetbrains": {
+   "has_gallery": false,
+   "registry_backed": false,
+   "already_visible": null,
+   "submission_path": "None for MCP entries. The JetBrains Marketplace hosts IDE plugins, a different artefact, and needs a JetBrains Account plus vendor approval.",
+   "autonomous_today": false,
+   "status": "no_path",
+   "evidence": [
+    "jetbrains.com/help/ai-assistant/mcp.html - manual JSON entry (command, args, env, working dir); only automation is 'Import from Claude'",
+    "same help pages mention registry.modelcontextprotocol.io, mcp.so and Smithery zero times; discovery punted to github.com/modelcontextprotocol/servers"
+   ],
+   "note": "No catalogue at all in the AI Assistant MCP picker. The marketplace plugins named 'MCP Server' are IDE plugins and do not populate that picker."
+  },
+  "lm-studio": {
+   "has_gallery": false,
+   "registry_backed": false,
+   "already_visible": null,
+   "submission_path": "No submission path and no gatekeeper. Any site may render an 'Add to LM Studio' deeplink button.",
+   "autonomous_today": null,
+   "status": "no_gatekeeper_free_lever",
+   "evidence": [
+    "lmstudio.ai/mcp 301 -> lmstudio.ai/docs/app/mcp",
+    "docs: servers added 'by editing the app's mcp.json file or via the Add to LM Studio Button, when available'; follows Cursor's mcp.json notation; documents remote HTTP servers with headers"
+   ],
+   "note": "FREE LEVER, not a submission: mcp.zovo.one could render a per-server 'Add to LM Studio' button at zero cost, and our hosted URLs fit the url form. Deeplink shape reported as lmstudio://add_mcp?name=<name>&config=<encoded JSON> but the exact encoding is UNVERIFIED by me - treat as a lead. Needs a site change, outside this round's file ownership."
+  },
+  "open-webui": {
+   "has_gallery": false,
+   "registry_backed": false,
+   "already_visible": null,
+   "submission_path": "None for MCP servers.",
+   "autonomous_today": false,
+   "status": "no_gallery_none_needed",
+   "evidence": [
+    "docs.openwebui.com/features/extensibility/mcp/ - native MCP since v0.6.31; Settings > Admin > Integrations > External Tool Servers > + Add Connection, Type = MCP (Streamable HTTP), paste URL + auth",
+    "openwebui.com/tools -> HTTP 302 (login gate); that site carries Python Tools/Functions, not MCP servers"
+   ],
+   "note": "Admin pastes a URL, so our hosted endpoints already work with no listing. Leverage is a setup snippet on the storefront, not a submission."
+  },
+  "librechat": {
+   "has_gallery": false,
+   "registry_backed": false,
+   "already_visible": false,
+   "submission_path": "None. Docs outsource discovery to Smithery.",
+   "autonomous_today": false,
+   "status": "no_gallery_none_needed",
+   "evidence": [
+    "www.librechat.ai/docs/features/mcp - librechat.yaml mcpServers: plus an in-app MCP Settings panel where the user types name/description/URL/transport",
+    "gh api -X GET search/code -f q='\"registry.modelcontextprotocol.io\" repo:danny-avila/LibreChat repo:open-webui/open-webui repo:langgenius/dify' -> total_count 0",
+    "curl 'https://registry.smithery.ai/servers?q=theluckystrike&pageSize=20' -> 20 results, 0 ours (same for q=zovo, q=invoice)"
+   ],
+   "note": "No catalogue file in the repo. The site its docs point users at (Smithery) does not list us either - see the smithery row."
+  },
+  "dify": {
+   "has_gallery": true,
+   "registry_backed": false,
+   "already_visible": false,
+   "submission_path": "PR to langgenius/dify-plugins adding <author>/<plugin>/<plugin>-<version>.difypkg. No fee. Template requires attesting 'I tested this plugin on Dify Community Edition and Dify Cloud'.",
+   "autonomous_today": false,
+   "status": "no_path_in_practice",
+   "evidence": [
+    "marketplace.dify.ai/api/v1/plugins/search/advanced query 'mcp' -> junjiem/mcp_see_agent 141214 installs, junjiem/mcp_sse 117999 installs (generic clients that accept any pasted SSE/streamable-HTTP URL)",
+    "same endpoint query 'theluckystrike' -> {\"code\":0,\"data\":{\"plugins\":[],\"total\":0},\"msg\":\"ok\"}"
+   ],
+   "note": "The marketplace lists Dify plugins, not MCP servers. Our endpoints already work in Dify today via the two most-installed generic MCP client plugins, with no listing at all. The PR path would need a packaged Python .difypkg and a Dify Cloud account for the required attestation - out of bounds, and the artefact would be a wrapper plugin rather than an MCP-server listing."
+  },
+  "goose": {
+   "has_gallery": true,
+   "registry_backed": false,
+   "already_visible": false,
+   "submission_path": "A pull request editing ONE file: documentation/static/servers.json in block/goose. No account beyond gh, no form, no fee.",
+   "autonomous_today": true,
+   "status": "submitted",
+   "evidence": [
+    "traced: documentation/src/pages/extensions/index.tsx -> src/utils/mcp-servers.ts (SERVERS_URL = '/servers.json') -> documentation/static/servers.json",
+    "gh api 'search/code?q=registry.modelcontextprotocol.io+repo:block/goose' -> total_count 0 (NOT registry-backed)",
+    "curl -sL raw.githubusercontent.com/block/goose/main/documentation/static/servers.json -> HTTP 200, 30531 bytes, 59 entries, 'theluckystrike' 0 hits, 'zovo' 0 hits",
+    "12 of 59 entries have no command, only a url (remote entries accepted); rendex-mcp is an exact precedent: streamable-http url + Authorization header + endorsed:false + show_install_command:false",
+    "outside-contributor PRs merged: #10650 james-see, #10638 jamiew, #9861 san-npm, #9433 mlava, #8487 tgonzalezc5, #8541 Dan425953",
+    "#10650 changed exactly 1 file and added 1 entry -> one server per PR is this repo's demonstrated convention"
+   ],
+   "note": "THE ONE REAL AUTONOMOUS LISTING THIS ROUND. Three PRs opened, one server each, following the repo's own one-per-PR convention rather than batching. Each endpoint was called as a stranger before being written into someone else's directory."
+  },
+  "claude-desktop-connectors": {
+   "has_gallery": true,
+   "registry_backed": false,
+   "already_visible": null,
+   "submission_path": "Two paths, both human-gated: (a) the remote-MCP portal at claude.ai/admin-settings/directory/submissions/new, which needs a Team or Enterprise organisation (a paid plan) and an Owner role; (b) the .mcpb desktop-extension Google Form at clau.de/desktop-extention-submission.",
+   "autonomous_today": false,
+   "status": "human_gated",
+   "evidence": [
+    "claude.com/docs/connectors/building/submission - 11-step portal; verbatim blocker: 'A Team or Enterprise organization. Organization settings aren't available on individual plans'",
+    "curl -o /dev/null -w '%{http_code} -> %{redirect_url}' https://clau.de/desktop-extention-submission -> 302 -> docs.google.com/forms/d/e/1FAIpQLScHtjkiCNjpqnWtFLIQStChXlvVcvX8NPXkMfjtYPDPymgang/viewform; curl -L -> HTTP 401 (sign-in required)"
+   ],
+   "note": "Anthropic-curated, no public catalogue API, so our presence cannot be checked. The .mcpb path matches our exact bundle format, which makes it the highest-value human action on this surface. Both written into docs/HUMAN_GATED_PACK.md section 12. Nothing submitted, form not opened. BLOCKER for the portal path: a privacy policy URL is required and none exists - /privacy, /legal/privacy and /privacy-policy all 404 as at 2026-09-08."
+  }
+ },
+ "adjacent_surfaces_found": {
+  "github-mcp-registry": {
+   "what": "Not a client. The backing service for VS Code's MCP gallery, and per GitHub's own docs for other downstream clients too.",
+   "registry_backed": true,
+   "already_visible": false,
+   "evidence": [
+    "curl -s https://api.mcp.github.com/ -> sync from the OSS registry, last_oss_snapshot_at 2026-09-08T04:58:17Z",
+    "3 pages enumerated -> total 250, 114 io.github.* rows, 62 com.* rows, 0 theluckystrike",
+    "search/q params are ignored: search=clickhouse, search=theluckystrike and search=invoice all return the identical first 5 rows"
+   ],
+   "action": "standing watch, no submission path exists"
+  },
+  "smithery": {
+   "what": "Not a client. The discovery site LibreChat's own docs send users to.",
+   "registry_backed": false,
+   "already_visible": false,
+   "evidence": [
+    "curl 'https://registry.smithery.ai/servers?q=theluckystrike&pageSize=20' -> 20 results, 0 ours; same for q=zovo and q=invoice"
+   ],
+   "action": "free gap; belongs to the distribution agent (data/distribution.json), not to this round's file ownership"
+  },
+  "claude-code": {
+   "what": "No gallery at all; `claude mcp add` takes a command or a URL.",
+   "registry_backed": false,
+   "already_visible": null,
+   "evidence": [],
+   "action": "nothing to submit to"
+  }
+ },
+ "submissions": [
+  {
+   "surface": "goose",
+   "server": "invoice",
+   "entry_id": "zovo-invoice",
+   "pr": "https://github.com/block/goose/pull/11917",
+   "state": "OPEN",
+   "mergeable": "MERGEABLE",
+   "changed_files": 1,
+   "additions": 20,
+   "endpoint": "https://mcp.zovo.one/mcp/invoice",
+   "endpoint_verified": "GET 200; POST initialize 200, serverInfo mcp-invoice 0.21.0"
+  },
+  {
+   "surface": "goose",
+   "server": "time-tracker",
+   "entry_id": "zovo-time-tracker",
+   "pr": "https://github.com/block/goose/pull/11918",
+   "state": "OPEN",
+   "mergeable": "MERGEABLE",
+   "changed_files": 1,
+   "additions": 20,
+   "endpoint": "https://mcp.zovo.one/mcp/time-tracker",
+   "endpoint_verified": "GET 200; POST initialize 200, serverInfo mcp-time-tracker 0.21.0"
+  },
+  {
+   "surface": "goose",
+   "server": "spreadsheet",
+   "entry_id": "zovo-spreadsheet",
+   "pr": "https://github.com/block/goose/pull/11919",
+   "state": "OPEN",
+   "mergeable": "MERGEABLE",
+   "changed_files": 1,
+   "additions": 20,
+   "endpoint": "https://mcp.zovo.one/mcp/spreadsheet",
+   "endpoint_verified": "GET 200; POST initialize 200, serverInfo mcp-spreadsheet 0.21.0"
+  }
+ ],
+ "registry_health_recheck": {
+  "question": "A helper reported io.github.theluckystrike/aging at 0.14.0 - is a manifest failing to republish?",
+  "answer": "No. The registry keeps one row per published version; a search without version=latest returns the whole history.",
+  "evidence": [
+   "search=io.github.theluckystrike/aging&limit=100 -> 8 rows, versions 0.14.0 through 0.21.0, isLatest only on 0.21.0",
+   "search=io.github.theluckystrike/aging&version=latest -> single row 0.21.0 active"
+  ],
+  "all_latest_rows": {
+   "0.21.0_active": 85,
+   "0.1.1_deprecated": 4
+  },
+  "deprecated_are": [
+   "io.github.theluckystrike/invoice",
+   "io.github.theluckystrike/price-tracker",
+   "io.github.theluckystrike/spreadsheet",
+   "io.github.theluckystrike/time-tracker"
+  ],
+  "deprecated_note": "All four deprecated 2026-09-02 - the naming round deliberately retiring the old short names, not a failed republish."
+ },
+ "namespace_check": {
+  "com.bestremotetools_in_vscode_gallery": false,
+  "note": "Expected - claimed 2026-09-08. The gallery already carries 62 com.* rows against 114 io.github.* rows, so the namespace is no barrier to entry there; and per ordering_semantics it would not change our position if it were."
+ },
+ "next_round": [
+  "Standing watch, one probe per loop: curl -s 'https://api.mcp.github.com/v0/servers?limit=100' | grep -c luckystrike, and read metadata.total to see whether the 250 cut is loosening. If we appear, 85 rows land in front of the largest MCP client population there is, for nothing.",
+  "Watch zed-industries/zed#59351. When Zed's registry migration ships, our existing rows carry us in with no work.",
+  "Poll the three Goose PRs (11917/11918/11919) for maintainer comments; be ready to close two of the three if they would rather take one.",
+  "Smithery is the one free listing gap found - hand to the distribution agent, it owns that file.",
+  "Content lever, not distribution: per-client copy-paste setup snippets for the hosted endpoints (Open WebUI, LibreChat, Dify, LM Studio deeplink) on mcp.zovo.one and in the 33 mirror READMEs. Those four clients need no listing at all, only a URL a user can paste.",
+  "Publish a privacy policy on mcp.zovo.one. /privacy, /legal/privacy and /privacy-policy all return 404, and a live one is a hard prerequisite for the Claude connectors portal (docs: missing privacy policies result in immediate rejection). Cheap agent task, blocks a human action."
+ ]
+}

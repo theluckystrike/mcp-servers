@@ -785,3 +785,151 @@ Issue numbers were at 3995 within hours of 3977, so the queue is receiving sever
 submissions a day and nobody is triaging them. Treat a free mcp.so listing as unlikely, and
 do **not** spend a future loop filing more issues there. If the operator ever wants mcp.so,
 the honest options are the $39 fee (blocked by the no-paid rule) or nothing.
+
+---
+
+## 12. Client in-product galleries (added 2026-09-08, round CLIENT_GALLERIES_R1)
+
+Thirteen MCP clients were worked this round. Twelve needed no human because there was nothing
+to submit to; one, Goose, was submitted autonomously (PRs
+[#11917](https://github.com/block/goose/pull/11917),
+[#11918](https://github.com/block/goose/pull/11918),
+[#11919](https://github.com/block/goose/pull/11919)). What follows is only the residue that
+genuinely needs a person. Full working in `docs/CLIENT_GALLERIES_R1.md`.
+
+**No paid listing was found on any client surface**, so there is nothing here to record as
+`skipped: paid`. Two of the three actions below are gated on a paid *plan* or an *account*,
+which is a different thing and is called out explicitly in each.
+
+### Ranked
+
+| # | Action | Time | Worth doing? | Why it needs you |
+| --- | --- | --- | --- | --- |
+| 12a | Submit the `.mcpb` bundles to Anthropic's desktop-extension form | ~4 min | **Yes — highest value on this surface** | Google Form behind a sign-in wall |
+| 12b | Check `cursor.directory/plugins/new` and submit if it is open | ~2 min | Maybe | Probe returned HTTP 429; the gate is unverified |
+| 12c | Claude connectors portal (remote MCP servers) | ~20 min | Only if a Team plan already exists | Requires a **paid** Team/Enterprise org |
+
+Deliberately **not** in this list, so nobody re-derives them as opportunities:
+
+- **Zed.** Real gallery, real open PR path, and we are skipping it on purpose. Zed's own docs
+  say the mechanism is being deprecated in favour of the official MCP registry and tell
+  maintainers to publish there instead — which we already do, with 85 active rows. Building 89
+  Rust/WASM extension repos into a retiring mechanism is negative-value work. Watch
+  `zed-industries/zed#59351` instead.
+- **VS Code's MCP gallery.** It *is* registry-backed and we *are* absent, but there is no form,
+  no PR and no request path — GitHub selects out of the official registry. Nothing a human can
+  click. It is a standing watch, recorded in `data/client_galleries.json`.
+- **VS Code extension marketplace.** Publishing needs an Azure DevOps organisation and a PAT.
+  That is account creation, and it is the wrong artefact anyway (a VS Code extension, not an
+  MCP server listing). Not worth your time.
+- **npm.** Still the single biggest unlock, still section 0. Note one thing this round changed:
+  npm is **not** the gate on client galleries. Every gallery that wanted a `command` also
+  accepted a `url`, and our thirty hosted endpoints satisfy that. npm remains the gate on
+  install copy, not on distribution here.
+
+---
+
+### 12a. Anthropic desktop-extension submission (the `.mcpb` form)
+
+This is the best-fit human action on the whole client surface. Anthropic's desktop-extension
+directory takes **`.mcpb` bundles — our exact shipping format**. No repackaging, no npm, no
+rewrite. We ship 32 of them on every release.
+
+**URL:** `https://clau.de/desktop-extention-submission`
+(note Anthropic's own typo in "extention"; that is the real link)
+
+It 302s to a Google Form:
+`https://docs.google.com/forms/d/e/1FAIpQLScHtjkiCNjpqnWtFLIQStChXlvVcvX8NPXkMfjtYPDPymgang/viewform`
+
+**Why it needs you:** fetching it unauthenticated returns **HTTP 401** — Google sign-in is
+required. An agent cannot sign in, so the form was never opened and its exact fields are
+unverified. Expect the usual: extension name, description, repository URL, contact email, and
+the bundle or a link to it.
+
+**Click path:** open the link → sign in to Google → fill → Submit. Repeat per server, strongest
+first.
+
+**What to paste** (from the per-server table in section 0, plus):
+
+- Repo: `https://github.com/theluckystrike/mcp-<server>`
+- Bundle: `https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/<server>.mcpb`
+- Support: `support@zovo.one` · License: MIT · Version: 0.21.0
+- If it asks whether the server actually runs, point at `docs/NEW_USER_E2E_R1.md`: the public
+  bundle downloads and boots, the free tier binds with a clear upgrade path, checkout reaches a
+  live Stripe page, and the zero-install hosted URL returns thirteen tools with no key.
+
+**Order to submit (highest value first):** `invoice`, `time-tracker`, `spreadsheet`,
+`expense-tracker`, `pdf`, `docx`, `price-tracker`, `office-suite`.
+
+**Verify it landed:** watch `support@zovo.one` for the acknowledgement, then check the
+connectors directory at `claude.com/connectors` after the stated review window.
+
+---
+
+### 12b. cursor.directory — two minutes, and it may be entirely open
+
+Cursor 3.14.7 has **no in-app MCP gallery** (verified by grepping the shipped `product.json`:
+`extensionsGallery` is present, `mcpGallery` is absent), and Cursor's own first-party list,
+`cursor/mcp-servers`, is **archived** (last push 2026-03-19). So the only Cursor-adjacent
+surface left is the third-party community site.
+
+**URL:** `https://cursor.directory/plugins/new`
+
+**Why it needs you:** the automated probe returned **HTTP 429** (rate limited), so the page's
+fields and its sign-in gate are genuinely unverified. It may well be open and take 60 seconds,
+or it may want a GitHub sign-in, in which case stop — that is out of bounds for the agents but
+your call to make.
+
+**Click path:** open it in a normal browser → if it asks you to sign in, decide; if not, fill
+name, description, GitHub URL, category → Submit.
+
+**What to paste:** name `Zovo Invoice`; description from the section 0 table; GitHub
+`https://github.com/theluckystrike/mcp-invoice`; homepage `https://mcp.zovo.one/s/invoice`.
+
+**Verify it landed:** search `cursor.directory` for `zovo`.
+
+**If a fee, a featured slot or a paid tier appears anywhere on that page, stop and do not pay** —
+record it as `skipped: paid` and tell the loop. Nothing paid was seen on any client surface this
+round and we would want to know if that changed.
+
+---
+
+### 12c. Claude connectors portal — only if a Team plan already exists
+
+**URL:** `https://claude.ai/admin-settings/directory/submissions/new`
+**Docs:** `https://claude.com/docs/connectors/building/submission`
+
+**Why it needs you, and why it is ranked last:** the docs state the requirement verbatim —
+*"A Team or Enterprise organization. Organization settings aren't available on individual
+plans."* You also need the Owner role or a custom role carrying the Directory permission. There
+is **no listing fee**, but Team/Enterprise is a **paid plan**, so this is only worth opening if
+one already exists. **Do not buy a plan for this.**
+
+It is an 11-step wizard: Introduction; Connection (an https URL, streamable HTTP or SSE);
+Tools (auto-synced — every tool needs a title and `readOnlyHint`/`destructiveHint`); Listing
+(name ≤100 chars, tagline ≤55, description ≤2000, 1–5 categories, documentation URL, privacy
+policy URL, support contact, icon, permanent slug); Use cases; Company; Authentication
+(OAuth 2.0 for authenticated services); Data handling; Test & launch (reviewer test-account
+credentials, plus confirmation you ran every tool); Compliance (7 acknowledgments); Review.
+
+**What to paste:**
+
+- Connection URL: `https://mcp.zovo.one/mcp/invoice` (streamable HTTP; 30 servers have one)
+- Reviewer credentials: none needed — say so, and give them
+  `https://mcp.zovo.one/mcp/connect`, which mints a free anonymous token in the browser with no
+  account, no card and no email
+- Documentation: `https://mcp.zovo.one/s/invoice` · Support: `support@zovo.one` · Icon:
+  `assets/invoice-logo.png` · Tagline and description: section 0 table
+
+**One hard blocker to fix before you start, and it is not fixed today:** the docs say
+*"Missing or incomplete privacy policies result in immediate rejection."* A privacy policy URL
+is a required field, and we do not have one. Probed 2026-09-08:
+
+    https://mcp.zovo.one/privacy          404
+    https://mcp.zovo.one/legal/privacy    404
+    https://mcp.zovo.one/privacy-policy   404
+
+So 12c is blocked on writing and publishing a privacy policy first — an agent task, not a human
+one, and cheap. Until that page returns 200, opening the wizard wastes the submission.
+
+Escalations: `mcp-review@anthropic.com`.
