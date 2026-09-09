@@ -66,7 +66,12 @@
     "before": "lowest server minimum 2.35; 0 of 31 servers had a minimum at or above 3.0",
     "after": "lowest server minimum 3.15; 31 of 31 at or above 3.0",
     "target_missed_honestly": "the brief asked for every minimum above 3.5 and 5 of 31 reach it. The binding constraint is the estate's own 220-character contract ceiling, which will not hold six scored dimensions at full marks. The ceiling was not raised and no name was added to the grandfathering baseline.",
-    "why_it_compounds": "Glama scores 40 percent on the single worst tool, so the minimum is the whole game, and connectors re-score daily so this is measurable within a day"
+    "why_it_compounds": "Glama scores 40 percent on the single worst tool, so the minimum is the whole game, and connectors re-score daily so this is measurable within a day",
+    "hosted_twin": {
+      "found_by": "the tool-description agent flagged it on its way out",
+      "why_it_mattered": "Glama connectors score the HOSTED endpoint, not the local build, so the hosted licence twin in remote/src/shims/license.ts was the string actually being scored at 1.4 of 5. It said only what the tool does NOT do and never said what it does.",
+      "fixed": "both hosted descriptions rewritten to 207 and 218 characters stating purpose, parameters and behaviour, deployed and verified live on all 30 endpoints"
+    }
   },
   "estate": {
     "tests": "46 failing assertions to 0",
@@ -77,5 +82,10 @@
     "awesome_mcp_servers": 5,
     "goose": 3,
     "docker": "PR 5030 open, queue stalled 19 days with 1,146 open PRs"
+  },
+  "stopped_deliberately": {
+    "what": "a plan to cut 22 hosted descriptions over 220 characters, mostly the upload tools at 843 to 1,144",
+    "why": "length is not the same as low quality. Those long descriptions carry measured guidance about why a url beats a large base64 payload, Glama weights conciseness at only 10 percent against 50 percent for transparency, guidelines and completeness, and the measurement had named the licence pair as the minimum, not these. The 220 ceiling is the local contract test and does not apply to hosted variants.",
+    "how_it_surfaced": "a first attempt dropped a concatenated shared constant and esbuild refused the build, so nothing shipped; the files were restored from git rather than patched forward"
   }
 }
