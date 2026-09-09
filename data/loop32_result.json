@@ -89,6 +89,22 @@
     },
     "how": "one extra row per buried server under com.bestremotetools, mcpb-only with no remotes block so it cannot collide with the hosted URL, leaving every io.github row active and untouched",
     "verified": "each new row points at a release bundle returning 200 and a product page returning 200",
-    "reversible": "one deprecate command per row if unwelcome"
+    "reversible": "one deprecate command per row if unwelcome",
+    "extended": "applied across the whole catalogue on the word a person would type",
+    "result": "443 places gained across ten contested tokens; nine of ten now sit in the first eight results where none was on page one",
+    "table": {
+      "pdf": "93 -> 5",
+      "image": "65 -> 6",
+      "bank": "62 -> 7",
+      "quote": "52 -> 3",
+      "price": "53 -> 7",
+      "contract": "52 -> 6",
+      "invoice": "65 -> 32",
+      "qr": "30 -> 2",
+      "calendar": "35 -> 8",
+      "archive": "13 -> 1"
+    },
+    "left_alone": "resume and kanban at rank 11, close enough to the fold that a second row is not worth the duplication",
+    "safety": "every io.github row still active; the new rows declare no hosted remote so nothing collided and no URL was reassigned"
   }
 }
