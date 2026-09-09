@@ -186,7 +186,9 @@ export function checkoutCustomText(productId, askedId = productId) {
   const after_submit =
     `Your license key is shown on the confirmation page immediately after payment. It is not emailed, ` +
     `so copy it from that page; the same URL always shows the same key. If you started from a hosted ` +
-    `mcp.zovo.one endpoint, that endpoint is upgraded to Pro automatically, with nothing to paste.`;
+    `mcp.zovo.one endpoint, that endpoint is upgraded to Pro automatically, with nothing to paste. ` +
+    `Bought some other way and already using a hosted endpoint? Run license_activate with the key there ` +
+    `and Pro applies to the connection you are on, so the data already stored under it stays put.`;
   return { submit, after_submit };
 }
 
