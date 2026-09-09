@@ -418,7 +418,7 @@ function stopRunning(db: DB, endDate: Date, note?: string): Entry {
 
 server.registerTool("timer_start", {
   title: "Start timer",
-  description: "Start a stopwatch for work on a project or client (timesheet / hours per project) and return the start time. Only one timer runs at a time: starting a new one stops the previous one first and logs it as an entry, and the answer names it. A partial project name matching exactly one existing project is used as that project; anything else creates a new one. rate is an hourly rate in MAJOR units for this timer only (90, or '90 euros an hour'), defaulting to the project rate. Nothing is written to the timesheet until timer_stop.",
+  description: "Start a stopwatch for work on a project and return the start time. Only one runs at a time: a new one stops and logs the previous, naming it. rate is an hourly rate in MAJOR units for this timer only.",
   inputSchema: {
     project: z.string().min(1).describe("Project or client name, e.g. 'acme-website'. A partial name that matches exactly one existing project is used as that project."),
     task: z.string().optional().describe("What you are working on right now"),
@@ -453,7 +453,7 @@ server.registerTool("timer_start", {
 
 server.registerTool("timer_stop", {
   title: "Stop timer",
-  description: "Stop the running timer and write it to the timesheet as one entry. Returns the project, the duration as h:mm:ss and as decimal hours, the money at the rate in force, and the new entry id to pass to entry_edit or entry_mark_billed. With no timer running it says so and writes nothing. When neither the entry nor its project carries a rate, the answer says the entry has no amount and how to set one.",
+  description: "Stop the running timer and log it as one entry. Returns the duration, the money at the rate in force and the new entry id. With no timer running it says so and writes nothing.",
   inputSchema: { note: z.string().optional().describe("Optional note stored with the entry") },
 }, guard(async ({ note }: { note?: string }) => {
   return withFileLock(LOCK, async () => {
@@ -472,7 +472,7 @@ server.registerTool("timer_stop", {
 
 server.registerTool("timer_status", {
   title: "Timer status",
-  description: "Report the timer that is running, if any: the project and task, how long it has been going and when it started, plus today's total hours across logged entries. Today means the local calendar day, so a timer started at 23:30 yesterday contributes only the minutes since midnight. Takes no arguments, writes nothing and changes no timer. Use report for any other period.",
+  description: "Report the running timer and today's total hours. Today is the local calendar day, so a timer started at 23:30 yesterday contributes only the minutes since midnight. No arguments, and it writes nothing.",
   inputSchema: {},
 }, guard(async () => {
   const db = load();
@@ -500,7 +500,7 @@ server.registerTool("timer_status", {
 
 server.registerTool("entry_add", {
   title: "Add time entry",
-  description: "Log time you have already worked as one timesheet entry, and return its id, duration and amount. Give start plus either end or minutes; a duration of zero or less is refused. billable defaults to true. rate is an hourly rate in MAJOR units (90, or '90 euros an hour') and the entry keeps the rate in force when it was logged, so a later project_set_rate does not change it. A partial project name matching exactly one existing project is used as that project.",
+  description: "Log time already worked as one entry and return its id, duration and amount. Give start plus end or minutes. rate is hourly in MAJOR units and is frozen on the entry, so a later rate change never moves it.",
   inputSchema: {
     project: z.string().min(1).describe("Project or client name. A partial name that matches exactly one existing project is used as that project."),
     task: z.string().optional().describe("What the work was"),
@@ -549,7 +549,7 @@ server.registerTool("entry_add", {
 
 server.registerTool("entry_list", {
   title: "List time entries",
-  description: "List logged entries as a table of id, day, start time, project, task, hours, billable flag, tags and note, newest first, with the total hours underneath. Filter by from, to and project; limit defaults to 50 rows. The free tier clamps the window to the last 7 days and says so in the answer; Pro reads the whole history. Use report for totals and invoice_summary for billable lines to put on an invoice.",
+  description: "List logged entries as a table of id, day, start, project, task, hours, billable, tags and note, newest first, with total hours. Free reads the last 7 days and says so; Pro reads the whole history.",
   inputSchema: {
     from: z.string().optional().describe("ISO date/time lower bound"),
     to: z.string().optional().describe("ISO date/time upper bound"),
@@ -589,7 +589,7 @@ server.registerTool("entry_list", {
 
 server.registerTool("entry_delete", {
   title: "Delete time entry",
-  description: "Permanently delete one logged entry by its id from entry_list or invoice_summary, and return the project and hours removed. An unknown id is refused and nothing is deleted. It never touches the running timer: stop that with timer_stop first. An entry already stamped by entry_mark_billed is deleted just the same, which loses the record of what was invoiced, so correct one with entry_edit instead. Free on every tier.",
+  description: "Delete one logged entry by id and report the project and hours removed. It never touches a running timer. A billed entry goes too, losing the invoice record, so correct one with entry_edit instead.",
   inputSchema: { id: z.string().describe("Entry id from entry_list") },
 }, guard(async ({ id }: { id: string }) => {
   return withFileLock(LOCK, async () => {
@@ -604,7 +604,7 @@ server.registerTool("entry_delete", {
 
 server.registerTool("entry_edit", {
   title: "Edit time entry",
-  description: "Change one logged entry by id: project, task, start, end, minutes, note, tags, billable, rate or currency. Only the fields you pass change. minutes keeps start and moves end; an end at or before start is refused and nothing is saved. tags REPLACES the whole list. rate is an hourly rate in MAJOR units (90, or '90 euros an hour'). This is the tool for correcting a mistake; entry_delete removes an entry outright.",
+  description: "Change one logged entry by id; only the fields you pass move. minutes keeps start and moves end, an end at or before start is refused, tags REPLACES the list, and rate is hourly in MAJOR units.",
   inputSchema: {
     id: z.string().describe("Entry id from entry_list"),
     project: z.string().optional(),

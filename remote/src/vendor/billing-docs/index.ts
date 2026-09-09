@@ -471,7 +471,7 @@ const server = new McpServer(
 
 server.registerTool("credit_note_create", {
   title: "Credit an invoice",
-  description: "Issue a credit note against one invoice: the whole invoice, a gross amount, or named lines with quantities. Line totals are stored negative in minor units and the invoice's VAT rates are reused.",
+  description: "Credit one invoice: the whole invoice, a GROSS amount_minor split over its VAT rates, or named lines. Amounts store negative, reusing the invoice's own rates. Free: 5 a month. Send it with credit_note_text.",
   inputSchema: {
     invoice: z.string().min(1, "invoice is required").describe("The invoice number to credit, e.g. INV-2026-0001"),
     reason: z.string().min(1, "reason is required").max(MAX_REASON, `reason must be ${MAX_REASON} characters or fewer`)
@@ -670,7 +670,7 @@ function overCredit(inv: Invoice, already: number, remaining: number, asked: num
 
 server.registerTool("credit_note_list", {
   title: "List credit notes",
-  description: "List credit notes newest first, one summary row each: id, the invoice number it credits, client, issue date, what it was based on (the whole invoice, a gross amount or named lines), currency, reason, and the total formatted and in minor units, which is NEGATIVE because a credit note reverses money. Above the rows it totals what has been credited per currency, never adding currencies together. Filter by invoice number (exact), by client name text and by issue date range. Use credit_note_get for one note with its lines and VAT.",
+  description: "List credit notes newest first: id, invoice, client, basis, reason, currency and the NEGATIVE total, with the amount credited per currency. Filter by invoice, client or issue date range.",
   inputSchema: {
     invoice: z.string().optional().describe("Only credit notes issued against this invoice number"),
     client: z.string().optional().describe("Only credit notes for clients whose name contains this text"),
@@ -703,7 +703,7 @@ server.registerTool("credit_note_list", {
 
 server.registerTool("credit_note_get", {
   title: "Show one credit note",
-  description: "Return one credit note in full by its id, or by an exact client name: every negated line with quantity, unit price and VAT rate, the subtotal, discount, VAT lines and total (all negative, in minor units and formatted), the reason, and the invoice number and invoice date it was issued against. Reads only, writes nothing. An id that matches nothing is refused and points at credit_note_list. Use credit_note_pdf or credit_note_text to turn it into something you can send.",
+  description: "Return one credit note in full by id or exact client name: every negated line, VAT lines, totals, the reason, and the invoice number and date it reverses. Reads only. Use credit_note_list for the ids.",
   inputSchema: { id: z.string().describe("Credit note id such as CN-2026-0001, or an exact client name") },
 }, async (a) => {
   try {
@@ -715,7 +715,7 @@ server.registerTool("credit_note_get", {
 
 server.registerTool("credit_note_pdf", {
   title: "Render the credit note as a PDF",
-  description: "Call this tool to render one credit note as an A4 print-ready document and return a download link valid for one hour. The invoice layout, titled CREDIT NOTE and carrying the invoice number it reverses. Pro.",
+  description: "Call this tool to render one credit note as an A4 print-ready document and return a download link valid for one hour: the invoice layout titled CREDIT NOTE, with the invoice it reverses. Pro.",
   inputSchema: {
     id: z.string().describe("Credit note id such as CN-2026-0001"),
     out_path: z.string().optional().describe("Name for the downloaded file, e.g. acme-credit. Defaults to the document id; the document comes back as a download link valid for one hour"),
@@ -757,7 +757,7 @@ server.registerTool("credit_note_pdf", {
 
 server.registerTool("credit_note_text", {
   title: "Plain-text credit note to paste into email",
-  description: "Turn a credit note into a plain-text summary with the negated line table, the VAT lines, the total and the invoice it reverses, ready to paste into an email. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",
+  description: "Turn a credit note into a plain-text summary to paste into an email: the negated line table, VAT lines, total, reason, and what now comes off the invoice. Also a .txt download link valid one hour. Free; credit_note_pdf writes the A4 document.",
   inputSchema: {
     id: z.string().describe("Credit note id such as CN-2026-0001"),
     greeting: z.string().optional().describe("Opening line, default \"Hello\" plus the client name"),
@@ -794,7 +794,7 @@ server.registerTool("credit_note_text", {
 
 server.registerTool("credit_note_delete", {
   title: "Delete a credit note",
-  description: "Remove a credit note that was never posted to its invoice and never rendered to a file: the invoice becomes creditable again and the free monthly document slot comes back. One with a dependent is refused.",
+  description: "Remove one credit note never posted to its invoice and never rendered, freeing that month's slot; the invoice becomes creditable again. One with a dependent is refused: issue a fresh note to reverse a sent one.",
   inputSchema: { id: z.string().describe("Credit note id such as CN-2026-0001, or an exact client name") },
 }, async (a) => {
   try {
@@ -842,7 +842,7 @@ server.registerTool("credit_note_delete", {
 
 server.registerTool("purchase_order_create", {
   title: "Raise a purchase order",
-  description: "Order from a supplier: line items with quantity and unit price in minor units, VAT, a currency and an expected delivery date. You are the buyer, from the shared business profile.",
+  description: "Raise a purchase order to a supplier and return its PO number. unit_price is in MAJOR units; currency, VAT and the buyer block come from the shared profile. Free: 5 documents a calendar month.",
   inputSchema: {
     supplier: z.string().min(1, "supplier is required").max(MAX_PARTY_NAME, `supplier must be ${MAX_PARTY_NAME} characters or fewer`)
       .describe("Supplier name or client id. A name the invoice server already knows brings its address, email and VAT id onto the order"),
@@ -948,7 +948,7 @@ server.registerTool("purchase_order_create", {
 
 server.registerTool("purchase_order_list", {
   title: "List purchase orders",
-  description: "Every purchase order with its supplier, total, expected delivery date and status (open, partially received or received). Filter by status, by supplier or by order date range.",
+  description: "List purchase orders newest first: id, supplier, order and expected delivery dates, status open, partially_received or received, currency, total and received date. Filter by status, supplier or date range.",
   inputSchema: {
     status: z.enum(["open", "partially_received", "received", "all"]).optional().describe('Default "all"'),
     supplier: z.string().optional().describe("Only orders to suppliers whose name contains this text"),
@@ -972,7 +972,7 @@ server.registerTool("purchase_order_list", {
 
 server.registerTool("purchase_order_get", {
   title: "Show one purchase order",
-  description: "The full stored record for one purchase order: the buyer and supplier blocks, every line with its unit price and VAT, the totals, the expected delivery date and what has been received.",
+  description: "Return one purchase order in full by id or exact supplier name: buyer and supplier blocks, every line with unit price and VAT, totals, the delivery date, status and every receipt with its date and note.",
   inputSchema: { id: z.string().describe("Purchase order id such as PO-2026-0001, or an exact supplier name") },
 }, async (a) => {
   try {
@@ -984,7 +984,7 @@ server.registerTool("purchase_order_get", {
 
 server.registerTool("purchase_order_pdf", {
   title: "Render the purchase order as a PDF",
-  description: "Call this tool to render one purchase order as an A4 print-ready document and return a download link valid for one hour. The invoice layout, titled PURCHASE ORDER, with the buyer, the supplier and the delivery date. Pro.",
+  description: "Call this tool to render one purchase order as an A4 print-ready document and return a download link valid for one hour: the invoice layout titled PURCHASE ORDER, with the buyer and supplier. Pro.",
   inputSchema: {
     id: z.string().describe("Purchase order id such as PO-2026-0001"),
     out_path: z.string().optional().describe("Name for the downloaded file, e.g. acme-credit. Defaults to the document id; the document comes back as a download link valid for one hour"),
@@ -1032,7 +1032,7 @@ server.registerTool("purchase_order_pdf", {
 
 server.registerTool("purchase_order_text", {
   title: "Plain-text purchase order to paste into email",
-  description: "Turn a purchase order into a plain-text summary with the line table, the VAT lines, the total and the delivery date, ready to paste into an email to the supplier. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",
+  description: "Turn a purchase order into a plain-text order to paste into an email: the line table, VAT lines, total, and a line asking the supplier to deliver by the date and quote the PO number. Also a .txt download link valid one hour. Free on every tier.",
   inputSchema: {
     id: z.string().describe("Purchase order id such as PO-2026-0001"),
     greeting: z.string().optional().describe("Opening line, default \"Hello\" plus the supplier name"),
@@ -1069,7 +1069,7 @@ server.registerTool("purchase_order_text", {
 
 server.registerTool("purchase_order_receive", {
   title: "Mark a purchase order received",
-  description: "Record that a purchase order arrived, in full or in part. A partial receipt keeps the order open and is kept on the record with its date and note; a full receipt closes it.",
+  description: "Record that an order arrived. partial keeps it open and can be repeated, each receipt kept with its date and note; a full receipt closes it. An order already received in full, or a date before it, is refused.",
   inputSchema: {
     id: z.string().describe("Purchase order id such as PO-2026-0001"),
     partial: z.boolean().optional().describe("True when only some of the order arrived. The order stays open and can be received again. Default false"),
@@ -1111,7 +1111,7 @@ server.registerTool("purchase_order_receive", {
 
 server.registerTool("purchase_order_delete", {
   title: "Delete a purchase order",
-  description: "Remove a purchase order with nothing received against it that was never rendered to a file: the free monthly document slot comes back. An order with a receipt is refused, naming that receipt.",
+  description: "Remove one purchase order with nothing received and never rendered, freeing that month's slot. One with a receipt is refused, naming it. The PO number is never reissued. purchase_order_receive logs arrivals.",
   inputSchema: { id: z.string().describe("Purchase order id such as PO-2026-0001, or an exact supplier name") },
 }, async (a) => {
   try {
@@ -1146,7 +1146,7 @@ server.registerTool("purchase_order_delete", {
 
 server.registerTool("billing_docs_report", {
   title: "Credited money and open orders",
-  description: "What has been credited back per currency, against how many invoices, and what is still on order per currency, with the purchase orders whose delivery date has passed. Pro.",
+  description: "Over a date range: what was credited back per currency and against how many invoices, what is still on order per currency, and every open order past its delivery date with days late. Pro; the list tools are free.",
   inputSchema: {
     from: z.string().optional().describe("YYYY-MM-DD, earliest document date to count"),
     to: z.string().optional().describe("YYYY-MM-DD, latest document date to count"),

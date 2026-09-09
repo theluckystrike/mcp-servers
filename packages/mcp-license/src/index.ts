@@ -209,10 +209,10 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
     },
     registerTools(server) {
       server.registerTool("license_status",
-        { title: "License status", description: "Report this server's licence state as JSON: the product id, the tier (free or pro), the licence id and expiry date when a key is present, where the key was read from (the MCP_LICENSE_KEY environment variable or the local config file), the reason when it is not Pro, and the checkout URL for upgrading. Takes no arguments, contacts no network and changes nothing: keys are verified offline. Call it when a tool has refused something as a free-tier limit, so you can tell the user whether Pro lifts it instead of retrying the same call.", inputSchema: {} },
+        { title: "License status", description: "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key.", inputSchema: {} },
         async () => ({ content: [{ type: "text", text: JSON.stringify(gate.status(), null, 2) }] }));
       server.registerTool("license_activate",
-        { title: "Activate license", description: "Activate a Pro licence key for this server. The key has the form MCPL1.<payload>.<signature>, comes from the checkout confirmation page, and is checked against a public key compiled into the server, so nothing is sent anywhere and it works with no network. A valid key is written to the shared licence file under your config directory and takes effect at once; the answer names that file and says whether the key covers this server alone or every server in the bundle. A key that is malformed, unsigned, expired or issued for a different product is refused with the reason and nothing is saved. A key already in MCP_LICENSE_KEY is read automatically and needs no activation.",
+        { title: "Activate license", description: "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back.",
           inputSchema: { key: z.string().describe("License key from the checkout confirmation page") } },
         async ({ key }: { key: string }) => {
           const r = gate.activate(key);

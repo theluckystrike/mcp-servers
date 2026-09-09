@@ -281,7 +281,7 @@ gate.registerTools(server as unknown as { registerTool: Function });
 
 server.registerTool("task_add", {
   title: "Add task",
-  description: "Add a task to a project board (todo list / kanban card). Optional column, due date, estimate, priority, tags and notes.",
+  description: "Add one task to a board and return its id, board and column. The board is created on first use, so pass an existing project or leave it out. An identical open task is refused. Free: 3 boards, 200 open.",
   inputSchema: {
     title: text(MAX_TITLE, 1).describe("What the task is, e.g. 'Write the launch email'"),
     project: text(MAX_PROJECT).optional().describe("Project or board name. A partial name matching exactly one existing project is used as that project. Defaults to your only board."),
@@ -358,7 +358,7 @@ server.registerTool("task_add", {
 
 server.registerTool("task_list", {
   title: "List tasks",
-  description: "List tasks as a table, filtered by project, column, tag, due date or overdue.",
+  description: "List tasks as a table of id, project, column, title, priority, due, estimate, actual and tags, sorted by due date, with the total estimate. Done tasks are left out unless include_done. 200 rows default.",
   inputSchema: {
     project: text(MAX_PROJECT).optional().describe("Only this project"),
     column: text(MAX_COLUMN_NAME).optional().describe("Only this column, e.g. 'doing'"),
@@ -392,7 +392,7 @@ server.registerTool("task_list", {
 
 server.registerTool("task_move", {
   title: "Move task",
-  description: "Move a task to another column on its board.",
+  description: "Move one task to another column of its own board and report the old and new column. An unknown column is refused, listing the real ones. Entering the done column stamps completion; leaving it clears it.",
   inputSchema: {
     id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12"),
     column: text(MAX_COLUMN_NAME, 1).describe("Target column, e.g. 'doing'"),
@@ -417,7 +417,7 @@ server.registerTool("task_move", {
 
 server.registerTool("task_update", {
   title: "Update task",
-  description: "Change any field of a task: title, notes, due date, estimate, priority, tags or project.",
+  description: "Change a task by id: only the fields you pass are touched. tags REPLACES the whole list, due 'none' clears it, and project moves the task to a board that already exists. Returns the task's new row.",
   inputSchema: {
     id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12"),
     title: text(MAX_TITLE, 1).optional(),
@@ -466,7 +466,7 @@ server.registerTool("task_update", {
 
 server.registerTool("task_done", {
   title: "Complete task",
-  description: "Mark a task done: it moves to the done column and is stamped with the time.",
+  description: "Mark one task finished: it moves to the board's done column (named done, else the last) and is stamped, leaving task_list and the open counts. Returns estimate against actual when both are known.",
   inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
 }, guard(async ({ id }: { id: string }) => {
   return withFileLock(LOCK, async () => {
@@ -487,7 +487,7 @@ server.registerTool("task_done", {
 
 server.registerTool("task_delete", {
   title: "Delete task",
-  description: "Delete a task permanently.",
+  description: "Delete one task by id, permanently; the id is never reused. The answer names any logged minutes lost. time-tracker entries are a separate store and are untouched. Use task_done to keep the record.",
   inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
 }, guard(async ({ id }: { id: string }) => {
   return withFileLock(LOCK, async () => {
@@ -510,7 +510,7 @@ server.registerTool("task_delete", {
 
 server.registerTool("task_search", {
   title: "Search tasks",
-  description: "Find tasks whose title, notes, tags or id match a query.",
+  description: "Find tasks whose id, title, notes or tags contain the query, across every board, finished ones included. Plain case-insensitive substring, never a regex. Use task_list for structured filters.",
   inputSchema: {
     query: text(MAX_QUERY, 1).describe("Text to look for"),
     limit: limitArg.describe(`Rows to print; default ${DEFAULT_ROW_LIMIT}`),
@@ -531,7 +531,7 @@ server.registerTool("task_search", {
 
 server.registerTool("board", {
   title: "Show board",
-  description: "Column-by-column summary of a project board: task counts and estimate totals.",
+  description: "Show one board column by column: tasks, estimate, actual and overdue count in each, then the board totals and the estimate still open. Defaults to your busiest board. Use project_list for every board.",
   inputSchema: { project: text(MAX_PROJECT).optional().describe("Which board; defaults to your busiest one") },
 }, guard(async ({ project }: { project?: string }) => {
   const db = load();
@@ -555,7 +555,7 @@ server.registerTool("board", {
 
 server.registerTool("task_start_timer", {
   title: "Start a timer for a task",
-  description: "Return the exact arguments to pass to the time-tracker server's timer_start for this task, and record the link on the task.",
+  description: "Return the exact arguments to pass to the time-tracker's timer_start for one task, and record the link here. It starts nothing itself, and warns when the tracker's own project names would misfile the time.",
   inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
 }, guard(async ({ id }: { id: string }) => {
   return withFileLock(LOCK, async () => {
@@ -589,7 +589,7 @@ server.registerTool("task_start_timer", {
 
 server.registerTool("task_log_time", {
   title: "Log time on a task",
-  description: "Add real minutes worked to a task, so estimate and actual can be compared.",
+  description: "Add real minutes worked to one task so estimate and actual can be compared. Minutes ADD; a negative corrects an over-count. Below zero or past 100,000 is refused. This counter is the board's own.",
   inputSchema: {
     id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12"),
     minutes: minutes({ negative: true }).describe("Minutes to add; a negative number corrects an over-count"),
@@ -614,7 +614,7 @@ server.registerTool("task_log_time", {
 
 server.registerTool("project_list", {
   title: "List projects",
-  description: "All project boards with open task counts, remaining estimate and overdue counts.",
+  description: "List every board with its task-id prefix, open and done counts, estimate still open and overdue count, plus free-tier use (3 boards, 200 open tasks). Use board for one board broken down by column.",
   inputSchema: {},
 }, guard(async () => {
   const db = load();
@@ -640,7 +640,7 @@ server.registerTool("project_list", {
  */
 server.registerTool("project_delete", {
   title: "Delete project board",
-  description: "Delete an empty project board and free its free-tier slot. A board that still holds tasks, open or done, is refused with a task named.",
+  description: "Delete an empty board and give its free-tier slot back. A board still holding tasks, open or done, is refused with one named, because task_add creates boards as a side effect and the work would be lost.",
   inputSchema: { project: text(MAX_PROJECT, 1).describe("Board to remove, e.g. 'Nova Site'. It must hold no tasks at all.") },
 }, guard(async ({ project }: { project: string }) => {
   return withFileLock(LOCK, async () => {
@@ -667,7 +667,7 @@ server.registerTool("project_delete", {
 
 server.registerTool("overdue", {
   title: "Overdue tasks",
-  description: "Every task past its due date, across all boards.",
+  description: "List every task whose due day is already past, across all boards, oldest first, in the task_list table. as_of measures against a day you name. A finished task, or one with no due date, never counts.",
   inputSchema: {
     as_of: text(64).optional().describe("Measure against this day instead of today (YYYY-MM-DD, 'next Monday', '+7d')"),
     limit: limitArg.describe(`Rows to print; default ${DEFAULT_ROW_LIMIT}`),
@@ -685,7 +685,7 @@ server.registerTool("overdue", {
 
 server.registerTool("weekly_review", {
   title: "Weekly review",
-  description: "Done versus planned for a week, with estimate against actual minutes per project.",
+  description: "Compare done against planned for one ISO week per project: how many were due, how many of those are finished, how many were completed, and estimate against actual minutes. Any week but this one is Pro.",
   inputSchema: { week: text(16).optional().describe("ISO week, e.g. '2026-W36'. Defaults to this week. Past weeks are a Pro feature.") },
 }, guard(async ({ week }: { week?: string }) => {
   const db = load();
@@ -716,7 +716,7 @@ server.registerTool("weekly_review", {
 
 server.registerTool("columns_set", {
   title: "Set board columns",
-  description: "Replace the columns of one board (Pro). Tasks sitting in a removed column move to the first column.",
+  description: "Replace one board's columns, in order, with 2 to 12 unique names. Tasks in a removed column move to the FIRST column. Blanks are dropped first, so a list normalising below two names is refused. Pro.",
   inputSchema: {
     project: text(MAX_PROJECT, 1).describe("Which board"),
     columns: z.array(text(MAX_COLUMN_NAME)).min(2).max(MAX_COLUMNS)

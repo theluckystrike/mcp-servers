@@ -198,7 +198,7 @@ const currencyArg = z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-lett
 
 server.registerTool("statement_build", {
   title: "Build a statement of account",
-  description: "Build one client's statement of account for a period and return it as JSON: opening balance, invoices issued, payments received with the deposits applied broken out, credit notes, closing balance, and every movement in date order. closing = opening + invoiced - paid - credited. Each money figure appears twice, formatted and as integer minor units, and one currency is never added to another. It reads the sibling invoice, credit-note and deposit stores and writes only its own register. Free tier: 5 distinct statements a calendar month, and rebuilding one already in the register costs nothing. Use statement_text or statement_pdf to produce something you can send.",
+  description: "Build one client's statement for a period: opening, invoices, payments with deposits applied broken out, credit notes and closing, formatted and in minor units. Free: 5 a month; a rebuild is free.",
   inputSchema: {
     client: clientArg,
     from: str("from", 10).describe("First day of the period, YYYY-MM-DD. Everything dated before it becomes the opening balance"),
@@ -219,7 +219,7 @@ server.registerTool("statement_build", {
 
 server.registerTool("statement_aging", {
   title: "Age the open invoices",
-  description: "Age what is owed into 0-30, 31-60, 61-90 and over 90 days past each invoice's DUE date, as at a date you choose, for one client or for every client, with each currency aged separately. Returns a bucket row per client and currency plus the individual open invoices, most overdue first, each with days overdue, what is paid and credited against it, and any unapplied credit. This is the per-invoice view of receivables and it is free and unlimited. Choose statements_report instead (Pro) for the whole book rolled up per currency with clients ranked by collection risk and no invoice rows.",
+  description: "Age open invoices into 0-30, 31-60, 61-90 and over 90 days past DUE date at a date, per client and currency, with the invoices themselves. Free. statements_report rolls up the whole book instead.",
   inputSchema: {
     client: str("client", MAX_NAME).optional().describe("One client id or name. Omit to age every client in the books"),
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Only this currency. Omit for every currency, each aged separately"),
@@ -330,7 +330,7 @@ function statementLines(st: Statement, day: string, greeting?: string, signOff?:
 
 server.registerTool("statement_text", {
   title: "Plain-text statement of account",
-  description: "Render one client's statement as a plain-text letter returned inline, ready to paste into an email: a greeting, every movement in date order, then opening balance, invoices issued, payments received, credit notes and CLOSING BALANCE, a line saying what is outstanding or in the client's favour, any deposit still held as a memo, and a sign-off from the shared business profile. Free on every tier. The same text also comes back as a .txt download link valid for one hour, and statement_pdf produces the A4 document instead. It registers the statement, so it uses one of the free tier's 5 statements a calendar month unless that exact client, period and currency is already registered.",
+  description: "Turn one client's statement into a plain-text letter for an email: movements in date order, opening and closing balances, deposit held, a sign-off. It is also a .txt download link valid one hour and counts toward the 5 a month; statement_pdf writes the A4 page.",
   inputSchema: {
     client: clientArg,
     from: str("from", 10).describe("First day of the period, YYYY-MM-DD"),
@@ -362,7 +362,7 @@ server.registerTool("statement_text", {
 
 server.registerTool("statement_pdf", {
   title: "Render the statement of account as a PDF",
-  description: "Render one client's statement of account as an A4 print-to-PDF document and return a download link valid for one hour, with the closing balance. Titled STATEMENT OF ACCOUNT, carrying the issuer and CLIENT blocks, the statement date, period and currency, the opening balance and every movement as its own line, and BALANCE OUTSTANDING at the foot. No VAT is added anywhere: the VAT was charged on the invoices this statement reports on, and charging it again would double it. This hosted endpoint has no PDF renderer, so the document is HTML laid out for A4; print it to PDF from the browser. Pro; the free tier gets the same figures from statement_text.",
+  description: "Call this tool to render one client's A4 statement of account and return a download link valid for one hour. Titled STATEMENT OF ACCOUNT, movements in date order, BALANCE OUTSTANDING at the foot. Pro.",
   inputSchema: {
     client: clientArg,
     from: str("from", 10).describe("First day of the period, YYYY-MM-DD"),
@@ -485,7 +485,7 @@ function bankLines(): string[] {
 
 server.registerTool("dunning_text", {
   title: "Write a dunning letter",
-  description: "Write a payment chaser for one client at level 1 friendly, 2 firm or 3 final demand: every OVERDUE invoice with its issue date, due date, days late and open amount, the total overdue, your bank details when the shared business profile has them, and a sign-off. The letter also comes back as a .txt download link valid for one hour. Money that is outstanding but not yet due is named separately and never chased. A client with nothing overdue in that currency as at the date is refused and nothing is written, because chasing an invoice that is not late yet loses clients. No late fee or interest is ever stated: this server holds no contract terms and no statutory rate, so any figure would be invented. Level 3 is Pro.",
+  description: "Write a payment chaser at level 1 friendly, 2 firm or 3 final demand: every OVERDUE invoice with its age, the total and your bank details. Nothing overdue is refused. No interest is stated. The letter is also a .txt download link valid one hour. Level 3 is Pro.",
   inputSchema: {
     client: clientArg,
     level: z.number().int().min(1, "level is 1, 2 or 3").max(3, "level is 1, 2 or 3")
@@ -562,7 +562,7 @@ server.registerTool("dunning_text", {
 
 server.registerTool("statements_report", {
   title: "What every client owes",
-  description: "The whole receivables book as at a date: one total per currency with its aging buckets, every client carrying a balance ranked by how much of it is OVERDUE rather than by how much they owe, and the single oldest overdue invoice across the book with the client holding it. limit lists the worst 20 clients by default. It returns no invoice-by-invoice rows and never one total across currencies, which would need an exchange rate this server does not have. Pro. Use statement_aging, which is free, for one client or for the open invoices themselves.",
+  description: "Receivables across every client at a date: totals and aging per currency, clients ranked by how much is OVERDUE, and the oldest overdue invoice. Pro. statement_aging is the free per-client view.",
   inputSchema: {
     as_of: str("as_of", 10).optional().describe("Age the invoices as at this date, YYYY-MM-DD. Defaults to today"),
     limit: z.number().int().min(1).max(200).optional().describe("How many clients to list, worst first. Default 20"),

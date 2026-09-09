@@ -234,13 +234,13 @@ const wrap = (fn: () => Promise<ReturnType<typeof ok>>) => fn().catch((e: unknow
 
 server.registerTool("qr_create", {
   title: "QR code",
-  description: "Call this tool to turn text or a URL into a QR code, as an SVG returned inline or written to out_path, or as a PNG at a chosen pixel size (Pro).",
+  description: "Call this tool to turn text or a URL into a QR code: SVG inline, or a PNG at a pixel size to out_path (Pro). Returns version, module grid and payload size. Free: 20 codes a month on this server.",
   inputSchema: { text: z.string().describe("The text or URL the code carries"), ...qrShape },
 }, async (a: QrShape & { text: string }) => wrap(() => qrTool(a.text, a, "text", "qr_create PNG output", "qr_create")));
 
 server.registerTool("qr_wifi", {
   title: "WiFi QR code",
-  description: "Call this tool to make a QR code that joins a WiFi network when scanned: network name, password and security type, written to out_path or returned as SVG.",
+  description: "Call this tool to make a QR code that joins a WiFi network when scanned: ssid, password and auth type, written to out_path or returned as SVG. Free: 20 codes a month. qr_create takes plain text or a URL.",
   inputSchema: {
     ssid: z.string().describe("Network name, exactly as it appears"),
     password: z.string().optional().describe("Passphrase. Leave out only for an open network"),
@@ -429,7 +429,7 @@ function linearOptions(a: LinearShape) {
 
 server.registerTool("barcode_create", {
   title: "Barcode",
-  description: "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG or PNG. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn.",
+  description: "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG, or PNG to out_path. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn. qr_create makes QR codes.",
   inputSchema: { symbology: symbologyArg, value: z.string().describe("The data to encode. Digits only for EAN and UPC"), ...linearShape },
 }, async (a: LinearShape & { symbology: Symbology; value: string }) => wrap(async () => {
   const format: Format = a.format ?? "svg";
@@ -525,7 +525,7 @@ server.registerTool("barcode_batch", {
 
 server.registerTool("code_list", {
   title: "Codes generated",
-  description: "List this server's own register of codes it generated, newest first: the timestamp, id, kind and symbology, output format, a summary of what the code carried and the file it was written to. Filter by kind (text, wifi, vcard, sepa, invoice, barcode or batch) and cap the rows with limit, default 20. The header always states how many of the free tier's 20 codes a calendar month are used, so call it to explain a refusal rather than retrying a capped generate. It reads the register only: it does not open, verify or re-render any code file.",
+  description: "List the codes this server generated, newest first, with what each carried and where it went, plus how much of the free 20 a month is used. Filter by kind. It reads the register, not the files.",
   inputSchema: {
     limit: z.number().int().min(1).max(200).optional().describe("How many rows to show, newest first (default 20)"),
     kind: z.string().optional().describe("Only rows of this kind: text, wifi, vcard, sepa, invoice, barcode or batch"),

@@ -224,7 +224,7 @@ server.registerTool("clause_add", {
 
 server.registerTool("clause_get", {
   title: "Read one clause",
-  description: "Return a clause in full by id or by title, with its variables and, in Pro, its revision count.",
+  description: "Return one clause in full by id or title: body, category, tags, jurisdiction, variables and the revision count, which stays 0 on free. A partial title matching several is refused with the candidates.",
   inputSchema: {
     id: z.string().optional().describe("Clause id, for example late-fees"),
     title: z.string().optional().describe("Clause title; a partial title matches too"),
@@ -279,7 +279,7 @@ server.registerTool("clause_update", {
 
 server.registerTool("clause_delete", {
   title: "Delete a clause",
-  description: "Remove a clause from the library. A deleted starter clause is not re-seeded on the next call.",
+  description: "Delete one clause by id or exact title and report how many are left. There is no undo, and a deleted starter clause is not re-seeded. Use clause_update to change one you want to keep.",
   inputSchema: { id: z.string().describe("Clause id or exact title") },
 }, async (a) => {
   try {
@@ -296,7 +296,7 @@ server.registerTool("clause_delete", {
 
 server.registerTool("clause_list", {
   title: "List clauses",
-  description: "List every clause, newest categories first, optionally narrowed to one category.",
+  description: "List the library as id, title, category, tags and variables, in contract order by category then title, which is the order contract_assemble uses. Narrow with category; use clause_search for words.",
   inputSchema: { category: z.string().optional() },
 }, async (a) => {
   try {
@@ -344,7 +344,7 @@ server.registerTool("clause_search", {
 
 server.registerTool("clause_import", {
   title: "Import clauses",
-  description: "Call this tool to bulk-load clauses into the library from a markdown or JSON file. Returns how many clauses were added, replaced, skipped and blocked by the free clause cap, plus the new library total.",
+  description: "Call this tool to load clauses from a .md or .json file, reporting added, replaced, skipped and capped counts. A duplicate title is skipped unless overwrite. json is Pro. Free: 10 of your own.",
   inputSchema: {
     path: z.string().describe("Path to a .md or .json file. Markdown form: '## Title', then optional 'category:' / 'tags:' / 'variables:' lines, a blank line, then the body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the free tier, within the free clause cap"),
     overwrite: z.boolean().optional().describe("Replace clauses whose title already exists instead of skipping them"),
@@ -398,7 +398,7 @@ server.registerTool("clause_import", {
 
 server.registerTool("clause_export", {
   title: "Export clauses",
-  description: "Call this tool to write the whole clause library out to one file. Returns the destination path, the format used and how many clauses were written.",
+  description: "Call this tool to write the whole library to one file and return the path, format and count. It is written in contract order, so it re-imports the same way. markdown is free; json is Pro.",
   inputSchema: {
     path: z.string().describe("Destination file path. The clauses are written in assembly order, categories first"),
     format: z.enum(["json", "markdown"]).describe("json (a Pro feature) or markdown (works in the free tier)"),
@@ -461,7 +461,7 @@ function assembleNote(pro: boolean, unfilled: number, missing: { clause: string;
 
 server.registerTool("contract_assemble", {
   title: "Assemble a contract",
-  description: "Call this tool to build a contract or proposal document from library clauses. Returns the path written, the clauses used in document order, which variables were filled, and the facts still missing as bracketed prompts.",
+  description: "Call this tool to build a contract from library clauses as .docx or markdown. A variable you omit stays as a bracketed prompt, never invented. clause_ids order is document order. Free: 8 clauses.",
   inputSchema: {
     title: z.string().describe("Document title, for example 'Service Agreement - Beta Corp'"),
     clause_ids: z.array(z.string()).optional().describe("Clause ids in the order they should appear; this is the document order. Free tier: up to 8 clauses per document"),
@@ -524,7 +524,7 @@ server.registerTool("contract_assemble", {
 
 server.registerTool("variables_list", {
   title: "List the variables a selection needs",
-  description: "Given a set of clauses, list every {{variable}} they use and which clause uses it, so nothing is missed before assembling.",
+  description: "List every {{variable}} the clauses you name use, and which clause uses each, so the facts are gathered before contract_assemble leaves bracketed prompts. Reads only; a title matching several is refused.",
   inputSchema: { clause_ids: z.array(z.string()).min(1).describe("Clause ids or titles") },
 }, async (a) => {
   try {

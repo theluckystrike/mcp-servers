@@ -425,7 +425,7 @@ server.registerTool("transactions_search", {
 
 server.registerTool("category_rules", {
   title: "Set or list category rules",
-  description: "Set the rules that categorise transactions, or call with none to list them. Each rule matches counterparty/description: plain is a substring; regex: true compiles only if not exponential. Reapplies to uncategorised rows.",
+  description: "Read the category rules, or pass rules to REPLACE the whole list. A plain match is a substring; a regex compiles only if it cannot backtrack exponentially. An empty match is refused. Free: 5 rules.",
   inputSchema: {
     rules: z.array(z.object({
       match: text(200).describe("Text to look for in the counterparty or description, e.g. \"spotify\""),
@@ -480,7 +480,7 @@ server.registerTool("category_rules", {
 
 server.registerTool("transaction_categorize", {
   title: "Categorise transactions by id",
-  description: "Set the category on one or more transactions by id. Nothing is changed unless every id exists, so a typo cannot half-apply.",
+  description: "Set or clear the category on transactions by id, for a one-off no rule is worth writing for. Every id is checked first, so one unknown id refuses the whole call. category_rules matches by text instead.",
   inputSchema: {
     ids: z.array(text(64)).min(1).describe("Transaction ids, as returned by transactions_list or transactions_search"),
     category: text(120).describe("Category to set. Pass an empty string to clear it"),
@@ -649,7 +649,7 @@ function median(ns: number[]): number {
 
 server.registerTool("recurring_detect", {
   title: "Subscriptions and recurring charges in the bank data",
-  description: "Find charges that come back: same counterparty, steady amount and cadence. Reports cadence, typical amount, last/next due date, yearly cost per currency. Free: last 3 months, 5 charges; Pro: full history, every charge.",
+  description: "Find charges that come back: debits grouped by counterparty and currency with a steady amount and interval, with cadence, typical amount, next due date and annual cost. Free: 3 months, 5 charges.",
   inputSchema: {
     months: z.number().int().min(1).max(60).optional().describe("How far back to look, default 3. Two occurrences are enough to see a cadence, three make it certain"),
     account: text(120).optional().describe("Limit to one account"),
@@ -806,7 +806,7 @@ server.registerTool("statement_export", {
 
 server.registerTool("accounts_list", {
   title: "List accounts",
-  description: "List the accounts that statement_import has read into this machine's local ledger: the account name, its bank, the currencies seen on it, how many transactions it holds, the first and last transaction date, the closing balance when the file carried one and the account holds a single currency, plus the free tier's 2-account limit and the data directory the ledger lives in. Start here to learn the exact account names transactions_list, statement_summary and statement_export take. Reads only, imports nothing.",
+  description: "List the imported accounts: bank, currencies, transaction count, first and last date, and the closing balance when the file carried one. Start here for the account names transactions_list and statement_export take.",
   inputSchema: {},
 }, async () => {
   try {

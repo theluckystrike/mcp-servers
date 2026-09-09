@@ -701,7 +701,7 @@ server.registerTool("image_batch_resize", {
 
 server.registerTool("image_dominant_colors", {
   title: "Read the dominant colours of an image",
-  description: "Call this tool to read the colours covering most of an image, as hex codes with each one's pixel share, for picking a background or brand palette. Read-only. Free tier: top 3 colours; Pro: up to 16.",
+  description: "Call this tool to read the colours covering most of an image, as hex codes with each one's pixel share. Sampled from a 200 px copy, so cost is fixed. Read-only. Free gives the top 3; Pro up to 16.",
   inputSchema: {
     path: pathArg,
     count: z.number().int().min(1).max(16).default(5).describe("How many colours to report, default 5"),

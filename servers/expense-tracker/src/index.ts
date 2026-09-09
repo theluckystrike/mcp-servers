@@ -278,7 +278,7 @@ server.registerTool("expense_add", {
 
 server.registerTool("expense_list", {
   title: "List expenses",
-  description: "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed.",
+  description: "List expenses in a date range with each one's net/VAT split, category, merchant, project and billable flag, plus a total per currency. Free reads the last 30 days and says when your range predates it.",
   inputSchema: {
     from: text(10).optional().describe("ISO date, inclusive"),
     to: text(10).optional().describe("ISO date, inclusive"),
@@ -310,7 +310,7 @@ server.registerTool("expense_list", {
 
 server.registerTool("expense_update", {
   title: "Update an expense",
-  description: "Change any field of a stored expense by id. Only the fields you pass are changed.",
+  description: "Change one expense by id; only the fields you pass move. amount is in MAJOR units. A rebilled expense refuses an amount, currency or vat_rate edit unless unlink_rebill drops the invoice link.",
   inputSchema: {
     id: text(64).describe("Expense id from expense_add or expense_list"),
     amount: amount("amount").optional(),
@@ -370,7 +370,7 @@ server.registerTool("expense_update", {
 
 server.registerTool("expense_delete", {
   title: "Delete an expense",
-  description: "Delete one expense by id. The receipt file itself is left on disk.",
+  description: "Delete one expense by id and report what went. The receipt FILE stays on disk. Deleting a rebilled expense loses the record of what an invoice charged, so correct it with expense_update instead.",
   inputSchema: { id: text(64) },
 }, async (a) => {
   try {

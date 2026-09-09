@@ -220,7 +220,7 @@ server.registerTool("pdf_info", {
 
 server.registerTool("pdf_count", {
   title: "Count pages in several PDFs",
-  description: "Page count per file plus the total, for any number of PDFs. Read-only. A file that cannot be read is reported per file; the others still count. Free tier: unlimited.",
+  description: "Page count per file plus the total, for any number of PDFs, with how many were readable. A file that cannot be read is reported on its own row and the others still count. Read-only. Free and unlimited.",
   inputSchema: {
     paths: z.array(z.string()).min(1).describe("Paths to the PDF files"),
   },

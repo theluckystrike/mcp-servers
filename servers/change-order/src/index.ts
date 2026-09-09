@@ -365,7 +365,7 @@ server.registerTool("change_order_add_line", {
 
 server.registerTool("change_order_status", {
   title: "Move a change order along",
-  description: "Move a change order: draft to sent, sent to approved or rejected, draft or sent to void, stamping the date and a note. Approved, rejected and void are final, and a draft cannot be approved unsent. Free.",
+  description: "Move one change order along and stamp the date and note: draft to sent, sent to approved or rejected, either to void. Backwards steps, an unsent approval and a backdated move are all refused.",
   inputSchema: {
     change_order: orderArg,
     status: z.enum(["draft", "sent", "approved", "rejected", "void"]).describe("The status to move to"),
@@ -423,7 +423,7 @@ server.registerTool("change_order_status", {
 
 server.registerTool("change_order_get", {
   title: "Show one change order",
-  description: "Show one change order in full: every added, removed and changed line with its reason and delta, the VAT, the delta gross, the status history and the running value of the reference. Free.",
+  description: "Return one change order in full by CO number or client: every added, removed and changed line with its reason and delta, VAT, delta gross, the status history and the running value. change_order_list finds the id.",
   inputSchema: { change_order: orderArg },
 }, async (a) => {
   try {
@@ -433,7 +433,7 @@ server.registerTool("change_order_get", {
 
 server.registerTool("change_order_list", {
   title: "List change orders",
-  description: "List change orders with their status and delta. Filter by reference, by status, by client, and by a date range. Free.",
+  description: "List change orders newest first with status, reference, client, currency and net delta, and above them the APPROVED and the pending delta per currency, kept apart. Filter by reference, status, client, date.",
   inputSchema: {
     reference: str("reference", 64).optional().describe("Only change orders against this quote or work order"),
     status: z.enum(["draft", "sent", "approved", "rejected", "void", "open"]).optional().describe("One status, or open for draft and sent together"),
@@ -481,7 +481,7 @@ server.registerTool("change_order_list", {
 
 server.registerTool("change_order_delete", {
   title: "Delete an empty draft",
-  description: "Delete a change order raised by mistake. Only a draft with no lines can go: once there is a line or it has been sent, it has a history and is voided, not erased. Free on every tier.",
+  description: "Delete a DRAFT change order with no lines, freeing an open slot. One sent, approved, rejected or voided is refused, and so is one carrying lines: void it with change_order_status instead. The number is not reissued.",
   inputSchema: { change_order: orderArg },
 }, async (a) => {
   try {
@@ -517,7 +517,7 @@ server.registerTool("change_order_delete", {
 
 server.registerTool("contract_value", {
   title: "Running contract value",
-  description: "The running value of one quote or work order: the original, the approved deltas and the current value, with pending draft and sent deltas shown separately and never added in. Free on every tier.",
+  description: "The running value of one quote or work order: original, approved deltas and current value, with pending draft and sent deltas kept apart. Net of VAT. A reference with no change order is refused.",
   inputSchema: { reference: referenceArg },
 }, async (a) => {
   try {

@@ -141,7 +141,7 @@ const loanArg = str("loan", MAX_NAME).describe("The loan id, e.g. LOAN-2026-0001
 
 server.registerTool("loan_create", {
   title: "Record a loan or lease",
-  description: "Record a loan or a lease from its terms and return its id, its level payment and its effective annual rate. Principal, fees and balloon are whole minor units; the rate is nominal annual basis points.",
+  description: "Record a loan or lease and return its id, level payment and effective annual rate. principal_minor, fees and balloon are whole MINOR units; rate_bps is the nominal annual rate in basis points. Free: 3 agreements.",
   inputSchema: {
     name: str("name", MAX_NAME).describe("What this agreement is, e.g. Van finance or Office lease"),
     principal_minor: z.number().int().min(1).max(MAX_MINOR).describe("Amount borrowed, in whole minor units (integer cents). 1,000,000 is EUR 10,000.00"),
@@ -227,7 +227,7 @@ server.registerTool("loan_create", {
 
 server.registerTool("loan_schedule", {
   title: "Build the amortization schedule",
-  description: "Build the schedule for one loan: opening balance, payment, interest, principal and closing balance for every period, with the total interest. The closing balance reaches the balloon, or zero, exactly. Free.",
+  description: "Build one loan's schedule: opening balance, payment, interest, principal and closing per period, with total interest. The last period absorbs rounding, landing exactly on the balloon or zero. loans_report totals it.",
   inputSchema: {
     loan: loanArg,
     from_period: z.number().int().min(1).max(MAX_PERIODS).optional().describe("First period to return. Default 1"),
@@ -401,7 +401,7 @@ server.registerTool("loan_journal", {
 
 server.registerTool("loan_list", {
   title: "List the loan register",
-  description: "List the loans and leases in the register with their terms, the level payment, the effective annual rate and the balance outstanding at a date. Free and unlimited.",
+  description: "List the register with terms, level payment, effective annual rate and, at a date, periods paid, balance outstanding, interest to date and the next payment, totalled per currency. Free and unlimited.",
   inputSchema: {
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Only agreements in this currency"),
     kind: z.enum(["loan", "lease"]).optional().describe("Only loans, or only leases"),
@@ -484,7 +484,7 @@ server.registerTool("loan_delete", {
 
 server.registerTool("loans_report", {
   title: "Report what is owed and what it costs",
-  description: "Report the debt: what is outstanding per currency, when each next payment falls due, and the interest charged in a calendar year, per loan and in total. Pro.",
+  description: "The debt at a date: per loan what is outstanding, whether it is settled, the next payment, and the interest and principal charged in a year, then totals per currency. It is the contractual balance. Pro.",
   inputSchema: {
     as_of: str("as_of", 10).optional().describe("Value the debt at this date, YYYY-MM-DD. Default today"),
     year: str("year", 4).optional().describe("The calendar year to total the interest for, YYYY. Default the year of as_of"),

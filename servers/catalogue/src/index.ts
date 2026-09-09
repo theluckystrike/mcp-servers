@@ -366,7 +366,7 @@ server.registerTool("sku_list", {
 
 server.registerTool("sku_delete", {
   title: "Delete an unused SKU",
-  description: "Delete a catalogue line raised by mistake. Only one that no rate card points at and that has never priced a resolved line can go; the refusal names what depends on it. Free on every tier.",
+  description: "Delete a catalogue line no rate card points at and that never priced a resolved line, freeing a free-tier slot. Otherwise it is refused, naming what depends on it: reprice it to withdraw it instead.",
   inputSchema: { sku: skuArg },
 }, async (a) => {
   try {
@@ -404,7 +404,7 @@ server.registerTool("sku_delete", {
 
 server.registerTool("rate_set", {
   title: "Set a labour rate",
-  description: "Set the hourly rate on a labour rate card: a role, a currency, an hourly rate in minor units and the day it comes into force. An update replaces the row for that currency and date. Free.",
+  description: "Set the hourly charge-out rate on a labour card: role, currency, hourly_minor in whole MINOR units and the day it starts. The same role, currency and date REPLACES that row rather than adding one. Free.",
   inputSchema: {
     role: str("role", 64).describe("The role charged for, e.g. senior developer. Lower case, this is what an hours line is priced from"),
     currency: currencyArg.optional().describe("ISO code this rate is in. Defaults to the shared business profile's currency"),
@@ -709,7 +709,7 @@ function priceListText(date: string, currency: string, tiers: string[]): string 
 
 server.registerTool("price_list_text", {
   title: "The price list as plain text",
-  description: "Print the price list as plain text: every SKU with the price in force on a date, per currency and tier, with the valid-from date and any later price already booked, then the labour rates. Free.",
+  description: "Print the price list as plain text: every SKU with its unit, the price in force on a date and any later price booked, then the labour rate cards, under your business name. Free; price_list_pdf writes the A4 page.",
   inputSchema: {
     date: str("date", 10).optional().describe("The day the list is in force, YYYY-MM-DD. Default today"),
     currency: currencyArg.optional().describe("Defaults to the shared business profile's currency"),

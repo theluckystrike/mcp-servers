@@ -249,7 +249,7 @@ server.registerTool("profile_set", {
 
 server.registerTool("profile_get", {
   title: "Show the stored profile",
-  description: "Return the stored CV profile as JSON, exactly as resume_create, resume_to_markdown, resume_to_html, cover_letter_create and tailor_to_job will use it: contact details, summary, skills, roles with their bullets in newest-first order, education, certifications and languages, plus the variant read and every variant name stored. Reads only, changes nothing. With no profile stored it says so and points at profile_set. Call it before any rewrite so you edit real stored facts rather than invented ones.",
+  description: "Return the stored CV profile exactly as resume_create, cover_letter_create and tailor_to_job will use it, plus the variant read and every stored variant name. Call it before any rewrite.",
   inputSchema: { variant: z.string().optional() },
 }, async (a) => {
   // Never throw across the transport: a corrupt store must arrive as an "Error: ..." answer.
@@ -314,7 +314,7 @@ server.registerTool("resume_create", {
 
 server.registerTool("resume_to_markdown", {
   title: "Resume as markdown",
-  description: "Render the stored profile as markdown text returned inline, ready to paste into an application form, an email or an ATS box. Same content and same page-budget trimming as resume_create, so bullets past max_pages (default 2) are dropped, but nothing is written to disk and no .docx is produced. Use resume_create for a Word file, resume_to_html for a printable page. Free on every tier; the style options are only in the file formats.",
+  description: "Return the stored profile as markdown text inline, ready to paste into a form or an ATS box. Same page-budget trimming as resume_create for max_pages. Nothing is written to disk. Free.",
   inputSchema: { variant: z.string().optional(), target_role: z.string().optional(), max_pages: z.number().int().min(1).max(5).default(2) },
 }, async (a) => {
   try {
@@ -327,7 +327,7 @@ server.registerTool("resume_to_markdown", {
 
 server.registerTool("resume_to_html", {
   title: "Printable resume HTML",
-  description: "Call this tool to write the resume as semantic HTML with a print stylesheet. Returns the output path. Open the file in a browser and print it to PDF.",
+  description: "Call this tool to write the resume as semantic HTML with a print stylesheet and return the path; print it to PDF from a browser. Bullets are trimmed to fit max_pages. Free and unlimited.",
   inputSchema: {
     variant: z.string().optional(), target_role: z.string().optional(),
     max_pages: z.number().int().min(1).max(5).default(2).describe("Bullets are trimmed to fit this many pages against a measured word budget. Default 2."),
@@ -349,7 +349,7 @@ server.registerTool("resume_to_html", {
 
 server.registerTool("resume_read", {
   title: "Read an existing resume .docx",
-  description: "Call this tool to extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Returns the parsed profile, the sections found, and anything unparsed.",
+  description: "Call this tool to read an existing .docx resume into the profile shape, with the sections found and anything unplaced. It saves nothing unless save is true, so review it first. .doc and .rtf are refused.",
   inputSchema: {
     path: z.string().min(1).optional().describe("Name of a document uploaded with doc_upload"),
     docx_base64: z.string().optional().describe("The .docx itself, base64-encoded, instead of uploading it first"),
@@ -384,7 +384,7 @@ server.registerTool("resume_read", {
 
 server.registerTool("cover_letter_create", {
   title: "Write a cover letter .docx",
-  description: "Call this tool to write a one-page cover letter from the stored profile: opening, fit, proof, close. Returns the output path, the word count, and every bracketed prompt left for you to fill in.",
+  description: "Call this tool to write a one-page cover letter .docx from the stored profile and return the path, word count and bracketed prompts. Nothing from the posting is restated as yours. Free: 3 a month.",
   inputSchema: {
     company: z.string().min(1),
     role: z.string().min(1),

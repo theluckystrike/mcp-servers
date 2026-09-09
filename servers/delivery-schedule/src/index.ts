@@ -258,7 +258,7 @@ server.registerTool("delivery_schedule_create", {
 
 server.registerTool("deliverable_add", {
   title: "Add a dated deliverable",
-  description: "Add one deliverable to a schedule: what it is, the day it is due, and its value in whole minor units when it is separately priced. It starts as planned. Free on every tier.",
+  description: "Add one dated deliverable and return its D number and the new counts. value_minor is NET of VAT in whole MINOR units. A due date before the reference document's own date is refused. It starts as planned.",
   inputSchema: {
     schedule: scheduleArg,
     description: str("description", MAX_TEXT).describe("What is being handed over, as the client would recognise it, e.g. Wireframes for the five main pages"),
@@ -326,7 +326,7 @@ server.registerTool("deliverable_add", {
 
 server.registerTool("deliverable_status", {
   title: "Move a deliverable along",
-  description: "Record a dated move on one deliverable: planned to in progress, to delivered, and delivered to accepted with the acceptance note. Accepting something never delivered is refused. Free.",
+  description: "Record a dated move on one deliverable: planned, in_progress, delivered, then accepted with a note. An out-of-order move, or a date before the reference document, is refused. The date drives lateness.",
   inputSchema: {
     schedule: scheduleArg,
     deliverable: deliverableArg,
@@ -397,7 +397,7 @@ server.registerTool("deliverable_status", {
 
 server.registerTool("deliverable_delete", {
   title: "Delete a planned deliverable",
-  description: "Delete a deliverable added by mistake. Only one still planned with nothing recorded against it can go: once it has been started or handed over it has a history. Free on every tier.",
+  description: "Delete one deliverable still planned with no history. One started, delivered or accepted is refused, naming when: add a corrected deliverable instead. The D number on a schedule is never reissued.",
   inputSchema: { schedule: scheduleArg, deliverable: deliverableArg },
 }, async (a) => {
   try {
@@ -427,7 +427,7 @@ server.registerTool("deliverable_delete", {
 
 server.registerTool("delivery_schedule_get", {
   title: "Show one delivery schedule",
-  description: "Show one schedule in full as at a date: every deliverable with its due date, status, delivered and accepted dates, acceptance note and value, plus what is late as at that date. Free.",
+  description: "Return one schedule in full as at a date: every deliverable with due date, status, delivered and accepted dates, note and value, plus what is late and the totals. The answer names the as_of it used.",
   inputSchema: { schedule: scheduleArg, as_of: asOfArg },
 }, async (a) => {
   try {
@@ -444,7 +444,7 @@ server.registerTool("delivery_schedule_get", {
 
 server.registerTool("delivery_schedule_list", {
   title: "List delivery schedules",
-  description: "List delivery schedules with their counts as at a date: what is late, what is still owed and what has been accepted. Filter by client, by reference and by whether the job is complete. Free.",
+  description: "List schedules oldest reference first with client, currency and counts as at a date: late, still owed, accepted. Filter by client, reference and state open or complete. Free.",
   inputSchema: {
     client: str("client", MAX_NAME).optional().describe("Only schedules whose client name contains this text"),
     reference: str("reference", 64).optional().describe("Only the schedule against this quote, work order or change order"),
@@ -489,7 +489,7 @@ server.registerTool("delivery_schedule_list", {
 
 server.registerTool("delivery_schedule_delete", {
   title: "Delete an empty schedule",
-  description: "Delete a delivery schedule opened by mistake. Only one with no deliverables can go: once it carries one, it carries a record of what was owed. Free on every tier.",
+  description: "Delete a schedule carrying no deliverables, freeing an open slot. One holding any is refused, naming them, since they record what was owed. The DS number is never reissued. Free on every tier.",
   inputSchema: { schedule: scheduleArg },
 }, async (a) => {
   try {
@@ -519,7 +519,7 @@ server.registerTool("delivery_schedule_delete", {
 
 server.registerTool("late_report", {
   title: "What is late as at a date",
-  description: "What has slipped as at a date you name: every deliverable still owed whose due date has passed, worst first, with the value at risk per currency and what was delivered late for the record. Free.",
+  description: "What has slipped as at a date: every deliverable still owed past its due date, worst first, with value at risk per currency, and what was delivered late kept apart. A reference with no schedule is refused.",
   inputSchema: {
     as_of: str("as_of", 10).optional().describe("Read lateness as at this date, YYYY-MM-DD. Defaults to today. Everything in the answer is as at this date, not as at now"),
     reference: str("reference", 64).optional().describe("Only the schedule against this quote, work order or change order"),

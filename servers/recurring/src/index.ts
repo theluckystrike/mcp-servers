@@ -311,7 +311,7 @@ server.registerTool("schedule_create", {
 
 server.registerTool("schedule_list", {
   title: "List schedules",
-  description: "Every schedule with its cadence, per-period amount, next due date and status (active or paused).",
+  description: "List schedules: id, client, cadence, per-period amount and currency, start and end dates, status, next due date and auto_generate. Filter by status; a paused schedule reports no next due date.",
   inputSchema: { status: z.enum(["active", "paused"]).optional() },
 }, async (a) => {
   try {
@@ -325,7 +325,7 @@ server.registerTool("schedule_list", {
 
 server.registerTool("schedule_get", {
   title: "Get one schedule",
-  description: "The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated.",
+  description: "Return one schedule in full by id or client: items, cadence, dates, due days, anchor rules, notes, per-period amount, next due date and how many invoices it generated. schedule_history is the log.",
   inputSchema: { id: z.string().describe("Schedule id, or a client name") },
 }, async (a) => {
   try {
@@ -410,7 +410,7 @@ function setStatus(id: string, status: "active" | "paused") {
 
 server.registerTool("schedule_pause", {
   title: "Pause a schedule",
-  description: "Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed.",
+  description: "Stop one schedule generating invoices without deleting it; invoice_generate_due and forecast skip it. Its periods keep falling due and resuming back-bills them, so use schedule_skip to drop just one.",
   inputSchema: { id: z.string() },
 }, async (a) => {
   try { return await setStatus(a.id, "paused"); } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -418,7 +418,7 @@ server.registerTool("schedule_pause", {
 
 server.registerTool("schedule_resume", {
   title: "Resume a schedule",
-  description: "Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due.",
+  description: "Make a paused schedule active again. Every period missed while it was paused is still due and the next invoice_generate_due creates them all. Refused when it would pass the free tier's 3 active.",
   inputSchema: { id: z.string() },
 }, async (a) => {
   try { return await setStatus(a.id, "active"); } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -426,7 +426,7 @@ server.registerTool("schedule_resume", {
 
 server.registerTool("schedule_delete", {
   title: "Delete a schedule",
-  description: "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Returns the client and how many invoices and history rows remain.",
+  description: "Delete one schedule permanently. Invoices already generated stay in the invoice server and the history is kept. Re-creating it gives a NEW id, so its old periods count as unbilled. schedule_pause is reversible.",
   inputSchema: { id: z.string().describe("Schedule id, or a client name. Deletion is permanent; re-creating the same schedule afterwards gives it a NEW id, so its old periods count as unbilled again") },
 }, async (a) => {
   try {
@@ -443,7 +443,7 @@ server.registerTool("schedule_delete", {
 
 server.registerTool("schedule_skip", {
   title: "Skip one period",
-  description: "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. Returns the amount that will not be billed and how to undo it.",
+  description: "Close ONE occurrence for good without pausing the schedule, reporting what will not be billed. period must be a real occurrence of it. An invoiced period is refused; undo reopens a skip.",
   inputSchema: {
     id: z.string().describe("Schedule id, or a client name"),
     period: z.string().describe("The occurrence date to skip, YYYY-MM-DD, exactly as it appears in schedule_upcoming or forecast. This is the answer to \"pause this client for October\": schedule_pause stops the whole schedule and a resumed schedule still back-bills the periods it missed, whereas a skipped period is closed for good"),
@@ -491,7 +491,7 @@ server.registerTool("schedule_skip", {
 
 server.registerTool("schedule_upcoming", {
   title: "What falls due soon",
-  description: "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free lists the first 3 occurrences in the horizon you ask for.",
+  description: "Table every occurrence of every ACTIVE schedule due in the next N days (30 default), with its amount and the invoice due date, plus a total per currency. Free lists the first 3 in your horizon.",
   inputSchema: { days: z.number().int().min(1).max(3650).optional().describe("Days ahead, default 30. The free tier honours the horizon you ask for and lists the first 3 occurrences in it; Pro lists them all") },
 }, async (a) => {
   try {
@@ -689,8 +689,8 @@ server.registerTool("invoice_generate_due", {
 });
 
 server.registerTool("schedule_history", {
-  title: "Schedule history (Pro)",
-  description: "The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path.",
+  title: "Schedule history",
+  description: "The audit log for one schedule, oldest first: period, invoice number, dates, amount, PDF path, and whether that invoice is unpaid, paid, skipped or has since been deleted. Pro.",
   inputSchema: { id: z.string() },
 }, async (a) => {
   try {
@@ -717,7 +717,7 @@ server.registerTool("schedule_history", {
 
 server.registerTool("forecast", {
   title: "Revenue forecast",
-  description: "Expected invoiced revenue per calendar month per currency from every active schedule. Free covers 3 months ahead; Pro covers up to 120.",
+  description: "Expected invoiced revenue per calendar month per currency from active schedules. Invoiced and skipped periods are excluded and paused schedules listed apart. Free: 3 months; Pro: up to 120.",
   inputSchema: { months: z.number().int().min(1).max(120).optional().describe("Months ahead including this one, default 12") },
 }, async (a) => {
   try {

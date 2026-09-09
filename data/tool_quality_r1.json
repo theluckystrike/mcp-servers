@@ -1,0 +1,6503 @@
+{
+  "generated": "2026-09-09",
+  "loop": 31,
+  "what": "Self-scored quality of every MCP tool description in the estate, before and after the loop 31 rewrite, against the six dimensions Glama publishes.",
+  "scoring_method": {
+    "note": "These are this project's own scores from a documented, reproducible heuristic, not Glama's. It is calibrated against the one datapoint Glama gives us: on mcp-statement-of-account it reproduces the published minimum of 2.9 (license_status, 2.90 here) and scores the mean lower than Glama's 3.7, so it is harsher than the real grader.",
+    "weights": {
+      "purpose_clarity": 0.25,
+      "usage_guidelines": 0.2,
+      "behavioral_transparency": 0.2,
+      "parameter_semantics": 0.15,
+      "conciseness_structure": 0.1,
+      "contextual_completeness": 0.1
+    },
+    "server_definition_score": "0.6 * mean(tool scores) + 0.4 * min(tool scores), the formula on the Glama score page",
+    "signals": {
+      "purpose_clarity": "3, +1 for a first sentence of 8 words or more, +1 for a description of 150 chars or more",
+      "usage_guidelines": "2, +1.5 when it names a sibling tool, +1 for a when-to-use clause, +0.5 when it states a tier",
+      "behavioral_transparency": "2, +1 for what it returns, +1 for what it refuses, +1 for a side effect or a cap",
+      "parameter_semantics": "2, +1 when it names a parameter, +1 more at three parameters, +1 for a unit or scale convention",
+      "conciseness_structure": "5 at 150-220 chars, 4 at 110-149, 3 below 110, 2 above the estate's 220-char contract ceiling",
+      "contextual_completeness": "2, +1 for a tier, +1 for cross-server context, +1 when it both returns and disambiguates"
+    }
+  },
+  "constraints_obeyed": {
+    "max_description_chars": 220,
+    "source": "servers/*/test/contract.test.mjs MAX_DESCRIPTION, with OVER_LENGTH_BASELINE empty on all 31 servers",
+    "imperative_rule": "a tool taking path, url, out_path, out_dir, paths, dir or template_path must open with 'Call this tool' or 'Use this'",
+    "claim_leading_tools": [
+      "price_check",
+      "watch_add",
+      "sheet_info",
+      "sheet_read",
+      "sheet_query",
+      "sheet_stats"
+    ]
+  },
+  "totals": {
+    "servers": 31,
+    "tools_scored": 352,
+    "tool_descriptions_rewritten": 221,
+    "own_server_tools_rewritten": 159,
+    "shared_license_tools_rewritten": 2,
+    "office_suite_own_tools_rewritten": 2,
+    "estate_mean_before": 3.339,
+    "estate_mean_after": 3.715,
+    "lowest_server_minimum_before": 2.35,
+    "lowest_server_minimum_after": 3.15,
+    "servers_with_minimum_at_or_above_3_5": 5,
+    "servers_with_minimum_at_or_above_3_0": 31
+  },
+  "servers": {
+    "amortization": {
+      "tool_count_before": 9,
+      "tool_count_after": 9,
+      "tool_names_identical": true,
+      "mean_before": 3.41,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.21,
+      "mean_after": 3.77,
+      "min_after": 3.5,
+      "min_tool_after": "loans_report",
+      "definition_score_after": 3.66,
+      "tools": [
+        {
+          "tool": "loans_report",
+          "rewritten": true,
+          "score_before": 3.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.5
+          },
+          "chars_before": 157,
+          "chars_after": 202
+        },
+        {
+          "tool": "loan_schedule",
+          "rewritten": true,
+          "score_before": 3.15,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 206,
+          "chars_after": 215
+        },
+        {
+          "tool": "loan_delete",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 158,
+          "chars_after": 158
+        },
+        {
+          "tool": "loan_repay_early",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 214,
+          "chars_after": 214
+        },
+        {
+          "tool": "loan_list",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 163,
+          "chars_after": 199
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "loan_create",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 199,
+          "chars_after": 201
+        },
+        {
+          "tool": "loan_journal",
+          "rewritten": false,
+          "score_before": 4.15,
+          "score_after": 4.15,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 4,
+            "total": 4.15
+          },
+          "chars_before": 190,
+          "chars_after": 190
+        }
+      ]
+    },
+    "asset-register": {
+      "tool_count_before": 9,
+      "tool_count_after": 9,
+      "tool_names_identical": true,
+      "mean_before": 3.44,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.22,
+      "mean_after": 3.84,
+      "min_after": 3.4,
+      "min_tool_after": "asset_schedule",
+      "definition_score_after": 3.66,
+      "tools": [
+        {
+          "tool": "asset_schedule",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 218,
+          "chars_after": 206
+        },
+        {
+          "tool": "asset_delete",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 201,
+          "chars_after": 201
+        },
+        {
+          "tool": "asset_add",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 198,
+          "chars_after": 198
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "asset_list",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 3.9
+          },
+          "chars_before": 172,
+          "chars_after": 172
+        },
+        {
+          "tool": "asset_journal",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 4,
+            "total": 3.9
+          },
+          "chars_before": 209,
+          "chars_after": 209
+        },
+        {
+          "tool": "asset_report",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 4,
+            "total": 3.9
+          },
+          "chars_before": 148,
+          "chars_after": 204
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "asset_dispose",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 4.3,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 4,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 4.3
+          },
+          "chars_before": 155,
+          "chars_after": 193
+        }
+      ]
+    },
+    "bank-statement": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.34,
+      "min_before": 2.75,
+      "min_tool_before": "accounts_list",
+      "definition_score_before": 3.1,
+      "mean_after": 3.63,
+      "min_after": 3.3,
+      "min_tool_after": "recurring_detect",
+      "definition_score_after": 3.5,
+      "tools": [
+        {
+          "tool": "recurring_detect",
+          "rewritten": true,
+          "score_before": 3.3,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 218,
+          "chars_after": 195
+        },
+        {
+          "tool": "category_rules",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 220,
+          "chars_after": 197
+        },
+        {
+          "tool": "transactions_search",
+          "rewritten": false,
+          "score_before": 3.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.5
+          },
+          "chars_before": 195,
+          "chars_after": 195
+        },
+        {
+          "tool": "statement_summary",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 214,
+          "chars_after": 214
+        },
+        {
+          "tool": "statement_export",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 212,
+          "chars_after": 212
+        },
+        {
+          "tool": "accounts_list",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 87,
+          "chars_after": 214
+        },
+        {
+          "tool": "reconcile_expenses",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 3.65
+          },
+          "chars_before": 218,
+          "chars_after": 218
+        },
+        {
+          "tool": "transaction_categorize",
+          "rewritten": true,
+          "score_before": 3.05,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 123,
+          "chars_after": 201
+        },
+        {
+          "tool": "statement_import",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 220,
+          "chars_after": 220
+        },
+        {
+          "tool": "transactions_list",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 195,
+          "chars_after": 195
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        }
+      ]
+    },
+    "barcode": {
+      "tool_count_before": 10,
+      "tool_count_after": 10,
+      "tool_names_identical": true,
+      "mean_before": 3.42,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.21,
+      "mean_after": 3.76,
+      "min_after": 3.5,
+      "min_tool_after": "qr_payment_sepa",
+      "definition_score_after": 3.66,
+      "tools": [
+        {
+          "tool": "qr_payment_sepa",
+          "rewritten": false,
+          "score_before": 3.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.5
+          },
+          "chars_before": 191,
+          "chars_after": 191
+        },
+        {
+          "tool": "code_list",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 3.5
+          },
+          "chars_before": 159,
+          "chars_after": 193
+        },
+        {
+          "tool": "qr_wifi",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.65
+          },
+          "chars_before": 154,
+          "chars_after": 203
+        },
+        {
+          "tool": "barcode_create",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 172,
+          "chars_after": 211
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "qr_create",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 4,
+            "total": 3.85
+          },
+          "chars_before": 144,
+          "chars_after": 194
+        },
+        {
+          "tool": "qr_vcard",
+          "rewritten": false,
+          "score_before": 3.85,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 198,
+          "chars_after": 198
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "barcode_batch",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.9
+          },
+          "chars_before": 173,
+          "chars_after": 173
+        },
+        {
+          "tool": "invoice_payment_qr",
+          "rewritten": false,
+          "score_before": 3.95,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 205,
+          "chars_after": 205
+        }
+      ]
+    },
+    "billing-docs": {
+      "tool_count_before": 16,
+      "tool_count_after": 16,
+      "tool_names_identical": true,
+      "mean_before": 3.28,
+      "min_before": 2.85,
+      "min_tool_before": "credit_note_list",
+      "definition_score_before": 3.11,
+      "mean_after": 3.63,
+      "min_after": 3.15,
+      "min_tool_after": "billing_docs_report",
+      "definition_score_after": 3.44,
+      "tools": [
+        {
+          "tool": "billing_docs_report",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.15,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.15
+          },
+          "chars_before": 171,
+          "chars_after": 212
+        },
+        {
+          "tool": "credit_note_delete",
+          "rewritten": true,
+          "score_before": 3.65,
+          "score_after": 3.25,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.25
+          },
+          "chars_before": 204,
+          "chars_after": 210
+        },
+        {
+          "tool": "credit_note_list",
+          "rewritten": true,
+          "score_before": 2.85,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 130,
+          "chars_after": 186
+        },
+        {
+          "tool": "credit_note_create",
+          "rewritten": true,
+          "score_before": 3.3,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 194,
+          "chars_after": 206
+        },
+        {
+          "tool": "purchase_order_get",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 184,
+          "chars_after": 202
+        },
+        {
+          "tool": "purchase_order_text",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.45
+          },
+          "chars_before": 182,
+          "chars_after": 202
+        },
+        {
+          "tool": "purchase_order_receive",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 172,
+          "chars_after": 208
+        },
+        {
+          "tool": "purchase_order_delete",
+          "rewritten": true,
+          "score_before": 3.65,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 191,
+          "chars_after": 207
+        },
+        {
+          "tool": "credit_note_text",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 177,
+          "chars_after": 200
+        },
+        {
+          "tool": "purchase_order_list",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.7
+          },
+          "chars_before": 174,
+          "chars_after": 205
+        },
+        {
+          "tool": "credit_note_pdf",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 3.85
+          },
+          "chars_before": 168,
+          "chars_after": 200
+        },
+        {
+          "tool": "purchase_order_pdf",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 3.85
+          },
+          "chars_before": 182,
+          "chars_after": 196
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "purchase_order_create",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 4.15,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 4.15
+          },
+          "chars_before": 178,
+          "chars_after": 192
+        },
+        {
+          "tool": "credit_note_get",
+          "rewritten": true,
+          "score_before": 3.1,
+          "score_after": 4.2,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 4.2
+          },
+          "chars_before": 140,
+          "chars_after": 200
+        }
+      ]
+    },
+    "calendar": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.2,
+      "min_before": 2.55,
+      "min_tool_before": "calendars_list",
+      "definition_score_before": 2.94,
+      "mean_after": 3.65,
+      "min_after": 3.25,
+      "min_tool_after": "conflicts",
+      "definition_score_after": 3.49,
+      "tools": [
+        {
+          "tool": "conflicts",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.25,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.25
+          },
+          "chars_before": 220,
+          "chars_after": 209
+        },
+        {
+          "tool": "calendars_list",
+          "rewritten": true,
+          "score_before": 2.55,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.4
+          },
+          "chars_before": 133,
+          "chars_after": 206
+        },
+        {
+          "tool": "events_list",
+          "rewritten": false,
+          "score_before": 3.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 215,
+          "chars_after": 215
+        },
+        {
+          "tool": "ics_import",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 215,
+          "chars_after": 215
+        },
+        {
+          "tool": "next_event",
+          "rewritten": true,
+          "score_before": 2.6,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 97,
+          "chars_after": 199
+        },
+        {
+          "tool": "events_search",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 217,
+          "chars_after": 217
+        },
+        {
+          "tool": "ics_forget",
+          "rewritten": true,
+          "score_before": 2.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 90,
+          "chars_after": 191
+        },
+        {
+          "tool": "free_busy",
+          "rewritten": true,
+          "score_before": 3.1,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 212,
+          "chars_after": 197
+        },
+        {
+          "tool": "event_export",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.8
+          },
+          "chars_before": 214,
+          "chars_after": 214
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "event_to_time_entry",
+          "rewritten": false,
+          "score_before": 3.95,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 3.95
+          },
+          "chars_before": 210,
+          "chars_after": 210
+        }
+      ]
+    },
+    "cash-book": {
+      "tool_count_before": 9,
+      "tool_count_after": 9,
+      "tool_names_identical": true,
+      "mean_before": 3.47,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.24,
+      "mean_after": 3.75,
+      "min_after": 3.35,
+      "min_tool_after": "ledger_build",
+      "definition_score_after": 3.59,
+      "tools": [
+        {
+          "tool": "ledger_build",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.35,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.35
+          },
+          "chars_before": 214,
+          "chars_after": 200
+        },
+        {
+          "tool": "trial_balance",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 211,
+          "chars_after": 211
+        },
+        {
+          "tool": "ledger_report",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 3.6
+          },
+          "chars_before": 190,
+          "chars_after": 197
+        },
+        {
+          "tool": "period_delete",
+          "rewritten": false,
+          "score_before": 3.7,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 3.7
+          },
+          "chars_before": 186,
+          "chars_after": 186
+        },
+        {
+          "tool": "month_close",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.7
+          },
+          "chars_before": 194,
+          "chars_after": 179
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "ledger_lines",
+          "rewritten": false,
+          "score_before": 4,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 4
+          },
+          "chars_before": 215,
+          "chars_after": 215
+        },
+        {
+          "tool": "ledger_export_csv",
+          "rewritten": false,
+          "score_before": 4.05,
+          "score_after": 4.05,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 4.05
+          },
+          "chars_before": 213,
+          "chars_after": 213
+        }
+      ]
+    },
+    "catalogue": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.51,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.27,
+      "mean_after": 3.76,
+      "min_after": 3.45,
+      "min_tool_after": "sku_delete",
+      "definition_score_after": 3.64,
+      "tools": [
+        {
+          "tool": "sku_delete",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.45
+          },
+          "chars_before": 187,
+          "chars_after": 198
+        },
+        {
+          "tool": "sku_list",
+          "rewritten": false,
+          "score_before": 3.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 186,
+          "chars_after": 186
+        },
+        {
+          "tool": "price_list_text",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 193,
+          "chars_after": 212
+        },
+        {
+          "tool": "catalogue_report",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 197,
+          "chars_after": 197
+        },
+        {
+          "tool": "lines_resolve",
+          "rewritten": false,
+          "score_before": 3.7,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 196,
+          "chars_after": 196
+        },
+        {
+          "tool": "price_list_pdf",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 174,
+          "chars_after": 174
+        },
+        {
+          "tool": "sku_set",
+          "rewritten": false,
+          "score_before": 3.85,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 4,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 173,
+          "chars_after": 173
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "sku_get",
+          "rewritten": false,
+          "score_before": 4,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 4
+          },
+          "chars_before": 198,
+          "chars_after": 198
+        },
+        {
+          "tool": "rate_set",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 4
+          },
+          "chars_before": 186,
+          "chars_after": 202
+        },
+        {
+          "tool": "rate_get",
+          "rewritten": false,
+          "score_before": 4,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 4
+          },
+          "chars_before": 191,
+          "chars_after": 191
+        }
+      ]
+    },
+    "change-order": {
+      "tool_count_before": 11,
+      "tool_count_after": 11,
+      "tool_names_identical": true,
+      "mean_before": 3.34,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.16,
+      "mean_after": 3.67,
+      "min_after": 3.4,
+      "min_tool_after": "change_order_status",
+      "definition_score_after": 3.56,
+      "tools": [
+        {
+          "tool": "change_order_status",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 202,
+          "chars_after": 191
+        },
+        {
+          "tool": "contract_value",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 194,
+          "chars_after": 194
+        },
+        {
+          "tool": "change_order_add_line",
+          "rewritten": false,
+          "score_before": 3.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 196,
+          "chars_after": 196
+        },
+        {
+          "tool": "change_order_list",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 117,
+          "chars_after": 206
+        },
+        {
+          "tool": "change_order_delete",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 181,
+          "chars_after": 215
+        },
+        {
+          "tool": "change_order_get",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 186,
+          "chars_after": 212
+        },
+        {
+          "tool": "change_order_document",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 193,
+          "chars_after": 193
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "change_order_invoice_payload",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.9
+          },
+          "chars_before": 192,
+          "chars_after": 192
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "change_order_create",
+          "rewritten": false,
+          "score_before": 4.1,
+          "score_after": 4.1,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 4.1
+          },
+          "chars_before": 199,
+          "chars_after": 199
+        }
+      ]
+    },
+    "clauses": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.18,
+      "min_before": 2.55,
+      "min_tool_before": "clause_delete",
+      "definition_score_before": 2.93,
+      "mean_after": 3.76,
+      "min_after": 3.4,
+      "min_tool_after": "clause_import",
+      "definition_score_after": 3.62,
+      "tools": [
+        {
+          "tool": "clause_import",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.4
+          },
+          "chars_before": 201,
+          "chars_after": 192
+        },
+        {
+          "tool": "clause_list",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 80,
+          "chars_after": 196
+        },
+        {
+          "tool": "clause_export",
+          "rewritten": true,
+          "score_before": 3.05,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 146,
+          "chars_after": 187
+        },
+        {
+          "tool": "contract_assemble",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 218,
+          "chars_after": 195
+        },
+        {
+          "tool": "clause_add",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 208,
+          "chars_after": 208
+        },
+        {
+          "tool": "clause_update",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 174,
+          "chars_after": 174
+        },
+        {
+          "tool": "clause_get",
+          "rewritten": true,
+          "score_before": 3.15,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 94,
+          "chars_after": 199
+        },
+        {
+          "tool": "clause_search",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 208,
+          "chars_after": 208
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "variables_list",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.95
+          },
+          "chars_before": 122,
+          "chars_after": 203
+        },
+        {
+          "tool": "clause_delete",
+          "rewritten": true,
+          "score_before": 2.55,
+          "score_after": 4.1,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 4.1
+          },
+          "chars_before": 93,
+          "chars_after": 183
+        }
+      ]
+    },
+    "currency": {
+      "tool_count_before": 10,
+      "tool_count_after": 10,
+      "tool_names_identical": true,
+      "mean_before": 3.42,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.21,
+      "mean_after": 3.66,
+      "min_after": 3.2,
+      "min_tool_after": "cache_status",
+      "definition_score_after": 3.48,
+      "tools": [
+        {
+          "tool": "cache_status",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.2,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.2
+          },
+          "chars_before": 153,
+          "chars_after": 213
+        },
+        {
+          "tool": "rates_latest",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 195,
+          "chars_after": 189
+        },
+        {
+          "tool": "currencies_list",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 180,
+          "chars_after": 188
+        },
+        {
+          "tool": "convert",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 204,
+          "chars_after": 204
+        },
+        {
+          "tool": "convert_many",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 135,
+          "chars_after": 187
+        },
+        {
+          "tool": "rate_on",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 217,
+          "chars_after": 217
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "rate_history",
+          "rewritten": false,
+          "score_before": 3.95,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 210,
+          "chars_after": 210
+        },
+        {
+          "tool": "fx_rates_for",
+          "rewritten": false,
+          "score_before": 4,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 4
+          },
+          "chars_before": 208,
+          "chars_after": 208
+        }
+      ]
+    },
+    "delivery-schedule": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.33,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.16,
+      "mean_after": 3.8,
+      "min_after": 3.4,
+      "min_tool_after": "deliverable_delete",
+      "definition_score_after": 3.64,
+      "tools": [
+        {
+          "tool": "deliverable_delete",
+          "rewritten": true,
+          "score_before": 3.15,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 180,
+          "chars_after": 196
+        },
+        {
+          "tool": "delivery_schedule_list",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 189,
+          "chars_after": 174
+        },
+        {
+          "tool": "late_report",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 194,
+          "chars_after": 205
+        },
+        {
+          "tool": "delivery_schedule_delete",
+          "rewritten": true,
+          "score_before": 3.15,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 162,
+          "chars_after": 192
+        },
+        {
+          "tool": "delivery_schedule_document",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 197,
+          "chars_after": 197
+        },
+        {
+          "tool": "delivery_schedule_get",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 182,
+          "chars_after": 198
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "milestone_payload",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.9
+          },
+          "chars_before": 193,
+          "chars_after": 193
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "delivery_schedule_create",
+          "rewritten": false,
+          "score_before": 4.1,
+          "score_after": 4.1,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 4.1
+          },
+          "chars_before": 190,
+          "chars_after": 190
+        },
+        {
+          "tool": "deliverable_status",
+          "rewritten": true,
+          "score_before": 3.15,
+          "score_after": 4.1,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 4.1
+          },
+          "chars_before": 183,
+          "chars_after": 200
+        },
+        {
+          "tool": "deliverable_add",
+          "rewritten": true,
+          "score_before": 3.3,
+          "score_after": 4.35,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 4.35
+          },
+          "chars_before": 172,
+          "chars_after": 203
+        }
+      ]
+    },
+    "deposits": {
+      "tool_count_before": 11,
+      "tool_count_after": 11,
+      "tool_names_identical": true,
+      "mean_before": 3.36,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.18,
+      "mean_after": 3.68,
+      "min_after": 3.45,
+      "min_tool_after": "deposit_list",
+      "definition_score_after": 3.59,
+      "tools": [
+        {
+          "tool": "deposit_list",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.45
+          },
+          "chars_before": 170,
+          "chars_after": 206
+        },
+        {
+          "tool": "deposit_delete",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.45
+          },
+          "chars_before": 215,
+          "chars_after": 202
+        },
+        {
+          "tool": "deposit_refund",
+          "rewritten": false,
+          "score_before": 3.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.5
+          },
+          "chars_before": 184,
+          "chars_after": 184
+        },
+        {
+          "tool": "deposit_statement_text",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 163,
+          "chars_after": 201
+        },
+        {
+          "tool": "deposit_statement_pdf",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 177,
+          "chars_after": 177
+        },
+        {
+          "tool": "deposit_record",
+          "rewritten": false,
+          "score_before": 3.7,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 170,
+          "chars_after": 170
+        },
+        {
+          "tool": "deposit_balance",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 182,
+          "chars_after": 182
+        },
+        {
+          "tool": "deposits_report",
+          "rewritten": true,
+          "score_before": 3.05,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 3.75
+          },
+          "chars_before": 144,
+          "chars_after": 202
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "deposit_apply",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 190,
+          "chars_after": 215
+        }
+      ]
+    },
+    "docx": {
+      "tool_count_before": 11,
+      "tool_count_after": 11,
+      "tool_names_identical": true,
+      "mean_before": 3.48,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.25,
+      "mean_after": 3.68,
+      "min_after": 3.3,
+      "min_tool_after": "business_set",
+      "definition_score_after": 3.53,
+      "tools": [
+        {
+          "tool": "business_set",
+          "rewritten": true,
+          "score_before": 3.05,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.3
+          },
+          "chars_before": 198,
+          "chars_after": 195
+        },
+        {
+          "tool": "doc_from_markdown",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 131,
+          "chars_after": 197
+        },
+        {
+          "tool": "doc_fill_template",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 220,
+          "chars_after": 199
+        },
+        {
+          "tool": "proposal_update",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 190,
+          "chars_after": 190
+        },
+        {
+          "tool": "doc_read",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 172,
+          "chars_after": 172
+        },
+        {
+          "tool": "doc_create",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 160,
+          "chars_after": 160
+        },
+        {
+          "tool": "doc_to_html",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 208,
+          "chars_after": 208
+        },
+        {
+          "tool": "contract_create",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 215,
+          "chars_after": 215
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "proposal_create",
+          "rewritten": false,
+          "score_before": 3.95,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 216,
+          "chars_after": 216
+        }
+      ]
+    },
+    "expense-tracker": {
+      "tool_count_before": 14,
+      "tool_count_after": 14,
+      "tool_names_identical": true,
+      "mean_before": 3.56,
+      "min_before": 2.5,
+      "min_tool_before": "expense_delete",
+      "definition_score_before": 3.14,
+      "mean_after": 3.86,
+      "min_after": 3.5,
+      "min_tool_after": "expense_list",
+      "definition_score_after": 3.72,
+      "tools": [
+        {
+          "tool": "expense_list",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 137,
+          "chars_after": 200
+        },
+        {
+          "tool": "expense_delete",
+          "rewritten": true,
+          "score_before": 2.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.5
+          },
+          "chars_before": 66,
+          "chars_after": 194
+        },
+        {
+          "tool": "expense_add",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 198,
+          "chars_after": 198
+        },
+        {
+          "tool": "receipt_attach",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 183,
+          "chars_after": 183
+        },
+        {
+          "tool": "expense_to_invoice",
+          "rewritten": false,
+          "score_before": 3.85,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.85
+          },
+          "chars_before": 195,
+          "chars_after": 195
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "mileage_add",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.9
+          },
+          "chars_before": 207,
+          "chars_after": 207
+        },
+        {
+          "tool": "expense_export",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 3.9
+          },
+          "chars_before": 198,
+          "chars_after": 198
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "expense_summary",
+          "rewritten": false,
+          "score_before": 3.95,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 208,
+          "chars_after": 208
+        },
+        {
+          "tool": "expense_update",
+          "rewritten": true,
+          "score_before": 2.95,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 4
+          },
+          "chars_before": 81,
+          "chars_after": 191
+        },
+        {
+          "tool": "expense_mark_rebilled",
+          "rewritten": false,
+          "score_before": 4.1,
+          "score_after": 4.1,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 4.1
+          },
+          "chars_before": 212,
+          "chars_after": 212
+        },
+        {
+          "tool": "expense_settings",
+          "rewritten": false,
+          "score_before": 4.15,
+          "score_after": 4.15,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 4.15
+          },
+          "chars_before": 204,
+          "chars_after": 204
+        },
+        {
+          "tool": "category_rules",
+          "rewritten": false,
+          "score_before": 4.2,
+          "score_after": 4.2,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 5,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 4.2
+          },
+          "chars_before": 188,
+          "chars_after": 188
+        }
+      ]
+    },
+    "image": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.55,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.29,
+      "mean_after": 3.72,
+      "min_after": 3.45,
+      "min_tool_after": "image_dominant_colors",
+      "definition_score_after": 3.61,
+      "tools": [
+        {
+          "tool": "image_dominant_colors",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.45
+          },
+          "chars_before": 198,
+          "chars_after": 196
+        },
+        {
+          "tool": "image_resize",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 187,
+          "chars_after": 187
+        },
+        {
+          "tool": "image_crop",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 219,
+          "chars_after": 219
+        },
+        {
+          "tool": "image_convert",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 193,
+          "chars_after": 193
+        },
+        {
+          "tool": "image_compress",
+          "rewritten": false,
+          "score_before": 3.7,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 219,
+          "chars_after": 219
+        },
+        {
+          "tool": "image_watermark",
+          "rewritten": false,
+          "score_before": 3.7,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 3.7
+          },
+          "chars_before": 209,
+          "chars_after": 209
+        },
+        {
+          "tool": "image_info",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 5,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 202,
+          "chars_after": 202
+        },
+        {
+          "tool": "image_strip_metadata",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 215,
+          "chars_after": 215
+        },
+        {
+          "tool": "image_batch_resize",
+          "rewritten": false,
+          "score_before": 3.85,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.85
+          },
+          "chars_before": 212,
+          "chars_after": 212
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "image_thumbnails",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.9
+          },
+          "chars_before": 217,
+          "chars_after": 217
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        }
+      ]
+    },
+    "invoice": {
+      "tool_count_before": 13,
+      "tool_count_after": 13,
+      "tool_names_identical": true,
+      "mean_before": 3.36,
+      "min_before": 2.75,
+      "min_tool_before": "invoice_list",
+      "definition_score_before": 3.12,
+      "mean_after": 3.74,
+      "min_after": 3.3,
+      "min_tool_after": "invoice_list",
+      "definition_score_after": 3.56,
+      "tools": [
+        {
+          "tool": "invoice_list",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 102,
+          "chars_after": 200
+        },
+        {
+          "tool": "invoice_mark_paid",
+          "rewritten": true,
+          "score_before": 3.15,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 177,
+          "chars_after": 182
+        },
+        {
+          "tool": "client_list",
+          "rewritten": true,
+          "score_before": 2.8,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 66,
+          "chars_after": 187
+        },
+        {
+          "tool": "client_add",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 187,
+          "chars_after": 187
+        },
+        {
+          "tool": "client_delete",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 196,
+          "chars_after": 186
+        },
+        {
+          "tool": "invoice_pdf",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 106,
+          "chars_after": 205
+        },
+        {
+          "tool": "overdue_report",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 206,
+          "chars_after": 186
+        },
+        {
+          "tool": "invoice_from_hours",
+          "rewritten": false,
+          "score_before": 3.85,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 218,
+          "chars_after": 218
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "invoice_get",
+          "rewritten": false,
+          "score_before": 4,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 4
+          },
+          "chars_before": 179,
+          "chars_after": 179
+        },
+        {
+          "tool": "invoice_create",
+          "rewritten": true,
+          "score_before": 3.8,
+          "score_after": 4.15,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 4.15
+          },
+          "chars_before": 198,
+          "chars_after": 195
+        },
+        {
+          "tool": "business_set",
+          "rewritten": false,
+          "score_before": 4.2,
+          "score_after": 4.2,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 4,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 4.2
+          },
+          "chars_before": 216,
+          "chars_after": 216
+        }
+      ]
+    },
+    "kanban": {
+      "tool_count_before": 17,
+      "tool_count_after": 17,
+      "tool_names_identical": true,
+      "mean_before": 2.81,
+      "min_before": 2.35,
+      "min_tool_before": "task_done",
+      "definition_score_before": 2.63,
+      "mean_after": 3.71,
+      "min_after": 3.3,
+      "min_tool_after": "task_update",
+      "definition_score_after": 3.55,
+      "tools": [
+        {
+          "tool": "task_update",
+          "rewritten": true,
+          "score_before": 2.85,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 88,
+          "chars_after": 197
+        },
+        {
+          "tool": "task_done",
+          "rewritten": true,
+          "score_before": 2.35,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.4
+          },
+          "chars_before": 75,
+          "chars_after": 195
+        },
+        {
+          "tool": "project_list",
+          "rewritten": true,
+          "score_before": 2.6,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.45
+          },
+          "chars_before": 80,
+          "chars_after": 196
+        },
+        {
+          "tool": "task_log_time",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 74,
+          "chars_after": 195
+        },
+        {
+          "tool": "task_add",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 119,
+          "chars_after": 202
+        },
+        {
+          "tool": "task_move",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 43,
+          "chars_after": 202
+        },
+        {
+          "tool": "board",
+          "rewritten": true,
+          "score_before": 2.5,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 77,
+          "chars_after": 200
+        },
+        {
+          "tool": "columns_set",
+          "rewritten": true,
+          "score_before": 2.7,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 99,
+          "chars_after": 198
+        },
+        {
+          "tool": "overdue",
+          "rewritten": true,
+          "score_before": 2.6,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 48,
+          "chars_after": 198
+        },
+        {
+          "tool": "task_start_timer",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 3.75
+          },
+          "chars_before": 123,
+          "chars_after": 205
+        },
+        {
+          "tool": "weekly_review",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 81,
+          "chars_after": 201
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "task_list",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.85
+          },
+          "chars_before": 77,
+          "chars_after": 202
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "task_search",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.9
+          },
+          "chars_before": 56,
+          "chars_after": 191
+        },
+        {
+          "tool": "project_delete",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 134,
+          "chars_after": 202
+        },
+        {
+          "tool": "task_delete",
+          "rewritten": true,
+          "score_before": 2.55,
+          "score_after": 4.35,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 4.35
+          },
+          "chars_before": 26,
+          "chars_after": 196
+        }
+      ]
+    },
+    "pdf": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.55,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.29,
+      "mean_after": 3.71,
+      "min_after": 3.55,
+      "min_tool_after": "pdf_watermark_business",
+      "definition_score_after": 3.65,
+      "tools": [
+        {
+          "tool": "pdf_watermark_business",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 3.55
+          },
+          "chars_before": 179,
+          "chars_after": 179
+        },
+        {
+          "tool": "pdf_info",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 5,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 210,
+          "chars_after": 210
+        },
+        {
+          "tool": "pdf_rotate",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 206,
+          "chars_after": 206
+        },
+        {
+          "tool": "pdf_stamp",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 205,
+          "chars_after": 205
+        },
+        {
+          "tool": "pdf_count",
+          "rewritten": true,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 165,
+          "chars_after": 201
+        },
+        {
+          "tool": "pdf_merge",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 218,
+          "chars_after": 218
+        },
+        {
+          "tool": "pdf_text",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 214,
+          "chars_after": 214
+        },
+        {
+          "tool": "pdf_reorder",
+          "rewritten": false,
+          "score_before": 3.7,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.7
+          },
+          "chars_before": 175,
+          "chars_after": 175
+        },
+        {
+          "tool": "pdf_pages",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 206,
+          "chars_after": 206
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "pdf_split",
+          "rewritten": false,
+          "score_before": 4,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 5,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 4
+          },
+          "chars_before": 204,
+          "chars_after": 204
+        }
+      ]
+    },
+    "per-diem": {
+      "tool_count_before": 9,
+      "tool_count_after": 9,
+      "tool_names_identical": true,
+      "mean_before": 3.64,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.34,
+      "mean_after": 3.92,
+      "min_after": 3.75,
+      "min_tool_after": "perdiem_rates",
+      "definition_score_after": 3.85,
+      "tools": [
+        {
+          "tool": "perdiem_rates",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 170,
+          "chars_after": 170
+        },
+        {
+          "tool": "perdiem_calc",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 214,
+          "chars_after": 214
+        },
+        {
+          "tool": "trip_delete",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 197,
+          "chars_after": 197
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "trip_record",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 3.9
+          },
+          "chars_before": 169,
+          "chars_after": 169
+        },
+        {
+          "tool": "trip_list",
+          "rewritten": false,
+          "score_before": 3.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 3.9
+          },
+          "chars_before": 189,
+          "chars_after": 189
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "perdiem_report",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 146,
+          "chars_after": 189
+        },
+        {
+          "tool": "trip_export",
+          "rewritten": false,
+          "score_before": 4.45,
+          "score_after": 4.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 5,
+            "total": 4.45
+          },
+          "chars_before": 186,
+          "chars_after": 186
+        }
+      ]
+    },
+    "petty-cash": {
+      "tool_count_before": 9,
+      "tool_count_after": 9,
+      "tool_names_identical": true,
+      "mean_before": 3.45,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.23,
+      "mean_after": 3.71,
+      "min_after": 3.3,
+      "min_tool_after": "reconcile",
+      "definition_score_after": 3.55,
+      "tools": [
+        {
+          "tool": "reconcile",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 193,
+          "chars_after": 192
+        },
+        {
+          "tool": "float_report",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.35,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.35
+          },
+          "chars_before": 175,
+          "chars_after": 185
+        },
+        {
+          "tool": "voucher_delete",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 205,
+          "chars_after": 182
+        },
+        {
+          "tool": "topup_record",
+          "rewritten": true,
+          "score_before": 3.1,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 189,
+          "chars_after": 200
+        },
+        {
+          "tool": "float_open",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 185,
+          "chars_after": 185
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "voucher_add",
+          "rewritten": false,
+          "score_before": 4,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 5,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 4
+          },
+          "chars_before": 192,
+          "chars_after": 192
+        },
+        {
+          "tool": "replenish_request",
+          "rewritten": false,
+          "score_before": 4.2,
+          "score_after": 4.2,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 4.2
+          },
+          "chars_before": 189,
+          "chars_after": 189
+        }
+      ]
+    },
+    "price-tracker": {
+      "tool_count_before": 10,
+      "tool_count_after": 10,
+      "tool_names_identical": true,
+      "mean_before": 3.26,
+      "min_before": 2.8,
+      "min_tool_before": "alerts_pending",
+      "definition_score_before": 3.08,
+      "mean_after": 3.62,
+      "min_after": 3.3,
+      "min_tool_after": "alerts_pending",
+      "definition_score_after": 3.49,
+      "tools": [
+        {
+          "tool": "alerts_pending",
+          "rewritten": true,
+          "score_before": 2.8,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 215,
+          "chars_after": 207
+        },
+        {
+          "tool": "price_check",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 193,
+          "chars_after": 218
+        },
+        {
+          "tool": "price_history",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 163,
+          "chars_after": 185
+        },
+        {
+          "tool": "watch_refresh",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 192,
+          "chars_after": 210
+        },
+        {
+          "tool": "watch_remove",
+          "rewritten": true,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 153,
+          "chars_after": 184
+        },
+        {
+          "tool": "price_add_manual",
+          "rewritten": true,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 204,
+          "chars_after": 206
+        },
+        {
+          "tool": "watch_list",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 185,
+          "chars_after": 204
+        },
+        {
+          "tool": "watch_add",
+          "rewritten": true,
+          "score_before": 3.65,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 195,
+          "chars_after": 219
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        }
+      ]
+    },
+    "quotes": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.31,
+      "min_before": 2.85,
+      "min_tool_before": "quote_list",
+      "definition_score_before": 3.13,
+      "mean_after": 3.65,
+      "min_after": 3.3,
+      "min_tool_after": "quote_list",
+      "definition_score_after": 3.51,
+      "tools": [
+        {
+          "tool": "quote_list",
+          "rewritten": true,
+          "score_before": 2.85,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 144,
+          "chars_after": 192
+        },
+        {
+          "tool": "quote_pdf",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.45
+          },
+          "chars_before": 158,
+          "chars_after": 179
+        },
+        {
+          "tool": "quote_report",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 200,
+          "chars_after": 200
+        },
+        {
+          "tool": "quote_get",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 168,
+          "chars_after": 196
+        },
+        {
+          "tool": "quote_decline",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 161,
+          "chars_after": 192
+        },
+        {
+          "tool": "quote_delete",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 202,
+          "chars_after": 202
+        },
+        {
+          "tool": "quote_update",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 4,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.65
+          },
+          "chars_before": 168,
+          "chars_after": 168
+        },
+        {
+          "tool": "quote_send_text",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 157,
+          "chars_after": 195
+        },
+        {
+          "tool": "quote_accept",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 213,
+          "chars_after": 213
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "quote_create",
+          "rewritten": true,
+          "score_before": 3.3,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 190,
+          "chars_after": 202
+        }
+      ]
+    },
+    "recurring": {
+      "tool_count_before": 14,
+      "tool_count_after": 14,
+      "tool_names_identical": true,
+      "mean_before": 3.16,
+      "min_before": 2.6,
+      "min_tool_before": "schedule_pause",
+      "definition_score_before": 2.94,
+      "mean_after": 3.69,
+      "min_after": 3.35,
+      "min_tool_after": "schedule_pause",
+      "definition_score_after": 3.55,
+      "tools": [
+        {
+          "tool": "schedule_pause",
+          "rewritten": true,
+          "score_before": 2.6,
+          "score_after": 3.35,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.35
+          },
+          "chars_before": 104,
+          "chars_after": 199
+        },
+        {
+          "tool": "schedule_upcoming",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.35,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.35
+          },
+          "chars_before": 188,
+          "chars_after": 193
+        },
+        {
+          "tool": "schedule_skip",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 205,
+          "chars_after": 186
+        },
+        {
+          "tool": "schedule_create",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 209,
+          "chars_after": 209
+        },
+        {
+          "tool": "schedule_delete",
+          "rewritten": true,
+          "score_before": 3.3,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 205,
+          "chars_after": 210
+        },
+        {
+          "tool": "forecast",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 135,
+          "chars_after": 189
+        },
+        {
+          "tool": "schedule_history",
+          "rewritten": true,
+          "score_before": 2.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.65
+          },
+          "chars_before": 110,
+          "chars_after": 176
+        },
+        {
+          "tool": "schedule_list",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.7
+          },
+          "chars_before": 96,
+          "chars_after": 192
+        },
+        {
+          "tool": "schedule_resume",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.7
+          },
+          "chars_before": 146,
+          "chars_after": 194
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "schedule_get",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.95
+          },
+          "chars_before": 109,
+          "chars_after": 196
+        },
+        {
+          "tool": "schedule_update",
+          "rewritten": false,
+          "score_before": 4,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 4
+          },
+          "chars_before": 198,
+          "chars_after": 198
+        },
+        {
+          "tool": "invoice_generate_due",
+          "rewritten": false,
+          "score_before": 4.1,
+          "score_after": 4.1,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 4.1
+          },
+          "chars_before": 211,
+          "chars_after": 211
+        }
+      ]
+    },
+    "resume": {
+      "tool_count_before": 10,
+      "tool_count_after": 10,
+      "tool_names_identical": true,
+      "mean_before": 3.28,
+      "min_before": 2.75,
+      "min_tool_before": "resume_to_markdown",
+      "definition_score_before": 3.07,
+      "mean_after": 3.8,
+      "min_after": 3.4,
+      "min_tool_after": "resume_read",
+      "definition_score_after": 3.64,
+      "tools": [
+        {
+          "tool": "resume_read",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 207,
+          "chars_after": 203
+        },
+        {
+          "tool": "cover_letter_create",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.45
+          },
+          "chars_before": 193,
+          "chars_after": 196
+        },
+        {
+          "tool": "resume_create",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 188,
+          "chars_after": 188
+        },
+        {
+          "tool": "tailor_to_job",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 205,
+          "chars_after": 205
+        },
+        {
+          "tool": "profile_set",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 193,
+          "chars_after": 193
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "resume_to_markdown",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 4
+          },
+          "chars_before": 84,
+          "chars_after": 184
+        },
+        {
+          "tool": "profile_get",
+          "rewritten": true,
+          "score_before": 3.5,
+          "score_after": 4.2,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 4.2
+          },
+          "chars_before": 118,
+          "chars_after": 186
+        },
+        {
+          "tool": "resume_to_html",
+          "rewritten": true,
+          "score_before": 3.1,
+          "score_after": 4.2,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 4,
+            "total": 4.2
+          },
+          "chars_before": 149,
+          "chars_after": 186
+        }
+      ]
+    },
+    "spreadsheet": {
+      "tool_count_before": 10,
+      "tool_count_after": 10,
+      "tool_names_identical": true,
+      "mean_before": 3.48,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.25,
+      "mean_after": 3.73,
+      "min_after": 3.4,
+      "min_tool_after": "sheet_query",
+      "definition_score_after": 3.6,
+      "tools": [
+        {
+          "tool": "sheet_query",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 207,
+          "chars_after": 202
+        },
+        {
+          "tool": "sheet_stats",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 209,
+          "chars_after": 209
+        },
+        {
+          "tool": "sheet_find",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 213,
+          "chars_after": 213
+        },
+        {
+          "tool": "sheet_read",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 206,
+          "chars_after": 206
+        },
+        {
+          "tool": "sheet_convert",
+          "rewritten": false,
+          "score_before": 3.75,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 220,
+          "chars_after": 220
+        },
+        {
+          "tool": "sheet_info",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.8
+          },
+          "chars_before": 200,
+          "chars_after": 200
+        },
+        {
+          "tool": "sheet_add_column",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 5,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.8
+          },
+          "chars_before": 207,
+          "chars_after": 207
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "sheet_write",
+          "rewritten": true,
+          "score_before": 3.25,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.85
+          },
+          "chars_before": 144,
+          "chars_after": 194
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        }
+      ]
+    },
+    "statement-of-account": {
+      "tool_count_before": 8,
+      "tool_count_after": 8,
+      "tool_names_identical": true,
+      "mean_before": 3.29,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.13,
+      "mean_after": 3.67,
+      "min_after": 3.45,
+      "min_tool_after": "statements_report",
+      "definition_score_after": 3.58,
+      "tools": [
+        {
+          "tool": "statements_report",
+          "rewritten": true,
+          "score_before": 3.05,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.45
+          },
+          "chars_before": 143,
+          "chars_after": 194
+        },
+        {
+          "tool": "statement_build",
+          "rewritten": true,
+          "score_before": 3.55,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.5
+          },
+          "chars_before": 188,
+          "chars_after": 196
+        },
+        {
+          "tool": "statement_pdf",
+          "rewritten": true,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 188,
+          "chars_after": 194
+        },
+        {
+          "tool": "dunning_text",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 204,
+          "chars_after": 205
+        },
+        {
+          "tool": "statement_aging",
+          "rewritten": true,
+          "score_before": 3.75,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.65
+          },
+          "chars_before": 176,
+          "chars_after": 195
+        },
+        {
+          "tool": "statement_text",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 166,
+          "chars_after": 213
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        }
+      ]
+    },
+    "time-tracker": {
+      "tool_count_before": 14,
+      "tool_count_after": 14,
+      "tool_names_identical": true,
+      "mean_before": 3.19,
+      "min_before": 2.35,
+      "min_tool_before": "entry_edit",
+      "definition_score_before": 2.85,
+      "mean_after": 3.68,
+      "min_after": 3.4,
+      "min_tool_after": "timer_status",
+      "definition_score_after": 3.57,
+      "tools": [
+        {
+          "tool": "timer_status",
+          "rewritten": true,
+          "score_before": 2.75,
+          "score_after": 3.4,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.4
+          },
+          "chars_before": 85,
+          "chars_after": 202
+        },
+        {
+          "tool": "timer_stop",
+          "rewritten": true,
+          "score_before": 2.8,
+          "score_after": 3.45,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.45
+          },
+          "chars_before": 89,
+          "chars_after": 175
+        },
+        {
+          "tool": "timer_start",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 174,
+          "chars_after": 200
+        },
+        {
+          "tool": "entry_list",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.55
+          },
+          "chars_before": 133,
+          "chars_after": 197
+        },
+        {
+          "tool": "project_set_rate",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 191,
+          "chars_after": 191
+        },
+        {
+          "tool": "export_csv",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 197,
+          "chars_after": 197
+        },
+        {
+          "tool": "invoice_summary",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 194,
+          "chars_after": 194
+        },
+        {
+          "tool": "entry_mark_billed",
+          "rewritten": false,
+          "score_before": 3.7,
+          "score_after": 3.7,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.7
+          },
+          "chars_before": 199,
+          "chars_after": 199
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "entry_delete",
+          "rewritten": true,
+          "score_before": 2.5,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.85
+          },
+          "chars_before": 28,
+          "chars_after": 197
+        },
+        {
+          "tool": "report",
+          "rewritten": false,
+          "score_before": 3.85,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 216,
+          "chars_after": 216
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "entry_add",
+          "rewritten": true,
+          "score_before": 3.5,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.9
+          },
+          "chars_before": 213,
+          "chars_after": 205
+        },
+        {
+          "tool": "entry_edit",
+          "rewritten": true,
+          "score_before": 2.35,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.9
+          },
+          "chars_before": 73,
+          "chars_after": 193
+        }
+      ]
+    },
+    "timezone": {
+      "tool_count_before": 11,
+      "tool_count_after": 11,
+      "tool_names_identical": true,
+      "mean_before": 3.28,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.13,
+      "mean_after": 3.6,
+      "min_after": 3.35,
+      "min_tool_after": "now",
+      "definition_score_after": 3.5,
+      "tools": [
+        {
+          "tool": "now",
+          "rewritten": true,
+          "score_before": 3.35,
+          "score_after": 3.35,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.35
+          },
+          "chars_before": 208,
+          "chars_after": 190
+        },
+        {
+          "tool": "business_days",
+          "rewritten": true,
+          "score_before": 3.4,
+          "score_after": 3.35,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.35
+          },
+          "chars_before": 207,
+          "chars_after": 194
+        },
+        {
+          "tool": "contacts_list",
+          "rewritten": true,
+          "score_before": 2.95,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.5
+          },
+          "chars_before": 107,
+          "chars_after": 186
+        },
+        {
+          "tool": "overlap",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 156,
+          "chars_after": 156
+        },
+        {
+          "tool": "dst_changes",
+          "rewritten": false,
+          "score_before": 3.55,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 183,
+          "chars_after": 183
+        },
+        {
+          "tool": "contacts_set",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 114,
+          "chars_after": 196
+        },
+        {
+          "tool": "find_meeting_slots",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 183,
+          "chars_after": 183
+        },
+        {
+          "tool": "convert_time",
+          "rewritten": false,
+          "score_before": 3.65,
+          "score_after": 3.65,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 2,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.65
+          },
+          "chars_before": 219,
+          "chars_after": 219
+        },
+        {
+          "tool": "ics_create",
+          "rewritten": true,
+          "score_before": 3.2,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 140,
+          "chars_after": 190
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        }
+      ]
+    },
+    "work-order": {
+      "tool_count_before": 12,
+      "tool_count_after": 12,
+      "tool_names_identical": true,
+      "mean_before": 3.32,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.15,
+      "mean_after": 3.69,
+      "min_after": 3.3,
+      "min_tool_after": "work_order_list",
+      "definition_score_after": 3.53,
+      "tools": [
+        {
+          "tool": "work_order_list",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.3
+          },
+          "chars_before": 118,
+          "chars_after": 195
+        },
+        {
+          "tool": "work_orders_report",
+          "rewritten": false,
+          "score_before": 3.5,
+          "score_after": 3.5,
+          "dimensions_after": {
+            "P": 4,
+            "U": 2.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 3,
+            "total": 3.5
+          },
+          "chars_before": 176,
+          "chars_after": 176
+        },
+        {
+          "tool": "work_order_delete",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.55,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.55
+          },
+          "chars_before": 190,
+          "chars_after": 213
+        },
+        {
+          "tool": "work_order_get",
+          "rewritten": true,
+          "score_before": 3.15,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 176,
+          "chars_after": 186
+        },
+        {
+          "tool": "completion_report_text",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 185,
+          "chars_after": 185
+        },
+        {
+          "tool": "completion_report_pdf",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.6
+          },
+          "chars_before": 169,
+          "chars_after": 169
+        },
+        {
+          "tool": "work_order_status",
+          "rewritten": true,
+          "score_before": 3.45,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 4,
+            "U": 3.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.75
+          },
+          "chars_before": 166,
+          "chars_after": 188
+        },
+        {
+          "tool": "work_order_create",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2.5,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.8
+          },
+          "chars_before": 168,
+          "chars_after": 168
+        },
+        {
+          "tool": "work_order_invoice_payload",
+          "rewritten": false,
+          "score_before": 3.85,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 3.85
+          },
+          "chars_before": 200,
+          "chars_after": 200
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        },
+        {
+          "tool": "work_order_add_line",
+          "rewritten": true,
+          "score_before": 3.1,
+          "score_after": 3.95,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4.5,
+            "B": 3,
+            "S": 5,
+            "C": 5,
+            "X": 2,
+            "total": 3.95
+          },
+          "chars_before": 161,
+          "chars_after": 199
+        }
+      ]
+    },
+    "zip": {
+      "tool_count_before": 9,
+      "tool_count_after": 9,
+      "tool_names_identical": true,
+      "mean_before": 3.27,
+      "min_before": 2.9,
+      "min_tool_before": "license_status",
+      "definition_score_before": 3.12,
+      "mean_after": 3.72,
+      "min_after": 3.3,
+      "min_tool_after": "zip_bundle_month",
+      "definition_score_after": 3.55,
+      "tools": [
+        {
+          "tool": "zip_bundle_month",
+          "rewritten": false,
+          "score_before": 3.3,
+          "score_after": 3.3,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 2,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.3
+          },
+          "chars_before": 196,
+          "chars_after": 196
+        },
+        {
+          "tool": "zip_create",
+          "rewritten": false,
+          "score_before": 3.6,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 2,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 190,
+          "chars_after": 190
+        },
+        {
+          "tool": "zip_add",
+          "rewritten": true,
+          "score_before": 3.05,
+          "score_after": 3.6,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 3,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.6
+          },
+          "chars_before": 186,
+          "chars_after": 198
+        },
+        {
+          "tool": "zip_list",
+          "rewritten": true,
+          "score_before": 3.05,
+          "score_after": 3.75,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4.5,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 2,
+            "total": 3.75
+          },
+          "chars_before": 209,
+          "chars_after": 207
+        },
+        {
+          "tool": "zip_extract_text",
+          "rewritten": false,
+          "score_before": 3.8,
+          "score_after": 3.8,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 2,
+            "total": 3.8
+          },
+          "chars_before": 200,
+          "chars_after": 200
+        },
+        {
+          "tool": "license_activate",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 3,
+            "C": 5,
+            "X": 3,
+            "total": 3.85
+          },
+          "chars_before": 86,
+          "chars_after": 209
+        },
+        {
+          "tool": "zip_extract",
+          "rewritten": false,
+          "score_before": 3.85,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 3.5,
+            "B": 3,
+            "S": 4,
+            "C": 5,
+            "X": 2,
+            "total": 3.85
+          },
+          "chars_before": 197,
+          "chars_after": 197
+        },
+        {
+          "tool": "zip_history",
+          "rewritten": true,
+          "score_before": 3,
+          "score_after": 3.85,
+          "dimensions_after": {
+            "P": 5,
+            "U": 4,
+            "B": 3,
+            "S": 2,
+            "C": 5,
+            "X": 4,
+            "total": 3.85
+          },
+          "chars_before": 142,
+          "chars_after": 194
+        },
+        {
+          "tool": "license_status",
+          "rewritten": true,
+          "score_before": 2.9,
+          "score_after": 3.9,
+          "dimensions_after": {
+            "P": 4,
+            "U": 4,
+            "B": 4,
+            "S": 2,
+            "C": 5,
+            "X": 5,
+            "total": 3.9
+          },
+          "chars_before": 71,
+          "chars_after": 207
+        }
+      ]
+    }
+  }
+}

@@ -1565,8 +1565,8 @@ function patchQuotesIndex(src) {
     'return json({ quote: q.id, download: out, document: "HTML quote, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour", total: formatMoney(q.total_minor, q.currency), notes: notes.length ? notes : undefined });',
     "quotes quote_pdf result");
   src = must(src,
-    'description: "Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro.",',
-    'description: "Call this tool to render one quote as an A4 print-ready document and return a download link valid for one hour. Same layout as the invoice document, with the validity date and an acceptance block. Pro.",',
+    'description: "Call this tool to write one quote as an A4 PDF and return the path: the invoice layout with the validity date, an acceptance block, and an EXPIRED marking once it has lapsed. Pro.",',
+    'description: "Call this tool to render one quote as an A4 print-ready document and return a download link valid for one hour: the invoice layout with the validity date and an acceptance block. Pro.",',
     "quotes quote_pdf description");
 
   // quote_send_text: the text stays inline (it is meant to be pasted) AND is published.
@@ -1584,8 +1584,8 @@ function patchQuotesIndex(src) {
     '      (businessMissing() ? `\\n\\n---\\n${NO_BUSINESS_NOTE}` : "");',
     "quotes quote_send_text download");
   src = must(src,
-    'description: "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier.",',
-    'description: "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    'description: "Turn a quote into a plain-text summary to paste into an email: the line table, VAT lines, total and validity date, with a sign-off from the shared profile. Free; quote_pdf writes the A4 document.",',
+    'description: "Turn a quote into a plain-text summary to paste into an email: the line table, VAT lines, total and validity date. Also a .txt download link valid one hour. Free; quote_pdf writes the A4 document.",',
     "quotes quote_send_text description");
 
   // The invoice store is a sibling tenant document, not a directory anyone can open.
@@ -2069,8 +2069,9 @@ function collect(a: { paths?: string[]; dir?: string; patterns?: string[]; exclu
     '    ? `${rows.length} archive(s) in the register stored for your token, ${used} this month. Pro: no limit.`\n' +
     '    : `${rows.length} archive(s) in the register stored for your token. ${used} of ${FREE_PER_MONTH} free archives used in ${monthOf()}.`;',
     "zip zip_history register wording");
-  src = must(src, 'description: "List the archives this server created, newest first, with their entry counts and sizes, plus how many of this month\'s free allowance are left.",',
-    'description: "List the archives created for your token, newest first, with their entry counts and sizes, plus how many of this month\'s free allowance are left. The link an archive was handed back on expires after an hour; the row keeps the name.",',
+  src = must(src,
+    'description: "List the archives this server created, newest first, with entry counts, sizes and paths, plus how much of the free 20 a month is used. It reads the register only; use zip_list to see inside one.",',
+    'description: "List the archives created for your token, newest first, with entry counts, sizes and names, plus how much of the free 20 a month is used. Each download link expires after an hour; the row keeps the name.",',
     "zip zip_history description");
 
   src = must(src, "gate.registerTools(server);",
@@ -2154,24 +2155,24 @@ function patchBillingDocsIndex(src) {
     '      purchase_order: p.id, download: out,\n      document: "HTML purchase order, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",',
     "billing-docs purchase_order_pdf result");
   src = must(src,
-    'description: "Call this tool to write the A4 PDF of one credit note and return the file path. The invoice layout, titled CREDIT NOTE and carrying the invoice number it reverses. Pro.",',
-    'description: "Call this tool to render one credit note as an A4 print-ready document and return a download link valid for one hour. The invoice layout, titled CREDIT NOTE and carrying the invoice number it reverses. Pro.",',
+    'description: "Call this tool to write one credit note as an A4 PDF and return the path: the invoice layout titled CREDIT NOTE, with the invoice it reverses and the reason at the foot. Pro; credit_note_text is free.",',
+    'description: "Call this tool to render one credit note as an A4 print-ready document and return a download link valid for one hour: the invoice layout titled CREDIT NOTE, with the invoice it reverses. Pro.",',
     "billing-docs credit_note_pdf description");
   src = must(src,
-    'description: "Call this tool to write the A4 PDF of one purchase order and return the file path. The invoice layout, titled PURCHASE ORDER, with the buyer, the supplier and the delivery date. Pro.",',
-    'description: "Call this tool to render one purchase order as an A4 print-ready document and return a download link valid for one hour. The invoice layout, titled PURCHASE ORDER, with the buyer, the supplier and the delivery date. Pro.",',
+    'description: "Call this tool to write one purchase order as an A4 PDF and return the path: the invoice layout titled PURCHASE ORDER, with the buyer, supplier and delivery date. Pro; purchase_order_text is free.",',
+    'description: "Call this tool to render one purchase order as an A4 print-ready document and return a download link valid for one hour: the invoice layout titled PURCHASE ORDER, with the buyer and supplier. Pro.",',
     "billing-docs purchase_order_pdf description");
 
   // Both text tools: the text stays inline (it is meant to be pasted) AND is published.
   src = patchDocText(src, "credit_note_text", "c.id");
   src = patchDocText(src, "purchase_order_text", "p.id");
   src = mustAll(src,
-    'ready to paste into an email. Free on every tier.",',
-    'ready to paste into an email. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    'Free; credit_note_pdf writes the A4 document.',
+    'Also a .txt download link valid one hour. Free; credit_note_pdf writes the A4 document.',
     "billing-docs text tool descriptions");
   src = must(src,
-    'ready to paste into an email to the supplier. Free on every tier.",',
-    'ready to paste into an email to the supplier. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    'quote the PO number. Free on every tier.',
+    'quote the PO number. Also a .txt download link valid one hour. Free on every tier.',
     "billing-docs purchase_order_text description");
 
   // A response string that named a machine no caller has.
@@ -2279,8 +2280,8 @@ function patchDepositsIndex(src) {
     '    return ok(`${text}${tail}`);',
     "deposits statement text download");
   src = must(src,
-    'ready to paste into an email. Free on every tier.",',
-    'ready to paste into an email. The same text also comes back as a .txt download link valid for one hour. Free on every tier.",',
+    'Pass currency when they have more than one. Free on every tier.',
+    'Pass currency when they have more than one. Also a .txt download link valid one hour. Free on every tier.',
     "deposits statement text description");
 
   // A response string that named a machine no caller has.
@@ -2437,8 +2438,8 @@ function patchStatementIndex(src) {
     '      document: "HTML statement of account, A4 print-to-PDF layout (there is no PDF renderer on Workers), link valid 1 hour",',
     "statement pdf result");
   src = must(src,
-    'description: "Call this tool to write one client\'s A4 statement of account and return the file path. Titled STATEMENT OF ACCOUNT, every movement in date order, closing with the balance outstanding. Pro.",',
-    'description: "Call this tool to render one client\'s A4 statement of account and return a download link valid for one hour. Titled STATEMENT OF ACCOUNT, every movement in date order, closing with the balance outstanding. Pro.",',
+    'description: "Call this tool to write one client\'s A4 statement of account and return the path. Titled STATEMENT OF ACCOUNT, movements in date order, BALANCE OUTSTANDING at the foot, and no VAT re-added. Pro.",',
+    'description: "Call this tool to render one client\'s A4 statement of account and return a download link valid for one hour. Titled STATEMENT OF ACCOUNT, movements in date order, BALANCE OUTSTANDING at the foot. Pro.",',
     "statement pdf description");
 
   // The plain-text statement stays inline (it is meant to be pasted) AND is published.
@@ -2453,8 +2454,8 @@ function patchStatementIndex(src) {
     '    return ok(extra.length ? `${text}\\n\\n---\\n${extra.join("\\n")}` : text);',
     "statement text download");
   src = must(src,
-    'ready to paste into an email.",',
-    'ready to paste into an email. The same text also comes back as a .txt download link valid for one hour.",',
+    'It counts toward the 5 a month;',
+    'It is also a .txt download link valid one hour and counts toward the 5 a month;',
     "statement text description");
 
   // The dunning letter, the same way.
@@ -2469,8 +2470,8 @@ function patchStatementIndex(src) {
     '    return ok(`${text}\\n\\n---\\n${extra.join("\\n")}`);',
     "dunning text download");
   src = must(src,
-    'plus your bank details when the profile has them. Level 3 is Pro.",',
-    'plus your bank details when the profile has them. The letter also comes back as a .txt download link valid for one hour. Level 3 is Pro.",',
+    'Level 3 is Pro.',
+    'The letter is also a .txt download link valid one hour. Level 3 is Pro.',
     "dunning text description");
 
   // One slug rule for both download names, beside the two helpers that already live there.
@@ -2808,8 +2809,8 @@ function patchCatalogueIndex(src) {
     '    if (businessMissing()) notes.push(`No business profile yet, so the list is headed "${PLACEHOLDER_ISSUER}". Run business_set {name, address} in the invoice server once.`);',
     "catalogue text download");
   src = must(src,
-    'then the labour rates. Free.",',
-    'then the labour rates. The same text also comes back as a .txt download link valid for one hour. Free.",',
+    'Free; price_list_pdf writes the A4 page.',
+    'Also a .txt download link valid one hour. Free; price_list_pdf writes the A4 page.',
     "catalogue text description");
 
   // The catalogue://price-list resource reported dataDir(), which hosted is the worker's

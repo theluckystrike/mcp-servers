@@ -453,7 +453,7 @@ server.registerTool("trip_export", {
 
 server.registerTool("perdiem_report", {
   title: "Totals per scheme and month",
-  description: "Total the saved trips per scheme and per calendar month, in each scheme's own currency, with the day count and the trips behind every figure. Pro.",
+  description: "Total saved trips per scheme and calendar month, bucketed by start date: trips, days, subsistence and lodging, each in the scheme's own currency, with the trip ids behind every figure. Pro.",
   inputSchema: {
     from: z.string().optional().describe("YYYY-MM, earliest month by start date"),
     to: z.string().optional().describe("YYYY-MM, latest month by start date"),

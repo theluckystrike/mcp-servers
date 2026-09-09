@@ -259,7 +259,7 @@ server.registerTool("profile_set", {
 
 server.registerTool("profile_get", {
   title: "Show the stored profile",
-  description: "Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job.",
+  description: "Return the stored CV profile exactly as resume_create, cover_letter_create and tailor_to_job will use it, plus the variant read and every stored variant name. Call it before any rewrite.",
   inputSchema: { variant: z.string().optional() },
 }, async (a) => {
   // Never throw across the transport: a corrupt store must arrive as an "Error: ..." answer.
@@ -323,7 +323,7 @@ server.registerTool("resume_create", {
 
 server.registerTool("resume_to_markdown", {
   title: "Resume as markdown",
-  description: "Return the stored profile as markdown: paste it into a form, an email or an ATS box.",
+  description: "Return the stored profile as markdown text inline, ready to paste into a form or an ATS box. Same page-budget trimming as resume_create for max_pages. Nothing is written to disk. Free.",
   inputSchema: { variant: z.string().optional(), target_role: z.string().optional(), max_pages: z.number().int().min(1).max(5).default(2) },
 }, async (a) => {
   try {
@@ -336,7 +336,7 @@ server.registerTool("resume_to_markdown", {
 
 server.registerTool("resume_to_html", {
   title: "Printable resume HTML",
-  description: "Call this tool to write the resume as semantic HTML with a print stylesheet. Returns the output path. Open the file in a browser and print it to PDF.",
+  description: "Call this tool to write the resume as semantic HTML with a print stylesheet and return the path; print it to PDF from a browser. Bullets are trimmed to fit max_pages. Free and unlimited.",
   inputSchema: {
     variant: z.string().optional(), target_role: z.string().optional(),
     max_pages: z.number().int().min(1).max(5).default(2).describe("Bullets are trimmed to fit this many pages against a measured word budget. Default 2."),
@@ -357,7 +357,7 @@ server.registerTool("resume_to_html", {
 
 server.registerTool("resume_read", {
   title: "Read an existing resume .docx",
-  description: "Call this tool to extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Returns the parsed profile, the sections found, and anything unparsed.",
+  description: "Call this tool to read an existing .docx resume into the profile shape, with the sections found and anything unplaced. It saves nothing unless save is true, so review it first. .doc and .rtf are refused.",
   inputSchema: {
     path: z.string().min(1).describe("Path to an existing .docx. Legacy .doc and .rtf are not readable here. Parsed best effort, section by heading."),
     save: z.boolean().default(false).describe("Store the result as the profile. Default false: nothing is saved. Review the result first."),
@@ -389,7 +389,7 @@ server.registerTool("resume_read", {
 
 server.registerTool("cover_letter_create", {
   title: "Write a cover letter .docx",
-  description: "Call this tool to write a one-page cover letter from the stored profile: opening, fit, proof, close. Returns the output path, the word count, and every bracketed prompt left for you to fill in.",
+  description: "Call this tool to write a one-page cover letter .docx from the stored profile and return the path, word count and bracketed prompts. Nothing from the posting is restated as yours. Free: 3 a month.",
   inputSchema: {
     company: z.string().min(1),
     role: z.string().min(1),

@@ -144,7 +144,7 @@ const server = new McpServer(
 
 server.registerTool("business_set", {
   title: "Set your business details",
-  description: "The sender profile printed on every proposal, contract and letter. The SAME profile invoice's business_set writes: it goes to the shared profile, so it also sets your invoice issuer and default VAT.",
+  description: "Store the sender details printed on every proposal, contract and letter, plus the currency, VAT, terms and prefix defaults. It writes the SAME shared profile as the invoice server's business_set.",
   inputSchema: z.object({
     name: z.string().describe("Your business or freelancer name, printed on the letterhead of every proposal, contract and letter"),
     address: z.string().optional().describe("Postal address, newlines allowed"),
@@ -334,7 +334,7 @@ server.registerTool("doc_create", {
 
 server.registerTool("doc_from_markdown", {
   title: "Markdown to Word",
-  description: "Call this tool to turn markdown into a .docx. Returns the file path and a count of the blocks written, by type. Free and unlimited.",
+  description: "Call this tool to turn markdown into a .docx and return the path with a count of blocks by type. Headings, lists, GFM tables and code fences are honoured. An existing file is kept unless overwrite.",
   inputSchema: {
     markdown: z.string().describe("The markdown source. ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables and fenced code blocks as monospace are honoured, as are **bold**, *italic* and `code` inline"),
     out_path: z.string().optional().describe("Where to write the .docx. Defaults to the data directory"),
@@ -412,7 +412,7 @@ server.registerTool("doc_to_html", {
 
 server.registerTool("doc_fill_template", {
   title: "Fill a Word template",
-  description: "Call this tool to replace {{placeholders}} in an existing .docx and write a new file. Returns the new path and which placeholders were replaced, unfilled or ignored. Call with no values to list a template's placeholders.",
+  description: "Call this tool to replace {{placeholders}} in a .docx and write a new file, reporting what was filled, unfilled or ignored. Call it with no values to list them. Free: templates up to 10 placeholders.",
   inputSchema: {
     template_path: z.string().optional().describe("Name of a template uploaded with doc_upload"),
     docx_base64: z.string().optional().describe("The .docx template itself, base64-encoded, instead of uploading it first"),

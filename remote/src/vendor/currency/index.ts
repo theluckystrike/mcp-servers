@@ -80,7 +80,7 @@ function needCurrency(explicit: string | undefined, what: string): { code: strin
 
 server.registerTool("rates_latest", {
   title: "Latest ECB reference rates",
-  description: "Call this tool for the most recent European Central Bank daily reference rates, re-expressed against any base. Returns the rates, the ECB rate date they belong to, and how old the local cache is.",
+  description: "Call this tool for the latest ECB daily reference rates against any base: 1.0812 for USD means 1 base = 1.0812 USD. Crosses go through the euro. Returns the ECB rate date and the cache age.",
   inputSchema: {
     base: code("base").optional().describe("Base currency; defaults to the shared business profile's default_currency, else EUR. A rate of 1.0812 for USD means 1 base = 1.0812 USD. Cross rates go through the euro, the only pair the ECB publishes"),
     quotes: z.array(code("quote")).max(200).optional().describe("Only these currencies, at most 200. Omit for all of them"),
@@ -218,7 +218,7 @@ server.registerTool("convert", {
 
 server.registerTool("convert_many", {
   title: "Convert one amount into several currencies",
-  description: "One amount, one source currency, many targets, all off the same ECB rate date. Each result is rounded to that target's own minor units.",
+  description: "Convert one amount into many currencies off the SAME ECB rate date, each rounded to its own minor units. A target the ECB does not quote is listed as unknown rather than failing the call.",
   inputSchema: {
     amount: AMOUNT,
     from: code("from"),
@@ -403,7 +403,7 @@ server.registerTool("rate_on", {
 
 server.registerTool("currencies_list", {
   title: "Currencies the ECB quotes",
-  description: "Every currency in the ECB daily reference set, with its rate against the euro and the number of decimal places it is rounded to. Anything not on this list cannot be converted here.",
+  description: "Every currency in the ECB daily set with its rate against the euro and its decimal places. This is the whole domain: a code not on this list cannot be converted, quoted or historised here.",
   inputSchema: {},
 }, async () => {
   try {
@@ -427,7 +427,7 @@ function fileInfo(p: string): { path: string; exists: boolean; bytes?: number; m
 
 server.registerTool("cache_status", {
   title: "Rate cache status",
-  description: "What is cached on this machine, how old it is, and when it will next be refreshed. Answer this before trusting a rate on a machine that has been offline.",
+  description: "Report the ECB rate cache here: which dates are held, how old they are and when they refresh. Reads only. Check it before trusting a rate after time offline; a cache that no longer parses is quarantined and named.",
   inputSchema: {},
 }, async () => {
   try {

@@ -403,7 +403,7 @@ server.registerTool("ics_import", {
 
 server.registerTool("calendars_list", {
   title: "List imported calendars",
-  description: "Every calendar imported into this server: its name, where it came from, how many event definitions it holds and when it was imported.",
+  description: "List imported calendars: name, event-definition count, size, source, import time and free-tier use of the 2 slots. It also names stored .ics files with no calendar row. With none it prints the export steps.",
   inputSchema: {},
 }, guard(async () => {
   const db = load();
@@ -505,7 +505,7 @@ server.registerTool("events_search", {
 server.registerTool("free_busy", {
   title: "Busy blocks and free windows",
   description:
-    "Where the time actually went: merged busy blocks from the calendars named, and the gaps in your working hours where nothing is booked. Free/transparent events do not count as busy; whole-day events block the day.",
+    "Merged busy blocks and the free gaps inside your working hours over a day range. Events marked free do not count; whole-day events block the day. Free: 31 days. Use conflicts for overlapping pairs.",
   inputSchema: {
     calendars: z.array(text(MAX_NAME, "calendar")).max(20).optional().describe("Calendar names; default all of them"),
     from: text(20, "from").describe("First day, YYYY-MM-DD"),
@@ -588,7 +588,7 @@ server.registerTool("free_busy", {
 server.registerTool("conflicts", {
   title: "Find double bookings",
   description:
-    "Every pair of events overlapping in time, with minutes they collide. Across all calendars unless one named, so a clashing work/family event is caught. Whole-day events reported separately. Free: 31 days; Pro: any window.",
+    "Find double bookings: every PAIR of timed events that overlap, with the minutes they collide, across all calendars unless you name one. Whole-day events are reported apart. Free: 31 days. free_busy shows gaps.",
   inputSchema: {
     calendar: text(MAX_NAME, "calendar").optional().describe("One calendar name; default every imported calendar"),
     from: text(20, "from").describe("First day, YYYY-MM-DD"),
@@ -627,7 +627,7 @@ server.registerTool("conflicts", {
 
 server.registerTool("next_event", {
   title: "Next event",
-  description: "The next event that has not started yet, with how long until it begins. Looks ahead up to a year.",
+  description: "The first event not yet started, within the next 366 days, across every imported calendar or one you name. Returns title, times in your zone, how long until it starts, location, attendees and its id.",
   inputSchema: {
     calendar: text(MAX_NAME, "calendar").optional().describe("One calendar name; default every imported calendar"),
   },
@@ -906,7 +906,7 @@ server.registerTool("event_to_time_entry", {
 
 server.registerTool("ics_forget", {
   title: "Forget a calendar",
-  description: "Remove one imported calendar and the local copy of its .ics file. Nothing else is touched.",
+  description: "Remove one imported calendar by name and delete this server's local copy of its .ics, freeing a slot. Your own calendar and the source file are untouched. ics_import replaces a name in place.",
   inputSchema: {
     name: text(MAX_NAME, "name").describe("The calendar name from calendars_list"),
   },
