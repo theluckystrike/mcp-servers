@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { randomBytes } from "node:crypto";
-import { closeSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -61,10 +61,32 @@ function slug(s: string): string {
  * second would clobber the first. A path this server derived itself is never allowed to
  * land on an earlier file -- it gets -2, -3, ... instead.
  */
+
+/**
+ * Create a directory and any missing ancestors, without mkdirSync's recursive mode.
+ * mkdirSync(recursive) never returns on a pseudo-filesystem: measured on Linux, mkdir
+ * under /proc answers ENOENT in 0 ms, Node reads that as a missing parent and retries
+ * forever, so a caller-supplied out_path there hung the server permanently. Bounded walk,
+ * non-recursive create, so a repeated ENOENT terminates on the first level.
+ */
+function ensureDirBounded(dir: string): void {
+  if (existsSync(dir)) return;
+  const missing: string[] = [];
+  let cur = dir;
+  for (let i = 0; i < 64 && !existsSync(cur); i++) {
+    missing.push(cur);
+    const parent = dirname(cur);
+    if (parent === cur) break;
+    cur = parent;
+  }
+  if (!existsSync(cur)) throw new Error(`cannot create ${dir}: no existing ancestor directory`);
+  for (const d of missing.reverse()) mkdirSync(d);
+}
+
 function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {
   const p = expandPath(out ?? join(dataDir(), "documents", fallbackName));
   const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;
-  mkdirSync(dirname(withExt), { recursive: true });
+  ensureDirBounded(dirname(withExt));
   if (out === undefined && !overwrite) {
     const stem = withExt.slice(0, withExt.length - ext.length);
     for (let n = 1; n < 1000; n++) {
