@@ -77,6 +77,12 @@ result is a statement about elapsed time as much as about the work.
 Run: `node scripts/traffic.mjs --indexation`, exit 0. The day-slicing and the saturation
 guard are unchanged and did not fire; largest single day slice 4,054 rows of 10,000 (41%).
 
+Two artefact timestamps, deliberately: `data/indexation.json` is stamped `09:00:42Z` (the
+census run) and `data/traffic.json` `09:09:47Z` (a later run that added the user-agent
+profile without spending another 177 URL-Inspection calls). The Cloudflare windows differ by
+nine minutes and no figure below turns on that; where a number appears in both files, the
+`data/traffic.json` value is the one quoted.
+
 ### Crawler URL coverage
 
 Over the **same 126-URL set R2 measured**, so the two rounds are directly comparable
@@ -244,13 +250,19 @@ paths are the *same* endpoints at five times the volume (`POST /mcp/deposits` 32
 `POST /mcp/per-diem` 306, `POST /mcp/billing-docs` 306 …). Probed live:
 
     POST /mcp/invoice  tools/list, no token          → 200, 13,442 bytes, full tool list
-    POST /mcp/invoice  notifications/initialized     → 406 (accept header), 202 when correct
+    POST /mcp/invoice  notifications/initialized     → 202, 0 bytes
+    POST /mcp/invoice  tools/call, no token          → 401, "This endpoint needs a token"
     GET  /mcp/invoice  accept: text/html             → 200 text/html, 4,054 bytes
     GET  /mcp/invoice  no accept header              → 200 application/json, 1,175 bytes
 
-So the metric R2 flagged as immovable did move, but the reading is "the same scanner
-population is now being accepted rather than refused", not "fewer clients are failing". Not
-measurement's call to judge; reported.
+R2 recorded the identical probe returning **401**: "unauthenticated `POST /mcp/invoice`
+(JSON-RPC `tools/list`) → 401". It now returns 200 with the full tool list. So the worker's
+own behaviour changed between the two rounds — `tools/list` and notifications are now open,
+`tools/call` still requires a token — and that, not a change in who is knocking, is what
+moved the 401 column. The scanner population is unchanged; the answer it gets is not.
+
+The metric R2 called immovable therefore did move, and it moved because the surface changed
+underneath it. Not measurement's call to judge whether that is wanted; reported.
 
 **404s are unchanged in shape** — the `/.well-known/*` discovery files that do not exist,
 ~1,250/day. **504s did not recover.** R2 flagged a 5.7x spike on 09-07 concentrated on
@@ -307,7 +319,7 @@ rather than from a hand-written list, so it cannot silently miss one.
 
 | Measure | Result |
 |---|---|
-| Endpoint URLs inspected | **36** |
+| Endpoint URLs inspected | **36** — the 32 server endpoints plus the four worker utility routes the log also shows (`/mcp/connect`, `/mcp/download`, `/mcp/token`, `/mcp/whoami`) |
 | `Submitted and indexed` | 0 |
 | `URL is unknown to Google` | **36 of 36** |
 | Ever crawled by Google | **0** |
@@ -427,7 +439,7 @@ node scripts/traffic.mjs --start 2026-09-08T08:26:26Z --out /tmp/since.json --no
 
 External calls this round: 2 full 141-URL sitemap censuses plus 1 × 36 endpoint URLs
 (URL Inspection, free, 2,000/day quota), ~40 Cloudflare GraphQL queries across four windows,
-16 inbound-link page fetches, 5 GitHub API calls and 8 live probes of the host.
+16 inbound-link page fetches, 5 GitHub API calls and 10 live probes of the host.
 
 **Durable risk, hit for the third session running:** the GSC key at
 `~/Desktop/keys/gsc-sa-key.json` is on iCloud Desktop and goes dataless without warning. See
