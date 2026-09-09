@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-09T11:30:51.780Z",
+  "generated_at": "2026-09-09T11:44:09.684Z",
   "session": {
-    "count": 72,
+    "count": 73,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -290,6 +290,10 @@
       {
         "at": "2026-09-09T11:30:51.618Z",
         "note": "Loop 32: both experiments still open and honestly marked; gallery pagination broken upstream so the watch degrades to partial"
+      },
+      {
+        "at": "2026-09-09T11:44:09.517Z",
+        "note": "Registry visibility: four servers were buried at 52 to 93 of a hundred on their contested token and are now at 5, 7, 3 and 32, measured live on the one channel that delivers people"
       }
     ]
   },
@@ -2413,6 +2417,10 @@
     {
       "file": "docs/RECURRING_AUDIT.md",
       "first_line": "mcp-recurring: adversarial audit and user-value run"
+    },
+    {
+      "file": "docs/REGISTRY_VISIBILITY_R1.md",
+      "first_line": "Registry visibility, acted on rather than deferred (2026-09-09)"
     },
     {
       "file": "docs/RELEASE_CHECK.md",

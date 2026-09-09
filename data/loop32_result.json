@@ -71,5 +71,24 @@
       "read": "the input changed and the score has not been recomputed yet; connectors are documented as re-scoring daily"
     }
   },
-  "housekeeping": "two orphaned background tasks stopped by PID: a poll loop waiting for a second result line that a finished agent would never write, and a container left from my own /proc reproduction"
+  "housekeeping": "two orphaned background tasks stopped by PID: a poll loop waiting for a second result line that a finished agent would never write, and a container left from my own /proc reproduction",
+  "registry_visibility": {
+    "acted": "the namespace lever was measured per server rather than argued about, and applied only where it costs something",
+    "finding": "16 of 20 servers already rank 1 or 2 under io.github on the word a person would type, because the word-rich naming from earlier rounds already won those tokens. The namespace is irrelevant there.",
+    "buried": {
+      "pdf": 93,
+      "invoice": 65,
+      "bank": 62,
+      "quote": 52
+    },
+    "after": {
+      "pdf": 5,
+      "invoice": 32,
+      "bank": 7,
+      "quote": 3
+    },
+    "how": "one extra row per buried server under com.bestremotetools, mcpb-only with no remotes block so it cannot collide with the hosted URL, leaving every io.github row active and untouched",
+    "verified": "each new row points at a release bundle returning 200 and a product page returning 200",
+    "reversible": "one deprecate command per row if unwelcome"
+  }
 }
