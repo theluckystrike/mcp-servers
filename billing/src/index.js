@@ -61,6 +61,45 @@ export const SINGLE_PRODUCT_IDS = Object.keys(PRODUCTS).filter((id) => id !== "b
  */
 export const PRODUCT_ALIASES = { "office-suite": "bundle" };
 
+/**
+ * Servers reachable at https://mcp.zovo.one/mcp/<id> with no install. Derived from the
+ * servers that declare a remotes[] block in their registry manifest, checked by a test so
+ * this list cannot drift from what is actually hosted. office-suite is absent on purpose:
+ * it spawns the others as local child processes, which has no meaning on a worker.
+ */
+export const HOSTED_SERVERS = new Set([
+  "amortization",
+  "asset-register",
+  "bank-statement",
+  "barcode",
+  "billing-docs",
+  "calendar",
+  "cash-book",
+  "catalogue",
+  "change-order",
+  "clauses",
+  "currency",
+  "deposits",
+  "docx",
+  "expense-tracker",
+  "image",
+  "invoice",
+  "kanban",
+  "pdf",
+  "per-diem",
+  "petty-cash",
+  "price-tracker",
+  "quotes",
+  "recurring",
+  "resume",
+  "spreadsheet",
+  "statement-of-account",
+  "time-tracker",
+  "timezone",
+  "work-order",
+  "zip",
+]);
+
 /** Ed25519 public key for MCP registry domain verification (see /.well-known/mcp-registry-auth). */
 /** Tools office-suite exposes, read from the running v0.21.0 bundle over stdio on 2026-09-07
  * (tools/list returned 292 distinct names across 31 children). The README claimed four
@@ -904,7 +943,16 @@ export default {
       const setupLinks = SETUP_SERVERS[id]
         ? CLIENT_ORDER.map((c) => `<a href="/setup/${c}/${id}">${esc(CLIENTS[c].name)}</a>`).join(" &middot; ")
         : null;
-      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}?src=store.s.${esc(id)}">Buy Pro $${soldUsd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a> &middot; <a href="${REPO}/releases/latest">Claude Desktop bundle (.mcpb)</a></p>${pg.html}
+      // Two ways to run this actually work today, and until now the page led with the price
+      // and buried the zero-install one at character 20,676 of 21,905. The registry is the
+      // only channel that measurably delivers people here, and a good share of them arrive
+      // from clients that take a URL and cannot set a header, so the hosted line goes above
+      // the fold with the bundle. HOSTED is empty for office-suite, which spawns local child
+      // processes and has no remote endpoint.
+      const hostedLine = HOSTED_SERVERS.has(id)
+        ? `<p><b>Two ways to run it, both free to start.</b> Paste <code>https://mcp.zovo.one/mcp/${esc(id)}</code> into any client that takes a URL, no install and no account, or open <a href="https://mcp.zovo.one/mcp/connect">mcp.zovo.one/mcp/connect</a> for a ready-made link. Or download <a href="${REPO}/releases/latest">${esc(id)}.mcpb</a> and double-click it in Claude Desktop.</p>`
+        : `<p><b>Install it in one click.</b> Download <a href="${REPO}/releases/latest">${esc(id)}.mcpb</a> and double-click it in Claude Desktop.</p>`;
+      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}?src=store.s.${esc(id)}">Buy Pro $${soldUsd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a></p>${hostedLine}${pg.html}
 ${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry and caveats: ${setupLinks} &middot; <a href="/setup">all clients</a></p>` : ""}
 ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/${esc(id)}">${esc(COMPARE[id].title)}</a> &middot; <a href="/compare">all comparisons</a></p>` : ""}
 <h2>Guides</h2>
