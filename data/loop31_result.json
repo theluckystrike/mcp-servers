@@ -39,5 +39,26 @@
     "why_wrong": "Search Console URL Inspection says those URLs are unknown to Google and have never been crawled, and several requests carry an HTML entity fused into the path, which no browser produces",
     "now": "recorded as automated traffic of unknown origin; the fix stands on its own merits"
   },
-  "coupling_found": "remote/build-vendor.mjs patches about 113 exact strings including tool descriptions, so editing a description breaks the hosted build. Documented and added to the verification steps."
+  "coupling_found": "remote/build-vendor.mjs patches about 113 exact strings including tool descriptions, so editing a description breaks the hosted build. Documented and added to the verification steps.",
+  "glama": {
+    "indexing": "Not steerable. 24 repo fields diffed between the indexed and unindexed mirrors and none discriminates. Glama's own methodology says there is no crawler for open-source servers, yet our record exists unclaimed. Lag is 33 minutes for one repo and about 120 days for another, which is a queue and not a filter.",
+    "connectors": "The real surface, and it is already working: the official registry is mirrored into glama.ai/mcp/connectors with no account, and our presence went from 4 to 25 servers between 09-07 and 09-09 with nobody doing anything. Connectors carry the identical scoring rubric and re-score daily.",
+    "biggest_lever": "license_activate was the minimum-scoring tool on 20 of 20 connectors at mean 2.26 and low 1.4, while license_status scored 4.12. It is registered ONCE in packages/mcp-license and inherited by all 31 servers, and 40 percent of the score is the minimum tool score, so one string capped the fleet. Rewritten to 202 characters, verified accurate against the code.",
+    "defect_found_in_our_own_tool": "The watch script used a badge returning 200 as the listing test. Glama serves a 2,880-byte placeholder badge for repositories that do not exist, byte-identical to one for a made-up repo, so the probe reported 3 of 33 when the true count is 1 of 33. Trusting it would have published a badge for a 404 page."
+  },
+  "repo_signals": {
+    "fixed": [
+      "CI status not available: real workflow added, two green runs on the indexed mirror",
+      "No stable releases found: real tag and release v0.20.0",
+      "1 commit in 12 weeks: squashing removed, the mirror now has real history"
+    ],
+    "ci_paid_for_itself": "It immediately exposed two defects the mirrors had shipped silently: contract tests that read a sibling server's source a mirror never contains, affecting nine servers, and a timezone concurrency test that ran on the free tier because its key came from a skipped test.",
+    "resync_blocked": "A sync builds from the working tree, and 21 servers currently carry uncommitted rebuilt edits while timezone fails its own tests. Syncing now would publish failing code to 31 public repos with a visible red badge. Guards added that refuse a dirty sync."
+  },
+  "pre_existing_defect_found": {
+    "what": "license_status at 534 characters and license_activate at 674 were both over the estate's own 220 ceiling at HEAD",
+    "scope": "registered once and inherited by all 31 servers, so the description contract test was failing on every server before this loop",
+    "how_found": "checked HEAD in a separate git worktree rather than assuming the failures belonged to the agent editing descriptions"
+  },
+  "server_count_fix": "SERVER_COUNT was 30 while 31 servers gate Pro, so every free-tier cap message and bundle link named a stale count. Fixed in both the licence package and the hosted shim."
 }

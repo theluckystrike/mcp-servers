@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-08T09:58:04.381Z",
+  "generated_at": "2026-09-09T07:12:20.265Z",
   "session": {
-    "count": 64,
+    "count": 65,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -258,6 +258,10 @@
       {
         "at": "2026-09-08T09:58:04.181Z",
         "note": "Loop 30 close: namespace claimed and measured, and the registry proved it cannot be A/B tested; hosted endpoints answer discovery; mirror Dockerfiles fixed and verified by a real docker run"
+      },
+      {
+        "at": "2026-09-09T07:12:20.081Z",
+        "note": "Loop 31: found why VS Code's MCP picker excludes us (every one of its 252 entries points at a repo with no subfolder; all 89 of ours use one), one controlled entry published to test it; Glama connectors went 4 to 25 unprompted and one shared tool description capped the whole fleet"
       }
     ]
   },
@@ -2027,6 +2031,10 @@
       "first_line": "Why no Docker image could be built, and what now builds (2026-09-08)"
     },
     {
+      "file": "docs/DOCKER_R2.md",
+      "first_line": "Docker MCP catalog, round 2: one server submitted, verified end to end (2026-09-09)"
+    },
+    {
       "file": "docs/DOCX_AUDIT.md",
       "first_line": "mcp-docx: adversarial audit and user-value run"
     },
@@ -2045,6 +2053,10 @@
     {
       "file": "docs/GLAMA_R1.md",
       "first_line": "Glama round 1 — is the awesome-mcp-servers PR really hard-blocked?"
+    },
+    {
+      "file": "docs/GLAMA_R2.md",
+      "first_line": "Glama round 2 — why 1 of 33, and what to do instead"
     },
     {
       "file": "docs/GSC_RESULT.md",
@@ -2145,6 +2157,10 @@
     {
       "file": "docs/LOOP30_BRIEF.md",
       "first_line": "Loop 30 brief (2026-09-08)"
+    },
+    {
+      "file": "docs/LOOP31_BRIEF.md",
+      "first_line": "Loop 31 brief (2026-09-09)"
     },
     {
       "file": "docs/MARKETPLACES_RESULT.md",
@@ -2451,12 +2467,20 @@
       "first_line": "REMOTE_RESULT.md - hosted streamable-HTTP endpoints (INTEL R1)"
     },
     {
+      "file": "docs/REPO_SIGNALS_R1.md",
+      "first_line": "Repository signals round 1 — Glama Maintenance, and what a mirror is allowed to claim"
+    },
+    {
       "file": "docs/RESUME_AUDIT.md",
       "first_line": "mcp-resume: adversarial audit and user-value run"
     },
     {
       "file": "docs/REVIEW_V5_SONNET.md",
       "first_line": "REVIEW_V5_SONNET"
+    },
+    {
+      "file": "docs/SEARCH_ARRIVALS_R1.md",
+      "first_line": "Traffic arriving at the hosted endpoints, and what it is not (2026-09-09)"
     },
     {
       "file": "docs/SEO_INDEXATION_R1.md",
@@ -2637,6 +2661,10 @@
     {
       "file": "docs/USER_VALUE_R9.md",
       "first_line": "User value audit, round 9 — 2026-09-03"
+    },
+    {
+      "file": "docs/VSCODE_GALLERY_R1.md",
+      "first_line": "Why these servers are absent from VS Code's MCP gallery (2026-09-09)"
     },
     {
       "file": "docs/WEEKLY_2026-09-05.md",

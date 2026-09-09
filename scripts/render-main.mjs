@@ -26,6 +26,7 @@ const dlf = js("data/download_forensics.json", null);
 const chk = js("data/checkout_r1.json", null);
 const base29 = js("data/loop29_baseline.json", null);
 const l30 = js("data/loop30_result.json", null);
+const l31 = js("data/loop31_result.json", null);
 const cov29 = (traffic && traffic.crawler_url_coverage) || {};
 const covN = (n) => (cov29[n] && cov29[n].urls_fetched != null ? cov29[n].urls_fetched : null);
 const uv = js("data/user_value.json", null);
@@ -139,6 +140,15 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="tabs"><button class="on" data-tab="truth">Reality check</button><button data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button><button data-tab="sprints">Sprint log${slog ? ` (${slog.sessions})` : ""}</button><button data-tab="kpi">KPIs${kpi ? ` (${kpi.kpis.filter(k => k.status === "met").length}/${kpi.kpis.length} met)` : ""}</button></div>
 <div class="tab on" id="tab-truth">
 <div class="card"><b>What this panel is for.</b> Every number here was measured on 2026-09-07 by a command named beside it. It exists because the dashboard previously reported 5,105 bundle downloads against a target of 1,000 and read that as met, when those fetches are automated. Read this tab before any other.</div>
+${l31 ? `<div class="card"><b>Loop 31, ${esc(l31.date)}.</b> ${esc(l31.headline)}
+<div class="tw" style="margin-top:10px"><table><tr><th>Hypothesis for why VS Code's picker excludes us</th><th>Tested against its 252 entries</th></tr>
+${Object.entries(l31.vscode_gallery.killed_hypotheses).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="dim">${esc(v)}</td></tr>`).join("")}
+<tr><td><b>repository.subfolder</b></td><td><b>${esc(l31.vscode_gallery.separator)}</b></td></tr></table></div>
+<p class="dim">${esc(l31.vscode_gallery.experiment)} Watch: <code>scripts/vscode-gallery-watch.mjs</code>.</p>
+<p class="dim"><b>Glama.</b> ${esc(l31.glama.connectors)} ${esc(l31.glama.biggest_lever)}</p>
+<p class="dim"><b>Docker.</b> ${esc(l31.docker.pr)} is open and locally validated through all four CI steps, but their queue has not merged anything since 2026-08-21 and carries 1,146 open pull requests, so it is a wait not a lever.</p>
+<p class="dim"><b>Found and fixed on the way.</b> ${esc(l31.pre_existing_defect_found.what)}, ${esc(l31.pre_existing_defect_found.scope)}. ${esc(l31.server_count_fix)} ${esc(l31.hosted_endpoints.defect)}, fixed by content negotiation.</p>
+<p class="dim"><b>Corrected.</b> ${esc(l31.correction.claim)}: ${esc(l31.correction.why_wrong)}</p></div>` : ""}
 ${l30 ? `<div class="card"><b>Loop 30, ${esc(l30.date)}.</b> ${esc(l30.headline)}
 <div class="tw" style="margin-top:10px"><table><tr><th>Token</th><th>com.bestremotetools</th><th>io.github.theluckystrike</th></tr>
 ${Object.entries(l30.namespace.measured_live).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num"><b>${esc(v.new)}</b></td><td class="num">${esc(v.old)}</td></tr>`).join("")}</table></div>
