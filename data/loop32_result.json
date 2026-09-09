@@ -22,7 +22,12 @@
     "crawlers_created_live_stripe_sessions": "A crawler sending a browser-shaped user agent with accept */* had a real cs_live_ checkout session created for it, while python-requests was correctly turned away. That put a Stripe call on the critical path of requests nobody would pay for, which is the likely cause of 691 gateway timeouts on /buy/* in 25 hours, every one with no recognisable browser, and it inflated the human-checkout-sessions figure. A navigation signal is now required of every request.",
     "hosted_path_was_invisible": "The zero-install hosted URL sat at character 20,676 of a 21,905-character product page while the page led with the price. It now sits at character 153 on all 30 hosted servers, driven by a list derived from the manifests behind a drift test that was control-tested."
   },
-  "inbound_links": "18 of 18 still live, including all four placed on 2026-09-08. The two lost earlier are still lost. One remains fragile because it was shipped by a live-mirror deploy against a repo that is behind live.",
+  "inbound_links": {
+    "verified": "21 of 21 live after this round, 18 of 18 survived from before, each matched on its exact href",
+    "new": "3 deep links to specific guides, on 2 sites, every host page confirmed Submitted and indexed by Google before the edit",
+    "finding": "the previous round chose host pages on impressions, which prove a page was served rather than that it is in the index. Two of its four contextual links sit on pages Google has crawled and declined to index, so they pass nothing. Index status is now recorded per link and checked before placement.",
+    "avoided": "the entire git-connected safe set: 12 of 12 sampled article pages there are crawled and not indexed, so only their homepages are indexed and no honest deep placement exists"
+  },
   "honesty_gates": {
     "problem": "billing/ is not an npm workspace, so root npm test never ran its tests. Six assertions were red at HEAD for days, including the gate written to stop the home page restating a stale check count, which had itself gone stale.",
     "resolved": "107 of 107, and the directory is now discovered and run by scripts/release-check.mjs, which walks the tree rather than holding a list so a new test directory cannot be born outside every gate. Control-tested by breaking an assertion and watching the gate catch it.",

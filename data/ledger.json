@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-09T11:54:54.296Z",
+  "generated_at": "2026-09-09T12:09:23.526Z",
   "session": {
-    "count": 74,
+    "count": 75,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -298,6 +298,10 @@
       {
         "at": "2026-09-09T11:54:54.073Z",
         "note": "Registry visibility: 443 places gained across ten contested tokens on the one channel that delivers people; nine of ten now in the first eight results"
+      },
+      {
+        "at": "2026-09-09T12:09:23.356Z",
+        "note": "Loop close: 443 registry places gained across ten contested tokens, three new deep inbound links on indexed pages, and the discovery that impressions are not indexation"
       }
     ]
   },
@@ -2121,6 +2125,10 @@
     {
       "file": "docs/INBOUND_LINKS_R1.md",
       "first_line": "Inbound links round 1 - loop 30 - 2026-09-08"
+    },
+    {
+      "file": "docs/INBOUND_LINKS_R2.md",
+      "first_line": "Inbound links round 2 - loop 33 - 2026-09-09"
     },
     {
       "file": "docs/INSTALL_COPY_R1.md",
