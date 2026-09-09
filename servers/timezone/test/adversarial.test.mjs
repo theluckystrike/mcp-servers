@@ -5,7 +5,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtempSync, readFileSync, existsSync } from "node:fs";
+import { mkdtempSync, readFileSync, existsSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -175,9 +175,19 @@ test("ics escapes commas, semicolons and newlines, and DTSTART is UTC", async (t
 
 test("an unwritable out_path fails cleanly and writes nothing", async (t) => {
   const c = client(); t.after(() => c.close()); await init(c);
-  const r = await c.call("ics_create", { title: "x", start: "2026-09-10 15:00", zone: "Warsaw", duration_minutes: 60, out_path: "/proc/nope/x.ics" });
+  // The path used to be a hardcoded "/proc/nope/x.ics". That is unwritable on macOS,
+  // where there is no /proc at all, and behaved differently on the Linux runner once the
+  // mirrors gained CI: the call did not fail, it hung, and the suite reported "timeout on
+  // tools/call" on a public repository's badge. A path is made unwritable here instead of
+  // assumed to be: a regular file is created and then used as a directory, which fails
+  // with ENOTDIR immediately on every platform this ships to.
+  const box = mkdtempSync(join(tmpdir(), "tz-unwritable-"));
+  const blocker = join(box, "not-a-directory");
+  writeFileSync(blocker, "x");
+  const target = join(blocker, "x.ics");
+  const r = await c.call("ics_create", { title: "x", start: "2026-09-10 15:00", zone: "Warsaw", duration_minutes: 60, out_path: target });
   assert.ok(r.isError, r.text);
-  assert.ok(!existsSync("/proc/nope/x.ics"));
+  assert.ok(!existsSync(target));
 });
 
 test("DST gap and fold, and far dates", async (t) => {
