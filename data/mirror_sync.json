@@ -1,0 +1,821 @@
+{
+  "generated": "2026-09-09T10:32:11+00:00",
+  "agent": "mirror-sync, loop 32",
+  "owner": "theluckystrike",
+  "monorepo_head_at_sync": "8b1372b45078ffa48404195eb653a379e1aa8155",
+  "counts": {
+    "servers": 32,
+    "mirrors": 32,
+    "healthy": 31,
+    "ci_success": 31,
+    "ci_failure": 1,
+    "ci_workflow_present": 32,
+    "dockerfile_self_contained": 32,
+    "dockerfile_monorepo_broken": 0,
+    "tagged": 32,
+    "single_commit": 1,
+    "created_this_round": [
+      "mcp-delivery-schedule"
+    ]
+  },
+  "open_defects": [
+    {
+      "id": "timezone-proc-livelock",
+      "where": [
+        "servers/timezone/src/index.ts:145",
+        "servers/calendar/src/index.ts:86"
+      ],
+      "owner": "not mirror-sync; the server owner",
+      "summary": "mkdirSync(dir,{recursive:true}) never returns on Linux when dir is under /proc: procfs answers mkdir with ENOENT, which Node's recursive mkdir reads as a missing parent and retries forever.",
+      "effect": "mcp-timezone CI is red on 'an unwritable out_path fails cleanly and writes nothing'; any out_path under a pseudo-filesystem hangs the server for good. calendar carries the same code with no test that reaches it.",
+      "evidence": "docker run --rm node:22-alpine node -e ... -> mkdir /proc/nope non-recursive ERR ENOENT 0ms; recursive: no return, killed at 120s",
+      "deliberately_not_hidden": "the mirror could skip the test and go green; that would be concealing real behaviour, which the loop brief forbids"
+    }
+  ],
+  "generator_defects_fixed": [
+    {
+      "step": "5d",
+      "servers": [
+        "amortization",
+        "catalogue",
+        "change-order",
+        "delivery-schedule",
+        "petty-cash",
+        "work-order"
+      ],
+      "summary": "RESULT.md is excluded from a mirror but asserted present in a required-file list"
+    },
+    {
+      "step": "5a2e",
+      "servers": [
+        "delivery-schedule"
+      ],
+      "summary": "a block reading monorepo files through a table of path strings"
+    },
+    {
+      "step": "5b",
+      "servers": [
+        "petty-cash"
+      ],
+      "summary": "a Pro-key helper wrapped by a second local helper; 11 of 44 tests failed"
+    },
+    {
+      "step": "5a2f",
+      "servers": [
+        "invoice"
+      ],
+      "summary": "join(here,'..','..') escapes the mirror root into whatever sits beside the clone"
+    }
+  ],
+  "mirrors": [
+    {
+      "server": "time-tracker",
+      "repo": "mcp-time-tracker",
+      "url": "https://github.com/theluckystrike/mcp-time-tracker",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 55,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "6453eca",
+      "preflight_linux": {
+        "tests": 32,
+        "pass": 15,
+        "fail": 0,
+        "skipped": 17,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "price-tracker",
+      "repo": "mcp-price-tracker",
+      "url": "https://github.com/theluckystrike/mcp-price-tracker",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 55,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "bec122d",
+      "preflight_linux": {
+        "tests": 64,
+        "pass": 59,
+        "fail": 0,
+        "skipped": 5,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "spreadsheet",
+      "repo": "mcp-spreadsheet",
+      "url": "https://github.com/theluckystrike/mcp-spreadsheet",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 58,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "9f68c3b",
+      "preflight_linux": {
+        "tests": 63,
+        "pass": 60,
+        "fail": 0,
+        "skipped": 3,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "invoice",
+      "repo": "mcp-invoice",
+      "url": "https://github.com/theluckystrike/mcp-invoice",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 61,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "036a4be",
+      "preflight_linux": {
+        "tests": 54,
+        "pass": 48,
+        "fail": 0,
+        "skipped": 6,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "expense-tracker",
+      "repo": "mcp-expense-tracker",
+      "url": "https://github.com/theluckystrike/mcp-expense-tracker",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 55,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "5ab7cbd",
+      "preflight_linux": {
+        "tests": 58,
+        "pass": 56,
+        "fail": 0,
+        "skipped": 2,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "currency",
+      "repo": "mcp-currency",
+      "url": "https://github.com/theluckystrike/mcp-currency",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 54,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "a0f79f2",
+      "preflight_linux": {
+        "tests": 45,
+        "pass": 42,
+        "fail": 0,
+        "skipped": 3,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "timezone",
+      "repo": "mcp-timezone",
+      "url": "https://github.com/theluckystrike/mcp-timezone",
+      "commits": 3,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 55,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "failure",
+      "head": "6459243",
+      "preflight_linux": {
+        "tests": 61,
+        "pass": 55,
+        "fail": 1,
+        "skipped": 5,
+        "exit": 1
+      },
+      "healthy": false
+    },
+    {
+      "server": "docx",
+      "repo": "mcp-docx",
+      "url": "https://github.com/theluckystrike/mcp-docx",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 61,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "44ddfee",
+      "preflight_linux": {
+        "tests": 34,
+        "pass": 30,
+        "fail": 0,
+        "skipped": 4,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "resume",
+      "repo": "mcp-resume",
+      "url": "https://github.com/theluckystrike/mcp-resume",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 77,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "fd664e9",
+      "preflight_linux": {
+        "tests": 38,
+        "pass": 34,
+        "fail": 0,
+        "skipped": 4,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "recurring",
+      "repo": "mcp-recurring",
+      "url": "https://github.com/theluckystrike/mcp-recurring",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 69,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "c791b88",
+      "preflight_linux": {
+        "tests": 39,
+        "pass": 36,
+        "fail": 0,
+        "skipped": 3,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "clauses",
+      "repo": "mcp-clauses",
+      "url": "https://github.com/theluckystrike/mcp-clauses",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 77,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "25232ec",
+      "preflight_linux": {
+        "tests": 39,
+        "pass": 32,
+        "fail": 0,
+        "skipped": 7,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "pdf",
+      "repo": "mcp-pdf",
+      "url": "https://github.com/theluckystrike/mcp-pdf",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 53,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "bae0200",
+      "preflight_linux": {
+        "tests": 48,
+        "pass": 13,
+        "fail": 0,
+        "skipped": 35,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "calendar",
+      "repo": "mcp-calendar",
+      "url": "https://github.com/theluckystrike/mcp-calendar",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 55,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "7085618",
+      "preflight_linux": {
+        "tests": 60,
+        "pass": 53,
+        "fail": 0,
+        "skipped": 7,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "kanban",
+      "repo": "mcp-kanban",
+      "url": "https://github.com/theluckystrike/mcp-kanban",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 54,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "d82b6fd",
+      "preflight_linux": {
+        "tests": 29,
+        "pass": 22,
+        "fail": 0,
+        "skipped": 7,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "image",
+      "repo": "mcp-image",
+      "url": "https://github.com/theluckystrike/mcp-image",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 52,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "69c198b",
+      "preflight_linux": {
+        "tests": 45,
+        "pass": 24,
+        "fail": 0,
+        "skipped": 21,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "bank-statement",
+      "repo": "mcp-bank-statement",
+      "url": "https://github.com/theluckystrike/mcp-bank-statement",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 72,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "0398048",
+      "preflight_linux": {
+        "tests": 53,
+        "pass": 39,
+        "fail": 0,
+        "skipped": 14,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "quotes",
+      "repo": "mcp-quotes",
+      "url": "https://github.com/theluckystrike/mcp-quotes",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 71,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "02719b3",
+      "preflight_linux": {
+        "tests": 33,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 27,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "barcode",
+      "repo": "mcp-barcode",
+      "url": "https://github.com/theluckystrike/mcp-barcode",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 56,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "010d1b8",
+      "preflight_linux": {
+        "tests": 48,
+        "pass": 40,
+        "fail": 0,
+        "skipped": 8,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "zip",
+      "repo": "mcp-zip",
+      "url": "https://github.com/theluckystrike/mcp-zip",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 55,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "9b7e4cd",
+      "preflight_linux": {
+        "tests": 45,
+        "pass": 40,
+        "fail": 0,
+        "skipped": 5,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "billing-docs",
+      "repo": "mcp-billing-docs",
+      "url": "https://github.com/theluckystrike/mcp-billing-docs",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 88,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "765cde4",
+      "preflight_linux": {
+        "tests": 50,
+        "pass": 25,
+        "fail": 0,
+        "skipped": 25,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "deposits",
+      "repo": "mcp-deposits",
+      "url": "https://github.com/theluckystrike/mcp-deposits",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 103,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "cd97151",
+      "preflight_linux": {
+        "tests": 40,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 9,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "per-diem",
+      "repo": "mcp-per-diem",
+      "url": "https://github.com/theluckystrike/mcp-per-diem",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 59,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "0c2fdea",
+      "preflight_linux": {
+        "tests": 36,
+        "pass": 26,
+        "fail": 0,
+        "skipped": 10,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "asset-register",
+      "repo": "mcp-asset-register",
+      "url": "https://github.com/theluckystrike/mcp-asset-register",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 57,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "5faf9b8",
+      "preflight_linux": {
+        "tests": 49,
+        "pass": 38,
+        "fail": 0,
+        "skipped": 11,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "statement-of-account",
+      "repo": "mcp-statement-of-account",
+      "url": "https://github.com/theluckystrike/mcp-statement-of-account",
+      "commits": 4,
+      "tags": [
+        "v0.20.0",
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 114,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "3971def",
+      "preflight_linux": {
+        "tests": 47,
+        "pass": 20,
+        "fail": 0,
+        "skipped": 27,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "cash-book",
+      "repo": "mcp-cash-book",
+      "url": "https://github.com/theluckystrike/mcp-cash-book",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 148,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "a267454",
+      "preflight_linux": {
+        "tests": 46,
+        "pass": 29,
+        "fail": 0,
+        "skipped": 17,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "amortization",
+      "repo": "mcp-amortization",
+      "url": "https://github.com/theluckystrike/mcp-amortization",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 104,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "ea125c0",
+      "preflight_linux": {
+        "tests": 49,
+        "pass": 34,
+        "fail": 0,
+        "skipped": 15,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "petty-cash",
+      "repo": "mcp-petty-cash",
+      "url": "https://github.com/theluckystrike/mcp-petty-cash",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 164,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "60f3bd5",
+      "preflight_linux": {
+        "tests": 44,
+        "pass": 13,
+        "fail": 0,
+        "skipped": 31,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "work-order",
+      "repo": "mcp-work-order",
+      "url": "https://github.com/theluckystrike/mcp-work-order",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 100,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "5c7f3d0",
+      "preflight_linux": {
+        "tests": 43,
+        "pass": 29,
+        "fail": 0,
+        "skipped": 14,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "catalogue",
+      "repo": "mcp-catalogue",
+      "url": "https://github.com/theluckystrike/mcp-catalogue",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 100,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "7f72c97",
+      "preflight_linux": {
+        "tests": 43,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 12,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "change-order",
+      "repo": "mcp-change-order",
+      "url": "https://github.com/theluckystrike/mcp-change-order",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 84,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "915cb94",
+      "preflight_linux": {
+        "tests": 49,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 18,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "delivery-schedule",
+      "repo": "mcp-delivery-schedule",
+      "url": "https://github.com/theluckystrike/mcp-delivery-schedule",
+      "commits": 1,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 84,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "5c552d3",
+      "preflight_linux": {
+        "tests": 53,
+        "pass": 35,
+        "fail": 0,
+        "skipped": 18,
+        "exit": 0
+      },
+      "healthy": true
+    },
+    {
+      "server": "office-suite",
+      "repo": "mcp-office-suite",
+      "url": "https://github.com/theluckystrike/mcp-office-suite",
+      "commits": 2,
+      "tags": [
+        "v0.21.0"
+      ],
+      "version": "0.21.0",
+      "tracked_files": 180,
+      "dockerfile": "self-contained",
+      "ci_workflow_present": true,
+      "ci_conclusion": "success",
+      "head": "a15c962",
+      "preflight_linux": {
+        "tests": 5,
+        "pass": 5,
+        "fail": 0,
+        "skipped": 0,
+        "exit": 0
+      },
+      "healthy": true
+    }
+  ],
+  "docker_evidence": {
+    "method": "docker build from a fresh clone of the published mirror",
+    "full_build_to_image": [
+      "mcp-timezone"
+    ],
+    "reached_npm_install_then_network_timeout": [
+      "mcp-delivery-schedule",
+      "mcp-petty-cash"
+    ],
+    "note": "the corrected Dockerfile's COPY steps all succeed (failure is at Dockerfile:9, the npm install); the old broken one failed at line 5 on COPY servers ./servers. The ETIMEDOUT is this machine's container DNS, not the mirror.",
+    "static_check_all_mirrors": "grep -c 'COPY servers' <clone>/Dockerfile == 0 for all 32"
+  }
+}
