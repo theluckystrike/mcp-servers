@@ -1,0 +1,422 @@
+{
+ "round": "CONTENT_R3",
+ "loop": 32,
+ "at": "2026-09-09",
+ "status": "DONE, not deployed",
+ "files_changed": [
+  "billing/src/content.js",
+  "docs/CONTENT_R3.md",
+  "data/content_r3.json"
+ ],
+ "files_not_touched": [
+  "billing/src/index.js",
+  "billing/src/compare.js",
+  "billing/src/setup.js",
+  "billing/src/pages.js",
+  "servers/",
+  "scripts/",
+  "remote/"
+ ],
+ "counts": {
+  "GUIDES_before": 76,
+  "GUIDES_after": 89,
+  "GUIDES_added": 13,
+  "GUIDES_renamed_or_removed": 0,
+  "COMPARE_before": 19,
+  "COMPARE_after": 19,
+  "pages_updated_in_place": 1,
+  "guide_index_description": "Seventy-six guides -> Eighty-nine guides"
+ },
+ "verification": {
+  "node_check": "exit 0",
+  "shape_problems": 0,
+  "duplicate_keys": false,
+  "missing_prior_keys": 0,
+  "internal_guide_links": 19,
+  "broken_internal_guide_links": 0,
+  "billing_test_suite": "107 pass / 0 fail (was 106/107 before the month-end-close fix)"
+ },
+ "humanize": {
+  "scanner": "~/Desktop/humanize/scan.py, readable this session, control-tested first",
+  "control_result": "FAIL, 2 hard (em_dash, tier1 delve+tapestry) and 4 soft on a deliberately bad string",
+  "pages_result": "14 of 14 CLEAN, 0 hard, 0 soft",
+  "second_checker": "brief-list checker over the 9 words the brief names plus em/en dashes",
+  "second_control": "10 flags on the same bad string",
+  "second_pages": "0 flags"
+ },
+ "orchestrator_defects_folded_in": [
+  {
+   "defect": "month-end-close-with-mcp-servers promised run figures and quoted today's bundle",
+   "fix": "thirty-one child servers, 292 tools -> twenty-four child servers, 224 tools",
+   "evidence": "data/user_value_r27.json method block: 24 children, tools_list 224",
+   "result": "billing suite 106/107 -> 107/107"
+  },
+  {
+   "defect": "present-tense bare server counts in live guide and FAQ copy",
+   "fix": "19 mentions rewritten to derived or attributed forms rather than a new number",
+   "note": "dated and attributed figures such as the office-suite 31 servers / 292 tools measured 2026-09-07 were left alone, and the 186-tool mentions were not touched",
+   "also": "7 places in the new pages written the same way, so none of them types a server count"
+  },
+  {
+   "defect": "/guides/one-install-office-suite-bundle is not a live slug",
+   "fix": "repointed to /guides/one-install-office-suite",
+   "broken_links_after": 0
+  }
+ ],
+ "external_calls": {
+  "budget": "~90",
+  "used": "about 96",
+  "registry_api": 45,
+  "vendor_and_spec_pages": 14,
+  "github_api": 9,
+  "own_live_endpoints": 15,
+  "raw_github_source": 3,
+  "paid_apis": 0,
+  "note": "the overrun is 3 re-measurements after a truncated response and one verification fetch of docs.claude.com"
+ },
+ "new_urls": [
+  {
+   "url": "https://mcp.zovo.one/guides/hosted-mcp-server-discovery-without-a-token",
+   "slug": "hosted-mcp-server-discovery-without-a-token",
+   "question": "Which JSON-RPC methods must a hosted MCP server answer with no token before a directory will list it?",
+   "evidence": "Live probes of mcp.zovo.one 2026-09-09 (initialize/tools/list/resources/list/ping 200, tools/call 401, wrong token 401); the method split read from remote/src/index.ts; registry issue 1626 population figures (16,305 endpoints, 25.4% require auth); glama.ai/mcp/methodology 2.2 for the introspection exchange."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/mcp-registry-remote-url-is-unique",
+   "slug": "mcp-registry-remote-url-is-unique",
+   "question": "What happens when two server names declare the same remote URL?",
+   "evidence": "validateNoDuplicateRemoteURLs in internal/service/registry_service.go, quoted from the main branch 2026-09-09; the 400 measured on 2026-09-08 in docs/NAMESPACE_R1.md; third-party issues 1302, 890, 1317, 1204, 1193, 1485; registry FAQ on unpublishing."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/mcp-registry-rank-and-letter-case",
+   "slug": "mcp-registry-rank-and-letter-case",
+   "question": "Does the capitalisation of my GitHub username affect my registry rank?",
+   "evidence": "Live result sets 2026-09-09: names == sorted(names) True and case-insensitive sort False on the search=_ page; consecutive io.github rows on pdf, invoice and late; ILIKE and ORDER BY quoted from internal/database/postgres.go; search=% returns 0 and slack/Slack/SLACK each return 20."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/how-crowded-is-an-mcp-server-name",
+   "slug": "how-crowded-is-an-mcp-server-name",
+   "question": "How many MCP servers already have my word in the name?",
+   "evidence": "29 tokens measured against the live registry 2026-09-09 at limit=100&version=latest, every result set byte-order sorted, full table in this file."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/server-json-field-reference",
+   "slug": "server-json-field-reference",
+   "question": "Which server.json fields exist and which limits fail a publish?",
+   "evidence": "The published schema at static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json, fetched and parsed 2026-09-09; the registry versioning, remote-servers and FAQ pages read the same day; registry issue 1579."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/mcp-tool-errors-versus-protocol-errors",
+   "slug": "mcp-tool-errors-versus-protocol-errors",
+   "question": "When a tool fails, do I return a JSON-RPC error or a result with isError?",
+   "evidence": "The tools section of the MCP specification revision 2026-07-28, fetched 2026-09-09; both example payloads are the specification's own."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/mcp-structured-tool-output",
+   "slug": "mcp-structured-tool-output",
+   "question": "What do outputSchema and structuredContent oblige a server to do?",
+   "evidence": "Same specification page: servers MUST conform, clients SHOULD validate, SHOULD also return serialized JSON as text, 2020-12 default, the no-parameter inputSchema forms, resultType and input_required."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/naming-mcp-tools",
+   "slug": "naming-mcp-tools",
+   "question": "What are the rules for an MCP tool name, and what happens when two servers use the same one?",
+   "evidence": "Specification 2026-07-28 tool-name rules and the disambiguation guidance including serverInfo not being unique; tool counts measured on seven live endpoints 2026-09-09; glama.ai/mcp/methodology 1.6; the 2KB description truncation verified on docs.claude.com 2026-09-09."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/mcp-stateful-tools-and-handles",
+   "slug": "mcp-stateful-tools-and-handles",
+   "question": "MCP has no session, so how do two tool calls share state?",
+   "evidence": "The non-normative stateful-tools section of specification 2026-07-28; the streamable HTTP page's own list of what revision 2026-07-28 removed, fetched 2026-09-09; this project's hosted token form."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/x-mcp-header-tool-parameters",
+   "slug": "x-mcp-header-tool-parameters",
+   "question": "What is x-mcp-header and what happens if I get it wrong?",
+   "evidence": "Specification 2026-07-28 tools page: the Mcp-Param-{name} mapping, the six MUST constraints, the client MUST exclude an invalid tool from tools/list, and the warning against mirroring secrets."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/how-a-directory-scores-your-mcp-server",
+   "slug": "how-a-directory-scores-your-mcp-server",
+   "question": "How is an MCP server scored by a directory, and which tool decides the score?",
+   "evidence": "glama.ai/mcp/methodology sections 1.3 and 1.6 read 2026-09-09; the formula and tiers from a listed server's score page as recorded in data/glama_r2.json; license_activate the minimum tool on 20 of 20 connectors, n=20 min 1.4 max 3.1 mean 2.26 against 4.12 for license_status, scored 2026-09-08."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/what-ai-crawlers-fetch-that-googlebot-does-not",
+   "slug": "what-ai-crawlers-fetch-that-googlebot-does-not",
+   "question": "What do AI crawlers fetch that Googlebot does not?",
+   "evidence": "Edge request logs for mcp.zovo.one, 165 hours ending 2026-09-09, joined to the 141-URL sitemap; 16 named crawlers; Google index status from one URL Inspection API call per URL the same day. Both in data/indexation.json."
+  },
+  {
+   "url": "https://mcp.zovo.one/guides/search-console-url-inspection-coverage-is-unstable",
+   "slug": "search-console-url-inspection-coverage-is-unstable",
+   "question": "Why does the URL Inspection API give a different coverage state for the same URL?",
+   "evidence": "Two full 141-URL censuses 15 minutes apart on 2026-09-09 with the same key and property: 82 of 141 changed coverageState, 76 in one direction and 6 in the other, while in_google_index and ever_crawled_by_google were identical. Recorded in data/indexation.json."
+  }
+ ],
+ "token_census_2026_09_09": {
+  "method": "GET /v0/servers?search=<token>&limit=100&version=latest, one call per token",
+  "tokens": 29,
+  "all_result_sets_byte_order_sorted": true,
+  "rank_one_row_is_an_ai_namespace": 19,
+  "rows": {
+   "github": {
+    "servers": 100,
+    "page_full": true,
+    "first_ai": 1,
+    "first_com": 4,
+    "first_io_github": 10
+   },
+   "slack": {
+    "servers": 20,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 3,
+    "first_io_github": 5
+   },
+   "postgres": {
+    "servers": 34,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": null,
+    "first_io_github": 15
+   },
+   "database": {
+    "servers": 25,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 5,
+    "first_io_github": 12
+   },
+   "search": {
+    "servers": 100,
+    "page_full": true,
+    "first_ai": 1,
+    "first_com": 46,
+    "first_io_github": null
+   },
+   "browser": {
+    "servers": 57,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 5,
+    "first_io_github": 14
+   },
+   "filesystem": {
+    "servers": 11,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": 1,
+    "first_io_github": 2
+   },
+   "memory": {
+    "servers": 100,
+    "page_full": true,
+    "first_ai": 1,
+    "first_com": 13,
+    "first_io_github": 40
+   },
+   "notion": {
+    "servers": 12,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 2,
+    "first_io_github": 4
+   },
+   "jira": {
+    "servers": 16,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 2,
+    "first_io_github": 3
+   },
+   "weather": {
+    "servers": 79,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 3,
+    "first_io_github": 15
+   },
+   "docker": {
+    "servers": 21,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": null,
+    "first_io_github": 3
+   },
+   "aws": {
+    "servers": 49,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 5,
+    "first_io_github": 10
+   },
+   "kubernetes": {
+    "servers": 2,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": null,
+    "first_io_github": 1
+   },
+   "stripe": {
+    "servers": 13,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": 1,
+    "first_io_github": 3
+   },
+   "calendar": {
+    "servers": 38,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 7,
+    "first_io_github": 12
+   },
+   "email": {
+    "servers": 93,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 5,
+    "first_io_github": 27
+   },
+   "agent": {
+    "servers": 100,
+    "page_full": true,
+    "first_ai": 1,
+    "first_com": null,
+    "first_io_github": null
+   },
+   "crypto": {
+    "servers": 100,
+    "page_full": true,
+    "first_ai": 1,
+    "first_com": 9,
+    "first_io_github": 29
+   },
+   "sqlite": {
+    "servers": 9,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": null,
+    "first_io_github": 3
+   },
+   "figma": {
+    "servers": 22,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": 1,
+    "first_io_github": 3
+   },
+   "linear": {
+    "servers": 8,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": null,
+    "first_io_github": 2
+   },
+   "schedule": {
+    "servers": 22,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": 1,
+    "first_io_github": 8
+   },
+   "delivery": {
+    "servers": 18,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": 1,
+    "first_io_github": 4
+   },
+   "milestone": {
+    "servers": 3,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": 1,
+    "first_io_github": 2
+   },
+   "late": {
+    "servers": 84,
+    "page_full": false,
+    "first_ai": 1,
+    "first_com": 4,
+    "first_io_github": 22
+   },
+   "invoice": {
+    "servers": 73,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": 32,
+    "first_io_github": 46
+   },
+   "pdf": {
+    "servers": 100,
+    "page_full": true,
+    "first_ai": 1,
+    "first_com": 4,
+    "first_io_github": 28
+   },
+   "excel": {
+    "servers": 11,
+    "page_full": false,
+    "first_ai": null,
+    "first_com": 2,
+    "first_io_github": 4
+   }
+  }
+ },
+ "hosted_endpoint_probe_2026_09_09": {
+  "host": "https://mcp.zovo.one",
+  "unauthenticated": {
+   "initialize": 200,
+   "tools/list": 200,
+   "resources/list": 200,
+   "ping": 200,
+   "tools/call": 401,
+   "tools/list with a wrong bearer token": 401
+  },
+  "tool_counts_unauthenticated": {
+   "invoice": 13,
+   "spreadsheet": 13,
+   "zip": 12,
+   "catalogue": 12,
+   "timezone": 11,
+   "barcode": 10,
+   "statement-of-account": 8
+  }
+ },
+ "registry_source_facts": {
+  "search_filter": "server_name ILIKE $n ESCAPE '\\\\' with backslash, percent and underscore escaped",
+  "ordering": "ORDER BY server_name, version",
+  "remote_url_uniqueness": "validateNoDuplicateRemoteURLs rejects a remotes[].url held by a different server name",
+  "read_from": "modelcontextprotocol/registry main branch, 2026-09-09"
+ },
+ "schema_facts_2025_12_11": {
+  "required": [
+   "name",
+   "description",
+   "version"
+  ],
+  "description_maxLength": 100,
+  "name_pattern": "^[a-zA-Z0-9.-]+/[a-zA-Z0-9._-]+$",
+  "name_len": [
+   3,
+   200
+  ],
+  "version_maxLength": 255,
+  "package_required": [
+   "registryType",
+   "identifier",
+   "transport"
+  ],
+  "fileSha256": "required for mcpb packages",
+  "meta_publisher_provided_limit_bytes": 4096
+ },
+ "updated_urls": [
+  {
+   "url": "https://mcp.zovo.one/guides/how-mcp-registry-search-works",
+   "what_changed": "Added a section reading the behaviour out of the registry's own source (ILIKE on server_name, ORDER BY server_name), the case-insensitive matching and case-sensitive ordering split, the wildcard escaping, and the one-URL-one-name constraint that stops the experiment being repeated on a hosted server. Existing rank numbers re-measured 2026-09-09 and unchanged: 3 against 15 of 22 on schedule, 2 against 17 of 18 on delivery.",
+   "renamed": false
+  }
+ ]
+}

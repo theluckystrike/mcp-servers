@@ -3369,8 +3369,8 @@ a retainer sitting on account, a bank export nobody has looked at, two receipts 
 laptop that has to go on the fixed asset register, a trip allowance, and at the end of it a statement
 you can send the client without checking it twice. Every one of those steps lives in a different
 place, and the reason month end takes a day is that the places disagree.</p>
-<p>This guide is one month, closed in nine sentences, through the <a href="/guides/one-install-office-suite-bundle">office-suite
-bundle</a>: one stdio server, thirty-one child servers, 292 tools on a single connection, one shared
+<p>This guide is one month, closed in nine sentences, through the <a href="/guides/one-install-office-suite">office-suite
+bundle</a>: one stdio server, twenty-four child servers, 224 tools on a single connection, one shared
 business profile. It is not a worked example written afterwards. Every prompt below is quoted exactly
 as it was typed, and every figure is the figure that run produced, read back off the stores on disk.
 The full measurement is in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md">the round 27 audit</a>:
@@ -3904,7 +3904,7 @@ hours did I put into Acme, grouped by task". The free tier gives unlimited timer
 reads clamped to the last seven days and hourly rates on two projects, which is the split recorded in
 <code>data/facts.json</code>. There are 11 tools on that server, counted from
 <code>data/tools.json</code>.</p>
-<p>Per-server Cursor pages with the exact block for each of the 30 servers are under
+<p>Per-server Cursor pages with the exact block for each server in this catalogue are under
 <a href="/setup/cursor">setup/cursor</a>.</p>
 ${FOOT}`,
     faq: [
@@ -3918,7 +3918,7 @@ ${FOOT}`,
     title: "Which MCP servers work with no network at all",
     description: "A per-server list of what makes a network call and what does not, why that matters for client data, and how to verify the claim yourself rather than take it on trust.",
     html: `<h1>MCP servers that work with no network at all</h1>
-<p>Of the 30 servers in this repository, 28 make no network call of any kind. Two do, and both only
+<p>Two servers in this repository make a network call. Every other one makes none, and the two only do
 because the thing they answer lives on someone else's server: the currency server fetches European
 Central Bank reference rates, and the price tracker fetches the shop page whose price you asked about.
 Everything else reads and writes files on your machine and talks to nothing.</p>
@@ -4873,7 +4873,7 @@ Check which one you are running before debugging the config.</p>
 exports, and answers with a safe expression language that runs no eval. Free covers read, query, stats
 and find on files up to 5,000 rows, and writes up to 500 rows with a refusal rather than a truncated
 file above that. From <code>data/facts.json</code>.</p>
-<p>Per-server VS Code pages with the exact block for each of the 30 servers are under
+<p>Per-server VS Code pages with the exact block for each server in this catalogue are under
 <a href="/setup/vscode">setup/vscode</a>. The client facts on this page were read off the VS Code
 documentation on 2026-09-02 and are recorded with their source URL in
 <code>billing/src/setup.js</code>.</p>
@@ -4968,7 +4968,7 @@ who sees the data.</p>
 <tr><td>Install</td><td>.mcpb bundle, or clone and build</td><td>Nothing. Paste a URL.</td></tr>
 <tr><td>Reads your files</td><td>Yes, any path you name</td><td>No. It cannot see your disk.</td></tr>
 <tr><td>Data lives</td><td>~/.local/share/mcp-servers/, plain JSON</td><td>On the server, keyed to your token</td></tr>
-<tr><td>Network calls</td><td>None, for 28 of the 30 servers</td><td>Every call, by definition</td></tr>
+<tr><td>Network calls</td><td>None, apart from the two named above</td><td>Every call, by definition</td></tr>
 <tr><td>Rate limit</td><td>None</td><td>600 calls an hour on the free anonymous token</td></tr>
 <tr><td>Retention</td><td>Until you delete the folder</td><td>30 days, refreshed for another 30 on every write</td></tr>
 <tr><td>Works in claude.ai</td><td>No</td><td>Yes</td></tr>
@@ -5022,11 +5022,11 @@ ${FOOT}`,
       { q: "Is the hosted version slower?", a: "It adds a network round trip per tool call, which is real but small next to the model's own latency. A scored nine-step run against the local stdio bundle took 17 tool calls in 118.6 seconds, recorded in docs/USER_VALUE_R27.md, and almost all of that time was the model rather than the servers." },
       { q: "What happens after 30 days?", a: "The data space expires. Every write refreshes it for another 30 days, so an actively used token does not lapse. A token you used once in March is gone by May, deliberately: the alternative is holding strangers' invoice data forever." },
       { q: "Can I move data from hosted to local?", a: "Use the export tools. expense_export, statement_export, export_csv on the time tracker and ledger_export_csv all produce text you can carry across. There is no store-level migration, and the export path is the honest one because it produces something you can read and check." },
-      { q: "Which is more private?", a: "Local, without qualification. 28 of the 30 servers make no network call at all, and you can prove it by running one in a network namespace with no interfaces and watching every tool still answer. A hosted server necessarily sees what you send it, and no policy statement changes that." },
+      { q: "Which is more private?", a: "Local, without qualification. Every server here except two makes no network call at all, and you can prove it by running one in a network namespace with no interfaces and watching every tool still answer. A hosted server necessarily sees what you send it, and no policy statement changes that." },
     ],
   },
   "free-mcp-servers-for-freelancers": {
-    title: "What these 30 MCP servers actually do on the free tier",
+    title: "What these MCP servers actually do on the free tier",
     description: "The free tier per server, with the specific limit rather than the word free, and the five tools that are unlimited on every tier because metering them would be dishonest.",
     html: `<h1>What the free tier really gives you</h1>
 <p>Free tier is a word people use to mean anything from a full product to a countdown. Here is the
@@ -5102,7 +5102,7 @@ ${FOOT}`,
     faq: [
       { q: "Is there a trial that expires?", a: "No. There is no clock anywhere in these servers. The free tier is the free tier in month one and in month twelve, and an install with no key never stops working." },
       { q: "What happens when I hit a cap?", a: "The call is refused by name with the reason and the number. Nothing already created becomes unreachable: reads, lists, exports of existing records and every free tool keep working. The cap is on adding, not on reaching what you have." },
-      { q: "Do the servers phone home to count usage?", a: "No. There is no network call in 28 of the 30 servers at all, and the two that make one fetch European Central Bank rates or a product page you named. Counters are local files. Deleting the data folder resets a monthly counter, which is a consequence of not having a server and is stated rather than hidden." },
+      { q: "Do the servers phone home to count usage?", a: "No. Every server but two makes no network call at all, and the two that do fetch European Central Bank rates or a product page you named. Counters are local files. Deleting the data folder resets a monthly counter, which is a consequence of not having a server and is stated rather than hidden." },
       { q: "Can I try Pro before buying?", a: "There is no trial key. What there is instead is a free tier designed so the thing each server exists to answer is free: aging, trial balance, loan schedules, per diem calculation and the petty cash reconciliation are all unmetered on purpose. You can judge the answers before you pay for the documents." },
     ],
   },
@@ -5351,7 +5351,7 @@ python3 -c 'import json,sys;json.load(open(sys.argv[1]))' ~/.cursor/mcp.json</co
 most clients respond to an unparseable config by loading no servers at all rather than by telling you
 which line is wrong.</p>
 
-<p>This table exists because it is the data the 30 MCP servers on this site had to get right to ship a
+<p>This table exists because it is the data the MCP servers on this site had to get right to ship a
 per-client install page for each one. The per-client pages are under
 <a href="/setup/claude-desktop">setup</a>, and the source rows with their caveats live in
 <code>billing/src/setup.js</code> in the repository.</p>
@@ -5468,7 +5468,7 @@ tail -f ~/Library/Logs/Claude/mcp.log     # Claude Desktop, macOS</code></pre>
 server.</p>
 
 <p>Every symptom above came from the vendor's own documentation, read on 2026-09-08, or from the
-stdio transport binding in the MCP specification revision 2026-07-28. The 30 servers published from
+stdio transport binding in the MCP specification revision 2026-07-28. The servers published from
 this repository hit most of them at least once while being packaged for six clients; the per-client
 caveats are recorded with their source URLs in <code>billing/src/setup.js</code>.</p>
 ${FOOT}`,
@@ -5481,7 +5481,7 @@ ${FOOT}`,
   },
   "how-mcp-registry-search-works": {
     title: "How MCP registry search actually works, measured",
-    description: "The official registry matches names only and sorts strict ASCII on the whole namespace and name. Your publisher namespace decides your rank, not your server's name. Measured live on 2026-09-08.",
+    description: "The official registry matches names only and sorts strict ASCII on the whole namespace and name. Your publisher namespace decides your rank, not your server's name. Measured live 2026-09-08 and re-measured 2026-09-09.",
     html: `<h1>Registry search sorts on your namespace, not your name</h1>
 <p>The official MCP registry's <code>search=</code> parameter matches the server <em>name</em> only,
 and returns matches in strict ASCII order on the whole <code>namespace/local-name</code> string. Your
@@ -5507,6 +5507,28 @@ copy. On 2026-09-08 that returned <code>True</code> for every result set checked
 <pre><code>names == sorted(names)   # True on schedule, delivery, and 6,000 paginated rows</code></pre>
 <p>Strict ASCII means uppercase sorts before lowercase, and digits before letters. It also means the
 comparison never reaches your local name until the namespaces are equal.</p>
+
+<h2>The same thing, read out of the registry's source</h2>
+<p>The behaviour is not an accident of the data. From
+<code>internal/database/postgres.go</code> in <code>modelcontextprotocol/registry</code>, read
+2026-09-09, the match and the order are two separate lines:</p>
+<pre><code>conditions = append(conditions, fmt.Sprintf("server_name ILIKE $%d ESCAPE '\\\\'", argIndex))
+...
+ORDER BY server_name, version</code></pre>
+<p>Three facts follow, and each was checked against the live API on 2026-09-09.</p>
+<ul>
+<li><strong>Matching is case-insensitive.</strong> <code>ILIKE</code> folds case, and
+<code>search=slack</code>, <code>search=Slack</code> and <code>search=SLACK</code> each returned the
+same 20 servers.</li>
+<li><strong>Ordering is not.</strong> <code>ORDER BY</code> does no folding, so a capitalised
+publisher handle sorts ahead of every lowercase one in the same namespace family. That is worth
+about twenty places and it has <a href="/guides/mcp-registry-rank-and-letter-case">its own
+page</a>.</li>
+<li><strong>Wildcards are escaped.</strong> The source escapes backslash, percent and underscore
+before wrapping the term in <code>%...%</code>, with a comment naming the exact case it closes.
+<code>search=%</code> returned 0 servers and <code>search=_</code> returned only names containing a
+literal underscore.</li>
+</ul>
 
 <h2>What that implies for a namespace</h2>
 <p>Reversed-domain namespaces cluster by their first label. In a 6,000-row pagination on 2026-09-08 the
@@ -5547,9 +5569,20 @@ count's clothes.</p>
 9 of 22 unique visitors in fourteen days, measured in <code>data/traffic.json</code>. That is a real
 channel and a small one. Ranking third instead of fifteenth multiplies a small number.</p>
 
+<h2>The constraint that stops you testing this on a hosted server</h2>
+<p>The comparison above worked because that one server ships a bundle and a stdio package and no
+hosted endpoint. Trying to repeat it on a hosted server fails: the registry binds each
+<code>remotes[].url</code> to exactly one server name and refuses a second name pointing at the same
+URL. So for a hosted fleet there is no A/B test, only a migration.
+<a href="/guides/mcp-registry-remote-url-is-unique">The rule, its source and the way around it</a> are
+a page of their own.</p>
+
 <p>Everything above was measured against the live API on 2026-09-08 from this repository, which
-publishes 30 MCP servers and used both login methods while working it out. The full working, including
-the ranks the same servers took under six candidate namespaces, is in <code>docs/NAMESPACE_R1.md</code>.</p>
+publishes its own catalogue of MCP servers and used both login methods while working it out. The two rank rows were
+re-measured on 2026-09-09 and returned the same numbers: 3 against 15 of 22 servers on
+<code>schedule</code>, 2 against 17 of 18 on <code>delivery</code>. The full working, including the
+ranks the same servers took under six candidate namespaces, is in
+<code>docs/NAMESPACE_R1.md</code>.</p>
 ${FOOT}`,
     faq: [
       { q: "Does the registry search descriptions or keywords?", a: "Not through search=. It matches the name. A server whose description is a perfect answer to a query and whose name does not contain the token does not come back at all, which is why the local name still matters even though the namespace outranks it." },
@@ -5641,8 +5674,8 @@ you were handed, not a total, so a count of 100 with a cursor set is a floor. An
 endpoint: <code>/v0/stats</code> returns 404 and <code>/v0/health</code> returns only a status and a
 GitHub client id, both checked on 2026-09-08.</p>
 
-<p>This count was run from a repository that publishes 30 MCP servers and has 85 active rows in the
-same registry, so the motive was practical rather than academic: knowing whether a name is contested is
+<p>This count was run from a repository that publishes its own catalogue of MCP servers and had 85
+active rows in the same registry when it was measured, so the motive was practical rather than academic: knowing whether a name is contested is
 one API call, and knowing what the whole list looks like turned out to be sixty.</p>
 ${FOOT}`,
     faq: [
@@ -5738,7 +5771,7 @@ hosted servers over streamable HTTP, whatever the tutorials still show.</p>
 
 <h2>You can do both</h2>
 <p>97 servers in that sample declare both, which is the honest answer for most tools: the same handlers
-behind two entry points. This repository's 30 servers run as stdio subprocesses from a bundle and as
+behind two entry points. The servers in this repository run as stdio subprocesses from a bundle and as
 streamable HTTP endpoints from one worker, off the same code. The only part that genuinely differs is
 where the data lives, and that is a product decision rather than a transport one.</p>
 ${FOOT}`,
@@ -5816,7 +5849,7 @@ envelope that does not exist.</p>
 
 <h2>Why this bites server authors more than client authors</h2>
 <p>A client ships as one product and can decide which version it speaks. A published server is called
-by clients of several eras at once. This repository's 30 servers are reachable from Claude Desktop,
+by clients of several eras at once. The servers in this repository are reachable from Claude Desktop,
 Claude Code, Cursor, VS Code, Windsurf, Cline and the claude.ai connector form, and those do not move in
 step. The compatibility matrix in the specification's backward compatibility section is the thing to
 read before you assume the version you developed against is the one arriving.</p>
@@ -5905,7 +5938,7 @@ docs.claude.com/en/docs/claude-code/mcp, Cursor from cursor.com/docs/context/mcp
 code.visualstudio.com/docs/copilot/customization/mcp-servers, Windsurf from
 docs.devin.ai/desktop/cascade/mcp, Cline from docs.cline.bot/mcp/mcp-overview. All read 2026-09-08. A
 blank cell means the vendor does not document the field, not that it is known to be unsupported.</p>
-<p>The 30 MCP servers published from this repository ship a per-client config block for each of these,
+<p>The MCP servers published from this repository ship a per-client config block for each of these,
 generated from one table so a field cannot drift on one page and not the others; the source rows are in
 <code>billing/src/setup.js</code>.</p>
 ${FOOT}`,
@@ -5993,7 +6026,7 @@ that need interactive input.</p>
 <p>It shows the definition Claude Code resolved and runs a health check against it. If the entry that
 comes back is not the one you edited, you edited a lower-precedence copy, and no amount of editing that
 file will change anything.</p>
-<p>This page was written while packaging 30 MCP servers for six clients; the per-client scope facts and
+<p>This page was written while packaging this catalogue of MCP servers for six clients; the per-client scope facts and
 their source URLs are recorded in <code>billing/src/setup.js</code>, read from each vendor's own
 documentation on 2026-09-08.</p>
 ${FOOT}`,
@@ -6058,7 +6091,7 @@ speaks to a server directly, so it separates "the server is wrong" from "the cli
 without involving a client at all. That is the same separation the manual launch above achieves, with a
 UI instead of a pasted JSON line.</p>
 
-<p>These paths were collected while shipping 30 MCP servers to six clients, where the per-server stderr
+<p>These paths were collected while shipping every server in this catalogue to six clients, where the per-server stderr
 file is what turns a silent absence into a one-line answer. The per-client install pages are under
 <a href="/setup/claude-desktop">setup</a>.</p>
 ${FOOT}`,
@@ -6122,7 +6155,7 @@ dataset, your model, your rate limit. Also when you expect to fix bugs weekly, b
 is asking every user to download 7 MB again.</p>
 <p><strong>Both</strong> is common and cheap if the handlers are transport-agnostic. In a paginated
 sample of the official registry on 2026-09-08, 97 of 2,211 servers declared both a remote endpoint and
-an installable package. The 30 servers here do both from one codebase; what differs is where the data
+an installable package. The servers here do both from one codebase; what differs is where the data
 sits, not the tool implementations.</p>
 
 <h2>The path most tutorials show, and why it is the weakest of the three</h2>
@@ -6267,7 +6300,7 @@ data and the more of it stops working when you do. For a local server that reads
 offline key is the only one of the three that is honest.</p>
 
 <h2>An offline key, concretely</h2>
-<p>A key is a signed statement, not a secret. The format used across the 30 servers here is
+<p>A key is a signed statement, not a secret. The format used across every server here is
 <code>MCPL1.&lt;payload&gt;.&lt;signature&gt;</code>, base64url, Ed25519. The payload names the product
 and an optional expiry:</p>
 <pre><code>{ "v": 1, "p": "invoice", "id": "&lt;license id&gt;", "iat": 1757000000 }
@@ -6313,7 +6346,7 @@ bundle source, because no cap message carried a bundle link at all. The cheaper 
 prose with nothing to click. That defect is invisible without the tag and obvious with it.</p>
 
 <h2>The honest result</h2>
-<p>Pricing here is one-time and lifetime, 19 dollars for a single server and 39 for all 30. Every step
+<p>Pricing here is one-time and lifetime, 19 dollars for a single server and 39 for the whole catalogue. Every step
 of the funnel has been verified working from a stranger's position: the free tier does real work, the
 refusal explains itself, the link redirects to a live Stripe checkout. Sales to date: zero. The
 constraint was never the gate. It was that 22 people reached the project in fourteen days.</p>
@@ -6480,7 +6513,7 @@ forbids it.</li>
 <p>Sources: the streamable HTTP transport binding of specification revision 2026-07-28 for the Origin,
 binding and authentication requirements; each vendor's own documentation, read 2026-09-08, for the
 consent gates. The archive figures are measured in <code>servers/zip/README.md</code> in this
-repository, whose 30 servers run 1,518 tests with 1,507 passing and 0 failing at v0.20.0, recorded in
+repository, whose servers ran 1,518 tests with 1,507 passing and 0 failing at v0.20.0, recorded in
 <code>data/tests.json</code>.</p>
 ${FOOT}`,
     faq: [
@@ -6490,9 +6523,1121 @@ ${FOOT}`,
       { q: "Should I autoApprove read-only tools?", a: "It is the defensible case, and it is worth being sure they are read-only first. A tool that fetches a URL is not read-only in the sense that matters, because the argument decides where the request goes." },
     ],
   },
+  "hosted-mcp-server-discovery-without-a-token": {
+    title: "Why a directory says your hosted MCP server is not responding",
+    description: "A bare POST with no credentials must answer initialize and tools/list, or every catalogue that health-checks by URL records your server as dead. The exact method boundary, with live probes.",
+    html: `<h1>Answer initialize and tools/list without a token, or no directory can list you</h1>
+<p>If a hosted MCP endpoint returns 401 to an unauthenticated <code>POST</code>, catalogues that check
+the URL they list will record the server as down. It does not matter that the server is healthy and
+that a real client with a token works perfectly. The prober never gets a token.</p>
+<p>That is what happened here. Four connectors were published with a red dot and the title
+<em>"Server is not responding"</em>, and a second directory's remote-server entry could not be filed at
+all, because <code>POST https://mcp.zovo.one/mcp/&lt;name&gt;</code> answered:</p>
+<pre><code>HTTP 401
+www-authenticate: Bearer realm="mcp.zovo.one", error="invalid_token"
+{"error":"unauthorized","message":"This endpoint needs a token..."}</code></pre>
+<p>The endpoints were up the whole time. They simply refused to say so.</p>
+
+<h2>The boundary that works</h2>
+<p>Split the JSON-RPC methods into the ones that cannot touch a user's data and the ones that can.
+Answer the first group with no credential. Keep the second group behind auth.</p>
+<table>
+<thead><tr><th>Method</th><th>Needs a token?</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td><code>initialize</code></td><td>No</td><td>Negotiates protocol version and capabilities. Reads nothing.</td></tr>
+<tr><td><code>notifications/initialized</code></td><td>No</td><td>An acknowledgement with no payload.</td></tr>
+<tr><td><code>tools/list</code></td><td>No</td><td>Returns schemas that are already public in your registry manifest.</td></tr>
+<tr><td><code>prompts/list</code>, <code>resources/list</code>, <code>resources/templates/list</code></td><td>No</td><td>Declarations, not content.</td></tr>
+<tr><td><code>ping</code></td><td>No</td><td>Liveness.</td></tr>
+<tr><td><code>tools/call</code></td><td>Yes</td><td>Runs code against a tenant's stored data.</td></tr>
+<tr><td><code>resources/read</code></td><td>Yes</td><td>Returns content, which is the thing you are protecting.</td></tr>
+</tbody>
+</table>
+<p>Measured against the live endpoint on 2026-09-09, with no <code>Authorization</code> header and no
+token in the path:</p>
+<pre><code>POST /mcp/invoice  {"method":"initialize"}       -> 200  serverInfo mcp-invoice 0.21.0
+POST /mcp/invoice  {"method":"tools/list"}        -> 200  13 tools
+POST /mcp/invoice  {"method":"resources/list"}    -> 200  resource declarations
+POST /mcp/invoice  {"method":"ping"}              -> 200  {}
+POST /mcp/invoice  {"method":"tools/call"}        -> 401  unauthorized
+Authorization: Bearer &lt;wrong token&gt;, tools/list  -> 401  unknown_token</code></pre>
+<p>The last line is the one that keeps this honest. A credential that is present but wrong is still
+rejected. The unauthenticated path is only reachable when no credential was offered at all, so a bad
+token is never quietly downgraded to anonymous discovery.</p>
+
+<h2>Why this is not a security loosening</h2>
+<p>Three properties make the open half safe, and each is checkable rather than asserted.</p>
+<ol>
+<li>Those methods cannot read or write a tenant document. In this implementation they are served
+with an empty file map, so there is no tenant to leak from.</li>
+<li>The tool schemas they return are already published. They sit in the <code>server.json</code>
+manifest in the official registry and on the product pages of this site.</li>
+<li>The open path gets its own rate-limit bucket, keyed on client IP, set here at 120 calls an hour.
+That is more than any health check needs and far less than a free tier.</li>
+</ol>
+
+<h2>How common the mistake is</h2>
+<p>An independent measurement filed on the registry's issue tracker as
+<a href="https://github.com/modelcontextprotocol/registry/issues/1626">modelcontextprotocol/registry#1626</a>
+on 2026-09-07 probed every listed entry that declares a network endpoint. Of 16,305 endpoints:</p>
+<table>
+<thead><tr><th>Outcome of a bare <code>initialize</code> then <code>tools/list</code></th><th>Count</th><th>Share</th></tr></thead>
+<tbody>
+<tr><td>Answered <code>tools/list</code> unauthenticated</td><td>9,532</td><td>58.5%</td></tr>
+<tr><td>Required authentication</td><td>4,135</td><td>25.4%</td></tr>
+<tr><td>Answered HTTP but not MCP</td><td>1,401</td><td>8.6%</td></tr>
+<tr><td>Unreachable</td><td>1,043</td><td>6.4%</td></tr>
+<tr><td>Timed out</td><td>103</td><td>0.6%</td></tr>
+<tr><td>Returned a JSON-RPC error</td><td>91</td><td>0.6%</td></tr>
+</tbody>
+</table>
+<p>So a quarter of listed remote servers refuse the handshake a prober sends, and the majority answer
+it. If you are in the quarter, a directory has no way to tell you apart from the 6.4 percent that
+are genuinely gone.</p>
+
+<h2>What a directory actually sends</h2>
+<p>Glama's published methodology, section 2.2, read 2026-09-09, describes its connector introspection
+as <em>"tools/list, resources/list, prompts/list, and full schema capture"</em>, run on a continuous
+schedule rather than once at ingest. That is the same list as the table above, which is not a
+coincidence: those are the methods that describe a server rather than use it.</p>
+<p>After the change here, the same connector listing carried zero occurrences of "not responding" and
+every health dot was green, with 25 connectors scored instead of 4.</p>
+
+<h2>If you cannot open the handshake</h2>
+<p>Some servers genuinely cannot. A gateway that resolves a tenant before it can enumerate tools has
+nothing truthful to say to an anonymous caller. Two options remain. Publish a stdio package or a
+bundle alongside the remote entry, so a catalogue that cannot reach the URL can still list the
+installable form. Or serve a fixed, tenant-independent tool list to unauthenticated callers and let
+the real list arrive after auth, which is honest as long as the anonymous list is a subset.</p>
+
+<p>Sources: the live endpoint at <code>mcp.zovo.one</code>, probed 2026-09-09 with the exact requests
+shown; the method split and rate limit read from <code>remote/src/index.ts</code> in this repository;
+registry issue 1626 for the population figures; glama.ai/mcp/methodology section 2.2 for the
+introspection exchange. This project runs a hosted MCP endpoint for every server it
+publishes and hit this defect on all of them.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does answering tools/list unauthenticated leak anything?", a: "Only the tool schemas, and those are already public if you are listed anywhere: the registry manifest, your documentation and any directory entry all carry them. What must stay closed is tools/call and resources/read, because those touch stored data rather than describing it." },
+      { q: "What about OAuth-protected servers?", a: "The specification's authorization flow expects a 401 with a WWW-Authenticate header pointing at the resource metadata, and a client that understands OAuth will follow it. A directory health prober usually does not. If you need OAuth, publish an installable package too, so a catalogue has something it can verify." },
+      { q: "Will a rate limit on the open path be enough?", a: "Per-IP is the right key because there is no identity to use. 120 an hour was chosen here as more than any prober needs and less than a usable free tier. The list is served from module scope with no storage read, so the cost of a request on this path is small." },
+      { q: "How do I test this the way a directory does?", a: "Send one POST with Content-Type application/json, Accept including both application/json and text/event-stream, and a body of {\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}. No Authorization header. If you get anything other than 200 with a tools array, a directory sees your server as broken." },
+      { q: "Is a GET on the endpoint enough?", a: "No, and that was the trap here. GET returned 200 with a description page while POST returned 401, so a shallow check passed and the real handshake failed. Probe with the method a client would actually send." },
+    ],
+  },
+  "mcp-registry-remote-url-is-unique": {
+    title: "The MCP registry binds one remote URL to one server name",
+    description: "Publishing a remotes[].url that another server already claims returns 400. The rule is in the registry's source, it counts inactive rows, and it means a hosted server cannot be renamed or A/B tested.",
+    html: `<h1>One remote URL belongs to exactly one server name, forever</h1>
+<p>The official MCP registry refuses a <code>server.json</code> whose <code>remotes[].url</code> is
+already claimed by a server with a different name. The publish fails with 400 and this message:</p>
+<pre><code>400: remote URL https://mcp.zovo.one/mcp/pdf is already used by server
+     io.github.theluckystrike/pdf-merge-split-stamp-extract-pages</code></pre>
+<p>That is not documented on the registry's publishing pages. It is in the code. From
+<code>internal/service/registry_service.go</code> in <code>modelcontextprotocol/registry</code>,
+function <code>validateNoDuplicateRemoteURLs</code>, read 2026-09-09:</p>
+<pre><code>for _, remote := range serverDetail.Remotes {
+    filter := &amp;database.ServerFilter{RemoteURL: &amp;remote.URL}
+    conflictingServers, _, err := s.db.ListServers(ctx, tx, filter, "", 1000)
+    ...
+    for _, conflictingServer := range conflictingServers {
+        if conflictingServer.Server.Name != serverDetail.Name {
+            return fmt.Errorf("remote URL %s is already used by server %s", ...)
+        }
+    }
+}</code></pre>
+<p>The check runs inside the publish transaction, on every remote in the submission, against every
+row in the table.</p>
+
+<h2>The four consequences that bite</h2>
+<ol>
+<li><strong>A hosted server cannot be renamed.</strong> The registry has no rename operation, so a new
+name means a new publish, and the new publish carries the same URL. It is refused.</li>
+<li><strong>You cannot run a namespace experiment on a hosted server.</strong> Publishing the same
+endpoint under a second namespace to compare their search ranks is exactly what the rule forbids.
+Any move is a migration, and reversing it is another one.</li>
+<li><strong>Inactive rows still block.</strong> The filter is on the URL alone. Open issues
+<a href="https://github.com/modelcontextprotocol/registry/issues/1317">#1317</a> and
+<a href="https://github.com/modelcontextprotocol/registry/issues/1193">#1193</a> both ask for
+deleted and deprecated servers to be excluded, which tells you they are not excluded today.</li>
+<li><strong>Nothing can be unpublished.</strong> The registry FAQ answers "Can I delete/unpublish my
+server?" with "Currently, no", pointing at issue 104. So a URL claimed by a name you regret stays
+claimed.</li>
+</ol>
+
+<h2>It is not just a rule for one project</h2>
+<p>Other publishers hit it and filed:</p>
+<ul>
+<li><a href="https://github.com/modelcontextprotocol/registry/issues/1302">#1302</a>, 2026-05-21:
+"Conflicting entry blocks io.github.piers-fawkes/fodda from claiming mcp.fodda.ai/sse remote".</li>
+<li><a href="https://github.com/modelcontextprotocol/registry/issues/890">#890</a>, 2026-01-14:
+"Constraint remote URL uniqueness checks to latest versions [Can't publish Docfork MCP to
+registry]", now closed.</li>
+<li><a href="https://github.com/modelcontextprotocol/registry/issues/1204">#1204</a>: "tests: treat
+only deleted servers as reusable for remote URL validation".</li>
+</ul>
+
+<h2>What to do before your first hosted publish</h2>
+<p>Give every server its own URL path and treat that path as permanent. A gateway at
+<code>https://example.com/mcp</code> serving several logical servers can list only one of them,
+because they would all declare the same URL. Paths of the form
+<code>https://example.com/mcp/&lt;server&gt;</code> give each name something of its own to claim.</p>
+<p>If you have already collided, one escape exists and it is legitimate rather than a trick: add a
+second, distinct endpoint path that answers the same server, and publish the new name against that
+path. Both rows then work, both are honest about where they point, and neither is a duplicate of the
+other's URL. Nothing in the schema requires two names to share an endpoint.</p>
+<p>The other case that works is a server with no <code>remotes</code> block at all. A stdio package
+or a downloadable bundle has no URL to collide with, so the same code can be published under two
+names for comparison. That is how the namespace comparison behind
+<a href="/guides/how-mcp-registry-search-works">how registry search works</a> was run at all: the one
+server in this catalogue that ships without a hosted endpoint.</p>
+
+<h2>What the check does not do</h2>
+<p>It compares URLs, not hosts. Two servers on the same domain with different paths are fine. It also
+does not follow redirects or resolve DNS, so a URL that no longer works still holds its claim. An
+independent survey filed as
+<a href="https://github.com/modelcontextprotocol/registry/issues/1485">#1485</a> on 2026-07-28 found
+80 remote hosts that no longer resolve, still listed.</p>
+
+<p>Sources: the registry's own source at <code>internal/service/registry_service.go</code> and
+<code>internal/database/postgres.go</code>, read from the main branch on 2026-09-09; the publish
+failure above, produced by <code>mcp-publisher publish</code> against the live registry on
+2026-09-08 and recorded in <code>docs/NAMESPACE_R1.md</code> in this repository; the registry FAQ at
+modelcontextprotocol.io/registry/faq; the linked issues.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does the rule apply to sse remotes too?", a: "Yes. The loop runs over every entry in the remotes array whatever its type, so a streamable-http URL and an sse URL are each claimed independently. Publishing both types at different URLs under one name is fine, because the name comparison only fires when the conflicting row has a different name." },
+      { q: "Can I republish the same name with the same URL?", a: "Yes. The conflict check skips rows whose name matches the one being published, so new versions of your own server are unaffected. What it stops is a second name pointing at a URL you already used." },
+      { q: "What if the other server is mine?", a: "It makes no difference. The comparison is on the server name string, not on the publisher or the authenticated namespace, so two names you both own still collide." },
+      { q: "Is this ever going to change?", a: "Open issues ask for deleted and deprecated rows to be excluded from the check, which would help anyone reusing a URL after retiring a name. Nothing suggests the basic one-URL-one-name rule is going away, and designing around it costs nothing." },
+      { q: "Why does the registry enforce this at all?", a: "A directory that resolved one endpoint to several names would let anyone attach their own name and description to somebody else's running service. Binding the URL to the first name that claimed it makes the listing mean something." },
+    ],
+  },
+  "mcp-registry-rank-and-letter-case": {
+    title: "Capital letters in your GitHub username change your MCP registry rank",
+    description: "Registry search orders by the whole server name in byte order, so digits sort before capitals and capitals before lowercase. Measured: on one token the first 14 io.github rows all start with a digit or a capital.",
+    html: `<h1>A capital letter is worth about 20 places in registry search</h1>
+<p>The official MCP registry orders search results by the server name string in byte order. ASCII puts
+digits (0x30 to 0x39) before uppercase letters (0x41 to 0x5A) before lowercase (0x61 to 0x7A). Since
+<code>io.github.&lt;login&gt;</code> is derived from your GitHub username, the capitalisation of that
+username decides where you land among everyone else who logged in the same way.</p>
+<p>Measured on the token <code>pdf</code>, 2026-09-09, one call, <code>version=latest</code>. These are
+consecutive rows:</p>
+<pre><code>28  io.github.263311487-ux/imprint-pdf
+29  io.github.AmerSarhan/pdffr-mcp
+30  io.github.AryanBV/pdf-toolkit-mcp
+...
+39  io.github.GuruPDF/gurupdf-mcp
+40  io.github.JoyTruepath/truepath-pdf-mcp
+41  io.github.LifeAbundantly/akd-vaultpdf
+   (lowercase logins begin below this point)</code></pre>
+<p>Every digit-leading login precedes every capitalised one, and every capitalised one precedes every
+lowercase one. The same shape on <code>invoice</code>: <code>io.github.CSOAI-ORG</code> at 46,
+<code>io.github.Wxt-ai</code> at 49 to 51, and the first lowercase login,
+<code>io.github.amehiny</code>, at 52.</p>
+
+<h2>The proof that it is byte order and not alphabetical order</h2>
+<p>Pull a result set that contains both cases and compare the returned order to two different sorts.
+Run against <code>search=_</code>, which returns names containing a literal underscore, on
+2026-09-09:</p>
+<pre><code>names == sorted(names)                  -> True     # byte order, case sensitive
+names == sorted(names, key=str.lower)   -> False    # alphabetical, case insensitive</code></pre>
+<p>31 of those 100 names contained a capital. Inside one namespace the ordering reads
+<code>ai.smithery/STUzhy-py_execute_mcp</code> then <code>ai.smithery/arjunkmrm-scrapermcp_el</code>,
+which no case-insensitive sort would produce.</p>
+<p>The registry's source says the same thing. From
+<code>internal/database/postgres.go</code> in <code>modelcontextprotocol/registry</code>, read
+2026-09-09, the search filter and the ordering are two separate lines:</p>
+<pre><code>conditions = append(conditions, fmt.Sprintf("server_name ILIKE $%d ESCAPE '\\\\'", argIndex))
+...
+ORDER BY server_name, version</code></pre>
+
+<h2>Matching is case-insensitive, ordering is not</h2>
+<p><code>ILIKE</code> is Postgres's case-insensitive match, so the query text's case is irrelevant.
+Measured 2026-09-09: <code>search=slack</code>, <code>search=Slack</code> and <code>search=SLACK</code>
+each return the same 20 servers. The <code>ORDER BY</code> has no such folding. So you cannot search
+your way around it, and you cannot spell your way into a better rank either, because the only lever
+is the bytes of the name itself.</p>
+
+<h2>The wildcards are escaped, so there is no shortcut</h2>
+<p>The same source escapes backslash, percent and underscore before wrapping the term in
+<code>%...%</code>. Verified live on 2026-09-09: <code>search=%</code> returns 0 servers, and
+<code>search=_</code> returns names that literally contain an underscore rather than everything. A
+comment in the code names the exact attack this closes, a single-character search expanding into a
+wildcard.</p>
+
+<h2>What this is worth, and what it is not</h2>
+<p>On <code>invoice</code>, 73 servers match. <code>io.github.CSOAI-ORG</code> sits at 46 and
+<code>io.github.theluckystrike</code> at 63. Nothing separates them except letter case, and 17 places
+on a 73-row list is the difference between the visible part and the scroll. On <code>pdf</code> the
+first <code>io.github</code> row is 28th and ours is 90th.</p>
+<p>Two honest limits. First, the effect is inside your namespace prefix: every
+<code>ai.</code> and <code>com.</code> namespace still sorts ahead of every <code>io.</code> one,
+whatever your username looks like, and on 19 of 29 tokens measured this day the rank-one row was an
+<code>ai.</code> namespace. Second, you cannot retrofit it. Version metadata is immutable, there is no
+unpublish, and a differently cased login is a different namespace, so it means new rows competing
+with your old ones in the same sorted list.</p>
+<p>The place this is actionable is before your first publish. If you are choosing between a personal
+GitHub account and an organisation, or you have not published yet, the case of that handle is a free
+variable that nobody tells you is load-bearing.</p>
+
+<h2>Reproduce it</h2>
+<pre><code>curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=pdf&amp;limit=100&amp;version=latest' \\
+  | python3 -c 'import json,sys; [print(i,r["server"]["name"]) for i,r in enumerate(json.load(sys.stdin)["servers"],1)]'</code></pre>
+
+<p>Sources: the live registry API, 29 tokens measured 2026-09-09, every result set confirmed to equal
+its own byte-order sort; <code>internal/database/postgres.go</code> on the registry's main branch for
+the <code>ILIKE</code> filter, the escaping and the <code>ORDER BY</code>. Ranks quoted are the
+positions in a single <code>version=latest</code> page of 100.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can I change the case of my GitHub username?", a: "GitHub lets you rename an account, and case is part of a rename. That gives you a new registry namespace, not an edited one: existing rows keep the old name because published metadata is immutable and nothing can be unpublished. You would be adding rows that compete with your own." },
+      { q: "Does this apply to the local name after the slash?", a: "Yes, by the same rule, but it only matters once the namespaces are equal. The comparison walks left to right, so every character of the namespace is decided before the first character of your server name is looked at." },
+      { q: "Would a name starting with a digit sort first?", a: "Within a namespace, yes, and the pdf result set shows one doing it. The name pattern allows digits, so io.github.263311487-ux sorts ahead of every letter. Nobody appears to be doing this deliberately." },
+      { q: "Is byte order guaranteed, or is it a database collation that might change?", a: "The SQL says ORDER BY server_name and the collation is the database's. What is measurable from outside is that every result set tested on 2026-09-09 matched a byte-order sort exactly and none matched a case-insensitive one. Treat it as measured behaviour rather than a promise." },
+      { q: "Does search look at the description?", a: "No. The filter is on server_name only. A server whose description answers a query perfectly does not appear unless the token is in its name." },
+    ],
+  },
+  "how-crowded-is-an-mcp-server-name": {
+    title: "How many MCP servers already have your word in the name",
+    description: "A census of 29 name tokens in the official registry, measured 2026-09-09: how many servers each one returns and where the first io.github row lands. One curl tells you before you commit to a name.",
+    html: `<h1>Count the competition for a name before you pick it</h1>
+<p>Registry search matches a substring of the server name and returns matches sorted by that name.
+So the useful question about a candidate name is not whether it is taken, it is how many rows already
+match the word you want and where your namespace would land among them. Both are one API call.</p>
+<pre><code>curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=&lt;token&gt;&amp;limit=100&amp;version=latest' \\
+  | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["metadata"]["count"])'</code></pre>
+<p><code>version=latest</code> matters. Without it the endpoint returns one row per published version,
+not one per server, and the count is meaningless. One publisher in this registry holds 739 version
+rows for a single server.</p>
+
+<h2>29 tokens, measured 2026-09-09</h2>
+<p>"Servers" is the count at <code>version=latest</code>; a plus sign means the page of 100 was full
+and the true count is higher. The last three columns are the position of the first row in each
+namespace family, which is what your own rank would be bounded by.</p>
+<table>
+<thead><tr><th>Token</th><th>Servers</th><th>First <code>ai.</code></th><th>First <code>com.</code></th><th>First <code>io.github.</code></th></tr></thead>
+<tbody>
+<tr><td>github</td><td>100+</td><td>1</td><td>4</td><td>10</td></tr>
+<tr><td>search</td><td>100+</td><td>1</td><td>46</td><td>none on page 1</td></tr>
+<tr><td>memory</td><td>100+</td><td>1</td><td>13</td><td>40</td></tr>
+<tr><td>agent</td><td>100+</td><td>1</td><td>none on page 1</td><td>none on page 1</td></tr>
+<tr><td>crypto</td><td>100+</td><td>1</td><td>9</td><td>29</td></tr>
+<tr><td>pdf</td><td>100+</td><td>1</td><td>4</td><td>28</td></tr>
+<tr><td>email</td><td>93</td><td>1</td><td>5</td><td>27</td></tr>
+<tr><td>late</td><td>84</td><td>1</td><td>4</td><td>22</td></tr>
+<tr><td>weather</td><td>79</td><td>1</td><td>3</td><td>15</td></tr>
+<tr><td>invoice</td><td>73</td><td>none</td><td>32</td><td>46</td></tr>
+<tr><td>browser</td><td>57</td><td>1</td><td>5</td><td>14</td></tr>
+<tr><td>aws</td><td>49</td><td>1</td><td>5</td><td>10</td></tr>
+<tr><td>calendar</td><td>38</td><td>1</td><td>7</td><td>12</td></tr>
+<tr><td>postgres</td><td>34</td><td>1</td><td>none</td><td>15</td></tr>
+<tr><td>database</td><td>25</td><td>1</td><td>5</td><td>12</td></tr>
+<tr><td>figma</td><td>22</td><td>none</td><td>1</td><td>3</td></tr>
+<tr><td>schedule</td><td>22</td><td>none</td><td>1</td><td>8</td></tr>
+<tr><td>docker</td><td>21</td><td>1</td><td>none</td><td>3</td></tr>
+<tr><td>slack</td><td>20</td><td>1</td><td>3</td><td>5</td></tr>
+<tr><td>delivery</td><td>18</td><td>none</td><td>1</td><td>4</td></tr>
+<tr><td>jira</td><td>16</td><td>1</td><td>2</td><td>3</td></tr>
+<tr><td>stripe</td><td>13</td><td>none</td><td>1</td><td>3</td></tr>
+<tr><td>notion</td><td>12</td><td>1</td><td>2</td><td>4</td></tr>
+<tr><td>filesystem</td><td>11</td><td>none</td><td>1</td><td>2</td></tr>
+<tr><td>excel</td><td>11</td><td>none</td><td>2</td><td>4</td></tr>
+<tr><td>sqlite</td><td>9</td><td>1</td><td>none</td><td>3</td></tr>
+<tr><td>linear</td><td>8</td><td>none</td><td>none</td><td>2</td></tr>
+<tr><td>milestone</td><td>3</td><td>none</td><td>1</td><td>2</td></tr>
+<tr><td>kubernetes</td><td>2</td><td>none</td><td>none</td><td>1</td></tr>
+</tbody>
+</table>
+
+<h2>Three things the table says</h2>
+<p><strong>The spread is two orders of magnitude.</strong> <code>kubernetes</code> returns 2 servers
+and <code>github</code> fills a page of 100 with the cursor still set. A word that feels equally
+obvious to you can be uncontested or hopeless, and there is no way to guess which.</p>
+<p><strong>An <code>ai.</code> namespace holds first place on 19 of the 29 tokens.</strong> That is
+not a quality signal, it is the alphabet. Anything published under <code>ai.something</code> sorts
+before every <code>com.</code>, <code>dev.</code> and <code>io.</code> row that matches the same
+word.</p>
+<p><strong>The crowded tokens are crowded at the top.</strong> On <code>search</code> the first
+<code>com.</code> row is 46th and no <code>io.github</code> row reaches page one at all. Choosing a
+narrow word is the only move available to a publisher who cannot change namespace, and it works: on
+<code>milestone</code>, 3 servers match and everybody is visible.</p>
+
+<h2>How to use this when naming</h2>
+<ol>
+<li>Write down the two or three words a person would actually type. Not your product name, the
+noun for the job.</li>
+<li>Run the count on each. Under about 20 matches, everyone on the list is reachable. Over 100,
+assume your rank is decided by your namespace and nothing else.</li>
+<li>Prefer a compound that keeps the common word and adds a rare one, so you match the broad query
+and rank inside the narrow one. A name containing both <code>delivery</code> and
+<code>milestone</code> appears in an 18-row list and a 3-row list.</li>
+<li>Check the whole list, not the count. Two of the tokens above return a handful of servers that
+are all abandoned, which the count alone will not tell you.</li>
+</ol>
+<p>What no naming choice can fix is the namespace prefix, which is compared before your first
+character. That is measured separately in
+<a href="/guides/how-mcp-registry-search-works">how MCP registry search actually works</a>.</p>
+
+<p>Source: the live registry API at <code>registry.modelcontextprotocol.io/v0/servers</code>, one
+call per token at <code>limit=100&amp;version=latest</code> on 2026-09-09. Every result set was
+checked against its own byte-order sort and every one matched. This project publishes its own catalogue of
+MCP servers and chose their names before measuring any of this, which is how the gaps in the table
+were found.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why does the count stop at 100?", a: "That is the maximum page size. When metadata carries a next cursor the real count is higher, and you have to paginate to learn it. For naming purposes a full page already answers the question: the token is crowded." },
+      { q: "Does a low count mean the word is available?", a: "It means few names contain it. Nothing stops someone else publishing the same word tomorrow, and nothing reserves it for you. The count is a measurement of a moment, which is why it is worth rerunning before you commit." },
+      { q: "Should I put mcp or server in the name?", a: "Both are near-universal, so they add nothing to a search that is already restricted to MCP servers, and they consume characters. The one case for them is a package name that will also appear on npm or PyPI, where the context is missing." },
+      { q: "Does the description help me get found?", a: "Not through this endpoint. Search matches the name only. A description is what a person or a model reads once you are on the list, which makes it decisive for selection and irrelevant for retrieval." },
+      { q: "How stable are these numbers?", a: "The registry is growing, so counts drift upward and ranks drift downward. A measurement filed on the registry's issue tracker on 2026-09-07 put the whole table at 28,139 entries. Rerun the call rather than quoting this table back at yourself in six months." },
+    ],
+  },
+  "server-json-field-reference": {
+    title: "server.json field reference for the MCP registry",
+    description: "Every field the official registry schema defines, with the limits that reject a publish: description is capped at 100 characters, names take exactly one slash, version ranges are refused and mcpb packages need a sha256.",
+    html: `<h1>server.json, field by field, with the limits that fail a publish</h1>
+<p>Three fields are required: <code>name</code>, <code>description</code> and <code>version</code>.
+Everything else is optional, and most publish failures come from a limit on one of the three rather
+than from a missing field.</p>
+<p>The one that catches people: <strong><code>description</code> has a maximum length of 100
+characters.</strong> Not 100 words, and not a soft guideline. It is <code>maxLength: 100</code> in the
+schema, so a sentence that reads well in a README is refused.</p>
+
+<h2>Top level</h2>
+<table>
+<thead><tr><th>Field</th><th>Type and limits</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>string, 3 to 200, pattern <code>^[a-zA-Z0-9.-]+/[a-zA-Z0-9._-]+$</code></td><td>Reverse DNS namespace, exactly one forward slash. Capitals are legal and they change your search rank.</td></tr>
+<tr><td><code>description</code></td><td>string, 1 to 100</td><td>"Should focus on capabilities, not implementation details."</td></tr>
+<tr><td><code>version</code></td><td>string, up to 255</td><td>Must be unique per publication. Immutable once published.</td></tr>
+<tr><td><code>title</code></td><td>string, 1 to 100, optional</td><td>Display name. Clients may or may not use it.</td></tr>
+<tr><td><code>websiteUrl</code></td><td>URI, optional</td><td>Homepage or documentation.</td></tr>
+<tr><td><code>repository</code></td><td>object, optional</td><td><code>url</code> and <code>source</code> both required if present.</td></tr>
+<tr><td><code>packages</code></td><td>array, optional</td><td>Installable forms.</td></tr>
+<tr><td><code>remotes</code></td><td>array, optional</td><td>Hosted endpoints.</td></tr>
+<tr><td><code>icons</code></td><td>array, optional</td><td>See below.</td></tr>
+<tr><td><code>_meta</code></td><td>object, optional</td><td>Reverse-DNS namespaced extension data.</td></tr>
+<tr><td><code>$schema</code></td><td>URI, optional</td><td>Points at the schema version you wrote against.</td></tr>
+</tbody>
+</table>
+<p>A server may declare <code>packages</code>, <code>remotes</code>, both, or neither. Neither is legal
+and useless: a survey filed as
+<a href="https://github.com/modelcontextprotocol/registry/issues/1579">registry#1579</a> on 2026-08-27
+counted 387 active servers that declare no package and no remote and therefore cannot be reached by
+anything.</p>
+
+<h2>version, and the four ways it goes wrong</h2>
+<p>Any string up to 255 characters is accepted, but the registry parses it as a semantic version for
+sorting and to decide which row is marked latest. From the registry's versioning documentation, read
+2026-09-09:</p>
+<ul>
+<li>Version ranges are refused outright. <code>^1.2.3</code>, <code>~1.2.3</code>, <code>&gt;=1.2.3</code>,
+<code>1.x</code>, <code>1.2.*</code> and <code>1 - 2</code> are all prohibited.</li>
+<li>If parsing fails, the version is marked latest regardless. So publishing an unparseable string
+after a run of semantic versions makes the unparseable one your latest.</li>
+<li><code>2025.06.18</code> is a non-semantic date and carries the same risk;
+<code>2025-06-18</code> is fine.</li>
+<li>Published metadata cannot be edited. Updating means publishing a new version string.</li>
+</ul>
+
+<h2>packages</h2>
+<p><code>registryType</code>, <code>identifier</code> and <code>transport</code> are required on every
+entry. <code>registryType</code> is a string such as <code>npm</code>, <code>pypi</code>,
+<code>oci</code>, <code>nuget</code> or <code>mcpb</code>. <code>version</code> must be a specific
+version; ranges are rejected here too.</p>
+<p><code>fileSha256</code> is a 64-character lowercase hex string, <strong>required for mcpb
+packages</strong> and optional for the rest. A downloadable bundle with no hash is not publishable,
+which is the right way round: the identifier for an mcpb package is a URL, and a URL alone proves
+nothing about what arrives.</p>
+<p>The remaining fields are <code>runtimeHint</code>, <code>runtimeArguments</code>,
+<code>packageArguments</code>, <code>environmentVariables</code> and <code>registryBaseUrl</code>. The
+schema carries a warning on the argument types worth reading before you accept user input into one:
+arguments build command lines, and a client that runs them through a shell inherits an injection
+risk, so the schema tells clients to prefer non-shell execution.</p>
+
+<h2>remotes</h2>
+<p><code>type</code> is <code>streamable-http</code> or <code>sse</code>, and <code>url</code> must
+match <code>^https?://[^\\s]+$</code>. Both fields are required. SSE is deprecated and exists for
+older clients; a server may publish both at different URLs.</p>
+<p>URLs support <code>{curly_brace}</code> template variables with a <code>variables</code> map
+carrying <code>description</code>, <code>isRequired</code>, <code>default</code>,
+<code>choices</code> and <code>isSecret</code>, which is how a multi-tenant or multi-region service
+publishes one entry. <code>headers</code> declares headers the client should send, each with its own
+<code>isRequired</code> and <code>isSecret</code>.</p>
+<p>One rule is not in the schema and will fail your publish anyway: a remote URL already claimed by a
+different server name is refused. That is
+<a href="/guides/mcp-registry-remote-url-is-unique">its own trap</a>.</p>
+
+<h2>repository and icons</h2>
+<p><code>repository</code> needs <code>url</code> and <code>source</code>, and takes an optional
+<code>id</code> and <code>subfolder</code>, the latter being the relative path to the server inside a
+monorepo.</p>
+<p><code>icons</code> entries need <code>src</code>, an HTTPS URI of at most 255 characters. The
+optional <code>mimeType</code> is an enum of png, jpeg, jpg, svg+xml and webp, and <code>sizes</code>
+entries must match <code>WxH</code> or the literal <code>any</code>. The schema warns consumers to
+treat SVGs carefully, since they can carry script.</p>
+
+<h2>_meta</h2>
+<p>Custom data survives publishing under
+<code>_meta.io.modelcontextprotocol.registry/publisher-provided</code>. There is a hard 4096-byte
+limit on the JSON, and exceeding it fails the publish. The registry writes its own block at
+<code>_meta.io.modelcontextprotocol.registry/official</code> carrying status, publishedAt, updatedAt
+and isLatest, which is where you read whether a row is active or deprecated.</p>
+
+<p>Sources: <code>https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json</code>,
+fetched and parsed 2026-09-09, for every type, limit and pattern quoted; the registry documentation
+pages on versioning, remote servers and the FAQ, read the same day, for the version rules and the 4KB
+limit. This project publishes its whole catalogue to the registry and has hit the description limit, the
+version-range rule and the remote URL rule.</p>
+${FOOT}`,
+    faq: [
+      { q: "What happens if my description is longer than 100 characters?", a: "The publish is rejected by schema validation. Write the 100-character version first and treat it as a headline: what the server does, in the words someone would use to look for it. The long explanation belongs in the README and on your website." },
+      { q: "Do I have to include $schema?", a: "No, it is optional. Including it pins the version you wrote against, which is worth doing because the schema is generated from the registry's OpenAPI definition and does change." },
+      { q: "Can I publish without a repository?", a: "Yes, repository is optional. It is recommended for transparency, and directories that build from source have nothing to build without it, so a server with only a remote endpoint and no repository limits where it can be listed." },
+      { q: "Which registryType do I use for a downloadable bundle?", a: "mcpb, with the identifier set to the download URL and fileSha256 set to the file's hash. That is the only package type where the hash is required." },
+      { q: "Can I fix a typo in a published version?", a: "No. Metadata is immutable per version, so the fix is a new version string. Nothing can be unpublished either, so the version with the typo stays visible in the version list even after a newer one is marked latest." },
+    ],
+  },
+  "mcp-tool-errors-versus-protocol-errors": {
+    title: "When an MCP tool fails, do not return a JSON-RPC error",
+    description: "A failed tool call is a successful JSON-RPC response with isError true. A JSON-RPC error means the request itself was wrong. Getting this backwards stops the model recovering from mistakes it could fix.",
+    html: `<h1>A tool that fails should return a result, not an error</h1>
+<p>MCP has two error channels and they are not interchangeable. Which one you use decides whether the
+model gets to try again.</p>
+<table>
+<thead><tr><th></th><th>Protocol error</th><th>Tool execution error</th></tr></thead>
+<tbody>
+<tr><td>Shape</td><td>JSON-RPC <code>error</code> object</td><td>JSON-RPC <code>result</code> with <code>isError: true</code></td></tr>
+<tr><td>Means</td><td>The request was wrong</td><td>The request was fine, the work failed</td></tr>
+<tr><td>Examples from the spec</td><td>Unknown tool, malformed request, server error</td><td>API failures, input validation errors, business logic errors</td></tr>
+<tr><td>What the client does</td><td>MAY pass it to the model</td><td>SHOULD pass it to the model</td></tr>
+</tbody>
+</table>
+<p>The specification's wording, revision 2026-07-28: protocol errors "indicate issues with the request
+structure itself that models are less likely to be able to fix", while tool execution errors "contain
+actionable feedback that language models can use to self-correct and retry with adjusted
+parameters".</p>
+
+<h2>The shapes</h2>
+<p>A protocol error:</p>
+<pre><code>{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "error": { "code": -32602, "message": "Unknown tool: invalid_tool_name" }
+}</code></pre>
+<p>A tool execution error:</p>
+<pre><code>{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "result": {
+    "resultType": "complete",
+    "content": [{ "type": "text", "text": "Invalid departure date: must be in the future. Current date is 08/08/2025." }],
+    "isError": true
+  }
+}</code></pre>
+<p>Note what is inside the second one. The message names the field, states the rule and gives the
+value needed to satisfy it. That is what makes a retry possible on the next turn instead of a dead
+end.</p>
+
+<h2>The mistake, and why it is expensive</h2>
+<p>Server code that validates arguments and throws produces a protocol error, because most SDK
+wrappers turn a thrown exception at the transport layer into <code>-32602</code>. So a bad date, a
+value out of range or an expired identifier arrives at the client as "the request was malformed".
+Clients are only told they MAY show that to the model. When they do not, the model sees a failed call
+with no reason and either repeats it or gives up.</p>
+<p>The same content returned as <code>isError: true</code> is something clients SHOULD show. The fix
+is usually to catch inside the tool handler and return a result rather than to let the throw
+escape.</p>
+
+<h2>Where the line falls in practice</h2>
+<ul>
+<li><strong>Unknown tool name</strong>: protocol error. The client asked for something that does not
+exist, and there is no result to return.</li>
+<li><strong>Missing required argument</strong>: protocol error if the request fails the
+<code>CallToolRequest</code> schema, which is the case the spec names.</li>
+<li><strong>Argument present but nonsensical</strong>: tool execution error. A date in the past, a
+currency that is not a currency, an invoice number with no invoice.</li>
+<li><strong>Upstream API returned 500</strong>: tool execution error. Say which API and whether a
+retry is worth it.</li>
+<li><strong>Expired or unknown state handle</strong>: tool execution error, and the specification says
+so explicitly in its guidance on stateful tools, so the model can recover by creating a new one.</li>
+<li><strong>Server is out of memory</strong>: protocol error. The model cannot fix that.</li>
+</ul>
+
+<h2>What to put in the message</h2>
+<p>An execution error is read by a model deciding what to do next, so write it for that reader. Name
+the parameter. State the constraint. Give the current value if it helps. Say whether retrying
+unchanged could work. "Invalid input" fails all four and is the most common thing servers return.</p>
+
+<p>Source: the tools section of the MCP specification, revision 2026-07-28, at
+modelcontextprotocol.io, fetched 2026-09-09. Both example payloads above are the specification's own.
+The <code>resultType</code> field shown in the result is part of the same revision.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does isError work with structured content?", a: "Yes. isError sits on the result alongside content and structuredContent, so an error result can still carry a machine-readable payload. If your outputSchema describes a success shape, be careful that an error result does not claim to conform to it." },
+      { q: "What JSON-RPC error codes should I use?", a: "The standard ones. The specification's example uses -32602, invalid params, for an unknown tool. Inventing codes in the reserved range is not useful because clients key on the presence of an error object, not on its code." },
+      { q: "Should I log the failure as well?", a: "Yes, and on stdio the place for it is stderr, never stdout. Stdout carries MCP messages only, and anything else written there corrupts the stream. Clients typically capture stderr to a log file." },
+      { q: "How do I test which one my server returns?", a: "Call the tool with a deliberately bad argument and look at the top-level keys of the response. If you see \"error\", it is a protocol error. If you see \"result\" with isError true, it is an execution error. Anything that throws before your handler runs will be the former." },
+      { q: "Does the client see my exception message?", a: "Only if you put it there. A thrown exception usually becomes a generic protocol error, and stack traces should not be sent to a model in any case. Catch it, decide what the model needs to know, and return that." },
+    ],
+  },
+  "mcp-structured-tool-output": {
+    title: "structuredContent and outputSchema in MCP, and what MUST hold",
+    description: "If a tool declares an outputSchema the server MUST return conforming structured results and clients SHOULD validate them. Return the serialized JSON as text as well. What the fields mean and the JSON Schema defaults.",
+    html: `<h1>Declaring an output schema is a promise the server has to keep</h1>
+<p>An MCP tool result can carry machine-readable data in <code>structuredContent</code> alongside the
+human-readable <code>content</code> blocks. A tool may also declare an <code>outputSchema</code>. The
+two together create an obligation, quoted from the specification, revision 2026-07-28:</p>
+<blockquote><p>Servers MUST provide structured results that conform to this schema. Clients SHOULD
+validate structured results against this schema.</p></blockquote>
+<p>So an <code>outputSchema</code> is not documentation. Declare one and every result has to satisfy
+it, including the awkward cases: an empty list, a partial result, a value your upstream returned as
+null.</p>
+
+<h2>The three fields</h2>
+<table>
+<thead><tr><th>Field</th><th>Where</th><th>What it is</th></tr></thead>
+<tbody>
+<tr><td><code>inputSchema</code></td><td>Tool definition</td><td>Required. MUST be a valid JSON Schema object, never null.</td></tr>
+<tr><td><code>outputSchema</code></td><td>Tool definition</td><td>Optional. Constrains <code>structuredContent</code>.</td></tr>
+<tr><td><code>structuredContent</code></td><td>Tool result</td><td>Any JSON value: object, array, string, number, boolean or null.</td></tr>
+</tbody>
+</table>
+<p>Both schemas default to JSON Schema draft 2020-12 when no <code>$schema</code> field is present,
+and an explicit <code>$schema</code> selects another draft. For a tool that takes no parameters the
+specification recommends <code>{ "type": "object", "additionalProperties": false }</code>, which
+accepts an empty object and nothing else. <code>{ "type": "object" }</code> is also valid and accepts
+any object.</p>
+
+<h2>Return the JSON twice</h2>
+<p>The specification asks for backwards compatibility: a tool that returns structured content SHOULD
+also return the serialized JSON in a text content block. Clients written before structured content
+existed, and clients that never implemented it, read <code>content</code> and nothing else. A result
+with only <code>structuredContent</code> looks empty to them.</p>
+<pre><code>{
+  "content": [{ "type": "text", "text": "{\\"basket_id\\":\\"bsk_a1b2c3\\"}" }],
+  "structuredContent": { "basket_id": "bsk_a1b2c3" }
+}</code></pre>
+
+<h2>The name collision worth knowing about</h2>
+<p>The specification says it plainly: <code>structuredContent</code> is server-produced result data
+and is unrelated to model "structured outputs", meaning schema-constrained generation by a language
+model. Same words, different mechanism. One is your server returning JSON it built. The other is a
+model being forced to emit JSON. Nothing in MCP constrains what the model does with your result.</p>
+
+<h2>When to declare an output schema</h2>
+<p>Declare one when the caller is code. A schema lets a client validate, a directory show the shape,
+and a downstream tool consume the result without parsing prose. Skip it when the honest answer is a
+free-form document, and skip it when the shape varies with the arguments in a way a single schema
+cannot express, because a schema you sometimes violate is worse than none: the client is told to
+validate, and validation failures are yours.</p>
+<p>The other reason to be careful is error results. A result with <code>isError: true</code> still
+travels in the same envelope, so decide whether your schema describes success only, and if it does,
+do not attach structured content to failures.</p>
+
+<h2>Related result fields in this revision</h2>
+<p>Results in revision 2026-07-28 carry a <code>resultType</code>, with <code>complete</code> for an
+ordinary answer and <code>input_required</code> for a call that needs more from the user before it
+can finish. The second returns an <code>inputRequests</code> map and an opaque
+<code>requestState</code>, and the client retries the call with <code>inputResponses</code>. The
+specification notes that the JSON-RPC id MUST differ between the first request and the retry.</p>
+
+<p>Source: the tools section of the MCP specification, revision 2026-07-28, at
+modelcontextprotocol.io, fetched 2026-09-09. Every MUST and SHOULD above is quoted or paraphrased from
+that page, and the schema defaults and the no-parameter forms are its recommendations.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is structuredContent supported everywhere?", a: "Not reliably, which is why the specification asks you to duplicate the JSON as text. Clients advertise a protocol version at initialize, and older versions predate the field entirely. Sending both costs a few hundred bytes and works everywhere." },
+      { q: "Can structuredContent be an array?", a: "Yes. It is any JSON value, including an array, a bare string or null. If you declare an outputSchema, the schema has to describe whatever you actually send, so a top-level array needs a schema with type array." },
+      { q: "What happens if my result violates my own outputSchema?", a: "The specification says clients SHOULD validate, so behaviour varies from ignoring it to rejecting the result. Neither is good for you. Validate against your own schema in your tests, on the same code path that builds the result." },
+      { q: "Does inputSchema have to describe every argument?", a: "It has to be a valid JSON Schema object, and it is what the model reads when deciding how to call you. Leaving arguments undescribed means the model guesses. Marking additionalProperties false on a no-argument tool is the recommended way to say that plainly." },
+      { q: "Which JSON Schema draft should I write?", a: "2020-12 is the default when no $schema is present, so writing 2020-12 and omitting the field is the least surprising choice. Set $schema explicitly only when you need an older draft, and then set it on that schema rather than assuming a server-wide default." },
+    ],
+  },
+  "naming-mcp-tools": {
+    title: "Rules for naming an MCP tool, and the collision nobody plans for",
+    description: "1 to 128 characters, case-sensitive, letters digits underscore hyphen and dot. Uniqueness is scoped to one server, so aggregators collide. Measured: every hosted server here ships the same two tool names.",
+    html: `<h1>Tool names are unique inside your server and nowhere else</h1>
+<p>The MCP specification, revision 2026-07-28, states the rules as SHOULDs rather than MUSTs, which
+means clients vary and the safe move is to satisfy all of them:</p>
+<ul>
+<li>Between 1 and 128 characters inclusive.</li>
+<li>Case-sensitive. <code>getUser</code> and <code>getuser</code> are different tools.</li>
+<li>Allowed characters: <code>A-Z</code>, <code>a-z</code>, <code>0-9</code>, underscore, hyphen and
+dot. No spaces, no commas, nothing else.</li>
+<li>Unique within a server.</li>
+</ul>
+<p>The specification's own valid examples are <code>getUser</code>, <code>DATA_EXPORT_v2</code> and
+<code>admin.tools.list</code>, so there is no house style being imposed. Pick one and hold it.</p>
+
+<h2>The part that catches people</h2>
+<p>Uniqueness is scoped to a single server. The specification then says what follows: clients or
+proxies that aggregate tools from several servers may hit collisions, for example two servers each
+exposing a <code>search</code> tool, and SHOULD prefix with a server identifier to disambiguate. It
+adds a warning that is easy to miss: <strong>the server name from <code>serverInfo</code> is not
+guaranteed to be unique across servers and SHOULD NOT be relied upon for disambiguation.</strong></p>
+<p>So the thing you would naturally reach for as a prefix is explicitly ruled out as a unique key.
+Whatever prefix a host uses is the host's business, which means your tool may be presented to a model
+as <code>myserver__search</code>, <code>mcp_myserver_search</code> or something else entirely, and the
+name the model actually sees is longer than the one you wrote.</p>
+
+<h2>A measured example of the collision</h2>
+<p>This project publishes a catalogue of MCP servers. Two tools, <code>license_activate</code> and
+<code>license_status</code>, come from a package vendored into every one of them, so every hosted
+endpoint ships the identical pair of names. Probed unauthenticated on 2026-09-09:</p>
+<pre><code>/mcp/invoice               13 tools
+/mcp/spreadsheet           13 tools
+/mcp/zip                   12 tools
+/mcp/catalogue             12 tools
+/mcp/timezone              11 tools
+/mcp/barcode               10 tools
+/mcp/statement-of-account   8 tools</code></pre>
+<p>Every one of those lists contains <code>license_activate</code>. Connect two of them to the same
+client and the host has to disambiguate or one wins. That is not a bug in any of the servers, it is
+the scope rule doing exactly what it says, and it is the normal outcome of shipping a shared package
+across a fleet.</p>
+
+<h2>Why the name and the description are worth more than the code</h2>
+<p>A model picks a tool by reading its name and description, so those strings are the interface even
+though the code is the product. Directories score them for the same reason. Glama's published
+methodology, section 1.6, read 2026-09-09, scores every tool on six dimensions, each 1 to 5: Purpose
+Clarity, Usage Guidelines, Behavioral Transparency, Parameter Semantics, Conciseness, and Contextual
+Completeness. Its own summary of what it finds across public servers is that 97 percent of tools carry
+at least one defect, 56 percent do not make clear what the tool does, and 89 percent omit usage
+constraints.</p>
+<p>The scoring weight is the part that changes behaviour. On the score page for a listed server the
+formula is 0.6 times the mean of the tool scores plus 0.4 times the minimum, then 70 percent of the
+overall grade against 30 percent for coherence. Read that again: <strong>40 percent of the definition
+score is your single worst-described tool</strong>. Measured across 20 of this project's connectors on
+2026-09-08, the minimum-scoring tool was <code>license_activate</code> on 20 of 20, mean 2.26 against
+4.12 for <code>license_status</code>, which lives three lines away in the same file and was written in
+the same style. One string held down a fleet.</p>
+
+<h2>A naming checklist that survives a proxy</h2>
+<ol>
+<li>Use one convention across the server. Mixed verbs, gerunds and nouns cost coherence points and
+make a list harder to read.</li>
+<li>Put the object before the verb, so related tools sort together: <code>invoice_create</code> and
+<code>invoice_send</code> rather than <code>create_invoice</code> and <code>send_invoice</code>.</li>
+<li>Keep it short enough that a host prefix does not push it past a limit you do not control.</li>
+<li>Avoid bare generics. <code>search</code>, <code>list</code>, <code>get</code> and
+<code>run</code> are the names most likely to collide in an aggregated client.</li>
+<li>Never rename a published tool. Every caller, proxy and saved workflow keys on the string.</li>
+</ol>
+
+<p>Sources: the tools section of the MCP specification, revision 2026-07-28, fetched 2026-09-09, for
+the naming rules and the disambiguation guidance; glama.ai/mcp/methodology section 1.6, read the same
+day, for the six scoring dimensions and its published survey figures; the tool counts above measured
+against this project's live endpoints on 2026-09-09; the per-connector scores recorded in
+<code>data/glama_r2.json</code> in this repository.</p>
+${FOOT}`,
+    faq: [
+      { q: "Are the naming rules MUSTs?", a: "No, the specification uses SHOULD throughout that section. In practice a client that rejects a name is worse for you than a name you did not want, so treating the SHOULDs as hard rules costs nothing and removes a class of failure you cannot debug from your side." },
+      { q: "snake_case or camelCase?", a: "The specification's examples include both and neither is preferred. Consistency inside one server is what gets scored and what a reader notices. Switching style halfway through a tool list is the actual defect." },
+      { q: "How long should a description be?", a: "Long enough to say what the tool does, when to call it, when not to, and what it changes. Claude Code truncates tool descriptions and server instructions at 2KB each, in its own documentation read 2026-09-09, so that is the practical ceiling. The common failure is the opposite: a single clause that repeats the tool name in different words." },
+      { q: "Can I have a tool with no parameters?", a: "Yes. The inputSchema still has to be a valid JSON Schema object, and the recommended form is {\"type\": \"object\", \"additionalProperties\": false}. Passing null is invalid." },
+      { q: "What if two of my own servers need the same tool name?", a: "That is legal, because uniqueness is per server, and it is what happens with any shared package. Just expect a client running both to prefix them, and do not build anything that depends on the model seeing your exact string." },
+    ],
+  },
+  "mcp-stateful-tools-and-handles": {
+    title: "MCP has no session, so how do two tool calls share state",
+    description: "The protocol has no concept of a state handle and revision 2026-07-28 removed protocol-level sessions. Return an explicit handle from a creation tool and take it as an argument, with the four design rules the spec names.",
+    html: `<h1>Return a handle, because there is no session to hang state on</h1>
+<p>A server that needs one tool call to know about another cannot rely on the connection to carry it.
+The MCP specification is direct about this in its guidance on stateful tools, revision 2026-07-28:</p>
+<blockquote><p>The protocol has no concept of a state handle; from the wire's perspective a handle is
+an ordinary string in a tool result and an ordinary argument to subsequent tool calls.</p></blockquote>
+<p>And on why implicit state is not available: MCP has no protocol-level session, so a server cannot
+relate one tool call to the next through the connection. Revision 2026-07-28 removed protocol-level
+sessions from the streamable HTTP binding, so this is not a gap waiting to be filled.</p>
+
+<h2>The pattern</h2>
+<p>A creation tool returns an identifier. Every later tool takes it as an argument. The model is
+responsible for carrying it forward, which it does well because the identifier is right there in the
+previous result.</p>
+<pre><code>// tools/call
+{ "name": "create_basket", "arguments": {} }
+
+// result
+{ "content": [{ "type": "text", "text": "Created basket bsk_a1b2c3" }],
+  "structuredContent": { "basket_id": "bsk_a1b2c3" } }
+
+// tools/call
+{ "name": "add_item", "arguments": { "basket_id": "bsk_a1b2c3", "sku": "..." } }</code></pre>
+<p>Put the handle in both places. <code>structuredContent</code> is what a client can extract
+mechanically, and the text block is what an older client and the model both read.</p>
+
+<h2>The four things the specification tells you to decide</h2>
+<ol>
+<li><strong>Authorization.</strong> For an authenticated server a handle is a name, not a capability,
+so validate the caller against the handle on every call. For an unauthenticated server the handle is
+necessarily a bearer token, which means enough entropy to be unguessable and a bounded lifetime.</li>
+<li><strong>Opacity.</strong> A handle that encodes internal structure invites parsing and guessing.
+Opaque identifiers do not.</li>
+<li><strong>Lifetime.</strong> Handles outlive any single connection, so state the retention policy
+in the creation tool's description, for example that baskets expire after 24 hours of inactivity. The
+model sees that text when it decides whether to create state.</li>
+<li><strong>Expiry errors.</strong> A call against an expired or unknown handle should return a tool
+execution error saying so, not a protocol error, so the model can recover by creating a new one.</li>
+</ol>
+<p>Point four is where most implementations go wrong, and it connects to
+<a href="/guides/mcp-tool-errors-versus-protocol-errors">the two error channels</a>: a thrown
+exception becomes a JSON-RPC error, which clients are only told they MAY pass to the model.</p>
+
+<h2>What this looks like on a hosted server</h2>
+<p>A remote MCP server has a second problem the local case does not: the handle has to identify a
+tenant as well as a document. This project's hosted endpoints solve it with a token rather than a
+per-tool handle. The token arrives in the <code>Authorization</code> header or, for clients that can
+only accept a URL, as a path segment, and it is the key that every stored document hangs from.</p>
+<pre><code>https://mcp.zovo.one/mcp/&lt;server&gt;/t/&lt;token&gt;</code></pre>
+<p>The trade is worth naming. A token in a URL is visible in logs and in anything that records the
+configuration, which is why it grants only a free anonymous tier here. Where a client can set headers,
+the header is the right place. Where it cannot, the URL form is the difference between working and
+not.</p>
+
+<h2>When not to use a handle at all</h2>
+<p>If every call can carry the whole input, do that. Handles add a lifetime, an authorization check
+and a failure mode, and a model that loses track of one produces a confusing conversation. They earn
+their place when the state is large, expensive to rebuild, or genuinely shared, such as an open
+browser context or a transaction. They do not earn it as a way to avoid repeating a filename.</p>
+
+<p>Source: the stateful tools section of the MCP specification, revision 2026-07-28, at
+modelcontextprotocol.io, fetched 2026-09-09, which is explicitly non-normative guidance rather than a
+requirement. The example payloads are the specification's own. The hosted token form is this
+project's implementation, live at <code>mcp.zovo.one</code> on every hosted endpoint.</p>
+${FOOT}`,
+    faq: [
+      { q: "What happened to session IDs in streamable HTTP?", a: "Protocol-level sessions were removed in revision 2026-07-28, along with the standalone GET stream. A server that still wants per-connection continuity has to build it from something it controls, such as a token or a handle in the arguments." },
+      { q: "Can I use the token as the handle?", a: "For tenancy, yes, and that is what a hosted server usually does. For a short-lived object such as a cart or a transaction you still want a separate handle, because its lifetime is different and you will want to expire it without invalidating the tenant." },
+      { q: "How long should a handle live?", a: "Long enough to survive a conversation and short enough that an abandoned one costs nothing, and whatever you choose belongs in the creation tool's description. The specification's example wording is that baskets expire after 24 hours of inactivity." },
+      { q: "Will the model actually carry the handle forward?", a: "Usually, if it is visible in the result text and the argument that needs it is described clearly. Naming the parameter the same thing as the field you returned helps more than any instruction in the description." },
+      { q: "Is a sequential integer an acceptable handle?", a: "Only on an authenticated server that checks ownership on every call. On an unauthenticated one the handle is a bearer token, and a sequential integer is guessable by design, which the specification calls out directly." },
+    ],
+  },
+  "x-mcp-header-tool-parameters": {
+    title: "x-mcp-header: mirroring tool parameters into HTTP headers",
+    description: "A 2026-07-28 extension that copies a tool argument into an Mcp-Param-Name header so proxies can route without parsing the body. Six constraints, and clients MUST drop tools that break them.",
+    html: `<h1>x-mcp-header puts one argument where a load balancer can see it</h1>
+<p>Streamable HTTP carries a tool call as a JSON body, so anything between the client and the server
+has to parse that body to know what is being asked. The <code>x-mcp-header</code> extension,
+introduced in specification revision 2026-07-28, lets a server nominate individual parameters to be
+copied into HTTP headers, so proxies, load balancers and firewalls can route on them without reading
+the payload.</p>
+<p>The annotation goes inside the JSON Schema of the property being mirrored, and its value is the
+name portion of the resulting <code>Mcp-Param-{name}</code> header:</p>
+<pre><code>{
+  "name": "execute_sql",
+  "description": "Execute SQL on Google Cloud Spanner",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "region": { "type": "string", "description": "The region to execute the query in", "x-mcp-header": "Region" },
+      "query":  { "type": "string", "description": "The SQL query to execute" }
+    },
+    "required": ["region", "query"]
+  }
+}</code></pre>
+<p>Called with <code>"region": "us-west1"</code>, the client adds
+<code>Mcp-Param-Region: us-west1</code> to the HTTP request.</p>
+
+<h2>The constraints, all MUSTs</h2>
+<ul>
+<li>Not empty.</li>
+<li>Matches HTTP field-name token syntax, <code>1*tchar</code> from RFC 9110 section 5.1.</li>
+<li>No control characters, including carriage return and line feed.</li>
+<li>Case-insensitively unique among all <code>x-mcp-header</code> values in that
+<code>inputSchema</code>.</li>
+<li>Applied only to primitive types: integer, string, boolean. <strong><code>number</code> is not
+permitted.</strong> Integers must be within the IEEE754 double-precision safe range.</li>
+<li>Applied only to properties statically reachable from the schema root.</li>
+</ul>
+
+<h2>The failure mode is silent, and it is the tool that disappears</h2>
+<p>A client on streamable HTTP MUST reject a tool definition that violates any of these, and rejection
+is defined precisely: the client MUST exclude the invalid tool from the result of
+<code>tools/list</code>. It SHOULD log a warning naming the tool and the reason. The stated purpose is
+that one malformed definition does not prevent the other tools from being used.</p>
+<p>So the symptom of a mistake here is a tool that simply is not there, on some transports and not
+others, with the explanation in a log you may not be reading. Clients on stdio MAY ignore the
+annotation entirely, which means a server tested locally over stdio can lose tools the moment it is
+deployed behind HTTP.</p>
+
+<h2>Do not mirror a secret</h2>
+<p>The specification says server developers SHOULD NOT mark passwords, API keys, tokens or personal
+data with <code>x-mcp-header</code>, because header values are visible to network intermediaries. That
+is the entire point of the feature, and it is the reason to use it sparingly: a value you mirror is a
+value you have chosen to show to every hop.</p>
+
+<h2>When it is worth using</h2>
+<p>The honest answer is rarely, and only when something in your network path needs to make a decision
+before the body is available. Region or tenant routing, per-parameter rate limiting at the edge, and
+firewall rules that depend on an argument are the cases the design is aimed at. If your server reads
+the value itself and nothing between you and the client cares, the argument in the body is already
+enough.</p>
+
+<p>Source: the tools section of the MCP specification, revision 2026-07-28, at
+modelcontextprotocol.io, fetched 2026-09-09. The example is the specification's own. This extension is
+new in that revision, so a client speaking an earlier version will not implement it and your tool has
+to work without it.</p>
+${FOOT}`,
+    faq: [
+      { q: "Why is number excluded when integer is allowed?", a: "Floating point values do not round-trip through a text header predictably, so the value a proxy reads could differ from the value the server receives. Integers are constrained to the IEEE754 safe range for the same reason." },
+      { q: "Does the server still get the parameter in the body?", a: "Yes. The header is a mirror, not a move. Your handler reads arguments exactly as before, and the specification points at its own section on extracting header values from call arguments for the precise rules." },
+      { q: "What if two parameters ask for the same header name?", a: "The uniqueness requirement is case-insensitive, so Region and region collide. A client on streamable HTTP must then reject the whole tool definition and leave that tool out of tools/list." },
+      { q: "Can I use it on a nested object property?", a: "Only if the property is statically reachable from the schema root. A property behind a oneOf branch or a dynamic reference is not, and marking one is a violation that removes the tool." },
+      { q: "How do I know whether a client honoured it?", a: "Log the incoming headers on your server and call the tool through the client you care about. A client on stdio may ignore the annotation entirely, which is allowed, so the absence of the header is not necessarily a bug." },
+    ],
+  },
+  "how-a-directory-scores-your-mcp-server": {
+    title: "How a directory scores an MCP server, and why your worst tool decides it",
+    description: "Glama publishes its formula: 40 percent of the tool-definition score is the single lowest-scoring tool. Measured across 20 connectors from one project, the same shared tool was the minimum on 20 of 20.",
+    html: `<h1>Forty percent of the score is your worst-described tool</h1>
+<p>Glama scores every MCP server it indexes and publishes both the rubric and the arithmetic. The
+formula on a listed server's score page:</p>
+<pre><code>definition quality = 0.6 * mean(tool scores) + 0.4 * min(tool scores)
+overall            = 0.7 * definition quality + 0.3 * mean(4 coherence dimensions)
+tiers              = A >= 3.5, B >= 3.0, C >= 2.0, D >= 1.0, F below 1.0</code></pre>
+<p>Read the first line again. A server with nine excellent tools and one careless one is scored as if
+the careless one were four of them. Adding a good tool barely moves the number. Fixing the worst one
+moves it a lot.</p>
+
+<h2>The six dimensions</h2>
+<p>Each tool is scored 1 to 5 on six axes, quoted from glama.ai/mcp/methodology section 1.6, read
+2026-09-09:</p>
+<table>
+<thead><tr><th>Dimension</th><th>The question it asks</th></tr></thead>
+<tbody>
+<tr><td>Purpose Clarity</td><td>Does the description clearly state what the tool does?</td></tr>
+<tr><td>Usage Guidelines</td><td>Are the conditions under which the tool should and should not be called made explicit?</td></tr>
+<tr><td>Behavioral Transparency</td><td>Does the description accurately describe side effects, idempotency and destructiveness?</td></tr>
+<tr><td>Parameter Semantics</td><td>Are parameter names, types and constraints specified unambiguously?</td></tr>
+<tr><td>Conciseness</td><td>Is the description precise without being bloated?</td></tr>
+<tr><td>Contextual Completeness</td><td>Does the description give a model everything needed to invoke the tool correctly, without an external lookup?</td></tr>
+</tbody>
+</table>
+<p>Above the per-tool score sit two more: tool-set coherence, meaning whether the tools compose into a
+non-overlapping surface, and server cohesiveness, meaning whether the stated purpose matches the
+capabilities actually exposed.</p>
+
+<h2>The measurement that made the minimum rule concrete</h2>
+<p>This project publishes a catalogue of MCP servers. A licence package is vendored into every one of them, so
+every server ships the same two tools written by the same person in the same style, three lines apart
+in one file. Across 20 connectors scored on 2026-09-08:</p>
+<table>
+<thead><tr><th>Tool</th><th>n</th><th>min</th><th>max</th><th>mean</th></tr></thead>
+<tbody>
+<tr><td><code>license_activate</code></td><td>20</td><td>1.4</td><td>3.1</td><td>2.26</td></tr>
+<tr><td><code>license_status</code></td><td>20</td><td>3.8</td><td>4.4</td><td>4.12</td></tr>
+</tbody>
+</table>
+<p><code>license_activate</code> was the lowest-scoring tool on <strong>20 of 20</strong> servers. Its
+sibling, in the same file, scored nearly twice as high. So this is the text and not the surface, and
+because the package is shared, one string was capping a whole fleet. Modelling the effect of lifting
+only that tool to 3.5 and changing nothing else moves the fleet mean from 3.562 to 3.874 and takes A
+tier from 12 of 20 to 20 of 20. That second figure is a model rather than a measurement, and it
+assumes coherence stays put.</p>
+
+<h2>The rule that makes a score improvement a defect</h2>
+<p>A description that scores well by claiming behaviour the code does not have is worse than a low
+score. One of ours ended up saying a tool "takes no arguments and activates nothing" while its own
+schema declared a required <code>key</code> parameter described as "License key from checkout". That
+contradiction is precisely what Parameter Semantics penalises, and rewording it would have been
+dishonest. The fix was to make the code do what the name says.</p>
+
+<h2>The other gate, which has nothing to do with words</h2>
+<p>Glama's methodology, section 1.3, read the same day: if an inferred Dockerfile fails to produce a
+working build, the profile page is preserved but distribution is withheld, and the server does not
+appear in search results, category listings or recommendations. A build that works in your monorepo
+and not in the repository you published is enough to trigger this. Ours did exactly that, copying
+<code>packages</code> and <code>servers</code> directories that do not exist in a split-out
+repository.</p>
+
+<h2>What to do with this</h2>
+<ol>
+<li>List your tools and find the worst description. Not the least important tool, the worst
+description. That one is 40 percent of the score.</li>
+<li>Check any tool you vendored from a shared package. It was written for a different reason and
+nobody has read it since.</li>
+<li>For each tool, answer the six questions in order. Usage Guidelines and Behavioral Transparency
+are the two most often missing, because they are the two nobody thinks to write.</li>
+<li>Verify each claim against the code before you ship it. A description is an assertion about
+behaviour.</li>
+<li>Clone your published repository into an empty directory and build it there.</li>
+</ol>
+
+<p>Sources: glama.ai/mcp/methodology sections 1.3 and 1.6, read 2026-09-09, for the dimensions and the
+build rule; the formula and tier thresholds from a listed server's own score page, recorded in
+<code>data/glama_r2.json</code> in this repository alongside the per-connector scores; the tool scores
+above measured on 20 connectors of this project on 2026-09-08. The description contradiction is from
+this project's own loop notes.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does this apply outside one directory?", a: "The arithmetic is one directory's. The input is not: a tool description is what a model reads when it decides whether to call you, so the same text is your first impression in every client. Improving it needs no account and no submission anywhere." },
+      { q: "Should I remove a weak tool to raise the minimum?", a: "Only if it should not exist. Deleting a published tool breaks callers, and the coherence score separately penalises gaps. Rewriting the description is the cheaper move and the honest one." },
+      { q: "How do I write Usage Guidelines?", a: "Say when to call the tool and when not to, in one sentence each. The second half is the one that gets omitted: which neighbouring tool is the right one instead, and what state the tool assumes. A model choosing between two similar tools has nothing else to go on." },
+      { q: "What is server cohesiveness?", a: "Whether the tools match the stated purpose. The methodology's own example is a server claiming to be a Postgres client while exposing arbitrary shell execution. It is scored separately from the per-tool axes and it is a design question, not a wording one." },
+      { q: "How often is it rescored?", a: "The methodology says every new commit and every rebuild triggers a full re-run, and that connector scores update on every introspection sweep. In practice a stamp on a score page can sit unchanged for a day or more after a deploy, so treat a stale date as a queue rather than a rejection." },
+    ],
+  },
+  "what-ai-crawlers-fetch-that-googlebot-does-not": {
+    title: "What AI crawlers fetch that Googlebot does not, measured on 141 URLs",
+    description: "One week of server logs for a small documentation site: ClaudeBot took 140 of 141 pages, Googlebot took 2, and Google has indexed one. Per-crawler coverage for 16 named bots.",
+    html: `<h1>ClaudeBot read 99 percent of the site. Googlebot read 1 percent.</h1>
+<p>One site, one week, and specific enough to be worth writing down. The site is a documentation and catalogue subdomain created on 2026-09-02, with 141 URLs in its
+sitemap, no inbound links to speak of and no history. The window is the seven days ending 2026-09-09, of which the log holds 165 hours, so the effective
+window is 6.875 days. Every request in it was classified by user agent and matched against the
+sitemap.</p>
+<table>
+<thead><tr><th>Crawler</th><th>Sitemap URLs fetched</th><th>Requests</th><th>Coverage</th></tr></thead>
+<tbody>
+<tr><td>ClaudeBot</td><td>140</td><td>144</td><td>99.3%</td></tr>
+<tr><td>Amazonbot</td><td>127</td><td>131</td><td>90.1%</td></tr>
+<tr><td>YandexBot</td><td>113</td><td>119</td><td>80.1%</td></tr>
+<tr><td>MJ12bot</td><td>112</td><td>135</td><td>79.4%</td></tr>
+<tr><td>SemrushBot</td><td>98</td><td>99</td><td>69.5%</td></tr>
+<tr><td>GPTBot</td><td>90</td><td>149</td><td>63.8%</td></tr>
+<tr><td>meta-externalagent</td><td>67</td><td>95</td><td>47.5%</td></tr>
+<tr><td>bingbot</td><td>35</td><td>62</td><td>24.8%</td></tr>
+<tr><td>Applebot</td><td>33</td><td>36</td><td>23.4%</td></tr>
+<tr><td>PerplexityBot</td><td>5</td><td>16</td><td>3.5%</td></tr>
+<tr><td>Googlebot</td><td>2</td><td>8</td><td>1.4%</td></tr>
+<tr><td>AhrefsBot</td><td>2</td><td>3</td><td>1.4%</td></tr>
+<tr><td>Claude-User</td><td>1</td><td>2</td><td>0.7%</td></tr>
+<tr><td>DuckDuckBot</td><td>1</td><td>2</td><td>0.7%</td></tr>
+<tr><td>ChatGPT-User</td><td>1</td><td>1</td><td>0.7%</td></tr>
+<tr><td>DotBot</td><td>1</td><td>1</td><td>0.7%</td></tr>
+</tbody>
+</table>
+<p>All 141 sitemap URLs were fetched by at least one search or AI crawler in the window. Nothing was
+missed by everybody. The difference between the top of the table and the bottom is not access, it is
+appetite.</p>
+
+<h2>What Google did with the two pages it took</h2>
+<p>Every one of the 141 URLs was checked through the Search Console URL Inspection API on 2026-09-09,
+one call per URL against the verified domain property:</p>
+<ul>
+<li>In Google's index: <strong>1</strong>, the home page.</li>
+<li>Ever crawled by Google: <strong>1</strong>.</li>
+<li>The other 140: known but not indexed, or unknown.</li>
+</ul>
+<p>Serving is not the problem. Googlebot receives HTTP 200 and full text, robots.txt allows
+everything, and the sitemap is submitted and fetched repeatedly. A crawler that reads your sitemap and
+then takes two pages has looked at what you offer and declined most of it. On a new domain with no
+authority that is ordinary behaviour, and it takes months rather than days to change.</p>
+
+<h2>Two distinctions worth keeping straight</h2>
+<p><strong>Training and indexing crawlers versus user-triggered fetches.</strong>
+<code>Claude-User</code> and <code>ChatGPT-User</code> are separate agents from
+<code>ClaudeBot</code> and <code>GPTBot</code>, and they appear when a person's question causes a
+fetch. In this window there were two such fetches in total, against 293 requests from ClaudeBot and GPTBot alone. Broad coverage is not the same as anyone reading.</p>
+<p><strong>Coverage is not citation.</strong> Nothing in a server log tells you whether a page was
+used in an answer. What the log supports is the weaker and still useful claim that the content is
+available to those systems, and that Google's is not.</p>
+
+<h2>What follows from it, for a small site</h2>
+<p>If your pages are reference material, the audience that has actually read them is not the one you
+optimised for. That argues for pages that answer a narrow question outright in the first lines, for
+keeping an accurate <code>llms.txt</code>, for stating dates and sources so a fact can be checked, and
+against another round of pages built for a search engine that took two URLs in a week.</p>
+<p>It does not argue for giving up on search. It argues for not spending the next month on it while a
+different set of crawlers reads everything you publish within a day.</p>
+
+<h2>Limits of this measurement</h2>
+<p>One site, one week, 141 URLs, a domain three weeks old. User agents can be spoofed, so a name in
+this table is a claim rather than a verified identity, though the volume pattern is consistent with
+the published crawler documentation for each. Coverage here means fetching a URL that is in the
+sitemap; requests to other paths were not counted. A larger or older site would see different numbers
+from Googlebot in particular, because crawl budget follows authority.</p>
+
+<p>Source: edge request logs for <code>mcp.zovo.one</code> ending 2026-09-09, joined to
+the 141-URL sitemap; the Google figures from
+<code>POST https://searchconsole.googleapis.com/v1/urlInspection/index:inspect</code>, one call per
+URL against a verified domain property, run the same day. Both are recorded in
+<code>data/indexation.json</code> in this repository.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does a high crawl rate mean my pages are being used in answers?", a: "No, and nothing in a log can tell you that. It tells you the content was retrieved. The separate user-triggered agents, Claude-User and ChatGPT-User, are the closest signal available, and here they accounted for two fetches in a week." },
+      { q: "Should I block AI crawlers?", a: "That depends on whether your content is the product or the advertisement for it. For reference documentation about something you sell, being read is the point. For the paid content itself, it is not." },
+      { q: "Why is Googlebot so low?", a: "New domain, no inbound links, no history. Crawl budget is allocated on authority, and there is none yet. The observable part is that it fetched robots.txt and the sitemap repeatedly and then took two pages, which is a decision rather than a failure to discover." },
+      { q: "How do I get these numbers for my own site?", a: "Any edge or server log with user agents, grouped by agent and joined to your sitemap URL list. For the index side, the Search Console URL Inspection API returns coverage per URL on a verified property, one call each, and it is free." },
+      { q: "Are these user agents trustworthy?", a: "Only as claims. Each of the major crawlers publishes IP ranges or a reverse-DNS method for verification, and doing that check is the difference between a measurement and a guess. The counts here are unverified by IP and are presented as such." },
+    ],
+  },
+  "search-console-url-inspection-coverage-is-unstable": {
+    title: "Search Console's URL Inspection API changes its answer between calls",
+    description: "Two full censuses of 141 URLs, 15 minutes apart, same key, same day: 58 percent returned a different coverageState. Only in_google_index and ever_crawled_by_google were stable.",
+    html: `<h1>58 percent of URLs answered differently 15 minutes apart</h1>
+<p>The Search Console URL Inspection API returns a <code>coverageState</code> string for each URL, and
+the two most common values on a young site are "Discovered - currently not indexed" and "URL is
+unknown to Google". Those read like different situations. Tracking the split between them looks like a
+reasonable way to measure whether a site is being discovered.</p>
+<p>It is not, and this is the test that shows it. Two complete censuses of the same 141 URLs were run
+on 2026-09-09, fifteen minutes apart, with the same service account key against the same verified
+property, and compared per URL:</p>
+<table>
+<thead><tr><th>Result</th><th>URLs</th></tr></thead>
+<tbody>
+<tr><td>Compared</td><td>141</td></tr>
+<tr><td>Changed <code>coverageState</code> between the two passes</td><td><strong>82 (58%)</strong></td></tr>
+<tr><td>"Discovered - currently not indexed" becoming "URL is unknown to Google"</td><td>76</td></tr>
+<tr><td>"URL is unknown to Google" becoming "Discovered - currently not indexed"</td><td>6</td></tr>
+<tr><td><code>in_google_index</code> differing between passes</td><td>0</td></tr>
+<tr><td><code>ever_crawled_by_google</code> differing between passes</td><td>0</td></tr>
+</tbody>
+</table>
+<p>Nothing changed on the site in those fifteen minutes. No deploy, no sitemap edit, no robots change.
+The API changed its mind about 82 URLs on its own.</p>
+
+<h2>What to trust and what to drop</h2>
+<p>Two fields were identical across both passes, and both were 1 out of 141: whether the URL is in the
+index, and whether Google has ever crawled it. Those are the fields to track, and they are the ones
+that answer the question anyone actually has.</p>
+<p><code>coverageState</code> is worth reading once for a single URL you are debugging, where the
+verdict and the last crawl time give context. It is not worth trending, and a report that says
+discovery rose or fell between two runs is measuring the API's variance rather than your site.</p>
+
+<h2>How to avoid fooling yourself</h2>
+<ol>
+<li>Run the census twice in the same session before believing any aggregate, and report the
+disagreement rate alongside the result. A metric with 58 percent flip-flop is not a metric.</li>
+<li>Pick fields that are binary and durable. "In the index" and "ever crawled" are both.</li>
+<li>Store the raw per-URL response, not the summary. A summary cannot be re-audited once you notice
+the instability.</li>
+<li>Do not compare a census against one taken by a different tool or on a different property scope.
+Domain and URL-prefix properties do not answer identically.</li>
+</ol>
+
+<h2>Why it probably happens</h2>
+<p>This is inference and it is labelled as such: the values that flipped are the two that both mean
+"not indexed", and the ones that held are the ones with a durable record behind them. That is
+consistent with the states being served from a cache or an index shard whose freshness varies per
+call, rather than from a single authoritative record. Nothing in Google's documentation promises
+stability here, and nothing observed from outside can confirm the cause.</p>
+
+<h2>The measurement in context</h2>
+<p>The site is a documentation subdomain created 2026-09-02 with 141 sitemap URLs. In the same seven
+days, ClaudeBot fetched 140 of those URLs and Googlebot fetched 2, which is the
+<a href="/guides/what-ai-crawlers-fetch-that-googlebot-does-not">separate measurement</a> that made
+the index question worth asking at all. A site with more history and more indexed pages may see a
+lower flip rate, because more of its URLs would sit in states with a durable record.</p>
+
+<p>Source: two passes of
+<code>POST https://searchconsole.googleapis.com/v1/urlInspection/index:inspect</code>, one call per
+URL, 141 URLs each, run at 08:45 and 09:00 UTC on 2026-09-09 against a verified
+<code>sc-domain</code> property with the same service account. Both passes and the per-URL comparison
+are recorded in <code>data/indexation.json</code> in this repository.</p>
+${FOOT}`,
+    faq: [
+      { q: "Is this a bug I should report?", a: "It is undocumented behaviour rather than an obvious defect, and the API does not promise that coverageState is stable. The practical response is to stop depending on it rather than to wait for it to change." },
+      { q: "Does the quota matter here?", a: "Yes, and it is the reason to design the census carefully. The URL Inspection API is rate limited per property, so running everything twice doubles a budget you may not have. Sampling half the URLs twice is a reasonable compromise for the stability check." },
+      { q: "What about the verdict field?", a: "Verdict was not part of this comparison, so nothing is claimed about it. If you rely on it, run the same two-pass test before trusting a trend, which is the general lesson rather than a finding about one field." },
+      { q: "Would a URL-prefix property behave differently?", a: "Unmeasured here. Both passes used the same domain property, so the comparison is internally consistent and says nothing about other property types. Do not mix scopes in one census." },
+      { q: "Should I use the Indexing API instead?", a: "It answers a different question. The Indexing API asks Google to crawl and is limited to specific content types; URL Inspection reports state. Neither makes a page get indexed, and on a new domain the constraint is authority rather than notification." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Seventy-six guides: how MCP itself works, from config file locations and transports to protocol versions, registry search and shipping a server; getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline, and then doing real work with it. then real work with one: billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.",
+  description: "Eighty-nine guides: how MCP itself works, from config file locations and transports to protocol versions, registry search and shipping a server; getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline, and then doing real work with it. then real work with one: billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.",
 };
