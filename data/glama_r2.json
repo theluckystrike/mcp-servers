@@ -1,0 +1,690 @@
+{
+  "round": 2,
+  "loop": 31,
+  "at": "2026-09-09T07:06:38.147597Z",
+  "question": "Why was 1 of 33 mirror repositories indexed on glama.ai/mcp/servers and 32 not, and what can be done about it autonomously?",
+  "headline": [
+    "Nothing in the repositories discriminates. 24 comparable fields are identical or non-discriminating between the indexed repo and the unindexed ones.",
+    "Glama's own methodology page documents NO crawler for open-source servers: listing requires a GitHub OAuth submission from a maintainer with write access. Our record exists anyway, unclaimed, so an unadvertised low-rate ingestion path exists and is not steerable.",
+    "The lag from repo creation to Glama record is 33 minutes for one repo and about 120 days for the other repo this account has listed. That spread is a queue, not a filter.",
+    "The official MCP registry is the one public no-account signal that demonstrably reaches Glama. It lands at /mcp/connectors, not /mcp/servers, and it is already working: 4 connectors on 2026-09-07 became at least 25 on 2026-09-09 with no action taken.",
+    "Connectors carry the identical TDQS rubric and are re-scored about daily, so the tool-description work IS measurable now on 25 servers.",
+    "license_activate is the minimum-scoring tool on 20 of 20 connectors. 40 percent of the definition-quality score is the minimum tool score, so one shared description caps the entire fleet."
+  ],
+  "discrimination": {
+    "method": "Compared the indexed repo (mcp-statement-of-account) against the unindexed ones across every field Glama could plausibly read.",
+    "commands": [
+      "gh repo list theluckystrike --limit 200 --json name,description,homepageUrl,repositoryTopics,stargazerCount,watchers,diskUsage,createdAt,pushedAt,isArchived,isPrivate,isFork,hasIssuesEnabled,hasDiscussionsEnabled,licenseInfo,primaryLanguage,latestRelease",
+      "gh api repos/theluckystrike/<repo>/git/trees/main?recursive=1",
+      "gh api repos/theluckystrike/<repo>/commits?per_page=100",
+      "gh api repos/theluckystrike/<repo>/traffic/popular/referrers",
+      "gh api repos/theluckystrike/<repo>/traffic/clones",
+      "curl https://raw.githubusercontent.com/theluckystrike/<repo>/main/{package.json,server.json,Dockerfile,glama.json}"
+    ],
+    "fields": [
+      {
+        "field": "glama.json",
+        "indexed": "schema-valid, maintainers:[theluckystrike]",
+        "unindexed": "byte-identical",
+        "discriminates": false
+      },
+      {
+        "field": "Dockerfile present",
+        "indexed": "yes",
+        "unindexed": "yes",
+        "discriminates": false
+      },
+      {
+        "field": "Dockerfile builds in its own repo",
+        "indexed": "NO",
+        "unindexed": "NO",
+        "discriminates": false,
+        "note": "measured, see build_test"
+      },
+      {
+        "field": "topics",
+        "indexed": "9 incl. mcp, mcp-server, model-context-protocol",
+        "unindexed": "8-10, same three always present (mcp-registry has 0)",
+        "discriminates": false
+      },
+      {
+        "field": "license",
+        "indexed": "MIT",
+        "unindexed": "MIT on all 33",
+        "discriminates": false
+      },
+      {
+        "field": "stars / watchers",
+        "indexed": "0 / 0",
+        "unindexed": "0 / 0 on all 33",
+        "discriminates": false
+      },
+      {
+        "field": "GitHub releases",
+        "indexed": "none",
+        "unindexed": "none (only the monorepo has releases)",
+        "discriminates": false
+      },
+      {
+        "field": "tags",
+        "indexed": "none",
+        "unindexed": "none",
+        "discriminates": false
+      },
+      {
+        "field": "issues enabled",
+        "indexed": "yes",
+        "unindexed": "yes (31/32; mcp-registry no)",
+        "discriminates": false
+      },
+      {
+        "field": "discussions enabled",
+        "indexed": "no",
+        "unindexed": "no on all 33",
+        "discriminates": false
+      },
+      {
+        "field": "homepage",
+        "indexed": "https://mcp.zovo.one/s/statement-of-account",
+        "unindexed": "same pattern per server",
+        "discriminates": false
+      },
+      {
+        "field": "description",
+        "indexed": "present, one sentence",
+        "unindexed": "present, one sentence",
+        "discriminates": false
+      },
+      {
+        "field": "size KB",
+        "indexed": "217",
+        "unindexed": "107-404 (monorepo 77969)",
+        "discriminates": false
+      },
+      {
+        "field": "created",
+        "indexed": "2026-09-05T17:10:18Z",
+        "unindexed": "2026-09-02 .. 2026-09-06",
+        "discriminates": false
+      },
+      {
+        "field": "pushed",
+        "indexed": "2026-09-06T08:22:12Z",
+        "unindexed": "2026-09-06T08:18-08:23 (one bulk sync)",
+        "discriminates": false
+      },
+      {
+        "field": "commit count",
+        "indexed": "1 force-pushed orphan commit",
+        "unindexed": "1 force-pushed orphan commit",
+        "discriminates": false
+      },
+      {
+        "field": "file tree",
+        "indexed": "same scaffold: src, test, vendor, server.json, smithery.yaml, llms-install.md, remotes.json, SPEC.md",
+        "unindexed": "same scaffold",
+        "discriminates": false
+      },
+      {
+        "field": "package.json name/keywords",
+        "indexed": "@theluckystrike/mcp-statement-of-account; keywords include mcp, model-context-protocol",
+        "unindexed": "same convention",
+        "discriminates": false
+      },
+      {
+        "field": "package.json version",
+        "indexed": "0.20.0",
+        "unindexed": "0.20.0",
+        "discriminates": false
+      },
+      {
+        "field": "declared repository.url",
+        "indexed": "github.com/theluckystrike/mcp-servers",
+        "unindexed": "github.com/theluckystrike/mcp-servers on ALL 33",
+        "discriminates": false,
+        "note": "identical, but see hypothesis H2"
+      },
+      {
+        "field": "server.json",
+        "indexed": "present, official registry schema",
+        "unindexed": "present",
+        "discriminates": false
+      },
+      {
+        "field": "README bytes",
+        "indexed": "8743",
+        "unindexed": "4994-16998",
+        "discriminates": false
+      },
+      {
+        "field": "in official MCP registry",
+        "indexed": "yes",
+        "unindexed": "yes, all of them",
+        "discriminates": false
+      },
+      {
+        "field": "GitHub traffic referrers",
+        "indexed": "[] empty",
+        "unindexed": "[] empty",
+        "discriminates": false,
+        "note": "glama.ai is a referrer on NONE of them, including the indexed one"
+      },
+      {
+        "field": "GitHub traffic clones",
+        "indexed": "68 clones / 28 uniques since 2026-09-05",
+        "unindexed": "272-325 / 68-92",
+        "discriminates": false
+      },
+      {
+        "field": "glama.ai/mcp/servers page",
+        "indexed": "HTTP 200",
+        "unindexed": "HTTP 404 on all 32",
+        "discriminates": "this is the outcome, not a cause"
+      }
+    ]
+  },
+  "hypotheses": [
+    {
+      "rank": 1,
+      "id": "H1",
+      "claim": "Crawl-queue position. An unadvertised, low-rate ingestion has simply not reached the other 32.",
+      "verdict": "best supported",
+      "for": [
+        "None of 24 compared fields discriminates.",
+        "glama.ai/mcp/methodology 1.1 documents open-source listing as GitHub-OAuth submission only, with no crawler. Our record exists unclaimed with an 'Author not verified' checklist item and a Claim flow, so an undocumented path exists.",
+        "Creation-to-record lag is 33 minutes for mcp-statement-of-account (created 2026-09-05T17:10:18Z, Glama record 2026-09-05T17:43:09.930064Z) and about 120 days for bln-mcp-grammar-server (created 2026-05-03T05:45:00Z, Glama record 2026-08-31T04:35:21.787402Z). A filter does not produce that spread."
+      ],
+      "against": [
+        "n=2 listed records. Not provable from outside Glama."
+      ],
+      "actionable": false,
+      "action": "None autonomously. Do not delete and recreate repos to bait a crawler."
+    },
+    {
+      "rank": 2,
+      "id": "H2",
+      "claim": "Duplicate-source collapse. All 33 mirrors declare repository.url = github.com/theluckystrike/mcp-servers, so a pipeline that canonicalises on the declared upstream keeps exactly one record.",
+      "verdict": "plausible, unproven",
+      "for": [
+        "Predicts exactly one survivor, which is what is observed.",
+        "package.json and server.json both declare the monorepo on all 33."
+      ],
+      "against": [
+        "The survivor should then be the first seen (mcp-time-tracker, created 2026-09-02), not the 27th created.",
+        "glama.ai/mcp/servers/theluckystrike/mcp-servers is itself 404, so the canonical repo did not win either."
+      ],
+      "actionable": true,
+      "action": "Testable by publishing ONE registry entry whose repository.url names the mirror repo instead of the monorepo. Needs the servers/*/server.json owner plus a registry publish; out of this agent's scope."
+    },
+    {
+      "rank": 3,
+      "id": "H3",
+      "claim": "Build failure withholds distribution. The Dockerfile in every mirror is the monorepo's and cannot build in the mirror's own context.",
+      "verdict": "defect confirmed, NOT the cause",
+      "for": [
+        "Measured: docker build on a clone of mcp-invoice fails at 'COPY packages ./packages' with '\"/packages\": not found'. The mirror has no packages/ or servers/ directory.",
+        "glama.ai/mcp/methodology 1.3: a failed build means the profile page is preserved but distribution is withheld."
+      ],
+      "against": [
+        "mcp-statement-of-account ships the SAME broken Dockerfile and is listed, scored and returned by the author search, so Glama's AI-inferred Dockerfile succeeded there.",
+        "Withheld distribution would mean absent from search, not a 404 on the page."
+      ],
+      "actionable": true,
+      "action": "Fix the Dockerfile emitted into mirrors. Owned by whoever owns scripts/sync-mirrors.sh. Round 1 wrongly counted 'Dockerfile serves HTTP 200' as a positive signal; serving is not building."
+    },
+    {
+      "rank": 4,
+      "id": "H4",
+      "claim": "The official MCP registry drives /mcp/servers listings.",
+      "verdict": "FALSIFIED",
+      "for": [],
+      "against": [
+        "bln-mcp-grammar-server is listed at /mcp/servers and is NOT in the official registry (searched registry.modelcontextprotocol.io for 'grammar': 4 results, all io.github.CSOAI-ORG/grammar-fix-ai-mcp).",
+        "All 33 mirrors ARE in the registry and 32 have no server page."
+      ],
+      "actionable": false,
+      "action": "The registry drives /mcp/connectors only. That is still valuable, see below."
+    },
+    {
+      "rank": 5,
+      "id": "H5",
+      "claim": "Repo metadata: a topic, a release, a description, a homepage, stars, size or README shape.",
+      "verdict": "FALSIFIED",
+      "for": [],
+      "against": [
+        "See the discrimination table: every field is identical or non-discriminating."
+      ],
+      "actionable": false,
+      "action": "Do not spend another loop on repo cosmetics for Glama."
+    },
+    {
+      "rank": 6,
+      "id": "H6",
+      "claim": "Fetching an unindexed page puts it in the queue.",
+      "verdict": "FALSIFIED in a prior round, not retested per brief",
+      "for": [],
+      "against": [],
+      "actionable": false,
+      "action": "none"
+    }
+  ],
+  "tests_run": [
+    {
+      "test": "GitHub traffic referrers, the check the brief expected to settle it",
+      "command": "gh api repos/theluckystrike/<repo>/traffic/popular/referrers",
+      "repos": [
+        "mcp-statement-of-account",
+        "mcp-time-tracker",
+        "mcp-invoice",
+        "mcp-spreadsheet",
+        "mcp-price-tracker"
+      ],
+      "result": "[] for all five, including the indexed one",
+      "conclusion": "Does not settle it. glama.ai is not a referrer on any repo, because a crawler clones or fetches raw files rather than browsing with a Referer header. Clone counts do not discriminate either. Recorded so no future loop re-spends these calls."
+    },
+    {
+      "test": "Docker build of a mirror repo in its own context",
+      "command": "git clone --depth 1 https://github.com/theluckystrike/mcp-invoice && docker build -t glama-r2-test-invoice .",
+      "result": "FAILS: 'failed to compute cache key: \"/packages\": not found' at Dockerfile line 6, COPY packages ./packages",
+      "conclusion": "Every mirror ships the monorepo's Dockerfile, which references packages/ and servers/ directories that do not exist in the mirror. A real defect, but not the cause of the 404s, since the indexed repo has the same file."
+    },
+    {
+      "test": "Is a 200 from the badge endpoint proof of a listing?",
+      "command": "curl -o /dev/null -w '%{http_code} %{size_download}' https://glama.ai/mcp/servers/theluckystrike/<repo>/badges/score.svg",
+      "result": "definitely-not-a-real-repo-xyz123 -> HTTP 200, 2880 bytes. mcp-change-order -> HTTP 200, 2880 bytes, BYTE-IDENTICAL. mcp-statement-of-account -> HTTP 200, 4558 bytes. Pages: mcp-change-order HEAD 404, mcp-statement-of-account HEAD 200.",
+      "conclusion": "The badge route serves a placeholder SVG for repositories that do not exist. The inherited watch script used badge-200 as its listing test and therefore reported 3 of 33 indexed; the truth is 1 of 33. Pasting such a badge into awesome-mcp-servers would have published a badge for a server that 404s. Fixed: the script now probes the PAGE and fingerprints the placeholder."
+    },
+    {
+      "test": "Is the documented daily sync real for an unclaimed server?",
+      "command": "node scripts/glama-watch.mjs; observed_at parsed from the embedded record on the server overview page",
+      "result": "mcp-statement-of-account observed_at = 2026-09-05T18:06:49.992918Z, releaseVersion 0.14.0, claimed=false. Unchanged across releases v0.15.0 through v0.21.0 and the 2026-09-06T08:22 force-push. Every connector was scored 2026-09-08.",
+      "conclusion": "Glama's score page says 'Servers are automatically synced at least once per day'. For this unclaimed server the tool schemas have not been re-read in 4 days and still report v0.14.0 while the project is at v0.21.0. The connector surface re-scores about daily. Falsifiable prediction for loop 32: if observed_at is still 2026-09-05 after the tool descriptions change, the /mcp/servers record cannot measure this work and only connectors can."
+    }
+  ],
+  "discovery_vs_sync": {
+    "two_pipelines": true,
+    "open_source_servers": {
+      "url": "https://glama.ai/mcp/servers/<owner>/<repo>",
+      "documented_entry": "GitHub OAuth submission by a maintainer with write access (glama.ai/mcp/methodology 1.1)",
+      "observed_entry": "an unadvertised path that also admits unclaimed records, at an uncontrollable rate",
+      "our_state": "1 of 33 mirror repos, unclaimed, last observed 2026-09-05T18:06:49.992918Z",
+      "public_signal_available": false
+    },
+    "connectors": {
+      "url": "https://glama.ai/mcp/connectors/io.github.theluckystrike/<name>",
+      "documented_entry": "Glama ingests and re-publishes everything in the official MCP registry (methodology 3: 'Glama operates as a superset of that registry')",
+      "public_signal_available": true,
+      "signal": "publish to registry.modelcontextprotocol.io, which this project already does",
+      "needs_account": false,
+      "growth": "4 connectors on 2026-09-07 (round 1) -> at least 25 on 2026-09-09, with no action taken",
+      "rescore_cadence": "all 20 fetched carry Scored timestamps of 2026-09-08, within 24 hours",
+      "carries_tdqs": true
+    },
+    "caveat": "The punkpeye/awesome-mcp-servers CI check matches the literal string 'glama.ai/mcp/servers/', so a connector URL does not satisfy it."
+  },
+  "crawler_visit_evidence": {
+    "referrers": "empty on every repo including the indexed one; glama.ai has never appeared as a GitHub traffic referrer",
+    "clones": "all mirrors are cloned heavily (68-325 in 14 days) but the indexed repo is not an outlier, so clones cannot identify Glama",
+    "positive_proof_of_a_visit": "Glama observed 8 tools on mcp-statement-of-account at 2026-09-05T18:06:49.992918Z and recorded a toolSchemaChangelog entry '8 tool updates v0.14.0'. That requires a clone, a build and a live tools/list, so the crawler demonstrably did visit and run that one repo.",
+    "no_evidence_of_a_visit_to_the_other_32": true
+  },
+  "fleet_score": {
+    "surface": "connectors",
+    "scored_on": "2026-09-08",
+    "n": 20,
+    "formula": {
+      "definition_quality": "0.6*mean(tool scores) + 0.4*min(tool scores)",
+      "overall": "0.7*definition_quality + 0.3*mean(4 coherence dimensions)",
+      "tiers": "A>=3.5 B>=3.0 C>=2.0 D>=1.0 F<1.0"
+    },
+    "fleet_mean_overall_now": 3.562,
+    "a_tier_now": 12,
+    "single_biggest_lever": {
+      "tool": "license_activate",
+      "file": "packages/mcp-license/src/index.ts",
+      "lines": "214-216",
+      "why": "It is the MINIMUM-scoring tool on 20 of 20 connectors, and 40 percent of the definition-quality score is the minimum tool score. The package is vendored into every server, so one description caps the whole fleet.",
+      "current_scores": {
+        "n": 20,
+        "min": 1.4,
+        "max": 3.1,
+        "mean": 2.26
+      },
+      "sibling_for_contrast": {
+        "tool": "license_status",
+        "file": "same file, line 211",
+        "n": 20,
+        "min": 3.8,
+        "max": 4.4,
+        "mean": 4.12
+      },
+      "current_description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally.",
+      "worst_dimensions_observed": "Usage Guidelines 1/5, Purpose 2/5, Behavior 2/5, Completeness 2/5, Conciseness 2/5",
+      "modelled_if_lifted_to_3_5": {
+        "fleet_mean_overall": 3.874,
+        "a_tier": 20,
+        "caveat": "A model, not a measurement. It assumes only the license tool score changes and coherence is unchanged. The claim must still describe what the tool actually does."
+      },
+      "owner": "the tool-description agent (servers/*/src and packages/); NOT this agent"
+    },
+    "per_connector": [
+      {
+        "connector": "amortization",
+        "grade": "B",
+        "published_tdqs": 3.4,
+        "scored_at": "2026-09-08 09:15",
+        "tools": 9,
+        "min_tool": "license_activate",
+        "min_tool_score": 2,
+        "overall_now": 3.459,
+        "tier_now": "B",
+        "overall_if_license_activate_at_3_5": 3.865,
+        "tier_then": "A"
+      },
+      {
+        "connector": "asset-register",
+        "grade": "A",
+        "published_tdqs": 3.5,
+        "scored_at": "2026-09-08 09:05",
+        "tools": 9,
+        "min_tool": "license_activate",
+        "min_tool_score": 2,
+        "overall_now": 3.539,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.861,
+        "tier_then": "A"
+      },
+      {
+        "connector": "bank-statement-csv-categorize-reconcile-ledger",
+        "grade": "A",
+        "published_tdqs": 3.7,
+        "scored_at": "2026-09-08 18:25",
+        "tools": 15,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.6,
+        "overall_now": 3.691,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.969,
+        "tier_then": "A"
+      },
+      {
+        "connector": "billing-docs-credit-notes-purchase-orders",
+        "grade": "A",
+        "published_tdqs": 3.7,
+        "scored_at": "2026-09-08 18:35",
+        "tools": 16,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.7,
+        "overall_now": 3.651,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.784,
+        "tier_then": "A"
+      },
+      {
+        "connector": "calendar-ics-reader-events-freebusy-conflicts",
+        "grade": "A",
+        "published_tdqs": 3.9,
+        "scored_at": "2026-09-08 19:35",
+        "tools": 11,
+        "min_tool": "license_activate",
+        "min_tool_score": 3.1,
+        "overall_now": 3.884,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.955,
+        "tier_then": "A"
+      },
+      {
+        "connector": "cash-book",
+        "grade": "B",
+        "published_tdqs": 3.4,
+        "scored_at": "2026-09-08 19:31",
+        "tools": 9,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.6,
+        "overall_now": 3.459,
+        "tier_now": "B",
+        "overall_if_license_activate_at_3_5": 3.585,
+        "tier_then": "A"
+      },
+      {
+        "connector": "catalogue",
+        "grade": "B",
+        "published_tdqs": 3.4,
+        "scored_at": "2026-09-08 09:08",
+        "tools": 12,
+        "min_tool": "license_activate",
+        "min_tool_score": 2,
+        "overall_now": 3.396,
+        "tier_now": "B",
+        "overall_if_license_activate_at_3_5": 3.812,
+        "tier_then": "A"
+      },
+      {
+        "connector": "contract-clause-library-proposal-template-docx",
+        "grade": "A",
+        "published_tdqs": 3.5,
+        "scored_at": "2026-09-08 09:07",
+        "tools": 12,
+        "min_tool": "license_activate",
+        "min_tool_score": 1.4,
+        "overall_now": 3.469,
+        "tier_now": "B",
+        "overall_if_license_activate_at_3_5": 4.13,
+        "tier_then": "A"
+      },
+      {
+        "connector": "deposits",
+        "grade": "B",
+        "published_tdqs": 3.3,
+        "scored_at": "2026-09-08 09:11",
+        "tools": 11,
+        "min_tool": "license_activate",
+        "min_tool_score": 1.5,
+        "overall_now": 3.297,
+        "tier_now": "B",
+        "overall_if_license_activate_at_3_5": 3.766,
+        "tier_then": "A"
+      },
+      {
+        "connector": "excel-spreadsheet-xlsx-csv",
+        "grade": "A",
+        "published_tdqs": 3.7,
+        "scored_at": "2026-09-08 09:11",
+        "tools": 13,
+        "min_tool": "license_activate",
+        "min_tool_score": 2,
+        "overall_now": 3.746,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 4.159,
+        "tier_then": "A"
+      },
+      {
+        "connector": "expense-tracker-receipts-mileage",
+        "grade": "A",
+        "published_tdqs": 3.7,
+        "scored_at": "2026-09-08 18:10",
+        "tools": 14,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.9,
+        "overall_now": 3.719,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.849,
+        "tier_then": "A"
+      },
+      {
+        "connector": "image-resize-convert-compress-watermark",
+        "grade": "A",
+        "published_tdqs": 3.6,
+        "scored_at": "2026-09-08 17:55",
+        "tools": 15,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.4,
+        "overall_now": 3.552,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.807,
+        "tier_then": "A"
+      },
+      {
+        "connector": "pdf-merge-split-stamp-extract-pages",
+        "grade": "B",
+        "published_tdqs": 3.3,
+        "scored_at": "2026-09-08 08:51",
+        "tools": 15,
+        "min_tool": "license_activate",
+        "min_tool_score": 1.4,
+        "overall_now": 3.322,
+        "tier_now": "B",
+        "overall_if_license_activate_at_3_5": 3.969,
+        "tier_then": "A"
+      },
+      {
+        "connector": "price-tracker-drop-alert-watch",
+        "grade": "A",
+        "published_tdqs": 3.7,
+        "scored_at": "2026-09-08 19:35",
+        "tools": 10,
+        "min_tool": "license_activate",
+        "min_tool_score": 3,
+        "overall_now": 3.679,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.84,
+        "tier_then": "A"
+      },
+      {
+        "connector": "quotes-estimates-proposals-vat-win-rate",
+        "grade": "A",
+        "published_tdqs": 3.7,
+        "scored_at": "2026-09-08 19:30",
+        "tools": 12,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.1,
+        "overall_now": 3.675,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 4.116,
+        "tier_then": "A"
+      },
+      {
+        "connector": "recurring-invoice-scheduler-subscription-billing-due-reminders",
+        "grade": "A",
+        "published_tdqs": 3.6,
+        "scored_at": "2026-09-08 09:11",
+        "tools": 13,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.4,
+        "overall_now": 3.618,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.766,
+        "tier_then": "A"
+      },
+      {
+        "connector": "statement-of-account",
+        "grade": "B",
+        "published_tdqs": 3.4,
+        "scored_at": "2026-09-08 18:25",
+        "tools": 8,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.8,
+        "overall_now": 3.468,
+        "tier_now": "B",
+        "overall_if_license_activate_at_3_5": 3.701,
+        "tier_then": "A"
+      },
+      {
+        "connector": "time-tracker-timesheet-billable-hours",
+        "grade": "A",
+        "published_tdqs": 3.6,
+        "scored_at": "2026-09-08 09:10",
+        "tools": 13,
+        "min_tool": "license_activate",
+        "min_tool_score": 2,
+        "overall_now": 3.636,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 4.048,
+        "tier_then": "A"
+      },
+      {
+        "connector": "timezone-world-clock-meeting-slots-overlap-ics",
+        "grade": "B",
+        "published_tdqs": 3.4,
+        "scored_at": "2026-09-08 09:16",
+        "tools": 9,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.2,
+        "overall_now": 3.346,
+        "tier_now": "B",
+        "overall_if_license_activate_at_3_5": 3.659,
+        "tier_then": "A"
+      },
+      {
+        "connector": "work-order",
+        "grade": "A",
+        "published_tdqs": 3.7,
+        "scored_at": "2026-09-08 09:10",
+        "tools": 12,
+        "min_tool": "license_activate",
+        "min_tool_score": 2.2,
+        "overall_now": 3.63,
+        "tier_now": "A",
+        "overall_if_license_activate_at_3_5": 3.843,
+        "tier_then": "A"
+      }
+    ]
+  },
+  "resolved_from_round_1": {
+    "connector_health_401": {
+      "round_1": "all 4 connectors rendered a red dot, 'Server is not responding', because https://mcp.zovo.one/mcp/<name> returned HTTP 401",
+      "now": "FIXED. mcp.zovo.one/mcp/{spreadsheet,statement-of-account,asset-register} all return HTTP 200, and every connector dot in the listing is green #12b981 with zero 'not responding' strings."
+    }
+  },
+  "rejected_levers": [
+    {
+      "lever": "Report tool usage to Glama's unauthenticated telemetry endpoint to clear the 'No recent usage' checklist item",
+      "rejected_because": "The usage did not happen. Reporting it would be fabrication, and the checklist item is a claim about real adoption."
+    },
+    {
+      "lever": "Add mcp-statement-of-account as a fifth entry to awesome-mcp-servers PR 13473 to flip the label",
+      "rejected_because": "Already rejected in round 1 and still correct: it would green a gate while four of five entries stay unbadged."
+    },
+    {
+      "lever": "Delete and recreate the 32 repos to bait the creation-time crawler",
+      "rejected_because": "Destructive, and the 120-day lag on bln-mcp-grammar-server shows creation time is not the trigger anyway."
+    },
+    {
+      "lever": "Create a Glama account to use the documented Add Server flow",
+      "rejected_because": "Forbidden by the brief and by standing project rules. Recorded in HUMAN_GATED_PACK.md as an operator click."
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": 1,
+      "to": "tool-description agent",
+      "action": "Rewrite the license_activate description in packages/mcp-license/src/index.ts:214-216. It is the fleet minimum on 20 of 20 connectors and 40 percent of the score is the minimum. Nothing else in reach moves as many servers with one edit.",
+      "measurable_in": "about 1 day on the connector surface"
+    },
+    {
+      "priority": 2,
+      "to": "loop coordinator",
+      "action": "Retarget Glama effort from /mcp/servers to /mcp/connectors. The registry path needs no account, already carries 25 of our servers, carries the identical TDQS, and re-scores daily. /mcp/servers is not enterable autonomously."
+    },
+    {
+      "priority": 3,
+      "to": "owner of scripts/sync-mirrors.sh",
+      "action": "The Dockerfile copied into every mirror repo is the monorepo's and cannot build there (measured). Emit a mirror-local Dockerfile, or omit it and let Glama infer one."
+    },
+    {
+      "priority": 4,
+      "to": "owner of servers/*/server.json + registry publish",
+      "action": "Test H2 on ONE server: publish a registry entry whose repository.url names the mirror repo rather than the monorepo, and watch whether a /mcp/servers record appears. This is the only remaining no-account experiment that could open the server surface."
+    },
+    {
+      "priority": 5,
+      "to": "any agent touching awesome-mcp-servers",
+      "action": "Never treat a 200 from the badge URL as proof of a listing. Check the page, or read badges[<repo>].safe_to_publish in data/glama_watch.json."
+    }
+  ],
+  "budget": {
+    "paid_apis": 0,
+    "glama_requests_paced_at_ms": 900,
+    "note": "All Glama requests were paced; the documented limit is 100 requests per second and this stayed near 1."
+  }
+}

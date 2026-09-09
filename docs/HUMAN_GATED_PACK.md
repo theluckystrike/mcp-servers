@@ -995,3 +995,43 @@ page header is a second instrument.
 `https://glama.ai/api/mcp/v1/servers/...` returns 401 and asks for one, and its data licence
 requires visible attribution on every page that displays it — not worth taking on), and there is
 no paid tier to buy.
+
+---
+
+### Glama, round 2 addendum (2026-09-09) — what changed, and what the click is now worth
+
+Measured this loop; details and commands in `docs/GLAMA_R2.md`, numbers in `data/glama_r2.json`.
+
+**The claim step is worth less than it looked, and something free is worth much more.**
+
+1. **Waiting will not do it.** Glama's own methodology page (`glama.ai/mcp/methodology` §1.1)
+   documents open-source listing as a **GitHub OAuth submission only** — there is no crawler in
+   the documented pipeline. The one mirror repo that got in arrived by an unadvertised path at
+   an uncontrollable rate: 33 minutes for `mcp-statement-of-account`, but about **120 days** for
+   `bln-mcp-grammar-server`. Four days on, it is still **1 of 33**. The line in the ranked table
+   above ("this may resolve itself") should be read as: possibly, on a timescale of months.
+2. **Nothing about the repositories is wrong.** 24 fields were diffed between the indexed repo
+   and the unindexed ones — topics, license, releases, size, README, `glama.json`, `server.json`,
+   file tree, traffic. Every one is identical or non-discriminating. There is no repository fix
+   waiting to be made, so the OAuth click really is the only route to `/mcp/servers`.
+3. **We are already on Glama 25 times over, for free.** The official MCP registry — which this
+   project already publishes to — is mirrored into `glama.ai/mcp/connectors`, needs no account,
+   and went from 4 to **at least 25** of our servers between 2026-09-07 and 2026-09-09 with
+   nobody doing anything. Those connector pages carry the **identical** Tool Definition Quality
+   rubric and are re-scored about daily. All health dots are green now that `mcp.zovo.one`
+   returns 200 instead of 401.
+4. **Correction to the "re-sync on 2026-09-08" note above.** The record's timestamp moves, but
+   the server has not actually been re-run: the embedded `observedAt` is still
+   **2026-09-05T18:06:49Z** and `releaseVersion` still **0.14.0**, across seven releases and a
+   force-push. The daily "sync" is not re-reading the tool schemas. That makes the manual
+   **Sync Server** button the single most useful thing behind the login — it is the only way to
+   find out whether that field will ever move for an unclaimed-then-claimed server.
+
+**So the click is still worth making**, for the awesome-mcp-servers gate (its CI matches the
+literal string `glama.ai/mcp/servers/`, which a connector URL does not satisfy) and for the
+manual sync. It is no longer the only way to be measured on Glama.
+
+**Do not** click "Try in Browser" purely to clear the "No recent usage" line if you are not
+actually trying the tool. That line is a claim about real adoption. Same reason this agent did
+not post to Glama's unauthenticated usage-telemetry endpoint, which would have cleared it in one
+request.
