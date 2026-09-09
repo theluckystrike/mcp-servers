@@ -59,3 +59,40 @@ already won. Four rows is the smallest change that captures the whole measured b
 It is not the migration. The `io.github` rows remain active and are still the project's
 primary identity. If the four new rows prove out, extending them is a small step; if they
 prove unwelcome, they can be deprecated with one command each and nothing else changes.
+
+## Extended to every buried server, and the full measured result
+
+The same measurement was run across the rest of the catalogue on the word a person would
+actually type. The pattern held: most servers are already rank 1 or 2 because the token is
+uncontested, and a handful are buried on the contested ones. Rows were added only where the
+`io.github` entry sat past where anyone looks.
+
+Measured live, same method, same day:
+
+| Token | `io.github` before | `com.bestremotetools` now | Places gained |
+|---|---|---|---|
+| pdf | 93 of 100 | **5** | 88 |
+| image | 65 of 75 | **6** | 59 |
+| bank | 62 of 67 | **7** | 55 |
+| quote | 52 of 80 | **3** | 49 |
+| price | 53 of 79 | **7** | 46 |
+| contract | 52 of 61 | **6** | 46 |
+| invoice | 65 of 75 | **32** | 33 |
+| qr | 30 of 38 | **2** | 28 |
+| calendar | 35 of 39 | **8** | 27 |
+| archive | 13 of 17 | **1** | 12 |
+
+**443 places across ten contested tokens.** Nine of the ten now sit in the first eight
+results where none was previously on the first page at all.
+
+Two servers were deliberately left alone. `resume` and `kanban` sit at 11, which is close
+enough to the fold that a second row is not worth the duplication.
+
+## What was not touched
+
+Every `io.github` row is still active and still the project's primary identity. The new rows
+carry no `remotes` block, so no hosted URL was reassigned and nothing collided. One row was
+deprecated and republished under a slightly different name because the registry's
+100-character description cap had truncated it mid-word; the `io.github` row sharing that
+local name was checked afterwards and is untouched and active.
+
