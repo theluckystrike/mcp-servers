@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T08:26:39.344Z",
+  "generated_at": "2026-09-09T08:45:23.005Z",
   "host": "mcp.zovo.one",
   "channels": {
     "cloudflare_graphql": "WORKING",
@@ -13,8 +13,8 @@
       "account": "dd3f2a29b7707e21a87f26a622c0bb9d"
     },
     "window": {
-      "start": "2026-09-01T08:26:26Z",
-      "end": "2026-09-08T08:26:26Z",
+      "start": "2026-09-02T08:45:02Z",
+      "end": "2026-09-09T08:45:02Z",
       "days": 7
     },
     "retention_note": "httpRequestsAdaptiveGroups on this Pro zone refuses data older than 1w1d (measured: query at -14d returns extensions.code=quota, \"cannot request data older than 1w1d\"). A 30-day per-path pull is IMPOSSIBLE on this plan. httpRequests1dGroups retains 30d but has no host dimension.",
@@ -22,80 +22,80 @@
       "row_cap": 10000,
       "slices": [
         {
-          "start": "2026-09-01T08:26:26Z",
-          "end": "2026-09-02T08:26:26Z",
+          "start": "2026-09-02T08:45:02Z",
+          "end": "2026-09-03T08:45:02Z",
           "upper_bound": "lt",
-          "rows_returned": 0,
+          "rows_returned": 1579,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-02T08:26:26Z",
-          "end": "2026-09-03T08:26:26Z",
+          "start": "2026-09-03T08:45:02Z",
+          "end": "2026-09-04T08:45:02Z",
           "upper_bound": "lt",
-          "rows_returned": 1519,
+          "rows_returned": 2206,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-03T08:26:26Z",
-          "end": "2026-09-04T08:26:26Z",
+          "start": "2026-09-04T08:45:02Z",
+          "end": "2026-09-05T08:45:02Z",
           "upper_bound": "lt",
-          "rows_returned": 2227,
+          "rows_returned": 1887,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-04T08:26:26Z",
-          "end": "2026-09-05T08:26:26Z",
+          "start": "2026-09-05T08:45:02Z",
+          "end": "2026-09-06T08:45:02Z",
           "upper_bound": "lt",
-          "rows_returned": 1857,
+          "rows_returned": 3145,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-05T08:26:26Z",
-          "end": "2026-09-06T08:26:26Z",
+          "start": "2026-09-06T08:45:02Z",
+          "end": "2026-09-07T08:45:02Z",
           "upper_bound": "lt",
-          "rows_returned": 3130,
+          "rows_returned": 3724,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-06T08:26:26Z",
-          "end": "2026-09-07T08:26:26Z",
+          "start": "2026-09-07T08:45:02Z",
+          "end": "2026-09-08T08:45:02Z",
           "upper_bound": "lt",
-          "rows_returned": 3765,
+          "rows_returned": 3674,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-07T08:26:26Z",
-          "end": "2026-09-08T08:26:26Z",
+          "start": "2026-09-08T08:45:02Z",
+          "end": "2026-09-09T08:45:02Z",
           "upper_bound": "leq",
-          "rows_returned": 3634,
+          "rows_returned": 3989,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         }
       ],
-      "rows_before_aggregation": 16132,
-      "rows_after_aggregation": 11132,
-      "max_rows_in_any_slice": 3765,
+      "rows_before_aggregation": 20204,
+      "rows_after_aggregation": 13371,
+      "max_rows_in_any_slice": 3989,
       "note": "The whole-window path×UA×country grouping saturates the 10,000-row API cap on this host, so it is pulled one day at a time and summed in-script. Any slice that still hits the cap is halved and re-pulled; a sub-hour slice at the cap aborts the run (exit 2)."
     },
     "daily_breakdown": [
       {
-        "slice_start": "2026-09-02T08:26:26Z",
-        "requests": 6931,
-        "human_page_views_render_proven": 29,
-        "sitemap_requests": 716,
+        "slice_start": "2026-09-02T08:45:02Z",
+        "requests": 7208,
+        "human_page_views_render_proven": 30,
+        "sitemap_requests": 731,
         "crawlers": {
           "ClaudeBot": {
             "requests": 163,
@@ -110,8 +110,8 @@
             "sitemap_urls_fetched": 17
           },
           "YandexBot": {
-            "requests": 96,
-            "sitemap_urls_fetched": 30
+            "requests": 108,
+            "sitemap_urls_fetched": 32
           },
           "bingbot": {
             "requests": 16,
@@ -125,33 +125,33 @@
             "requests": 5,
             "sitemap_urls_fetched": 4
           },
-          "OAI-SearchBot": {
-            "requests": 3,
+          "Googlebot": {
+            "requests": 4,
             "sitemap_urls_fetched": 0
           },
-          "Googlebot": {
+          "OAI-SearchBot": {
             "requests": 3,
             "sitemap_urls_fetched": 0
           }
         }
       },
       {
-        "slice_start": "2026-09-03T08:26:26Z",
-        "requests": 15218,
-        "human_page_views_render_proven": 39,
-        "sitemap_requests": 549,
+        "slice_start": "2026-09-03T08:45:02Z",
+        "requests": 15546,
+        "human_page_views_render_proven": 38,
+        "sitemap_requests": 546,
         "crawlers": {
           "ClaudeBot": {
-            "requests": 132,
+            "requests": 133,
             "sitemap_urls_fetched": 25
-          },
-          "YandexBot": {
-            "requests": 87,
-            "sitemap_urls_fetched": 14
           },
           "MJ12bot": {
             "requests": 84,
             "sitemap_urls_fetched": 20
+          },
+          "YandexBot": {
+            "requests": 76,
+            "sitemap_urls_fetched": 13
           },
           "bingbot": {
             "requests": 21,
@@ -170,7 +170,7 @@
             "sitemap_urls_fetched": 0
           },
           "Googlebot": {
-            "requests": 6,
+            "requests": 5,
             "sitemap_urls_fetched": 1
           },
           "PerplexityBot": {
@@ -188,30 +188,30 @@
         }
       },
       {
-        "slice_start": "2026-09-04T08:26:26Z",
-        "requests": 12831,
-        "human_page_views_render_proven": 87,
-        "sitemap_requests": 466,
+        "slice_start": "2026-09-04T08:45:02Z",
+        "requests": 13064,
+        "human_page_views_render_proven": 88,
+        "sitemap_requests": 476,
         "crawlers": {
           "ClaudeBot": {
-            "requests": 38,
+            "requests": 37,
             "sitemap_urls_fetched": 3
           },
           "SemrushBot": {
-            "requests": 32,
-            "sitemap_urls_fetched": 7
+            "requests": 34,
+            "sitemap_urls_fetched": 8
           },
           "MJ12bot": {
             "requests": 26,
             "sitemap_urls_fetched": 6
           },
-          "YandexBot": {
-            "requests": 22,
-            "sitemap_urls_fetched": 14
-          },
           "Amazonbot": {
             "requests": 22,
             "sitemap_urls_fetched": 10
+          },
+          "YandexBot": {
+            "requests": 21,
+            "sitemap_urls_fetched": 13
           },
           "GPTBot": {
             "requests": 9,
@@ -240,50 +240,54 @@
           "bingbot": {
             "requests": 2,
             "sitemap_urls_fetched": 0
+          },
+          "Claude-User": {
+            "requests": 2,
+            "sitemap_urls_fetched": 1
           }
         }
       },
       {
-        "slice_start": "2026-09-05T08:26:26Z",
-        "requests": 29727,
-        "human_page_views_render_proven": 44,
-        "sitemap_requests": 750,
+        "slice_start": "2026-09-05T08:45:02Z",
+        "requests": 29179,
+        "human_page_views_render_proven": 46,
+        "sitemap_requests": 745,
         "crawlers": {
           "GPTBot": {
             "requests": 238,
             "sitemap_urls_fetched": 32
           },
           "Amazonbot": {
-            "requests": 145,
-            "sitemap_urls_fetched": 47
+            "requests": 154,
+            "sitemap_urls_fetched": 48
           },
           "ClaudeBot": {
-            "requests": 131,
+            "requests": 132,
             "sitemap_urls_fetched": 23
           },
           "SemrushBot": {
-            "requests": 119,
-            "sitemap_urls_fetched": 38
-          },
-          "bingbot": {
-            "requests": 73,
-            "sitemap_urls_fetched": 19
+            "requests": 117,
+            "sitemap_urls_fetched": 37
           },
           "MJ12bot": {
-            "requests": 42,
-            "sitemap_urls_fetched": 15
+            "requests": 85,
+            "sitemap_urls_fetched": 21
+          },
+          "bingbot": {
+            "requests": 74,
+            "sitemap_urls_fetched": 19
           },
           "meta-externalagent": {
-            "requests": 22,
+            "requests": 23,
             "sitemap_urls_fetched": 5
+          },
+          "OAI-SearchBot": {
+            "requests": 5,
+            "sitemap_urls_fetched": 0
           },
           "YandexBot": {
             "requests": 4,
             "sitemap_urls_fetched": 2
-          },
-          "OAI-SearchBot": {
-            "requests": 4,
-            "sitemap_urls_fetched": 0
           },
           "AhrefsBot": {
             "requests": 4,
@@ -292,10 +296,6 @@
           "Applebot": {
             "requests": 3,
             "sitemap_urls_fetched": 2
-          },
-          "Claude-User": {
-            "requests": 2,
-            "sitemap_urls_fetched": 1
           },
           "PerplexityBot": {
             "requests": 2,
@@ -312,46 +312,46 @@
         }
       },
       {
-        "slice_start": "2026-09-06T08:26:26Z",
-        "requests": 15761,
-        "human_page_views_render_proven": 59,
-        "sitemap_requests": 2337,
+        "slice_start": "2026-09-06T08:45:02Z",
+        "requests": 15623,
+        "human_page_views_render_proven": 56,
+        "sitemap_requests": 2334,
         "crawlers": {
           "Amazonbot": {
-            "requests": 219,
-            "sitemap_urls_fetched": 25
-          },
-          "MJ12bot": {
-            "requests": 107,
-            "sitemap_urls_fetched": 12
+            "requests": 210,
+            "sitemap_urls_fetched": 24
           },
           "meta-externalagent": {
-            "requests": 86,
-            "sitemap_urls_fetched": 43
-          },
-          "ClaudeBot": {
-            "requests": 67,
-            "sitemap_urls_fetched": 33
+            "requests": 87,
+            "sitemap_urls_fetched": 44
           },
           "YandexBot": {
             "requests": 67,
             "sitemap_urls_fetched": 52
           },
+          "ClaudeBot": {
+            "requests": 66,
+            "sitemap_urls_fetched": 33
+          },
+          "MJ12bot": {
+            "requests": 65,
+            "sitemap_urls_fetched": 6
+          },
           "bingbot": {
             "requests": 59,
-            "sitemap_urls_fetched": 16
+            "sitemap_urls_fetched": 17
           },
           "SemrushBot": {
-            "requests": 44,
-            "sitemap_urls_fetched": 7
-          },
-          "OAI-SearchBot": {
-            "requests": 4,
-            "sitemap_urls_fetched": 0
+            "requests": 49,
+            "sitemap_urls_fetched": 10
           },
           "Applebot": {
             "requests": 4,
             "sitemap_urls_fetched": 2
+          },
+          "OAI-SearchBot": {
+            "requests": 3,
+            "sitemap_urls_fetched": 0
           },
           "GPTBot": {
             "requests": 3,
@@ -368,29 +368,29 @@
         }
       },
       {
-        "slice_start": "2026-09-07T08:26:26Z",
-        "requests": 13055,
-        "human_page_views_render_proven": 66,
-        "sitemap_requests": 1185,
+        "slice_start": "2026-09-07T08:45:02Z",
+        "requests": 13146,
+        "human_page_views_render_proven": 67,
+        "sitemap_requests": 1201,
         "crawlers": {
           "meta-externalagent": {
-            "requests": 239,
-            "sitemap_urls_fetched": 18
+            "requests": 237,
+            "sitemap_urls_fetched": 17
           },
           "SemrushBot": {
-            "requests": 101,
-            "sitemap_urls_fetched": 28
+            "requests": 96,
+            "sitemap_urls_fetched": 24
           },
           "Amazonbot": {
-            "requests": 79,
-            "sitemap_urls_fetched": 20
+            "requests": 82,
+            "sitemap_urls_fetched": 21
           },
           "bingbot": {
-            "requests": 52,
-            "sitemap_urls_fetched": 10
+            "requests": 51,
+            "sitemap_urls_fetched": 9
           },
           "MJ12bot": {
-            "requests": 36,
+            "requests": 35,
             "sitemap_urls_fetched": 22
           },
           "ClaudeBot": {
@@ -414,6 +414,74 @@
             "sitemap_urls_fetched": 0
           },
           "PerplexityBot": {
+            "requests": 2,
+            "sitemap_urls_fetched": 1
+          }
+        }
+      },
+      {
+        "slice_start": "2026-09-08T08:45:02Z",
+        "requests": 38919,
+        "human_page_views_render_proven": 99,
+        "sitemap_requests": 974,
+        "crawlers": {
+          "GPTBot": {
+            "requests": 138,
+            "sitemap_urls_fetched": 43
+          },
+          "Amazonbot": {
+            "requests": 63,
+            "sitemap_urls_fetched": 24
+          },
+          "Applebot": {
+            "requests": 45,
+            "sitemap_urls_fetched": 29
+          },
+          "SemrushBot": {
+            "requests": 33,
+            "sitemap_urls_fetched": 16
+          },
+          "ClaudeBot": {
+            "requests": 32,
+            "sitemap_urls_fetched": 14
+          },
+          "meta-externalagent": {
+            "requests": 32,
+            "sitemap_urls_fetched": 23
+          },
+          "bingbot": {
+            "requests": 9,
+            "sitemap_urls_fetched": 0
+          },
+          "Claude-User": {
+            "requests": 8,
+            "sitemap_urls_fetched": 1
+          },
+          "PerplexityBot": {
+            "requests": 7,
+            "sitemap_urls_fetched": 5
+          },
+          "OAI-SearchBot": {
+            "requests": 6,
+            "sitemap_urls_fetched": 0
+          },
+          "DuckDuckBot": {
+            "requests": 3,
+            "sitemap_urls_fetched": 1
+          },
+          "AhrefsBot": {
+            "requests": 3,
+            "sitemap_urls_fetched": 1
+          },
+          "Googlebot": {
+            "requests": 3,
+            "sitemap_urls_fetched": 1
+          },
+          "MJ12bot": {
+            "requests": 3,
+            "sitemap_urls_fetched": 0
+          },
+          "YandexBot": {
             "requests": 2,
             "sitemap_urls_fetched": 1
           }
@@ -483,12 +551,12 @@
       },
       {
         "date": "2026-09-02",
-        "status": 502,
+        "status": 406,
         "requests": 3
       },
       {
         "date": "2026-09-02",
-        "status": 406,
+        "status": 502,
         "requests": 3
       },
       {
@@ -763,12 +831,12 @@
       },
       {
         "date": "2026-09-06",
-        "status": 406,
+        "status": 499,
         "requests": 25
       },
       {
         "date": "2026-09-06",
-        "status": 499,
+        "status": 406,
         "requests": 25
       },
       {
@@ -838,33 +906,53 @@
       },
       {
         "date": "2026-09-08",
-        "status": 401,
-        "requests": 2479
+        "status": 200,
+        "requests": 17474
       },
       {
         "date": "2026-09-08",
-        "status": 200,
-        "requests": 1590
+        "status": 202,
+        "requests": 3549
+      },
+      {
+        "date": "2026-09-08",
+        "status": 401,
+        "requests": 3093
       },
       {
         "date": "2026-09-08",
         "status": 404,
-        "requests": 611
+        "requests": 1246
       },
       {
         "date": "2026-09-08",
         "status": 504,
-        "requests": 243
+        "requests": 1088
       },
       {
         "date": "2026-09-08",
         "status": 303,
-        "requests": 187
+        "requests": 760
+      },
+      {
+        "date": "2026-09-08",
+        "status": 429,
+        "requests": 549
       },
       {
         "date": "2026-09-08",
         "status": 301,
-        "requests": 47
+        "requests": 117
+      },
+      {
+        "date": "2026-09-08",
+        "status": 302,
+        "requests": 20
+      },
+      {
+        "date": "2026-09-08",
+        "status": 499,
+        "requests": 11
       },
       {
         "date": "2026-09-08",
@@ -873,17 +961,82 @@
       },
       {
         "date": "2026-09-08",
-        "status": 302,
+        "status": 400,
+        "requests": 3
+      },
+      {
+        "date": "2026-09-08",
+        "status": 413,
         "requests": 1
+      },
+      {
+        "date": "2026-09-09",
+        "status": 200,
+        "requests": 11923
+      },
+      {
+        "date": "2026-09-09",
+        "status": 202,
+        "requests": 2761
+      },
+      {
+        "date": "2026-09-09",
+        "status": 504,
+        "requests": 522
+      },
+      {
+        "date": "2026-09-09",
+        "status": 401,
+        "requests": 373
+      },
+      {
+        "date": "2026-09-09",
+        "status": 303,
+        "requests": 357
+      },
+      {
+        "date": "2026-09-09",
+        "status": 404,
+        "requests": 283
+      },
+      {
+        "date": "2026-09-09",
+        "status": 429,
+        "requests": 58
+      },
+      {
+        "date": "2026-09-09",
+        "status": 301,
+        "requests": 53
+      },
+      {
+        "date": "2026-09-09",
+        "status": 302,
+        "requests": 52
+      },
+      {
+        "date": "2026-09-09",
+        "status": 400,
+        "requests": 16
+      },
+      {
+        "date": "2026-09-09",
+        "status": 499,
+        "requests": 9
+      },
+      {
+        "date": "2026-09-09",
+        "status": 413,
+        "requests": 3
       }
     ],
     "effective_window": {
-      "requested_start": "2026-09-01T08:26:26Z",
-      "requested_end": "2026-09-08T08:26:26Z",
+      "requested_start": "2026-09-02T08:45:02Z",
+      "requested_end": "2026-09-09T08:45:02Z",
       "requested_days": 7,
       "first_hour_with_host_data": "2026-09-02T12:00:00Z",
-      "hours_with_data": 141,
-      "effective_days": 5.852,
+      "hours_with_data": 165,
+      "effective_days": 6.865,
       "note": "RETENTION SHORTFALL: the adaptive dataset holds no rows for this host before 2026-09-02T12:00:00Z, although the API accepts the older start and other hosts on the zone do return rows there. Absolute counts cover the effective window, not the requested one."
     },
     "host_hourly_requests": [
@@ -1449,150 +1602,255 @@
       },
       {
         "hour": "2026-09-08T08:00:00Z",
-        "requests": 383
+        "requests": 1412
+      },
+      {
+        "hour": "2026-09-08T09:00:00Z",
+        "requests": 1902
+      },
+      {
+        "hour": "2026-09-08T10:00:00Z",
+        "requests": 1736
+      },
+      {
+        "hour": "2026-09-08T11:00:00Z",
+        "requests": 1353
+      },
+      {
+        "hour": "2026-09-08T12:00:00Z",
+        "requests": 1344
+      },
+      {
+        "hour": "2026-09-08T13:00:00Z",
+        "requests": 1595
+      },
+      {
+        "hour": "2026-09-08T14:00:00Z",
+        "requests": 1170
+      },
+      {
+        "hour": "2026-09-08T15:00:00Z",
+        "requests": 1114
+      },
+      {
+        "hour": "2026-09-08T16:00:00Z",
+        "requests": 1213
+      },
+      {
+        "hour": "2026-09-08T17:00:00Z",
+        "requests": 1214
+      },
+      {
+        "hour": "2026-09-08T18:00:00Z",
+        "requests": 1036
+      },
+      {
+        "hour": "2026-09-08T19:00:00Z",
+        "requests": 1344
+      },
+      {
+        "hour": "2026-09-08T20:00:00Z",
+        "requests": 1780
+      },
+      {
+        "hour": "2026-09-08T21:00:00Z",
+        "requests": 1688
+      },
+      {
+        "hour": "2026-09-08T22:00:00Z",
+        "requests": 1842
+      },
+      {
+        "hour": "2026-09-08T23:00:00Z",
+        "requests": 1391
+      },
+      {
+        "hour": "2026-09-09T00:00:00Z",
+        "requests": 1328
+      },
+      {
+        "hour": "2026-09-09T01:00:00Z",
+        "requests": 1389
+      },
+      {
+        "hour": "2026-09-09T02:00:00Z",
+        "requests": 1949
+      },
+      {
+        "hour": "2026-09-09T03:00:00Z",
+        "requests": 1755
+      },
+      {
+        "hour": "2026-09-09T04:00:00Z",
+        "requests": 2251
+      },
+      {
+        "hour": "2026-09-09T05:00:00Z",
+        "requests": 1908
+      },
+      {
+        "hour": "2026-09-09T06:00:00Z",
+        "requests": 1831
+      },
+      {
+        "hour": "2026-09-09T07:00:00Z",
+        "requests": 2691
+      },
+      {
+        "hour": "2026-09-09T08:00:00Z",
+        "requests": 1308
       }
     ],
     "sampling": {
-      "avg_sample_interval": 1.2475489215254711,
+      "avg_sample_interval": 1.1896142087379076,
       "note": "count is the sample-adjusted request estimate returned by the adaptive dataset."
     },
     "totals": {
-      "requests": 93525,
-      "visits": 7343,
-      "edge_response_bytes": 209568997
+      "requests": 132686,
+      "visits": 8444,
+      "edge_response_bytes": 286728576
     },
     "by_class": {
-      "scripted_client": 50625,
-      "other_bot_probe": 30986,
-      "unclassified": 3574,
-      "human_browser": 3125,
-      "search_ai_crawler": 2345,
-      "unknown-empty-ua": 2131,
-      "seo_crawler": 737
+      "scripted_client": 62342,
+      "other_bot_probe": 54012,
+      "human_browser": 5023,
+      "unclassified": 4744,
+      "unknown-empty-ua": 3092,
+      "search_ai_crawler": 2696,
+      "seo_crawler": 776
     },
     "by_crawler": {
-      "ClaudeBot": 561,
-      "Amazonbot": 466,
-      "MJ12bot": 422,
-      "GPTBot": 376,
-      "meta-externalagent": 368,
-      "SemrushBot": 303,
-      "YandexBot": 276,
-      "bingbot": 223,
-      "Googlebot": 29,
-      "PerplexityBot": 19,
-      "OAI-SearchBot": 17,
-      "AhrefsBot": 9,
-      "Applebot": 7,
+      "ClaudeBot": 593,
+      "Amazonbot": 532,
+      "GPTBot": 514,
+      "MJ12bot": 425,
+      "meta-externalagent": 400,
+      "SemrushBot": 336,
+      "YandexBot": 278,
+      "bingbot": 232,
+      "Applebot": 52,
+      "Googlebot": 32,
+      "PerplexityBot": 26,
+      "OAI-SearchBot": 23,
+      "AhrefsBot": 12,
+      "Claude-User": 10,
       "DotBot": 3,
-      "Claude-User": 2,
+      "DuckDuckBot": 3,
       "ChatGPT-User": 1
     },
     "top_countries": [
       {
-        "country": "PL",
-        "requests": 26073
+        "country": "US",
+        "requests": 38475
       },
       {
-        "country": "US",
-        "requests": 21902
+        "country": "PL",
+        "requests": 27667
       },
       {
         "country": "FI",
-        "requests": 12888
+        "requests": 27610
       },
       {
         "country": "VN",
-        "requests": 11038
+        "requests": 11051
       },
       {
         "country": "DE",
-        "requests": 7743
+        "requests": 9139
       },
       {
         "country": "FR",
-        "requests": 6370
+        "requests": 8695
       },
       {
         "country": "GB",
-        "requests": 3642
+        "requests": 4047
       },
       {
         "country": "SG",
-        "requests": 916
-      },
-      {
-        "country": "KR",
-        "requests": 490
+        "requests": 1489
       },
       {
         "country": "CN",
-        "requests": 292
+        "requests": 737
       },
       {
-        "country": "RU",
-        "requests": 285
+        "country": "KR",
+        "requests": 729
       },
       {
         "country": "NL",
-        "requests": 284
+        "requests": 592
+      },
+      {
+        "country": "RU",
+        "requests": 384
+      },
+      {
+        "country": "AT",
+        "requests": 263
+      },
+      {
+        "country": "IN",
+        "requests": 244
       },
       {
         "country": "AE",
         "requests": 242
       },
       {
-        "country": "AT",
-        "requests": 202
-      },
-      {
-        "country": "IN",
-        "requests": 144
-      },
-      {
         "country": "JP",
-        "requests": 111
-      },
-      {
-        "country": "AR",
-        "requests": 87
-      },
-      {
-        "country": "CA",
-        "requests": 82
+        "requests": 159
       },
       {
         "country": "BR",
-        "requests": 70
+        "requests": 108
       },
       {
-        "country": "TW",
-        "requests": 62
+        "country": "CA",
+        "requests": 92
+      },
+      {
+        "country": "AR",
+        "requests": 92
+      },
+      {
+        "country": "HK",
+        "requests": 86
       }
     ],
     "top_referer_hosts": [
       {
         "referer_host": "(none)",
-        "requests": 92220
+        "requests": 130592
       },
       {
         "referer_host": "mcp.zovo.one",
-        "requests": 1182
+        "requests": 1919
+      },
+      {
+        "referer_host": "www.google.com",
+        "requests": 52
       },
       {
         "referer_host": "mcp.zovo.one:80",
         "requests": 39
       },
       {
-        "referer_host": "www.google.com",
-        "requests": 19
+        "referer_host": "verifymcp.io",
+        "requests": 10
       },
       {
-        "referer_host": "registry.modelcontextprotocol.io",
+        "referer_host": "bing.com",
         "requests": 8
       },
       {
         "referer_host": "mcpindex.ai",
+        "requests": 8
+      },
+      {
+        "referer_host": "registry.modelcontextprotocol.io",
         "requests": 8
       },
       {
@@ -1624,19 +1882,19 @@
         "requests": 3
       },
       {
-        "referer_host": "www.baidu.com",
-        "requests": 2
+        "referer_host": "gateturbo.com",
+        "requests": 3
       },
       {
         "referer_host": "glama.ai",
         "requests": 2
       },
       {
-        "referer_host": "mcp.zovo.one:2095",
-        "requests": 1
+        "referer_host": "www.baidu.com",
+        "requests": 2
       },
       {
-        "referer_host": "github.com",
+        "referer_host": "worthmyclaim.com",
         "requests": 1
       },
       {
@@ -1644,7 +1902,11 @@
         "requests": 1
       },
       {
-        "referer_host": "worthmyclaim.com",
+        "referer_host": "github.com",
+        "requests": 1
+      },
+      {
+        "referer_host": "mcp.zovo.one:2095",
         "requests": 1
       },
       {
@@ -1658,72 +1920,60 @@
       {
         "referer_host": "mcp.zovo.one:8880",
         "requests": 1
-      },
-      {
-        "referer_host": "checkout.stripe.com",
-        "requests": 1
-      },
-      {
-        "referer_host": "aiwebsitepipeline.com",
-        "requests": 1
-      },
-      {
-        "referer_host": "mcp.zovo.one:2082",
-        "requests": 1
       }
     ],
     "by_status": [
       {
         "status": 200,
-        "requests": 36620
+        "requests": 64427
       },
       {
         "status": 401,
-        "requests": 34791
+        "requests": 35778
       },
       {
         "status": 404,
-        "requests": 9981
-      },
-      {
-        "status": 303,
-        "requests": 5204
-      },
-      {
-        "status": 504,
-        "requests": 3600
-      },
-      {
-        "status": 400,
-        "requests": 1062
-      },
-      {
-        "status": 301,
-        "requests": 867
+        "requests": 10899
       },
       {
         "status": 202,
-        "requests": 506
+        "requests": 6816
+      },
+      {
+        "status": 303,
+        "requests": 6134
+      },
+      {
+        "status": 504,
+        "requests": 4967
+      },
+      {
+        "status": 400,
+        "requests": 1081
+      },
+      {
+        "status": 301,
+        "requests": 990
       },
       {
         "status": 429,
-        "requests": 269
-      },
-      {
-        "status": 413,
-        "requests": 206
+        "requests": 876
       },
       {
         "status": 499,
-        "requests": 191
+        "requests": 211
+      },
+      {
+        "status": 413,
+        "requests": 210
+      },
+      {
+        "status": 302,
+        "requests": 133
       },
       {
         "status": 503,
         "requests": 77
-      },
-      {
-        "status": 302,
-        "requests": 62
       },
       {
         "status": 406,
@@ -1751,12 +2001,6 @@
       }
     ],
     "zone_wide_daily_30d": [
-      {
-        "date": "2026-08-09",
-        "requests": 18574,
-        "page_views": 3730,
-        "uniques": 5001
-      },
       {
         "date": "2026-08-10",
         "requests": 29119,
@@ -1933,41 +2177,47 @@
       },
       {
         "date": "2026-09-08",
-        "requests": 11718,
-        "page_views": 2942,
-        "uniques": 1463
+        "requests": 46317,
+        "page_views": 5846,
+        "uniques": 4104
+      },
+      {
+        "date": "2026-09-09",
+        "requests": 23321,
+        "page_views": 2186,
+        "uniques": 2135
       }
     ],
     "robots_and_sitemap": [
       {
         "path": "/robots.txt",
-        "requests": 693,
-        "search_ai_crawler": 177,
+        "requests": 825,
+        "search_ai_crawler": 201,
         "crawlers": {
-          "ClaudeBot": 81,
-          "YandexBot": 45,
-          "SemrushBot": 34,
-          "MJ12bot": 43,
-          "OAI-SearchBot": 17,
-          "bingbot": 12,
-          "PerplexityBot": 6,
-          "meta-externalagent": 6,
+          "ClaudeBot": 89,
+          "YandexBot": 46,
+          "SemrushBot": 39,
+          "MJ12bot": 45,
+          "OAI-SearchBot": 23,
+          "bingbot": 13,
+          "PerplexityBot": 8,
+          "meta-externalagent": 7,
+          "Applebot": 7,
           "Googlebot": 5,
-          "Applebot": 3,
-          "AhrefsBot": 6,
+          "AhrefsBot": 7,
+          "Claude-User": 2,
           "DotBot": 2,
-          "Amazonbot": 1,
-          "Claude-User": 1
+          "Amazonbot": 1
         }
       },
       {
         "path": "/sitemap.xml",
-        "requests": 329,
-        "search_ai_crawler": 94,
+        "requests": 353,
+        "search_ai_crawler": 104,
         "crawlers": {
-          "ClaudeBot": 80,
-          "Googlebot": 8,
-          "GPTBot": 6,
+          "ClaudeBot": 88,
+          "Googlebot": 9,
+          "GPTBot": 7,
           "SemrushBot": 1,
           "AhrefsBot": 1
         }
@@ -1984,11 +2234,11 @@
     "section_rollup": {
       "/(root)": {
         "urls": 1,
-        "requests": 1048,
-        "human": 414,
-        "human_verified": 245,
-        "human_verified_ex_operator": 243,
-        "search_ai": 26,
+        "requests": 1200,
+        "human": 495,
+        "human_verified": 288,
+        "human_verified_ex_operator": 286,
+        "search_ai": 33,
         "urls_with_human": 1,
         "urls_with_human_verified": 1,
         "urls_with_human_verified_ex_operator": 1,
@@ -1996,71 +2246,83 @@
       },
       "/bundle": {
         "urls": 1,
-        "requests": 58,
-        "human": 8,
-        "human_verified": 0,
-        "human_verified_ex_operator": 0,
-        "search_ai": 11,
+        "requests": 74,
+        "human": 13,
+        "human_verified": 1,
+        "human_verified_ex_operator": 1,
+        "search_ai": 14,
         "urls_with_human": 1,
-        "urls_with_human_verified": 0,
-        "urls_with_human_verified_ex_operator": 0,
+        "urls_with_human_verified": 1,
+        "urls_with_human_verified_ex_operator": 1,
         "urls_with_crawler": 1
       },
       "/changelog": {
         "urls": 1,
-        "requests": 36,
-        "human": 6,
+        "requests": 39,
+        "human": 8,
+        "human_verified": 1,
+        "human_verified_ex_operator": 1,
+        "search_ai": 7,
+        "urls_with_human": 1,
+        "urls_with_human_verified": 1,
+        "urls_with_human_verified_ex_operator": 1,
+        "urls_with_crawler": 1
+      },
+      "/guides": {
+        "urls": 77,
+        "requests": 2844,
+        "human": 508,
+        "human_verified": 59,
+        "human_verified_ex_operator": 59,
+        "search_ai": 368,
+        "urls_with_human": 77,
+        "urls_with_human_verified": 31,
+        "urls_with_human_verified_ex_operator": 31,
+        "urls_with_crawler": 77
+      },
+      "/compare": {
+        "urls": 20,
+        "requests": 612,
+        "human": 113,
+        "human_verified": 7,
+        "human_verified_ex_operator": 7,
+        "search_ai": 105,
+        "urls_with_human": 20,
+        "urls_with_human_verified": 6,
+        "urls_with_human_verified_ex_operator": 6,
+        "urls_with_crawler": 20
+      },
+      "/privacy": {
+        "urls": 1,
+        "requests": 13,
+        "human": 3,
         "human_verified": 0,
         "human_verified_ex_operator": 0,
-        "search_ai": 7,
+        "search_ai": 2,
         "urls_with_human": 1,
         "urls_with_human_verified": 0,
         "urls_with_human_verified_ex_operator": 0,
         "urls_with_crawler": 1
       },
-      "/guides": {
-        "urls": 63,
-        "requests": 2357,
-        "human": 315,
-        "human_verified": 38,
-        "human_verified_ex_operator": 38,
-        "search_ai": 248,
-        "urls_with_human": 63,
-        "urls_with_human_verified": 23,
-        "urls_with_human_verified_ex_operator": 23,
-        "urls_with_crawler": 63
-      },
-      "/compare": {
-        "urls": 20,
-        "requests": 531,
-        "human": 79,
-        "human_verified": 1,
-        "human_verified_ex_operator": 1,
-        "search_ai": 102,
-        "urls_with_human": 20,
-        "urls_with_human_verified": 1,
-        "urls_with_human_verified_ex_operator": 1,
-        "urls_with_crawler": 20
-      },
       "/s": {
         "urls": 32,
-        "requests": 1667,
-        "human": 235,
-        "human_verified": 32,
-        "human_verified_ex_operator": 31,
-        "search_ai": 151,
+        "requests": 1888,
+        "human": 297,
+        "human_verified": 54,
+        "human_verified_ex_operator": 53,
+        "search_ai": 176,
         "urls_with_human": 32,
-        "urls_with_human_verified": 20,
-        "urls_with_human_verified_ex_operator": 19,
+        "urls_with_human_verified": 26,
+        "urls_with_human_verified_ex_operator": 25,
         "urls_with_crawler": 32
       },
       "/setup": {
         "urls": 8,
-        "requests": 306,
-        "human": 57,
-        "human_verified": 8,
-        "human_verified_ex_operator": 8,
-        "search_ai": 55,
+        "requests": 337,
+        "human": 69,
+        "human_verified": 14,
+        "human_verified_ex_operator": 14,
+        "search_ai": 59,
         "urls_with_human": 8,
         "urls_with_human_verified": 7,
         "urls_with_human_verified_ex_operator": 7,
@@ -2070,16 +2332,16 @@
     "non_sitemap_top_paths": [
       {
         "path": "/mcp/invoice",
-        "total": 3663,
-        "human": 12,
-        "human_verified": 3,
+        "total": 5140,
+        "human": 24,
+        "human_verified": 10,
         "search_ai": 7,
-        "human_verified_ex_operator": 3,
+        "human_verified_ex_operator": 10,
         "seo": 1,
-        "scripted": 2317,
-        "other_bot": 1246,
-        "unclassified": 80,
-        "visits": 0,
+        "scripted": 2788,
+        "other_bot": 2186,
+        "unclassified": 134,
+        "visits": 4,
         "crawlers": {
           "Amazonbot": 3,
           "GPTBot": 1,
@@ -2090,15 +2352,15 @@
       },
       {
         "path": "/mcp/time-tracker",
-        "total": 2850,
-        "human": 12,
-        "human_verified": 3,
+        "total": 4245,
+        "human": 21,
+        "human_verified": 11,
         "search_ai": 11,
-        "human_verified_ex_operator": 3,
+        "human_verified_ex_operator": 11,
         "seo": 1,
-        "scripted": 1549,
-        "other_bot": 1200,
-        "unclassified": 77,
+        "scripted": 1944,
+        "other_bot": 2135,
+        "unclassified": 133,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 4,
@@ -2111,35 +2373,38 @@
       },
       {
         "path": "/mcp/spreadsheet",
-        "total": 2742,
-        "human": 15,
-        "human_verified": 4,
-        "search_ai": 7,
-        "human_verified_ex_operator": 4,
-        "seo": 1,
-        "scripted": 1445,
-        "other_bot": 1206,
-        "unclassified": 68,
-        "visits": 0,
+        "total": 4151,
+        "human": 26,
+        "human_verified": 9,
+        "search_ai": 15,
+        "human_verified_ex_operator": 9,
+        "seo": 2,
+        "scripted": 1852,
+        "other_bot": 2134,
+        "unclassified": 122,
+        "visits": 2,
         "crawlers": {
+          "Claude-User": 6,
           "Amazonbot": 3,
+          "GPTBot": 2,
           "ClaudeBot": 1,
           "meta-externalagent": 1,
           "Googlebot": 2,
-          "SemrushBot": 1
+          "SemrushBot": 1,
+          "MJ12bot": 1
         }
       },
       {
         "path": "/mcp/expense-tracker",
-        "total": 2449,
-        "human": 3,
-        "human_verified": 0,
+        "total": 3683,
+        "human": 5,
+        "human_verified": 1,
         "search_ai": 5,
-        "human_verified_ex_operator": 0,
+        "human_verified_ex_operator": 1,
         "seo": 1,
-        "scripted": 1125,
-        "other_bot": 1236,
-        "unclassified": 79,
+        "scripted": 1368,
+        "other_bot": 2161,
+        "unclassified": 143,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 3,
@@ -2150,15 +2415,15 @@
       },
       {
         "path": "/mcp/pdf",
-        "total": 2396,
+        "total": 3543,
         "human": 5,
         "human_verified": 0,
         "search_ai": 6,
         "human_verified_ex_operator": 0,
         "seo": 1,
-        "scripted": 1326,
-        "other_bot": 1007,
-        "unclassified": 51,
+        "scripted": 1732,
+        "other_bot": 1693,
+        "unclassified": 106,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 3,
@@ -2170,15 +2435,15 @@
       },
       {
         "path": "/mcp/price-tracker",
-        "total": 2267,
-        "human": 4,
-        "human_verified": 0,
+        "total": 3533,
+        "human": 5,
+        "human_verified": 1,
         "search_ai": 6,
-        "human_verified_ex_operator": 0,
+        "human_verified_ex_operator": 1,
         "seo": 1,
-        "scripted": 925,
-        "other_bot": 1265,
-        "unclassified": 66,
+        "scripted": 1180,
+        "other_bot": 2216,
+        "unclassified": 125,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 3,
@@ -2189,16 +2454,35 @@
         }
       },
       {
-        "path": "/mcp/zip",
-        "total": 2217,
-        "human": 3,
+        "path": "/mcp/docx",
+        "total": 3224,
+        "human": 4,
         "human_verified": 0,
-        "search_ai": 5,
+        "search_ai": 7,
         "human_verified_ex_operator": 0,
+        "seo": 1,
+        "scripted": 1433,
+        "other_bot": 1671,
+        "unclassified": 108,
+        "visits": 0,
+        "crawlers": {
+          "GPTBot": 3,
+          "Amazonbot": 3,
+          "meta-externalagent": 1,
+          "SemrushBot": 1
+        }
+      },
+      {
+        "path": "/mcp/zip",
+        "total": 3147,
+        "human": 5,
+        "human_verified": 1,
+        "search_ai": 5,
+        "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 1534,
-        "other_bot": 623,
-        "unclassified": 52,
+        "scripted": 1835,
+        "other_bot": 1191,
+        "unclassified": 111,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 3,
@@ -2207,36 +2491,150 @@
         }
       },
       {
-        "path": "/mcp/docx",
-        "total": 2144,
+        "path": "/mcp/resume",
+        "total": 3147,
         "human": 4,
         "human_verified": 0,
-        "search_ai": 5,
+        "search_ai": 8,
         "human_verified_ex_operator": 0,
-        "seo": 1,
-        "scripted": 1072,
-        "other_bot": 999,
-        "unclassified": 63,
+        "seo": 0,
+        "scripted": 1294,
+        "other_bot": 1723,
+        "unclassified": 118,
+        "visits": 0,
+        "crawlers": {
+          "GPTBot": 3,
+          "Amazonbot": 3,
+          "ClaudeBot": 1,
+          "meta-externalagent": 1
+        }
+      },
+      {
+        "path": "/mcp/currency",
+        "total": 3115,
+        "human": 6,
+        "human_verified": 2,
+        "search_ai": 6,
+        "human_verified_ex_operator": 2,
+        "seo": 0,
+        "scripted": 1192,
+        "other_bot": 1769,
+        "unclassified": 142,
+        "visits": 0,
+        "crawlers": {
+          "Amazonbot": 3,
+          "GPTBot": 1,
+          "ClaudeBot": 1,
+          "meta-externalagent": 1
+        }
+      },
+      {
+        "path": "/mcp/clauses",
+        "total": 3108,
+        "human": 7,
+        "human_verified": 3,
+        "search_ai": 6,
+        "human_verified_ex_operator": 3,
+        "seo": 0,
+        "scripted": 1299,
+        "other_bot": 1676,
+        "unclassified": 120,
+        "visits": 0,
+        "crawlers": {
+          "GPTBot": 3,
+          "Amazonbot": 1,
+          "meta-externalagent": 1,
+          "ClaudeBot": 1
+        }
+      },
+      {
+        "path": "/mcp/recurring",
+        "total": 3000,
+        "human": 3,
+        "human_verified": 0,
+        "search_ai": 6,
+        "human_verified_ex_operator": 0,
+        "seo": 0,
+        "scripted": 1108,
+        "other_bot": 1765,
+        "unclassified": 118,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 3,
           "GPTBot": 1,
           "meta-externalagent": 1,
+          "ClaudeBot": 1
+        }
+      },
+      {
+        "path": "/mcp/calendar",
+        "total": 2987,
+        "human": 5,
+        "human_verified": 2,
+        "search_ai": 6,
+        "human_verified_ex_operator": 2,
+        "seo": 1,
+        "scripted": 1215,
+        "other_bot": 1642,
+        "unclassified": 118,
+        "visits": 0,
+        "crawlers": {
+          "GPTBot": 3,
+          "ClaudeBot": 1,
+          "meta-externalagent": 1,
+          "Amazonbot": 1,
           "SemrushBot": 1
         }
       },
       {
+        "path": "/mcp/timezone",
+        "total": 2964,
+        "human": 6,
+        "human_verified": 1,
+        "search_ai": 4,
+        "human_verified_ex_operator": 1,
+        "seo": 0,
+        "scripted": 1066,
+        "other_bot": 1767,
+        "unclassified": 121,
+        "visits": 0,
+        "crawlers": {
+          "GPTBot": 1,
+          "ClaudeBot": 1,
+          "Amazonbot": 1,
+          "meta-externalagent": 1
+        }
+      },
+      {
+        "path": "/mcp/image",
+        "total": 2956,
+        "human": 6,
+        "human_verified": 2,
+        "search_ai": 5,
+        "human_verified_ex_operator": 2,
+        "seo": 0,
+        "scripted": 1456,
+        "other_bot": 1374,
+        "unclassified": 115,
+        "visits": 0,
+        "crawlers": {
+          "Amazonbot": 3,
+          "GPTBot": 1,
+          "ClaudeBot": 1
+        }
+      },
+      {
         "path": "/mcp/bank-statement",
-        "total": 2043,
-        "human": 4,
+        "total": 2933,
+        "human": 5,
         "human_verified": 0,
         "search_ai": 6,
         "human_verified_ex_operator": 0,
         "seo": 0,
-        "scripted": 1219,
-        "other_bot": 742,
-        "unclassified": 72,
-        "visits": 0,
+        "scripted": 1474,
+        "other_bot": 1314,
+        "unclassified": 134,
+        "visits": 1,
         "crawlers": {
           "Amazonbot": 3,
           "PerplexityBot": 1,
@@ -2245,149 +2643,71 @@
         }
       },
       {
-        "path": "/mcp/calendar",
-        "total": 2012,
-        "human": 4,
-        "human_verified": 1,
-        "search_ai": 4,
-        "human_verified_ex_operator": 1,
-        "seo": 0,
-        "scripted": 974,
-        "other_bot": 965,
-        "unclassified": 65,
-        "visits": 0,
-        "crawlers": {
-          "GPTBot": 1,
-          "ClaudeBot": 1,
-          "meta-externalagent": 1,
-          "Amazonbot": 1
-        }
-      },
-      {
-        "path": "/mcp/resume",
-        "total": 2010,
-        "human": 3,
-        "human_verified": 0,
-        "search_ai": 6,
-        "human_verified_ex_operator": 0,
-        "seo": 0,
-        "scripted": 917,
-        "other_bot": 1025,
-        "unclassified": 59,
-        "visits": 0,
-        "crawlers": {
-          "Amazonbot": 3,
-          "GPTBot": 1,
-          "ClaudeBot": 1,
-          "meta-externalagent": 1
-        }
-      },
-      {
-        "path": "/mcp/image",
-        "total": 2006,
+        "path": "/mcp/deposits",
+        "total": 2873,
         "human": 5,
         "human_verified": 1,
-        "search_ai": 5,
+        "search_ai": 2,
         "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 1183,
-        "other_bot": 753,
-        "unclassified": 60,
-        "visits": 0,
+        "scripted": 1370,
+        "other_bot": 1393,
+        "unclassified": 103,
+        "visits": 1,
         "crawlers": {
-          "Amazonbot": 3,
-          "GPTBot": 1,
-          "ClaudeBot": 1
+          "Amazonbot": 1,
+          "GPTBot": 1
         }
       },
       {
-        "path": "/mcp/currency",
-        "total": 2003,
-        "human": 6,
-        "human_verified": 2,
-        "search_ai": 6,
-        "human_verified_ex_operator": 2,
-        "seo": 0,
-        "scripted": 830,
-        "other_bot": 1074,
-        "unclassified": 87,
-        "visits": 0,
-        "crawlers": {
-          "Amazonbot": 3,
-          "GPTBot": 1,
-          "ClaudeBot": 1,
-          "meta-externalagent": 1
-        }
-      },
-      {
-        "path": "/mcp/recurring",
-        "total": 1999,
+        "path": "/mcp/per-diem",
+        "total": 2605,
         "human": 3,
         "human_verified": 0,
-        "search_ai": 6,
+        "search_ai": 4,
         "human_verified_ex_operator": 0,
         "seo": 0,
-        "scripted": 868,
-        "other_bot": 1062,
-        "unclassified": 60,
+        "scripted": 1093,
+        "other_bot": 1407,
+        "unclassified": 98,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 3,
-          "GPTBot": 1,
-          "meta-externalagent": 1,
-          "ClaudeBot": 1
+          "GPTBot": 1
         }
       },
       {
-        "path": "/mcp/clauses",
-        "total": 1992,
-        "human": 6,
-        "human_verified": 2,
-        "search_ai": 4,
-        "human_verified_ex_operator": 2,
-        "seo": 0,
-        "scripted": 917,
-        "other_bot": 1002,
-        "unclassified": 63,
-        "visits": 0,
-        "crawlers": {
-          "GPTBot": 1,
-          "Amazonbot": 1,
-          "meta-externalagent": 1,
-          "ClaudeBot": 1
-        }
-      },
-      {
-        "path": "/mcp/timezone",
-        "total": 1952,
-        "human": 5,
+        "path": "/mcp/billing-docs",
+        "total": 2597,
+        "human": 1,
         "human_verified": 0,
-        "search_ai": 4,
+        "search_ai": 7,
         "human_verified_ex_operator": 0,
-        "seo": 0,
-        "scripted": 816,
-        "other_bot": 1053,
-        "unclassified": 74,
+        "seo": 1,
+        "scripted": 973,
+        "other_bot": 1505,
+        "unclassified": 110,
         "visits": 0,
         "crawlers": {
-          "GPTBot": 1,
+          "Amazonbot": 3,
+          "GPTBot": 2,
+          "meta-externalagent": 1,
           "ClaudeBot": 1,
-          "Amazonbot": 1,
-          "meta-externalagent": 1
+          "SemrushBot": 1
         }
       },
       {
         "path": "/mcp/barcode",
-        "total": 1737,
-        "human": 5,
-        "human_verified": 1,
+        "total": 2584,
+        "human": 7,
+        "human_verified": 2,
         "search_ai": 6,
-        "human_verified_ex_operator": 1,
+        "human_verified_ex_operator": 2,
         "seo": 0,
-        "scripted": 961,
-        "other_bot": 696,
-        "unclassified": 69,
-        "visits": 0,
+        "scripted": 1311,
+        "other_bot": 1131,
+        "unclassified": 129,
+        "visits": 1,
         "crawlers": {
           "Amazonbot": 3,
           "GPTBot": 1,
@@ -2397,119 +2717,33 @@
       },
       {
         "path": "/mcp/kanban",
-        "total": 1601,
-        "human": 3,
-        "human_verified": 0,
-        "search_ai": 5,
-        "human_verified_ex_operator": 0,
-        "seo": 0,
-        "scripted": 818,
-        "other_bot": 722,
-        "unclassified": 53,
-        "visits": 0,
-        "crawlers": {
-          "Amazonbot": 3,
-          "GPTBot": 1,
-          "ClaudeBot": 1
-        }
-      },
-      {
-        "path": "/mcp/quotes",
-        "total": 1514,
-        "human": 3,
+        "total": 2509,
+        "human": 4,
         "human_verified": 1,
-        "search_ai": 3,
+        "search_ai": 5,
         "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 806,
-        "other_bot": 646,
-        "unclassified": 56,
-        "visits": 0,
-        "crawlers": {
-          "GPTBot": 1,
-          "Amazonbot": 1,
-          "ClaudeBot": 1
-        }
-      },
-      {
-        "path": "/mcp/deposits",
-        "total": 1424,
-        "human": 3,
-        "human_verified": 0,
-        "search_ai": 1,
-        "human_verified_ex_operator": 0,
-        "seo": 0,
-        "scripted": 936,
-        "other_bot": 450,
-        "unclassified": 34,
-        "visits": 0,
-        "crawlers": {
-          "Amazonbot": 1
-        }
-      },
-      {
-        "path": "/.well-known/oauth-protected-resource",
-        "total": 1369,
-        "human": 0,
-        "human_verified": 0,
-        "search_ai": 1,
-        "human_verified_ex_operator": 0,
-        "seo": 0,
-        "scripted": 280,
-        "other_bot": 720,
-        "unclassified": 368,
-        "visits": 0,
-        "crawlers": {
-          "Amazonbot": 1
-        }
-      },
-      {
-        "path": "/mcp/billing-docs",
-        "total": 1256,
-        "human": 1,
-        "human_verified": 0,
-        "search_ai": 6,
-        "human_verified_ex_operator": 0,
-        "seo": 0,
-        "scripted": 721,
-        "other_bot": 478,
-        "unclassified": 50,
+        "scripted": 1074,
+        "other_bot": 1316,
+        "unclassified": 110,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 3,
-          "meta-externalagent": 1,
           "GPTBot": 1,
           "ClaudeBot": 1
-        }
-      },
-      {
-        "path": "/mcp/per-diem",
-        "total": 1192,
-        "human": 2,
-        "human_verified": 0,
-        "search_ai": 4,
-        "human_verified_ex_operator": 0,
-        "seo": 0,
-        "scripted": 723,
-        "other_bot": 424,
-        "unclassified": 39,
-        "visits": 0,
-        "crawlers": {
-          "Amazonbot": 3,
-          "GPTBot": 1
         }
       },
       {
         "path": "/mcp/asset-register",
-        "total": 1160,
-        "human": 5,
+        "total": 2489,
+        "human": 6,
         "human_verified": 2,
         "search_ai": 4,
         "human_verified_ex_operator": 2,
         "seo": 0,
-        "scripted": 706,
-        "other_bot": 404,
-        "unclassified": 41,
+        "scripted": 1144,
+        "other_bot": 1225,
+        "unclassified": 110,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 3,
@@ -2517,37 +2751,73 @@
         }
       },
       {
+        "path": "/mcp/quotes",
+        "total": 2371,
+        "human": 4,
+        "human_verified": 1,
+        "search_ai": 5,
+        "human_verified_ex_operator": 1,
+        "seo": 1,
+        "scripted": 1033,
+        "other_bot": 1221,
+        "unclassified": 107,
+        "visits": 1,
+        "crawlers": {
+          "GPTBot": 3,
+          "Amazonbot": 1,
+          "ClaudeBot": 1,
+          "SemrushBot": 1
+        }
+      },
+      {
         "path": "/mcp/amortization",
-        "total": 1096,
-        "human": 3,
+        "total": 2206,
+        "human": 4,
         "human_verified": 1,
         "search_ai": 2,
         "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 658,
-        "other_bot": 390,
-        "unclassified": 43,
+        "scripted": 974,
+        "other_bot": 1123,
+        "unclassified": 103,
         "visits": 0,
         "crawlers": {
           "Amazonbot": 1,
           "GPTBot": 1
+        }
+      },
+      {
+        "path": "/mcp/cash-book",
+        "total": 2070,
+        "human": 1,
+        "human_verified": 0,
+        "search_ai": 5,
+        "human_verified_ex_operator": 0,
+        "seo": 0,
+        "scripted": 846,
+        "other_bot": 1139,
+        "unclassified": 79,
+        "visits": 0,
+        "crawlers": {
+          "Amazonbot": 3,
+          "GPTBot": 2
         }
       }
     ]
   },
   "sitemap_coverage": {
-    "sitemap_urls": 126,
-    "fetched_by_any_client": 126,
-    "fetched_by_search_or_ai_crawler": 126,
-    "fetched_by_any_crawler_incl_seo": 126,
-    "fetched_by_human_browser_ua_loose": 126,
-    "fetched_by_render_proven_browser_strict": 52,
-    "fetched_by_render_proven_browser_excl_operator_country": 51,
+    "sitemap_urls": 141,
+    "fetched_by_any_client": 141,
+    "fetched_by_search_or_ai_crawler": 141,
+    "fetched_by_any_crawler_incl_seo": 141,
+    "fetched_by_human_browser_ua_loose": 141,
+    "fetched_by_render_proven_browser_strict": 73,
+    "fetched_by_render_proven_browser_excl_operator_country": 72,
     "never_fetched_at_all": 0,
-    "human_page_views_render_proven": 324,
-    "human_page_views_render_proven_excl_operator_country": 321,
-    "human_page_views_excl_homepage_and_operator": 78,
-    "sitemap_urls_with_human_page_view_excl_homepage": 50
+    "human_page_views_render_proven": 424,
+    "human_page_views_render_proven_excl_operator_country": 421,
+    "human_page_views_excl_homepage_and_operator": 135,
+    "sitemap_urls_with_human_page_view_excl_homepage": 71
   },
   "github_traffic": {
     "status": "OK",
@@ -2718,7 +2988,7 @@
     ]
   },
   "registry_referral_baseline": {
-    "recorded_at": "2026-09-08T08:26:54.025Z",
+    "recorded_at": "2026-09-09T08:45:30.485Z",
     "why": "Baseline for the registry-placement experiment: if better registry rank is worth anything, these two numbers rise. Rank alone is not the outcome; visits are.",
     "github_side": {
       "window": "14d rolling",
@@ -2742,27 +3012,27 @@
     },
     "storefront_side": {
       "window": {
-        "start": "2026-09-01T08:26:26Z",
-        "end": "2026-09-08T08:26:26Z",
+        "start": "2026-09-02T08:45:02Z",
+        "end": "2026-09-09T08:45:02Z",
         "days": 7
       },
       "effective_window": {
-        "requested_start": "2026-09-01T08:26:26Z",
-        "requested_end": "2026-09-08T08:26:26Z",
+        "requested_start": "2026-09-02T08:45:02Z",
+        "requested_end": "2026-09-09T08:45:02Z",
         "requested_days": 7,
         "first_hour_with_host_data": "2026-09-02T12:00:00Z",
-        "hours_with_data": 141,
-        "effective_days": 5.852,
+        "hours_with_data": 165,
+        "effective_days": 6.865,
         "note": "RETENTION SHORTFALL: the adaptive dataset holds no rows for this host before 2026-09-02T12:00:00Z, although the API accepts the older start and other hosts on the zone do return rows there. Absolute counts cover the effective window, not the requested one."
       },
       "host": "mcp.zovo.one",
       "referer_hosts_matching_registry_ecosystem": [
         {
-          "referer_host": "registry.modelcontextprotocol.io",
+          "referer_host": "mcpindex.ai",
           "requests": 8
         },
         {
-          "referer_host": "mcpindex.ai",
+          "referer_host": "registry.modelcontextprotocol.io",
           "requests": 8
         },
         {
@@ -2784,230 +3054,241 @@
     "user_initiated_assistant_fetches": {
       "note": "The assistant-crawler side of the same question. ClaudeBot/GPTBot are scheduled crawls; Claude-User, ChatGPT-User and Perplexity-User are fetches a PERSON triggered by asking an assistant about a page. That is the only measurable proxy for an assistant surface sending a human here.",
       "window": {
-        "start": "2026-09-01T08:26:26Z",
-        "end": "2026-09-08T08:26:26Z",
+        "start": "2026-09-02T08:45:02Z",
+        "end": "2026-09-09T08:45:02Z",
         "days": 7
       },
       "counts": {
-        "Claude-User": 2,
+        "Claude-User": 10,
         "ChatGPT-User": 1,
-        "PerplexityBot": 19,
-        "OAI-SearchBot": 17
+        "PerplexityBot": 26,
+        "OAI-SearchBot": 23
       }
     }
   },
   "crawler_url_coverage": {
     "ClaudeBot": {
-      "urls_fetched": 126,
-      "requests": 130,
-      "pct_of_sitemap": 100
+      "urls_fetched": 140,
+      "requests": 144,
+      "pct_of_sitemap": 99.3
+    },
+    "Amazonbot": {
+      "urls_fetched": 127,
+      "requests": 131,
+      "pct_of_sitemap": 90.1
+    },
+    "YandexBot": {
+      "urls_fetched": 113,
+      "requests": 119,
+      "pct_of_sitemap": 80.1
     },
     "MJ12bot": {
       "urls_fetched": 112,
       "requests": 135,
-      "pct_of_sitemap": 88.9
-    },
-    "YandexBot": {
-      "urls_fetched": 112,
-      "requests": 118,
-      "pct_of_sitemap": 88.9
-    },
-    "Amazonbot": {
-      "urls_fetched": 102,
-      "requests": 106,
-      "pct_of_sitemap": 81
+      "pct_of_sitemap": 79.4
     },
     "SemrushBot": {
-      "urls_fetched": 82,
-      "requests": 83,
-      "pct_of_sitemap": 65.1
-    },
-    "meta-externalagent": {
-      "urls_fetched": 66,
-      "requests": 72,
-      "pct_of_sitemap": 52.4
+      "urls_fetched": 98,
+      "requests": 99,
+      "pct_of_sitemap": 69.5
     },
     "GPTBot": {
-      "urls_fetched": 48,
-      "requests": 88,
-      "pct_of_sitemap": 38.1
+      "urls_fetched": 90,
+      "requests": 149,
+      "pct_of_sitemap": 63.8
+    },
+    "meta-externalagent": {
+      "urls_fetched": 67,
+      "requests": 95,
+      "pct_of_sitemap": 47.5
     },
     "bingbot": {
       "urls_fetched": 35,
       "requests": 62,
-      "pct_of_sitemap": 27.8
-    },
-    "PerplexityBot": {
-      "urls_fetched": 4,
-      "requests": 11,
-      "pct_of_sitemap": 3.2
+      "pct_of_sitemap": 24.8
     },
     "Applebot": {
-      "urls_fetched": 4,
-      "requests": 4,
-      "pct_of_sitemap": 3.2
+      "urls_fetched": 32,
+      "requests": 35,
+      "pct_of_sitemap": 22.7
+    },
+    "PerplexityBot": {
+      "urls_fetched": 5,
+      "requests": 16,
+      "pct_of_sitemap": 3.5
     },
     "Googlebot": {
       "urls_fetched": 2,
-      "requests": 7,
-      "pct_of_sitemap": 1.6
+      "requests": 8,
+      "pct_of_sitemap": 1.4
+    },
+    "AhrefsBot": {
+      "urls_fetched": 2,
+      "requests": 3,
+      "pct_of_sitemap": 1.4
     },
     "Claude-User": {
       "urls_fetched": 1,
-      "requests": 1,
-      "pct_of_sitemap": 0.8
+      "requests": 2,
+      "pct_of_sitemap": 0.7
+    },
+    "DuckDuckBot": {
+      "urls_fetched": 1,
+      "requests": 2,
+      "pct_of_sitemap": 0.7
     },
     "ChatGPT-User": {
       "urls_fetched": 1,
       "requests": 1,
-      "pct_of_sitemap": 0.8
-    },
-    "AhrefsBot": {
-      "urls_fetched": 1,
-      "requests": 2,
-      "pct_of_sitemap": 0.8
+      "pct_of_sitemap": 0.7
     },
     "DotBot": {
       "urls_fetched": 1,
       "requests": 1,
-      "pct_of_sitemap": 0.8
+      "pct_of_sitemap": 0.7
     }
   },
   "crawler_url_coverage_previous_set": {
     "source": "data/traffic.json as it stood before this run",
-    "previous_generated_at": "2026-09-07T01:13:50.436Z",
+    "previous_generated_at": "2026-09-08T08:26:39.344Z",
     "previous_window": {
-      "start": "2026-08-31T01:13:44Z",
-      "end": "2026-09-07T01:13:44Z",
+      "start": "2026-09-01T08:26:26Z",
+      "end": "2026-09-08T08:26:26Z",
       "days": 7
     },
-    "urls_in_set": 312,
-    "still_in_current_sitemap": 96,
-    "dropped_from_sitemap": 216,
+    "urls_in_set": 126,
+    "still_in_current_sitemap": 126,
+    "dropped_from_sitemap": 0,
     "coverage": {
       "ClaudeBot": {
-        "urls_fetched": 311,
-        "requests": 315,
-        "pct_of_set": 99.7
-      },
-      "meta-externalagent": {
-        "urls_fetched": 272,
-        "requests": 278,
-        "pct_of_set": 87.2
-      },
-      "MJ12bot": {
-        "urls_fetched": 267,
-        "requests": 321,
-        "pct_of_set": 85.6
+        "urls_fetched": 126,
+        "requests": 130,
+        "pct_of_set": 100
       },
       "Amazonbot": {
-        "urls_fetched": 261,
-        "requests": 265,
-        "pct_of_set": 83.7
+        "urls_fetched": 125,
+        "requests": 129,
+        "pct_of_set": 99.2
       },
-      "SemrushBot": {
-        "urls_fetched": 247,
-        "requests": 248,
-        "pct_of_set": 79.2
+      "MJ12bot": {
+        "urls_fetched": 112,
+        "requests": 135,
+        "pct_of_set": 88.9
       },
       "YandexBot": {
-        "urls_fetched": 195,
-        "requests": 197,
-        "pct_of_set": 62.5
+        "urls_fetched": 112,
+        "requests": 118,
+        "pct_of_set": 88.9
+      },
+      "SemrushBot": {
+        "urls_fetched": 98,
+        "requests": 99,
+        "pct_of_set": 77.8
       },
       "GPTBot": {
-        "urls_fetched": 144,
-        "requests": 259,
-        "pct_of_set": 46.2
+        "urls_fetched": 78,
+        "requests": 132,
+        "pct_of_set": 61.9
+      },
+      "meta-externalagent": {
+        "urls_fetched": 67,
+        "requests": 95,
+        "pct_of_set": 53.2
       },
       "bingbot": {
-        "urls_fetched": 114,
-        "requests": 206,
-        "pct_of_set": 36.5
-      },
-      "PerplexityBot": {
-        "urls_fetched": 4,
-        "requests": 11,
-        "pct_of_set": 1.3
+        "urls_fetched": 35,
+        "requests": 62,
+        "pct_of_set": 27.8
       },
       "Applebot": {
-        "urls_fetched": 4,
-        "requests": 4,
-        "pct_of_set": 1.3
+        "urls_fetched": 32,
+        "requests": 35,
+        "pct_of_set": 25.4
+      },
+      "PerplexityBot": {
+        "urls_fetched": 5,
+        "requests": 16,
+        "pct_of_set": 4
       },
       "Googlebot": {
         "urls_fetched": 2,
-        "requests": 7,
-        "pct_of_set": 0.6
+        "requests": 8,
+        "pct_of_set": 1.6
+      },
+      "AhrefsBot": {
+        "urls_fetched": 2,
+        "requests": 3,
+        "pct_of_set": 1.6
       },
       "Claude-User": {
         "urls_fetched": 1,
-        "requests": 1,
-        "pct_of_set": 0.3
+        "requests": 2,
+        "pct_of_set": 0.8
+      },
+      "DuckDuckBot": {
+        "urls_fetched": 1,
+        "requests": 2,
+        "pct_of_set": 0.8
       },
       "ChatGPT-User": {
         "urls_fetched": 1,
         "requests": 1,
-        "pct_of_set": 0.3
-      },
-      "AhrefsBot": {
-        "urls_fetched": 1,
-        "requests": 2,
-        "pct_of_set": 0.3
+        "pct_of_set": 0.8
       },
       "DotBot": {
         "urls_fetched": 1,
         "requests": 1,
-        "pct_of_set": 0.3
+        "pct_of_set": 0.8
       }
     }
   },
   "sitemap_pages": [
     {
       "path": "/",
-      "total": 1048,
-      "human": 414,
-      "human_verified": 245,
-      "search_ai": 26,
-      "human_verified_ex_operator": 243,
+      "total": 1200,
+      "human": 495,
+      "human_verified": 288,
+      "search_ai": 33,
+      "human_verified_ex_operator": 286,
       "seo": 7,
-      "scripted": 205,
-      "other_bot": 75,
-      "unclassified": 321,
-      "visits": 738,
+      "scripted": 226,
+      "other_bot": 112,
+      "unclassified": 327,
+      "visits": 830,
       "crawlers": {
-        "PerplexityBot": 5,
+        "PerplexityBot": 6,
         "bingbot": 5,
-        "Googlebot": 6,
+        "Googlebot": 7,
+        "Applebot": 3,
         "GPTBot": 2,
+        "Claude-User": 2,
         "meta-externalagent": 2,
         "MJ12bot": 3,
+        "DuckDuckBot": 2,
         "YandexBot": 1,
         "ClaudeBot": 1,
         "Amazonbot": 1,
-        "Claude-User": 1,
         "SemrushBot": 1,
         "ChatGPT-User": 1,
         "AhrefsBot": 2,
-        "Applebot": 1,
         "DotBot": 1
       }
     },
     {
       "path": "/s/expense-tracker",
-      "total": 79,
-      "human": 17,
+      "total": 88,
+      "human": 21,
       "human_verified": 5,
-      "search_ai": 10,
+      "search_ai": 11,
       "human_verified_ex_operator": 5,
       "seo": 2,
-      "scripted": 21,
+      "scripted": 23,
       "other_bot": 8,
-      "unclassified": 21,
-      "visits": 48,
+      "unclassified": 23,
+      "visits": 51,
       "crawlers": {
+        "PerplexityBot": 3,
         "GPTBot": 2,
-        "PerplexityBot": 2,
         "MJ12bot": 1,
         "ClaudeBot": 1,
         "SemrushBot": 1,
@@ -3020,18 +3301,18 @@
     },
     {
       "path": "/s/invoice",
-      "total": 115,
-      "human": 23,
+      "total": 127,
+      "human": 27,
       "human_verified": 4,
-      "search_ai": 12,
+      "search_ai": 13,
       "human_verified_ex_operator": 4,
-      "seo": 2,
-      "scripted": 47,
+      "seo": 3,
+      "scripted": 50,
       "other_bot": 7,
-      "unclassified": 24,
-      "visits": 67,
+      "unclassified": 27,
+      "visits": 72,
       "crawlers": {
-        "PerplexityBot": 2,
+        "PerplexityBot": 3,
         "MJ12bot": 1,
         "ClaudeBot": 2,
         "GPTBot": 2,
@@ -3041,13 +3322,36 @@
         "bingbot": 1,
         "Applebot": 1,
         "Googlebot": 1,
-        "meta-externalagent": 1
+        "meta-externalagent": 1,
+        "AhrefsBot": 1
+      }
+    },
+    {
+      "path": "/guides",
+      "total": 84,
+      "human": 12,
+      "human_verified": 4,
+      "search_ai": 11,
+      "human_verified_ex_operator": 4,
+      "seo": 2,
+      "scripted": 48,
+      "other_bot": 11,
+      "unclassified": 0,
+      "visits": 48,
+      "crawlers": {
+        "GPTBot": 6,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "meta-externalagent": 2
       }
     },
     {
       "path": "/guides/track-time-in-claude-code",
-      "total": 74,
-      "human": 9,
+      "total": 76,
+      "human": 11,
       "human_verified": 4,
       "search_ai": 5,
       "human_verified_ex_operator": 4,
@@ -3055,7 +3359,7 @@
       "scripted": 25,
       "other_bot": 33,
       "unclassified": 0,
-      "visits": 56,
+      "visits": 58,
       "crawlers": {
         "MJ12bot": 1,
         "ClaudeBot": 1,
@@ -3066,22 +3370,85 @@
       }
     },
     {
-      "path": "/guides",
-      "total": 77,
-      "human": 9,
-      "human_verified": 3,
-      "search_ai": 10,
-      "human_verified_ex_operator": 3,
+      "path": "/guides/mcp-server-free-vs-pro",
+      "total": 75,
+      "human": 11,
+      "human_verified": 4,
+      "search_ai": 6,
+      "human_verified_ex_operator": 4,
       "seo": 2,
-      "scripted": 45,
-      "other_bot": 11,
+      "scripted": 22,
+      "other_bot": 34,
       "unclassified": 0,
-      "visits": 44,
+      "visits": 58,
       "crawlers": {
-        "GPTBot": 6,
         "YandexBot": 1,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 2,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/s/spreadsheet",
+      "total": 63,
+      "human": 11,
+      "human_verified": 4,
+      "search_ai": 4,
+      "human_verified_ex_operator": 4,
+      "seo": 2,
+      "scripted": 15,
+      "other_bot": 8,
+      "unclassified": 23,
+      "visits": 35,
+      "crawlers": {
         "ClaudeBot": 1,
         "MJ12bot": 1,
+        "YandexBot": 1,
+        "SemrushBot": 1,
+        "meta-externalagent": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/s/recurring",
+      "total": 68,
+      "human": 9,
+      "human_verified": 4,
+      "search_ai": 5,
+      "human_verified_ex_operator": 4,
+      "seo": 2,
+      "scripted": 12,
+      "other_bot": 7,
+      "unclassified": 33,
+      "visits": 41,
+      "crawlers": {
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "YandexBot": 1
+      }
+    },
+    {
+      "path": "/guides/expense-tracking-in-claude",
+      "total": 86,
+      "human": 12,
+      "human_verified": 3,
+      "search_ai": 4,
+      "human_verified_ex_operator": 3,
+      "seo": 2,
+      "scripted": 29,
+      "other_bot": 39,
+      "unclassified": 0,
+      "visits": 64,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "YandexBot": 1,
         "Amazonbot": 1,
         "SemrushBot": 1,
         "meta-externalagent": 1
@@ -3089,60 +3456,212 @@
     },
     {
       "path": "/guides/price-drop-alerts-with-claude",
-      "total": 81,
-      "human": 8,
+      "total": 86,
+      "human": 11,
       "human_verified": 3,
-      "search_ai": 4,
+      "search_ai": 5,
       "human_verified_ex_operator": 3,
       "seo": 2,
-      "scripted": 23,
+      "scripted": 24,
       "other_bot": 44,
       "unclassified": 0,
-      "visits": 64,
+      "visits": 68,
       "crawlers": {
         "MJ12bot": 1,
         "ClaudeBot": 1,
         "YandexBot": 1,
         "meta-externalagent": 1,
         "Amazonbot": 1,
-        "SemrushBot": 1
+        "SemrushBot": 1,
+        "Applebot": 1
       }
     },
     {
-      "path": "/guides/mcp-server-free-vs-pro",
-      "total": 69,
-      "human": 8,
+      "path": "/s/quotes",
+      "total": 66,
+      "human": 11,
       "human_verified": 3,
       "search_ai": 5,
       "human_verified_ex_operator": 3,
       "seo": 2,
-      "scripted": 20,
-      "other_bot": 34,
-      "unclassified": 0,
-      "visits": 54,
+      "scripted": 16,
+      "other_bot": 9,
+      "unclassified": 23,
+      "visits": 36,
       "crawlers": {
-        "YandexBot": 1,
-        "MJ12bot": 1,
+        "GPTBot": 2,
         "ClaudeBot": 1,
-        "SemrushBot": 1,
+        "MJ12bot": 1,
         "Amazonbot": 1,
+        "SemrushBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/guides/kanban-board-in-claude-with-time-tracking",
+      "total": 61,
+      "human": 11,
+      "human_verified": 3,
+      "search_ai": 5,
+      "human_verified_ex_operator": 3,
+      "seo": 3,
+      "scripted": 11,
+      "other_bot": 31,
+      "unclassified": 0,
+      "visits": 49,
+      "crawlers": {
+        "MJ12bot": 2,
+        "meta-externalagent": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/meeting-slots-across-time-zones",
+      "total": 88,
+      "human": 10,
+      "human_verified": 3,
+      "search_ai": 6,
+      "human_verified_ex_operator": 3,
+      "seo": 2,
+      "scripted": 21,
+      "other_bot": 49,
+      "unclassified": 0,
+      "visits": 71,
+      "crawlers": {
+        "GPTBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "YandexBot": 1,
         "meta-externalagent": 2
       }
     },
     {
+      "path": "/s/clauses",
+      "total": 64,
+      "human": 10,
+      "human_verified": 3,
+      "search_ai": 7,
+      "human_verified_ex_operator": 3,
+      "seo": 2,
+      "scripted": 13,
+      "other_bot": 10,
+      "unclassified": 22,
+      "visits": 36,
+      "crawlers": {
+        "GPTBot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "meta-externalagent": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/s/price-tracker",
+      "total": 69,
+      "human": 9,
+      "human_verified": 3,
+      "search_ai": 5,
+      "human_verified_ex_operator": 3,
+      "seo": 2,
+      "scripted": 14,
+      "other_bot": 15,
+      "unclassified": 24,
+      "visits": 42,
+      "crawlers": {
+        "meta-externalagent": 2,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/recurring-invoices-on-a-schedule",
+      "total": 59,
+      "human": 9,
+      "human_verified": 3,
+      "search_ai": 5,
+      "human_verified_ex_operator": 3,
+      "seo": 2,
+      "scripted": 10,
+      "other_bot": 33,
+      "unclassified": 0,
+      "visits": 48,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "SemrushBot": 1,
+        "GPTBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1
+      }
+    },
+    {
+      "path": "/s/bank-statement",
+      "total": 57,
+      "human": 8,
+      "human_verified": 3,
+      "search_ai": 4,
+      "human_verified_ex_operator": 3,
+      "seo": 2,
+      "scripted": 13,
+      "other_bot": 9,
+      "unclassified": 21,
+      "visits": 33,
+      "crawlers": {
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "meta-externalagent": 1
+      }
+    },
+    {
+      "path": "/setup/cline",
+      "total": 33,
+      "human": 7,
+      "human_verified": 3,
+      "search_ai": 6,
+      "human_verified_ex_operator": 3,
+      "seo": 1,
+      "scripted": 12,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 22,
+      "crawlers": {
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 2,
+        "Applebot": 1
+      }
+    },
+    {
       "path": "/s/time-tracker",
-      "total": 89,
-      "human": 15,
+      "total": 98,
+      "human": 19,
       "human_verified": 2,
-      "search_ai": 9,
+      "search_ai": 10,
       "human_verified_ex_operator": 2,
       "seo": 2,
-      "scripted": 32,
+      "scripted": 34,
       "other_bot": 8,
-      "unclassified": 23,
-      "visits": 53,
+      "unclassified": 25,
+      "visits": 56,
       "crawlers": {
-        "PerplexityBot": 2,
+        "PerplexityBot": 3,
         "MJ12bot": 1,
         "ClaudeBot": 1,
         "GPTBot": 1,
@@ -3156,23 +3675,90 @@
     },
     {
       "path": "/guides/read-excel-in-cursor",
-      "total": 80,
+      "total": 82,
       "human": 11,
       "human_verified": 2,
-      "search_ai": 5,
+      "search_ai": 6,
       "human_verified_ex_operator": 2,
       "seo": 2,
-      "scripted": 25,
+      "scripted": 26,
       "other_bot": 37,
       "unclassified": 0,
-      "visits": 61,
+      "visits": 62,
       "crawlers": {
         "YandexBot": 1,
         "MJ12bot": 1,
         "ClaudeBot": 1,
         "meta-externalagent": 2,
         "SemrushBot": 1,
-        "Amazonbot": 1
+        "Amazonbot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/guides/currency-conversion-ecb-rates-in-claude",
+      "total": 79,
+      "human": 11,
+      "human_verified": 2,
+      "search_ai": 7,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 22,
+      "other_bot": 37,
+      "unclassified": 0,
+      "visits": 60,
+      "crawlers": {
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/guides/resume-and-cover-letter-from-chat",
+      "total": 67,
+      "human": 11,
+      "human_verified": 2,
+      "search_ai": 5,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 12,
+      "other_bot": 37,
+      "unclassified": 0,
+      "visits": 55,
+      "crawlers": {
+        "meta-externalagent": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/setup",
+      "total": 63,
+      "human": 11,
+      "human_verified": 2,
+      "search_ai": 5,
+      "human_verified_ex_operator": 2,
+      "seo": 3,
+      "scripted": 37,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 37,
+      "crawlers": {
+        "MJ12bot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "bingbot": 1,
+        "SemrushBot": 1,
+        "meta-externalagent": 1,
+        "Applebot": 1
       }
     },
     {
@@ -3192,203 +3778,518 @@
         "ClaudeBot": 1,
         "bingbot": 1,
         "MJ12bot": 1,
-        "meta-externalagent": 1,
         "YandexBot": 1,
+        "meta-externalagent": 1,
         "SemrushBot": 1,
         "Amazonbot": 1
       }
     },
     {
-      "path": "/setup",
-      "total": 59,
+      "path": "/s/resume",
+      "total": 71,
       "human": 10,
       "human_verified": 2,
-      "search_ai": 4,
+      "search_ai": 3,
       "human_verified_ex_operator": 2,
-      "seo": 3,
-      "scripted": 35,
-      "other_bot": 7,
-      "unclassified": 0,
-      "visits": 35,
+      "seo": 2,
+      "scripted": 15,
+      "other_bot": 18,
+      "unclassified": 23,
+      "visits": 38,
       "crawlers": {
-        "MJ12bot": 2,
-        "YandexBot": 1,
         "ClaudeBot": 1,
-        "bingbot": 1,
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/zip-archives-safely-from-chat",
+      "total": 54,
+      "human": 10,
+      "human_verified": 2,
+      "search_ai": 6,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 9,
+      "other_bot": 27,
+      "unclassified": 0,
+      "visits": 43,
+      "crawlers": {
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "YandexBot": 1,
         "SemrushBot": 1,
         "meta-externalagent": 1
       }
     },
     {
-      "path": "/guides/expense-tracking-in-claude",
-      "total": 82,
+      "path": "/guides/one-install-office-suite",
+      "total": 41,
+      "human": 10,
+      "human_verified": 2,
+      "search_ai": 7,
+      "human_verified_ex_operator": 2,
+      "seo": 3,
+      "scripted": 17,
+      "other_bot": 4,
+      "unclassified": 0,
+      "visits": 25,
+      "crawlers": {
+        "Amazonbot": 2,
+        "SemrushBot": 2,
+        "YandexBot": 1,
+        "GPTBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "meta-externalagent": 2
+      }
+    },
+    {
+      "path": "/guides/calendar-ics-free-busy-in-claude",
+      "total": 78,
+      "human": 9,
+      "human_verified": 2,
+      "search_ai": 9,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 15,
+      "other_bot": 43,
+      "unclassified": 0,
+      "visits": 62,
+      "crawlers": {
+        "GPTBot": 2,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "bingbot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "meta-externalagent": 2,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/guides/quotes-and-estimates-to-invoice-in-claude",
+      "total": 68,
+      "human": 9,
+      "human_verified": 2,
+      "search_ai": 7,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 15,
+      "other_bot": 35,
+      "unclassified": 0,
+      "visits": 53,
+      "crawlers": {
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "bingbot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 2,
+        "SemrushBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/s/pdf",
+      "total": 59,
       "human": 9,
       "human_verified": 2,
       "search_ai": 4,
       "human_verified_ex_operator": 2,
       "seo": 2,
-      "scripted": 28,
-      "other_bot": 39,
-      "unclassified": 0,
-      "visits": 61,
+      "scripted": 14,
+      "other_bot": 7,
+      "unclassified": 23,
+      "visits": 34,
       "crawlers": {
         "ClaudeBot": 1,
         "MJ12bot": 1,
         "YandexBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/meeting-slots-across-time-zones",
-      "total": 82,
-      "human": 8,
-      "human_verified": 2,
-      "search_ai": 5,
-      "human_verified_ex_operator": 2,
-      "seo": 2,
-      "scripted": 18,
-      "other_bot": 49,
-      "unclassified": 0,
-      "visits": 68,
-      "crawlers": {
-        "GPTBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "YandexBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/quotes-and-estimates-to-invoice-in-claude",
-      "total": 62,
-      "human": 8,
-      "human_verified": 2,
-      "search_ai": 5,
-      "human_verified_ex_operator": 2,
-      "seo": 2,
-      "scripted": 12,
-      "other_bot": 35,
-      "unclassified": 0,
-      "visits": 50,
-      "crawlers": {
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "bingbot": 1,
-        "ClaudeBot": 1,
         "Amazonbot": 1,
         "meta-externalagent": 1,
         "SemrushBot": 1
       }
     },
     {
-      "path": "/s/spreadsheet",
-      "total": 56,
+      "path": "/s/image",
+      "total": 50,
+      "human": 9,
+      "human_verified": 2,
+      "search_ai": 2,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 9,
+      "other_bot": 7,
+      "unclassified": 21,
+      "visits": 29,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/setup/cursor",
+      "total": 40,
+      "human": 9,
+      "human_verified": 2,
+      "search_ai": 7,
+      "human_verified_ex_operator": 2,
+      "seo": 3,
+      "scripted": 14,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 26,
+      "crawlers": {
+        "GPTBot": 2,
+        "MJ12bot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "bingbot": 1,
+        "meta-externalagent": 1
+      }
+    },
+    {
+      "path": "/setup/claude-code",
+      "total": 36,
+      "human": 9,
+      "human_verified": 2,
+      "search_ai": 5,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 13,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 24,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "GPTBot": 1,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1
+      }
+    },
+    {
+      "path": "/guides/bank-statement-csv-categorize-reconcile",
+      "total": 81,
       "human": 8,
       "human_verified": 2,
-      "search_ai": 4,
+      "search_ai": 8,
+      "human_verified_ex_operator": 2,
+      "seo": 1,
+      "scripted": 12,
+      "other_bot": 52,
+      "unclassified": 0,
+      "visits": 67,
+      "crawlers": {
+        "GPTBot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "bingbot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 2,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/s/currency",
+      "total": 73,
+      "human": 8,
+      "human_verified": 2,
+      "search_ai": 5,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 26,
+      "other_bot": 8,
+      "unclassified": 24,
+      "visits": 39,
+      "crawlers": {
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "YandexBot": 1,
+        "SemrushBot": 1,
+        "bingbot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/setup/windsurf",
+      "total": 46,
+      "human": 8,
+      "human_verified": 2,
+      "search_ai": 11,
+      "human_verified_ex_operator": 2,
+      "seo": 3,
+      "scripted": 17,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 31,
+      "crawlers": {
+        "bingbot": 7,
+        "MJ12bot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1
+      }
+    },
+    {
+      "path": "/setup/vscode",
+      "total": 38,
+      "human": 8,
+      "human_verified": 2,
+      "search_ai": 9,
+      "human_verified_ex_operator": 2,
+      "seo": 3,
+      "scripted": 11,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 24,
+      "crawlers": {
+        "GPTBot": 4,
+        "MJ12bot": 2,
+        "meta-externalagent": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/s/zip",
+      "total": 57,
+      "human": 7,
+      "human_verified": 2,
+      "search_ai": 6,
       "human_verified_ex_operator": 2,
       "seo": 2,
       "scripted": 13,
       "other_bot": 8,
       "unclassified": 21,
-      "visits": 32,
+      "visits": 31,
       "crawlers": {
+        "GPTBot": 2,
         "ClaudeBot": 1,
         "MJ12bot": 1,
         "YandexBot": 1,
-        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/s/asset-register",
+      "total": 46,
+      "human": 7,
+      "human_verified": 2,
+      "search_ai": 6,
+      "human_verified_ex_operator": 2,
+      "seo": 1,
+      "scripted": 10,
+      "other_bot": 5,
+      "unclassified": 17,
+      "visits": 24,
+      "crawlers": {
+        "GPTBot": 2,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
         "meta-externalagent": 1,
         "Amazonbot": 1
       }
     },
     {
-      "path": "/s/clauses",
-      "total": 56,
-      "human": 8,
+      "path": "/compare/expense-tracker",
+      "total": 34,
+      "human": 7,
       "human_verified": 2,
       "search_ai": 6,
       "human_verified_ex_operator": 2,
       "seo": 2,
-      "scripted": 10,
-      "other_bot": 10,
-      "unclassified": 20,
-      "visits": 33,
-      "crawlers": {
-        "GPTBot": 2,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/s/price-tracker",
-      "total": 60,
-      "human": 7,
-      "human_verified": 2,
-      "search_ai": 4,
-      "human_verified_ex_operator": 2,
-      "seo": 2,
-      "scripted": 11,
-      "other_bot": 14,
-      "unclassified": 22,
-      "visits": 38,
-      "crawlers": {
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/s/recurring",
-      "total": 61,
-      "human": 6,
-      "human_verified": 2,
-      "search_ai": 5,
-      "human_verified_ex_operator": 2,
-      "seo": 2,
-      "scripted": 10,
+      "scripted": 12,
       "other_bot": 7,
-      "unclassified": 31,
-      "visits": 38,
+      "unclassified": 0,
+      "visits": 23,
       "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1,
+        "bingbot": 2,
         "MJ12bot": 1,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
         "Amazonbot": 1,
         "SemrushBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/bundle",
+      "total": 74,
+      "human": 13,
+      "human_verified": 1,
+      "search_ai": 14,
+      "human_verified_ex_operator": 1,
+      "seo": 5,
+      "scripted": 34,
+      "other_bot": 7,
+      "unclassified": 1,
+      "visits": 42,
+      "crawlers": {
+        "ClaudeBot": 4,
+        "MJ12bot": 4,
+        "GPTBot": 4,
+        "Amazonbot": 4,
+        "YandexBot": 1,
+        "SemrushBot": 1,
+        "meta-externalagent": 1
+      }
+    },
+    {
+      "path": "/guides/word-documents-proposals-from-chat",
+      "total": 86,
+      "human": 10,
+      "human_verified": 1,
+      "search_ai": 7,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 22,
+      "other_bot": 45,
+      "unclassified": 0,
+      "visits": 69,
+      "crawlers": {
+        "meta-externalagent": 2,
+        "bingbot": 1,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/guides/price-lists-and-rate-cards-from-chat",
+      "total": 74,
+      "human": 10,
+      "human_verified": 1,
+      "search_ai": 8,
+      "human_verified_ex_operator": 1,
+      "seo": 3,
+      "scripted": 13,
+      "other_bot": 40,
+      "unclassified": 0,
+      "visits": 58,
+      "crawlers": {
+        "MJ12bot": 2,
+        "meta-externalagent": 2,
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "bingbot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/guides/pdf-merge-split-stamp-from-chat",
+      "total": 71,
+      "human": 10,
+      "human_verified": 1,
+      "search_ai": 9,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 19,
+      "other_bot": 31,
+      "unclassified": 0,
+      "visits": 52,
+      "crawlers": {
+        "meta-externalagent": 2,
+        "Applebot": 2,
+        "MJ12bot": 1,
+        "bingbot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1,
         "YandexBot": 1
       }
     },
     {
-      "path": "/guides/recurring-invoices-on-a-schedule",
-      "total": 54,
-      "human": 6,
-      "human_verified": 2,
-      "search_ai": 5,
-      "human_verified_ex_operator": 2,
+      "path": "/guides/connect-mcp-servers-without-installing",
+      "total": 65,
+      "human": 10,
+      "human_verified": 1,
+      "search_ai": 7,
+      "human_verified_ex_operator": 1,
       "seo": 2,
-      "scripted": 8,
-      "other_bot": 33,
+      "scripted": 12,
+      "other_bot": 34,
       "unclassified": 0,
-      "visits": 45,
+      "visits": 52,
+      "crawlers": {
+        "GPTBot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 2
+      }
+    },
+    {
+      "path": "/guides/client-deposits-and-retainers-from-chat",
+      "total": 60,
+      "human": 10,
+      "human_verified": 1,
+      "search_ai": 8,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 12,
+      "other_bot": 28,
+      "unclassified": 0,
+      "visits": 46,
+      "crawlers": {
+        "GPTBot": 2,
+        "meta-externalagent": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/compare",
+      "total": 56,
+      "human": 10,
+      "human_verified": 1,
+      "search_ai": 5,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 32,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 34,
       "crawlers": {
         "ClaudeBot": 1,
         "YandexBot": 1,
         "MJ12bot": 1,
         "SemrushBot": 1,
-        "GPTBot": 1,
         "Amazonbot": 1,
-        "meta-externalagent": 1
+        "meta-externalagent": 1,
+        "Applebot": 1
       }
     },
     {
@@ -3413,40 +4314,61 @@
       }
     },
     {
-      "path": "/guides/pdf-merge-split-stamp-from-chat",
-      "total": 63,
-      "human": 9,
+      "path": "/guides/petty-cash-float-from-chat",
+      "total": 33,
+      "human": 10,
       "human_verified": 1,
       "search_ai": 6,
       "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 15,
-      "other_bot": 31,
+      "seo": 1,
+      "scripted": 12,
+      "other_bot": 4,
       "unclassified": 0,
-      "visits": 48,
+      "visits": 20,
       "crawlers": {
+        "ClaudeBot": 1,
         "MJ12bot": 1,
         "bingbot": 1,
-        "ClaudeBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "GPTBot": 1,
         "meta-externalagent": 1,
-        "YandexBot": 1
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/sepa-payment-qr-codes-on-invoices-from-chat",
+      "total": 85,
+      "human": 9,
+      "human_verified": 1,
+      "search_ai": 7,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 10,
+      "other_bot": 57,
+      "unclassified": 0,
+      "visits": 72,
+      "crawlers": {
+        "GPTBot": 2,
+        "meta-externalagent": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
       }
     },
     {
       "path": "/s/timezone",
-      "total": 72,
-      "human": 8,
+      "total": 76,
+      "human": 9,
       "human_verified": 1,
       "search_ai": 10,
       "human_verified_ex_operator": 1,
       "seo": 2,
-      "scripted": 24,
+      "scripted": 25,
       "other_bot": 7,
-      "unclassified": 21,
-      "visits": 37,
+      "unclassified": 23,
+      "visits": 38,
       "crawlers": {
         "GPTBot": 4,
         "bingbot": 2,
@@ -3459,165 +4381,17 @@
       }
     },
     {
-      "path": "/s/resume",
-      "total": 65,
-      "human": 8,
-      "human_verified": 1,
-      "search_ai": 3,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 13,
-      "other_bot": 18,
-      "unclassified": 21,
-      "visits": 36,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/guides/resume-and-cover-letter-from-chat",
-      "total": 58,
-      "human": 8,
-      "human_verified": 1,
-      "search_ai": 3,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 8,
-      "other_bot": 37,
-      "unclassified": 0,
-      "visits": 50,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/s/quotes",
-      "total": 56,
-      "human": 8,
-      "human_verified": 1,
-      "search_ai": 4,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 12,
-      "other_bot": 9,
-      "unclassified": 21,
-      "visits": 32,
-      "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/guides/kanban-board-in-claude-with-time-tracking",
-      "total": 56,
-      "human": 8,
-      "human_verified": 1,
-      "search_ai": 4,
-      "human_verified_ex_operator": 1,
-      "seo": 3,
-      "scripted": 10,
-      "other_bot": 31,
-      "unclassified": 0,
-      "visits": 45,
-      "crawlers": {
-        "MJ12bot": 2,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/guides/sepa-payment-qr-codes-on-invoices-from-chat",
-      "total": 80,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 6,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 8,
-      "other_bot": 57,
-      "unclassified": 0,
-      "visits": 69,
-      "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/guides/word-documents-proposals-from-chat",
-      "total": 78,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 5,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 19,
-      "other_bot": 45,
-      "unclassified": 0,
-      "visits": 64,
-      "crawlers": {
-        "bingbot": 1,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/calendar-ics-free-busy-in-claude",
-      "total": 70,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 7,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 11,
-      "other_bot": 43,
-      "unclassified": 0,
-      "visits": 58,
-      "crawlers": {
-        "GPTBot": 2,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "bingbot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
       "path": "/s/docx",
-      "total": 68,
-      "human": 7,
+      "total": 73,
+      "human": 9,
       "human_verified": 1,
       "search_ai": 6,
       "human_verified_ex_operator": 1,
       "seo": 2,
-      "scripted": 24,
+      "scripted": 25,
       "other_bot": 7,
-      "unclassified": 22,
-      "visits": 37,
+      "unclassified": 24,
+      "visits": 39,
       "crawlers": {
         "bingbot": 2,
         "ClaudeBot": 1,
@@ -3629,83 +4403,88 @@
       }
     },
     {
-      "path": "/s/currency",
-      "total": 67,
-      "human": 7,
+      "path": "/guides/contract-clauses-library-assembly",
+      "total": 63,
+      "human": 9,
       "human_verified": 1,
-      "search_ai": 4,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 24,
-      "other_bot": 8,
-      "unclassified": 22,
-      "visits": 37,
-      "crawlers": {
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "YandexBot": 1,
-        "SemrushBot": 1,
-        "bingbot": 1
-      }
-    },
-    {
-      "path": "/guides/price-lists-and-rate-cards-from-chat",
-      "total": 62,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 4,
+      "search_ai": 5,
       "human_verified_ex_operator": 1,
       "seo": 2,
       "scripted": 9,
-      "other_bot": 40,
+      "other_bot": 38,
       "unclassified": 0,
-      "visits": 52,
+      "visits": 53,
       "crawlers": {
-        "MJ12bot": 2,
-        "ClaudeBot": 1,
-        "meta-externalagent": 1,
-        "bingbot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/connect-mcp-servers-without-installing",
-      "total": 59,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 6,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 10,
-      "other_bot": 34,
-      "unclassified": 0,
-      "visits": 48,
-      "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1,
         "YandexBot": 1,
         "MJ12bot": 1,
+        "ClaudeBot": 1,
         "SemrushBot": 1,
         "Amazonbot": 1,
+        "GPTBot": 1,
         "meta-externalagent": 1
       }
     },
     {
-      "path": "/s/pdf",
-      "total": 54,
-      "human": 7,
+      "path": "/guides/image-resize-compress-watermark-from-chat",
+      "total": 53,
+      "human": 9,
       "human_verified": 1,
-      "search_ai": 4,
+      "search_ai": 7,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 9,
+      "other_bot": 26,
+      "unclassified": 0,
+      "visits": 42,
+      "crawlers": {
+        "GPTBot": 2,
+        "meta-externalagent": 2,
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/client-statements-and-dunning-from-chat",
+      "total": 35,
+      "human": 9,
+      "human_verified": 1,
+      "search_ai": 7,
       "human_verified_ex_operator": 1,
       "seo": 2,
       "scripted": 13,
-      "other_bot": 7,
-      "unclassified": 21,
-      "visits": 32,
+      "other_bot": 4,
+      "unclassified": 0,
+      "visits": 21,
       "crawlers": {
         "ClaudeBot": 1,
         "MJ12bot": 1,
+        "Amazonbot": 1,
+        "YandexBot": 1,
+        "meta-externalagent": 2,
+        "SemrushBot": 1,
+        "GPTBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/s/billing-docs",
+      "total": 60,
+      "human": 8,
+      "human_verified": 1,
+      "search_ai": 5,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 15,
+      "other_bot": 11,
+      "unclassified": 19,
+      "visits": 36,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "GPTBot": 1,
         "YandexBot": 1,
         "Amazonbot": 1,
         "meta-externalagent": 1,
@@ -3713,8 +4492,115 @@
       }
     },
     {
+      "path": "/s/work-order",
+      "total": 48,
+      "human": 8,
+      "human_verified": 1,
+      "search_ai": 6,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 14,
+      "other_bot": 5,
+      "unclassified": 13,
+      "visits": 26,
+      "crawlers": {
+        "MJ12bot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Applebot": 1,
+        "meta-externalagent": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/s/amortization",
+      "total": 45,
+      "human": 8,
+      "human_verified": 1,
+      "search_ai": 5,
+      "human_verified_ex_operator": 1,
+      "seo": 1,
+      "scripted": 10,
+      "other_bot": 5,
+      "unclassified": 16,
+      "visits": 26,
+      "crawlers": {
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "Applebot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/changelog",
+      "total": 39,
+      "human": 8,
+      "human_verified": 1,
+      "search_ai": 7,
+      "human_verified_ex_operator": 1,
+      "seo": 3,
+      "scripted": 16,
+      "other_bot": 5,
+      "unclassified": 0,
+      "visits": 24,
+      "crawlers": {
+        "GPTBot": 2,
+        "MJ12bot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "meta-externalagent": 2,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/compare/invoice",
+      "total": 37,
+      "human": 8,
+      "human_verified": 1,
+      "search_ai": 7,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 13,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 23,
+      "crawlers": {
+        "GPTBot": 2,
+        "bingbot": 2,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/compare/time-tracker",
+      "total": 32,
+      "human": 8,
+      "human_verified": 1,
+      "search_ai": 3,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 12,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 21,
+      "crawlers": {
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "bingbot": 1
+      }
+    },
+    {
       "path": "/s/kanban",
-      "total": 54,
+      "total": 56,
       "human": 7,
       "human_verified": 1,
       "search_ai": 4,
@@ -3722,7 +4608,7 @@
       "seo": 2,
       "scripted": 9,
       "other_bot": 14,
-      "unclassified": 18,
+      "unclassified": 20,
       "visits": 29,
       "crawlers": {
         "MJ12bot": 1,
@@ -3735,7 +4621,7 @@
     },
     {
       "path": "/s/calendar",
-      "total": 50,
+      "total": 52,
       "human": 7,
       "human_verified": 1,
       "search_ai": 4,
@@ -3743,7 +4629,7 @@
       "seo": 2,
       "scripted": 9,
       "other_bot": 9,
-      "unclassified": 19,
+      "unclassified": 21,
       "visits": 30,
       "crawlers": {
         "ClaudeBot": 1,
@@ -3755,340 +4641,203 @@
       }
     },
     {
-      "path": "/guides/zip-archives-safely-from-chat",
-      "total": 50,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 6,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 8,
-      "other_bot": 27,
-      "unclassified": 0,
-      "visits": 40,
-      "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "YandexBot": 1,
-        "SemrushBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/image-resize-compress-watermark-from-chat",
-      "total": 48,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 6,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 7,
-      "other_bot": 26,
-      "unclassified": 0,
-      "visits": 39,
-      "crawlers": {
-        "GPTBot": 2,
-        "YandexBot": 1,
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/s/image",
-      "total": 44,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 2,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 7,
-      "other_bot": 7,
-      "unclassified": 19,
-      "visits": 27,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/setup/cursor",
-      "total": 36,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 7,
-      "human_verified_ex_operator": 1,
-      "seo": 3,
-      "scripted": 12,
-      "other_bot": 7,
-      "unclassified": 0,
-      "visits": 24,
-      "crawlers": {
-        "GPTBot": 2,
-        "MJ12bot": 2,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "bingbot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/setup/vscode",
-      "total": 34,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 8,
-      "human_verified_ex_operator": 1,
-      "seo": 3,
-      "scripted": 9,
-      "other_bot": 7,
-      "unclassified": 0,
-      "visits": 22,
-      "crawlers": {
-        "GPTBot": 4,
-        "MJ12bot": 2,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/setup/claude-code",
-      "total": 32,
-      "human": 7,
-      "human_verified": 1,
-      "search_ai": 5,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 11,
-      "other_bot": 7,
-      "unclassified": 0,
-      "visits": 22,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "GPTBot": 1,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/bank-statement-csv-categorize-reconcile",
-      "total": 75,
-      "human": 6,
-      "human_verified": 1,
-      "search_ai": 7,
-      "human_verified_ex_operator": 1,
-      "seo": 1,
-      "scripted": 9,
-      "other_bot": 52,
-      "unclassified": 0,
-      "visits": 64,
-      "crawlers": {
-        "GPTBot": 2,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "bingbot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/guides/currency-conversion-ecb-rates-in-claude",
-      "total": 70,
-      "human": 6,
-      "human_verified": 1,
-      "search_ai": 6,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 19,
-      "other_bot": 37,
-      "unclassified": 0,
-      "visits": 54,
-      "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/contract-clauses-library-assembly",
-      "total": 59,
-      "human": 6,
-      "human_verified": 1,
-      "search_ai": 5,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 8,
-      "other_bot": 38,
-      "unclassified": 0,
-      "visits": 50,
-      "crawlers": {
-        "YandexBot": 1,
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "GPTBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/s/zip",
-      "total": 53,
-      "human": 6,
-      "human_verified": 1,
-      "search_ai": 6,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 12,
-      "other_bot": 8,
-      "unclassified": 19,
-      "visits": 30,
-      "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/s/bank-statement",
+      "path": "/guides/work-orders-and-job-cards-from-chat",
       "total": 51,
-      "human": 6,
+      "human": 7,
       "human_verified": 1,
-      "search_ai": 4,
+      "search_ai": 7,
       "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 11,
-      "other_bot": 9,
-      "unclassified": 19,
-      "visits": 31,
-      "crawlers": {
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/setup/windsurf",
-      "total": 41,
-      "human": 5,
-      "human_verified": 1,
-      "search_ai": 11,
-      "human_verified_ex_operator": 1,
-      "seo": 3,
-      "scripted": 15,
-      "other_bot": 7,
+      "seo": 0,
+      "scripted": 13,
+      "other_bot": 24,
       "unclassified": 0,
-      "visits": 28,
+      "visits": 38,
       "crawlers": {
-        "bingbot": 7,
-        "MJ12bot": 2,
-        "YandexBot": 1,
+        "meta-externalagent": 2,
         "ClaudeBot": 1,
-        "SemrushBot": 1,
+        "bingbot": 1,
+        "YandexBot": 1,
         "Amazonbot": 1,
-        "meta-externalagent": 1
+        "Applebot": 1
       }
     },
     {
-      "path": "/s/asset-register",
-      "total": 40,
-      "human": 5,
+      "path": "/s/per-diem",
+      "total": 46,
+      "human": 7,
       "human_verified": 1,
       "search_ai": 6,
       "human_verified_ex_operator": 1,
-      "seo": 1,
-      "scripted": 8,
+      "seo": 2,
+      "scripted": 9,
       "other_bot": 5,
-      "unclassified": 15,
+      "unclassified": 17,
+      "visits": 26,
+      "crawlers": {
+        "GPTBot": 2,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/s/change-order",
+      "total": 41,
+      "human": 7,
+      "human_verified": 1,
+      "search_ai": 3,
+      "human_verified_ex_operator": 1,
+      "seo": 1,
+      "scripted": 12,
+      "other_bot": 5,
+      "unclassified": 13,
       "visits": 23,
       "crawlers": {
-        "GPTBot": 2,
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
         "YandexBot": 1,
-        "meta-externalagent": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
         "Amazonbot": 1
       }
     },
     {
-      "path": "/compare/expense-tracker",
-      "total": 29,
-      "human": 5,
+      "path": "/guides/credit-notes-and-purchase-orders-from-chat",
+      "total": 28,
+      "human": 7,
+      "human_verified": 1,
+      "search_ai": 5,
+      "human_verified_ex_operator": 1,
+      "seo": 3,
+      "scripted": 9,
+      "other_bot": 4,
+      "unclassified": 0,
+      "visits": 19,
+      "crawlers": {
+        "MJ12bot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "meta-externalagent": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/compare/recurring",
+      "total": 27,
+      "human": 6,
       "human_verified": 1,
       "search_ai": 5,
       "human_verified_ex_operator": 1,
       "seo": 2,
-      "scripted": 10,
-      "other_bot": 7,
-      "unclassified": 0,
-      "visits": 20,
-      "crawlers": {
-        "bingbot": 2,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/setup/cline",
-      "total": 26,
-      "human": 5,
-      "human_verified": 1,
-      "search_ai": 4,
-      "human_verified_ex_operator": 1,
-      "seo": 1,
-      "scripted": 9,
-      "other_bot": 7,
+      "scripted": 8,
+      "other_bot": 6,
       "unclassified": 0,
       "visits": 18,
       "crawlers": {
         "YandexBot": 1,
         "ClaudeBot": 1,
-        "SemrushBot": 1,
+        "MJ12bot": 1,
         "Amazonbot": 1,
+        "SemrushBot": 1,
+        "GPTBot": 1,
         "meta-externalagent": 1
+      }
+    },
+    {
+      "path": "/guides/chase-unpaid-invoices-without-a-crm",
+      "total": 19,
+      "human": 6,
+      "human_verified": 1,
+      "search_ai": 4,
+      "human_verified_ex_operator": 1,
+      "seo": 1,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 12,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/where-is-claude-desktop-config-json",
+      "total": 18,
+      "human": 6,
+      "human_verified": 1,
+      "search_ai": 3,
+      "human_verified_ex_operator": 1,
+      "seo": 1,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 12,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/s/statement-of-account",
+      "total": 40,
+      "human": 5,
+      "human_verified": 1,
+      "search_ai": 3,
+      "human_verified_ex_operator": 1,
+      "seo": 1,
+      "scripted": 8,
+      "other_bot": 6,
+      "unclassified": 17,
+      "visits": 23,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/compare/docx",
+      "total": 37,
+      "human": 5,
+      "human_verified": 1,
+      "search_ai": 7,
+      "human_verified_ex_operator": 1,
+      "seo": 2,
+      "scripted": 17,
+      "other_bot": 6,
+      "unclassified": 0,
+      "visits": 22,
+      "crawlers": {
+        "GPTBot": 2,
+        "bingbot": 2,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
       }
     },
     {
       "path": "/s/barcode",
-      "total": 54,
-      "human": 8,
+      "total": 58,
+      "human": 9,
       "human_verified": 1,
       "search_ai": 3,
       "human_verified_ex_operator": 0,
       "seo": 2,
-      "scripted": 15,
+      "scripted": 16,
       "other_bot": 8,
-      "unclassified": 18,
-      "visits": 32,
+      "unclassified": 20,
+      "visits": 33,
       "crawlers": {
         "ClaudeBot": 1,
         "YandexBot": 1,
@@ -4098,232 +4847,336 @@
       }
     },
     {
-      "path": "/bundle",
-      "total": 58,
-      "human": 8,
+      "path": "/guides/fixed-assets-and-depreciation-from-chat",
+      "total": 62,
+      "human": 9,
       "human_verified": 0,
-      "search_ai": 11,
-      "human_verified_ex_operator": 0,
-      "seo": 5,
-      "scripted": 29,
-      "other_bot": 4,
-      "unclassified": 1,
-      "visits": 37,
-      "crawlers": {
-        "ClaudeBot": 4,
-        "MJ12bot": 4,
-        "Amazonbot": 4,
-        "YandexBot": 1,
-        "GPTBot": 1,
-        "SemrushBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/client-deposits-and-retainers-from-chat",
-      "total": 53,
-      "human": 7,
-      "human_verified": 0,
-      "search_ai": 7,
+      "search_ai": 5,
       "human_verified_ex_operator": 0,
       "seo": 2,
-      "scripted": 9,
-      "other_bot": 28,
+      "scripted": 10,
+      "other_bot": 36,
       "unclassified": 0,
-      "visits": 42,
+      "visits": 52,
       "crawlers": {
-        "GPTBot": 2,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
         "meta-externalagent": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
         "YandexBot": 1,
         "Amazonbot": 1,
         "SemrushBot": 1
       }
     },
     {
-      "path": "/compare",
-      "total": 49,
-      "human": 7,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 29,
-      "other_bot": 7,
-      "unclassified": 0,
-      "visits": 30,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/s/work-order",
-      "total": 38,
-      "human": 7,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 11,
-      "other_bot": 5,
-      "unclassified": 11,
-      "visits": 22,
-      "crawlers": {
-        "MJ12bot": 2,
-        "ClaudeBot": 1,
-        "YandexBot": 1
-      }
-    },
-    {
-      "path": "/guides/one-install-office-suite",
-      "total": 34,
-      "human": 7,
+      "path": "/guides/one-ledger-from-every-server",
+      "total": 58,
+      "human": 9,
       "human_verified": 0,
       "search_ai": 6,
       "human_verified_ex_operator": 0,
-      "seo": 3,
+      "seo": 2,
+      "scripted": 14,
+      "other_bot": 27,
+      "unclassified": 0,
+      "visits": 45,
+      "crawlers": {
+        "GPTBot": 2,
+        "Amazonbot": 1,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "meta-externalagent": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/month-end-close-with-mcp-servers",
+      "total": 33,
+      "human": 8,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
       "scripted": 14,
       "other_bot": 4,
       "unclassified": 0,
       "visits": 21,
       "crawlers": {
-        "Amazonbot": 2,
-        "SemrushBot": 2,
         "YandexBot": 1,
-        "GPTBot": 1,
         "ClaudeBot": 1,
         "MJ12bot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1,
+        "SemrushBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/guides/per-diem-and-travel-allowances-from-chat",
+      "total": 66,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 9,
+      "other_bot": 46,
+      "unclassified": 0,
+      "visits": 57,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/loan-and-lease-schedules-from-chat",
+      "total": 57,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 8,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 12,
+      "other_bot": 28,
+      "unclassified": 0,
+      "visits": 43,
+      "crawlers": {
+        "GPTBot": 2,
+        "bingbot": 1,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 2,
+        "Applebot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/s/deposits",
+      "total": 48,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 8,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 10,
+      "other_bot": 5,
+      "unclassified": 16,
+      "visits": 27,
+      "crawlers": {
+        "GPTBot": 2,
+        "YandexBot": 2,
+        "meta-externalagent": 2,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/compare/timezone",
+      "total": 42,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 8,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 19,
+      "other_bot": 6,
+      "unclassified": 0,
+      "visits": 25,
+      "crawlers": {
+        "GPTBot": 2,
+        "bingbot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
         "meta-externalagent": 1
       }
     },
     {
-      "path": "/s/billing-docs",
-      "total": 54,
+      "path": "/s/catalogue",
+      "total": 41,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 10,
+      "other_bot": 5,
+      "unclassified": 13,
+      "visits": 22,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1,
+        "Applebot": 1
+      }
+    },
+    {
+      "path": "/setup/claude-web",
+      "total": 31,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 6,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 9,
+      "other_bot": 7,
+      "unclassified": 0,
+      "visits": 21,
+      "crawlers": {
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "SemrushBot": 1,
+        "GPTBot": 1,
+        "bingbot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1
+      }
+    },
+    {
+      "path": "/s/delivery-schedule",
+      "total": 25,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 6,
+      "other_bot": 4,
+      "unclassified": 2,
+      "visits": 17,
+      "crawlers": {
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "PerplexityBot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/install-mcp-servers-without-npm",
+      "total": 23,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 5,
+      "other_bot": 4,
+      "unclassified": 0,
+      "visits": 15,
+      "crawlers": {
+        "MJ12bot": 2,
+        "GPTBot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/free-mcp-servers-for-freelancers",
+      "total": 23,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 3,
+      "scripted": 6,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 16,
+      "crawlers": {
+        "YandexBot": 2,
+        "MJ12bot": 2,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/cursor-mcp-json-setup",
+      "total": 21,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 14,
+      "crawlers": {
+        "YandexBot": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "GPTBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-servers-that-work-offline",
+      "total": 21,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 3,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 15,
+      "crawlers": {
+        "MJ12bot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/s/cash-book",
+      "total": 48,
       "human": 6,
       "human_verified": 0,
       "search_ai": 5,
       "human_verified_ex_operator": 0,
       "seo": 2,
       "scripted": 13,
-      "other_bot": 11,
-      "unclassified": 17,
-      "visits": 34,
+      "other_bot": 6,
+      "unclassified": 16,
+      "visits": 27,
       "crawlers": {
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "GPTBot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/s/deposits",
-      "total": 43,
-      "human": 6,
-      "human_verified": 0,
-      "search_ai": 7,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 9,
-      "other_bot": 5,
-      "unclassified": 14,
-      "visits": 25,
-      "crawlers": {
-        "GPTBot": 2,
-        "YandexBot": 2,
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "meta-externalagent": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/s/per-diem",
-      "total": 40,
-      "human": 6,
-      "human_verified": 0,
-      "search_ai": 5,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 7,
-      "other_bot": 5,
-      "unclassified": 15,
-      "visits": 24,
-      "crawlers": {
-        "GPTBot": 2,
         "MJ12bot": 1,
         "ClaudeBot": 1,
         "YandexBot": 1,
+        "Amazonbot": 1,
         "SemrushBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/compare/timezone",
-      "total": 39,
-      "human": 6,
-      "human_verified": 0,
-      "search_ai": 8,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 18,
-      "other_bot": 5,
-      "unclassified": 0,
-      "visits": 23,
-      "crawlers": {
-        "GPTBot": 2,
-        "bingbot": 2,
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/changelog",
-      "total": 36,
-      "human": 6,
-      "human_verified": 0,
-      "search_ai": 7,
-      "human_verified_ex_operator": 0,
-      "seo": 3,
-      "scripted": 15,
-      "other_bot": 5,
-      "unclassified": 0,
-      "visits": 22,
-      "crawlers": {
-        "GPTBot": 2,
-        "MJ12bot": 2,
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "meta-externalagent": 2,
-        "Amazonbot": 1,
-        "SemrushBot": 1
+        "Applebot": 1,
+        "GPTBot": 1
       }
     },
     {
       "path": "/s/office-suite",
-      "total": 34,
+      "total": 38,
       "human": 6,
       "human_verified": 0,
       "search_ai": 4,
       "human_verified_ex_operator": 0,
       "seo": 0,
       "scripted": 7,
-      "other_bot": 3,
-      "unclassified": 14,
-      "visits": 9,
+      "other_bot": 5,
+      "unclassified": 16,
+      "visits": 11,
       "crawlers": {
         "YandexBot": 2,
         "Amazonbot": 1,
@@ -4331,116 +5184,62 @@
       }
     },
     {
-      "path": "/setup/claude-web",
-      "total": 28,
+      "path": "/compare/currency",
+      "total": 37,
       "human": 6,
       "human_verified": 0,
       "search_ai": 6,
       "human_verified_ex_operator": 0,
       "seo": 2,
-      "scripted": 8,
-      "other_bot": 6,
+      "scripted": 16,
+      "other_bot": 7,
       "unclassified": 0,
-      "visits": 19,
+      "visits": 23,
       "crawlers": {
-        "YandexBot": 1,
+        "GPTBot": 2,
         "ClaudeBot": 1,
         "MJ12bot": 1,
+        "YandexBot": 1,
         "SemrushBot": 1,
-        "GPTBot": 1,
-        "bingbot": 1,
         "Amazonbot": 1,
-        "meta-externalagent": 1
+        "bingbot": 1
       }
     },
     {
-      "path": "/guides/per-diem-and-travel-allowances-from-chat",
-      "total": 62,
-      "human": 5,
+      "path": "/compare/spreadsheet",
+      "total": 34,
+      "human": 6,
       "human_verified": 0,
-      "search_ai": 3,
+      "search_ai": 7,
       "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 7,
-      "other_bot": 46,
+      "seo": 2,
+      "scripted": 12,
+      "other_bot": 7,
       "unclassified": 0,
-      "visits": 55,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/guides/one-ledger-from-every-server",
-      "total": 50,
-      "human": 5,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 13,
-      "other_bot": 27,
-      "unclassified": 0,
-      "visits": 40,
-      "crawlers": {
-        "Amazonbot": 1,
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/s/amortization",
-      "total": 35,
-      "human": 5,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 7,
-      "other_bot": 5,
-      "unclassified": 14,
       "visits": 22,
       "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
+        "bingbot": 2,
         "MJ12bot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/s/catalogue",
-      "total": 31,
-      "human": 5,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 7,
-      "other_bot": 5,
-      "unclassified": 11,
-      "visits": 19,
-      "crawlers": {
         "ClaudeBot": 1,
         "YandexBot": 1,
-        "MJ12bot": 1
+        "GPTBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1
       }
     },
     {
       "path": "/compare/resume",
-      "total": 26,
-      "human": 5,
+      "total": 29,
+      "human": 6,
       "human_verified": 0,
       "search_ai": 6,
       "human_verified_ex_operator": 0,
       "seo": 2,
-      "scripted": 8,
-      "other_bot": 5,
+      "scripted": 9,
+      "other_bot": 6,
       "unclassified": 0,
-      "visits": 17,
+      "visits": 19,
       "crawlers": {
         "bingbot": 2,
         "MJ12bot": 1,
@@ -4452,402 +5251,259 @@
       }
     },
     {
-      "path": "/guides/petty-cash-float-from-chat",
-      "total": 24,
-      "human": 5,
+      "path": "/compare/quotes",
+      "total": 25,
+      "human": 6,
       "human_verified": 0,
-      "search_ai": 5,
+      "search_ai": 3,
       "human_verified_ex_operator": 0,
-      "seo": 1,
+      "seo": 2,
       "scripted": 9,
-      "other_bot": 4,
-      "unclassified": 0,
-      "visits": 15,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "bingbot": 1,
-        "meta-externalagent": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/credit-notes-and-purchase-orders-from-chat",
-      "total": 23,
-      "human": 5,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 3,
-      "scripted": 7,
-      "other_bot": 4,
+      "other_bot": 5,
       "unclassified": 0,
       "visits": 16,
       "crawlers": {
-        "MJ12bot": 2,
         "ClaudeBot": 1,
-        "YandexBot": 1,
-        "meta-externalagent": 1,
+        "MJ12bot": 1,
+        "GPTBot": 1,
         "Amazonbot": 1,
         "SemrushBot": 1
       }
     },
     {
-      "path": "/s/delivery-schedule",
-      "total": 16,
-      "human": 5,
+      "path": "/guides/vat-and-reverse-charge-invoices-from-chat",
+      "total": 21,
+      "human": 6,
       "human_verified": 0,
-      "search_ai": 2,
+      "search_ai": 5,
       "human_verified_ex_operator": 0,
       "seo": 1,
+      "scripted": 6,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 12,
+      "crawlers": {
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-server-not-showing-up-in-claude-desktop",
+      "total": 20,
+      "human": 6,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 6,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 12,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "bingbot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/project-profitability-hours-versus-budget",
+      "total": 20,
+      "human": 6,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
       "scripted": 4,
-      "other_bot": 4,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 13,
+      "crawlers": {
+        "MJ12bot": 2,
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/local-mcp-servers-versus-hosted-connectors",
+      "total": 20,
+      "human": 6,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 3,
+      "scripted": 4,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 14,
+      "crawlers": {
+        "MJ12bot": 2,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/self-employed-tax-year-pack-from-chat",
+      "total": 18,
+      "human": 6,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 12,
+      "crawlers": {
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/choosing-an-mcp-server-for-invoicing",
+      "total": 17,
+      "human": 6,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 4,
+      "other_bot": 3,
       "unclassified": 0,
       "visits": 11,
       "crawlers": {
         "YandexBot": 1,
         "ClaudeBot": 1,
-        "MJ12bot": 1
+        "Amazonbot": 1,
+        "GPTBot": 1
       }
     },
     {
-      "path": "/guides/mcp-server-not-showing-up-in-claude-desktop",
-      "total": 16,
-      "human": 5,
+      "path": "/guides/combine-receipts-into-one-pdf-for-your-accountant",
+      "total": 15,
+      "human": 6,
       "human_verified": 0,
       "search_ai": 3,
       "human_verified_ex_operator": 0,
-      "seo": 0,
-      "scripted": 5,
-      "other_bot": 3,
+      "seo": 1,
+      "scripted": 4,
+      "other_bot": 1,
       "unclassified": 0,
       "visits": 10,
       "crawlers": {
         "ClaudeBot": 1,
         "YandexBot": 1,
-        "bingbot": 1
-      }
-    },
-    {
-      "path": "/guides/fixed-assets-and-depreciation-from-chat",
-      "total": 53,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 7,
-      "other_bot": 36,
-      "unclassified": 0,
-      "visits": 46,
-      "crawlers": {
         "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "meta-externalagent": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/guides/loan-and-lease-schedules-from-chat",
-      "total": 45,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 8,
-      "other_bot": 28,
-      "unclassified": 0,
-      "visits": 37,
-      "crawlers": {
-        "bingbot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "MJ12bot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/work-orders-and-job-cards-from-chat",
-      "total": 41,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 5,
-      "human_verified_ex_operator": 0,
-      "seo": 0,
-      "scripted": 8,
-      "other_bot": 24,
-      "unclassified": 0,
-      "visits": 33,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "bingbot": 1,
-        "YandexBot": 1,
-        "meta-externalagent": 1,
         "Amazonbot": 1
       }
     },
     {
       "path": "/guides/change-orders-and-contract-value-from-chat",
-      "total": 37,
-      "human": 4,
+      "total": 40,
+      "human": 5,
       "human_verified": 0,
-      "search_ai": 3,
+      "search_ai": 5,
       "human_verified_ex_operator": 0,
       "seo": 0,
       "scripted": 7,
       "other_bot": 23,
       "unclassified": 0,
-      "visits": 30,
+      "visits": 32,
       "crawlers": {
         "ClaudeBot": 1,
         "meta-externalagent": 1,
-        "YandexBot": 1
-      }
-    },
-    {
-      "path": "/s/cash-book",
-      "total": 36,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 8,
-      "other_bot": 6,
-      "unclassified": 14,
-      "visits": 24,
-      "crawlers": {
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
         "YandexBot": 1,
+        "GPTBot": 1,
         "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/compare/docx",
-      "total": 34,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 7,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 16,
-      "other_bot": 5,
-      "unclassified": 0,
-      "visits": 20,
-      "crawlers": {
-        "GPTBot": 2,
-        "bingbot": 2,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/s/change-order",
-      "total": 33,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 10,
-      "other_bot": 5,
-      "unclassified": 10,
-      "visits": 21,
-      "crawlers": {
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/compare/currency",
-      "total": 33,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 6,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 15,
-      "other_bot": 6,
-      "unclassified": 0,
-      "visits": 20,
-      "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "bingbot": 1
       }
     },
     {
       "path": "/s/petty-cash",
-      "total": 32,
-      "human": 4,
+      "total": 37,
+      "human": 5,
       "human_verified": 0,
-      "search_ai": 2,
+      "search_ai": 4,
       "human_verified_ex_operator": 0,
       "seo": 2,
       "scripted": 6,
       "other_bot": 5,
-      "unclassified": 13,
-      "visits": 20,
+      "unclassified": 15,
+      "visits": 22,
       "crawlers": {
         "MJ12bot": 2,
         "ClaudeBot": 1,
-        "YandexBot": 1
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1
       }
     },
     {
-      "path": "/compare/invoice",
-      "total": 31,
-      "human": 4,
+      "path": "/compare/pdf",
+      "total": 32,
+      "human": 5,
       "human_verified": 0,
       "search_ai": 7,
       "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 11,
-      "other_bot": 7,
+      "seo": 3,
+      "scripted": 13,
+      "other_bot": 4,
       "unclassified": 0,
       "visits": 19,
       "crawlers": {
+        "MJ12bot": 2,
         "GPTBot": 2,
         "bingbot": 2,
-        "MJ12bot": 1,
-        "YandexBot": 1,
         "ClaudeBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/compare/calendar",
-      "total": 31,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 6,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 16,
-      "other_bot": 4,
-      "unclassified": 0,
-      "visits": 18,
-      "crawlers": {
-        "bingbot": 3,
         "YandexBot": 1,
-        "ClaudeBot": 1,
         "Amazonbot": 1,
         "SemrushBot": 1
       }
     },
     {
-      "path": "/compare/spreadsheet",
-      "total": 30,
-      "human": 4,
+      "path": "/compare/clauses",
+      "total": 27,
+      "human": 5,
       "human_verified": 0,
-      "search_ai": 7,
+      "search_ai": 5,
       "human_verified_ex_operator": 0,
       "seo": 2,
-      "scripted": 11,
+      "scripted": 9,
       "other_bot": 6,
       "unclassified": 0,
-      "visits": 19,
+      "visits": 18,
       "crawlers": {
-        "bingbot": 2,
         "MJ12bot": 1,
         "ClaudeBot": 1,
         "YandexBot": 1,
-        "GPTBot": 1,
         "SemrushBot": 1,
+        "bingbot": 1,
         "Amazonbot": 1,
         "meta-externalagent": 1
       }
     },
     {
-      "path": "/compare/pdf",
-      "total": 29,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 7,
-      "human_verified_ex_operator": 0,
-      "seo": 3,
-      "scripted": 12,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 17,
-      "crawlers": {
-        "MJ12bot": 2,
-        "GPTBot": 2,
-        "bingbot": 2,
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/compare/time-tracker",
+      "path": "/compare/price-tracker",
       "total": 26,
-      "human": 4,
+      "human": 5,
       "human_verified": 0,
       "search_ai": 3,
       "human_verified_ex_operator": 0,
       "seo": 2,
       "scripted": 10,
-      "other_bot": 7,
+      "other_bot": 6,
       "unclassified": 0,
       "visits": 17,
-      "crawlers": {
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "bingbot": 1
-      }
-    },
-    {
-      "path": "/guides/month-end-close-with-mcp-servers",
-      "total": 25,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 11,
-      "other_bot": 4,
-      "unclassified": 0,
-      "visits": 16,
-      "crawlers": {
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/compare/price-tracker",
-      "total": 23,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 9,
-      "other_bot": 5,
-      "unclassified": 0,
-      "visits": 15,
       "crawlers": {
         "ClaudeBot": 1,
         "MJ12bot": 1,
@@ -4857,31 +5513,9 @@
       }
     },
     {
-      "path": "/compare/recurring",
-      "total": 23,
-      "human": 4,
-      "human_verified": 0,
-      "search_ai": 5,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 7,
-      "other_bot": 5,
-      "unclassified": 0,
-      "visits": 15,
-      "crawlers": {
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1,
-        "GPTBot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/guides/client-statements-and-dunning-from-chat",
-      "total": 21,
-      "human": 4,
+      "path": "/compare/kanban",
+      "total": 22,
+      "human": 5,
       "human_verified": 0,
       "search_ai": 4,
       "human_verified_ex_operator": 0,
@@ -4892,84 +5526,381 @@
       "visits": 14,
       "crawlers": {
         "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
         "YandexBot": 1,
-        "meta-externalagent": 1,
+        "MJ12bot": 1,
+        "GPTBot": 1,
+        "Amazonbot": 1,
         "SemrushBot": 1
       }
     },
     {
-      "path": "/guides/install-mcp-servers-without-npm",
-      "total": 16,
-      "human": 4,
+      "path": "/guides/mcp-on-windows-paths-and-npx",
+      "total": 21,
+      "human": 5,
       "human_verified": 0,
-      "search_ai": 3,
+      "search_ai": 6,
       "human_verified_ex_operator": 0,
       "seo": 2,
-      "scripted": 3,
-      "other_bot": 4,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 13,
+      "crawlers": {
+        "YandexBot": 2,
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-servers-in-windsurf-and-cline",
+      "total": 21,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 6,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 13,
+      "crawlers": {
+        "YandexBot": 2,
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/compare/per-diem",
+      "total": 21,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 7,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 13,
+      "crawlers": {
+        "GPTBot": 2,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/mileage-log-for-tax-from-chat",
+      "total": 19,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 12,
+      "crawlers": {
+        "MJ12bot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/do-you-need-an-mcp-server-or-just-a-prompt",
+      "total": 19,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 3,
+      "scripted": 4,
+      "other_bot": 3,
       "unclassified": 0,
       "visits": 13,
       "crawlers": {
         "MJ12bot": 2,
         "YandexBot": 1,
         "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/rebill-client-expenses-with-a-markup",
+      "total": 17,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 11,
+      "crawlers": {
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/answer-questions-about-a-spreadsheet-without-formulas",
+      "total": 17,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 2,
+      "scripted": 4,
+      "other_bot": 1,
+      "unclassified": 0,
+      "visits": 10,
+      "crawlers": {
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "MJ12bot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/guides/set-a-freelance-hourly-rate-from-your-own-numbers",
+      "total": 16,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 4,
+      "other_bot": 1,
+      "unclassified": 0,
+      "visits": 9,
+      "crawlers": {
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "MJ12bot": 1,
         "Amazonbot": 1
       }
     },
     {
-      "path": "/guides/do-you-need-an-mcp-server-or-just-a-prompt",
-      "total": 14,
-      "human": 4,
+      "path": "/guides/split-a-scanned-pdf-into-separate-documents",
+      "total": 16,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 4,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 11,
+      "crawlers": {
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/send-a-month-of-paperwork-as-one-zip",
+      "total": 16,
+      "human": 5,
       "human_verified": 0,
       "search_ai": 2,
       "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 5,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 10,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/quote-to-cash-in-claude",
+      "total": 15,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 4,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 9,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "GPTBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/price-a-job-with-a-rate-card-and-a-change-order",
+      "total": 15,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 2,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 4,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 10,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/compare/calendar",
+      "total": 32,
+      "human": 4,
+      "human_verified": 0,
+      "search_ai": 6,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 16,
+      "other_bot": 5,
+      "unclassified": 0,
+      "visits": 19,
+      "crawlers": {
+        "bingbot": 3,
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/claude-mcp-add-command-reference",
+      "total": 17,
+      "human": 4,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
       "seo": 2,
+      "scripted": 4,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 11,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "SemrushBot": 1,
+        "GPTBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-servers-in-vs-code-copilot-agent-mode",
+      "total": 16,
+      "human": 4,
+      "human_verified": 0,
+      "search_ai": 5,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
       "scripted": 3,
       "other_bot": 3,
       "unclassified": 0,
       "visits": 10,
       "crawlers": {
-        "MJ12bot": 2,
+        "GPTBot": 2,
         "YandexBot": 1,
-        "ClaudeBot": 1
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1
       }
     },
     {
-      "path": "/compare/clauses",
-      "total": 23,
+      "path": "/guides/reconcile-a-bank-export-with-your-invoices",
+      "total": 15,
+      "human": 4,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 3,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 11,
+      "crawlers": {
+        "YandexBot": 1,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "Amazonbot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/csv-to-excel-and-back-in-claude",
+      "total": 15,
+      "human": 4,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 4,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 10,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "YandexBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
+      "path": "/compare/barcode",
+      "total": 22,
       "human": 3,
       "human_verified": 0,
-      "search_ai": 5,
+      "search_ai": 3,
       "human_verified_ex_operator": 0,
       "seo": 2,
       "scripted": 8,
-      "other_bot": 5,
+      "other_bot": 6,
       "unclassified": 0,
-      "visits": 15,
+      "visits": 14,
       "crawlers": {
-        "MJ12bot": 1,
         "ClaudeBot": 1,
         "YandexBot": 1,
-        "SemrushBot": 1,
-        "bingbot": 1,
+        "MJ12bot": 1,
         "Amazonbot": 1,
-        "meta-externalagent": 1
+        "SemrushBot": 1
       }
     },
     {
       "path": "/compare/image",
-      "total": 19,
+      "total": 20,
       "human": 3,
       "human_verified": 0,
       "search_ai": 5,
       "human_verified_ex_operator": 0,
       "seo": 2,
       "scripted": 5,
-      "other_bot": 4,
+      "other_bot": 5,
       "unclassified": 0,
-      "visits": 12,
+      "visits": 13,
       "crawlers": {
         "GPTBot": 2,
         "MJ12bot": 1,
@@ -4981,600 +5912,304 @@
     },
     {
       "path": "/compare/bank-statement",
-      "total": 19,
+      "total": 20,
       "human": 3,
       "human_verified": 0,
       "search_ai": 5,
       "human_verified_ex_operator": 0,
       "seo": 2,
       "scripted": 5,
-      "other_bot": 4,
-      "unclassified": 0,
-      "visits": 12,
-      "crawlers": {
-        "GPTBot": 2,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/compare/quotes",
-      "total": 18,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 6,
-      "other_bot": 4,
+      "other_bot": 5,
       "unclassified": 0,
       "visits": 13,
       "crawlers": {
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "GPTBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/compare/kanban",
-      "total": 17,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 5,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 11,
-      "crawlers": {
-        "ClaudeBot": 1,
+        "GPTBot": 2,
         "YandexBot": 1,
-        "MJ12bot": 1,
-        "GPTBot": 1,
-        "Amazonbot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/compare/barcode",
-      "total": 17,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 5,
-      "other_bot": 4,
-      "unclassified": 0,
-      "visits": 12,
-      "crawlers": {
         "ClaudeBot": 1,
-        "YandexBot": 1,
         "MJ12bot": 1,
         "Amazonbot": 1,
         "SemrushBot": 1
       }
     },
     {
-      "path": "/guides/mileage-log-for-tax-from-chat",
-      "total": 14,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 3,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 10,
-      "crawlers": {
-        "MJ12bot": 2,
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/free-mcp-servers-for-freelancers",
-      "total": 14,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 12,
-      "crawlers": {
-        "YandexBot": 2,
-        "MJ12bot": 2,
-        "ClaudeBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/local-mcp-servers-versus-hosted-connectors",
+      "path": "/privacy",
       "total": 13,
       "human": 3,
       "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 11,
-      "crawlers": {
-        "MJ12bot": 2,
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/cursor-mcp-json-setup",
-      "total": 12,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 10,
-      "crawlers": {
-        "YandexBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/mcp-servers-that-work-offline",
-      "total": 12,
-      "human": 3,
-      "human_verified": 0,
       "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 10,
-      "crawlers": {
-        "MJ12bot": 2,
-        "YandexBot": 1,
-        "ClaudeBot": 1
-      }
-    },
-    {
-      "path": "/guides/vat-and-reverse-charge-invoices-from-chat",
-      "total": 12,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 3,
       "human_verified_ex_operator": 0,
       "seo": 0,
-      "scripted": 3,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 8,
+      "scripted": 5,
+      "other_bot": 1,
+      "unclassified": 2,
+      "visits": 6,
       "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/project-profitability-hours-versus-budget",
-      "total": 12,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 10,
-      "crawlers": {
-        "MJ12bot": 2,
         "ClaudeBot": 1,
         "YandexBot": 1
       }
     },
     {
-      "path": "/guides/chase-unpaid-invoices-without-a-crm",
-      "total": 12,
+      "path": "/guides/how-mcp-registry-search-works",
+      "total": 7,
       "human": 3,
       "human_verified": 0,
-      "search_ai": 3,
+      "search_ai": 2,
       "human_verified_ex_operator": 0,
-      "seo": 1,
+      "seo": 0,
       "scripted": 2,
-      "other_bot": 3,
+      "other_bot": 0,
       "unclassified": 0,
-      "visits": 10,
+      "visits": 2,
       "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1
+        "GPTBot": 2
       }
     },
     {
-      "path": "/guides/choosing-an-mcp-server-for-invoicing",
-      "total": 12,
+      "path": "/guides/licensing-a-paid-mcp-server",
+      "total": 7,
       "human": 3,
       "human_verified": 0,
       "search_ai": 3,
       "human_verified_ex_operator": 0,
       "seo": 0,
-      "scripted": 3,
-      "other_bot": 3,
+      "scripted": 1,
+      "other_bot": 0,
       "unclassified": 0,
-      "visits": 8,
+      "visits": 3,
       "crawlers": {
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1
+        "GPTBot": 2,
+        "ClaudeBot": 1
       }
     },
     {
-      "path": "/guides/where-is-claude-desktop-config-json",
-      "total": 11,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 9,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/split-a-scanned-pdf-into-separate-documents",
-      "total": 11,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 9,
-      "crawlers": {
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/answer-questions-about-a-spreadsheet-without-formulas",
-      "total": 10,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 1,
-      "unclassified": 0,
-      "visits": 8,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/quote-to-cash-in-claude",
-      "total": 9,
+      "path": "/guides/mcp-client-config-file-locations",
+      "total": 6,
       "human": 3,
       "human_verified": 0,
       "search_ai": 1,
       "human_verified_ex_operator": 0,
       "seo": 0,
       "scripted": 2,
-      "other_bot": 3,
+      "other_bot": 0,
       "unclassified": 0,
-      "visits": 7,
+      "visits": 3,
       "crawlers": {
         "ClaudeBot": 1
       }
     },
     {
-      "path": "/guides/price-a-job-with-a-rate-card-and-a-change-order",
-      "total": 9,
-      "human": 3,
+      "path": "/guides/stdio-or-streamable-http",
+      "total": 6,
+      "human": 2,
       "human_verified": 0,
-      "search_ai": 1,
+      "search_ai": 4,
       "human_verified_ex_operator": 0,
       "seo": 0,
-      "scripted": 2,
-      "other_bot": 3,
+      "scripted": 0,
+      "other_bot": 0,
       "unclassified": 0,
-      "visits": 7,
-      "crawlers": {
-        "ClaudeBot": 1
-      }
-    },
-    {
-      "path": "/guides/set-a-freelance-hourly-rate-from-your-own-numbers",
-      "total": 9,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 1,
-      "unclassified": 0,
-      "visits": 7,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/combine-receipts-into-one-pdf-for-your-accountant",
-      "total": 9,
-      "human": 3,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 1,
-      "unclassified": 0,
-      "visits": 7,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/s/statement-of-account",
-      "total": 31,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 5,
-      "other_bot": 6,
-      "unclassified": 14,
-      "visits": 20,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/compare/per-diem",
-      "total": 15,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 2,
-      "scripted": 6,
-      "other_bot": 2,
-      "unclassified": 0,
-      "visits": 9,
+      "visits": 4,
       "crawlers": {
         "GPTBot": 2,
         "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "SemrushBot": 1
-      }
-    },
-    {
-      "path": "/guides/mcp-on-windows-paths-and-npx",
-      "total": 11,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 9,
-      "crawlers": {
-        "YandexBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/self-employed-tax-year-pack-from-chat",
-      "total": 11,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 9,
-      "crawlers": {
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
         "Amazonbot": 1
       }
     },
     {
-      "path": "/guides/mcp-servers-in-windsurf-and-cline",
-      "total": 11,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 9,
-      "crawlers": {
-        "YandexBot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/claude-mcp-add-command-reference",
-      "total": 10,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 8,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/reconcile-a-bank-export-with-your-invoices",
-      "total": 10,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 8,
-      "crawlers": {
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "MJ12bot": 1
-      }
-    },
-    {
-      "path": "/guides/rebill-client-expenses-with-a-markup",
-      "total": 10,
+      "path": "/guides/mcp-tool-description-and-output-limits",
+      "total": 6,
       "human": 2,
       "human_verified": 0,
       "search_ai": 3,
       "human_verified_ex_operator": 0,
       "seo": 0,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 8,
-      "crawlers": {
-        "YandexBot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/send-a-month-of-paperwork-as-one-zip",
-      "total": 10,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 8,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/csv-to-excel-and-back-in-claude",
-      "total": 9,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 0,
-      "scripted": 2,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 7,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "YandexBot": 1
-      }
-    },
-    {
-      "path": "/guides/mcp-servers-in-vs-code-copilot-agent-mode",
-      "total": 9,
-      "human": 2,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 1,
       "scripted": 1,
-      "other_bot": 3,
+      "other_bot": 0,
       "unclassified": 0,
-      "visits": 8,
+      "visits": 2,
       "crawlers": {
-        "YandexBot": 1,
+        "GPTBot": 2,
+        "ClaudeBot": 1
+      }
+    },
+    {
+      "path": "/guides/what-is-in-the-mcp-registry",
+      "total": 5,
+      "human": 2,
+      "human_verified": 0,
+      "search_ai": 2,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 1,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 2,
+      "crawlers": {
+        "GPTBot": 1,
+        "ClaudeBot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-config-scopes-and-precedence",
+      "total": 5,
+      "human": 2,
+      "human_verified": 0,
+      "search_ai": 2,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 1,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 3,
+      "crawlers": {
         "ClaudeBot": 1,
-        "MJ12bot": 1
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/what-is-inside-an-mcpb-bundle",
+      "total": 5,
+      "human": 1,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 1,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 2,
+      "crawlers": {
+        "GPTBot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-server-logs-and-what-they-say",
+      "total": 4,
+      "human": 1,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 0,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 2,
+      "crawlers": {
+        "GPTBot": 2,
+        "ClaudeBot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-server-security-review",
+      "total": 4,
+      "human": 1,
+      "human_verified": 0,
+      "search_ai": 2,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 1,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 1,
+      "crawlers": {
+        "GPTBot": 1,
+        "ClaudeBot": 1
+      }
+    },
+    {
+      "path": "/guides/why-an-mcp-server-does-not-appear",
+      "total": 3,
+      "human": 1,
+      "human_verified": 0,
+      "search_ai": 2,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 0,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 2,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-server-json-fields-by-client",
+      "total": 3,
+      "human": 1,
+      "human_verified": 0,
+      "search_ai": 2,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 0,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 2,
+      "crawlers": {
+        "GPTBot": 1,
+        "ClaudeBot": 1
+      }
+    },
+    {
+      "path": "/guides/shipping-an-mcp-server-bundle-or-hosted-url",
+      "total": 3,
+      "human": 1,
+      "human_verified": 0,
+      "search_ai": 2,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 0,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 2,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "GPTBot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-protocol-versions",
+      "total": 2,
+      "human": 1,
+      "human_verified": 0,
+      "search_ai": 1,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 0,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 2,
+      "crawlers": {
+        "ClaudeBot": 1
       }
     }
   ],
   "human_evidence": {
     "render_proof_paths": "/^\\/(cdn-cgi\\/|favicon\\.ico|assets\\/|apple-touch-icon)/",
-    "browser_ua_strings_seen": 165,
-    "browser_ua_strings_render_proven": 43,
-    "requests_human_ua_loose": 3125,
-    "requests_render_proven": 709,
-    "requests_render_proven_excl_operator_country": 702,
+    "browser_ua_strings_seen": 250,
+    "browser_ua_strings_render_proven": 52,
+    "requests_human_ua_loose": 5023,
+    "requests_render_proven": 1217,
+    "requests_render_proven_excl_operator_country": 1210,
     "operator_country_excluded": "PL"
   },
   "queries": {
-    "cf_path_x_useragent_x_country@2026-09-01T08:26:26Z..2026-09-02T08:26:26Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-01T08:26:26Z\", datetime_lt: \"2026-09-02T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-02T08:26:26Z..2026-09-03T08:26:26Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:26:26Z\", datetime_lt: \"2026-09-03T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-03T08:26:26Z..2026-09-04T08:26:26Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-03T08:26:26Z\", datetime_lt: \"2026-09-04T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-04T08:26:26Z..2026-09-05T08:26:26Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-04T08:26:26Z\", datetime_lt: \"2026-09-05T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-05T08:26:26Z..2026-09-06T08:26:26Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-05T08:26:26Z\", datetime_lt: \"2026-09-06T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-06T08:26:26Z..2026-09-07T08:26:26Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-06T08:26:26Z\", datetime_lt: \"2026-09-07T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-07T08:26:26Z..2026-09-08T08:26:26Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-07T08:26:26Z\", datetime_leq: \"2026-09-08T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_country": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 250, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-01T08:26:26Z\", datetime_leq: \"2026-09-08T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { clientCountryName } } } } }",
-    "cf_referer_host": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 500, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-01T08:26:26Z\", datetime_leq: \"2026-09-08T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { clientRefererHost } } } } }",
-    "cf_status": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 100, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-01T08:26:26Z\", datetime_leq: \"2026-09-08T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { edgeResponseStatus } } } } }",
-    "cf_status_x_date": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 2000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-01T08:26:26Z\", datetime_leq: \"2026-09-08T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { edgeResponseStatus date } } } } }",
-    "cf_totals": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 1, filter: {datetime_geq: \"2026-09-01T08:26:26Z\", datetime_leq: \"2026-09-08T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } } } } }",
-    "cf_zone_daily_30d": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequests1dGroups(limit: 40, orderBy: [date_ASC], filter: {date_geq: \"2026-08-09\", date_leq: \"2026-09-08\"}) { dimensions { date } sum { requests pageViews bytes } uniq { uniques } } } } }",
-    "cf_host_hourly": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 400, orderBy: [datetimeHour_ASC], filter: {datetime_geq: \"2026-09-01T08:26:26Z\", datetime_leq: \"2026-09-08T08:26:26Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { datetimeHour } } } } }"
+    "cf_path_x_useragent_x_country@2026-09-02T08:45:02Z..2026-09-03T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_lt: \"2026-09-03T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-03T08:45:02Z..2026-09-04T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-03T08:45:02Z\", datetime_lt: \"2026-09-04T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-04T08:45:02Z..2026-09-05T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-04T08:45:02Z\", datetime_lt: \"2026-09-05T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-05T08:45:02Z..2026-09-06T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-05T08:45:02Z\", datetime_lt: \"2026-09-06T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-06T08:45:02Z..2026-09-07T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-06T08:45:02Z\", datetime_lt: \"2026-09-07T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-07T08:45:02Z..2026-09-08T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-07T08:45:02Z\", datetime_lt: \"2026-09-08T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-08T08:45:02Z..2026-09-09T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-08T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_country": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 250, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { clientCountryName } } } } }",
+    "cf_referer_host": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 500, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { clientRefererHost } } } } }",
+    "cf_status": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 100, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { edgeResponseStatus } } } } }",
+    "cf_status_x_date": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 2000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { edgeResponseStatus date } } } } }",
+    "cf_totals": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 1, filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } } } } }",
+    "cf_zone_daily_30d": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequests1dGroups(limit: 40, orderBy: [date_ASC], filter: {date_geq: \"2026-08-10\", date_leq: \"2026-09-09\"}) { dimensions { date } sum { requests pageViews bytes } uniq { uniques } } } } }",
+    "cf_host_hourly": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 400, orderBy: [datetimeHour_ASC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { datetimeHour } } } } }"
   },
   "classification_rules": {
     "human_browser": "/^Mozilla\\/5\\.0 \\((Windows NT|Macintosh;|X11;|iPhone;|iPad;|Linux; Android|Android)/ AND /(Chrome\\/\\d|Safari\\/\\d|Firefox\\/\\d|Edg\\/\\d|OPR\\/\\d|Version\\/\\d.*Safari)/ AND NOT /(bot|crawler|spider|probe|scan|monitor|registry|health|liveness|audit|census|collector|research|validator|check|watch|uptime|pinger|beat|observatory|explorer|indexer|fetcher|scraper|archiver|agent-|-agent\\b)/i",

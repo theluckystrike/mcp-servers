@@ -44,3 +44,17 @@ purchase is made from a hosted connection. So the tool can genuinely do what its
 4. Use `/usr/bin/grep`; plain `grep` is shadowed here and can silently return nothing.
 5. No paid APIs, no paid listings, no accounts, no OAuth sign-in.
 6. Own only your assigned files. Do not deploy; the orchestrator deploys.
+
+## Trap: validate against a worker you are redeploying
+
+A validation run scored 949/951 with two petty-cash failures, where `reconcile` recorded a
+count 11 short and the following `replenish_request` read state as if it had not. Local
+petty-cash tests passed 44/44 and nothing in the change touched that server.
+
+The cause was the run itself. `scripts/validate.mjs` exercises the live hosted endpoint for
+about 100 seconds, and three `wrangler deploy` calls landed during it, so a later call in a
+stateful sequence hit a different worker version from the one that wrote the state. Re-run
+with deploys settled: 951/951.
+
+So a hosted validation failure is only evidence when nothing is being deployed. Finish
+deploying, then validate, and re-run once before believing a failure in a stateful sequence.

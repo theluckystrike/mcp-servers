@@ -1,33 +1,34 @@
 {
   "status": "MEASURED",
-  "generated_at": "2026-09-08T08:26:54.025Z",
+  "generated_at": "2026-09-09T08:45:30.485Z",
   "host": "mcp.zovo.one",
-  "sitemap_urls": 126,
+  "sitemap_urls": 141,
   "google": {
     "status": "MEASURED",
     "method": "POST https://searchconsole.googleapis.com/v1/urlInspection/index:inspect { inspectionUrl, siteUrl: \"sc-domain:zovo.one\" } — one call per sitemap URL",
     "service_account": "zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com",
-    "urls_inspected": 126,
+    "urls_inspected": 141,
     "api_errors": 0,
     "by_coverage_state": {
-      "Discovered - currently not indexed": 66,
-      "URL is unknown to Google": 60
+      "Discovered - currently not indexed": 121,
+      "Submitted and indexed": 1,
+      "URL is unknown to Google": 19
     },
-    "in_google_index": 0,
-    "known_to_google": 66,
-    "unknown_to_google": 60,
-    "ever_crawled_by_google": 0,
+    "in_google_index": 1,
+    "known_to_google": 122,
+    "unknown_to_google": 19,
+    "ever_crawled_by_google": 1,
     "urls": [
       {
         "url": "https://mcp.zovo.one/",
         "http": 200,
-        "verdict": "NEUTRAL",
-        "coverage_state": "Discovered - currently not indexed",
-        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
-        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
-        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
-        "last_crawl_time": null,
-        "google_canonical": null
+        "verdict": "PASS",
+        "coverage_state": "Submitted and indexed",
+        "robots_txt_state": "ALLOWED",
+        "indexing_state": "INDEXING_ALLOWED",
+        "page_fetch_state": "SUCCESSFUL",
+        "last_crawl_time": "2026-09-08T17:20:24Z",
+        "google_canonical": "https://mcp.zovo.one/"
       },
       {
         "url": "https://mcp.zovo.one/bundle",
@@ -44,7 +45,7 @@
         "url": "https://mcp.zovo.one/changelog",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -55,7 +56,7 @@
         "url": "https://mcp.zovo.one/compare",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -77,7 +78,7 @@
         "url": "https://mcp.zovo.one/compare/barcode",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -88,7 +89,7 @@
         "url": "https://mcp.zovo.one/compare/calendar",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -110,7 +111,7 @@
         "url": "https://mcp.zovo.one/compare/currency",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -121,7 +122,7 @@
         "url": "https://mcp.zovo.one/compare/docx",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -154,7 +155,7 @@
         "url": "https://mcp.zovo.one/compare/invoice",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -176,7 +177,7 @@
         "url": "https://mcp.zovo.one/compare/pdf",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -209,7 +210,7 @@
         "url": "https://mcp.zovo.one/compare/quotes",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -220,7 +221,7 @@
         "url": "https://mcp.zovo.one/compare/recurring",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -231,7 +232,7 @@
         "url": "https://mcp.zovo.one/compare/resume",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -308,7 +309,7 @@
         "url": "https://mcp.zovo.one/guides/calendar-ics-free-busy-in-claude",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -341,7 +342,7 @@
         "url": "https://mcp.zovo.one/guides/choosing-an-mcp-server-for-invoicing",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -451,7 +452,7 @@
         "url": "https://mcp.zovo.one/guides/cursor-mcp-json-setup",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -462,7 +463,7 @@
         "url": "https://mcp.zovo.one/guides/do-you-need-an-mcp-server-or-just-a-prompt",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -503,10 +504,21 @@
         "google_canonical": null
       },
       {
+        "url": "https://mcp.zovo.one/guides/how-mcp-registry-search-works",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
         "url": "https://mcp.zovo.one/guides/image-resize-compress-watermark-from-chat",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -517,7 +529,7 @@
         "url": "https://mcp.zovo.one/guides/install-mcp-servers-without-npm",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -547,7 +559,40 @@
         "google_canonical": null
       },
       {
+        "url": "https://mcp.zovo.one/guides/licensing-a-paid-mcp-server",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "URL is unknown to Google",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
         "url": "https://mcp.zovo.one/guides/loan-and-lease-schedules-from-chat",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "URL is unknown to Google",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/local-mcp-servers-versus-hosted-connectors",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "URL is unknown to Google",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/mcp-client-config-file-locations",
         "http": 200,
         "verdict": "NEUTRAL",
         "coverage_state": "Discovered - currently not indexed",
@@ -558,7 +603,7 @@
         "google_canonical": null
       },
       {
-        "url": "https://mcp.zovo.one/guides/local-mcp-servers-versus-hosted-connectors",
+        "url": "https://mcp.zovo.one/guides/mcp-config-scopes-and-precedence",
         "http": 200,
         "verdict": "NEUTRAL",
         "coverage_state": "Discovered - currently not indexed",
@@ -580,7 +625,40 @@
         "google_canonical": null
       },
       {
+        "url": "https://mcp.zovo.one/guides/mcp-protocol-versions",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
         "url": "https://mcp.zovo.one/guides/mcp-server-free-vs-pro",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "URL is unknown to Google",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/mcp-server-json-fields-by-client",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/mcp-server-logs-and-what-they-say",
         "http": 200,
         "verdict": "NEUTRAL",
         "coverage_state": "URL is unknown to Google",
@@ -594,7 +672,18 @@
         "url": "https://mcp.zovo.one/guides/mcp-server-not-showing-up-in-claude-desktop",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/mcp-server-security-review",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -605,7 +694,7 @@
         "url": "https://mcp.zovo.one/guides/mcp-servers-in-vs-code-copilot-agent-mode",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -616,7 +705,7 @@
         "url": "https://mcp.zovo.one/guides/mcp-servers-in-windsurf-and-cline",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -625,6 +714,17 @@
       },
       {
         "url": "https://mcp.zovo.one/guides/mcp-servers-that-work-offline",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/mcp-tool-description-and-output-limits",
         "http": 200,
         "verdict": "NEUTRAL",
         "coverage_state": "Discovered - currently not indexed",
@@ -671,7 +771,7 @@
         "url": "https://mcp.zovo.one/guides/one-install-office-suite",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -726,7 +826,7 @@
         "url": "https://mcp.zovo.one/guides/price-a-job-with-a-rate-card-and-a-change-order",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -781,7 +881,7 @@
         "url": "https://mcp.zovo.one/guides/quotes-and-estimates-to-invoice-in-claude",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -792,7 +892,7 @@
         "url": "https://mcp.zovo.one/guides/read-excel-in-cursor",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -814,7 +914,7 @@
         "url": "https://mcp.zovo.one/guides/reconcile-a-bank-export-with-your-invoices",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "Discovered - currently not indexed",
+        "coverage_state": "URL is unknown to Google",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -858,7 +958,7 @@
         "url": "https://mcp.zovo.one/guides/send-a-month-of-paperwork-as-one-zip",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -869,7 +969,7 @@
         "url": "https://mcp.zovo.one/guides/sepa-payment-qr-codes-on-invoices-from-chat",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -888,7 +988,29 @@
         "google_canonical": null
       },
       {
+        "url": "https://mcp.zovo.one/guides/shipping-an-mcp-server-bundle-or-hosted-url",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "URL is unknown to Google",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
         "url": "https://mcp.zovo.one/guides/split-a-scanned-pdf-into-separate-documents",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/stdio-or-streamable-http",
         "http": 200,
         "verdict": "NEUTRAL",
         "coverage_state": "Discovered - currently not indexed",
@@ -902,7 +1024,7 @@
         "url": "https://mcp.zovo.one/guides/track-time-in-claude-code",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -921,10 +1043,43 @@
         "google_canonical": null
       },
       {
+        "url": "https://mcp.zovo.one/guides/what-is-in-the-mcp-registry",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/what-is-inside-an-mcpb-bundle",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
         "url": "https://mcp.zovo.one/guides/where-is-claude-desktop-config-json",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/guides/why-an-mcp-server-does-not-appear",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -935,7 +1090,7 @@
         "url": "https://mcp.zovo.one/guides/word-documents-proposals-from-chat",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -957,7 +1112,18 @@
         "url": "https://mcp.zovo.one/guides/zip-archives-safely-from-chat",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
+        "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+        "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+        "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
+        "last_crawl_time": null,
+        "google_canonical": null
+      },
+      {
+        "url": "https://mcp.zovo.one/privacy",
+        "http": 200,
+        "verdict": "NEUTRAL",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -968,7 +1134,7 @@
         "url": "https://mcp.zovo.one/s/amortization",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "Discovered - currently not indexed",
+        "coverage_state": "URL is unknown to Google",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -979,7 +1145,7 @@
         "url": "https://mcp.zovo.one/s/asset-register",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "Discovered - currently not indexed",
+        "coverage_state": "URL is unknown to Google",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1012,7 +1178,7 @@
         "url": "https://mcp.zovo.one/s/billing-docs",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1045,7 +1211,7 @@
         "url": "https://mcp.zovo.one/s/catalogue",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1067,7 +1233,7 @@
         "url": "https://mcp.zovo.one/s/clauses",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1089,7 +1255,7 @@
         "url": "https://mcp.zovo.one/s/delivery-schedule",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1100,7 +1266,7 @@
         "url": "https://mcp.zovo.one/s/deposits",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1122,7 +1288,7 @@
         "url": "https://mcp.zovo.one/s/expense-tracker",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1144,7 +1310,7 @@
         "url": "https://mcp.zovo.one/s/invoice",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1155,7 +1321,7 @@
         "url": "https://mcp.zovo.one/s/kanban",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1177,7 +1343,7 @@
         "url": "https://mcp.zovo.one/s/pdf",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1199,7 +1365,7 @@
         "url": "https://mcp.zovo.one/s/petty-cash",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1254,7 +1420,7 @@
         "url": "https://mcp.zovo.one/s/spreadsheet",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1265,7 +1431,7 @@
         "url": "https://mcp.zovo.one/s/statement-of-account",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1276,7 +1442,7 @@
         "url": "https://mcp.zovo.one/s/time-tracker",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1287,7 +1453,7 @@
         "url": "https://mcp.zovo.one/s/timezone",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1309,7 +1475,7 @@
         "url": "https://mcp.zovo.one/s/zip",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1331,7 +1497,7 @@
         "url": "https://mcp.zovo.one/setup/claude-code",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1342,7 +1508,7 @@
         "url": "https://mcp.zovo.one/setup/claude-desktop",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1353,7 +1519,7 @@
         "url": "https://mcp.zovo.one/setup/claude-web",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1375,7 +1541,7 @@
         "url": "https://mcp.zovo.one/setup/cursor",
         "http": 200,
         "verdict": "NEUTRAL",
-        "coverage_state": "URL is unknown to Google",
+        "coverage_state": "Discovered - currently not indexed",
         "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
         "indexing_state": "INDEXING_STATE_UNSPECIFIED",
         "page_fetch_state": "PAGE_FETCH_STATE_UNSPECIFIED",
@@ -1409,7 +1575,7 @@
   "other_engines": {
     "note": "No free keyless index-status API exists for Bing or Yandex. Bing Webmaster Tools has one (GET /webmaster/api.svc/json/GetUrlTrafficInfo etc.) but it needs an API key from a signed-in account, which is a human step; Yandex Webmaster likewise needs OAuth. Neither key exists in this repo, so those channels are reported UNMEASURED.",
     "bing": "UNMEASURED — the positive control returned 0 results on a domain that is certainly indexed (HTTP 200), so this probe cannot see the index at all. A zero for our host would be a broken probe, not an absent site.",
-    "mojeek": "UNMEASURED — the positive control returned 0 results on a domain that is certainly indexed (HTTP 200), so this probe cannot see the index at all. A zero for our host would be a broken probe, not an absent site.",
+    "mojeek": "UNMEASURED — the positive control returned 0 results on a domain that is certainly indexed (HTTP 403), so this probe cannot see the index at all. A zero for our host would be a broken probe, not an absent site.",
     "duckduckgo": "UNMEASURED — the positive control returned 0 results on a domain that is certainly indexed (HTTP 202), so this probe cannot see the index at all. A zero for our host would be a broken probe, not an absent site.",
     "probes": [
       {
@@ -1417,15 +1583,15 @@
         "query_url": "https://www.bing.com/search?q=site%3Amcp.zovo.one&format=rss&count=50",
         "label": "target",
         "http_status": 200,
-        "bytes": 4054,
+        "bytes": 3930,
         "links_found": 10,
         "links_on_target_host": 0,
         "sample_links": [
-          "https://www.zhihu.com/explore",
-          "https://zhidao.baidu.com/question/12936434.html",
-          "https://zhidao.baidu.com/question/2064162789938045347.html",
-          "https://www.zhihu.com/question/20498753",
-          "https://www.jeuxvideo.com/jeux/pc/00031287-blur.htm"
+          "https://dcard.docomo.ne.jp/st/index.html",
+          "https://dpoint.docomo.ne.jp/index.html",
+          "https://dcard.docomo.ne.jp/st/dcard_dcard/index.html",
+          "https://www.docomo.ne.jp/service/dcard/",
+          "https://ja.wikipedia.org/wiki/D"
         ]
       },
       {
@@ -1433,49 +1599,43 @@
         "query_url": "https://www.bing.com/search?q=site%3Amodelcontextprotocol.io&format=rss&count=50",
         "label": "positive control, a site certainly in Bing",
         "http_status": 200,
-        "bytes": 4942,
+        "bytes": 4505,
         "links_found": 10,
         "links_on_target_host": 0,
         "sample_links": [
-          "https://ramonki.ru/blog/obrazy-dlya-vecerinok-stilnye-reseniya-i-trendy-2025",
-          "https://vplate.ru/vecherinka/odezhda/",
-          "https://ru.pinterest.com/ideas/наряды-для-вечеринок/927559763928/",
-          "https://ramonki.ru/blog/cto-nadet-na-vecerinku-polnyi-gid-po-sozdaniyu-idealnogo-obraza",
-          "https://fashionblogger.ru/moda-dlya-vecherinok-vechernie-obrazy-kotorye-vpechatlyayut/"
+          "https://translate.google.com/?hl=vi",
+          "https://translate.google.co.vi/",
+          "https://translate.google.com/intl/vi/about/",
+          "https://translate.google.com.vn/details",
+          "https://chatgpt.com/vi-VN/translate/"
         ]
       },
       {
         "engine": "mojeek",
         "query_url": "https://www.mojeek.com/search?q=site%3Amcp.zovo.one",
         "label": "target",
-        "http_status": 200,
-        "bytes": 5508,
-        "links_found": 2,
+        "http_status": 403,
+        "bytes": 338,
+        "links_found": 0,
         "links_on_target_host": 0,
-        "sample_links": [
-          "https://mastodon.social/@Mojeek",
-          "https://buttondown.email/Mojeek"
-        ]
+        "sample_links": []
       },
       {
         "engine": "mojeek",
         "query_url": "https://www.mojeek.com/search?q=site%3Amodelcontextprotocol.io",
         "label": "positive control",
-        "http_status": 200,
-        "bytes": 5519,
-        "links_found": 2,
+        "http_status": 403,
+        "bytes": 349,
+        "links_found": 0,
         "links_on_target_host": 0,
-        "sample_links": [
-          "https://mastodon.social/@Mojeek",
-          "https://buttondown.email/Mojeek"
-        ]
+        "sample_links": []
       },
       {
         "engine": "duckduckgo_html",
         "query_url": "https://html.duckduckgo.com/html/?q=site%3Amcp.zovo.one",
         "label": "target",
         "http_status": 202,
-        "bytes": 14163,
+        "bytes": 14157,
         "links_found": 0,
         "links_on_target_host": 0,
         "sample_links": []
@@ -1485,7 +1645,7 @@
         "query_url": "https://html.duckduckgo.com/html/?q=site%3Amodelcontextprotocol.io",
         "label": "positive control",
         "http_status": 202,
-        "bytes": 14191,
+        "bytes": 14185,
         "links_found": 0,
         "links_on_target_host": 0,
         "sample_links": []
@@ -1498,96 +1658,101 @@
   },
   "crawl_evidence": {
     "window": {
-      "start": "2026-09-01T08:26:26Z",
-      "end": "2026-09-08T08:26:26Z",
+      "start": "2026-09-02T08:45:02Z",
+      "end": "2026-09-09T08:45:02Z",
       "days": 7
     },
     "effective_window": {
-      "requested_start": "2026-09-01T08:26:26Z",
-      "requested_end": "2026-09-08T08:26:26Z",
+      "requested_start": "2026-09-02T08:45:02Z",
+      "requested_end": "2026-09-09T08:45:02Z",
       "requested_days": 7,
       "first_hour_with_host_data": "2026-09-02T12:00:00Z",
-      "hours_with_data": 141,
-      "effective_days": 5.852,
+      "hours_with_data": 165,
+      "effective_days": 6.865,
       "note": "RETENTION SHORTFALL: the adaptive dataset holds no rows for this host before 2026-09-02T12:00:00Z, although the API accepts the older start and other hosts on the zone do return rows there. Absolute counts cover the effective window, not the requested one."
     },
     "crawler_url_coverage": {
       "ClaudeBot": {
-        "urls_fetched": 126,
-        "requests": 130,
-        "pct_of_sitemap": 100
+        "urls_fetched": 140,
+        "requests": 144,
+        "pct_of_sitemap": 99.3
+      },
+      "Amazonbot": {
+        "urls_fetched": 127,
+        "requests": 131,
+        "pct_of_sitemap": 90.1
+      },
+      "YandexBot": {
+        "urls_fetched": 113,
+        "requests": 119,
+        "pct_of_sitemap": 80.1
       },
       "MJ12bot": {
         "urls_fetched": 112,
         "requests": 135,
-        "pct_of_sitemap": 88.9
-      },
-      "YandexBot": {
-        "urls_fetched": 112,
-        "requests": 118,
-        "pct_of_sitemap": 88.9
-      },
-      "Amazonbot": {
-        "urls_fetched": 102,
-        "requests": 106,
-        "pct_of_sitemap": 81
+        "pct_of_sitemap": 79.4
       },
       "SemrushBot": {
-        "urls_fetched": 82,
-        "requests": 83,
-        "pct_of_sitemap": 65.1
-      },
-      "meta-externalagent": {
-        "urls_fetched": 66,
-        "requests": 72,
-        "pct_of_sitemap": 52.4
+        "urls_fetched": 98,
+        "requests": 99,
+        "pct_of_sitemap": 69.5
       },
       "GPTBot": {
-        "urls_fetched": 48,
-        "requests": 88,
-        "pct_of_sitemap": 38.1
+        "urls_fetched": 90,
+        "requests": 149,
+        "pct_of_sitemap": 63.8
+      },
+      "meta-externalagent": {
+        "urls_fetched": 67,
+        "requests": 95,
+        "pct_of_sitemap": 47.5
       },
       "bingbot": {
         "urls_fetched": 35,
         "requests": 62,
-        "pct_of_sitemap": 27.8
-      },
-      "PerplexityBot": {
-        "urls_fetched": 4,
-        "requests": 11,
-        "pct_of_sitemap": 3.2
+        "pct_of_sitemap": 24.8
       },
       "Applebot": {
-        "urls_fetched": 4,
-        "requests": 4,
-        "pct_of_sitemap": 3.2
+        "urls_fetched": 32,
+        "requests": 35,
+        "pct_of_sitemap": 22.7
+      },
+      "PerplexityBot": {
+        "urls_fetched": 5,
+        "requests": 16,
+        "pct_of_sitemap": 3.5
       },
       "Googlebot": {
         "urls_fetched": 2,
-        "requests": 7,
-        "pct_of_sitemap": 1.6
+        "requests": 8,
+        "pct_of_sitemap": 1.4
+      },
+      "AhrefsBot": {
+        "urls_fetched": 2,
+        "requests": 3,
+        "pct_of_sitemap": 1.4
       },
       "Claude-User": {
         "urls_fetched": 1,
-        "requests": 1,
-        "pct_of_sitemap": 0.8
+        "requests": 2,
+        "pct_of_sitemap": 0.7
+      },
+      "DuckDuckBot": {
+        "urls_fetched": 1,
+        "requests": 2,
+        "pct_of_sitemap": 0.7
       },
       "ChatGPT-User": {
         "urls_fetched": 1,
         "requests": 1,
-        "pct_of_sitemap": 0.8
-      },
-      "AhrefsBot": {
-        "urls_fetched": 1,
-        "requests": 2,
-        "pct_of_sitemap": 0.8
+        "pct_of_sitemap": 0.7
       },
       "DotBot": {
         "urls_fetched": 1,
         "requests": 1,
-        "pct_of_sitemap": 0.8
+        "pct_of_sitemap": 0.7
       }
     },
-    "sitemap_urls_fetched_by_search_or_ai_crawler": 126
+    "sitemap_urls_fetched_by_search_or_ai_crawler": 141
   }
 }

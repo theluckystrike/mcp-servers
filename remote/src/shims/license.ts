@@ -256,16 +256,33 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
         { title: "License status", description: "Report this endpoint's licence state for your token as JSON: the product, the tier free or pro, why it is not Pro, and the checkout URL. Call it to explain a free-tier refusal. No arguments, nothing changes.", inputSchema: {} },
         async () => ({ content: [{ type: "text", text: JSON.stringify(gate.status(), null, 2) }] }));
       server.registerTool("license_activate",
-        { title: "Activate license", description: "Explain how to turn Pro on for this hosted endpoint, which stores no key server-side. Returns the two ways to send one: the key as a URL segment, or as an Authorization bearer. Takes no arguments and activates nothing.", inputSchema: { key: z.string().describe("License key from checkout") } },
-        async () => ({
-          content: [{ type: "text", text:
-            "On the remote endpoint keys are not stored. Reconnect with the key in the URL, " +
-            `"${CHECKOUT_BASE}/mcp/${product}/t/MCPL1...." (for a client with no header field, such as ` +
-            "a Claude.ai or Claude Desktop custom connector), or with the header " +
-            "\"Authorization: Bearer MCPL1....\", and this endpoint runs in Pro mode for that key. " +
-            "If you bought from a link carrying ?tenant=<your anonymous token>, there is nothing to " +
-            "paste at all: Pro is already on for this same connection and this same data." }],
-        }));
+        { title: "Activate license", description:
+          "Turn Pro on for this hosted connection using a key from checkout, keeping the data already stored under your " +
+          "current token. Pass key as MCPL1.<payload>.<signature>. A wrong or expired key changes nothing.",
+          inputSchema: { key: z.string().describe("License key from checkout, MCPL1.<payload>.<signature>") } },
+        async (a: { key?: string }) => {
+          const c = ctx();
+          const key = String(a?.key ?? "").trim();
+          if (!key) {
+            return { content: [{ type: "text", text: "Give the key argument: the MCPL1.... string shown after checkout." }] };
+          }
+          if (!c.anonToken) {
+            // A licence-key caller is already Pro; there is no anonymous document to bind to.
+            return { content: [{ type: "text", text:
+              "This connection already authenticates with a licence key, so there is nothing to activate. " +
+              `Its tier is reported by license_status.` }] };
+          }
+          // The worker verifies and writes bind:<anonToken> after the request; the shim
+          // cannot reach KV or the public key. Binding is what a hosted purchase already
+          // does, so Pro applies to THIS token and the documents under it are untouched.
+          c.bindKey = key;
+          return { content: [{ type: "text", text:
+            "Checking that key and, if it is valid for this server, turning Pro on for this connection. " +
+            "Your existing data stays where it is: Pro is applied to the token you are already using, nothing is copied " +
+            "or migrated. Call license_status on the next request to see the result; a key that is malformed, expired " +
+            "or issued for a different product leaves the connection on the free tier and changes nothing. " +
+            `If your client can send headers you can also skip this and connect with "Authorization: Bearer ${key.slice(0, 6)}...." instead.` }] };
+        });
     },
   };
   return gate;

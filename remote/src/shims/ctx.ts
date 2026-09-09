@@ -48,6 +48,13 @@ export interface RequestCtx {
    * worker never writes them into the tenant document.
    */
   shared?: Set<string>;
+  /**
+   * A licence key the caller passed to license_activate, to be bound to their anonymous
+   * token after the request. The shim cannot reach KV or the signing key, so it records
+   * the request here and the worker verifies and writes `bind:<anonToken>` exactly the
+   * way a hosted purchase does. Left unset by every other path.
+   */
+  bindKey?: string;
   /** Open file descriptors, request-local: fd -> buffer plus its own read offset. */
   fds: Map<number, { buf: Buffer; pos: number }>;
   nextFd: number;

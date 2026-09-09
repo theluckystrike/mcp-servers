@@ -1912,6 +1912,19 @@ export default {
         for (const d of rctx.downloads) {
           await env.REMOTE_DATA.put(`dl:${d.token}`, JSON.stringify(d), { expirationTtl: DOWNLOAD_TTL });
         }
+        // license_activate asked to bind a key to this anonymous token. The shim can
+        // neither reach KV nor verify a signature, so it records the request and the
+        // verification happens here, with the same verifyLicense() used on every bearer.
+        // This grants nothing new: the caller already holds the key and could send it as
+        // a bearer. What it buys them is keeping the documents already stored under this
+        // token, instead of moving to a different tenant and leaving their data behind.
+        // A key that fails to verify writes nothing at all.
+        if (rctx.bindKey && auth.kind === "anon" && auth.anonToken) {
+          const v = await verifyLicense(rctx.bindKey.trim(), product);
+          if (v.ok) {
+            await env.REMOTE_DATA.put(`bind:${auth.anonToken}`, rctx.bindKey.trim(), { expirationTtl: ANON_TTL });
+          }
+        }
         // The tool handlers report the virtual path they wrote; the caller gets the link.
         // The virtual root is an implementation detail, so it never reaches the caller:
         // in inline-data mode a sheet is known by the name it was loaded under.
