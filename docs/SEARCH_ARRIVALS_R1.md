@@ -1,4 +1,4 @@
-# Real people are arriving from search, at the wrong page (2026-09-09)
+# Traffic arriving at the hosted endpoints, and what it is not (2026-09-09)
 
 ## What was found
 
@@ -15,12 +15,25 @@ Cloudflare referer data for mcp.zovo.one over 2026-09-07 to 09-09:
 | verifymcp.io | 1 |
 | zovo.one | 1 |
 
-This is the first time Google has ever appeared as a referer for this host. Search Console
-still reports zero impressions, but Search Console lags by a day or two and, more to the
-point, these are arrivals rather than impressions.
+This is the first time Google has ever appeared as a referer for this host, and the
+user-agent breakdown on those requests is Chrome, Chrome Mobile, Edge and Mobile Safari.
 
-They are people, not crawlers. The user-agent breakdown on those requests is Chrome, Chrome
-Mobile, Edge and Mobile Safari.
+**That is not organic search traffic, and the first version of this document said it was.**
+The claim was checked against Search Console's URL Inspection API and it does not hold:
+
+    https://mcp.zovo.one/mcp/spreadsheet    URL is unknown to Google, lastCrawl never
+    https://mcp.zovo.one/mcp/time-tracker   URL is unknown to Google, lastCrawl never
+
+Google has never crawled these URLs, so it cannot have shown them in a result. A second
+tell points the same way: several of the requests are for paths like
+`/mcp/spreadsheet&quot`, with an HTML entity fused into the path. No browser constructs a
+URL that way. Something is parsing HTML badly and following what it thinks are links, with a
+browser user-agent and a google.com referer attached.
+
+So the honest reading is that this is automated traffic of unknown origin, and browser-shaped
+user-agents are not evidence of a person. What remains true and useful is the next section:
+whatever these clients are, and whenever a real person does arrive, the page they were being
+handed was wrong.
 
 ## Where they landed, and why it mattered
 
@@ -31,14 +44,18 @@ Almost all of them hit a hosted endpoint URL, `/mcp/<server>`, not a product pag
 Those URLs answered with raw JSON. So every person who found this project through a search
 engine over the last two days was shown a machine document.
 
-There is a direct cause. Until 2026-09-08 those endpoints answered 401 to anything without a
-token, which made them uninteresting to a crawler. The fix that stopped the 401, made for a
-different reason (directories were marking the servers dead), also made them indexable. The
-traffic is a side effect of that fix, and the JSON was the unhandled half of it.
+There is a plausible cause for the timing. Until 2026-09-08 those endpoints answered 401 to
+anything without a token. The fix that stopped the 401, made for a different reason
+(directories were marking the servers dead), also made them fetchable by anything that
+wanders in. This traffic appeared immediately afterwards.
 
-Two of the referers are worth naming separately: `verifymcp.io`, `www.stork.ai` and
-`gateturbo.com` are MCP ecosystem sites nobody here has ever submitted to. They found these
-endpoints on their own.
+Three of the referers are worth naming separately: `verifymcp.io`, `www.stork.ai` and
+`gateturbo.com` are MCP ecosystem sites nobody here has ever submitted to. VerifyMCP
+describes itself as a trust-score directory for MCP servers and it probed `/mcp/calendar`.
+None of the three lists this project by name yet, so the most likely route is that they read
+the official registry and verify what they find there. That is the registry working as a
+distribution primitive without anyone doing anything, which is the one genuinely encouraging
+signal here.
 
 ## The fix
 
