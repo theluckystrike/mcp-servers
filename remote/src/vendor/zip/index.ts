@@ -669,7 +669,7 @@ server.registerTool("zip_bundle_month", {
 
 server.registerTool("zip_history", {
   title: "Archives created",
-  description: "List the archives created for your token, newest first, with their entry counts and sizes, plus how many of this month's free allowance are left. The link an archive was handed back on expires after an hour; the row keeps the name.",
+  description: "List the register of archives created for your token, newest first: the timestamp, id, which operation made it, the entry count, the byte size, whether the write is still in progress and the archive name. limit caps the rows, default 20. The header always states how many of the free tier's 20 archives a calendar month are used, so call it to explain a refusal rather than retrying a capped create. The download link an archive was handed back on expires after an hour; the row keeps the name. It reads the register only and never opens an archive: use zip_list for what is inside one.",
   inputSchema: {
     limit: z.number().int().min(1).max(200).optional().describe("How many rows to show, newest first (default 20)"),
   },

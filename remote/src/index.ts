@@ -1257,6 +1257,58 @@ function indexDoc(base: string) {
  * document /mcp already serves, so the public description of a server cannot drift from
  * the index's description of it.
  */
+/**
+ * The human page for a hosted endpoint. Same facts as publicEndpointDoc, laid out for a
+ * person who clicked a search result rather than a client that parsed the JSON. It says
+ * what the server does, what it costs, and the two ways to actually use it, and it links
+ * to the product page which is where a purchase can happen.
+ */
+function endpointPage(base: string, product: string): string {
+  const d = publicEndpointDoc(base, product) as Record<string, unknown>;
+  const esc = (x: unknown) => String(x ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const tools = (d.tools as string[] | undefined) ?? [];
+  const title = `${product} MCP server, hosted with no install`;
+  const desc = String(d.summary ?? "").slice(0, 155);
+  const store = `https://mcp.zovo.one/s/${product}`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="${base}/mcp/${esc(product)}">
+<style>:root{color-scheme:light dark}
+body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#fbfbfa;color:#18202e}
+main{max-width:720px;margin:0 auto;padding:44px 20px 80px}
+h1{font-size:26px;margin:0 0 6px}h2{font-size:18px;margin:30px 0 8px}
+code{background:#ebf0f8;padding:2px 6px;border-radius:4px;font-size:14px}
+pre{background:#18202e;color:#ebf0f8;padding:14px;border-radius:8px;overflow-x:auto;font-size:13px}
+a{color:#2a78d6}.muted{color:#52514e;font-size:14px}
+ul{padding-left:20px}li{margin:4px 0}
+@media(prefers-color-scheme:dark){body{background:#151514;color:#ebf0f8}code{background:#26262b}.muted{color:#a8a79f}}
+</style></head><body><main>
+<h1>${esc(product)}</h1>
+<p>${esc(d.summary)}</p>
+<p class="muted">This URL is a Model Context Protocol endpoint. It speaks streamable HTTP to an MCP client; it is not a web app. If you reached it from a search result, the two ways to actually use it are below.</p>
+
+<h2>Use it with no install</h2>
+<p>Open <a href="${base}/mcp/connect">${base}/mcp/connect</a>. It mints a free anonymous token and prints a ready-to-paste URL for this server and every other one. Paste that URL into any client that accepts a URL, such as Claude.ai custom connectors or the Claude Desktop connector dialog.</p>
+<p>Or set the header yourself:</p>
+<pre>curl ${base}/mcp/token
+curl -X POST ${base}/mcp/${esc(product)} \\
+  -H "Authorization: Bearer &lt;token&gt;" \\
+  -H "content-type: application/json" \\
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'</pre>
+
+<h2>Or run it on your own machine</h2>
+<p>Download <code>${esc(product)}.mcpb</code> from the <a href="https://github.com/theluckystrike/mcp-servers/releases/latest">latest release</a> and double-click it in Claude Desktop. Nothing leaves your computer on that path.</p>
+
+<h2>What it can do</h2>
+<p>${tools.length} tools:</p>
+<ul>${tools.map((t) => `<li><code>${esc(t)}</code></li>`).join("")}</ul>
+${d.free_limits ? `<h2>Free tier</h2><p>${esc(d.free_limits)}</p>` : ""}
+<p><a href="${store}">Full description, examples and pricing for ${esc(product)}</a> &middot; <a href="https://mcp.zovo.one">all servers</a> &middot; <a href="https://github.com/theluckystrike/mcp-servers">source</a></p>
+</main></body></html>`;
+}
+
 function publicEndpointDoc(base: string, product: string) {
   const doc = indexDoc(base);
   const e = (doc.endpoints as Record<string, unknown>[]).find((x) => x.name === product) ?? {};
@@ -1715,6 +1767,19 @@ export default {
     // publicEndpointDoc() for the measured reason this exists. Everything that carries a
     // credential, and every POST, falls through to authenticate() unchanged.
     if ((req.method === "GET" || req.method === "HEAD") && !req.headers.get("authorization") && !urlToken) {
+      // A browser gets a page, a machine gets the JSON. Measured 2026-09-09: real people
+      // in Chrome, Edge and Mobile Safari are arriving here from Google and Bing results
+      // for /mcp/<server> URLs, and every one of them was handed raw JSON. These URLs
+      // became indexable the day the endpoint stopped answering 401. Content negotiation
+      // is the whole fix: `accept: text/html` means a person, anything else is a client
+      // or a directory health check and keeps exactly the document it had before.
+      const accept = req.headers.get("accept") ?? "";
+      if (accept.includes("text/html")) {
+        return new Response(endpointPage(base, product), {
+          status: 200,
+          headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" },
+        });
+      }
       return json(publicEndpointDoc(base, product), 200, { "cache-control": "public, max-age=300" });
     }
 

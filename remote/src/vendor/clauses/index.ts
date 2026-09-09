@@ -225,7 +225,7 @@ server.registerTool("clause_add", {
 
 server.registerTool("clause_get", {
   title: "Read one clause",
-  description: "Return a clause in full by id or by title, with its variables and, in Pro, its revision count.",
+  description: "Return one clause in full by id or by title: body text, category, tags, jurisdiction, language, its {{variables}}, created and updated stamps, and the number of stored revisions, which stays 0 on the free tier because no history is kept. An exact id or title wins outright; a partial title is used only when exactly one clause matches, and a query matching several is refused with the candidates listed rather than guessed at. Reads only, changes nothing.",
   inputSchema: {
     id: z.string().optional().describe("Clause id, for example late-fees"),
     title: z.string().optional().describe("Clause title; a partial title matches too"),
@@ -280,7 +280,7 @@ server.registerTool("clause_update", {
 
 server.registerTool("clause_delete", {
   title: "Delete a clause",
-  description: "Remove a clause from the library. A deleted starter clause is not re-seeded on the next call.",
+  description: "Remove one clause from the library by id or exact title and report how many are left. There is no undo and no version is kept, and nothing checks whether an assembled contract used it. A deleted starter clause is NOT re-seeded on a later call, so the bundled library shrinks permanently; deleting one of your own gives a free-tier slot back. Use clause_update to change a clause you want to keep. Free on every tier.",
   inputSchema: { id: z.string().describe("Clause id or exact title") },
 }, async (a) => {
   try {
@@ -297,7 +297,7 @@ server.registerTool("clause_delete", {
 
 server.registerTool("clause_list", {
   title: "List clauses",
-  description: "List every clause, newest categories first, optionally narrowed to one category.",
+  description: "List the clause library as id, title, category, tags, detected {{variables}} and whether each is one of the 25 bundled starters, with the total and how many are your own. The order is contract order by category (parties, scope, payment, expenses, ip, confidentiality, data, term, liability, warranty, disputes, general, then anything else), then title A to Z, which is also the order contract_assemble uses. Narrow it with category. Use clause_search to match on words and clause_get to read one in full.",
   inputSchema: { category: z.string().optional() },
 }, async (a) => {
   try {

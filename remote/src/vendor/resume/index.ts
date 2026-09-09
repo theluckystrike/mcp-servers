@@ -249,7 +249,7 @@ server.registerTool("profile_set", {
 
 server.registerTool("profile_get", {
   title: "Show the stored profile",
-  description: "Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job.",
+  description: "Return the stored CV profile as JSON, exactly as resume_create, resume_to_markdown, resume_to_html, cover_letter_create and tailor_to_job will use it: contact details, summary, skills, roles with their bullets in newest-first order, education, certifications and languages, plus the variant read and every variant name stored. Reads only, changes nothing. With no profile stored it says so and points at profile_set. Call it before any rewrite so you edit real stored facts rather than invented ones.",
   inputSchema: { variant: z.string().optional() },
 }, async (a) => {
   // Never throw across the transport: a corrupt store must arrive as an "Error: ..." answer.
@@ -314,7 +314,7 @@ server.registerTool("resume_create", {
 
 server.registerTool("resume_to_markdown", {
   title: "Resume as markdown",
-  description: "Return the stored profile as markdown: paste it into a form, an email or an ATS box.",
+  description: "Render the stored profile as markdown text returned inline, ready to paste into an application form, an email or an ATS box. Same content and same page-budget trimming as resume_create, so bullets past max_pages (default 2) are dropped, but nothing is written to disk and no .docx is produced. Use resume_create for a Word file, resume_to_html for a printable page. Free on every tier; the style options are only in the file formats.",
   inputSchema: { variant: z.string().optional(), target_role: z.string().optional(), max_pages: z.number().int().min(1).max(5).default(2) },
 }, async (a) => {
   try {

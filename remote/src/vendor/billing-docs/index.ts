@@ -670,7 +670,7 @@ function overCredit(inv: Invoice, already: number, remaining: number, asked: num
 
 server.registerTool("credit_note_list", {
   title: "List credit notes",
-  description: "Every credit note with its invoice, client, reason and negative total. Filter by invoice number, by client or by issue date range.",
+  description: "List credit notes newest first, one summary row each: id, the invoice number it credits, client, issue date, what it was based on (the whole invoice, a gross amount or named lines), currency, reason, and the total formatted and in minor units, which is NEGATIVE because a credit note reverses money. Above the rows it totals what has been credited per currency, never adding currencies together. Filter by invoice number (exact), by client name text and by issue date range. Use credit_note_get for one note with its lines and VAT.",
   inputSchema: {
     invoice: z.string().optional().describe("Only credit notes issued against this invoice number"),
     client: z.string().optional().describe("Only credit notes for clients whose name contains this text"),
@@ -703,7 +703,7 @@ server.registerTool("credit_note_list", {
 
 server.registerTool("credit_note_get", {
   title: "Show one credit note",
-  description: "The full stored record for one credit note: every negated line, the VAT lines, the totals, the reason and the invoice it was issued against.",
+  description: "Return one credit note in full by its id, or by an exact client name: every negated line with quantity, unit price and VAT rate, the subtotal, discount, VAT lines and total (all negative, in minor units and formatted), the reason, and the invoice number and invoice date it was issued against. Reads only, writes nothing. An id that matches nothing is refused and points at credit_note_list. Use credit_note_pdf or credit_note_text to turn it into something you can send.",
   inputSchema: { id: z.string().describe("Credit note id such as CN-2026-0001, or an exact client name") },
 }, async (a) => {
   try {

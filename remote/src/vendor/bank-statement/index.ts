@@ -806,7 +806,7 @@ server.registerTool("statement_export", {
 
 server.registerTool("accounts_list", {
   title: "List accounts",
-  description: "List the imported accounts with their bank, currency, transaction count and date range.",
+  description: "List the accounts that statement_import has read into this machine's local ledger: the account name, its bank, the currencies seen on it, how many transactions it holds, the first and last transaction date, the closing balance when the file carried one and the account holds a single currency, plus the free tier's 2-account limit and the data directory the ledger lives in. Start here to learn the exact account names transactions_list, statement_summary and statement_export take. Reads only, imports nothing.",
   inputSchema: {},
 }, async () => {
   try {

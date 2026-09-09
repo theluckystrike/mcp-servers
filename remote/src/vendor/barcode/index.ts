@@ -525,7 +525,7 @@ server.registerTool("barcode_batch", {
 
 server.registerTool("code_list", {
   title: "Codes generated",
-  description: "List the codes this server generated, newest first, with what each one carried and where it was written, plus how many of this month's free allowance are left.",
+  description: "List this server's own register of codes it generated, newest first: the timestamp, id, kind and symbology, output format, a summary of what the code carried and the file it was written to. Filter by kind (text, wifi, vcard, sepa, invoice, barcode or batch) and cap the rows with limit, default 20. The header always states how many of the free tier's 20 codes a calendar month are used, so call it to explain a refusal rather than retrying a capped generate. It reads the register only: it does not open, verify or re-render any code file.",
   inputSchema: {
     limit: z.number().int().min(1).max(200).optional().describe("How many rows to show, newest first (default 20)"),
     kind: z.string().optional().describe("Only rows of this kind: text, wifi, vcard, sepa, invoice, barcode or batch"),

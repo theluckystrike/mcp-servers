@@ -273,7 +273,7 @@ server.registerTool("expense_add", {
 
 server.registerTool("expense_list", {
   title: "List expenses",
-  description: "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed.",
+  description: "List stored expenses in a date range as JSON, each with its formatted amount, net/VAT split, category, merchant, project, billable flag and any receipt hash, plus a total per currency; currencies are never added together. Filter by from, to, project, category and billable. The free tier reads only the last 30 days, and when the whole range you asked for is older than that it says the period was never opened rather than returning an empty list. Receipts only: bank lines are listed by bank-statement's transactions_list.",
   inputSchema: {
     from: text(10).optional().describe("ISO date, inclusive"),
     to: text(10).optional().describe("ISO date, inclusive"),
@@ -305,7 +305,7 @@ server.registerTool("expense_list", {
 
 server.registerTool("expense_update", {
   title: "Update an expense",
-  description: "Change any field of a stored expense by id. Only the fields you pass are changed.",
+  description: "Change one stored expense by id: amount, currency, category, merchant, date, project, note, billable, vat_rate or the rebilled marker. Only the fields you pass change, and the updated record comes back. amount is in MAJOR units and is rescaled to that currency's minor units. An expense already rebilled onto an invoice refuses a change to amount, currency or vat_rate unless unlink_rebill is true, which drops the invoice link. Moving to a currency with a different number of decimals also needs a new amount, so 12.34 EUR can never silently become JPY 1234.",
   inputSchema: {
     id: text(64).describe("Expense id from expense_add or expense_list"),
     amount: amount("amount").optional(),
@@ -365,7 +365,7 @@ server.registerTool("expense_update", {
 
 server.registerTool("expense_delete", {
   title: "Delete an expense",
-  description: "Delete one expense by id. The receipt file itself is left on disk.",
+  description: "Permanently delete one expense by id and return what was removed. The receipt FILE stays on disk untouched; only the record, with its stored path and sha256, goes. An unknown id is refused and nothing is deleted. Deleting an expense already stamped by expense_mark_rebilled destroys the record of what an invoice charged, so correct one with expense_update instead. Free on every tier.",
   inputSchema: { id: text(64) },
 }, async (a) => {
   try {

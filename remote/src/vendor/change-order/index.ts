@@ -434,7 +434,7 @@ server.registerTool("change_order_get", {
 
 server.registerTool("change_order_list", {
   title: "List change orders",
-  description: "List change orders with their status and delta. Filter by reference, by status, by client, and by a date range. Free.",
+  description: "List change orders newest first, one summary row each: id, status, the quote or work order it is against, client, title, date, currency, line count, the net delta formatted and in minor units, whether it is still open and when its status last moved. Above the rows it totals, per currency, the APPROVED delta and the pending draft-plus-sent delta separately, and never adds currencies together. Filter by reference, status (or open for draft and sent at once), client, and a date range; limit caps the rows and the answer says when it truncated. Use change_order_get for one order in full and contract_value for the running value of a reference.",
   inputSchema: {
     reference: str("reference", 64).optional().describe("Only change orders against this quote or work order"),
     status: z.enum(["draft", "sent", "approved", "rejected", "void", "open"]).optional().describe("One status, or open for draft and sent together"),

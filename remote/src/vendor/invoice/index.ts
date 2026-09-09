@@ -449,7 +449,7 @@ server.registerTool("client_delete", {
 });
 
 server.registerTool("client_list", {
-  title: "List clients", description: "List every stored client with their id, address, email and VAT id.",
+  title: "List clients", description: "List every stored client as JSON with the id, address, email and VAT id held for each. Takes no arguments and writes nothing. With no clients yet it says so and points at client_add, because invoice_create and invoice_from_hours also create a client from the name you pass, so no setup is needed first. Use client_add to store one and client_delete to remove one nothing refers to.",
   inputSchema: {},
 }, async () => {
   const clients = getClients();
@@ -611,7 +611,7 @@ function createInvoice(a: {
 
 server.registerTool("invoice_create", {
   title: "Create an invoice",
-  description: "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused) and returns the stored invoice with its subtotal, discount, one tax line per rate and the total.",
+  description: "Create an invoice for a client from a list of line items and return the stored record: subtotal, discount, one tax line per rate and the total. Allocates the next invoice number, which is never reused. unit_price and discount are in MAJOR units; amounts are held as integer minor units, each line rounded first and then summed, so the printed lines can never disagree with the total. Every line must be in one currency: a mix is refused with the conversion argument to pass. An unknown client name is stored as a new client. Free tier: 3 invoices per calendar month. Render it with invoice_pdf.",
   inputSchema: {
     client: z.string().describe("Client name or id. Unknown names are added automatically"),
     items: z.array(itemSchema).describe("Line items. Amounts are held as integer minor units and every line is rounded first, then summed, so the printed lines can never disagree with the total. A line may carry its own currency"),
@@ -724,7 +724,7 @@ server.registerTool("invoice_from_hours", {
 
 server.registerTool("invoice_list", {
   title: "List invoices",
-  description: "List invoices, optionally filtered by status (unpaid, paid, partial), client, and an issue-date range.",
+  description: "List invoices as a summary row each: number, client, issue and due date, currency, subtotal, discount, one tax line per rate, total, status, paid, credited and the balance still due after any credit note. Sorted by invoice number. Filter by status (unpaid, paid, partial), by client name or id, and by an issue-date range. Use invoice_get for one invoice in full, overdue_report for only what is late.",
   inputSchema: {
     status: z.enum(["unpaid", "paid", "partial"]).optional(),
     client: z.string().optional(),
@@ -833,7 +833,7 @@ server.registerTool("invoice_mark_paid", {
 
 server.registerTool("invoice_pdf", {
   title: "Render invoice PDF",
-  description: "Call this tool to render a stored invoice as an A4 PDF you can send. Returns the path of the file written.",
+  description: "Write one stored invoice as an A4 PDF and return the path. The page carries the issuer block, the BILL TO client block, dates, the item table, subtotal, discount, one tax line per rate, the total, payment details and notes, with a currency code on every money value. It always writes PDF bytes, and says so if the path does not end in .pdf. The free tier stamps a 'Generated with mcp-invoice' line and no logo; Pro renders it unbranded with your logo_path.",
   inputSchema: {
     number: z.string().describe("Invoice number to render, as returned by invoice_create"),
     out_path: z.string().optional().describe("Where to write the PDF; defaults to <data dir>/pdf/<number>.pdf. The page carries the issuer block, the BILL TO client block, dates, an item table with wrapped descriptions, subtotal, discount, one tax line per rate, the total, payment details and notes, and every money value on it carries its currency code. Use a .pdf path: the bytes written are always PDF"),

@@ -419,7 +419,7 @@ server.registerTool("work_order_get", {
 
 server.registerTool("work_order_list", {
   title: "List work orders",
-  description: "List work orders with their status, hours and value. Filter by status, by client, and by a requested-date range. Free.",
+  description: "List work orders newest requested-date first, one summary row each: id, status, priority, client, site address, what the job is, currency, line count, labour hours, labour and materials value, the net value formatted and in minor units, whether it is still open and when its status last moved. Above the rows it totals orders, hours and net value per currency, never adding currencies together, since this server holds no exchange rate. Filter by status (or open for draft, scheduled and in_progress at once), by client, and by a requested-date range; limit caps the rows and the answer says when it truncated. Use work_order_get for one job in full. Free.",
   inputSchema: {
     status: z.enum(["draft", "scheduled", "in_progress", "done", "invoiced", "open"]).optional().describe("One status, or open for draft, scheduled and in_progress together"),
     client: str("client", MAX_NAME).optional().describe("Only jobs whose client name contains this text"),

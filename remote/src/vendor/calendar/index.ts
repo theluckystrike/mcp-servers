@@ -405,7 +405,7 @@ server.registerTool("ics_import", {
 
 server.registerTool("calendars_list", {
   title: "List imported calendars",
-  description: "Every calendar imported into this server: its name, where it came from, how many event definitions it holds and when it was imported.",
+  description: "List the calendars imported into this server: name, how many event definitions each holds, its size, where it came from, when it was imported, and how many of the free tier's 2 calendar slots are used. Also names any stored .ics file that has no calendar row and is being ignored. With nothing imported it prints the export steps for Google, Apple and Outlook instead. Start here when you do not know which calendar names exist.",
   inputSchema: {},
 }, guard(async () => {
   const db = load();
@@ -629,7 +629,7 @@ server.registerTool("conflicts", {
 
 server.registerTool("next_event", {
   title: "Next event",
-  description: "The next event that has not started yet, with how long until it begins. Looks ahead up to a year.",
+  description: "The first event that has not started yet, searching the next 366 days across every imported calendar or just the one you name. Returns the title, calendar, start and end in your own zone (or the whole day for an all-day event), how long until it begins, location, attendees and the occurrence id that event_export and event_to_time_entry take. Recurring events are expanded, so the next occurrence counts. Free and unlimited; use events_list for a whole window.",
   inputSchema: {
     calendar: text(MAX_NAME, "calendar").optional().describe("One calendar name; default every imported calendar"),
   },
@@ -909,7 +909,7 @@ server.registerTool("event_to_time_entry", {
 
 server.registerTool("ics_forget", {
   title: "Forget a calendar",
-  description: "Remove one imported calendar and the local copy of its .ics file. Nothing else is touched.",
+  description: "Remove one imported calendar by its name from calendars_list, and delete this server's local copy of its .ics file. It reads back the calendars left and frees one of the free tier's 2 slots. Your original calendar and the file you imported from are untouched, and no other calendar is affected. Re-import with ics_import; importing the same name again also replaces a calendar in place, so use that to refresh rather than forgetting first.",
   inputSchema: {
     name: text(MAX_NAME, "name").describe("The calendar name from calendars_list"),
   },

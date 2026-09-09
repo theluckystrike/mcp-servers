@@ -474,7 +474,7 @@ server.registerTool("quote_create", {
 
 server.registerTool("quote_list", {
   title: "List quotes",
-  description: "Every quote with its client, total, validity and state (open, expired, accepted or declined). Filter by state, by client or by quote date range.",
+  description: "List quotes newest first, one summary row each: id, client, quote date, valid_until, state, days left while still open, currency, total formatted and in minor units, and the invoice number when the quote was accepted. State is worked out against today, so a quote past its valid_until reads as expired without anything having to update it. Filter by state (all, open, expired, accepted, declined), by client name text and by quote date range. Use quote_get for one quote with its lines, and quote_report for pipeline totals and the win rate.",
   inputSchema: {
     state: z.enum(["open", "expired", "accepted", "declined", "all"]).optional().describe('Default "all". "open" excludes quotes whose validity has run out; "expired" is only those'),
     client: z.string().optional().describe("Only quotes for clients whose name contains this text"),

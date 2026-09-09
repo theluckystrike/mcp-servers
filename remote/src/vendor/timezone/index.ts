@@ -460,7 +460,7 @@ server.registerTool("business_days", {
 
 server.registerTool("contacts_set", {
   title: "Save a contact's zone",
-  description: "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later.",
+  description: "Save one person's time zone and working hours so later calls can say 'find a slot with Maria and Raj' by name instead of by zone. zone accepts an IANA zone, a city, a country or an abbreviation; work_start and work_end default to 09:00 and 17:00 local. Returns the resolved zone and their local time right now. Names are matched case-insensitively, so saving the same name again REPLACES that contact and the answer says what it replaced. Free tier: 5 saved contacts. Your own zone is not stored here: it comes from the shared business profile.",
   inputSchema: {
     name: text(MAX_ZONE_TEXT, "name").min(1).describe("Their name"),
     zone: text(MAX_ZONE_TEXT, "zone").min(1).describe("Their place or IANA zone"),
@@ -492,7 +492,7 @@ server.registerTool("contacts_set", {
 
 server.registerTool("contacts_list", {
   title: "List saved contacts",
-  description: "Everyone you have saved, with their current local time and whether they are inside working hours right now.",
+  description: "List every saved contact, A to Z, with their zone, their local time right now, their working hours and whether they are inside them at this moment; weekends count as outside. It also prints your OWN zone from the shared business profile, so you never have to ask the user what zone they are in before calling find_meeting_slots or overlap. Takes no arguments and changes nothing. With none saved it says how to add one with contacts_set.",
   inputSchema: {},
 }, guard(async () => {
   const db = load();

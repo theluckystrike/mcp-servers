@@ -311,7 +311,7 @@ server.registerTool("schedule_create", {
 
 server.registerTool("schedule_list", {
   title: "List schedules",
-  description: "Every schedule with its cadence, per-period amount, next due date and status (active or paused).",
+  description: "List schedules, one summary row each: id, client, cadence in words, the per-period amount and currency, start and end dates, status, next due date and whether it auto-generates. Filter by status active or paused; a paused schedule reports no next due date. Use schedule_get for one schedule in full, schedule_upcoming for the occurrences themselves and forecast for money per month.",
   inputSchema: { status: z.enum(["active", "paused"]).optional() },
 }, async (a) => {
   try {
@@ -325,7 +325,7 @@ server.registerTool("schedule_list", {
 
 server.registerTool("schedule_get", {
   title: "Get one schedule",
-  description: "The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated.",
+  description: "Return one schedule in full by id or by client name: every line item, the cadence and its label, start and end dates, due days, anchor-day and end-of-month rules, notes, the auto_generate flag, the per-period amount, the next due date and how many invoices it has generated so far. Reads only. Use schedule_history for the period-by-period audit log, which is Pro.",
   inputSchema: { id: z.string().describe("Schedule id, or a client name") },
 }, async (a) => {
   try {
@@ -410,7 +410,7 @@ function setStatus(id: string, status: "active" | "paused") {
 
 server.registerTool("schedule_pause", {
   title: "Pause a schedule",
-  description: "Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed.",
+  description: "Stop one schedule from generating invoices, without deleting it or losing anything. A paused schedule is skipped by invoice_generate_due and by forecast, and reports no next due date. Its periods keep falling due in the background: schedule_resume back-bills every one that was missed, so to drop a single month for good use schedule_skip instead. Free on every tier.",
   inputSchema: { id: z.string() },
 }, async (a) => {
   try { return await setStatus(a.id, "paused"); } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -418,7 +418,7 @@ server.registerTool("schedule_pause", {
 
 server.registerTool("schedule_resume", {
   title: "Resume a schedule",
-  description: "Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due.",
+  description: "Put a paused schedule back to active by id or client name. Periods that fell due while it was paused are still due and the next invoice_generate_due will create them all, so use schedule_skip on any period you do not want billed before resuming. Refused when it would take you past the free tier's 3 active schedules, and nothing is changed.",
   inputSchema: { id: z.string() },
 }, async (a) => {
   try { return await setStatus(a.id, "active"); } catch (e) { return fail(String((e as Error).message ?? e)); }
@@ -689,8 +689,8 @@ server.registerTool("invoice_generate_due", {
 });
 
 server.registerTool("schedule_history", {
-  title: "Schedule history (Pro)",
-  description: "The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path.",
+  title: "Schedule history",
+  description: "The audit log for one schedule, oldest period first: every period it has reached, the invoice number, issue and due date, amount, PDF path, and whether that invoice is unpaid, paid, skipped or has since been deleted in the invoice server. Pro; the free tier returns the upgrade note instead. Use schedule_get for the schedule's own definition and generated count.",
   inputSchema: { id: z.string() },
 }, async (a) => {
   try {
