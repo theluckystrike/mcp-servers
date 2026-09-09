@@ -53,12 +53,18 @@ const REGIONS = {
   table,
   counts,
   install: [
-    "Install any server by downloading its `.mcpb` bundle from the",
-    `[latest release](${REPO}/releases/latest) and opening it in Claude Desktop. That is one double-click, no terminal.`,
+    "![invoice](assets/demo-invoice.gif)",
     "",
-    "The npm packages are **not published yet**, so `npx -y @theluckystrike/mcp-<name>` returns 404. Do not use it, and",
-    "do not recommend it. The two paths that work today are the `.mcpb` bundle above and the hosted endpoints at",
-    "`https://mcp.zovo.one/mcp/<server>`, which need no install at all.",
+    "That is the invoice server answering a real prompt: a client, some hours, a VAT rate, and a numbered PDF at the end.",
+    "Every server in the table below has a demo like it.",
+    "",
+    "**Two ways to run any of these, both working today.**",
+    "",
+    `1. **One click.** Download the server's \`.mcpb\` bundle from the [latest release](${REPO}/releases/latest) and open it in Claude Desktop. No terminal, no config file.`,
+    "2. **No install at all.** Point a client at `https://mcp.zovo.one/mcp/<server>`. `GET https://mcp.zovo.one/mcp/connect` mints a free token and prints a ready URL for each server.",
+    "",
+    "A third way is coming and does not work yet: the npm packages are unpublished, so `npx -y @theluckystrike/mcp-<name>`",
+    "returns 404 today. The commands below are written for the day it is published; use one of the two paths above until then.",
   ].join("\n"),
 };
 
