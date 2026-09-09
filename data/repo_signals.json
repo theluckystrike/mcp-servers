@@ -1,0 +1,226 @@
+{
+  "at": "2026-09-09T07:10:00Z",
+  "agent": "repository-signals",
+  "loop": 31,
+  "source": {
+    "score_page": "https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/score",
+    "fetched_at": "2026-09-09T06:38:00Z",
+    "http": 200,
+    "bytes": 157019,
+    "glama_record_uid": "xqty9uhzj7",
+    "glama_record_updated_at": "2026-09-08T13:40:06.281292Z",
+    "glama_latest_release_version_reported": "0.14.0"
+  },
+  "indexed_servers_on_glama": [
+    "mcp-statement-of-account"
+  ],
+  "findings": [
+    {
+      "id": "issues",
+      "glama_text": "No community issues in the last 6 months",
+      "true": true,
+      "fixable": false,
+      "gate": "by design",
+      "note": "Issues enabled on all 31 server mirrors; MIRROR.md routes issues to the monorepo, so the tracker stays empty. Manufacturing issues would be a defect.",
+      "action": "recorded"
+    },
+    {
+      "id": "commits",
+      "glama_text": "1 commit in the last 12 weeks",
+      "true": true,
+      "fixable": true,
+      "gate": "none",
+      "note": "Artefact of squash + force-push in sync-mirrors.sh, not of low activity.",
+      "action": "squashing removed; mirror now has 3 commits",
+      "evidence": "gh api repos/theluckystrike/mcp-statement-of-account/commits -> 4a27981, a3a0ab7, 926110e"
+    },
+    {
+      "id": "releases",
+      "glama_text": "No stable releases found",
+      "true": true,
+      "fixable": true,
+      "gate": "none",
+      "note": "No mirror had ever carried a tag or a release.",
+      "action": "tag + release v0.20.0 created; generator now tags every sync",
+      "evidence": "gh release list --repo theluckystrike/mcp-statement-of-account -> v0.20.0 Latest 2026-09-09T06:48:35Z, draft=false prerelease=false"
+    },
+    {
+      "id": "vuln_critical",
+      "glama_text": "No critical vulnerability alerts",
+      "true": true,
+      "fixable": false,
+      "gate": "none",
+      "note": "Positive signal already.",
+      "action": "none"
+    },
+    {
+      "id": "vuln_high",
+      "glama_text": "No high-severity vulnerability alerts",
+      "true": true,
+      "fixable": false,
+      "gate": "none",
+      "note": "Positive signal already.",
+      "action": "none"
+    },
+    {
+      "id": "code_scanning",
+      "glama_text": "No code scanning findings",
+      "true": true,
+      "fixable": false,
+      "gate": "none",
+      "note": "Positive signal already.",
+      "action": "none"
+    },
+    {
+      "id": "ci",
+      "glama_text": "CI status not available",
+      "true": true,
+      "fixable": true,
+      "gate": "none",
+      "note": "No mirror had a workflow. A mirror is self-contained so its own suite runs from a fresh clone.",
+      "action": "ci.yml added to the generator and to the indexed mirror",
+      "evidence": "gh run list --repo theluckystrike/mcp-statement-of-account -> 34320638505 success a3a0ab7 (17s); 34321250634 success 4a27981 (22s)"
+    },
+    {
+      "id": "license",
+      "glama_text": "Has a permissive license (MIT)",
+      "true": true,
+      "fixable": false,
+      "gate": "none",
+      "note": "Positive signal already.",
+      "action": "none"
+    },
+    {
+      "id": "readme",
+      "glama_text": "Has README",
+      "true": true,
+      "fixable": false,
+      "gate": "none",
+      "note": "Positive signal already.",
+      "action": "none"
+    },
+    {
+      "id": "usage",
+      "glama_text": "No recent usage",
+      "true": true,
+      "fixable": false,
+      "gate": "traffic",
+      "note": "Counts tool calls made through Glama's own Try in Browser feature.",
+      "action": "recorded"
+    },
+    {
+      "id": "glama_json",
+      "glama_text": "Has valid glama.json",
+      "true": true,
+      "fixable": false,
+      "gate": "none",
+      "note": "Byte-for-byte the shape Glama's own page documents: $schema + maintainers array. Nothing changed.",
+      "action": "verified"
+    },
+    {
+      "id": "author",
+      "glama_text": "Author not verified",
+      "true": true,
+      "fixable": false,
+      "gate": "human",
+      "note": "Requires GitHub sign-in on glama.ai and claiming the listing. Also unlocks 'Add related servers' and the manual Sync Server button.",
+      "action": "appended to docs/HUMAN_GATED_PACK.md section 13"
+    },
+    {
+      "id": "latest_release_version",
+      "glama_text": "Has a Glama release / Latest release: v0.14.0",
+      "true": false,
+      "fixable": "unknown",
+      "gate": "none",
+      "note": "0.14.0 was the project version during the 33 minutes between mirror creation (2026-09-05T17:10:18Z) and Glama indexing it (17:43:09Z); the registry's first publication of this server was 0.14.0 at 17:04:59Z. Glama re-synced the record on 2026-09-08T13:40:06Z and still reports 0.14.0, so the field is frozen at profile creation, not re-read. Control: bln-mcp-grammar-server has a real GitHub release v1.0.0 and Glama reports 1.0.0 for it.",
+      "action": "created a real GitHub release on the mirror; outcome falsifiable at Glama's next sync",
+      "prediction": "the Maintenance line flips to a found release and latestReleaseVersion moves off 0.14.0; if it does not, the field is Glama-internal and nothing pushed can move it"
+    }
+  ],
+  "mirror_state": {
+    "servers_in_monorepo": 32,
+    "server_mirrors_existing": 31,
+    "servers_without_a_mirror": [
+      "delivery-schedule"
+    ],
+    "other_mcp_repos": [
+      "mcp-servers",
+      "mcp-registry"
+    ],
+    "monorepo_version": "0.21.0",
+    "mirrors_last_synced": {
+      "2026-09-06T08:18-08:23Z": 30,
+      "2026-09-08T09:44:31Z": [
+        "mcp-timezone"
+      ]
+    },
+    "mirrors_with_broken_dockerfile": 30,
+    "mirrors_with_ci": [
+      "mcp-statement-of-account"
+    ],
+    "mirrors_with_a_release": [
+      "mcp-statement-of-account"
+    ]
+  },
+  "resync_safety": {
+    "safe_to_run_now": false,
+    "reason": "The mirror tree is built from the working tree. At 2026-09-09T06:57Z, 21 of 32 servers had uncommitted src/index.ts edits and all 21 had been rebuilt, so their dist carries the in-flight text. mcp-license depends on mcp-timezone and every server depends on mcp-license, so every mirror's vendored closure is affected. servers/timezone fails 2 of 6 of its own contract tests in the monorepo right now.",
+    "measurement": "git status --porcelain | grep '^ M servers/' -> 21; dist/index.js newer than src/index.ts for all 21; node --test servers/timezone/test/contract.test.mjs -> 3 pass 2 fail",
+    "guards_added": [
+      "per-server dirty working tree warning",
+      "vendored-dependency dirty-and-rebuilt warning",
+      "REQUIRE_CLEAN=1 turns either into a skip"
+    ],
+    "guard_proof": "REQUIRE_CLEAN=1 scripts/sync-mirrors.sh petty-cash -> skipped, vendored mcp-billing-docs is dirty and rebuilt",
+    "run_when": "monorepo npm test green and the description work committed",
+    "order": [
+      "REQUIRE_CLEAN=1 scripts/sync-mirrors.sh timezone",
+      "fresh clone + npm install && npm run build && npm test + gh run list",
+      "REQUIRE_CLEAN=1 scripts/sync-mirrors.sh"
+    ]
+  },
+  "squash_recommendation": {
+    "decision": "stop squashing, implemented",
+    "why": "The one-commit history was an artefact of force-pushing a fresh git init, not of low activity, and the mirrors may become the public repository every registry entry points at (docs/VSCODE_GALLERY_R1.md).",
+    "fallbacks": {
+      "SQUASH=1": "force-push a single squashed commit, discarding history",
+      "no main on the remote": "init path, force-push, as before"
+    },
+    "no_silent_fallback": "a failed fetch fails that mirror and pushes nothing, rather than force-pushing over the history it could not read",
+    "push_mode": "plain fast-forward, verified afterwards against git ls-remote",
+    "rehearsal": {
+      "hook": "LOCAL_REMOTE=<dir> scripts/sync-mirrors.sh <name>",
+      "run1": "empty remote -> 8fdd8d7 + tag v0.21.0",
+      "run2": "unchanged content -> no commit, tag left alone",
+      "run3": "remote diverged -> 26423ab parent=72de980 parent=8fdd8d7, STRAY.md removed"
+    }
+  },
+  "generator_defects_found_and_fixed": [
+    {
+      "id": "sibling_source",
+      "servers_affected": [
+        "amortization",
+        "bank-statement",
+        "calendar",
+        "cash-book",
+        "image",
+        "kanban",
+        "pdf",
+        "petty-cash",
+        "statement-of-account"
+      ],
+      "symptom": "npm test from a fresh clone of mcp-statement-of-account: 47 tests, 1 fail, ENOENT on <clone>/servers/invoice/src/store.ts",
+      "fix": "step 5a2d",
+      "after": "47 tests, 0 fail"
+    },
+    {
+      "id": "env_setup_in_a_skipped_test",
+      "servers_affected": [
+        "timezone"
+      ],
+      "symptom": "generated mcp-timezone tree: 'two processes writing ics counters do not lose a count' expected 10 counted writes, found 3, because the Pro key is signed inside a test the mirror skips; the same file passes 2/2 in the monorepo",
+      "fix": "step 5c",
+      "after": "61 tests, 0 generator-caused failures"
+    }
+  ]
+}

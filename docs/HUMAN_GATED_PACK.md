@@ -933,3 +933,65 @@ So 12c is blocked on writing and publishing a privacy policy first — an agent 
 one, and cheap. Until that page returns 200, opening the wizard wastes the submission.
 
 Escalations: `mcp-review@anthropic.com`.
+
+---
+
+## 13. Glama author verification — the last Maintenance line an agent cannot close (repository-signals, loop 31, 2026-09-09)
+
+**URL:** https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/score
+**Button:** "Claim", top of the page, next to `by theluckystrike`. The Author panel lower down
+spells out the same thing: *"If you are the author, simply authenticate using GitHub."*
+
+**Why it needs you, and why it is now the only thing left on that page.** Glama grades every
+indexed server and publishes the grading. Of its twelve Maintenance lines, three were fixable
+and are fixed as of this morning — CI, a stable release, and a real commit history (all measured
+in `docs/REPO_SIGNALS_R1.md`). Of the rest, six were already positive, two are true statements
+about how this project is deliberately run, and one — **"Author not verified"** — needs a human
+to sign in with GitHub once. It is not a form, not a fee, and not a submission: it is a single
+OAuth sign-in that binds the `theluckystrike` GitHub account to the listing.
+
+**Nothing needs preparing first.** The `glama.json` in every mirror is already byte-for-byte the
+shape Glama's own page prints as the requirement:
+
+    {
+      "$schema": "https://glama.ai/mcp/schemas/server.json",
+      "maintainers": [
+        "theluckystrike"
+      ]
+    }
+
+Glama's checklist already agrees — the line reads "Has valid glama.json". It was verified this
+round and deliberately left untouched.
+
+**Exact click path, about one minute:**
+
+1. Open https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account
+2. Click **Claim** (top right of the title block).
+3. Choose **authenticate using GitHub** and approve. Sign in as `theluckystrike` — the username
+   in `glama.json` must match the account, or the claim will not bind.
+4. Nothing else. Do not add a paid plan, do not buy a listing.
+
+**What it unlocks beyond the one line**
+
+- **"No related servers"**, the other unchecked item in the 75% profile-completion panel. Once
+  claimed, "Add related servers" becomes available; the 30 sibling mirrors are the obvious set.
+- **The manual "Sync Server" button** in the MCP server admin interface. Glama's own help text
+  says servers sync at least daily, but its record for this one still reports
+  `Latest release: v0.14.0` after a re-sync on 2026-09-08 (the project is at v0.21.0). A manual
+  sync is the direct way to test whether that field will ever move.
+- **"Try in Browser"** on the server page, which is what Glama's tip names as the way to seed the
+  "No recent usage" line. Clicking a tool there once is worth doing while you are signed in.
+
+**Verify it landed — no account needed for the check:**
+
+    curl -s -A "Mozilla/5.0" \
+      https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/score \
+      | grep -c "Author not verified"
+
+`1` means it is still unclaimed. `0` means it worked. The same check on the word `Claim` in the
+page header is a second instrument.
+
+**Do not do these while you are in there:** no API key is needed (the directory API at
+`https://glama.ai/api/mcp/v1/servers/...` returns 401 and asks for one, and its data licence
+requires visible attribution on every page that displays it — not worth taking on), and there is
+no paid tier to buy.
