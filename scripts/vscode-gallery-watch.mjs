@@ -16,13 +16,20 @@ const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const BASE = "https://api.mcp.github.com/v0/servers";
 const NEEDLES = ["theluckystrike", "bestremotetools", "zovo"];
 
-let rows = [], cursor = null, pages = 0;
+// The subfolder hypothesis, under test since 2026-09-09 (docs/VSCODE_GALLERY_R1.md):
+// all 252 gallery entries pointed at a repository with NO repository.subfolder, while
+// every one of this project's registry entries pointed at a monorepo subfolder, and
+// subfolders run at about 19% registry-wide. This watch records the ratio each run so the
+// hypothesis is either confirmed or killed by data rather than left as an opinion.
+
+let rows = [], raw = [], cursor = null, pages = 0;
 while (pages < 40) {
   const u = `${BASE}?limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`;
   const res = await fetch(u, { headers: { "user-agent": "mcp-servers-gallery-watch" } });
   if (!res.ok) { console.error(`FATAL: ${u} returned ${res.status}; refusing to report a count from a failed pull`); process.exit(2); }
   const d = await res.json();
   const got = d.servers || [];
+  raw = raw.concat(got);
   rows = rows.concat(got.map((r) => r.server?.name).filter(Boolean));
   cursor = d.metadata?.next_cursor || null;
   pages++;
@@ -35,8 +42,11 @@ const CONTROL = "microsoft/markitdown";
 if (!rows.includes(CONTROL)) { console.error(`FATAL: control ${CONTROL} absent, so this probe is broken`); process.exit(3); }
 
 const hits = rows.filter((n) => NEEDLES.some((x) => n.toLowerCase().includes(x)));
+const withSubfolder = raw.filter((r) => r.server?.repository?.subfolder).length;
 const out = { at: new Date().toISOString(), gallery: BASE, pages, total_rows: rows.length, control: CONTROL, ours: hits,
+  entries_with_repository_subfolder: withSubfolder,
+  subfolder_hypothesis: withSubfolder === 0 ? "still holds: zero gallery entries use a monorepo subfolder" : `KILLED: ${withSubfolder} gallery entries do use a subfolder`,
   note: "Registry-backed and syncs from the official MCP registry. No submission path exists; appearing is a ranked cut. If ours is non-empty, VS Code users can now find these servers in the built-in picker." };
 writeFileSync(`${ROOT}/data/vscode_gallery.json`, JSON.stringify(out, null, 2));
 if (process.argv.includes("--json")) console.log(JSON.stringify(out, null, 2));
-else console.log(`vscode gallery: ${rows.length} servers over ${pages} pages, ours = ${hits.length}${hits.length ? ": " + hits.join(", ") : ""}`);
+else console.log(`vscode gallery: ${rows.length} servers over ${pages} pages, ours = ${hits.length}${hits.length ? ": " + hits.join(", ") : ""}; entries using a monorepo subfolder = ${withSubfolder}`);
