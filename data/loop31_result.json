@@ -1,0 +1,43 @@
+{
+  "loop": 31,
+  "date": "2026-09-09",
+  "headline": "Found why none of these servers appears in VS Code's built-in MCP picker, and it is a property of our own registry entries rather than anything about the product.",
+  "vscode_gallery": {
+    "surface": "api.mcp.github.com, read by VS Code's MCP picker, syncs daily from the official registry, 252 servers",
+    "killed_hypotheses": {
+      "stars": "38 of 252 have zero",
+      "organisation": "60 of 252 are personal accounts",
+      "namespace": "114 of 252 are io.github.*",
+      "alphabet": "spans ai.bittlebits to zapier",
+      "language": "TypeScript 81, Python 40, none 64",
+      "age": "44 published this month"
+    },
+    "separator": "0 of 252 gallery entries have repository.subfolder; 19 of 100 sampled registry entries do; all 89 of ours do",
+    "p_value": "about 9e-24 under independence",
+    "experiment": "com.bestremotetools/office-suite-all-servers-one-install published pointing at a standalone repo with no subfolder, same namespace as a subfolder entry so only the tested variable differs",
+    "watch": "scripts/vscode-gallery-watch.mjs now records the subfolder ratio each run"
+  },
+  "docker": {
+    "pr": "https://github.com/docker/mcp-registry/pull/5030",
+    "state": "OPEN, MERGEABLE, one file, 23 lines",
+    "validated": "all four CI steps run locally against a real Docker daemon: validate, build --tools, catalog, clean, plus go test",
+    "verified": "fresh clone, docker build --no-cache, then a real handshake under --network none returning 11 tools and four working tool calls",
+    "blocker": "fork PRs need a maintainer to approve the workflow run; no action available to us or the operator",
+    "queue": "VERIFIED INDEPENDENTLY: main last moved 2026-08-21, 19 days ago, with 1,146 open pull requests. Do not spend another loop here until this one moves."
+  },
+  "hosted_endpoints": {
+    "defect": "a browser asking for /mcp/<server> was handed raw JSON",
+    "fix": "content negotiation on accept: text/html; the protocol path is byte-identical and tools/call without a token still 401s",
+    "verified": "browser 200 text/html 4,298 bytes; no accept header 200 application/json; POST tools/list 200; POST tools/call 401"
+  },
+  "github_repo": {
+    "was": "description named 4 of 31 servers, 10 topics, README opened with text and no proof",
+    "now": "accurate description, 20 topics each a browsable GitHub page, README opens with a real demo and the two install paths that work"
+  },
+  "correction": {
+    "claim": "an earlier draft this loop said real people were arriving from Google search",
+    "why_wrong": "Search Console URL Inspection says those URLs are unknown to Google and have never been crawled, and several requests carry an HTML entity fused into the path, which no browser produces",
+    "now": "recorded as automated traffic of unknown origin; the fix stands on its own merits"
+  },
+  "coupling_found": "remote/build-vendor.mjs patches about 113 exact strings including tool descriptions, so editing a description breaks the hosted build. Documented and added to the verification steps."
+}
