@@ -60,5 +60,22 @@
     "scope": "registered once and inherited by all 31 servers, so the description contract test was failing on every server before this loop",
     "how_found": "checked HEAD in a separate git worktree rather than assuming the failures belonged to the agent editing descriptions"
   },
-  "server_count_fix": "SERVER_COUNT was 30 while 31 servers gate Pro, so every free-tier cap message and bundle link named a stale count. Fixed in both the licence package and the hosted shim."
+  "server_count_fix": "SERVER_COUNT was 30 while 31 servers gate Pro, so every free-tier cap message and bundle link named a stale count. Fixed in both the licence package and the hosted shim.",
+  "tool_quality": {
+    "scorer_validated": "the agent's scorer reproduces Glama's published minimum of 2.9 on the one indexed server exactly",
+    "before": "lowest server minimum 2.35; 0 of 31 servers had a minimum at or above 3.0",
+    "after": "lowest server minimum 3.15; 31 of 31 at or above 3.0",
+    "target_missed_honestly": "the brief asked for every minimum above 3.5 and 5 of 31 reach it. The binding constraint is the estate's own 220-character contract ceiling, which will not hold six scored dimensions at full marks. The ceiling was not raised and no name was added to the grandfathering baseline.",
+    "why_it_compounds": "Glama scores 40 percent on the single worst tool, so the minimum is the whole game, and connectors re-score daily so this is measurable within a day"
+  },
+  "estate": {
+    "tests": "46 failing assertions to 0",
+    "live_validation": "951/951",
+    "deployed": "hosted worker redeployed twice with the new descriptions"
+  },
+  "open_submissions": {
+    "awesome_mcp_servers": 5,
+    "goose": 3,
+    "docker": "PR 5030 open, queue stalled 19 days with 1,146 open PRs"
+  }
 }
