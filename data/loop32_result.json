@@ -22,5 +22,27 @@
     "crawlers_created_live_stripe_sessions": "A crawler sending a browser-shaped user agent with accept */* had a real cs_live_ checkout session created for it, while python-requests was correctly turned away. That put a Stripe call on the critical path of requests nobody would pay for, which is the likely cause of 691 gateway timeouts on /buy/* in 25 hours, every one with no recognisable browser, and it inflated the human-checkout-sessions figure. A navigation signal is now required of every request.",
     "hosted_path_was_invisible": "The zero-install hosted URL sat at character 20,676 of a 21,905-character product page while the page led with the price. It now sits at character 153 on all 30 hosted servers, driven by a list derived from the manifests behind a drift test that was control-tested."
   },
-  "inbound_links": "18 of 18 still live, including all four placed on 2026-09-08. The two lost earlier are still lost. One remains fragile because it was shipped by a live-mirror deploy against a repo that is behind live."
+  "inbound_links": "18 of 18 still live, including all four placed on 2026-09-08. The two lost earlier are still lost. One remains fragile because it was shipped by a live-mirror deploy against a repo that is behind live.",
+  "honesty_gates": {
+    "problem": "billing/ is not an npm workspace, so root npm test never ran its tests. Six assertions were red at HEAD for days, including the gate written to stop the home page restating a stale check count, which had itself gone stale.",
+    "resolved": "107 of 107, and the directory is now discovered and run by scripts/release-check.mjs, which walks the tree rather than holding a list so a new test directory cannot be born outside every gate. Control-tested by breaking an assertion and watching the gate catch it.",
+    "worst_case": "data/tests.json said 1,507 unit tests and the real figure is 1,563. README renders that file and build-readme --check gates the README against it, so a green gate was hiding a stale public number. Corrected.",
+    "live_defect_found": "a guide promising every figure came from a specific run was quoting today's bundle instead: 31 servers and 292 tools where that run produced 24 and 224. Corrected to the run's own numbers.",
+    "also_found": "office-suite was emitted twice in llms.txt under two titles for one URL, 34 product lines for a 32-product catalogue, in the file assistant crawlers actually read"
+  },
+  "content": {
+    "new_guides": 13,
+    "guides_total": 89,
+    "sitemap": 154,
+    "novel_findings_published": [
+      "a capital letter in a GitHub username is worth about 20 places in registry search order, proved against live data and the registry's own source",
+      "the registry enforces one hosted URL per server name, quoted from validateNoDuplicateRemoteURLs, which is undocumented on its publishing pages",
+      "25.4 percent of 16,305 listed remote MCP endpoints require auth on the discovery methods directories probe, so the 401 trap is an ecosystem-wide problem"
+    ]
+  },
+  "estate": {
+    "unit_tests": "1,563 pass, 0 fail, of 1,574",
+    "live_validation": "951/951",
+    "billing_gates": "107 of 107"
+  }
 }

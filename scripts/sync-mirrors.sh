@@ -533,6 +533,124 @@ open(path, "w").write(note + "\n".join(out))
 PYSCRIPTS
   done
 
+  # 5a2e. 5a2c and 5a2d both match a LITERAL monorepo path -- join(REPO, "scripts" and
+  #       join(REPO, "servers". A block can also reach the monorepo through a variable, and
+  #       then neither pass sees it. delivery-schedule's contract suite drives a table:
+  #
+  #         const cases = [["scripts/build-mcpb.sh", /.../, "SERVERS list"], ...];
+  #         for (const [file, re, what] of cases) readFileSync(join(REPO, file), "utf8");
+  #
+  #       It asserts the estate registered this server in build-mcpb.sh, sync-mirrors.sh,
+  #       build-pages.mjs and two sibling servers -- all monorepo files, none of which a
+  #       mirror holds. Measured 2026-09-09 on the generated tree: "not ok 37 - the estate
+  #       lists this server everywhere a new server has to be registered". It is a real and
+  #       useful check IN THE MONOREPO, so it is marked skipped here rather than rewritten:
+  #       there is nothing in a mirror it could truthfully assert. Recognised by a
+  #       "scripts/..." or "servers/..." path literal in a block that also calls join(REPO.
+  #       delivery-schedule is the only server where such a block is still live; amortization
+  #       and petty-cash carry the same literals inside blocks an earlier pass already
+  #       skipped, and this pass leaves those alone.
+  for T in "$MIRROR"/test/*.mjs; do
+    [ -f "$T" ] || continue
+    python3 - "$T" <<'PYTABLE'
+import re, sys
+path = sys.argv[1]
+src = open(path).read()
+if not re.search(r'"(scripts|servers)/', src) or "join(REPO" not in src:
+    sys.exit(0)
+lines = src.split("\n")
+starts = [i for i, l in enumerate(lines) if l.startswith("test(") or l.startswith("test.skip(")]
+if not starts:
+    sys.exit(0)
+bounds = starts + [len(lines)]
+out = lines[:starts[0]]
+changed = False
+for a, b in zip(bounds, bounds[1:]):
+    block = lines[a:b]
+    text = "\n".join(block)
+    if block[0].startswith("test(") and re.search(r'"(scripts|servers)/', text) and "join(REPO" in text:
+        block[0] = "test.skip(" + block[0][len("test("):]
+        changed = True
+    out += block
+if changed:
+    NOTE = ("// Mirror note: a test that reads monorepo files through a table of paths is skipped\n"
+            "// here. Those files live outside any server folder and never reach a mirror; run it\n"
+            "// in the monorepo, which is the only place it can mean anything.\n")
+    open(path, "w").write(NOTE + "\n".join(out))
+PYTABLE
+  done
+
+  # 5a2f. `const SERVERS = join(here, "..", "..")` is the monorepo's servers/ directory,
+  #       reached two levels up from test/. 5a2b rewrites the THREE-level form (the repo
+  #       root); this two-level one it leaves alone, and in a mirror it points at whatever
+  #       happens to sit NEXT TO the clone -- outside the repository entirely. invoice's
+  #       round5 suite imports siblings through it:
+  #
+  #         const inv = await import(join(SERVERS, "invoice", "dist", "money.js"));
+  #         const exp = await import(join(SERVERS, "expense-tracker", "dist", "money.js"));
+  #
+  #       This one hid from the pre-flight for a while and is worth the warning: a harness
+  #       that stages every generated tree side by side RECREATES servers/, so the import
+  #       resolves and the test passes for a reason a real one-repo clone will not have.
+  #       It was caught only because the trees were built in alphabetical order and
+  #       time-tracker had not been built yet when invoice ran. Verify a mirror isolated.
+  #
+  #       Own-folder uses are rewritten to the mirror root, so the second D-R15 block --
+  #       which only imports invoice's own money.js -- stays live and keeps its meaning.
+  #       A block still reaching a sibling afterwards is skipped, as in 5a2d.
+  for T in "$MIRROR"/test/*.mjs; do
+    [ -f "$T" ] || continue
+    python3 - "$T" "$NAME" <<'PYSERVERS'
+import re, sys
+path, name = sys.argv[1], sys.argv[2]
+src = open(path).read()
+if 'join(here, "..", "..")' not in src:
+    sys.exit(0)
+lines = src.split("\n")
+starts = [i for i, l in enumerate(lines) if l.startswith("test(") or l.startswith("test.skip(")]
+head = "\n".join(lines[:starts[0]]) if starts else src
+esc = re.findall(r'const\s+(\w+)\s*=\s*join\(here,\s*"\.\.",\s*"\.\."\)\s*;', head)
+# the mirror IS this server's folder, so servers/<own name>/... is the mirror root
+for v in esc:
+    src = src.replace('join(%s, "%s", ' % (v, name), 'join(here, "..", ')
+    src = src.replace('join(%s, "%s")' % (v, name), 'join(here, "..")')
+lines = src.split("\n")
+starts = [i for i, l in enumerate(lines) if l.startswith("test(") or l.startswith("test.skip(")]
+if not starts:
+    open(path, "w").write(src)
+    sys.exit(0)
+bounds = starts + [len(lines)]
+head_lines = lines[:starts[0]]
+# Reached from MODULE SCOPE -- invoice's profile-readers.test.mjs walks the directory inside
+# serversThatReadSharedProfile(), and shared-profile.test.mjs spawns siblings from a helper
+# defined up there -- and then no test in the file can run, exactly as in 5c. Reached only
+# from inside blocks (round5), and just those blocks go. The const's own definition line does
+# not count as a use, or every file would skip whole.
+defline = re.compile(r'\s*const\s+(?:%s)\s*=' % "|".join(re.escape(v) for v in esc)) if esc else None
+head_rest = "\n".join(l for l in head_lines if not (defline and defline.match(l)))
+module_scope = 'join(here, "..", "..")' in head_rest or any(
+    re.search(r"\b%s\b" % v, head_rest) for v in esc)
+out = lines[:starts[0]]
+skipped = False
+for a, b in zip(bounds, bounds[1:]):
+    block = lines[a:b]
+    text = "\n".join(block)
+    reaches = module_scope or 'join(here, "..", "..")' in text or any(
+        re.search(r"\b%s\b" % v, text) for v in esc)
+    if reaches and block[0].startswith("test("):
+        block[0] = "test.skip(" + block[0][len("test("):]
+        skipped = True
+    out += block
+new = "\n".join(out)
+if skipped:
+    new = ("// Mirror note: a test that reaches the monorepo's servers/ directory, two levels up\n"
+           "// from test/, is skipped here. In a mirror that path lands outside the repository;\n"
+           "// the sibling servers it wants are only side by side in the monorepo.\n") + new
+if new != open(path).read():
+    open(path, "w").write(new)
+PYSERVERS
+  done
+
   # 5a3. recurring's smoke test spawns the sibling invoice server directly (as a second
   #      process, to confirm the invoice server's own process sees what recurring wrote)
   #      via a "../../invoice/dist/index.js" monorepo-sibling path. In a mirror that
@@ -600,6 +718,33 @@ toplevel_key = any("sign-license" in l and ".trim()" in l for l in head)
 # variables that hold the signer path, so blocks using them count as pro-tier too
 signer_vars = re.findall(r"const\s+(\w+)\s*=\s*[^;]*sign-license", "\n".join(head))
 signer_vars = signer_vars + helper_ids
+# A LOCAL helper in this file that calls a pro-tier helper is pro-tier itself, and the
+# blocks that use it never spell the pro-tier name, so the per-block scan below cannot
+# see them. petty-cash: `async function withFloat(t, opts = { key: proKey() })`, and
+# eleven tests call withFloat(t). With proKey() neutralised to "" they ran on the free
+# tier, where float_report answers a different shape, and failed with
+# "Cannot read properties of undefined (reading '0')" -- 11 of 44 on a fresh clone,
+# measured 2026-09-09, against 44 of 44 in the monorepo. Resolved to a fixpoint, since a
+# wrapper can wrap a wrapper.
+head_text = "\n".join(head)
+marks = [(m.group(1) or m.group(2), m.start()) for m in
+         re.finditer(r"^(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\(|^(?:export\s+)?const\s+(\w+)\s*=",
+                     head_text, re.M)]
+spans = {}
+for i, (nm, at) in enumerate(marks):
+    end = marks[i + 1][1] if i + 1 < len(marks) else len(head_text)
+    spans[nm] = head_text[at:end]
+pro_ids = set(signer_vars)
+changed = True
+while changed:
+    changed = False
+    for nm, body in spans.items():
+        if nm in pro_ids:
+            continue
+        if "sign-license" in body or any(re.search(r"\b%s\b" % re.escape(i), body) for i in pro_ids):
+            pro_ids.add(nm)
+            changed = True
+signer_vars = sorted(pro_ids)
 NOTE = ("// Mirror note: tests that need a signed Pro key are skipped here. The signing key\n"
         "// lives only in the monorepo (keys/license-private.pem); run them there.\n")
 
@@ -684,6 +829,49 @@ new = "\n".join(out)
 if new != src:
     open(path, "w").write(NOTE + new)
 PYENV
+  done
+
+  # 5d. RESULT.md is deliberately excluded from a mirror by step 1: it is the build agent's
+  #     internal work log and carries absolute local paths (/Users/...), wall-clock cost and
+  #     process notes that have no business in a public repository. Six servers'
+  #     contract suites nevertheless assert it exists, in a list of required files:
+  #
+  #       test("the required files are all present", () => {
+  #         for (const f of ["package.json", ..., "SPEC.md", "RESULT.md", ...])
+  #           assert.ok(existsSync(join(HERE, f)), `missing ${f}`);
+  #
+  #     which fails in every mirror. Measured 2026-09-09 on a fresh clone of the generated
+  #     tree: mcp-amortization "not ok 37 - the required files are all present / missing
+  #     RESULT.md". Affects amortization, catalogue, change-order, delivery-schedule,
+  #     petty-cash and work-order. This is the same class as 5a2d -- a test asserting
+  #     something a mirror does not contain -- so it gets the same treatment, except that
+  #     skipping the whole block would throw away a real check of twenty other files. Only
+  #     the one entry is dropped, so the assertion stays meaningful AND true of the mirror.
+  #     The other shape, join(HERE, "RESULT.md") in the em-dash sweep, is already harmless:
+  #     that list ends in .filter(existsSync), so a missing file drops out on its own.
+  for T in "$MIRROR"/test/*.mjs; do
+    [ -f "$T" ] || continue
+    python3 - "$T" <<'PYRESULT'
+import re, sys
+path = sys.argv[1]
+src = open(path).read()
+if '"RESULT.md"' not in src:
+    sys.exit(0)
+out, changed = [], False
+for line in src.split("\n"):
+    # only the bare-filename list form; join(HERE, "RESULT.md") is existsSync-filtered
+    if '"RESULT.md"' in line and "join(" not in line:
+        new = re.sub(r'\s*"RESULT\.md"\s*,', '', line)
+        new = re.sub(r',\s*"RESULT\.md"(?=\s*[\]\)])', '', new)
+        if new != line:
+            line, changed = new, True
+    out.append(line)
+if changed:
+    NOTE = ("// Mirror note: RESULT.md is the monorepo's build log for this server and is not\n"
+            "// published to a mirror, so it is dropped from the required-file list below. Every\n"
+            "// other file in that list is still checked.\n")
+    open(path, "w").write(NOTE + "\n".join(out))
+PYRESULT
   done
 
   # 6. the commit

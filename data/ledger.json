@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-09T09:29:01.906Z",
+  "generated_at": "2026-09-09T10:15:47.309Z",
   "session": {
-    "count": 68,
+    "count": 69,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -274,6 +274,10 @@
       {
         "at": "2026-09-09T09:29:01.769Z",
         "note": "Loop 32: Google indexed the first URL ever; hosted buyers were losing their data on activation and crawlers were creating live Stripe sessions, both fixed"
+      },
+      {
+        "at": "2026-09-09T10:15:47.167Z",
+        "note": "Loop 32 close: Google indexed the first URL ever; two money-path defects fixed; honesty gates green and wired into the release check; 13 reference guides live, sitemap 154"
       }
     ]
   },
@@ -1875,6 +1879,10 @@
       "first_line": "Content round 21: copy buttons on prompt blocks - 2026-09-06"
     },
     {
+      "file": "docs/CONTENT_R3.md",
+      "first_line": "CONTENT_R3 — 13 new reference pages about MCP, organic content round 3, 2026-09-09"
+    },
+    {
       "file": "docs/CONTENT_R3_RESULT.md",
       "first_line": "Content round 3: guides, setup and compare pages for currency, docx, timezone - 2026-09-03"
     },
@@ -2077,6 +2085,10 @@
     {
       "file": "docs/GUARDRAILS_RESULT.md",
       "first_line": "Gate classification: volume/export stays Pro, guardrails go free with a cap"
+    },
+    {
+      "file": "docs/HONESTY_GATES_R1.md",
+      "first_line": "Honesty gates, round 1"
     },
     {
       "file": "docs/HUMAN_GATED_PACK.md",
