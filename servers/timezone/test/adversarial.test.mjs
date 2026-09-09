@@ -188,6 +188,16 @@ test("an unwritable out_path fails cleanly and writes nothing", async (t) => {
   const r = await c.call("ics_create", { title: "x", start: "2026-09-10 15:00", zone: "Warsaw", duration_minutes: 60, out_path: target });
   assert.ok(r.isError, r.text);
   assert.ok(!existsSync(target));
+
+  // The pseudo-filesystem case, which is where this test started. It ran only on Linux
+  // and it did not fail there, it HUNG: mkdirSync(recursive) retries forever when mkdir
+  // answers ENOENT in 0 ms, so the server never returned. Skipped where /proc does not
+  // exist rather than replaced by a path that only looks equivalent.
+  if (existsSync("/proc")) {
+    const proc = await c.call("ics_create", { title: "x", start: "2026-09-10 15:00", zone: "Warsaw", duration_minutes: 60, out_path: "/proc/nope/x.ics" });
+    assert.ok(proc.isError, proc.text);
+    assert.ok(!existsSync("/proc/nope/x.ics"));
+  }
 });
 
 test("DST gap and fold, and far dates", async (t) => {
