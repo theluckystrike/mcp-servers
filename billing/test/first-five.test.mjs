@@ -30,6 +30,27 @@ const SCENARIOS = ROUND_FILES.flatMap((file) => {
     .map((s) => ({ file, round, date: String(doc.at || "").slice(0, 10), server: s.server || (typeof s.surface === "string" ? s.surface.split("/").pop() : null), prompt: s.prompt, score: s.score, note: typeof s.note === "string" ? s.note : "" }));
 });
 
+/**
+ * The servers a measurement round has actually exercised, derived from the round files
+ * themselves rather than kept as a list. A server enters this set the moment a round covers
+ * it, and no exemption has to be written down or later remembered.
+ */
+const MEASURED = new Set(SCENARIOS.map((s) => s.server).filter(Boolean));
+const MEASURED_PAGES = Object.keys(PAGES).filter((id) => MEASURED.has(id));
+
+/**
+ * The section, or a failure naming the page. `html.slice(html.indexOf(needle))` returns the
+ * LAST CHARACTER when the needle is absent, not the empty string, so a page with no section
+ * used to be checked against one character of unrelated markup and fail somewhere else with
+ * a message about scores or dates. Read it through here and the absence is what is reported.
+ */
+function firstFiveSection(id) {
+  const html = PAGES[id].html;
+  const at = html.indexOf("<h2>First five minutes</h2>");
+  assert.notEqual(at, -1, `${id}: no First five minutes section`);
+  return html.slice(at);
+}
+
 function esc(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
@@ -44,9 +65,35 @@ function renderedPrompts(html) {
   return [...section.matchAll(/<pre class="prompt">([\s\S]*?)<\/pre>/g)].map((m) => unesc(m[1]));
 }
 
-test("every /s/<id> page has a First five minutes section", () => {
+test("a page carries a First five minutes section exactly when a round has exercised it", () => {
+  // Was: every page must have the section, full stop. delivery-schedule is the thirty-first
+  // server and was built after the last user-value round, so no round has ever exercised it
+  // and scripts/build-pages.mjs emits no section for it. The assertion was therefore failing
+  // on the generator being honest.
+  //
+  // The fix is not to let a missing section pass. It is to assert the property that was
+  // always meant: the section exists if and only if there is a measurement behind it. That
+  // fails in BOTH directions, where the old one only failed in one - a page that grew a
+  // section for a server no round has touched is fabricated evidence on a sales page, and
+  // nothing caught that before. The uncovered servers are named in the failure text either
+  // way, and scripts/release-check.mjs prints them as a standing named gap on every run, so
+  // the hole stays in sight instead of being quietly tolerated here.
+  const measuredWithNoSection = [];
+  const sectionWithNoMeasurement = [];
   for (const [id, pg] of Object.entries(PAGES)) {
-    assert.ok(pg.html.includes("<h2>First five minutes</h2>"), `${id} has no First five minutes section`);
+    const has = pg.html.includes("<h2>First five minutes</h2>");
+    if (MEASURED.has(id) && !has) measuredWithNoSection.push(id);
+    if (!MEASURED.has(id) && has) sectionWithNoMeasurement.push(id);
+  }
+  assert.deepEqual(measuredWithNoSection, [],
+    `a round has exercised these servers but their page shows no section; run node scripts/build-pages.mjs: ${measuredWithNoSection.join(", ")}`);
+  assert.deepEqual(sectionWithNoMeasurement, [],
+    `these pages show a First five minutes section for a server no round has exercised, which is evidence nobody measured: ${sectionWithNoMeasurement.join(", ")}`);
+});
+
+test("every measured page quotes one to three prompts", () => {
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
     assert.ok(Array.isArray(pg.first_five) && pg.first_five.length >= 1, `${id} quotes no prompt`);
     assert.ok(pg.first_five.length <= 3, `${id} quotes more than three prompts`);
   }
@@ -54,7 +101,8 @@ test("every /s/<id> page has a First five minutes section", () => {
 
 test("every quoted prompt string exists verbatim in some data/user_value_r*.json", () => {
   const missing = [];
-  for (const [id, pg] of Object.entries(PAGES)) {
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
     for (const prompt of renderedPrompts(pg.html)) {
       // JSON.stringify so the comparison is against the encoded form actually on disk:
       // a prompt carrying a quote or a newline must match the escaped bytes, not a
@@ -67,13 +115,15 @@ test("every quoted prompt string exists verbatim in some data/user_value_r*.json
 });
 
 test("the metadata prompts and the rendered prompts are the same list", () => {
-  for (const [id, pg] of Object.entries(PAGES)) {
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
     assert.deepEqual(renderedPrompts(pg.html), pg.first_five.map((e) => e.prompt), `${id} renders different prompts than it records`);
   }
 });
 
 test("each quoted prompt carries the score the round file recorded, in the round the page names", () => {
-  for (const [id, pg] of Object.entries(PAGES)) {
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
     for (const e of pg.first_five) {
       const match = SCENARIOS.find((s) => s.server === id && s.round === e.round && s.prompt === e.prompt);
       assert.ok(match, `${id}: no round ${e.round} scenario with that prompt`);
@@ -85,7 +135,8 @@ test("each quoted prompt carries the score the round file recorded, in the round
 });
 
 test("the sentence under each prompt is a substring of that scenario's evidence", () => {
-  for (const [id, pg] of Object.entries(PAGES)) {
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
     for (const e of pg.first_five) {
       const match = SCENARIOS.find((s) => s.server === id && s.round === e.round && s.prompt === e.prompt);
       assert.ok(e.evidence.length > 0, `${id}: empty evidence sentence`);
@@ -96,7 +147,8 @@ test("the sentence under each prompt is a substring of that scenario's evidence"
 });
 
 test("the round each page names is one that scored at least as well as any other round for that server", () => {
-  for (const [id, pg] of Object.entries(PAGES)) {
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
     const rows = SCENARIOS.filter((s) => s.server === id);
     const means = new Map();
     for (const r of rows) {
@@ -111,8 +163,9 @@ test("the round each page names is one that scored at least as well as any other
 });
 
 test("a page quoting anything below 3 states the score, a page quoting only 3s does not", () => {
-  for (const [id, pg] of Object.entries(PAGES)) {
-    const section = pg.html.slice(pg.html.indexOf("<h2>First five minutes</h2>"));
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
+    const section = firstFiveSection(id);
     const allThree = pg.first_five.every((e) => e.score === 3);
     assert.equal(allThree, section.includes("scored 3 of 3"), `${id}: lead sentence disagrees with the scores`);
     for (const e of pg.first_five) {
@@ -122,8 +175,9 @@ test("a page quoting anything below 3 states the score, a page quoting only 3s d
 });
 
 test("each section names its round and date, and quotes the free tier from data/facts.json", () => {
-  for (const [id, pg] of Object.entries(PAGES)) {
-    const section = pg.html.slice(pg.html.indexOf("<h2>First five minutes</h2>"));
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
+    const section = firstFiveSection(id);
     assert.ok(section.includes(`measured in round ${pg.first_five_round}, ${pg.first_five_date}`), `${id}: no source line`);
     assert.match(pg.first_five_date, /^\d{4}-\d{2}-\d{2}$/, `${id}: date is not a date`);
     const free = FACTS.servers[id].free;
@@ -132,7 +186,8 @@ test("each section names its round and date, and quotes the free tier from data/
 });
 
 test("the section is plain text a reader can copy, with no unescaped markup from the round data", () => {
-  for (const [id, pg] of Object.entries(PAGES)) {
+  for (const id of MEASURED_PAGES) {
+    const pg = PAGES[id];
     for (const prompt of renderedPrompts(pg.html)) {
       assert.ok(!/<[a-z/]/i.test(prompt), `${id}: markup leaked into a copy block`);
     }

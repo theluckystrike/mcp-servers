@@ -31,7 +31,16 @@ test("the page shell sets no Content-Security-Policy header (inline script needs
 });
 
 test("every First five minutes prompt renders as pre.prompt", () => {
-  for (const [id, pg] of Object.entries(PAGES)) {
+  // Scoped 2026-09-09 to the pages that carry the section. delivery-schedule has no round
+  // behind it and so no section, which first-five.test.mjs asserts is exactly right, and
+  // `html.slice(html.indexOf(needle))` returns the LAST CHARACTER rather than "" when the
+  // needle is absent, so this failed here on one character of unrelated markup. Which pages
+  // may lack a section is decided there and reported by scripts/release-check.mjs; this file
+  // only checks how a section that exists is rendered.
+  const withSection = Object.keys(PAGES).filter((id) => PAGES[id].html.includes("<h2>First five minutes</h2>"));
+  assert.ok(withSection.length > 0, "no page has a First five minutes section; the probe is broken, not the pages");
+  for (const id of withSection) {
+    const pg = PAGES[id];
     const section = pg.html.slice(pg.html.indexOf("<h2>First five minutes</h2>"));
     const plainPre = section.match(/<pre>(?!.*class="prompt")/g);
     assert.ok(!plainPre, `${id}: a First five minutes prompt is a bare <pre>, not <pre class="prompt">`);

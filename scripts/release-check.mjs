@@ -85,11 +85,28 @@ const billing = await import(join(ROOT, "billing", "src", "index.js"));
 const setup = await import(join(ROOT, "billing", "src", "setup.js"));
 const content = await import(join(ROOT, "billing", "src", "content.js"));
 const compare = await import(join(ROOT, "billing", "src", "compare.js"));
+const pagesMod = await import(join(ROOT, "billing", "src", "pages.js"));
 
 const { PRODUCTS } = billing;
 const { SETUP_SERVERS, CLIENT_ORDER } = setup;
 const { GUIDES } = content;
 const { COMPARE } = compare;
+const { PAGES } = pagesMod;
+
+// Servers a user-value round has actually exercised, read out of the round files. A product
+// page's "First five minutes" section is built from these, so a server that no round has
+// touched correctly has no section: see billing/test/first-five.test.mjs, which asserts the
+// section exists if and only if there is a measurement behind it.
+const MEASURED_SERVERS = new Set();
+for (const f of readdirSync(join(ROOT, "data")).filter((f) => /^user_value(?:_r\d+)?\.json$/.test(f))) {
+  let doc;
+  try { doc = readJson(join(ROOT, "data", f)); } catch { continue; }
+  for (const sc of doc.scenarios || []) {
+    if (typeof sc.prompt !== "string" || typeof sc.score !== "number") continue;
+    const name = sc.server || (typeof sc.surface === "string" ? sc.surface.split("/").pop() : null);
+    if (name) MEASURED_SERVERS.add(name);
+  }
+}
 
 // The six installed clients. claude-web is the hosted connector and is served by
 // WEB_ANGLE, not by ANGLE, so it is not one of the six.
@@ -323,6 +340,22 @@ check("product", "Stripe PRODUCTS", (s) => {
   return true;
 });
 
+// The "First five minutes" section is the only measured evidence on a product page. A
+// server nobody has run a round against has none, and inventing one would be exactly the
+// fabrication these gates exist to stop - so it is a named gap, printed by name on every
+// run, and not a silent tolerance inside a test. It closes by running a round, not by
+// editing a list.
+check("first-five", "measured evidence on the page", (s) => {
+  const pg = PAGES[s];
+  if (!pg) return "no product page";
+  const hasSection = pg.html.includes("<h2>First five minutes</h2>");
+  if (MEASURED_SERVERS.has(s)) {
+    return hasSection ? true : `a round has exercised ${s} but its page shows no First five minutes section; run node scripts/build-pages.mjs`;
+  }
+  if (hasSection) return `${s} shows a First five minutes section although no user_value round has exercised it; that is evidence nobody measured`;
+  return gap(`no user_value round has exercised ${s}, so its product page carries no measured evidence. Run a round against it and regenerate with node scripts/build-pages.mjs; do not write the section by hand.`);
+});
+
 check("setup", `SETUP_SERVERS + ${ANGLE_CLIENTS.length} ANGLE`, (s) => {
   if (!SETUP_SERVERS[s]) return "not in SETUP_SERVERS";
   const body = entryText(ANGLE_SRC, s);
@@ -442,6 +475,91 @@ global_("no list carries a server that does not exist", () => {
   for (const s of Object.keys(SETUP_SERVERS)) if (!known.has(s)) strays.push(`SETUP_SERVERS: ${s}`);
   for (const s of Object.keys(COMPARE)) if (!known.has(s)) strays.push(`COMPARE: ${s}`);
   return strays.length ? strays.join("; ") : true;
+});
+
+// A test nothing runs is not a test. Root `npm test` is
+//   npm run test --workspaces --if-present && node --test test/*.test.mjs
+// so it reaches packages/*, servers/* and the root test/ directory, and nothing else.
+// billing/test (106 tests) and remote/test (30) have always sat outside it. Four honesty
+// gates in billing/test were red at HEAD for days and nobody saw it, including the one
+// whose entire job is to stop the home page restating a stale check count - the failure it
+// was written to prevent had happened again, inside the gate meant to prevent it.
+//
+// This finds the uncovered directories by walking the tree and subtracting what the root
+// script already covers, rather than by keeping a list of them, so a test directory added
+// next month is picked up instead of being silently outside every gate.
+const ROOT_PKG = readJson(join(ROOT, "package.json"));
+const SKIP_DIRS = new Set(["node_modules", "dist", "bundles", "assets", "keys", "coverage"]);
+
+/** Directories the root `npm test` already reaches. */
+function coveredTestDirs() {
+  const covered = new Set();
+  for (const glob of ROOT_PKG.workspaces || []) {
+    const [head, tail] = glob.split("/");
+    if (tail === "*") {
+      for (const e of readdirSync(join(ROOT, head), { withFileTypes: true })) {
+        if (e.isDirectory()) covered.add(`${head}/${e.name}/test`);
+      }
+    } else covered.add(`${glob}/test`);
+  }
+  // ...plus whatever that script runs itself, read from the script, not assumed.
+  for (const m of String(ROOT_PKG.scripts?.test || "").matchAll(/node --test ([^\s&|]+)/g)) {
+    covered.add(dirname(m[1]).replace(/\\/g, "/"));
+  }
+  return covered;
+}
+
+/** Every directory under ROOT holding at least one *.test.mjs, as repo-relative paths. */
+function allTestDirs(dir = ROOT, rel = "") {
+  const out = [];
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (!e.isDirectory() || e.name.startsWith(".") || SKIP_DIRS.has(e.name)) continue;
+    const childRel = rel ? `${rel}/${e.name}` : e.name;
+    const child = join(dir, e.name);
+    if (readdirSync(child).some((f) => f.endsWith(".test.mjs"))) out.push(childRel);
+    out.push(...allTestDirs(child, childRel));
+  }
+  return out;
+}
+
+const UNCOVERED_TEST_DIRS = allTestDirs().filter((d) => !coveredTestDirs().has(d)).sort();
+
+global_(`test suites outside the npm workspaces are green (${UNCOVERED_TEST_DIRS.join(", ") || "none"})`, () => {
+  const bad = [];
+  for (const rel of UNCOVERED_TEST_DIRS) {
+    const dir = join(ROOT, rel);
+    const files = readdirSync(dir).filter((f) => f.endsWith(".test.mjs")).sort().map((f) => join(dir, f));
+    let out = "";
+    try {
+      out = execFileSync(process.execPath, ["--test", ...files], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    } catch (e) {
+      out = String(e.stdout || "") + String(e.stderr || "");
+      const failed = [...out.matchAll(/^not ok \d+ - (.*)$/gm)].map((m) => m[1].trim());
+      bad.push(`${rel}: ${failed.length || "?"} failing (${failed.slice(0, 6).join("; ")}${failed.length > 6 ? "; ..." : ""})`);
+    }
+  }
+  return bad.length ? bad.join(" | ") : true;
+});
+
+// `npm run test --workspaces --if-present` skips, silently, any workspace with no test
+// script. All 33 have one today; this fails the day one loses it and its tests stop running
+// without any output changing.
+global_("every workspace package still has a test script", () => {
+  const silent = [];
+  for (const glob of ROOT_PKG.workspaces || []) {
+    const [head, tail] = glob.split("/");
+    const names = tail === "*"
+      ? readdirSync(join(ROOT, head), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name)
+      : [tail];
+    for (const n of names) {
+      const pkgPath = join(ROOT, head, n, "package.json");
+      if (!has(pkgPath)) continue;
+      const testFiles = has(join(ROOT, head, n, "test"))
+        && readdirSync(join(ROOT, head, n, "test")).some((f) => f.endsWith(".test.mjs"));
+      if (testFiles && !readJson(pkgPath).scripts?.test) silent.push(`${head}/${n}`);
+    }
+  }
+  return silent.length ? `has test files but no test script, so --if-present skips it: ${silent.join(", ")}` : true;
 });
 
 /* ------------------------------------------------------------------ report */

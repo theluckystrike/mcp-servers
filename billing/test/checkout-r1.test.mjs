@@ -227,10 +227,25 @@ test("a crawler with no User-Agent still creates no Stripe session", async () =>
 });
 
 test("a crawler on an alias is sent to a page that exists", async () => {
-  const req = new Request("https://mcp.zovo.one/buy/office-suite", { headers: { "user-agent": "curl/8.4.0" } });
-  const { result: res } = await withStripeStub(() => worker.fetch(req, testEnv(), ctx));
-  // /s/office-suite is not in PAGES, so the fallback must be the product it resolves to.
-  assert.equal(res.headers.get("location"), "https://mcp.zovo.one/s/bundle");
+  // Rewritten 2026-09-09. This asserted the literal /s/bundle, on the comment "/s/office-suite
+  // is not in PAGES". It is in PAGES now, and the route already prefers the alias's own page
+  // when one exists, so the assertion was failing on the better behaviour: a crawler that
+  // followed a /buy/office-suite link (every directory submission in docs/HUMAN_GATED_PACK.md
+  // ships that URL) now lands on the office-suite page rather than on the bundle page.
+  // The title is the property, so the property is what is asserted: fetch wherever it was
+  // sent and require a real page. A pinned path is exactly what went stale here.
+  for (const alias of Object.keys(PRODUCT_ALIASES)) {
+    const req = new Request(`https://mcp.zovo.one/buy/${alias}`, { headers: { "user-agent": "curl/8.4.0" } });
+    const { result: res, calls } = await withStripeStub(() => worker.fetch(req, testEnv(), ctx));
+    assert.equal(res.status, 303, `${alias}: not redirected`);
+    assert.equal(calls.length, 0, `${alias}: a crawler created a Stripe object`);
+    const location = res.headers.get("location");
+    assert.match(location, /^https:\/\/mcp\.zovo\.one\/s\//, `${alias}: sent somewhere that is not a product page: ${location}`);
+    const landed = await worker.fetch(new Request(location), testEnv(), ctx);
+    assert.equal(landed.status, 200, `${alias}: sent to ${location}, which answers ${landed.status}`);
+    const html = await landed.text();
+    assert.ok(!html.includes("Unknown server"), `${alias}: sent to ${location}, which is the not-found page`);
+  }
 });
 
 test("an unknown product is a dead end no longer: it names the bundle and charges nothing", async () => {
@@ -304,11 +319,29 @@ test("llms.txt lists every product with a URL and a description", async () => {
     assert.ok(txt.includes(`(https://mcp.zovo.one/s/${id})`), `llms.txt does not link /s/${id}`);
   }
   assert.ok(txt.includes("(https://mcp.zovo.one/bundle)"), "llms.txt does not link the bundle");
-  assert.ok(/servers\/office-suite\)/.test(txt), "llms.txt does not name the office-suite aggregator");
+  // Rewritten 2026-09-09. This required the string "servers/office-suite)", the tail of the
+  // GitHub source URL the aggregator line used to carry. The line now points at
+  // https://mcp.zovo.one/s/office-suite, a page that did not exist when the assertion was
+  // written and does now, so the regex was failing on an improvement. What has to be true is
+  // that the aggregator is listed, at a URL that resolves, and that it says the thing no
+  // generated tagline says: there is no $19 office-suite key, its unlock is the bundle key.
+  const officeLines = txt.split("\n").filter((l) => /^- \[[^\]]*\]\(https:\/\/mcp\.zovo\.one\/s\/office-suite\)/.test(l));
+  assert.equal(officeLines.length, 1, `llms.txt lists the office-suite aggregator ${officeLines.length} times, not once`);
+  assert.match(officeLines[0], new RegExp(`\\$${PRODUCTS.bundle.usd} bundle key`), "the office-suite line does not say its Pro unlock is the bundle key");
+  assert.equal((await worker.fetch(new Request("https://mcp.zovo.one/s/office-suite"), testEnv(), ctx)).status, 200,
+    "llms.txt links /s/office-suite but that page does not answer 200");
   // Every product line is "- [name](url): description", never a bare link. Index links
   // ("All guides", "All comparisons") are navigation, not products, and carry none.
   const productLines = txt.split("\n").filter((l) => /^- \[.*\]\(https:\/\/mcp\.zovo\.one\/(s\/|bundle)/.test(l));
-  assert.equal(productLines.length, SINGLE_PRODUCT_IDS.length + 1, "llms.txt product lines do not match the catalogue");
+  // A count was the old assertion and it could not say which way it was wrong. The
+  // catalogue is exactly: every single product, every alias with a page of its own, and the
+  // bundle; each listed once. That catches a product dropped, a stray added, and the
+  // duplicate office-suite line this file carried until 2026-09-09, by name.
+  const expected = [...SINGLE_PRODUCT_IDS.map((id) => `https://mcp.zovo.one/s/${id}`),
+    ...Object.keys(PRODUCT_ALIASES).map((a) => `https://mcp.zovo.one/s/${a}`),
+    "https://mcp.zovo.one/bundle"].sort();
+  const listed = productLines.map((l) => l.match(/\((https:[^)]+)\)/)[1]).sort();
+  assert.deepEqual(listed, expected, "llms.txt product lines do not match the catalogue");
   for (const line of productLines) {
     assert.match(line, /^- \[[^\]]+\]\([^)]+\): \S/, `llms.txt line has no description: ${line}`);
   }

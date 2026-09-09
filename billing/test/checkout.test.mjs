@@ -6,7 +6,7 @@
 // exact strings a customer sees are testable without touching Stripe.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -34,7 +34,22 @@ test("the bundle description names the count, the one key and the saving", () =>
     checkoutDescription("bundle"),
     `${countWord()} MCP servers for Claude, one lifetime key, saves $${BUNDLE_SAVING_USD} against buying singly`,
   );
-  assert.match(checkoutDescription("bundle"), /^Thirty MCP servers/);
+  // Rewritten 2026-09-09. This was `/^Thirty MCP servers/`: a literal, there so the
+  // assertion above could not pass by comparing a derived string to itself. A pinned English
+  // word is the one kind of anchor guaranteed to go stale, and it did the day the thirty-first
+  // server shipped. The anchor is now the estate on disk, which is where release-check reads
+  // the count from too, so the two sides of the comparison have genuinely different sources.
+  const serversDir = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "servers");
+  const onDisk = readdirSync(serversDir)
+    .filter((n) => n !== "office-suite" && existsSync(join(serversDir, n, "package.json")));
+  assert.equal(SERVER_COUNT, onDisk.length,
+    `PRODUCTS sells ${SERVER_COUNT} servers, servers/ ships ${onDisk.length}: ${onDisk.join(", ")}`);
+  assert.ok(checkoutDescription("bundle").startsWith(`${countWord()} MCP servers`),
+    `the bundle description does not lead with the count: ${checkoutDescription("bundle")}`);
+  // countWord() falls back to the bare numeral when NUMBER_WORD runs out of entries, and the
+  // home page H1 renders it, so "46 local-first MCP servers" would ship silently.
+  assert.match(countWord(), /^[A-Z][a-z]+(-[a-z]+)?$/,
+    `countWord() is not a spelled-out word: ${countWord()}; extend NUMBER_WORD in billing/src/index.js`);
 });
 
 test("every single-server description names the product and prices the bundle", () => {
