@@ -43,6 +43,12 @@
   "estate": {
     "unit_tests": "1,563 pass, 0 fail, of 1,574",
     "live_validation": "951/951",
-    "billing_gates": "107 of 107"
+    "billing_gates": "107 of 107, and the gate caught my own stale figure within the hour: re-running validation moved the median and the home page still restated the old one"
+  },
+  "mirrors": {
+    "synced": "30 of 31 pushed today, mcp-delivery-schedule created so there are now 32 server mirrors, and the corrected Dockerfile reached every mirror sampled",
+    "ci": "green on 6 of 7 sampled; the seventh was timezone, which had not been re-synced and was failing a portability defect now fixed",
+    "portability_defect": "a test asserted /proc/nope was unwritable, true on macOS and false on the Linux runner, where the call hung rather than failing and put a red badge on a public repository. The condition is now constructed rather than assumed.",
+    "not_verified": "a docker build from a synced mirror timed out reaching registry.npmjs.org, which is a network failure here and not a Dockerfile defect; the timezone mirror built and ran correctly yesterday under the same Dockerfile"
   }
 }

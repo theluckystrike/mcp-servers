@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-09T10:15:47.309Z",
+  "generated_at": "2026-09-09T10:54:57.748Z",
   "session": {
-    "count": 69,
+    "count": 70,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -278,6 +278,10 @@
       {
         "at": "2026-09-09T10:15:47.167Z",
         "note": "Loop 32 close: Google indexed the first URL ever; two money-path defects fixed; honesty gates green and wired into the release check; 13 reference guides live, sitemap 154"
+      },
+      {
+        "at": "2026-09-09T10:54:57.588Z",
+        "note": "Loop 32 close: Google indexed the first URL ever; hosted buyers no longer lose data on activation; crawlers no longer create live Stripe sessions; mirrors synced with working Dockerfiles and CI; 13 guides live, sitemap 154; honesty gates 107/107 and wired into the release check"
       }
     ]
   },
@@ -2197,6 +2201,10 @@
     {
       "file": "docs/MIRRORS_RESULT.md",
       "first_line": "MIRRORS_RESULT.md -- one public repo per server, 2026-09-02"
+    },
+    {
+      "file": "docs/MIRROR_SYNC_R1.md",
+      "first_line": "Mirror sync round 1 — the full re-sync, and the five defects it was hiding"
     },
     {
       "file": "docs/NAMESPACE_R1.md",
