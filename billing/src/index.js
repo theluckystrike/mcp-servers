@@ -1199,7 +1199,17 @@ contract. Where it and the source disagree, the source is right and this page is
       // for `*/*`. Named tool prefixes stay scripted whatever they accept.
       const accept = request.headers.get("accept") || "";
       const looksLikeNavigation = /text\/html/i.test(accept) || request.headers.get("sec-fetch-mode") === "navigate";
-      const scripted = /^(curl|python|node|wget|go-http|undici|axios|httpie)/i.test(ua) || (ua === "" && !looksLikeNavigation);
+      // 2026-09-09: requiring the navigation signal ONLY when the UA was empty left the
+      // hole open. A crawler that sends a browser-shaped UA with `accept: */*` was treated
+      // as a buyer and had a live Stripe Checkout Session created for it: measured here,
+      // `HeadlessChrome/120` with `*/*` came back with a real cs_live_ URL, while
+      // `python-requests` was correctly turned away. That cost a Stripe object per crawler
+      // hit, put a Stripe API call on the critical path of a request nobody would pay for
+      // (691 gateway timeouts on /buy/* in 25 hours, every one with no recognisable
+      // browser), and inflated the "checkout sessions from humans" figure the funnel is
+      // judged on. The signal is now required of every request: a top-level browser
+      // navigation always asks for text/html, so no real buyer is affected.
+      const scripted = /^(curl|python|node|wget|go-http|undici|axios|httpie)/i.test(ua) || !looksLikeNavigation;
       const probeTag = request.headers.get("x-mcp-probe") === "1" || scripted ? "1" : "";
       const asked = decodeURIComponent(path.slice("/buy/".length));
       // office-suite, and any future alias, sells a product it is not itself; see PRODUCT_ALIASES.
