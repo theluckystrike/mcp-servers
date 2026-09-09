@@ -3,18 +3,18 @@
 Every claim below names the command or file it came from. Scores are this project's own,
 from the reproducible heuristic recorded in `data/tool_quality_r1.json`; they are not
 Glama's. The heuristic is calibrated against the one number Glama publishes for us: on
-mcp-statement-of-account it reproduces the published minimum of 2.9 exactly, and scores
-the mean lower than Glama's 3.7, so it is harsher than the real grader in both directions
-that matter.
+mcp-statement-of-account it reproduces the published minimum of 2.9 exactly, and puts the
+mean at 3.29 against Glama's published 3.7, so it grades harder than the real thing.
 
 ## Why the minimum is the whole game
 
 Glama computes Tool Definition Quality as 60 percent of the MEAN tool score plus 40 percent
-of the MINIMUM. One tool caps the server. Before this loop the minimum on all 31 servers
-was the same pair of tools, `license_status` and `license_activate`, registered once in
+of the MINIMUM. One tool caps the server. On 19 of the 31 servers the pre-loop minimum was
+the same pair of tools, `license_status` and `license_activate`, registered once in
 `packages/mcp-license/src/index.ts` and inherited by every server. Both scored 2.90 here and
 both are now 3.85 or better, at 207 and 209 characters. Fixing that one file moved 31 servers
-at once; fixing a per-server tool moves one.
+at once; fixing a per-server tool moves one. On the other 12 the floor was a one-line tool of
+that server's own, the worst being kanban's `task_done` and time-tracker's `entry_edit` at 2.35.
 
 They were also over the estate's own 220-character contract ceiling before this loop, at 534
 and 674 characters, so that pair was failing the description assertion on every server in the
@@ -87,8 +87,9 @@ The binding constraint is the estate's own contract test: `MAX_DESCRIPTION = 220
 exceed 220 characters. Six scored dimensions do not fit in 220 characters at full marks:
 naming what a tool returns, what it refuses, its units, its free-tier cap AND the sibling to
 prefer instead costs more than that. The descriptions written for this loop were first drafted
-at 300 to 600 characters and then cut to the ceiling; the cut cost roughly 0.3 of a point per
-tool on Behavioral Transparency and Contextual Completeness.
+at 300 to 600 characters and then cut to the ceiling; what the cut removed was, in nearly every
+case, a clause on what the tool refuses or on the sibling to prefer, which are the two signals
+Behavioral Transparency and Usage Guidelines score.
 
 That ceiling was not raised, and no name was added to `OVER_LENGTH_BASELINE`. Moving a shared
 quality gate to let this work through is not this agent's call. The tools still furthest from

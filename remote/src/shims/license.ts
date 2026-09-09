@@ -253,10 +253,10 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
     },
     registerTools(server) {
       server.registerTool("license_status",
-        { title: "License status", description: "Show whether this endpoint runs in free or Pro mode for your token, and where to upgrade.", inputSchema: {} },
+        { title: "License status", description: "Report this endpoint's licence state for your token as JSON: the product, the tier free or pro, why it is not Pro, and the checkout URL. Call it to explain a free-tier refusal. No arguments, nothing changes.", inputSchema: {} },
         async () => ({ content: [{ type: "text", text: JSON.stringify(gate.status(), null, 2) }] }));
       server.registerTool("license_activate",
-        { title: "Activate license", description: "On the remote endpoint a licence is not stored server-side: reconnect with the key in the URL or the Authorization header instead.", inputSchema: { key: z.string().describe("License key from checkout") } },
+        { title: "Activate license", description: "Explain how to turn Pro on for this hosted endpoint, which stores no key server-side. Returns the two ways to send one: the key as a URL segment, or as an Authorization bearer. Takes no arguments and activates nothing.", inputSchema: { key: z.string().describe("License key from checkout") } },
         async () => ({
           content: [{ type: "text", text:
             "On the remote endpoint keys are not stored. Reconnect with the key in the URL, " +
