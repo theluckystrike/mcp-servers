@@ -27,6 +27,7 @@ const chk = js("data/checkout_r1.json", null);
 const base29 = js("data/loop29_baseline.json", null);
 const l30 = js("data/loop30_result.json", null);
 const l31 = js("data/loop31_result.json", null);
+const l32 = js("data/loop32_result.json", null);
 const cov29 = (traffic && traffic.crawler_url_coverage) || {};
 const covN = (n) => (cov29[n] && cov29[n].urls_fetched != null ? cov29[n].urls_fetched : null);
 const uv = js("data/user_value.json", null);
@@ -140,6 +141,17 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="tabs"><button class="on" data-tab="truth">Reality check</button><button data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button><button data-tab="sprints">Sprint log${slog ? ` (${slog.sessions})` : ""}</button><button data-tab="kpi">KPIs${kpi ? ` (${kpi.kpis.filter(k => k.status === "met").length}/${kpi.kpis.length} met)` : ""}</button></div>
 <div class="tab on" id="tab-truth">
 <div class="card"><b>What this panel is for.</b> Every number here was measured on 2026-09-07 by a command named beside it. It exists because the dashboard previously reported 5,105 bundle downloads against a target of 1,000 and read that as met, when those fetches are automated. Read this tab before any other.</div>
+${l32 ? `<div class="card"><b>Loop 32, ${esc(l32.date)}.</b> ${esc(l32.headline)}
+<div class="tw" style="margin-top:10px"><table><tr><th>Measure</th><th>Reading</th></tr>
+<tr><td>Google index</td><td><b>${esc(l32.google.indexed)}</b>, from ${esc(l32.google.before)}. ${esc(l32.google.caveat)}</td></tr>
+<tr><td>Registry referrals</td><td>${esc(l32.registry_referrals.verdict)}. ${esc(l32.registry_referrals.fair_caveat)}</td></tr>
+<tr><td>Human page views, corrected</td><td>${esc(l32.human_traffic_corrected.was)} became <b>${esc(l32.human_traffic_corrected.now)}</b>. ${esc(l32.human_traffic_corrected.why)}</td></tr>
+<tr><td>Inbound links</td><td>${esc(l32.inbound_links)}</td></tr>
+</table></div>
+<p class="dim"><b>Money-path defects found and fixed.</b> ${esc(l32.defects_fixed.hosted_buyers_lost_their_data)}</p>
+<p class="dim">${esc(l32.defects_fixed.crawlers_created_live_stripe_sessions)}</p>
+<p class="dim">${esc(l32.defects_fixed.hosted_path_was_invisible)}</p>
+<p class="dim"><b>A metric retired.</b> ${esc(l32.google.artefact_caught)}</p></div>` : ""}
 ${l31 ? `<div class="card"><b>Loop 31, ${esc(l31.date)}.</b> ${esc(l31.headline)}
 <div class="tw" style="margin-top:10px"><table><tr><th>Hypothesis for why VS Code's picker excludes us</th><th>Tested against its 252 entries</th></tr>
 ${Object.entries(l31.vscode_gallery.killed_hypotheses).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="dim">${esc(v)}</td></tr>`).join("")}

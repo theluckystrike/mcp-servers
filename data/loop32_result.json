@@ -1,0 +1,26 @@
+{
+  "loop": 32,
+  "date": "2026-09-09",
+  "headline": "Google indexed the first URL this project has ever had, and two money-path defects were found and fixed: hosted buyers were losing their data, and crawlers were having live Stripe sessions created for them.",
+  "google": {
+    "indexed": "1 of 141 URLs, the homepage, crawled 2026-09-08T17:20:24Z",
+    "before": "0 of 126",
+    "caveat": "140 of 141 remain uncrawled and impressions are still zero. Googlebot made exactly one sitemap fetch in 24.7 hours.",
+    "artefact_caught": "the discovered/unknown coverage split is not trackable: two censuses 15 minutes apart disagreed on 82 of 141 URLs, so only in-index and ever-crawled are reportable"
+  },
+  "registry_referrals": {
+    "verdict": "flat, and exactly flat: every count byte-identical to the baseline, and zero registry-referred requests in the 24.7 hours since",
+    "fair_caveat": "four of the five changes had been live for 1.4 to 2.6 hours at window close, so this measures deployment, not effect. The recorded criterion says re-run on or after 2026-09-15."
+  },
+  "human_traffic_corrected": {
+    "was": "137 off-homepage page views on a render-proof filter",
+    "now": "14 to 39 per week",
+    "why": "one user-agent string touched 53 of 141 pages from eight countries, and 18 of 53 render-proven agents appeared from more than one country. A rendering crawler fetches assets too, so an asset fetch proves a browser engine, not a person."
+  },
+  "defects_fixed": {
+    "hosted_buyers_lost_their_data": "On the hosted endpoints the tenant IS the token, so a buyer who reconnected with their licence key landed on a different tenant and left their invoices behind. license_activate was a stub whose description even contradicted its own schema. It now binds a verified key to the caller's own anonymous token, using the same mechanism a hosted purchase already used. Verified live: free to pro on the same token with the invoice intact; a garbage key and a valid key for another product both change nothing.",
+    "crawlers_created_live_stripe_sessions": "A crawler sending a browser-shaped user agent with accept */* had a real cs_live_ checkout session created for it, while python-requests was correctly turned away. That put a Stripe call on the critical path of requests nobody would pay for, which is the likely cause of 691 gateway timeouts on /buy/* in 25 hours, every one with no recognisable browser, and it inflated the human-checkout-sessions figure. A navigation signal is now required of every request.",
+    "hosted_path_was_invisible": "The zero-install hosted URL sat at character 20,676 of a 21,905-character product page while the page led with the price. It now sits at character 153 on all 30 hosted servers, driven by a list derived from the manifests behind a drift test that was control-tested."
+  },
+  "inbound_links": "18 of 18 still live, including all four placed on 2026-09-08. The two lost earlier are still lost. One remains fragile because it was shipped by a live-mirror deploy against a repo that is behind live."
+}
