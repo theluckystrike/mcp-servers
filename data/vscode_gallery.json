@@ -1,10 +1,12 @@
 {
-  "at": "2026-09-09T08:42:02.959Z",
+  "at": "2026-09-09T11:30:21.845Z",
   "gallery": "https://api.mcp.github.com/v0/servers",
-  "pages": 3,
-  "total_rows": 252,
+  "pages": 1,
+  "total_rows": 100,
   "control": "microsoft/markitdown",
   "ours": [],
+  "partial": "pagination stopped at page 2: HTTP 400 on a cursor the service itself issued",
+  "coverage": "PARTIAL: only the rows above were seen, so an absence below them is unmeasured, not proven",
   "entries_with_repository_subfolder": 0,
   "subfolder_hypothesis": "still holds: zero gallery entries use a monorepo subfolder",
   "note": "Registry-backed and syncs from the official MCP registry. No submission path exists; appearing is a ranked cut. If ours is non-empty, VS Code users can now find these servers in the built-in picker."
