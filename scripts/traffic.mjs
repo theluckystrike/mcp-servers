@@ -387,6 +387,22 @@ async function gsc() {
       dimensions: ['date'], rowLimit: 100, dataState: 'final',
       dimensionFilterGroups: [{ filters: [{ dimension: 'page', operator: 'contains',
         expression: '//zovo.one/' }] }] }) })).json()).rows || [];
+  // dataState:'final' lags roughly three days, so the window above physically cannot see
+  // what happened in the last 72 hours. A second, deliberately fresher probe over the last
+  // 10 days with dataState:'all' (Google's own "includes incomplete data" mode) is the only
+  // free way to see a very recent first impression. It carries the same positive control, so
+  // a zero here is a measured zero rather than a broken query.
+  const freshStart = new Date(Date.now() - 10 * 86400e3).toISOString().slice(0, 10);
+  const freshEnd = new Date().toISOString().slice(0, 10);
+  const fresh = async expr => (await (await fetch(
+    `https://www.googleapis.com/webmasters/v3/sites/${enc}/searchAnalytics/query`,
+    { method: 'POST', headers: H, body: JSON.stringify({ startDate: freshStart, endDate: freshEnd,
+      dimensions: ['date'], rowLimit: 100, dataState: 'all',
+      dimensionFilterGroups: [{ filters: [{ dimension: 'page', operator: 'contains',
+        expression: expr }] }] }) })).json()).rows || [];
+  const freshHost = await fresh(`//${HOST}/`);
+  const freshControl = await fresh('//zovo.one/');
+
   return { channel: 'google_search_console', status: 'OK', site: GSC_SITE, window: { start, end },
     api: 'POST https://www.googleapis.com/webmasters/v3/sites/'
       + GSC_SITE + '/searchAnalytics/query, dataState:final, rowLimit:25000',
@@ -419,6 +435,20 @@ async function gsc() {
         days_with_impressions: controlDaily.filter(r => r.impressions > 0).length,
         clicks: controlDaily.reduce((n, r) => n + r.clicks, 0),
         impressions: controlDaily.reduce((n, r) => n + r.impressions, 0) },
+    },
+    fresh_probe: {
+      why: "dataState:'final' lags ~3 days and so cannot show a very recent first impression",
+      window: { start: freshStart, end: freshEnd }, data_state: 'all',
+      host_daily_rows: freshHost.length,
+      host_days_with_impressions: freshHost.filter(r => r.impressions > 0).length,
+      host_impressions: freshHost.reduce((n, r) => n + r.impressions, 0),
+      host_clicks: freshHost.reduce((n, r) => n + r.clicks, 0),
+      host_daily: freshHost,
+      positive_control_zovo_one: { daily_rows: freshControl.length,
+        days_with_impressions: freshControl.filter(r => r.impressions > 0).length,
+        impressions: freshControl.reduce((n, r) => n + r.impressions, 0),
+        clicks: freshControl.reduce((n, r) => n + r.clicks, 0),
+        last_day_with_data: freshControl.filter(r => r.impressions > 0).map(r => r.keys[0]).pop() || null },
     },
     page, query_page: qp,
     mcp_pages: page.filter(r => r.keys[0].includes(`//${HOST}`)) };
@@ -478,10 +508,67 @@ async function probeSiteOperator(name, url, targetHost, label) {
   } catch (e) { return { engine: name, query_url: url, label, error: String(e).slice(0, 200) }; }
 }
 
-async function indexation(sitePaths) {
+// One URL Inspection census over an arbitrary list of URLs. Factored out so the hosted
+// /mcp/<server> endpoints — which are deliberately NOT in the sitemap but ARE indexable, and
+// which changed from raw JSON to an HTML page on 2026-09-09T06:49Z — can be measured with the
+// same instrument and the same retry behaviour as the sitemap census.
+async function inspectCensus(H, API, urls, label) {
+  const results = [];
+  let cursor = 0, apiErrors = 0;
+  const read = (u, r, j, retried) => {
+    const i = (j.inspectionResult && j.inspectionResult.indexStatusResult) || {};
+    return { url: u, http: r.status, verdict: i.verdict || null,
+      coverage_state: i.coverageState || null, robots_txt_state: i.robotsTxtState || null,
+      indexing_state: i.indexingState || null, page_fetch_state: i.pageFetchState || null,
+      last_crawl_time: i.lastCrawlTime || null, google_canonical: i.googleCanonical || null,
+      ...(retried ? { retried: true } : {}) };
+  };
+  async function worker() {
+    while (cursor < urls.length) {
+      const u = urls[cursor++];
+      const r = await fetch(API, { method: 'POST', headers: H,
+        body: JSON.stringify({ inspectionUrl: u, siteUrl: GSC_SITE }) });
+      const j = await r.json();
+      if (!r.ok) { apiErrors++; results.push({ url: u, http: r.status, error: JSON.stringify(j).slice(0, 200) }); continue; }
+      results.push(read(u, r, j, false));
+    }
+  }
+  await Promise.all([...Array(4)].map(worker));
+  // One retry pass for transient API failures, so a 500 on a single URL does not leave a
+  // hole in the census. Anything still failing is reported as an error row, not as
+  // "unknown to Google".
+  for (const f of results.filter(r => r.error)) {
+    const r = await fetch(API, { method: 'POST', headers: H,
+      body: JSON.stringify({ inspectionUrl: f.url, siteUrl: GSC_SITE }) });
+    const j = await r.json();
+    if (!r.ok) continue;
+    Object.assign(f, read(f.url, r, j, true), { error: undefined });
+    apiErrors--;
+  }
+  const tally = {};
+  for (const r of results) tally[r.coverage_state || `HTTP ${r.http}`] = (tally[r.coverage_state || `HTTP ${r.http}`] || 0) + 1;
+  return {
+    status: results.length && apiErrors === results.length ? 'ERROR' : 'MEASURED',
+    method: 'POST ' + API + ' { inspectionUrl, siteUrl: "' + GSC_SITE + '" } — one call per ' + label,
+    urls_inspected: results.length,
+    api_errors: apiErrors,
+    by_coverage_state: tally,
+    in_google_index: results.filter(r => r.verdict === 'PASS').length,
+    known_to_google: results.filter(r => r.coverage_state && !/unknown to Google/i.test(r.coverage_state)).length,
+    unknown_to_google: results.filter(r => /unknown to Google/i.test(r.coverage_state || '')).length,
+    ever_crawled_by_google: results.filter(r => r.last_crawl_time).length,
+    crawled_since: results.filter(r => r.last_crawl_time)
+      .map(r => ({ url: r.url, last_crawl_time: r.last_crawl_time, verdict: r.verdict,
+        coverage_state: r.coverage_state })),
+    urls: results.sort((a, b) => a.url.localeCompare(b.url)),
+  };
+}
+
+async function indexation(sitePaths, endpointPaths = []) {
   const urls = sitePaths.map(p => `https://${HOST}${p}`);
+  const endpointUrls = endpointPaths.map(p => `https://${HOST}${p}`);
   const out = { generated_at: new Date().toISOString(), host: HOST, sitemap_urls: urls.length,
-    google: null, other_engines: null };
+    google: null, google_hosted_endpoints: null, other_engines: null };
 
   // ---- Google: URL Inspection, one call per URL, small concurrency (quota 600/min) ------
   const tok = await mintGscToken();
@@ -490,57 +577,22 @@ async function indexation(sitePaths) {
   } else {
     const H = { Authorization: `Bearer ${tok.token}`, 'Content-Type': 'application/json' };
     const API = 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect';
-    const results = [];
-    let cursor = 0, apiErrors = 0;
-    async function worker() {
-      while (cursor < urls.length) {
-        const u = urls[cursor++];
-        const r = await fetch(API, { method: 'POST', headers: H,
-          body: JSON.stringify({ inspectionUrl: u, siteUrl: GSC_SITE }) });
-        const j = await r.json();
-        if (!r.ok) { apiErrors++; results.push({ url: u, http: r.status, error: JSON.stringify(j).slice(0, 200) }); continue; }
-        const i = (j.inspectionResult && j.inspectionResult.indexStatusResult) || {};
-        results.push({ url: u, http: r.status, verdict: i.verdict || null,
-          coverage_state: i.coverageState || null, robots_txt_state: i.robotsTxtState || null,
-          indexing_state: i.indexingState || null, page_fetch_state: i.pageFetchState || null,
-          last_crawl_time: i.lastCrawlTime || null, google_canonical: i.googleCanonical || null });
-      }
+    out.google = { ...(await inspectCensus(H, API, urls, 'sitemap URL')),
+      service_account: tok.client_email };
+    // The hosted endpoints are the surface search engines were already sending clients to
+    // while it answered raw JSON. They are not in the sitemap by design (near-duplicate
+    // content), so the sitemap census cannot see them; they get their own census.
+    if (endpointUrls.length) {
+      out.google_hosted_endpoints = {
+        why: 'GET /mcp/<server> began answering a browser with an HTML page on '
+          + '2026-09-09T06:49Z (commit 6cbec3d); before that it answered raw JSON. These URLs '
+          + 'are indexable but deliberately absent from the sitemap, so the sitemap census '
+          + 'above does not cover them. lastCrawlTime is the only free evidence of whether '
+          + 'Google has fetched one since the change.',
+        source: 'the /mcp/<server> paths observed in the Cloudflare log this window, not a guess',
+        ...(await inspectCensus(H, API, endpointUrls, 'hosted endpoint URL')),
+      };
     }
-    await Promise.all([...Array(4)].map(worker));
-    // One retry pass for transient API failures, so a 500 on a single URL does not leave a
-    // hole in a 126-row census. Anything still failing is reported as an error row, not as
-    // "unknown to Google".
-    const failed = results.filter(r => r.error);
-    if (failed.length) {
-      for (const f of failed) {
-        const r = await fetch(API, { method: 'POST', headers: H,
-          body: JSON.stringify({ inspectionUrl: f.url, siteUrl: GSC_SITE }) });
-        const j = await r.json();
-        if (!r.ok) continue;
-        const i = (j.inspectionResult && j.inspectionResult.indexStatusResult) || {};
-        Object.assign(f, { http: r.status, error: undefined, verdict: i.verdict || null,
-          coverage_state: i.coverageState || null, robots_txt_state: i.robotsTxtState || null,
-          indexing_state: i.indexingState || null, page_fetch_state: i.pageFetchState || null,
-          last_crawl_time: i.lastCrawlTime || null, google_canonical: i.googleCanonical || null,
-          retried: true });
-        apiErrors--;
-      }
-    }
-    const tally = {};
-    for (const r of results) tally[r.coverage_state || `HTTP ${r.http}`] = (tally[r.coverage_state || `HTTP ${r.http}`] || 0) + 1;
-    out.google = {
-      status: apiErrors === results.length ? 'ERROR' : 'MEASURED',
-      method: 'POST ' + API + ' { inspectionUrl, siteUrl: "' + GSC_SITE + '" } — one call per sitemap URL',
-      service_account: tok.client_email,
-      urls_inspected: results.length,
-      api_errors: apiErrors,
-      by_coverage_state: tally,
-      in_google_index: results.filter(r => r.verdict === 'PASS').length,
-      known_to_google: results.filter(r => r.coverage_state && !/unknown to Google/i.test(r.coverage_state)).length,
-      unknown_to_google: results.filter(r => /unknown to Google/i.test(r.coverage_state || '')).length,
-      ever_crawled_by_google: results.filter(r => r.last_crawl_time).length,
-      urls: results.sort((a, b) => a.url.localeCompare(b.url)),
-    };
   }
 
   // ---- Everything else: attempt, with a control, and say UNMEASURED if the control fails
@@ -637,6 +689,76 @@ for (const r of cf.pathUA) {
   klassTotals.set(klass, (klassTotals.get(klass) || 0) + r.count);
   if (crawler) crawlerTotals.set(crawler, (crawlerTotals.get(crawler) || 0) + r.count);
 }
+
+
+// Pass 3 — the shape of the "human" evidence, not just its size. The render-proof test can
+// only prove a rendering engine ran; it cannot tell a person from a headless-browser crawler
+// that does not name itself. The discriminator that IS available is breadth: a person reads
+// a few pages, a sweeper touches most of the catalogue once each. This profiles every
+// render-proven UA string by how many DISTINCT sitemap URLs it touched, so a jump in "human
+// page views" can be attributed rather than assumed.
+const renderProvenProfile = (() => {
+  const byUA = new Map();
+  for (const r of cf.pathUA) {
+    const ua = r.dimensions.userAgent;
+    if (!renderProven.has(ua)) continue;
+    const e = byUA.get(ua) || { user_agent: ua, requests: 0, sitemap_urls: new Set(),
+      countries: new Set(), asset_requests: 0, sitemap_page_views: 0,
+      sitemap_page_views_ex_operator: 0, catalogue_page_views_ex_operator: 0 };
+    e.requests += r.count;
+    if (RENDER_PROOF.test(r.dimensions.clientRequestPath)) e.asset_requests += r.count;
+    else if (sitemapSet.has(r.dimensions.clientRequestPath)) {
+      e.sitemap_urls.add(r.dimensions.clientRequestPath);
+      e.sitemap_page_views += r.count;
+      if (r.dimensions.clientCountryName !== OPERATOR_COUNTRY) {
+        e.sitemap_page_views_ex_operator += r.count;
+        // The homepage takes the great majority of all page views and is reported separately
+        // everywhere else in this file, so the off-homepage figure is kept separately here too.
+        if (r.dimensions.clientRequestPath !== '/') e.catalogue_page_views_ex_operator += r.count;
+      }
+    }
+    if (r.dimensions.clientCountryName) e.countries.add(r.dimensions.clientCountryName);
+    byUA.set(ua, e);
+  }
+  const rows = [...byUA.values()].map(e => ({ user_agent: e.user_agent, requests: e.requests,
+    asset_requests: e.asset_requests, distinct_sitemap_urls: e.sitemap_urls.size,
+    sitemap_page_views: e.sitemap_page_views,
+    sitemap_page_views_ex_operator: e.sitemap_page_views_ex_operator,
+    catalogue_page_views_ex_operator: e.catalogue_page_views_ex_operator,
+    distinct_countries: e.countries.size,
+    countries: [...e.countries].sort() }))
+    .sort((a, b) => b.distinct_sitemap_urls - a.distinct_sitemap_urls || b.requests - a.requests);
+  const SWEEP = 10;   // one UA touching 10+ distinct catalogue URLs in the window
+  return {
+    why: 'A render-proven UA is proof a rendering engine ran, NOT proof of a person. Breadth '
+      + 'separates the two: a reader touches a few pages, a rendering crawler touches many. '
+      + 'Rows with distinct_sitemap_urls >= ' + SWEEP + ' are counted as sweepers and their '
+      + 'page views are reported separately, so the human figure has a stated floor.',
+    render_proven_ua_strings: rows.length,
+    sweeper_threshold_distinct_urls: SWEEP,
+    sweepers: rows.filter(r => r.distinct_sitemap_urls >= SWEEP).length,
+    sweeper_url_touches: rows.filter(r => r.distinct_sitemap_urls >= SWEEP)
+      .reduce((n, r) => n + r.distinct_sitemap_urls, 0),
+    sweeper_sitemap_page_views: rows.filter(r => r.distinct_sitemap_urls >= SWEEP)
+      .reduce((n, r) => n + r.sitemap_page_views, 0),
+    sweeper_sitemap_page_views_ex_operator: rows.filter(r => r.distinct_sitemap_urls >= SWEEP)
+      .reduce((n, r) => n + r.sitemap_page_views_ex_operator, 0),
+    sweeper_catalogue_page_views_ex_operator: rows.filter(r => r.distinct_sitemap_urls >= SWEEP)
+      .reduce((n, r) => n + r.catalogue_page_views_ex_operator, 0),
+    // The honest floor: render-proven sitemap page views once every sweeping UA is removed.
+    sitemap_page_views_ex_operator_excl_sweepers: rows.filter(r => r.distinct_sitemap_urls < SWEEP)
+      .reduce((n, r) => n + r.sitemap_page_views_ex_operator, 0),
+    // The number the audience question actually turns on: off the homepage, outside the
+    // operator's country, with every sweeping UA removed.
+    catalogue_page_views_ex_operator_excl_sweepers: rows.filter(r => r.distinct_sitemap_urls < SWEEP)
+      .reduce((n, r) => n + r.catalogue_page_views_ex_operator, 0),
+    multi_country_ua_strings: rows.filter(r => r.distinct_countries > 1).length,
+    multi_country_note: 'One UA string appearing from several countries in one week is a '
+      + 'proxy-pool tell, not a traveller. Reported because it is the cheapest available '
+      + 'evidence that a render-proven UA is not one person.',
+    rows: rows.slice(0, 40),
+  };
+})();
 
 const sitemapRows = sitePaths.map(p => perPath.get(p)
   || { path: p, total: 0, human: 0, human_verified: 0, human_verified_ex_operator: 0,
@@ -789,6 +911,7 @@ const out = {
   } : null,
   sitemap_pages: sitemapRows.sort((a, b) => b.human_verified_ex_operator - a.human_verified_ex_operator
     || b.human_verified - a.human_verified || b.human - a.human || b.total - a.total),
+  render_proven_ua_profile: renderProvenProfile,
   human_evidence: {
     render_proof_paths: String(RENDER_PROOF),
     browser_ua_strings_seen: [...new Set(cf.pathUA.filter(r => classify(r.dimensions.userAgent).klass === 'human_browser').map(r => r.dimensions.userAgent))].length,
@@ -879,16 +1002,55 @@ if (!SKIP_GSC) {
 }
 
 if (argv.includes('--indexation')) {
-  const ix = await indexation(sitePaths);
+  const ixFile = flag('--indexation-out') || 'data/indexation.json';
+  // The hosted endpoints, taken from what the log actually shows being requested this window
+  // rather than from a hand-written list, so the census cannot silently miss a live endpoint.
+  const endpointPaths = [...perPath.keys()]
+    .filter(p => /^\/mcp\/[a-z0-9-]+$/.test(p) && !sitemapSet.has(p)).sort();
+  // Read the file being overwritten first, so the movement between rounds is recorded in the
+  // artefact itself and does not depend on someone having kept the old file.
+  let prevIx = null;
+  try {
+    const q = JSON.parse(fs.readFileSync(path.resolve(ROOT, ixFile), 'utf8'));
+    if (q.google && q.google.urls_inspected) {
+      prevIx = { generated_at: q.generated_at, sitemap_urls: q.sitemap_urls,
+        urls_inspected: q.google.urls_inspected, in_google_index: q.google.in_google_index,
+        ever_crawled_by_google: q.google.ever_crawled_by_google,
+        known_to_google: q.google.known_to_google, unknown_to_google: q.google.unknown_to_google,
+        by_coverage_state: q.google.by_coverage_state,
+        hosted_endpoints: q.google_hosted_endpoints ? {
+          urls_inspected: q.google_hosted_endpoints.urls_inspected,
+          in_google_index: q.google_hosted_endpoints.in_google_index,
+          ever_crawled_by_google: q.google_hosted_endpoints.ever_crawled_by_google,
+          by_coverage_state: q.google_hosted_endpoints.by_coverage_state } : null };
+    }
+  } catch { /* no readable previous census */ }
+
+  const ix = await indexation(sitePaths, endpointPaths);
   // Crawl evidence from THIS run, so indexation.json is self-contained: crawled != indexed.
   ix.crawl_evidence = { window: cf.window, effective_window: cf.effective,
     crawler_url_coverage: out.crawler_url_coverage,
     sitemap_urls_fetched_by_search_or_ai_crawler: cov.fetched_by_search_or_ai_crawler };
-  const ixFile = flag('--indexation-out') || 'data/indexation.json';
+  if (prevIx) {
+    ix.previous_run = prevIx;
+    ix.movement = {
+      note: 'This run minus the census in ' + ixFile + ' before it was overwritten. The '
+        + 'discovered/unknown split is known to be noisy between runs; in_google_index and '
+        + 'ever_crawled_by_google are the stable pair.',
+      in_google_index: ix.google.in_google_index - prevIx.in_google_index,
+      ever_crawled_by_google: ix.google.ever_crawled_by_google - prevIx.ever_crawled_by_google,
+      known_to_google: ix.google.known_to_google - prevIx.known_to_google,
+      unknown_to_google: ix.google.unknown_to_google - prevIx.unknown_to_google,
+      sitemap_urls: ix.sitemap_urls - prevIx.sitemap_urls,
+    };
+  }
   const w = writeChannelFile(ixFile, { status: ix.google.status, generated_at: ix.generated_at, ...ix },
     ['MEASURED']);
+  const he = ix.google_hosted_endpoints;
   console.error(`[traffic.mjs] ${ixFile} ${w} — Google: `
-    + `${ix.google.status === 'MEASURED' ? ix.google.in_google_index + ' of ' + ix.google.urls_inspected + ' in the index' : ix.google.status}`);
+    + `${ix.google.status === 'MEASURED' ? ix.google.in_google_index + ' of ' + ix.google.urls_inspected + ' in the index' : ix.google.status}`
+    + (he ? `; hosted endpoints: ${he.in_google_index} of ${he.urls_inspected} indexed, `
+      + `${he.ever_crawled_by_google} ever crawled` : ''));
 }
 
 fs.writeFileSync(path.resolve(ROOT, OUT_FILE), JSON.stringify(out, null, 2) + '\n');

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T08:45:23.005Z",
+  "generated_at": "2026-09-09T09:09:47.877Z",
   "host": "mcp.zovo.one",
   "channels": {
     "cloudflare_graphql": "WORKING",
@@ -13,8 +13,8 @@
       "account": "dd3f2a29b7707e21a87f26a622c0bb9d"
     },
     "window": {
-      "start": "2026-09-02T08:45:02Z",
-      "end": "2026-09-09T08:45:02Z",
+      "start": "2026-09-02T09:09:33Z",
+      "end": "2026-09-09T09:09:33Z",
       "days": 7
     },
     "retention_note": "httpRequestsAdaptiveGroups on this Pro zone refuses data older than 1w1d (measured: query at -14d returns extensions.code=quota, \"cannot request data older than 1w1d\"). A 30-day per-path pull is IMPOSSIBLE on this plan. httpRequests1dGroups retains 30d but has no host dimension.",
@@ -22,80 +22,80 @@
       "row_cap": 10000,
       "slices": [
         {
-          "start": "2026-09-02T08:45:02Z",
-          "end": "2026-09-03T08:45:02Z",
+          "start": "2026-09-02T09:09:33Z",
+          "end": "2026-09-03T09:09:33Z",
           "upper_bound": "lt",
-          "rows_returned": 1579,
+          "rows_returned": 1646,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-03T08:45:02Z",
-          "end": "2026-09-04T08:45:02Z",
+          "start": "2026-09-03T09:09:33Z",
+          "end": "2026-09-04T09:09:33Z",
           "upper_bound": "lt",
-          "rows_returned": 2206,
+          "rows_returned": 2269,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-04T08:45:02Z",
-          "end": "2026-09-05T08:45:02Z",
+          "start": "2026-09-04T09:09:33Z",
+          "end": "2026-09-05T09:09:33Z",
           "upper_bound": "lt",
-          "rows_returned": 1887,
+          "rows_returned": 1851,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-05T08:45:02Z",
-          "end": "2026-09-06T08:45:02Z",
+          "start": "2026-09-05T09:09:33Z",
+          "end": "2026-09-06T09:09:33Z",
           "upper_bound": "lt",
-          "rows_returned": 3145,
+          "rows_returned": 3207,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-06T08:45:02Z",
-          "end": "2026-09-07T08:45:02Z",
+          "start": "2026-09-06T09:09:33Z",
+          "end": "2026-09-07T09:09:33Z",
           "upper_bound": "lt",
-          "rows_returned": 3724,
+          "rows_returned": 3713,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-07T08:45:02Z",
-          "end": "2026-09-08T08:45:02Z",
+          "start": "2026-09-07T09:09:33Z",
+          "end": "2026-09-08T09:09:33Z",
           "upper_bound": "lt",
-          "rows_returned": 3674,
+          "rows_returned": 3840,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         },
         {
-          "start": "2026-09-08T08:45:02Z",
-          "end": "2026-09-09T08:45:02Z",
+          "start": "2026-09-08T09:09:33Z",
+          "end": "2026-09-09T09:09:33Z",
           "upper_bound": "leq",
-          "rows_returned": 3989,
+          "rows_returned": 4054,
           "row_cap": 10000,
           "saturated": false,
           "split_depth": 0
         }
       ],
-      "rows_before_aggregation": 20204,
-      "rows_after_aggregation": 13371,
-      "max_rows_in_any_slice": 3989,
+      "rows_before_aggregation": 20580,
+      "rows_after_aggregation": 13461,
+      "max_rows_in_any_slice": 4054,
       "note": "The whole-window path×UA×country grouping saturates the 10,000-row API cap on this host, so it is pulled one day at a time and summed in-script. Any slice that still hits the cap is halved and re-pulled; a sub-hour slice at the cap aborts the run (exit 2)."
     },
     "daily_breakdown": [
       {
-        "slice_start": "2026-09-02T08:45:02Z",
-        "requests": 7208,
+        "slice_start": "2026-09-02T09:09:33Z",
+        "requests": 7508,
         "human_page_views_render_proven": 30,
-        "sitemap_requests": 731,
+        "sitemap_requests": 734,
         "crawlers": {
           "ClaudeBot": {
             "requests": 163,
@@ -114,8 +114,8 @@
             "sitemap_urls_fetched": 32
           },
           "bingbot": {
-            "requests": 16,
-            "sitemap_urls_fetched": 4
+            "requests": 19,
+            "sitemap_urls_fetched": 5
           },
           "meta-externalagent": {
             "requests": 5,
@@ -136,8 +136,8 @@
         }
       },
       {
-        "slice_start": "2026-09-03T08:45:02Z",
-        "requests": 15546,
+        "slice_start": "2026-09-03T09:09:33Z",
+        "requests": 15775,
         "human_page_views_render_proven": 38,
         "sitemap_requests": 546,
         "crawlers": {
@@ -154,8 +154,8 @@
             "sitemap_urls_fetched": 13
           },
           "bingbot": {
-            "requests": 21,
-            "sitemap_urls_fetched": 6
+            "requests": 18,
+            "sitemap_urls_fetched": 5
           },
           "meta-externalagent": {
             "requests": 11,
@@ -178,7 +178,7 @@
             "sitemap_urls_fetched": 1
           },
           "Amazonbot": {
-            "requests": 1,
+            "requests": 2,
             "sitemap_urls_fetched": 1
           },
           "OAI-SearchBot": {
@@ -188,26 +188,26 @@
         }
       },
       {
-        "slice_start": "2026-09-04T08:45:02Z",
-        "requests": 13064,
+        "slice_start": "2026-09-04T09:09:33Z",
+        "requests": 12662,
         "human_page_views_render_proven": 88,
-        "sitemap_requests": 476,
+        "sitemap_requests": 482,
         "crawlers": {
-          "ClaudeBot": {
-            "requests": 37,
-            "sitemap_urls_fetched": 3
-          },
           "SemrushBot": {
-            "requests": 34,
-            "sitemap_urls_fetched": 8
+            "requests": 43,
+            "sitemap_urls_fetched": 10
+          },
+          "ClaudeBot": {
+            "requests": 40,
+            "sitemap_urls_fetched": 4
+          },
+          "Amazonbot": {
+            "requests": 27,
+            "sitemap_urls_fetched": 13
           },
           "MJ12bot": {
             "requests": 26,
             "sitemap_urls_fetched": 6
-          },
-          "Amazonbot": {
-            "requests": 22,
-            "sitemap_urls_fetched": 10
           },
           "YandexBot": {
             "requests": 21,
@@ -248,29 +248,29 @@
         }
       },
       {
-        "slice_start": "2026-09-05T08:45:02Z",
-        "requests": 29179,
+        "slice_start": "2026-09-05T09:09:33Z",
+        "requests": 29464,
         "human_page_views_render_proven": 46,
-        "sitemap_requests": 745,
+        "sitemap_requests": 757,
         "crawlers": {
           "GPTBot": {
             "requests": 238,
             "sitemap_urls_fetched": 32
           },
           "Amazonbot": {
-            "requests": 154,
-            "sitemap_urls_fetched": 48
+            "requests": 150,
+            "sitemap_urls_fetched": 45
           },
           "ClaudeBot": {
-            "requests": 132,
-            "sitemap_urls_fetched": 23
+            "requests": 131,
+            "sitemap_urls_fetched": 22
           },
           "SemrushBot": {
-            "requests": 117,
-            "sitemap_urls_fetched": 37
+            "requests": 108,
+            "sitemap_urls_fetched": 35
           },
           "MJ12bot": {
-            "requests": 85,
+            "requests": 86,
             "sitemap_urls_fetched": 21
           },
           "bingbot": {
@@ -312,17 +312,17 @@
         }
       },
       {
-        "slice_start": "2026-09-06T08:45:02Z",
-        "requests": 15623,
+        "slice_start": "2026-09-06T09:09:33Z",
+        "requests": 15379,
         "human_page_views_render_proven": 56,
-        "sitemap_requests": 2334,
+        "sitemap_requests": 2328,
         "crawlers": {
           "Amazonbot": {
-            "requests": 210,
+            "requests": 208,
             "sitemap_urls_fetched": 24
           },
           "meta-externalagent": {
-            "requests": 87,
+            "requests": 89,
             "sitemap_urls_fetched": 44
           },
           "YandexBot": {
@@ -330,20 +330,20 @@
             "sitemap_urls_fetched": 52
           },
           "ClaudeBot": {
-            "requests": 66,
+            "requests": 64,
             "sitemap_urls_fetched": 33
           },
           "MJ12bot": {
-            "requests": 65,
+            "requests": 64,
             "sitemap_urls_fetched": 6
           },
           "bingbot": {
-            "requests": 59,
+            "requests": 60,
             "sitemap_urls_fetched": 17
           },
           "SemrushBot": {
-            "requests": 49,
-            "sitemap_urls_fetched": 10
+            "requests": 52,
+            "sitemap_urls_fetched": 11
           },
           "Applebot": {
             "requests": 4,
@@ -368,25 +368,25 @@
         }
       },
       {
-        "slice_start": "2026-09-07T08:45:02Z",
-        "requests": 13146,
-        "human_page_views_render_proven": 67,
-        "sitemap_requests": 1201,
+        "slice_start": "2026-09-07T09:09:33Z",
+        "requests": 14201,
+        "human_page_views_render_proven": 68,
+        "sitemap_requests": 1206,
         "crawlers": {
           "meta-externalagent": {
-            "requests": 237,
+            "requests": 235,
             "sitemap_urls_fetched": 17
           },
           "SemrushBot": {
-            "requests": 96,
-            "sitemap_urls_fetched": 24
+            "requests": 93,
+            "sitemap_urls_fetched": 23
           },
           "Amazonbot": {
             "requests": 82,
             "sitemap_urls_fetched": 21
           },
           "bingbot": {
-            "requests": 51,
+            "requests": 50,
             "sitemap_urls_fetched": 9
           },
           "MJ12bot": {
@@ -394,7 +394,7 @@
             "sitemap_urls_fetched": 22
           },
           "ClaudeBot": {
-            "requests": 30,
+            "requests": 32,
             "sitemap_urls_fetched": 0
           },
           "Googlebot": {
@@ -420,10 +420,10 @@
         }
       },
       {
-        "slice_start": "2026-09-08T08:45:02Z",
-        "requests": 38919,
-        "human_page_views_render_proven": 99,
-        "sitemap_requests": 974,
+        "slice_start": "2026-09-08T09:09:33Z",
+        "requests": 38854,
+        "human_page_views_render_proven": 101,
+        "sitemap_requests": 991,
         "crawlers": {
           "GPTBot": {
             "requests": 138,
@@ -434,15 +434,15 @@
             "sitemap_urls_fetched": 24
           },
           "Applebot": {
-            "requests": 45,
-            "sitemap_urls_fetched": 29
+            "requests": 46,
+            "sitemap_urls_fetched": 30
           },
           "SemrushBot": {
-            "requests": 33,
-            "sitemap_urls_fetched": 16
+            "requests": 38,
+            "sitemap_urls_fetched": 17
           },
           "ClaudeBot": {
-            "requests": 32,
+            "requests": 33,
             "sitemap_urls_fetched": 14
           },
           "meta-externalagent": {
@@ -551,12 +551,12 @@
       },
       {
         "date": "2026-09-02",
-        "status": 406,
+        "status": 502,
         "requests": 3
       },
       {
         "date": "2026-09-02",
-        "status": 502,
+        "status": 406,
         "requests": 3
       },
       {
@@ -831,12 +831,12 @@
       },
       {
         "date": "2026-09-06",
-        "status": 499,
+        "status": 406,
         "requests": 25
       },
       {
         "date": "2026-09-06",
-        "status": 406,
+        "status": 499,
         "requests": 25
       },
       {
@@ -972,52 +972,52 @@
       {
         "date": "2026-09-09",
         "status": 200,
-        "requests": 11923
+        "requests": 12783
       },
       {
         "date": "2026-09-09",
         "status": 202,
-        "requests": 2761
+        "requests": 2844
       },
       {
         "date": "2026-09-09",
         "status": 504,
-        "requests": 522
-      },
-      {
-        "date": "2026-09-09",
-        "status": 401,
-        "requests": 373
+        "requests": 589
       },
       {
         "date": "2026-09-09",
         "status": 303,
-        "requests": 357
+        "requests": 459
+      },
+      {
+        "date": "2026-09-09",
+        "status": 401,
+        "requests": 383
       },
       {
         "date": "2026-09-09",
         "status": 404,
-        "requests": 283
+        "requests": 293
       },
       {
         "date": "2026-09-09",
         "status": 429,
-        "requests": 58
+        "requests": 70
       },
       {
         "date": "2026-09-09",
         "status": 301,
-        "requests": 53
+        "requests": 55
       },
       {
         "date": "2026-09-09",
         "status": 302,
-        "requests": 52
+        "requests": 55
       },
       {
         "date": "2026-09-09",
         "status": 400,
-        "requests": 16
+        "requests": 23
       },
       {
         "date": "2026-09-09",
@@ -1027,16 +1027,16 @@
       {
         "date": "2026-09-09",
         "status": 413,
-        "requests": 3
+        "requests": 5
       }
     ],
     "effective_window": {
-      "requested_start": "2026-09-02T08:45:02Z",
-      "requested_end": "2026-09-09T08:45:02Z",
+      "requested_start": "2026-09-02T09:09:33Z",
+      "requested_end": "2026-09-09T09:09:33Z",
       "requested_days": 7,
       "first_hour_with_host_data": "2026-09-02T12:00:00Z",
-      "hours_with_data": 165,
-      "effective_days": 6.865,
+      "hours_with_data": 166,
+      "effective_days": 6.882,
       "note": "RETENTION SHORTFALL: the adaptive dataset holds no rows for this host before 2026-09-02T12:00:00Z, although the API accepts the older start and other hosts on the zone do return rows there. Absolute counts cover the effective window, not the requested one."
     },
     "host_hourly_requests": [
@@ -1698,37 +1698,41 @@
       },
       {
         "hour": "2026-09-09T08:00:00Z",
-        "requests": 1308
+        "requests": 2263
+      },
+      {
+        "hour": "2026-09-09T09:00:00Z",
+        "requests": 203
       }
     ],
     "sampling": {
-      "avg_sample_interval": 1.1896142087379076,
+      "avg_sample_interval": 1.1902868932643225,
       "note": "count is the sample-adjusted request estimate returned by the adaptive dataset."
     },
     "totals": {
-      "requests": 132686,
-      "visits": 8444,
-      "edge_response_bytes": 286728576
+      "requests": 133843,
+      "visits": 8479,
+      "edge_response_bytes": 289202922
     },
     "by_class": {
-      "scripted_client": 62342,
-      "other_bot_probe": 54012,
-      "human_browser": 5023,
-      "unclassified": 4744,
-      "unknown-empty-ua": 3092,
-      "search_ai_crawler": 2696,
-      "seo_crawler": 776
+      "scripted_client": 63072,
+      "other_bot_probe": 54345,
+      "human_browser": 5096,
+      "unclassified": 4753,
+      "unknown-empty-ua": 3096,
+      "search_ai_crawler": 2700,
+      "seo_crawler": 781
     },
     "by_crawler": {
-      "ClaudeBot": 593,
+      "ClaudeBot": 596,
       "Amazonbot": 532,
       "GPTBot": 514,
       "MJ12bot": 425,
       "meta-externalagent": 400,
-      "SemrushBot": 336,
+      "SemrushBot": 341,
       "YandexBot": 278,
       "bingbot": 232,
-      "Applebot": 52,
+      "Applebot": 53,
       "Googlebot": 32,
       "PerplexityBot": 26,
       "OAI-SearchBot": 23,
@@ -1741,19 +1745,19 @@
     "top_countries": [
       {
         "country": "US",
-        "requests": 38475
-      },
-      {
-        "country": "PL",
-        "requests": 27667
+        "requests": 38766
       },
       {
         "country": "FI",
-        "requests": 27610
+        "requests": 27758
+      },
+      {
+        "country": "PL",
+        "requests": 27755
       },
       {
         "country": "VN",
-        "requests": 11051
+        "requests": 11605
       },
       {
         "country": "DE",
@@ -1761,19 +1765,19 @@
       },
       {
         "country": "FR",
-        "requests": 8695
+        "requests": 8700
       },
       {
         "country": "GB",
-        "requests": 4047
+        "requests": 4069
       },
       {
         "country": "SG",
-        "requests": 1489
+        "requests": 1490
       },
       {
         "country": "CN",
-        "requests": 737
+        "requests": 751
       },
       {
         "country": "KR",
@@ -1801,7 +1805,7 @@
       },
       {
         "country": "JP",
-        "requests": 159
+        "requests": 189
       },
       {
         "country": "BR",
@@ -1823,15 +1827,15 @@
     "top_referer_hosts": [
       {
         "referer_host": "(none)",
-        "requests": 130592
+        "requests": 131734
       },
       {
         "referer_host": "mcp.zovo.one",
-        "requests": 1919
+        "requests": 1933
       },
       {
         "referer_host": "www.google.com",
-        "requests": 52
+        "requests": 53
       },
       {
         "referer_host": "mcp.zovo.one:80",
@@ -1914,62 +1918,62 @@
         "requests": 1
       },
       {
-        "referer_host": "mcp.zovo.one:2052",
+        "referer_host": "mcp.zovo.one:8880",
         "requests": 1
       },
       {
-        "referer_host": "mcp.zovo.one:8880",
+        "referer_host": "mcp.zovo.one:2052",
         "requests": 1
       }
     ],
     "by_status": [
       {
         "status": 200,
-        "requests": 64427
+        "requests": 65287
       },
       {
         "status": 401,
-        "requests": 35778
+        "requests": 35788
       },
       {
         "status": 404,
-        "requests": 10899
+        "requests": 10909
       },
       {
         "status": 202,
-        "requests": 6816
+        "requests": 6898
       },
       {
         "status": 303,
-        "requests": 6134
+        "requests": 6236
       },
       {
         "status": 504,
-        "requests": 4967
+        "requests": 5034
       },
       {
         "status": 400,
-        "requests": 1081
+        "requests": 1088
       },
       {
         "status": 301,
-        "requests": 990
+        "requests": 992
       },
       {
         "status": 429,
-        "requests": 876
+        "requests": 888
+      },
+      {
+        "status": 413,
+        "requests": 212
       },
       {
         "status": 499,
         "requests": 211
       },
       {
-        "status": 413,
-        "requests": 210
-      },
-      {
         "status": 302,
-        "requests": 133
+        "requests": 136
       },
       {
         "status": 503,
@@ -2183,20 +2187,20 @@
       },
       {
         "date": "2026-09-09",
-        "requests": 23321,
-        "page_views": 2186,
-        "uniques": 2135
+        "requests": 24682,
+        "page_views": 2299,
+        "uniques": 2188
       }
     ],
     "robots_and_sitemap": [
       {
         "path": "/robots.txt",
-        "requests": 825,
-        "search_ai_crawler": 201,
+        "requests": 828,
+        "search_ai_crawler": 202,
         "crawlers": {
-          "ClaudeBot": 89,
+          "ClaudeBot": 90,
           "YandexBot": 46,
-          "SemrushBot": 39,
+          "SemrushBot": 40,
           "MJ12bot": 45,
           "OAI-SearchBot": 23,
           "bingbot": 13,
@@ -2212,10 +2216,10 @@
       },
       {
         "path": "/sitemap.xml",
-        "requests": 353,
-        "search_ai_crawler": 104,
+        "requests": 363,
+        "search_ai_crawler": 105,
         "crawlers": {
-          "ClaudeBot": 88,
+          "ClaudeBot": 89,
           "Googlebot": 9,
           "GPTBot": 7,
           "SemrushBot": 1,
@@ -2234,10 +2238,10 @@
     "section_rollup": {
       "/(root)": {
         "urls": 1,
-        "requests": 1200,
-        "human": 495,
-        "human_verified": 288,
-        "human_verified_ex_operator": 286,
+        "requests": 1206,
+        "human": 498,
+        "human_verified": 289,
+        "human_verified_ex_operator": 287,
         "search_ai": 33,
         "urls_with_human": 1,
         "urls_with_human_verified": 1,
@@ -2246,8 +2250,8 @@
       },
       "/bundle": {
         "urls": 1,
-        "requests": 74,
-        "human": 13,
+        "requests": 76,
+        "human": 14,
         "human_verified": 1,
         "human_verified_ex_operator": 1,
         "search_ai": 14,
@@ -2270,10 +2274,10 @@
       },
       "/guides": {
         "urls": 77,
-        "requests": 2844,
-        "human": 508,
-        "human_verified": 59,
-        "human_verified_ex_operator": 59,
+        "requests": 2854,
+        "human": 513,
+        "human_verified": 60,
+        "human_verified_ex_operator": 60,
         "search_ai": 368,
         "urls_with_human": 77,
         "urls_with_human_verified": 31,
@@ -2306,11 +2310,11 @@
       },
       "/s": {
         "urls": 32,
-        "requests": 1888,
-        "human": 297,
-        "human_verified": 54,
-        "human_verified_ex_operator": 53,
-        "search_ai": 176,
+        "requests": 1907,
+        "human": 305,
+        "human_verified": 55,
+        "human_verified_ex_operator": 54,
+        "search_ai": 177,
         "urls_with_human": 32,
         "urls_with_human_verified": 26,
         "urls_with_human_verified_ex_operator": 25,
@@ -2332,14 +2336,14 @@
     "non_sitemap_top_paths": [
       {
         "path": "/mcp/invoice",
-        "total": 5140,
+        "total": 5202,
         "human": 24,
         "human_verified": 10,
         "search_ai": 7,
         "human_verified_ex_operator": 10,
         "seo": 1,
-        "scripted": 2788,
-        "other_bot": 2186,
+        "scripted": 2837,
+        "other_bot": 2199,
         "unclassified": 134,
         "visits": 4,
         "crawlers": {
@@ -2352,14 +2356,14 @@
       },
       {
         "path": "/mcp/time-tracker",
-        "total": 4245,
+        "total": 4271,
         "human": 21,
         "human_verified": 11,
         "search_ai": 11,
         "human_verified_ex_operator": 11,
         "seo": 1,
-        "scripted": 1944,
-        "other_bot": 2135,
+        "scripted": 1957,
+        "other_bot": 2148,
         "unclassified": 133,
         "visits": 0,
         "crawlers": {
@@ -2373,14 +2377,14 @@
       },
       {
         "path": "/mcp/spreadsheet",
-        "total": 4151,
+        "total": 4173,
         "human": 26,
         "human_verified": 9,
         "search_ai": 15,
         "human_verified_ex_operator": 9,
         "seo": 2,
-        "scripted": 1852,
-        "other_bot": 2134,
+        "scripted": 1861,
+        "other_bot": 2147,
         "unclassified": 122,
         "visits": 2,
         "crawlers": {
@@ -2396,14 +2400,14 @@
       },
       {
         "path": "/mcp/expense-tracker",
-        "total": 3683,
+        "total": 3705,
         "human": 5,
         "human_verified": 1,
         "search_ai": 5,
         "human_verified_ex_operator": 1,
         "seo": 1,
-        "scripted": 1368,
-        "other_bot": 2161,
+        "scripted": 1374,
+        "other_bot": 2177,
         "unclassified": 143,
         "visits": 0,
         "crawlers": {
@@ -2415,14 +2419,14 @@
       },
       {
         "path": "/mcp/pdf",
-        "total": 3543,
+        "total": 3570,
         "human": 5,
         "human_verified": 0,
         "search_ai": 6,
         "human_verified_ex_operator": 0,
         "seo": 1,
-        "scripted": 1732,
-        "other_bot": 1693,
+        "scripted": 1753,
+        "other_bot": 1699,
         "unclassified": 106,
         "visits": 0,
         "crawlers": {
@@ -2435,14 +2439,14 @@
       },
       {
         "path": "/mcp/price-tracker",
-        "total": 3533,
+        "total": 3552,
         "human": 5,
         "human_verified": 1,
         "search_ai": 6,
         "human_verified_ex_operator": 1,
         "seo": 1,
-        "scripted": 1180,
-        "other_bot": 2216,
+        "scripted": 1186,
+        "other_bot": 2229,
         "unclassified": 125,
         "visits": 0,
         "crawlers": {
@@ -2455,14 +2459,14 @@
       },
       {
         "path": "/mcp/docx",
-        "total": 3224,
+        "total": 3244,
         "human": 4,
         "human_verified": 0,
         "search_ai": 7,
         "human_verified_ex_operator": 0,
         "seo": 1,
-        "scripted": 1433,
-        "other_bot": 1671,
+        "scripted": 1447,
+        "other_bot": 1677,
         "unclassified": 108,
         "visits": 0,
         "crawlers": {
@@ -2474,14 +2478,14 @@
       },
       {
         "path": "/mcp/zip",
-        "total": 3147,
+        "total": 3179,
         "human": 5,
         "human_verified": 1,
         "search_ai": 5,
         "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 1835,
-        "other_bot": 1191,
+        "scripted": 1860,
+        "other_bot": 1198,
         "unclassified": 111,
         "visits": 0,
         "crawlers": {
@@ -2492,14 +2496,14 @@
       },
       {
         "path": "/mcp/resume",
-        "total": 3147,
+        "total": 3165,
         "human": 4,
         "human_verified": 0,
         "search_ai": 8,
         "human_verified_ex_operator": 0,
         "seo": 0,
-        "scripted": 1294,
-        "other_bot": 1723,
+        "scripted": 1304,
+        "other_bot": 1731,
         "unclassified": 118,
         "visits": 0,
         "crawlers": {
@@ -2511,16 +2515,16 @@
       },
       {
         "path": "/mcp/currency",
-        "total": 3115,
-        "human": 6,
+        "total": 3134,
+        "human": 7,
         "human_verified": 2,
         "search_ai": 6,
         "human_verified_ex_operator": 2,
         "seo": 0,
-        "scripted": 1192,
-        "other_bot": 1769,
+        "scripted": 1202,
+        "other_bot": 1777,
         "unclassified": 142,
-        "visits": 0,
+        "visits": 1,
         "crawlers": {
           "Amazonbot": 3,
           "GPTBot": 1,
@@ -2530,14 +2534,14 @@
       },
       {
         "path": "/mcp/clauses",
-        "total": 3108,
+        "total": 3125,
         "human": 7,
         "human_verified": 3,
         "search_ai": 6,
         "human_verified_ex_operator": 3,
         "seo": 0,
-        "scripted": 1299,
-        "other_bot": 1676,
+        "scripted": 1308,
+        "other_bot": 1684,
         "unclassified": 120,
         "visits": 0,
         "crawlers": {
@@ -2549,14 +2553,14 @@
       },
       {
         "path": "/mcp/recurring",
-        "total": 3000,
+        "total": 3014,
         "human": 3,
         "human_verified": 0,
         "search_ai": 6,
         "human_verified_ex_operator": 0,
         "seo": 0,
-        "scripted": 1108,
-        "other_bot": 1765,
+        "scripted": 1114,
+        "other_bot": 1773,
         "unclassified": 118,
         "visits": 0,
         "crawlers": {
@@ -2568,14 +2572,14 @@
       },
       {
         "path": "/mcp/calendar",
-        "total": 2987,
+        "total": 3001,
         "human": 5,
         "human_verified": 2,
         "search_ai": 6,
         "human_verified_ex_operator": 2,
         "seo": 1,
-        "scripted": 1215,
-        "other_bot": 1642,
+        "scripted": 1222,
+        "other_bot": 1649,
         "unclassified": 118,
         "visits": 0,
         "crawlers": {
@@ -2588,14 +2592,14 @@
       },
       {
         "path": "/mcp/timezone",
-        "total": 2964,
+        "total": 2983,
         "human": 6,
         "human_verified": 1,
         "search_ai": 4,
         "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 1066,
-        "other_bot": 1767,
+        "scripted": 1077,
+        "other_bot": 1775,
         "unclassified": 121,
         "visits": 0,
         "crawlers": {
@@ -2607,14 +2611,14 @@
       },
       {
         "path": "/mcp/image",
-        "total": 2956,
+        "total": 2976,
         "human": 6,
         "human_verified": 2,
         "search_ai": 5,
         "human_verified_ex_operator": 2,
         "seo": 0,
-        "scripted": 1456,
-        "other_bot": 1374,
+        "scripted": 1469,
+        "other_bot": 1381,
         "unclassified": 115,
         "visits": 0,
         "crawlers": {
@@ -2625,14 +2629,14 @@
       },
       {
         "path": "/mcp/bank-statement",
-        "total": 2933,
+        "total": 2954,
         "human": 5,
         "human_verified": 0,
         "search_ai": 6,
         "human_verified_ex_operator": 0,
         "seo": 0,
-        "scripted": 1474,
-        "other_bot": 1314,
+        "scripted": 1488,
+        "other_bot": 1321,
         "unclassified": 134,
         "visits": 1,
         "crawlers": {
@@ -2644,14 +2648,14 @@
       },
       {
         "path": "/mcp/deposits",
-        "total": 2873,
+        "total": 2941,
         "human": 5,
         "human_verified": 1,
         "search_ai": 2,
         "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 1370,
-        "other_bot": 1393,
+        "scripted": 1415,
+        "other_bot": 1416,
         "unclassified": 103,
         "visits": 1,
         "crawlers": {
@@ -2660,32 +2664,15 @@
         }
       },
       {
-        "path": "/mcp/per-diem",
-        "total": 2605,
-        "human": 3,
-        "human_verified": 0,
-        "search_ai": 4,
-        "human_verified_ex_operator": 0,
-        "seo": 0,
-        "scripted": 1093,
-        "other_bot": 1407,
-        "unclassified": 98,
-        "visits": 0,
-        "crawlers": {
-          "Amazonbot": 3,
-          "GPTBot": 1
-        }
-      },
-      {
         "path": "/mcp/billing-docs",
-        "total": 2597,
+        "total": 2635,
         "human": 1,
         "human_verified": 0,
         "search_ai": 7,
         "human_verified_ex_operator": 0,
         "seo": 1,
-        "scripted": 973,
-        "other_bot": 1505,
+        "scripted": 995,
+        "other_bot": 1521,
         "unclassified": 110,
         "visits": 0,
         "crawlers": {
@@ -2697,15 +2684,32 @@
         }
       },
       {
+        "path": "/mcp/per-diem",
+        "total": 2630,
+        "human": 3,
+        "human_verified": 0,
+        "search_ai": 4,
+        "human_verified_ex_operator": 0,
+        "seo": 0,
+        "scripted": 1103,
+        "other_bot": 1422,
+        "unclassified": 98,
+        "visits": 0,
+        "crawlers": {
+          "Amazonbot": 3,
+          "GPTBot": 1
+        }
+      },
+      {
         "path": "/mcp/barcode",
-        "total": 2584,
+        "total": 2614,
         "human": 7,
         "human_verified": 2,
         "search_ai": 6,
         "human_verified_ex_operator": 2,
         "seo": 0,
-        "scripted": 1311,
-        "other_bot": 1131,
+        "scripted": 1332,
+        "other_bot": 1140,
         "unclassified": 129,
         "visits": 1,
         "crawlers": {
@@ -2717,14 +2721,14 @@
       },
       {
         "path": "/mcp/kanban",
-        "total": 2509,
+        "total": 2521,
         "human": 4,
         "human_verified": 1,
         "search_ai": 5,
         "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 1074,
-        "other_bot": 1316,
+        "scripted": 1079,
+        "other_bot": 1323,
         "unclassified": 110,
         "visits": 0,
         "crawlers": {
@@ -2735,14 +2739,14 @@
       },
       {
         "path": "/mcp/asset-register",
-        "total": 2489,
+        "total": 2519,
         "human": 6,
         "human_verified": 2,
         "search_ai": 4,
         "human_verified_ex_operator": 2,
         "seo": 0,
-        "scripted": 1144,
-        "other_bot": 1225,
+        "scripted": 1160,
+        "other_bot": 1239,
         "unclassified": 110,
         "visits": 0,
         "crawlers": {
@@ -2752,14 +2756,14 @@
       },
       {
         "path": "/mcp/quotes",
-        "total": 2371,
+        "total": 2390,
         "human": 4,
         "human_verified": 1,
         "search_ai": 5,
         "human_verified_ex_operator": 1,
         "seo": 1,
-        "scripted": 1033,
-        "other_bot": 1221,
+        "scripted": 1044,
+        "other_bot": 1229,
         "unclassified": 107,
         "visits": 1,
         "crawlers": {
@@ -2771,14 +2775,14 @@
       },
       {
         "path": "/mcp/amortization",
-        "total": 2206,
+        "total": 2240,
         "human": 4,
         "human_verified": 1,
         "search_ai": 2,
         "human_verified_ex_operator": 1,
         "seo": 0,
-        "scripted": 974,
-        "other_bot": 1123,
+        "scripted": 993,
+        "other_bot": 1138,
         "unclassified": 103,
         "visits": 0,
         "crawlers": {
@@ -2788,14 +2792,14 @@
       },
       {
         "path": "/mcp/cash-book",
-        "total": 2070,
+        "total": 2109,
         "human": 1,
         "human_verified": 0,
         "search_ai": 5,
         "human_verified_ex_operator": 0,
         "seo": 0,
-        "scripted": 846,
-        "other_bot": 1139,
+        "scripted": 870,
+        "other_bot": 1154,
         "unclassified": 79,
         "visits": 0,
         "crawlers": {
@@ -2814,9 +2818,9 @@
     "fetched_by_render_proven_browser_strict": 73,
     "fetched_by_render_proven_browser_excl_operator_country": 72,
     "never_fetched_at_all": 0,
-    "human_page_views_render_proven": 424,
-    "human_page_views_render_proven_excl_operator_country": 421,
-    "human_page_views_excl_homepage_and_operator": 135,
+    "human_page_views_render_proven": 427,
+    "human_page_views_render_proven_excl_operator_country": 424,
+    "human_page_views_excl_homepage_and_operator": 137,
     "sitemap_urls_with_human_page_view_excl_homepage": 71
   },
   "github_traffic": {
@@ -2988,7 +2992,7 @@
     ]
   },
   "registry_referral_baseline": {
-    "recorded_at": "2026-09-09T08:45:30.485Z",
+    "recorded_at": "2026-09-09T09:10:04.353Z",
     "why": "Baseline for the registry-placement experiment: if better registry rank is worth anything, these two numbers rise. Rank alone is not the outcome; visits are.",
     "github_side": {
       "window": "14d rolling",
@@ -3012,17 +3016,17 @@
     },
     "storefront_side": {
       "window": {
-        "start": "2026-09-02T08:45:02Z",
-        "end": "2026-09-09T08:45:02Z",
+        "start": "2026-09-02T09:09:33Z",
+        "end": "2026-09-09T09:09:33Z",
         "days": 7
       },
       "effective_window": {
-        "requested_start": "2026-09-02T08:45:02Z",
-        "requested_end": "2026-09-09T08:45:02Z",
+        "requested_start": "2026-09-02T09:09:33Z",
+        "requested_end": "2026-09-09T09:09:33Z",
         "requested_days": 7,
         "first_hour_with_host_data": "2026-09-02T12:00:00Z",
-        "hours_with_data": 165,
-        "effective_days": 6.865,
+        "hours_with_data": 166,
+        "effective_days": 6.882,
         "note": "RETENTION SHORTFALL: the adaptive dataset holds no rows for this host before 2026-09-02T12:00:00Z, although the API accepts the older start and other hosts on the zone do return rows there. Absolute counts cover the effective window, not the requested one."
       },
       "host": "mcp.zovo.one",
@@ -3054,8 +3058,8 @@
     "user_initiated_assistant_fetches": {
       "note": "The assistant-crawler side of the same question. ClaudeBot/GPTBot are scheduled crawls; Claude-User, ChatGPT-User and Perplexity-User are fetches a PERSON triggered by asking an assistant about a page. That is the only measurable proxy for an assistant surface sending a human here.",
       "window": {
-        "start": "2026-09-02T08:45:02Z",
-        "end": "2026-09-09T08:45:02Z",
+        "start": "2026-09-02T09:09:33Z",
+        "end": "2026-09-09T09:09:33Z",
         "days": 7
       },
       "counts": {
@@ -3088,9 +3092,9 @@
       "pct_of_sitemap": 79.4
     },
     "SemrushBot": {
-      "urls_fetched": 98,
-      "requests": 99,
-      "pct_of_sitemap": 69.5
+      "urls_fetched": 99,
+      "requests": 100,
+      "pct_of_sitemap": 70.2
     },
     "GPTBot": {
       "urls_fetched": 90,
@@ -3108,9 +3112,9 @@
       "pct_of_sitemap": 24.8
     },
     "Applebot": {
-      "urls_fetched": 32,
-      "requests": 35,
-      "pct_of_sitemap": 22.7
+      "urls_fetched": 33,
+      "requests": 36,
+      "pct_of_sitemap": 23.4
     },
     "PerplexityBot": {
       "urls_fetched": 5,
@@ -3181,9 +3185,9 @@
         "pct_of_set": 88.9
       },
       "SemrushBot": {
-        "urls_fetched": 98,
-        "requests": 99,
-        "pct_of_set": 77.8
+        "urls_fetched": 99,
+        "requests": 100,
+        "pct_of_set": 78.6
       },
       "GPTBot": {
         "urls_fetched": 78,
@@ -3201,9 +3205,9 @@
         "pct_of_set": 27.8
       },
       "Applebot": {
-        "urls_fetched": 32,
-        "requests": 35,
-        "pct_of_set": 25.4
+        "urls_fetched": 33,
+        "requests": 36,
+        "pct_of_set": 26.2
       },
       "PerplexityBot": {
         "urls_fetched": 5,
@@ -3245,16 +3249,16 @@
   "sitemap_pages": [
     {
       "path": "/",
-      "total": 1200,
-      "human": 495,
-      "human_verified": 288,
+      "total": 1206,
+      "human": 498,
+      "human_verified": 289,
       "search_ai": 33,
-      "human_verified_ex_operator": 286,
+      "human_verified_ex_operator": 287,
       "seo": 7,
-      "scripted": 226,
+      "scripted": 229,
       "other_bot": 112,
       "unclassified": 327,
-      "visits": 830,
+      "visits": 832,
       "crawlers": {
         "PerplexityBot": 6,
         "bingbot": 5,
@@ -3301,16 +3305,16 @@
     },
     {
       "path": "/s/invoice",
-      "total": 127,
-      "human": 27,
+      "total": 139,
+      "human": 33,
       "human_verified": 4,
       "search_ai": 13,
       "human_verified_ex_operator": 4,
       "seo": 3,
-      "scripted": 50,
+      "scripted": 56,
       "other_bot": 7,
       "unclassified": 27,
-      "visits": 72,
+      "visits": 78,
       "crawlers": {
         "PerplexityBot": 3,
         "MJ12bot": 1,
@@ -3349,6 +3353,28 @@
       }
     },
     {
+      "path": "/guides/mcp-server-free-vs-pro",
+      "total": 76,
+      "human": 12,
+      "human_verified": 4,
+      "search_ai": 6,
+      "human_verified_ex_operator": 4,
+      "seo": 2,
+      "scripted": 22,
+      "other_bot": 34,
+      "unclassified": 0,
+      "visits": 59,
+      "crawlers": {
+        "YandexBot": 1,
+        "MJ12bot": 1,
+        "ClaudeBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 2,
+        "Applebot": 1
+      }
+    },
+    {
       "path": "/guides/track-time-in-claude-code",
       "total": 76,
       "human": 11,
@@ -3367,28 +3393,6 @@
         "YandexBot": 1,
         "SemrushBot": 1,
         "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/mcp-server-free-vs-pro",
-      "total": 75,
-      "human": 11,
-      "human_verified": 4,
-      "search_ai": 6,
-      "human_verified_ex_operator": 4,
-      "seo": 2,
-      "scripted": 22,
-      "other_bot": 34,
-      "unclassified": 0,
-      "visits": 58,
-      "crawlers": {
-        "YandexBot": 1,
-        "MJ12bot": 1,
-        "ClaudeBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 2,
-        "Applebot": 1
       }
     },
     {
@@ -3538,6 +3542,29 @@
         "SemrushBot": 1,
         "YandexBot": 1,
         "meta-externalagent": 2
+      }
+    },
+    {
+      "path": "/guides/quotes-and-estimates-to-invoice-in-claude",
+      "total": 70,
+      "human": 10,
+      "human_verified": 3,
+      "search_ai": 7,
+      "human_verified_ex_operator": 3,
+      "seo": 2,
+      "scripted": 16,
+      "other_bot": 35,
+      "unclassified": 0,
+      "visits": 54,
+      "crawlers": {
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "bingbot": 1,
+        "ClaudeBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 2,
+        "SemrushBot": 1,
+        "Applebot": 1
       }
     },
     {
@@ -3785,6 +3812,28 @@
       }
     },
     {
+      "path": "/s/docx",
+      "total": 75,
+      "human": 10,
+      "human_verified": 2,
+      "search_ai": 6,
+      "human_verified_ex_operator": 2,
+      "seo": 2,
+      "scripted": 26,
+      "other_bot": 7,
+      "unclassified": 24,
+      "visits": 40,
+      "crawlers": {
+        "bingbot": 2,
+        "ClaudeBot": 1,
+        "MJ12bot": 1,
+        "YandexBot": 1,
+        "SemrushBot": 1,
+        "Amazonbot": 1,
+        "meta-externalagent": 1
+      }
+    },
+    {
       "path": "/s/resume",
       "total": 71,
       "human": 10,
@@ -3842,8 +3891,8 @@
         "Amazonbot": 2,
         "SemrushBot": 2,
         "YandexBot": 1,
-        "GPTBot": 1,
         "ClaudeBot": 1,
+        "GPTBot": 1,
         "MJ12bot": 1,
         "meta-externalagent": 2
       }
@@ -3869,29 +3918,6 @@
         "Amazonbot": 1,
         "SemrushBot": 1,
         "meta-externalagent": 2,
-        "Applebot": 1
-      }
-    },
-    {
-      "path": "/guides/quotes-and-estimates-to-invoice-in-claude",
-      "total": 68,
-      "human": 9,
-      "human_verified": 2,
-      "search_ai": 7,
-      "human_verified_ex_operator": 2,
-      "seo": 2,
-      "scripted": 15,
-      "other_bot": 35,
-      "unclassified": 0,
-      "visits": 53,
-      "crawlers": {
-        "MJ12bot": 1,
-        "YandexBot": 1,
-        "bingbot": 1,
-        "ClaudeBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 2,
-        "SemrushBot": 1,
         "Applebot": 1
       }
     },
@@ -4018,8 +4044,8 @@
         "MJ12bot": 1,
         "ClaudeBot": 1,
         "Amazonbot": 1,
-        "YandexBot": 1,
         "SemrushBot": 1,
+        "YandexBot": 1,
         "bingbot": 1,
         "Applebot": 1
       }
@@ -4135,16 +4161,16 @@
     },
     {
       "path": "/bundle",
-      "total": 74,
-      "human": 13,
+      "total": 76,
+      "human": 14,
       "human_verified": 1,
       "search_ai": 14,
       "human_verified_ex_operator": 1,
       "seo": 5,
-      "scripted": 34,
+      "scripted": 35,
       "other_bot": 7,
       "unclassified": 1,
-      "visits": 42,
+      "visits": 43,
       "crawlers": {
         "ClaudeBot": 4,
         "MJ12bot": 4,
@@ -4286,8 +4312,8 @@
         "ClaudeBot": 1,
         "YandexBot": 1,
         "MJ12bot": 1,
-        "SemrushBot": 1,
         "Amazonbot": 1,
+        "SemrushBot": 1,
         "meta-externalagent": 1,
         "Applebot": 1
       }
@@ -4374,28 +4400,6 @@
         "bingbot": 2,
         "MJ12bot": 1,
         "ClaudeBot": 1,
-        "YandexBot": 1,
-        "SemrushBot": 1,
-        "Amazonbot": 1,
-        "meta-externalagent": 1
-      }
-    },
-    {
-      "path": "/s/docx",
-      "total": 73,
-      "human": 9,
-      "human_verified": 1,
-      "search_ai": 6,
-      "human_verified_ex_operator": 1,
-      "seo": 2,
-      "scripted": 25,
-      "other_bot": 7,
-      "unclassified": 24,
-      "visits": 39,
-      "crawlers": {
-        "bingbot": 2,
-        "ClaudeBot": 1,
-        "MJ12bot": 1,
         "YandexBot": 1,
         "SemrushBot": 1,
         "Amazonbot": 1,
@@ -4955,16 +4959,16 @@
     },
     {
       "path": "/s/deposits",
-      "total": 48,
+      "total": 50,
       "human": 7,
       "human_verified": 0,
-      "search_ai": 8,
+      "search_ai": 9,
       "human_verified_ex_operator": 0,
       "seo": 2,
-      "scripted": 10,
+      "scripted": 11,
       "other_bot": 5,
       "unclassified": 16,
-      "visits": 27,
+      "visits": 28,
       "crawlers": {
         "GPTBot": 2,
         "YandexBot": 2,
@@ -4972,7 +4976,8 @@
         "MJ12bot": 1,
         "ClaudeBot": 1,
         "Amazonbot": 1,
-        "SemrushBot": 1
+        "SemrushBot": 1,
+        "Applebot": 1
       }
     },
     {
@@ -5017,6 +5022,24 @@
         "Amazonbot": 1,
         "GPTBot": 1,
         "Applebot": 1
+      }
+    },
+    {
+      "path": "/s/office-suite",
+      "total": 40,
+      "human": 7,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 8,
+      "other_bot": 5,
+      "unclassified": 16,
+      "visits": 12,
+      "crawlers": {
+        "YandexBot": 2,
+        "Amazonbot": 1,
+        "ClaudeBot": 1
       }
     },
     {
@@ -5145,7 +5168,7 @@
     },
     {
       "path": "/s/cash-book",
-      "total": 48,
+      "total": 49,
       "human": 6,
       "human_verified": 0,
       "search_ai": 5,
@@ -5153,7 +5176,7 @@
       "seo": 2,
       "scripted": 13,
       "other_bot": 6,
-      "unclassified": 16,
+      "unclassified": 17,
       "visits": 27,
       "crawlers": {
         "MJ12bot": 1,
@@ -5163,24 +5186,6 @@
         "SemrushBot": 1,
         "Applebot": 1,
         "GPTBot": 1
-      }
-    },
-    {
-      "path": "/s/office-suite",
-      "total": 38,
-      "human": 6,
-      "human_verified": 0,
-      "search_ai": 4,
-      "human_verified_ex_operator": 0,
-      "seo": 0,
-      "scripted": 7,
-      "other_bot": 5,
-      "unclassified": 16,
-      "visits": 11,
-      "crawlers": {
-        "YandexBot": 2,
-        "Amazonbot": 1,
-        "ClaudeBot": 1
       }
     },
     {
@@ -5677,6 +5682,25 @@
       }
     },
     {
+      "path": "/guides/quote-to-cash-in-claude",
+      "total": 16,
+      "human": 5,
+      "human_verified": 0,
+      "search_ai": 3,
+      "human_verified_ex_operator": 0,
+      "seo": 1,
+      "scripted": 4,
+      "other_bot": 3,
+      "unclassified": 0,
+      "visits": 10,
+      "crawlers": {
+        "ClaudeBot": 1,
+        "GPTBot": 1,
+        "Amazonbot": 1,
+        "SemrushBot": 1
+      }
+    },
+    {
       "path": "/guides/set-a-freelance-hourly-rate-from-your-own-numbers",
       "total": 16,
       "human": 5,
@@ -5730,24 +5754,6 @@
       "crawlers": {
         "ClaudeBot": 1,
         "MJ12bot": 1,
-        "Amazonbot": 1
-      }
-    },
-    {
-      "path": "/guides/quote-to-cash-in-claude",
-      "total": 15,
-      "human": 5,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 0,
-      "scripted": 4,
-      "other_bot": 3,
-      "unclassified": 0,
-      "visits": 9,
-      "crawlers": {
-        "ClaudeBot": 1,
-        "GPTBot": 1,
         "Amazonbot": 1
       }
     },
@@ -5949,6 +5955,24 @@
       }
     },
     {
+      "path": "/guides/stdio-or-streamable-http",
+      "total": 8,
+      "human": 3,
+      "human_verified": 0,
+      "search_ai": 4,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 1,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 4,
+      "crawlers": {
+        "GPTBot": 2,
+        "ClaudeBot": 1,
+        "Amazonbot": 1
+      }
+    },
+    {
       "path": "/guides/how-mcp-registry-search-works",
       "total": 7,
       "human": 3,
@@ -5998,21 +6022,20 @@
       }
     },
     {
-      "path": "/guides/stdio-or-streamable-http",
+      "path": "/guides/mcp-server-logs-and-what-they-say",
       "total": 6,
       "human": 2,
       "human_verified": 0,
-      "search_ai": 4,
+      "search_ai": 3,
       "human_verified_ex_operator": 0,
       "seo": 0,
-      "scripted": 0,
+      "scripted": 1,
       "other_bot": 0,
       "unclassified": 0,
-      "visits": 4,
+      "visits": 2,
       "crawlers": {
         "GPTBot": 2,
-        "ClaudeBot": 1,
-        "Amazonbot": 1
+        "ClaudeBot": 1
       }
     },
     {
@@ -6034,6 +6057,23 @@
     },
     {
       "path": "/guides/what-is-in-the-mcp-registry",
+      "total": 5,
+      "human": 2,
+      "human_verified": 0,
+      "search_ai": 2,
+      "human_verified_ex_operator": 0,
+      "seo": 0,
+      "scripted": 1,
+      "other_bot": 0,
+      "unclassified": 0,
+      "visits": 2,
+      "crawlers": {
+        "GPTBot": 1,
+        "ClaudeBot": 1
+      }
+    },
+    {
+      "path": "/guides/mcp-server-json-fields-by-client",
       "total": 5,
       "human": 2,
       "human_verified": 0,
@@ -6085,23 +6125,6 @@
       }
     },
     {
-      "path": "/guides/mcp-server-logs-and-what-they-say",
-      "total": 4,
-      "human": 1,
-      "human_verified": 0,
-      "search_ai": 3,
-      "human_verified_ex_operator": 0,
-      "seo": 0,
-      "scripted": 0,
-      "other_bot": 0,
-      "unclassified": 0,
-      "visits": 2,
-      "crawlers": {
-        "GPTBot": 2,
-        "ClaudeBot": 1
-      }
-    },
-    {
       "path": "/guides/mcp-server-security-review",
       "total": 4,
       "human": 1,
@@ -6133,23 +6156,6 @@
       "crawlers": {
         "ClaudeBot": 1,
         "GPTBot": 1
-      }
-    },
-    {
-      "path": "/guides/mcp-server-json-fields-by-client",
-      "total": 3,
-      "human": 1,
-      "human_verified": 0,
-      "search_ai": 2,
-      "human_verified_ex_operator": 0,
-      "seo": 0,
-      "scripted": 0,
-      "other_bot": 0,
-      "unclassified": 0,
-      "visits": 2,
-      "crawlers": {
-        "GPTBot": 1,
-        "ClaudeBot": 1
       }
     },
     {
@@ -6186,30 +6192,608 @@
       }
     }
   ],
+  "render_proven_ua_profile": {
+    "why": "A render-proven UA is proof a rendering engine ran, NOT proof of a person. Breadth separates the two: a reader touches a few pages, a rendering crawler touches many. Rows with distinct_sitemap_urls >= 10 are counted as sweepers and their page views are reported separately, so the human figure has a stated floor.",
+    "render_proven_ua_strings": 53,
+    "sweeper_threshold_distinct_urls": 10,
+    "sweepers": 4,
+    "sweeper_url_touches": 89,
+    "sweeper_sitemap_page_views": 120,
+    "sweeper_sitemap_page_views_ex_operator": 117,
+    "sweeper_catalogue_page_views_ex_operator": 98,
+    "sitemap_page_views_ex_operator_excl_sweepers": 307,
+    "catalogue_page_views_ex_operator_excl_sweepers": 39,
+    "multi_country_ua_strings": 18,
+    "multi_country_note": "One UA string appearing from several countries in one week is a proxy-pool tell, not a traveller. Reported because it is the cheapest available evidence that a render-proven UA is not one person.",
+    "rows": [
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+        "requests": 203,
+        "asset_requests": 82,
+        "distinct_sitemap_urls": 53,
+        "sitemap_page_views": 71,
+        "sitemap_page_views_ex_operator": 68,
+        "catalogue_page_views_ex_operator": 63,
+        "distinct_countries": 8,
+        "countries": [
+          "CN",
+          "DE",
+          "FR",
+          "GB",
+          "JP",
+          "PL",
+          "SG",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "requests": 79,
+        "asset_requests": 37,
+        "distinct_sitemap_urls": 13,
+        "sitemap_page_views": 26,
+        "sitemap_page_views_ex_operator": 26,
+        "catalogue_page_views_ex_operator": 12,
+        "distinct_countries": 5,
+        "countries": [
+          "CN",
+          "FR",
+          "JP",
+          "PT",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+        "requests": 74,
+        "asset_requests": 35,
+        "distinct_sitemap_urls": 13,
+        "sitemap_page_views": 13,
+        "sitemap_page_views_ex_operator": 13,
+        "catalogue_page_views_ex_operator": 13,
+        "distinct_countries": 2,
+        "countries": [
+          "CN",
+          "SG"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+        "requests": 72,
+        "asset_requests": 33,
+        "distinct_sitemap_urls": 10,
+        "sitemap_page_views": 10,
+        "sitemap_page_views_ex_operator": 10,
+        "catalogue_page_views_ex_operator": 10,
+        "distinct_countries": 5,
+        "countries": [
+          "CN",
+          "DE",
+          "HK",
+          "NL",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+        "requests": 25,
+        "asset_requests": 5,
+        "distinct_sitemap_urls": 9,
+        "sitemap_page_views": 9,
+        "sitemap_page_views_ex_operator": 9,
+        "catalogue_page_views_ex_operator": 8,
+        "distinct_countries": 2,
+        "countries": [
+          "SG",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+        "requests": 61,
+        "asset_requests": 33,
+        "distinct_sitemap_urls": 7,
+        "sitemap_page_views": 7,
+        "sitemap_page_views_ex_operator": 7,
+        "catalogue_page_views_ex_operator": 7,
+        "distinct_countries": 1,
+        "countries": [
+          "CN"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "requests": 185,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 6,
+        "sitemap_page_views": 177,
+        "sitemap_page_views_ex_operator": 177,
+        "catalogue_page_views_ex_operator": 5,
+        "distinct_countries": 7,
+        "countries": [
+          "BD",
+          "GB",
+          "ID",
+          "IE",
+          "JM",
+          "US",
+          "VE"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+        "requests": 47,
+        "asset_requests": 29,
+        "distinct_sitemap_urls": 4,
+        "sitemap_page_views": 16,
+        "sitemap_page_views_ex_operator": 16,
+        "catalogue_page_views_ex_operator": 3,
+        "distinct_countries": 3,
+        "countries": [
+          "PT",
+          "US",
+          "VN"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "requests": 26,
+        "asset_requests": 10,
+        "distinct_sitemap_urls": 4,
+        "sitemap_page_views": 4,
+        "sitemap_page_views_ex_operator": 4,
+        "catalogue_page_views_ex_operator": 4,
+        "distinct_countries": 2,
+        "countries": [
+          "CN",
+          "PA"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "requests": 39,
+        "asset_requests": 25,
+        "distinct_sitemap_urls": 3,
+        "sitemap_page_views": 3,
+        "sitemap_page_views_ex_operator": 3,
+        "catalogue_page_views_ex_operator": 3,
+        "distinct_countries": 2,
+        "countries": [
+          "HK",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 26_4_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/152.0.7977.64 Mobile/15E148 Safari/604.1",
+        "requests": 37,
+        "asset_requests": 27,
+        "distinct_sitemap_urls": 3,
+        "sitemap_page_views": 10,
+        "sitemap_page_views_ex_operator": 10,
+        "catalogue_page_views_ex_operator": 4,
+        "distinct_countries": 1,
+        "countries": [
+          "VN"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "requests": 29,
+        "asset_requests": 1,
+        "distinct_sitemap_urls": 2,
+        "sitemap_page_views": 9,
+        "sitemap_page_views_ex_operator": 9,
+        "catalogue_page_views_ex_operator": 1,
+        "distinct_countries": 6,
+        "countries": [
+          "AL",
+          "AR",
+          "IN",
+          "IQ",
+          "TC",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
+        "requests": 70,
+        "asset_requests": 12,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 11,
+        "sitemap_page_views_ex_operator": 11,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "CN"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
+        "requests": 24,
+        "asset_requests": 14,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 2,
+        "sitemap_page_views_ex_operator": 2,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 3,
+        "countries": [
+          "CA",
+          "DE",
+          "GB"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+        "requests": 20,
+        "asset_requests": 6,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 9,
+        "sitemap_page_views_ex_operator": 9,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 3,
+        "countries": [
+          "CA",
+          "TW",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+        "requests": 17,
+        "asset_requests": 5,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 4,
+        "sitemap_page_views_ex_operator": 4,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "CH"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "requests": 16,
+        "asset_requests": 12,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 4,
+        "sitemap_page_views_ex_operator": 4,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.5938.132 Safari/537.36",
+        "requests": 15,
+        "asset_requests": 9,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+        "requests": 14,
+        "asset_requests": 7,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 7,
+        "sitemap_page_views_ex_operator": 7,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 2,
+        "countries": [
+          "NL",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.60 Safari/537.36 Edge/12.246",
+        "requests": 14,
+        "asset_requests": 8,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "requests": 11,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 2,
+        "sitemap_page_views_ex_operator": 2,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 2,
+        "countries": [
+          "CA",
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "requests": 9,
+        "asset_requests": 6,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 2,
+        "sitemap_page_views_ex_operator": 2,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 4,
+        "countries": [
+          "CN",
+          "CO",
+          "HK",
+          "NL"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+        "requests": 9,
+        "asset_requests": 6,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 3,
+        "sitemap_page_views_ex_operator": 3,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 2,
+        "countries": [
+          "DE",
+          "FI"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Linux; Android 10; HUAWEI P30 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.105 Mobile Safari/537.36",
+        "requests": 9,
+        "asset_requests": 7,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 1,
+        "distinct_countries": 1,
+        "countries": [
+          "CN"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+        "requests": 9,
+        "asset_requests": 7,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 2,
+        "sitemap_page_views_ex_operator": 2,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "FR"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36",
+        "requests": 8,
+        "asset_requests": 6,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 2,
+        "sitemap_page_views_ex_operator": 2,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1",
+        "requests": 7,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 3,
+        "sitemap_page_views_ex_operator": 3,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0",
+        "requests": 7,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0",
+        "requests": 6,
+        "asset_requests": 5,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 1,
+        "distinct_countries": 1,
+        "countries": [
+          "ZA"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36",
+        "requests": 6,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 2,
+        "sitemap_page_views_ex_operator": 2,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Linux; Android 11; CPH2185) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Mobile Safari/537.36",
+        "requests": 5,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 1,
+        "distinct_countries": 1,
+        "countries": [
+          "CN"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.7977.64 Safari/537.36",
+        "requests": 5,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "requests": 5,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0",
+        "requests": 5,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1",
+        "requests": 5,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
+        "requests": 5,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "VN"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+        "requests": 5,
+        "asset_requests": 4,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "NL"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "requests": 4,
+        "asset_requests": 3,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 1,
+        "sitemap_page_views_ex_operator": 1,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
+        "requests": 3,
+        "asset_requests": 1,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 2,
+        "sitemap_page_views_ex_operator": 2,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "US"
+        ]
+      },
+      {
+        "user_agent": "Mozilla/5.0 (Linux; Android 12; Redmi Note 9; Build/SD1A.250103.187) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36",
+        "requests": 3,
+        "asset_requests": 1,
+        "distinct_sitemap_urls": 1,
+        "sitemap_page_views": 2,
+        "sitemap_page_views_ex_operator": 2,
+        "catalogue_page_views_ex_operator": 0,
+        "distinct_countries": 1,
+        "countries": [
+          "HK"
+        ]
+      }
+    ]
+  },
   "human_evidence": {
     "render_proof_paths": "/^\\/(cdn-cgi\\/|favicon\\.ico|assets\\/|apple-touch-icon)/",
-    "browser_ua_strings_seen": 250,
-    "browser_ua_strings_render_proven": 52,
-    "requests_human_ua_loose": 5023,
-    "requests_render_proven": 1217,
-    "requests_render_proven_excl_operator_country": 1210,
+    "browser_ua_strings_seen": 253,
+    "browser_ua_strings_render_proven": 53,
+    "requests_human_ua_loose": 5096,
+    "requests_render_proven": 1232,
+    "requests_render_proven_excl_operator_country": 1225,
     "operator_country_excluded": "PL"
   },
   "queries": {
-    "cf_path_x_useragent_x_country@2026-09-02T08:45:02Z..2026-09-03T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_lt: \"2026-09-03T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-03T08:45:02Z..2026-09-04T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-03T08:45:02Z\", datetime_lt: \"2026-09-04T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-04T08:45:02Z..2026-09-05T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-04T08:45:02Z\", datetime_lt: \"2026-09-05T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-05T08:45:02Z..2026-09-06T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-05T08:45:02Z\", datetime_lt: \"2026-09-06T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-06T08:45:02Z..2026-09-07T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-06T08:45:02Z\", datetime_lt: \"2026-09-07T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-07T08:45:02Z..2026-09-08T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-07T08:45:02Z\", datetime_lt: \"2026-09-08T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_path_x_useragent_x_country@2026-09-08T08:45:02Z..2026-09-09T08:45:02Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-08T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
-    "cf_country": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 250, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { clientCountryName } } } } }",
-    "cf_referer_host": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 500, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { clientRefererHost } } } } }",
-    "cf_status": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 100, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { edgeResponseStatus } } } } }",
-    "cf_status_x_date": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 2000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { edgeResponseStatus date } } } } }",
-    "cf_totals": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 1, filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-02T09:09:33Z..2026-09-03T09:09:33Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T09:09:33Z\", datetime_lt: \"2026-09-03T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-03T09:09:33Z..2026-09-04T09:09:33Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-03T09:09:33Z\", datetime_lt: \"2026-09-04T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-04T09:09:33Z..2026-09-05T09:09:33Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-04T09:09:33Z\", datetime_lt: \"2026-09-05T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-05T09:09:33Z..2026-09-06T09:09:33Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-05T09:09:33Z\", datetime_lt: \"2026-09-06T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-06T09:09:33Z..2026-09-07T09:09:33Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-06T09:09:33Z\", datetime_lt: \"2026-09-07T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-07T09:09:33Z..2026-09-08T09:09:33Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-07T09:09:33Z\", datetime_lt: \"2026-09-08T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_path_x_useragent_x_country@2026-09-08T09:09:33Z..2026-09-09T09:09:33Z": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 10000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-08T09:09:33Z\", datetime_leq: \"2026-09-09T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } dimensions { clientRequestPath userAgent clientCountryName } } } } }",
+    "cf_country": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 250, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T09:09:33Z\", datetime_leq: \"2026-09-09T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { clientCountryName } } } } }",
+    "cf_referer_host": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 500, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T09:09:33Z\", datetime_leq: \"2026-09-09T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { clientRefererHost } } } } }",
+    "cf_status": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 100, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T09:09:33Z\", datetime_leq: \"2026-09-09T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { edgeResponseStatus } } } } }",
+    "cf_status_x_date": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 2000, orderBy: [count_DESC], filter: {datetime_geq: \"2026-09-02T09:09:33Z\", datetime_leq: \"2026-09-09T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { edgeResponseStatus date } } } } }",
+    "cf_totals": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 1, filter: {datetime_geq: \"2026-09-02T09:09:33Z\", datetime_leq: \"2026-09-09T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count sum { visits edgeResponseBytes } avg { sampleInterval } } } } }",
     "cf_zone_daily_30d": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequests1dGroups(limit: 40, orderBy: [date_ASC], filter: {date_geq: \"2026-08-10\", date_leq: \"2026-09-09\"}) { dimensions { date } sum { requests pageViews bytes } uniq { uniques } } } } }",
-    "cf_host_hourly": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 400, orderBy: [datetimeHour_ASC], filter: {datetime_geq: \"2026-09-02T08:45:02Z\", datetime_leq: \"2026-09-09T08:45:02Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { datetimeHour } } } } }"
+    "cf_host_hourly": "query { viewer { zones(filter: {zoneTag: \"f16be0fc9bae2ff3786d91eb7a90c023\"}) { httpRequestsAdaptiveGroups(limit: 400, orderBy: [datetimeHour_ASC], filter: {datetime_geq: \"2026-09-02T09:09:33Z\", datetime_leq: \"2026-09-09T09:09:33Z\", clientRequestHTTPHost: \"mcp.zovo.one\"}) { count dimensions { datetimeHour } } } } }"
   },
   "classification_rules": {
     "human_browser": "/^Mozilla\\/5\\.0 \\((Windows NT|Macintosh;|X11;|iPhone;|iPad;|Linux; Android|Android)/ AND /(Chrome\\/\\d|Safari\\/\\d|Firefox\\/\\d|Edg\\/\\d|OPR\\/\\d|Version\\/\\d.*Safari)/ AND NOT /(bot|crawler|spider|probe|scan|monitor|registry|health|liveness|audit|census|collector|research|validator|check|watch|uptime|pinger|beat|observatory|explorer|indexer|fetcher|scraper|archiver|agent-|-agent\\b)/i",

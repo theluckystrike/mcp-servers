@@ -309,6 +309,117 @@
       "impressions": 4647
     }
   },
+  "fresh_probe": {
+    "why": "dataState:'final' lags ~3 days and so cannot show a very recent first impression",
+    "window": {
+      "start": "2026-08-30",
+      "end": "2026-09-09"
+    },
+    "data_state": "all",
+    "host_daily_rows": 10,
+    "host_days_with_impressions": 0,
+    "host_impressions": 0,
+    "host_clicks": 0,
+    "host_daily": [
+      {
+        "keys": [
+          "2026-08-30"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-08-31"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-01"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-02"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-03"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-04"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-05"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-06"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-07"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-08"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      }
+    ],
+    "positive_control_zovo_one": {
+      "daily_rows": 10,
+      "days_with_impressions": 10,
+      "impressions": 1818,
+      "clicks": 17,
+      "last_day_with_data": "2026-09-08"
+    }
+  },
   "page": [
     {
       "keys": [
