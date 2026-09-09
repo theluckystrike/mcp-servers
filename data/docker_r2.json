@@ -1,0 +1,377 @@
+{
+  "loop": 31,
+  "artifact": "docker_r2",
+  "generated_at_utc": "2026-09-09T06:50:00Z",
+  "generated_by": "docker-catalog agent, loop 31",
+  "summary": "One server (timezone) submitted to docker/mcp-registry as a single-server PR after the build and a real MCP handshake were re-verified from a clean clone, and after all four CI validation commands were run locally against a real Docker daemon.",
+  "pull_request": {
+    "url": "https://github.com/docker/mcp-registry/pull/5030",
+    "number": 5030,
+    "repo": "docker/mcp-registry",
+    "title": "Add timezone MCP server",
+    "head": "theluckystrike:add-mcp-timezone",
+    "head_commit": "ee424e79265416f5077e3d7c65eaf5621186bd2b",
+    "base_commit": "8c773729f13f036da8c909be503fe433923a9aa2",
+    "state": "OPEN",
+    "mergeable": "MERGEABLE",
+    "files_changed": 1,
+    "additions": 23,
+    "deletions": 0,
+    "files": [
+      "servers/timezone/server.yaml"
+    ],
+    "opened_at_utc": "2026-09-09T06:46Z",
+    "supersedes": {
+      "number": 4892,
+      "title": "Add sixteen local-only servers for freelance and small-business work",
+      "state": "closed",
+      "closed_by": "us"
+    }
+  },
+  "ci_status": {
+    "checks_reported": false,
+    "workflow_run_url": "https://github.com/docker/mcp-registry/actions/runs/34320631981",
+    "workflow": ".github/workflows/ci.yaml",
+    "conclusion": "action_required",
+    "meaning": "GitHub requires a docker/mcp-registry maintainer to approve workflow runs on fork pull requests. Not specific to this PR.",
+    "peer_prs_same_state": [
+      {
+        "branch": "add-tasklite",
+        "repo": "shimon-ks/mcp-registry",
+        "conclusion": "action_required"
+      },
+      {
+        "branch": "add-proofstack",
+        "repo": "lttxzmj/mcp-reg",
+        "conclusion": "action_required"
+      },
+      {
+        "branch": "add-codecalc",
+        "repo": "suavecito585/mcp-registry",
+        "conclusion": "action_required"
+      }
+    ],
+    "actionable_by_us": false,
+    "actionable_by_operator": false
+  },
+  "build_verification": {
+    "source_repo": "https://github.com/theluckystrike/mcp-timezone",
+    "clone": "git clone --depth 1, fresh, this session",
+    "commit": "54bff6bb65bd865bdbf43d7547e493b510c96be9",
+    "commit_subject": "Dockerfile: build from this repository, not from a monorepo layout it does not have",
+    "command": "docker build --no-cache -t mcp-timezone:r2 .",
+    "exit_code": 0,
+    "stage_times_seconds": {
+      "npm install + npm run build": 43.3,
+      "npm install --omit=dev": 36.9,
+      "load node:22-alpine metadata": 3.2,
+      "export image": 1.0,
+      "sum_of_all_stages": 84.4
+    },
+    "image_id": "sha256:d0b317845d62791b8bf3e54f6de36b2481e6cb956396ab46f0f3d2f1d56bc19f",
+    "image_size_human": "324MB",
+    "image_size_bytes": 70442278,
+    "architecture": "arm64/linux",
+    "cmd": [
+      "node",
+      "dist/index.js"
+    ],
+    "note": "The 84.4s figure is the sum of per-stage buildkit DONE times, not wall clock; the run was not timed end to end, so it neither confirms nor contradicts round 1's 'about four minutes'."
+  },
+  "runtime_verification": {
+    "command": "( cat handshake.jsonl; sleep 4 ) | docker run -i --rm --network none mcp-timezone:r2",
+    "network": "none",
+    "exit_code": 0,
+    "stderr": "mcp-timezone ready (free), 490 places, data in /root/.local/share/mcp-servers/timezone",
+    "initialize": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {
+        "tools": {
+          "listChanged": true
+        },
+        "resources": {
+          "listChanged": true
+        },
+        "prompts": {
+          "listChanged": true
+        }
+      },
+      "serverInfo": {
+        "name": "mcp-timezone",
+        "version": "0.20.0"
+      }
+    },
+    "tools_list_count": 11,
+    "tools": [
+      {
+        "name": "license_status",
+        "description": "Show whether this server runs in free or Pro mode and where to upgrade.",
+        "required": []
+      },
+      {
+        "name": "license_activate",
+        "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally.",
+        "required": [
+          "key"
+        ]
+      },
+      {
+        "name": "now",
+        "description": "The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC.",
+        "required": []
+      },
+      {
+        "name": "convert_time",
+        "description": "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'.",
+        "required": [
+          "time",
+          "from_zone",
+          "to_zones"
+        ]
+      },
+      {
+        "name": "overlap",
+        "description": "The window each day when every listed place is inside working hours. Computed on a real date, so a DST week that widens or narrows the overlap is reflected.",
+        "required": [
+          "zones"
+        ]
+      },
+      {
+        "name": "find_meeting_slots",
+        "description": "Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first.",
+        "required": [
+          "participants"
+        ]
+      },
+      {
+        "name": "dst_changes",
+        "description": "The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October.",
+        "required": [
+          "zone"
+        ]
+      },
+      {
+        "name": "business_days",
+        "description": "Count the business days between two dates in a place, for delivery dates and payment terms. Returns the business-day count, the calendar total, and how many days fell on a weekend or on a holiday you passed.",
+        "required": [
+          "from",
+          "to",
+          "zone"
+        ]
+      },
+      {
+        "name": "contacts_set",
+        "description": "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later.",
+        "required": [
+          "name",
+          "zone"
+        ]
+      },
+      {
+        "name": "contacts_list",
+        "description": "Everyone you have saved, with their current local time and whether they are inside working hours right now.",
+        "required": []
+      },
+      {
+        "name": "ics_create",
+        "description": "Call this tool to write a .ics calendar file for one meeting. Returns the path written and the meeting time in UTC and in the zone you gave.",
+        "required": [
+          "title",
+          "start",
+          "zone",
+          "duration_minutes"
+        ]
+      }
+    ],
+    "tools_called_for_real": [
+      {
+        "tool": "license_status",
+        "result": {
+          "product": "timezone",
+          "tier": "free",
+          "reason": "no license found",
+          "upgradeUrl": "https://mcp.zovo.one/buy/timezone"
+        }
+      },
+      {
+        "tool": "now",
+        "args": {
+          "zones": [
+            "Europe/Warsaw",
+            "America/New_York"
+          ]
+        },
+        "ok": true
+      },
+      {
+        "tool": "dst_changes",
+        "args": {
+          "zone": "Europe/Warsaw",
+          "year": 2026
+        },
+        "ok": true,
+        "returned": "2 clock changes, 2026-03-29 and 2026-10-25, with both offsets"
+      },
+      {
+        "tool": "find_meeting_slots",
+        "args": {
+          "participants": 2
+        },
+        "ok": true,
+        "returned": "9 slots, best 2026-09-09T13:30:00.000Z, fairness 3.00h"
+      }
+    ],
+    "persistence_test": {
+      "volume": "mcp-timezone-data:/root/.local/share/mcp-servers/timezone",
+      "container_a_with_volume": "contacts_set Maria/America/Sao_Paulo -> saved",
+      "container_b_new_same_volume": "contacts_list -> 1 contact(s): Maria",
+      "container_c_no_volume": "contacts_list -> No contacts saved yet.",
+      "conclusion": "Named volume is required for contacts, licence and the monthly ics counter to survive a container restart. Declared in the entry."
+    }
+  },
+  "registry_validation": {
+    "tooling": "go run ./cmd/<x> (Taskfile.yml tasks are one-line go run wrappers; the 'task' binary is not installed on this machine and is not needed)",
+    "go_version": "go1.26.4 darwin/arm64",
+    "ci_sequence_source": ".github/workflows/ci.yaml -> scripts/ci-validation.sh",
+    "steps": [
+      {
+        "step": "task validate -- --name timezone",
+        "command": "go run ./cmd/validate --name timezone",
+        "exit_code": 0,
+        "output_lines": [
+          "Name is valid",
+          "Directory is valid",
+          "Title is valid",
+          "YAML formatting is valid",
+          "Commit is pinned",
+          "Secrets are valid",
+          "Config env is valid",
+          "License is valid",
+          "Icon is valid",
+          "Remote validation skipped (not a remote server)",
+          "OAuth dynamic configuration is valid"
+        ]
+      },
+      {
+        "step": "task build -- --tools --pull-community timezone",
+        "command": "go run ./cmd/build --tools --pull-community timezone",
+        "exit_code": 0,
+        "output": "naming to docker.io/mcp/timezone:latest done / 11 tools found. / Image built as mcp/timezone",
+        "note": "built from the pinned git URL, then ran the container to list tools"
+      },
+      {
+        "step": "task catalog -- timezone",
+        "command": "go run ./cmd/catalog timezone",
+        "exit_code": 0,
+        "output": "Catalog written to catalogs/timezone/catalog.yaml"
+      },
+      {
+        "step": "task clean -- timezone",
+        "command": "go run ./cmd/clean timezone",
+        "exit_code": 0
+      },
+      {
+        "step": "go test ./...",
+        "exit_code": 0,
+        "note": "only cmd/validate has tests; ok 0.565s"
+      }
+    ],
+    "prettier": {
+      "command": "npx --yes prettier --check servers/timezone/server.yaml",
+      "result": "All matched files use Prettier code style!"
+    },
+    "icon": {
+      "url": "https://avatars.githubusercontent.com/u/51033404?v=4",
+      "format": "png",
+      "width": 460,
+      "height": 460,
+      "bytes": 155912,
+      "limits": "<=512x512, <=2MB",
+      "valid": true
+    },
+    "license": {
+      "spdx": "MIT",
+      "source": "GitHub API repos/theluckystrike/mcp-timezone",
+      "accepted_by_validate": true
+    }
+  },
+  "entry": {
+    "path": "servers/timezone/server.yaml",
+    "generated_by": "go run ./cmd/create --category productivity https://github.com/theluckystrike/mcp-timezone",
+    "generator_output": "11 tools found. / Server definition written to servers/timezone/server.yaml.",
+    "hand_edits": [
+      "about.title replaced Timezone (TODO)",
+      "about.description replaced the TODO placeholder",
+      "config block deleted entirely (no secrets, env or parameters)",
+      "run.volumes added after measuring persistence",
+      "run.disableNetwork added after measuring an offline run"
+    ],
+    "name": "timezone",
+    "image": "mcp/timezone",
+    "type": "server",
+    "category": "productivity",
+    "title": "Timezone Meeting Planner",
+    "tags": [
+      "claude",
+      "cursor",
+      "ics",
+      "meeting-planner",
+      "model-context-protocol",
+      "timezone"
+    ],
+    "no_collision_with": "servers/time (Time (Reference), modelcontextprotocol/servers)",
+    "tools_json_included": false,
+    "tools_json_rationale": "cmd/build uses tools.json only to skip running the container; cmd/catalog never reads it. This server lists tools live with no configuration, so omitting the file makes CI prove the container answers tools/list instead of reading our claim.",
+    "readme_md_included": false,
+    "readme_md_rationale": "readme.md is written only by cmd/remote-wizard and is a remote-server convention (82 of 328 entries). Omitted to keep the diff to one file. It does override the Docker Hub overview page (see PR #4743), so it is a follow-up lever if a reviewer engages."
+  },
+  "honesty": {
+    "paid_tier_disclosed_in_catalog_description": true,
+    "free_limits_from_source": {
+      "file": "src/index.ts",
+      "FREE_MAX_PARTICIPANTS": 3,
+      "FREE_MAX_DAYS": 5,
+      "FREE_MAX_CONTACTS": 5,
+      "FREE_ICS_PER_MONTH": 3,
+      "MAX_PARTICIPANTS": 100,
+      "MAX_DAYS": 366
+    },
+    "all_11_tools_available_on_free_tier": true,
+    "over_free_horizon_behaviour": "search is shortened to 5 days, not refused (src/index.ts:322-327)",
+    "network_claim_evidence": [
+      "grep for fetch(, http.request, https.request, axios, net.connect across src/ and vendor/*/dist/: zero hits",
+      "docker run --network none answered initialize, tools/list and four tools/call requests"
+    ],
+    "credentials_required": false,
+    "host_bind_mounts": false,
+    "writes_only_to": "/root/.local/share/mcp-servers/timezone inside a Docker named volume",
+    "version_caveat": "serverInfo reports 0.20.0 because the mirrors were last synced before v0.21.0; the entry pins a commit, not a version"
+  },
+  "registry_health": {
+    "measured_at_utc": "2026-09-09T06:45Z",
+    "main_last_commit": {
+      "sha": "8c773729f13f036da8c909be503fe433923a9aa2",
+      "date": "2026-08-21T13:07:30Z",
+      "days_stale_at_measurement": 19
+    },
+    "open_pull_requests": 1145,
+    "open_pr_source": "Link header rel=last on /pulls?state=open&per_page=1",
+    "new_server_entries_merged_since_2026_03_20": 1,
+    "the_one": {
+      "path": "servers/incident-io/server.yaml",
+      "date": "2026-04-01",
+      "pr": 2203,
+      "type": "remote"
+    },
+    "new_local_server_entries_merged_since_2026_03_20": 0,
+    "history_window": "1088 commits, 2026-03-20 to 2026-08-21, git log --diff-filter=A on servers/*/server.yaml",
+    "correction_to_round_1": "Round 1 recorded that the forty most recent merges each added one server. Measured today, the forty most recent merges are pin-bump bot commits and edits to existing entries. The single-server shape is still right; the expected latency is not days.",
+    "recommendation": "Do not spend another loop on a second Docker submission until this one moves."
+  },
+  "not_done": [
+    "No readme.md in the entry (deliberate, see entry.readme_md_rationale).",
+    "The monorepo Dockerfile cycle between packages/mcp-license and servers/timezone is still unfixed. Not needed for this submission because the catalog builds from the mirror, but the next server submitted needs a mirror too.",
+    "Nothing deployed; no file outside docs/DOCKER_R2.md and data/docker_r2.json touched in this repository."
+  ],
+  "blockers": []
+}
