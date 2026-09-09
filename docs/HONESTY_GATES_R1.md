@@ -440,3 +440,20 @@ A trap worth recording for whoever runs it next: `record-tests.mjs` takes a log 
 its argument and does not read stdin. Piping a test run into it (`npm test | node
 scripts/record-tests.mjs`) makes it exit on its usage message, which closes the pipe and
 leaves the suite writing into nothing. Run the suite to a file first, then pass that path.
+
+## The median figure will fire this gate after every validation run, and that is correct
+
+`VALIDATION.medianMs` is rendered into a sentence that opens "As of <date>", so it is a
+dated snapshot rather than a standing claim, which is the right shape. But the gate compares
+it to the newest run in `data/validation.json`, and the p50 moves a little every run: 504,
+then 469, then 509, then 462 across four runs on the same day.
+
+So any loop that runs `node scripts/validate.mjs` will make this gate red until the figure is
+refreshed. That is the gate working, not churn to be designed away: the alternative is a
+performance number on the storefront that quietly drifts from the run it claims to describe.
+
+The refresh is one line, and the current values are always the last entry of
+`data/validation.json`:
+
+    export const VALIDATION = { at: "<run date>", pass: <p>, total: <t>, servers: <n>, medianMs: <p50> };
+
