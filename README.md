@@ -153,7 +153,7 @@ record.
 
 ## Validation
 
-Before anything ships: 1,507 unit tests across the servers and the shared license package (protocol smoke
+Before anything ships: 1,563 unit tests across the servers and the shared license package (protocol smoke
 tests over real stdio, plus adversarial cases: bad input, oversized strings, path traversal, concurrent
 writers, zero-byte files), a 951-check live validation database run against the built servers and the hosted
 worker (`data/validation.json`, run 50), seven rounds of user-value testing through a real MCP client (one

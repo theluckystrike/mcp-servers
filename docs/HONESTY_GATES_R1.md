@@ -418,3 +418,25 @@ written.
 
 That is the rule worth keeping: **an anchor typed into a test is a number on the live site
 with extra steps.** It rots on the same schedule, and it rots where nobody is looking.
+
+## Follow-up: the one the audit called the worst
+
+The audit named `data/tests.json` as the worst remaining case, because `README.md` renders
+it and `build-readme --check` gates the README against it, while nothing gated it against
+reality. A green gate was actively hiding a stale number.
+
+Measured and corrected 2026-09-09:
+
+    data/tests.json before : 1,507 pass at 2026-09-06T07:49, no total recorded
+    root npm test now      : 1,563 pass, 0 fail, of 1,574
+    README before          : "Before anything ships: 1,507 unit tests"
+    README now             : "Before anything ships: 1,563 unit tests"
+
+So the public figure was 56 tests behind, and the mechanism that was supposed to keep it
+honest could not see it. `scripts/record-tests.mjs` already exists to write that file from a
+real run; it simply had not been run since the v0.20.0 release chain.
+
+A trap worth recording for whoever runs it next: `record-tests.mjs` takes a log FILE PATH as
+its argument and does not read stdin. Piping a test run into it (`npm test | node
+scripts/record-tests.mjs`) makes it exit on its usage message, which closes the pipe and
+leaves the suite writing into nothing. Run the suite to a file first, then pass that path.

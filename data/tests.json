@@ -1,9 +1,9 @@
 {
-  "tests": 1518,
-  "pass": 1507,
+  "tests": 1574,
+  "pass": 1563,
   "fail": 0,
   "cancelled": 0,
   "skipped": 11,
-  "at": "2026-09-06T07:49:22.496Z",
-  "release": "v0.20.0"
+  "at": "2026-09-09T10:09:51.296Z",
+  "release": null
 }
