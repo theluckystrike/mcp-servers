@@ -48,3 +48,21 @@ Named gaps on the indexed server, quoted from its own score page:
 3. No paid APIs, no paid listings, no accounts, no OAuth sign-in.
 4. Own only your assigned files. Do not deploy; the orchestrator deploys.
 5. Every number names the command or file it came from.
+
+## Coupling discovered mid-loop: descriptions are load-bearing in two places
+
+`remote/build-vendor.mjs` vendors each server's source into the hosted worker and applies
+about 113 exact-string patches while doing so. Several match a tool's `description`
+verbatim, because the hosted copy must say something different: the local zip server says
+"List the archives this server created", the hosted one says "created for your token",
+since a hosted tenant has no data directory.
+
+Those patches throw on a failed match. Editing a description in `servers/<name>/src` without
+updating its counterpart breaks the hosted build:
+
+    Error: patch did not apply: zip zip_history description
+
+So the rule for anyone editing tool text: grep `remote/build-vendor.mjs` for the tool first,
+using `/usr/bin/grep` because plain `grep` is shadowed here and can silently return nothing,
+and update both sides. `node remote/build-vendor.mjs` exiting cleanly is the check that
+proves the hosted half still works, and it catches more than a stdio boot test does.
