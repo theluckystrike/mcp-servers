@@ -12,8 +12,14 @@ that matter.
 Glama computes Tool Definition Quality as 60 percent of the MEAN tool score plus 40 percent
 of the MINIMUM. One tool caps the server. Before this loop the minimum on all 31 servers
 was the same pair of tools, `license_status` and `license_activate`, registered once in
-`packages/mcp-license/src/index.ts` and inherited by every server, and they scored 2.90 and
-2.75 here. Fixing that one file moved 31 servers at once; fixing a per-server tool moves one.
+`packages/mcp-license/src/index.ts` and inherited by every server. Both scored 2.90 here and
+both are now 3.85 or better, at 207 and 209 characters. Fixing that one file moved 31 servers
+at once; fixing a per-server tool moves one.
+
+They were also over the estate's own 220-character contract ceiling before this loop, at 534
+and 674 characters, so that pair was failing the description assertion on every server in the
+estate. A separate measurement of the Glama connector scores, made by another agent this loop,
+found `license_activate` was the minimum-scoring tool on 20 of 20 connectors at a mean of 2.26.
 
 ## What changed
 
@@ -106,7 +112,7 @@ quality gate to let this work through is not this agent's call. The tools still 
   `change_order_invoice_payload` and `milestone_payload`: invoice_create-ready items in MAJOR
   units and quote_create-ready items in MINOR units, exactly 100x apart.
 - Free-tier caps are named with their number wherever one exists, so an assistant can explain
-  a refusal instead of retrying it: 3 boards and 200 tasks (kanban), 7 days (time-tracker),
+  a refusal instead of retrying it: 3 boards and 200 open tasks (kanban), 7 days (time-tracker),
   30 days (expense-tracker), 3 invoices a month (invoice), 5 statements a month
   (statement-of-account), 5 documents a month (billing-docs), 20 codes and 20 archives a month
   (barcode, zip), 3 watches (price-tracker), 2 calendars (calendar), 5 contacts (timezone).
@@ -114,8 +120,8 @@ quality gate to let this work through is not this agent's call. The tools still 
 ## Verification
 
 - `npm run build` at the root: clean, all 31 servers plus office-suite and packages/mcp-license.
-- `npm test -w servers/<name>` for all 32 servers: 0 failures. Root `npm test`: exit 0,
-  0 `not ok` lines.
+- `npm test -w servers/<name>` for all 32 servers: 0 failures. Root `npm test`: 34 suites,
+  1563 assertions, 0 failures, 0 `not ok` lines.
 - `node remote/build-vendor.mjs`: exits 0. Twelve of its exact-string patches match tool
   descriptions and were updated on both sides, keeping the hosted wording's own meaning
   (download links valid one hour, per-token registers, no PDF renderer on Workers).

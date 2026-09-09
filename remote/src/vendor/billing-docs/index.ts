@@ -1069,7 +1069,7 @@ server.registerTool("purchase_order_text", {
 
 server.registerTool("purchase_order_receive", {
   title: "Mark a purchase order received",
-  description: "Record that an order arrived. partial keeps it open and can be repeated, each receipt kept with its date and note; a full receipt closes it. An order already received in full, or a date before it, is refused.",
+  description: "Record that an order arrived. partial keeps it open and can be repeated, each receipt kept with its date and note; a full receipt closes it. An order already received, or a date before the order date, is refused.",
   inputSchema: {
     id: z.string().describe("Purchase order id such as PO-2026-0001"),
     partial: z.boolean().optional().describe("True when only some of the order arrived. The order stays open and can be received again. Default false"),

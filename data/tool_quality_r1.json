@@ -197,7 +197,7 @@
             "total": 3.95
           },
           "chars_before": 199,
-          "chars_after": 201
+          "chars_after": 212
         },
         {
           "tool": "loan_journal",
@@ -920,7 +920,7 @@
             "total": 3.5
           },
           "chars_before": 172,
-          "chars_after": 208
+          "chars_after": 212
         },
         {
           "tool": "purchase_order_delete",
@@ -3716,7 +3716,7 @@
             "total": 3.6
           },
           "chars_before": 119,
-          "chars_after": 202
+          "chars_after": 201
         },
         {
           "tool": "task_move",
