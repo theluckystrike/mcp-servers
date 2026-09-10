@@ -338,7 +338,7 @@ server.registerTool("schedule_get", {
 
 server.registerTool("schedule_update", {
   title: "Update a schedule",
-  description: "Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only.",
+  description: "Change one schedule by id: client, items, currency, cadence, dates, due_days, notes or auto_generate. Only the fields you pass change. Periods already invoiced are never re-issued, so a new amount applies to future ones.",
   inputSchema: {
     id: z.string(),
     client: z.string().optional(),
@@ -690,7 +690,7 @@ server.registerTool("invoice_generate_due", {
 
 server.registerTool("schedule_history", {
   title: "Schedule history",
-  description: "The audit log for one schedule, oldest first: period, invoice number, dates, amount, PDF path, and whether that invoice is unpaid, paid, skipped or has since been deleted. Pro.",
+  description: "The audit log for one schedule id, oldest first: period, invoice number, issue and due dates, amount, PDF path, and whether that invoice is unpaid, paid, skipped or since deleted. schedule_list finds the id. Pro.",
   inputSchema: { id: z.string() },
 }, async (a) => {
   try {

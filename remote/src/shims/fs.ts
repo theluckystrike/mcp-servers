@@ -84,6 +84,18 @@ export function publishFile(p: string): string | null {
 }
 
 export function existsSync(p: string): boolean {
+  // The root of this virtual filesystem always exists, the same way it does on a real one.
+  // Nothing ever calls mkdirSync("/"), so it would otherwise never enter `dirs` and every
+  // ancestor walk that reaches the root would conclude the path is uncreatable.
+  //
+  // That is not hypothetical. The servers that write a caller-supplied path use a BOUNDED
+  // ancestor walk rather than mkdirSync(recursive), because on Linux a recursive mkdir under
+  // /proc retries forever. The bounded walk climbs to an existing ancestor and refuses if it
+  // finds none, so hosted zip_extract writing to the virtual "/out/" failed with
+  // "cannot create /out: no existing ancestor directory" the first time that fix reached
+  // production. Treating the root as present is both correct and the narrowest repair: it
+  // fixes every server that writes to a virtual path, not only the one whose test caught it.
+  if (p === "/") return true;
   const c = ctx();
   return c.files.has(p) || c.dirs.has(p);
 }

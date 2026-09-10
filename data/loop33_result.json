@@ -43,11 +43,12 @@
   "human_gated": [],
   "open": [],
   "dead_advertised_path": {
-    "what": "https://mcp.zovo.one/mcp/<server>, the headline connect-by-URL path, answers initialize and tools/list with 200 and the full tool list, and answers every tools/call with HTTP 401. The working shape is /mcp/<server>/t/<token>, and a token comes from /mcp/connect.",
-    "scope": "It was the above-the-fold hero on 30 of 30 product pages, on all 31 llms.txt lines, and 81 of 85 active registry rows landed there. So 100 percent of the only channel that delivers humans pointed at a path that delivers no value, hits no usage cap, and therefore never reaches checkout.",
+    "what": "https://mcp.zovo.one/mcp/<server>, the headline connect-by-URL path, needs a token. It answers initialize and tools/list with 200 and the full tool list, by design so directory health probes do not mark it down, and refuses every tools/call without one. A token works either as an Authorization Bearer header or in the /mcp/<server>/t/<token> path form, and a token is minted at /mcp/connect.",
+    "scope": "It was advertised as the zero-install path on 30 of 30 product pages and all 31 llms.txt lines WITHOUT saying a token was needed or where to get one, and 81 of 85 active registry rows land there. The whole point of a paste-a-URL path is a client that cannot set headers, and that is exactly the client that cannot use the bare form at all.",
     "why_it_hid": "It looks alive from every direction an automated check looks. A previous loop deliberately opened initialize and tools/list to unauthenticated callers so directory health probes would stop publishing the servers as down. Every validation and every prober passed. Only a tools/call fails, and nothing was calling one against the tokenless URL. In a client the user sees the tools appear and then a tool error.",
     "confirmed_by": "Two independent instruments: the funnel audit, and an orchestrator probe that ran the same tools/call against the tokenless URL (401) and against a freshly minted token URL (200, business profile saved).",
-    "lesson": "For a hosted endpoint the shipping test is a real tools/call through the exact URL the marketing prints, not a tools/list. Discovery succeeding is not the product working."
+    "lesson": "For a hosted endpoint the shipping test is a real tools/call through the exact URL the marketing prints, carrying only what the page tells a reader to have. Discovery succeeding is not the product working.",
+    "precision": "An earlier wording called the endpoint dead. That overstates it and was corrected after a second agent challenged it and was right: the bare URL returns 200 with a Bearer header, verified live. The defect is that it was advertised without its prerequisite, not that it is broken."
   },
   "click_instrument": {
     "was_lying": "Proved unconfounded: a Googlebot user agent with Accept text/html, no probe header, on a dead product id was recorded as a click. The counter also moved 1,685 to 1,690 in 16 unattended minutes.",
@@ -63,5 +64,18 @@
   "answered_no": [
     "An agent-native payment rail is not reachable without a human step. The MCP specification has no payment primitive; the proposal for one closed unmerged. x402 is live and a no-account facilitator exists, but it needs a wallet address, which is a custody decision only the operator can take, and decisively no mainstream MCP client settles a 402, so every one of them would need a separately funded bridge. Median x402 price is a cent per call against a nineteen dollar one-time product.",
     "The tokenless endpoint should NOT self-provision a tenant. The transport issues no session id, so a session-scoped tenant would silently lose stored documents, bypass the mint rate limit, and break the binding that lets a buyer keep their data, meaning someone who paid would land back on the free tier with nothing."
-  ]
+  ],
+  "github_channel": {
+    "baseline": "22 of 34 buyer-intent GitHub queries surfaced one of our repos, with rank 1 on 10 of them. The split was total: 11 of 17 uncontested queries in the top 3, and 0 of 7 contested ones.",
+    "mechanism": "Repository search reads name, description and topics and nothing else, proved with a control pair where a word present only in topics matches and a word present only in package.json does not. A hyphenated topic does not match its component words. Query-term coverage is the gate at 1.00 mean where we surfaced against 0.90 where we did not, and every sub-1.00 query returned nothing of ours.",
+    "stars_refuted": "Stars are not the ranking factor. Zero-star, zero-topic repos held rank 1 on fields of 14 to 91 results; across 87 competitors captured in top-fives the median is 1 star and 35 have zero.",
+    "acted": "All 32 mirrors rewritten through a single generator so a sync reproduces the live bytes exactly. Coverage against the 18 frozen buyer questions moved 0.608 to 0.862, topics 8-9 to 15-16, and the README now leads with capability and only install paths that work.",
+    "result": "22 of 34 to 32 of 34 surfaced, rank 1 from 10 to 15. Contested queries stayed 0 of 7 in the top three across all three runs, so coverage fixed appearing and not winning. The second pass ran about 20 minutes after the change, so its small moves are index noise and the honest re-measure dates are recorded as 2026-09-17 and 2026-10-10.",
+    "refused": "Four keyword additions were refused as untrue, notably putting pdf on bank-statement, which is CSV only."
+  },
+  "product_gap": {
+    "finding": "Blind question 4, whether an assistant can read a bank statement PDF and categorise the transactions, has NO honest answer in this estate. The bank-statement server takes CSV and text exports, not PDFs.",
+    "why_it_matters": "It is the one question of the 18 where our own catalogue implies an answer we cannot give, and the market named four competitors for it. A PDF-to-transactions path is the clearest demand-evidenced product gap the loop found.",
+    "status": "Recorded, not acted on. Adding it late in this loop would have been scope creep."
+  }
 }

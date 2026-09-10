@@ -2,7 +2,7 @@
 import { registerDocxUpload, stageUpload } from "../../shims/docx-upload.js";
 import { existsSync, publishFile } from "../../shims/fs.js";
 import { randomBytes } from "node:crypto";
-import { closeSync, mkdirSync, openSync, readFileSync, writeFileSync } from "../../shims/fs.js";
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "../../shims/fs.js";
 import { homedir } from "../../shims/os.js";
 import { dirname, isAbsolute, join, resolve as resolvePath } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -62,6 +62,28 @@ function slug(s: string): string {
  * second would clobber the first. A path this server derived itself is never allowed to
  * land on an earlier file -- it gets -2, -3, ... instead.
  */
+
+/**
+ * Create a directory and any missing ancestors, without mkdirSync's recursive mode.
+ * mkdirSync(recursive) never returns on a pseudo-filesystem: measured on Linux, mkdir
+ * under /proc answers ENOENT in 0 ms, Node reads that as a missing parent and retries
+ * forever, so a caller-supplied out_path there hung the server permanently. Bounded walk,
+ * non-recursive create, so a repeated ENOENT terminates on the first level.
+ */
+function ensureDirBounded(dir: string): void {
+  if (existsSync(dir)) return;
+  const missing: string[] = [];
+  let cur = dir;
+  for (let i = 0; i < 64 && !existsSync(cur); i++) {
+    missing.push(cur);
+    const parent = dirname(cur);
+    if (parent === cur) break;
+    cur = parent;
+  }
+  if (!existsSync(cur)) throw new Error(`cannot create ${dir}: no existing ancestor directory`);
+  for (const d of missing.reverse()) mkdirSync(d);
+}
+
 function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {
   const name = expandPath(out ?? fallbackName).split("/").pop() as string;
   const withExt = name.toLowerCase().endsWith(ext) ? name : `${name.replace(/\.[A-Za-z0-9]{1,8}$/, "")}${ext}`;
@@ -327,7 +349,7 @@ server.registerTool("resume_to_markdown", {
 
 server.registerTool("resume_to_html", {
   title: "Printable resume HTML",
-  description: "Call this tool to write the resume as semantic HTML with a print stylesheet and return the path; print it to PDF from a browser. Bullets are trimmed to fit max_pages. Free and unlimited.",
+  description: "Call this tool to write the resume as semantic HTML with a print stylesheet and return where it went; print it to PDF from a browser, because there is no doc_to_pdf here. Bullets are trimmed to fit max_pages. Free.",
   inputSchema: {
     variant: z.string().optional(), target_role: z.string().optional(),
     max_pages: z.number().int().min(1).max(5).default(2).describe("Bullets are trimmed to fit this many pages against a measured word budget. Default 2."),

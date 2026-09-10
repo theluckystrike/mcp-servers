@@ -74,6 +74,32 @@ function expandPath(p: string): string {
  * processes writing a derived path would both pass the check and the second would clobber
  * the first. A path this server derived itself gets -2, -3, ... instead.
  */
+
+/**
+ * Create a directory and any missing ancestors, without mkdirSync's recursive mode.
+ *
+ * mkdirSync(recursive) never returns on a pseudo-filesystem: measured on Linux in a
+ * node:22-alpine container, mkdir("/proc/nope") answers ENOENT in 0 ms, Node reads that as
+ * a missing parent and retries forever, and the call had not returned after 25 seconds. Any
+ * caller-supplied output path under /proc, /sys or /dev hung the server permanently. The
+ * ancestors are walked here under a hard bound and each level is created non-recursively,
+ * so a repeated ENOENT terminates on the first one. Verified on Linux: /proc throws ENOENT
+ * and /sys throws EROFS, both in 0 ms, while a normal nested path still succeeds.
+ */
+function ensureDirBounded(dir: string): void {
+  if (existsSync(dir)) return;
+  const missing: string[] = [];
+  let cur = dir;
+  for (let i = 0; i < 64 && !existsSync(cur); i++) {
+    missing.push(cur);
+    const parent = dirname(cur);
+    if (parent === cur) break;
+    cur = parent;
+  }
+  if (!existsSync(cur)) throw new Error(`cannot create ${dir}: no existing ancestor directory`);
+  for (const d of missing.reverse()) mkdirSync(d);
+}
+
 function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {
   const name = expandPath(out ?? fallbackName).split("/").pop() as string;
   const withExt = name.toLowerCase().endsWith(ext) ? name : `${name.replace(/\.[A-Za-z0-9]{1,8}$/, "")}${ext}`;

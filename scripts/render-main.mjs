@@ -155,7 +155,8 @@ ${l33 ? `<div class="card"><b>Loop 33, ${esc(l33.date)}.</b> ${esc(l33.headline)
 <p class="dim"><b>Defect found on it.</b> ${esc(l33.retrieval_vs_citation.defect_found)}</p>
 <p class="dim"><b>What follows.</b> ${esc(l33.citation_sources.consequence)}</p>
 ${l33.dead_advertised_path ? `<p class="dim"><b>The advertised zero-install URL was dead.</b> ${esc(l33.dead_advertised_path.what)} ${esc(l33.dead_advertised_path.scope)}</p>
-<p class="dim"><b>Why it hid.</b> ${esc(l33.dead_advertised_path.why_it_hid)} ${esc(l33.dead_advertised_path.lesson)}</p>` : ""}
+<p class="dim"><b>Why it hid.</b> ${esc(l33.dead_advertised_path.why_it_hid)} ${esc(l33.dead_advertised_path.lesson)}</p>
+<p class="dim"><b>Precision.</b> ${esc(l33.dead_advertised_path.precision)}</p>` : ""}
 ${l33.click_instrument ? `<p class="dim"><b>The upgrade-click counter was lying, and now is not.</b> ${esc(l33.click_instrument.was_lying)} ${esc(l33.click_instrument.in_product)} ${esc(l33.click_instrument.now)}</p>` : ""}
 ${(l33.shipped||[]).length ? `<p class="dim"><b>Shipped this loop.</b></p><ul class="dim">${(l33.shipped||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
 ${(l33.corrections_to_prior_beliefs||[]).length ? `<p class="dim"><b>Beliefs this loop corrected.</b></p><ul class="dim">${(l33.corrections_to_prior_beliefs||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}

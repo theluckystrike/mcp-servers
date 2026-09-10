@@ -359,7 +359,7 @@ const server = new McpServer(
 
 server.registerTool("quote_create", {
   title: "Create a quote",
-  description: "Create a quote and return its Q number and totals. unit_price is in MAJOR units; currency, VAT and the issuer come from the shared profile. It expires by itself after validity_days. Free: 5 open quotes.",
+  description: "Store a quote for client from items and return its Q number, VAT and totals. unit_price is in MAJOR units; currency, VAT and issuer come from the shared profile. A duplicate of an open quote is refused. Free: 5 open.",
   inputSchema: {
     client: z.string().min(1, "client is required").max(MAX_CLIENT_NAME, `client must be ${MAX_CLIENT_NAME} characters or fewer`)
       .describe("Client name or id. A name the invoice server already knows brings its address, email and VAT id onto the quote"),

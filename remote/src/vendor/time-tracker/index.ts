@@ -972,7 +972,7 @@ server.registerTool("entry_mark_billed", {
 
 server.registerTool("invoice_summary", {
   title: "Invoice summary",
-  description: "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00).",
+  description: "Turn tracked billable time into invoice lines for one project: hours, hourly rate, amount per task and the total, one line per rate so two rates never average. Hours already marked billed are left out. Free: last 7 days.",
   inputSchema: {
     project: z.string().min(1).describe("Project or client to invoice"),
     from: z.string().describe("ISO date/time start of the billing period. Free covers the last 7 days; Pro invoices any period from the full history."),

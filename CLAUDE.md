@@ -37,12 +37,17 @@ instrument cited: github.com 21, glama.ai 7, ours 4, apify.com 4, mcpservers.org
 
 ## Traps that have each cost a loop
 
-1. **The advertised hosted URL was dead.** `/mcp/<server>` answers `initialize` and
-   `tools/list` with 200 and 401s every `tools/call`. The working shape is
-   `/mcp/<server>/t/<token>` with a token from `/mcp/connect`. It looked healthy to every
-   automated check because discovery was deliberately opened to unauthenticated callers.
-   **The shipping test for a hosted endpoint is a real `tools/call` through the exact URL the
-   marketing prints.** Discovery succeeding is not the product working.
+1. **The advertised hosted URL was missing its prerequisite.** `/mcp/<server>` needs a token.
+   It answers `initialize` and `tools/list` with 200, deliberately, so directory health probes
+   do not mark it down, and refuses every `tools/call` without one. A token works as an
+   `Authorization: Bearer` header or in the `/mcp/<server>/t/<token>` path form, and is minted
+   at `/mcp/connect`. It was advertised as the zero-install paste-a-URL path on 30 product
+   pages and 31 llms.txt lines without saying any of that, and the client that needs a
+   paste-a-URL path is exactly the client that cannot set a header. It looked healthy to every
+   automated check. **The shipping test for a hosted endpoint is a real `tools/call` through
+   the exact URL the marketing prints, carrying only what the page tells a reader to have.**
+   Discovery succeeding is not the product working. Note `/mcp/connect` enforces 10 mints per
+   IP per hour; exhausting it yields an EMPTY token, which then reads as a spurious 401.
 2. **Tool descriptions are a build input.** `remote/build-vendor.mjs` applies about 113 exact
    string patches and throws on a miss. Before editing any description, run
    `/usr/bin/grep -n '<server> <tool> description' remote/build-vendor.mjs`, update both
