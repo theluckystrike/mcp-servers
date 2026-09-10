@@ -43,7 +43,14 @@
     "All 32 mirror repositories rewritten through one generator, so a sync reproduces the live bytes exactly, proved by a dry run producing a byte-identical README and a second run reporting zero changes. GitHub search coverage against the 18 frozen buyer questions moved 0.608 to 0.862, topics 8-9 to 15-16, and the README now leads with capability. The npx install block it used to lead with was dead: npm returns 404 for those packages against a passing control, and no dist is committed."
   ],
   "human_gated": [],
-  "open": [],
+  "open": [
+    "Registry entries at latest version reads 72 of 91, against 85 of 85 before. The target rose because new manifests exist, and the shortfall is names that have never been published, including the two new servers. Spot-checked live: existing entries are present at 0.21.0. Verify the count returns to full after the publish rather than assuming it.",
+    "Whether the Gemini CLI gallery indexes the 30 mirrors. Its crawler runs daily, so check on or after 2026-09-11.",
+    "Whether the GitHub vocabulary pass moves ranks once the index settles. Re-run scripts/gh-search-rank.mjs on 2026-09-17 and 2026-10-10; today measurement was 20 minutes after the change and its small moves are index noise.",
+    "Whether IndexNow moves anything. 154 URLs accepted by Bing, Yandex, Seznam and Naver, and accepted is not indexed. Re-measure 2026-09-24. Brave is not an IndexNow participant, so this cannot move the one index we are proven to be in.",
+    "The blind recommendation KPI is 0 of 18 and must be re-run by a FRESH agent after the GitHub and content changes have been crawled, per docs/BLIND_RECOMMENDATION_PROCEDURE.md.",
+    "The research file the operator pointed at, ~/Desktop/platform-analysis-2026/, could not be read. All 20 files are iCloud-evicted: ls -lO reports compressed,dataless and cat returns an empty body with exit 0, which is the signature of an evicted file rather than an empty one. Nothing in this loop is based on it."
+  ],
   "dead_advertised_path": {
     "what": "https://mcp.zovo.one/mcp/<server>, the headline connect-by-URL path, needs a token. It answers initialize and tools/list with 200 and the full tool list, by design so directory health probes do not mark it down, and refuses every tools/call without one. A token works either as an Authorization Bearer header or in the /mcp/<server>/t/<token> path form, and a token is minted at /mcp/connect.",
     "scope": "It was advertised as the zero-install path on 30 of 30 product pages and all 31 llms.txt lines WITHOUT saying a token was needed or where to get one, and 81 of 85 active registry rows land there. The whole point of a paste-a-URL path is a client that cannot set headers, and that is exactly the client that cannot use the bare form at all.",

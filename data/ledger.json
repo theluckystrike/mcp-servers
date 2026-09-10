@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T12:09:23.526Z",
+  "generated_at": "2026-09-10T14:41:09.097Z",
   "session": {
     "count": 75,
     "history": [
@@ -650,6 +650,49 @@
       }
     },
     {
+      "id": "checklist",
+      "npm_name": "@theluckystrike/mcp-checklist",
+      "version": "0.21.0",
+      "dir": "servers/checklist",
+      "tools": [
+        "checklist_create",
+        "checklist_item_add",
+        "checklist_item_remove",
+        "checklist_show",
+        "checklist_list",
+        "checklist_delete",
+        "run_start",
+        "run_check",
+        "run_show",
+        "run_list",
+        "run_sign_off",
+        "run_status",
+        "run_report",
+        "run_delete"
+      ],
+      "tool_count": 14,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "pending",
+      "result_status": "DONE",
+      "loc": 1089,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
       "version": "0.21.0",
@@ -1016,7 +1059,48 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 435,
+      "loc": 437,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "packing-list",
+      "npm_name": "@theluckystrike/mcp-packing-list",
+      "version": "0.21.0",
+      "dir": "servers/packing-list",
+      "tools": [
+        "packing_list_create",
+        "packing_expect",
+        "carton_add",
+        "pack_item",
+        "unpack_item",
+        "packing_list_show",
+        "packing_list_list",
+        "carton_report",
+        "packing_shortfall",
+        "packing_list_status",
+        "packing_slip",
+        "packing_list_delete"
+      ],
+      "tool_count": 12,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "pending",
+      "result_status": "DONE",
+      "loc": 1167,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1589,6 +1673,11 @@
         "url": "https://mcp.zovo.one/buy/change-order"
       },
       {
+        "id": "checklist",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/checklist"
+      },
+      {
         "id": "clauses",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/clauses"
@@ -1637,6 +1726,11 @@
         "id": "office-suite",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/office-suite"
+      },
+      {
+        "id": "packing-list",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/packing-list"
       },
       {
         "id": "pdf",
@@ -1707,6 +1801,14 @@
   },
   "docs": [
     {
+      "file": "docs/AGENT_PAYMENTS_R1.md",
+      "first_line": "Agent-native payments for the hosted MCP endpoints — research, design, verdict"
+    },
+    {
+      "file": "docs/AI_INDEX_R1.md",
+      "first_line": "AI-assistant index measurement — R1 (2026-09-10)"
+    },
+    {
       "file": "docs/AMORTIZATION_AUDIT.md",
       "first_line": "mcp-amortization: Part 2 CLI run and the Part 1 gaps"
     },
@@ -1769,6 +1871,14 @@
     {
       "file": "docs/BILLING_DOCS_RESULT.md",
       "first_line": "mcp-billing-docs: build"
+    },
+    {
+      "file": "docs/BLIND_RECOMMENDATION_PROCEDURE.md",
+      "first_line": "Blind recommendation test: the estate's primary discovery KPI"
+    },
+    {
+      "file": "docs/BLIND_RECOMMENDATION_R1.md",
+      "first_line": "Blind MCP Recommendation Run — R1"
     },
     {
       "file": "docs/CALENDAR_AUDIT.md",
@@ -1911,6 +2021,10 @@
       "first_line": "Content round 3: guides, setup and compare pages for currency, docx, timezone - 2026-09-03"
     },
     {
+      "file": "docs/CONTENT_R4.md",
+      "first_line": "CONTENT_R4, writing for the crawler that actually reads this site, 2026-09-10"
+    },
+    {
       "file": "docs/CONTENT_R4_RESULT.md",
       "first_line": "Content round 4: guides, setup and compare pages for resume, recurring, clauses - 2026-09-03"
     },
@@ -1973,6 +2087,10 @@
     {
       "file": "docs/DISTRIBUTION.md",
       "first_line": "Distribution runbook — 4 MCP servers (theluckystrike)"
+    },
+    {
+      "file": "docs/DISTRIBUTION_R2.md",
+      "first_line": "Distribution round 2: new surfaces (2026-09-10)"
     },
     {
       "file": "docs/DISTRIBUTION_RESULT.md",
@@ -2095,12 +2213,24 @@
       "first_line": "Free directory submissions (forms + PR lists) — RESULT"
     },
     {
+      "file": "docs/FUNNEL_R1.md",
+      "first_line": "Funnel round 1: discovery to money, walked end to end (loop 33, 2026-09-10)"
+    },
+    {
+      "file": "docs/GH_SEARCH_R1.md",
+      "first_line": "GitHub as the front door: clone traffic, repo search rank, and what the mirrors changed"
+    },
+    {
       "file": "docs/GLAMA_R1.md",
       "first_line": "Glama round 1 — is the awesome-mcp-servers PR really hard-blocked?"
     },
     {
       "file": "docs/GLAMA_R2.md",
       "first_line": "Glama round 2 — why 1 of 33, and what to do instead"
+    },
+    {
+      "file": "docs/GOOGLE_INDEX_R1.md",
+      "first_line": "Why Google indexes zovo.one and will not touch mcp.zovo.one (loop 33, 2026-09-10)"
     },
     {
       "file": "docs/GSC_RESULT.md",
@@ -2219,6 +2349,14 @@
       "first_line": "Loop 32 brief (2026-09-10)"
     },
     {
+      "file": "docs/LOOP33_BRIEF.md",
+      "first_line": "Loop 33 brief (2026-09-10)"
+    },
+    {
+      "file": "docs/LOOP33_CONVERGENCE.md",
+      "first_line": "Three instruments, one conclusion"
+    },
+    {
       "file": "docs/MARKETPLACES_RESULT.md",
       "first_line": "Marketplaces: Docker MCP catalog + Cline marketplace"
     },
@@ -2273,6 +2411,10 @@
     {
       "file": "docs/NPM_UNBLOCK_R2.md",
       "first_line": "npm unblock, round 2 — exhausting every path to a first publish"
+    },
+    {
+      "file": "docs/OPERATOR_ACTIONS_LOOP33.md",
+      "first_line": "Operator actions, loop 33"
     },
     {
       "file": "docs/ORGANIC_R2.md",
@@ -2421,6 +2563,10 @@
     {
       "file": "docs/README_DEPTH_RESULT.md",
       "first_line": "README depth pass — 2026-09-02"
+    },
+    {
+      "file": "docs/RECOMMENDATION_SOURCES_R1.md",
+      "first_line": "Where MCP server recommendations actually come from"
     },
     {
       "file": "docs/RECOVERABLE_SLOTS_RESULT.md",
@@ -2575,8 +2721,16 @@
       "first_line": "mcp-timezone: adversarial audit and user-value run"
     },
     {
+      "file": "docs/TOKEN_DEMAND_R1.md",
+      "first_line": "Token demand, round 1 (2026-09-10)"
+    },
+    {
       "file": "docs/TOOL_QUALITY_R1.md",
       "first_line": "Tool description quality, loop 31 (2026-09-09)"
+    },
+    {
+      "file": "docs/TOOL_QUALITY_R2.md",
+      "first_line": "Tool description quality, round 2 (loop 33, 2026-09-10)"
     },
     {
       "file": "docs/TRAFFIC_R1.md",
@@ -2737,6 +2891,10 @@
     {
       "file": "docs/VSCODE_GALLERY_R1.md",
       "first_line": "Why these servers are absent from VS Code's MCP gallery (2026-09-09)"
+    },
+    {
+      "file": "docs/VSCODE_GALLERY_R2.md",
+      "first_line": "VS Code MCP gallery: the subfolder hypothesis is refuted (2026-09-10)"
     },
     {
       "file": "docs/WEEKLY_2026-09-05.md",
