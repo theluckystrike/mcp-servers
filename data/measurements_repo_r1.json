@@ -1,0 +1,22 @@
+{
+  "published_at": "2026-09-10",
+  "url": "https://github.com/theluckystrike/mcp-ecosystem-measurements",
+  "public": true,
+  "files": 61,
+  "findings": 12,
+  "findings_with_written_notes": 9,
+  "findings_evidence_only": [
+    "01-registry-search-name-only",
+    "06-remote-endpoint-auth",
+    "07-release-download-counts"
+  ],
+  "topics": 10,
+  "homepage": "https://github.com/theluckystrike/mcp-servers",
+  "refuted_hypothesis_published": "05-vscode-gallery-selection",
+  "conflict_of_interest_disclosed": "DISCLOSURE.md, at the top",
+  "humanize": {
+    "scanner": "/Users/mike/content-pipeline/voice/humanize-scan.py",
+    "controls": "known-bad FAIL, known-good PASS",
+    "result": "0 hard, 1 soft"
+  }
+}
