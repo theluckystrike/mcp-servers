@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T14:41:09.097Z",
+  "generated_at": "2026-09-10T15:25:57.378Z",
   "session": {
     "count": 75,
     "history": [
@@ -2359,6 +2359,10 @@
     {
       "file": "docs/MARKETPLACES_RESULT.md",
       "first_line": "Marketplaces: Docker MCP catalog + Cline marketplace"
+    },
+    {
+      "file": "docs/MEASUREMENTS_REPO_R1.md",
+      "first_line": "The public measurements repository, round 1 (2026-09-10)"
     },
     {
       "file": "docs/MIRRORS_RESULT.md",

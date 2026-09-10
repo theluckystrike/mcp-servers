@@ -159,6 +159,10 @@ ${l33.dead_advertised_path ? `<p class="dim"><b>The advertised zero-install URL 
 <p class="dim"><b>Precision.</b> ${esc(l33.dead_advertised_path.precision)}</p>` : ""}
 ${l33.click_instrument ? `<p class="dim"><b>The upgrade-click counter was lying, and now is not.</b> ${esc(l33.click_instrument.was_lying)} ${esc(l33.click_instrument.in_product)} ${esc(l33.click_instrument.now)}</p>` : ""}
 ${(l33.shipped||[]).length ? `<p class="dim"><b>Shipped this loop.</b></p><ul class="dim">${(l33.shipped||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+${l33.estate && l33.estate.final ? `<p class="dim"><b>Estate at loop close.</b> Root tests ${esc(l33.estate.final.root_tests)}. Live validation ${esc(l33.estate.final.live_validation)}. Worker build ${esc(l33.estate.final.build_vendor)}. Billing gates ${esc(l33.estate.final.billing_gates)}. Manifests: ${esc(l33.estate.final.manifests)}.</p>` : ""}
+${l33.registry_publish ? `<p class="dim"><b>Registry.</b> ${esc(l33.registry_publish)}</p>` : ""}
+${l33.registry_npm_validation ? `<p class="dim"><b>A new registry rule.</b> ${esc(l33.registry_npm_validation)}</p>` : ""}
+${l33.release_verified ? `<p class="dim"><b>The release, verified rather than assumed.</b> ${esc(l33.release_verified)}</p>` : ""}
 ${(l33.post_deploy_verified||[]).length ? `<p class="dim"><b>Verified live after deploying, not merely shipped.</b></p><ul class="dim">${(l33.post_deploy_verified||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
 ${l33.github_channel ? `<p class="dim"><b>The GitHub channel.</b> ${esc(l33.github_channel.baseline)} ${esc(l33.github_channel.mechanism)} ${esc(l33.github_channel.stars_refuted)} ${esc(l33.github_channel.acted)} ${esc(l33.github_channel.result)} ${esc(l33.github_channel.gemini||"")}</p>` : ""}
 ${l33.google ? `<p class="dim"><b>Why Google has never shown this site.</b> ${esc(l33.google.cause)} ${esc(l33.google.census)} ${esc(l33.google.host_level)}</p><p class="dim">${esc(l33.google.killed)} ${esc(l33.google.acted)} ${esc(l33.google.counter_evidence)}</p>` : ""}

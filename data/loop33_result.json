@@ -27,7 +27,14 @@
   "estate": {
     "live_validation_baseline": "951/951 before any change this loop",
     "servers": 32,
-    "hosted": 30
+    "hosted": 30,
+    "final": {
+      "root_tests": "1715 tests, 1704 pass, 0 fail, exit 0",
+      "live_validation": "1028 of 1028 across 34 servers",
+      "build_vendor": "exit 0",
+      "billing_gates": "134 of 134",
+      "manifests": "no checksum drift"
+    }
   },
   "agents": [],
   "shipped": [
@@ -71,7 +78,8 @@
     "Loop 32 concluded Glama connectors beat the Glama servers directory because connectors are free, need no account and re-score daily. Both halves were true and the conclusion was still wrong: being scored is not being read. 6 of 7 Glama citations are servers-directory pages and none are connector pages. Worse, the connectors index holds 19,647 entries and its sort options are Featured, Search Relevance, GitHub Stars, Name and Date Updated. Tool quality score is not among them, so the score does not rank us anywhere.",
     "The servers directory was recorded as an unenterable queue. It is not: we are on it with 2 of 34 mirrors and the discriminator appears to be head-of-queue residency in GitHub recently-pushed list. office-suite is last in the sync script and is the one that got in, which also explains lags previously recorded as 33 minutes for one repo and about 120 days for another.",
     "A watcher reported 6 of 34 mirrors indexed on Glama. That was an artifact: its HEAD probe flaps, and a nonexistent repo returned 404, 200, 404, 404, 404 on repeat. The sitemap gives the true figure of 2.",
-    "Stars were assumed to be why our repos do not rank in GitHub search. Measured, they are not. Across 87 competitor repos captured in top-five results the median is 1 star and 35 have zero, and the top result for three separate buyer queries had zero, zero and three stars with no topics at all."
+    "Stars were assumed to be why our repos do not rank in GitHub search. Measured, they are not. Across 87 competitor repos captured in top-five results the median is 1 star and 35 have zero, and the top result for three separate buyer queries had zero, zero and three stars with no topics at all.",
+    "The public measurements repo re-measured five of this project own claims and corrected them. The registry holds 30,395 distinct latest servers; the 2,211 figure was a 6,000-row cursor sample, and the live page that quotes it says so explicitly, so nothing public was wrong. Download-count UNIFORMITY does not generalise, MCP repos run at CV 3.60 against 2.58 to 3.88 for non-MCP controls, so drop that argument and keep the one that survives: the median MCP release asset has 1 download. Endpoints requiring auth on discovery are 34.2 percent of a seeded sample of 120, not 25.4 percent, a different method rather than a contradiction. A capital letter ranks you EARLIER, since ASCII puts uppercase before lowercase; the live page already had this the right way round. And the VS Code subfolder hypothesis was refuted independently, before it was told the answer."
   ],
   "answered_no": [
     "An agent-native payment rail is not reachable without a human step. The MCP specification has no payment primitive; the proposal for one closed unmerged. x402 is live and a no-account facilitator exists, but it needs a wallet address, which is a custody decision only the operator can take, and decisively no mainstream MCP client settles a 402, so every one of them would need a separately funded bridge. Median x402 price is a cent per call against a nineteen dollar one-time product.",
