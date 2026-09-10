@@ -43,7 +43,7 @@
     },
     {
       "name": "zip_list",
-      "description": "Call this tool to list an archive's entries with sizes, compressed sizes and ratios, and to flag what is dangerous in it: absolute paths, .., symlinks, encrypted entries, duplicate names and compression bombs."
+      "description": "Call this tool to list an archive's entries with sizes and ratios and flag what is dangerous: absolute paths, .., symlinks, encrypted entries, duplicate names and bombs. Read-only. Run it before zip_extract."
     },
     {
       "name": "zip_extract",
@@ -51,7 +51,7 @@
     },
     {
       "name": "zip_add",
-      "description": "Call this tool to add files to an existing archive. The archive is rebuilt from its entries and written tmp-then-rename, so a failure part way leaves the original file exactly as it was."
+      "description": "Call this tool to add files to an existing archive under their own names, or under prefix. A name clash is refused unless replace. An archive holding unsafe entries is refused rather than rewritten."
     },
     {
       "name": "zip_extract_text",
@@ -63,15 +63,15 @@
     },
     {
       "name": "zip_history",
-      "description": "List the archives this server created, newest first, with their entry counts and sizes, plus how many of this month's free allowance are left."
+      "description": "List the archives this server created, newest first, with entry counts, sizes and paths, plus how much of the free 20 a month is used. It reads the register only; use zip_list to see inside one."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

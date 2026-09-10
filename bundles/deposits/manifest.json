@@ -43,11 +43,11 @@
     },
     {
       "name": "deposit_list",
-      "description": "List deposits with what was received, applied, refunded and still held on each. Filter by client, by status held, applied or refunded, by kind and by received date range."
+      "description": "List deposits newest first: DEP number, client, kind, date, reference and what was received, applied, refunded and still held, with the same four totalled per currency. Filter by client, status, kind, date."
     },
     {
       "name": "deposit_apply",
-      "description": "Apply part or all of a held deposit to one invoice: records that amount as a payment on the invoice through the invoice engine. Refuses more than is held or more than the invoice still owes."
+      "description": "Apply part of a held deposit to one invoice: it records that amount as a PAYMENT through the invoice server. amount_minor defaults to the lesser of held and owed. More than either, or a pre-arrival date, is refused."
     },
     {
       "name": "deposit_refund",
@@ -55,15 +55,15 @@
     },
     {
       "name": "deposit_delete",
-      "description": "Delete a deposit recorded by mistake and free that month's free-tier slot again. Only a deposit with nothing applied to an invoice and nothing refunded can go; one whose money moved is refused, naming what holds it."
+      "description": "Delete a deposit that never moved money, freeing that month's free-tier slot. One with anything applied or refunded is refused, naming it, since a payment or refund would be left with nothing behind it."
     },
     {
       "name": "deposit_balance",
-      "description": "Answer \"how much of theirs am I holding?\" for one client or for everyone: received, applied to invoices, refunded and still held, one row per currency, never added across currencies."
+      "description": "Answer \"how much of theirs am I holding?\" for one client or everyone: received, applied to invoices, refunded and still held, one row per currency, never added across them. Reads only; deposit_list shows each deposit."
     },
     {
       "name": "deposit_statement_text",
-      "description": "Turn one client's deposits into a plain-text statement with every movement in date order and the closing balance, ready to paste into an email. Free on every tier."
+      "description": "Turn one client's deposits into a plain-text statement to paste into an email: every movement in date order and the closing balance held. Pass currency when they have more than one. Free on every tier."
     },
     {
       "name": "deposit_statement_pdf",
@@ -71,15 +71,15 @@
     },
     {
       "name": "deposits_report",
-      "description": "What is held per currency, the oldest held deposits, and every deposit received more than N days ago with none of it applied to an invoice. Pro."
+      "description": "The deposit book at a date: held per currency, received, applied and refunded, the oldest holdings with days held, and every deposit older than N days with nothing applied. Pro; deposit_balance is free."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

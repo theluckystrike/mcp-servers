@@ -39,15 +39,15 @@
   "tools": [
     {
       "name": "quote_create",
-      "description": "Quote a client: line items with quantity and unit price in minor units, VAT per line or the business default, an optional discount and a validity window. Returns the quote id and the totals."
+      "description": "Store a quote for client from items and return its Q number, VAT and totals. unit_price is in MAJOR units; currency, VAT and issuer come from the shared profile. A duplicate of an open quote is refused. Free: 5 open."
     },
     {
       "name": "quote_list",
-      "description": "Every quote with its client, total, validity and state (open, expired, accepted or declined). Filter by state, by client or by quote date range."
+      "description": "List quotes newest first: id, client, dates, state, days left while open, currency, total and the invoice number once accepted. State is read against today, so a lapsed quote shows as expired."
     },
     {
       "name": "quote_get",
-      "description": "The full stored record for one quote: every line with its unit price and VAT, the totals, the validity date, the notes and, when it was accepted, the invoice it became."
+      "description": "Return one quote in full by Q number or exact client name: lines with unit price and VAT, totals, dates, the state today with days left, notes, and the invoice it became once accepted. Reads only."
     },
     {
       "name": "quote_update",
@@ -55,7 +55,7 @@
     },
     {
       "name": "quote_send_text",
-      "description": "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier."
+      "description": "Turn a quote into a plain-text summary to paste into an email: the line table, VAT lines, total and validity date, with a sign-off from the shared profile. Free; quote_pdf writes the A4 document."
     },
     {
       "name": "quote_accept",
@@ -63,7 +63,7 @@
     },
     {
       "name": "quote_decline",
-      "description": "Mark a quote as lost, with an optional reason, so it stops counting against the open quotes and shows up in the win rate. An accepted quote is never turned back."
+      "description": "Mark a quote lost, with a reason kept on the record, freeing a free-tier open slot and counting in the win rate. An accepted quote is refused, naming the invoice it became. Free on every tier."
     },
     {
       "name": "quote_delete",
@@ -71,7 +71,7 @@
     },
     {
       "name": "quote_pdf",
-      "description": "Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro."
+      "description": "Call this tool to write one quote as an A4 PDF and return the path: the invoice layout with the validity date, an acceptance block, and an EXPIRED marking once it has lapsed. Pro."
     },
     {
       "name": "quote_report",
@@ -79,11 +79,11 @@
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

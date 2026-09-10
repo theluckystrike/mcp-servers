@@ -166,7 +166,7 @@ function registerTool(name, config, handler) {
 /* ---------------- price_check ---------------- */
 registerTool("price_check", {
     title: "Check a price now",
-    description: "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price. Returns price, currency, title, confidence and the change since the last check.",
+    description: "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price. Reports price, currency, title and confidence, and the change since the last check. It creates no watch.",
     inputSchema: { url: z.string().describe("Product page URL, including https://") },
 }, async ({ url }) => {
     try {
@@ -201,7 +201,7 @@ registerTool("price_check", {
 /* ---------------- watch_add ---------------- */
 registerTool("watch_add", {
     title: "Watch a price",
-    description: "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price. Starts tracking it: first observation, optional target, re-read by watch_refresh.",
+    description: "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price. Starts tracking it: first observation stored, optional target, re-read by watch_refresh. Free: 3 watches.",
     inputSchema: {
         url: z.string().describe("Product page URL"),
         label: z.string().optional().describe("Short name for this item"),
@@ -273,7 +273,7 @@ registerTool("watch_add", {
 /* ---------------- watch_list ---------------- */
 registerTool("watch_list", {
     title: "List watches",
-    description: "Show every tracked item with its current price, previous price, min, max, change %, target, extraction confidence and last check time. Prices are as of the last watch_refresh, not live.",
+    description: "Show every tracked item with current and previous price, min, max, change %, target, confidence and last check, plus free-tier use. Prices are as of the last watch_refresh, never live; nothing is fetched.",
     inputSchema: {},
 }, async () => {
     const db = load();
@@ -286,7 +286,7 @@ registerTool("watch_list", {
 /* ---------------- watch_remove ---------------- */
 registerTool("watch_remove", {
     title: "Remove a watch",
-    description: "Call this tool to stop tracking an item, by watch id or by URL. Give either id or url. Its stored observation history is deleted and cannot be recovered.",
+    description: "Call this tool to stop tracking one item, by watch id or URL. Its whole price history is deleted and cannot be recovered, so re-adding starts empty. A key matching no watch is refused.",
     inputSchema: {
         id: z.string().optional().describe("Watch id from watch_list"),
         url: z.string().optional().describe("URL of the watch, if you do not have the id"),
@@ -308,7 +308,7 @@ registerTool("watch_remove", {
 /* ---------------- watch_refresh ---------------- */
 registerTool("watch_refresh", {
     title: "Refresh prices",
-    description: "This is what actually checks prices: re-fetches one watch or every watch, appends the new observations and returns current, previous, min, max, change %, extraction confidence and target hits.",
+    description: "The only tool that re-reads prices: it re-fetches one watch or all, appends observations and returns current, previous, min, max, change % and target hits. A page that fails is listed; then read alerts_pending.",
     inputSchema: {
         id: z.string().optional().describe("Watch id or URL to re-fetch. Omit and set all=true to refresh everything. Nothing runs in the background, so call this whenever the user asks about prices, drops or alerts - typically once at the start of a session, then read alerts_pending."),
         all: z.boolean().optional().describe("Refresh every watch in one call (Pro; on free, refresh one id at a time)"),
@@ -374,7 +374,7 @@ registerTool("watch_refresh", {
 /* ---------------- price_history ---------------- */
 registerTool("price_history", {
     title: "Price history",
-    description: `Call this tool to list the stored observations for one watch, newest last, each with its price, currency, source and extraction confidence. Free shows the last ${FREE_HISTORY_LIMIT}.`,
+    description: "Call this tool to list one watch's stored observations, oldest to newest, each with price, currency, source and confidence, plus min and max. Nothing is fetched. Free shows the last 30.",
     inputSchema: {
         id: z.string().optional().describe("Watch id"),
         url: z.string().optional().describe("Watch URL"),
@@ -404,7 +404,7 @@ registerTool("price_history", {
 /* ---------------- price_add_manual ---------------- */
 registerTool("price_add_manual", {
     title: "Record a price by hand",
-    description: "Call this tool to store a price you read yourself, for shops that block automated requests. Creates the watch for that URL if it does not exist yet, and returns the stored price and the observation count.",
+    description: "Call this tool to store a price you read yourself where a shop blocks fetching: it creates the watch if new and returns the amount and the observation count. An unreadable price is refused. Free: 3 watches.",
     inputSchema: {
         url: z.string().describe("Product page URL"),
         price: z.union([z.string(), z.number()]).describe("Price as shown, for example 1299.00 or 1.299,00"),
@@ -444,7 +444,7 @@ registerTool("price_add_manual", {
 /* ---------------- alerts_pending ---------------- */
 registerTool("alerts_pending", {
     title: "Pending alerts",
-    description: `Answer "did anything I watch get cheaper?": lists every watch whose latest price is at or below its target, or which dropped ${DROP_ALERT_PCT}% or more against the previous observation, with the change % and the reading confidence.`,
+    description: "Answer whether anything you watch got cheaper: every watch at or below its target_price, or down 5% or more since the previous observation, with the change %. Reads stored data only: run watch_refresh first.",
     inputSchema: {},
 }, async () => {
     const db = load();

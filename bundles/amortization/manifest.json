@@ -39,11 +39,11 @@
   "tools": [
     {
       "name": "loan_create",
-      "description": "Record a loan or a lease from its terms and return its id, its level payment and its effective annual rate. Principal, fees and balloon are whole minor units; the rate is nominal annual basis points."
+      "description": "Record a loan or lease and return its id, level payment and effective annual rate. principal_minor, fees and balloon are whole MINOR units; rate_bps is the nominal annual rate in basis points. Free: 3 agreements."
     },
     {
       "name": "loan_schedule",
-      "description": "Build the schedule for one loan: opening balance, payment, interest, principal and closing balance for every period, with the total interest. The closing balance reaches the balloon, or zero, exactly. Free."
+      "description": "Build one loan's schedule: opening balance, payment, interest, principal and closing per period, with total interest. The last period absorbs rounding, landing exactly on the balloon or zero. loans_report totals it."
     },
     {
       "name": "loan_repay_early",
@@ -51,11 +51,11 @@
     },
     {
       "name": "loan_journal",
-      "description": "Return the double entry for one payment period or one month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Pro."
+      "description": "Return the double entry for one payment period or month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Give period or month, not both. Pro."
     },
     {
       "name": "loan_list",
-      "description": "List the loans and leases in the register with their terms, the level payment, the effective annual rate and the balance outstanding at a date. Free and unlimited."
+      "description": "List the register with terms, level payment, effective annual rate and, at as_of, periods paid, balance outstanding, interest to date and the next payment, totalled per currency. Free; loans_report is the Pro roll-up."
     },
     {
       "name": "loan_delete",
@@ -63,15 +63,15 @@
     },
     {
       "name": "loans_report",
-      "description": "Report the debt: what is outstanding per currency, when each next payment falls due, and the interest charged in a calendar year, per loan and in total. Pro."
+      "description": "The debt at as_of: per loan what is outstanding, whether it is settled, the next payment, and the interest and principal charged in a year, then totals per currency. Contractual balance, not cash paid. Pro."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

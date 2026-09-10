@@ -71,19 +71,19 @@
     },
     {
       "name": "image_batch_resize",
-      "description": "Call this tool to resize every image into out_dir, keeping aspect ratio, named <name>-<W>x<H>.<ext>. One of width/height lets the other follow; with both, each fits inside the box. Free: 5 files/call, up to 4 MP."
+      "description": "Call this tool to resize every image in paths at once, keeping aspect ratio, each named <name>-<W>x<H>.<ext>. One of width/height lets the other follow; with both, each fits inside the box. Free: 5 files a call, 4 MP."
     },
     {
       "name": "image_dominant_colors",
-      "description": "Call this tool to read the colours covering most of an image, as hex codes with each one's pixel share, for picking a background or brand palette. Read-only. Free tier: top 3 colours; Pro: up to 16."
+      "description": "Call this tool to read the colours covering most of an image, as hex codes with each one's pixel share. Sampled from a 200 px copy, so cost is fixed. Read-only. Free gives the top 3; Pro up to 16."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

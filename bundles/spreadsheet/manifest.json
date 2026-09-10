@@ -47,7 +47,7 @@
     },
     {
       "name": "sheet_query",
-      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filters, groups, aggregates and sorts in one call, e.g. where '[Qty] > 10'."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filters, groups, aggregates and sorts in one call: where '[Qty] > 10'."
     },
     {
       "name": "sheet_stats",
@@ -59,7 +59,7 @@
     },
     {
       "name": "sheet_write",
-      "description": "Call this tool to write rows to an excel (xlsx) or csv/tsv/json file. Returns the rows, columns, byte size and column names of the file written."
+      "description": "Call this tool to write rows to an xlsx, csv, tsv or json file; the extension of out_path picks the format. mode is new_file, append or overwrite. Other sheets are kept. Free: 500 rows per file."
     },
     {
       "name": "sheet_add_column",
@@ -71,11 +71,11 @@
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

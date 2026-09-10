@@ -39,11 +39,11 @@
   "tools": [
     {
       "name": "qr_create",
-      "description": "Call this tool to turn text or a URL into a QR code, as an SVG returned inline or written to out_path, or as a PNG at a chosen pixel size (Pro)."
+      "description": "Call this tool to turn text or a URL into a QR code: SVG inline, or a PNG at a pixel size to out_path (Pro). Returns version, module grid and payload size. Free: 20 codes a month on this server."
     },
     {
       "name": "qr_wifi",
-      "description": "Call this tool to make a QR code that joins a WiFi network when scanned: network name, password and security type, written to out_path or returned as SVG."
+      "description": "Call this tool to make a QR code that joins a WiFi network when scanned: ssid, password and auth type, written to out_path or returned as SVG. Free: 20 codes a month. qr_create takes plain text or a URL."
     },
     {
       "name": "qr_vcard",
@@ -59,7 +59,7 @@
     },
     {
       "name": "barcode_create",
-      "description": "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG or PNG. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn."
+      "description": "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG, or PNG to out_path. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn. qr_create makes QR codes."
     },
     {
       "name": "barcode_batch",
@@ -67,15 +67,15 @@
     },
     {
       "name": "code_list",
-      "description": "List the codes this server generated, newest first, with what each one carried and where it was written, plus how many of this month's free allowance are left."
+      "description": "List the codes this server generated, newest first, with what each carried and where it went, plus how much of the free 20 a month is used. Filter by kind. It reads the register, not the files."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

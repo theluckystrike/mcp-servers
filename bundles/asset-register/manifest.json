@@ -47,7 +47,7 @@
     },
     {
       "name": "asset_schedule",
-      "description": "Build the depreciation schedule for a stored asset, or price one not yet in the register, per year or per month, to zero or residual, with the table convention applied and the periods summing exactly to the base. Free."
+      "description": "Build the depreciation schedule for a stored asset, or price one not in the register, per year or per month, to residual or zero, with the table's rate, life and convention. Periods sum exactly to the base."
     },
     {
       "name": "asset_journal",
@@ -55,7 +55,7 @@
     },
     {
       "name": "asset_dispose",
-      "description": "Record the sale, scrapping or write-off of an asset on a date for a proceeds amount, and return the gain or loss against net book value at that date. Free."
+      "description": "Record that an asset left the business on a date and return the gain or loss against net book value. proceeds_minor is in MINOR units. Depreciation stops here, and a second disposal is refused."
     },
     {
       "name": "asset_delete",
@@ -63,15 +63,15 @@
     },
     {
       "name": "asset_report",
-      "description": "Report net book value by category and currency at a date, the year's depreciation charge, and every disposal in the year with its gain or loss. Pro."
+      "description": "For one year: net book value by category, scheme and currency at as_of, the year's depreciation charge per currency, and every disposal with its gain or loss. Pro; asset_list and asset_schedule are free per-asset views."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

@@ -39,7 +39,7 @@
   "tools": [
     {
       "name": "sku_set",
-      "description": "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and a price in minor units for one currency, tier and valid-from date. Free tier: 25 SKUs."
+      "description": "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and price_minor in whole minor units for one currency, tier and valid_from. A repriced line keeps its old rows. Free: 25 SKUs, one tier."
     },
     {
       "name": "sku_get",
@@ -51,11 +51,11 @@
     },
     {
       "name": "sku_delete",
-      "description": "Delete a catalogue line raised by mistake. Only one that no rate card points at and that has never priced a resolved line can go; the refusal names what depends on it. Free on every tier."
+      "description": "Delete a catalogue line no rate card points at and that never priced a resolved line, freeing a free-tier slot. Otherwise it is refused, naming what depends on it: reprice it to withdraw it instead."
     },
     {
       "name": "rate_set",
-      "description": "Set the hourly rate on a labour rate card: a role, a currency, an hourly rate in minor units and the day it comes into force. An update replaces the row for that currency and date. Free."
+      "description": "Set the hourly charge-out rate on a labour card: role, currency, hourly_minor in whole MINOR units and the day it starts. The same role, currency and date REPLACES that row rather than adding one. Free."
     },
     {
       "name": "rate_get",
@@ -67,7 +67,7 @@
     },
     {
       "name": "price_list_text",
-      "description": "Print the price list as plain text: every SKU with the price in force on a date, per currency and tier, with the valid-from date and any later price already booked, then the labour rates. Free."
+      "description": "Print the price list as plain text: every SKU with its unit, the price in force on a date and any later price booked, then the labour rate cards, under your business name. Free; price_list_pdf writes the A4 page."
     },
     {
       "name": "price_list_pdf",
@@ -75,15 +75,15 @@
     },
     {
       "name": "catalogue_report",
-      "description": "Report the catalogue: how many SKUs there are, how many price rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Pro."
+      "description": "Report the catalogue as at date: how many SKUs there are, how many price rows are in force, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Reads only. Pro."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

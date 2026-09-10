@@ -39,31 +39,31 @@
   "tools": [
     {
       "name": "timer_start",
-      "description": "Start a stopwatch for billable work on a project or client (timesheet / hours per project). Only one timer runs at a time: starting a new one stops and logs the previous one."
+      "description": "Start a stopwatch for work on a project and return the start time. Only one runs at a time: a new one stops and logs the previous, naming it. rate is an hourly rate in MAJOR units for this timer only."
     },
     {
       "name": "timer_stop",
-      "description": "Stop the running timer and log it as a time entry. Returns the duration and the entry id."
+      "description": "Stop the running timer and log it as one entry. Returns the duration, the money at the rate in force and the new entry id. With no timer running it says so and writes nothing."
     },
     {
       "name": "timer_status",
-      "description": "Show the running timer, how long it has been running, and today's total hours so far."
+      "description": "Report the running timer and today's total hours. Today is the local calendar day, so a timer started at 23:30 yesterday contributes only the minutes since midnight. No arguments, and it writes nothing."
     },
     {
       "name": "entry_add",
-      "description": "Log billable (or non-billable) time you already worked on a project - a timesheet entry. Give start plus either end or minutes, and optionally the hourly rate and its currency, e.g. rate '90 euros an hour' -> EUR."
+      "description": "Log time already worked as one entry and return its id, duration and amount. Give start plus end or minutes. rate is hourly in MAJOR units and is frozen on the entry, so a later rate change never moves it."
     },
     {
       "name": "entry_list",
-      "description": "List logged time entries (timesheet rows) as a compact table, with hours, billable flag and project. Free tier shows the last 7 days."
+      "description": "List logged entries as a table of id, day, start, project, task, hours, billable, tags and note, newest first, with total hours. Free reads the last 7 days and says so; Pro reads the whole history."
     },
     {
       "name": "entry_delete",
-      "description": "Delete one time entry by id."
+      "description": "Delete one logged entry by id and report the project and hours removed. It never touches a running timer. A billed entry goes too, losing the invoice record, so correct one with entry_edit instead."
     },
     {
       "name": "entry_edit",
-      "description": "Change fields of an existing entry. Only the fields you pass are changed."
+      "description": "Change one logged entry by id; only the fields you pass move. minutes keeps start and moves end, an end at or before start is refused, tags REPLACES the list, and rate is hourly in MAJOR units."
     },
     {
       "name": "project_set_rate",
@@ -83,15 +83,15 @@
     },
     {
       "name": "invoice_summary",
-      "description": "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00)."
+      "description": "Turn tracked billable time into invoice lines for one project: hours, hourly rate, amount per task and the total, one line per rate so two rates never average. Hours already marked billed are left out. Free: last 7 days."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

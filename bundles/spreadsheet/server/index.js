@@ -129,8 +129,36 @@ function writeCapRefusal(rowCount, what, workaround, toolName) {
         gate.upgradeText(`writing more than ${FREE_WRITE_ROWS} rows`, toolName),
     ].join("\n\n");
 }
+/**
+ * Create a directory and any missing ancestors, without mkdirSync's recursive mode.
+ *
+ * mkdirSync(recursive) never returns on a pseudo-filesystem: measured on Linux in a
+ * node:22-alpine container, mkdir("/proc/nope") answers ENOENT in 0 ms, Node reads that as
+ * a missing parent and retries forever, and the call had not returned after 25 seconds. Any
+ * caller-supplied output path under /proc, /sys or /dev hung the server permanently. The
+ * ancestors are walked here under a hard bound and each level is created non-recursively,
+ * so a repeated ENOENT terminates on the first one. Verified on Linux: /proc throws ENOENT
+ * and /sys throws EROFS, both in 0 ms, while a normal nested path still succeeds.
+ */
+function ensureDirBounded(dir) {
+    if (existsSync(dir))
+        return;
+    const missing = [];
+    let cur = dir;
+    for (let i = 0; i < 64 && !existsSync(cur); i++) {
+        missing.push(cur);
+        const parent = dirname(cur);
+        if (parent === cur)
+            break;
+        cur = parent;
+    }
+    if (!existsSync(cur))
+        throw new Error(`cannot create ${dir}: no existing ancestor directory`);
+    for (const d of missing.reverse())
+        mkdirSync(d);
+}
 function writeAtomic(file, data) {
-    mkdirSync(dirname(file), { recursive: true });
+    ensureDirBounded(dirname(file));
     const tmp = `${file}.tmp-${process.pid}`;
     writeFileSync(tmp, data);
     renameSync(tmp, file);
@@ -370,7 +398,7 @@ function describeQuery(q) {
 }
 server.registerTool("sheet_query", {
     title: "Filter, group and sort rows",
-    description: "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filters, groups, aggregates and sorts in one call, e.g. where '[Qty] > 10'.",
+    description: "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filters, groups, aggregates and sorts in one call: where '[Qty] > 10'.",
     inputSchema: {
         path: z.string().describe("Path to the .xlsx or .csv file"),
         sheet: z.string().optional(),
@@ -536,7 +564,7 @@ server.registerTool("sheet_find", {
 // --------------------------------------------------------------- sheet_write
 server.registerTool("sheet_write", {
     title: "Write rows",
-    description: "Call this tool to write rows to an excel (xlsx) or csv/tsv/json file. Returns the rows, columns, byte size and column names of the file written.",
+    description: "Call this tool to write rows to an xlsx, csv, tsv or json file; the extension of out_path picks the format. mode is new_file, append or overwrite. Other sheets are kept. Free: 500 rows per file.",
     inputSchema: {
         path: z.string().describe("Source file for append/overwrite, or the intended file for new_file (~ is expanded)"),
         sheet: z.string().optional().describe("Sheet to write; default is the first sheet of the source, or \"Sheet1\" for a new file. Other sheets of an existing workbook are kept unchanged"),

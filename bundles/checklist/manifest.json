@@ -1,0 +1,115 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-checklist",
+  "display_name": "Checklist",
+  "version": "0.21.0",
+  "description": "Reusable checklists and the dated runs of them: pass, fail, not applicable, and a sign-off.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "checklist_create",
+      "description": "Create a reusable checklist and return its CL-NNNN id: a name, a category and an optional description. Add the steps with checklist_item_add. Free tier: 3 checklists, and unlimited runs of them."
+    },
+    {
+      "name": "checklist_item_add",
+      "description": "Add one step to a checklist and return its I01-style id: the text, an optional section heading, and whether it is required. A required step that is unanswered or failed blocks sign-off; an optional one does not."
+    },
+    {
+      "name": "checklist_item_remove",
+      "description": "Remove one step from a checklist by its I01-style id and bump the checklist version. Runs already under way keep the step they started with, so nothing anybody already ticked is rewritten."
+    },
+    {
+      "name": "checklist_show",
+      "description": "One checklist with its steps in order, grouped by section, plus how many are required and how many runs have been started from it. Pass as_text for a blank printable copy with a box against each step."
+    },
+    {
+      "name": "checklist_list",
+      "description": "Every checklist with its category, version, step count and how many runs came from it. Filter by category or by a word in the name. Returns at most 500 rows, newest change first."
+    },
+    {
+      "name": "checklist_delete",
+      "description": "Delete a checklist and its steps for good. Runs already started from it are untouched and stay readable: a run carries its own copy of the steps, so deleting the checklist does not erase what anybody signed."
+    },
+    {
+      "name": "run_start",
+      "description": "Start a dated run of a checklist and return its RUN-YYYY-NNNN id. The steps are COPIED into the run, so editing the checklist afterwards never changes a run already under way. Runs are free and never capped."
+    },
+    {
+      "name": "run_check",
+      "description": "Mark one step pass, fail or na, with who did it and when. na means the step did not apply; it counts as answered and never as passed. A step can be answered again while the run is open, and the last answer stands."
+    },
+    {
+      "name": "run_show",
+      "description": "The whole run: every step with its answer, who answered it and when, grouped by section, plus the pass, fail and outstanding counts, the failures in full, and whether it can be signed off and why not."
+    },
+    {
+      "name": "run_list",
+      "description": "Runs newest first, with their checklist, progress and sign-off state. Filter by checklist, by status, by reference or to open runs only. Returns at most 500 rows."
+    },
+    {
+      "name": "run_sign_off",
+      "description": "Sign off a completed run with a name and a date, which freezes it. Refused while a required step is unanswered or failed, unless force is true, and either way the exceptions stay on the record and print on the report."
+    },
+    {
+      "name": "run_status",
+      "description": "Move a run back to open so a step can be answered again, or abandon it when the job did not happen. A signed-off run is refused: a signature is the point at which a run stops moving."
+    },
+    {
+      "name": "run_report",
+      "description": "The run as plain text on every tier: every step with its mark, who answered it, the notes, the counts and a signature block or the recorded signature. Pro also writes it to out_path as a .txt file."
+    },
+    {
+      "name": "run_delete",
+      "description": "Delete a run for good, with every answer on it. A signed-off run is refused: it is the record of what somebody put their name to. Abandon a run you no longer want instead of deleting a signed one."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "checklist",
+    "snag-list",
+    "handover",
+    "sign-off",
+    "inspection",
+    "onboarding"
+  ]
+}

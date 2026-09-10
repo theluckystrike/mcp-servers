@@ -43,7 +43,7 @@
     },
     {
       "name": "pdf_count",
-      "description": "Page count per file plus the total, for any number of PDFs. Read-only. A file that cannot be read is reported per file; the others still count. Free tier: unlimited."
+      "description": "Page count per file plus the total, for any number of PDFs, with how many were readable. A file that cannot be read is reported on its own row and the others still count. Read-only. Free and unlimited."
     },
     {
       "name": "pdf_merge",
@@ -79,11 +79,11 @@
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

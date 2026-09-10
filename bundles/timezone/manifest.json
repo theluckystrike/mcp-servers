@@ -39,11 +39,11 @@
   "tools": [
     {
       "name": "now",
-      "description": "The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC."
+      "description": "The current time in one or more places, each with the zone it resolved to and the local date, time and offset, under one UTC instant. Accepts IANA zones, cities, countries and abbreviations."
     },
     {
       "name": "convert_time",
-      "description": "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'."
+      "description": "Convert one time from from_zone into every zone in to_zones, marking any day change, plus the UTC instant. The time is wall-clock in from_zone unless it carries an offset or a trailing Z. '3pm tomorrow' works."
     },
     {
       "name": "overlap",
@@ -59,27 +59,27 @@
     },
     {
       "name": "business_days",
-      "description": "Count the business days between two dates in a place, for delivery dates and payment terms. Returns the business-day count, the calendar total, and how many days fell on a weekend or on a holiday you passed."
+      "description": "Count business days between two dates in a place, inclusive, with the calendar total and the weekend and holiday counts. It has NO holiday calendar: without holidays, only weekends are excluded."
     },
     {
       "name": "contacts_set",
-      "description": "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later."
+      "description": "Save one person's zone and working hours so later calls can name them. Returns the resolved zone and their local time now. Saving the same name REPLACES that contact and says so. Free: 5 contacts."
     },
     {
       "name": "contacts_list",
-      "description": "Everyone you have saved, with their current local time and whether they are inside working hours right now."
+      "description": "List saved contacts with their zone, local time now, working hours and whether they are inside them; weekends count as outside. It also prints YOUR zone from the shared business profile."
     },
     {
       "name": "ics_create",
-      "description": "Call this tool to write a .ics calendar file for one meeting. Returns the path written and the meeting time in UTC and in the zone you gave."
+      "description": "Call this tool to write a .ics for one meeting and return the path plus the start in UTC and in your zone. Times are stored in UTC so it lands correctly in any client. Free: 3 files a month."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

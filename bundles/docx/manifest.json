@@ -39,7 +39,7 @@
   "tools": [
     {
       "name": "business_set",
-      "description": "The sender profile printed on every proposal, contract and letter. The SAME profile invoice's business_set writes: it goes to the shared profile, so it also sets your invoice issuer and default VAT."
+      "description": "Store the sender details printed on every proposal, contract and letter, plus the currency, VAT, terms and prefix defaults. It writes the SAME shared profile as the invoice server's business_set."
     },
     {
       "name": "doc_create",
@@ -47,7 +47,7 @@
     },
     {
       "name": "doc_from_markdown",
-      "description": "Call this tool to turn markdown into a .docx. Returns the file path and a count of the blocks written, by type. Free and unlimited."
+      "description": "Call this tool to turn markdown into a .docx, returning the file and a count of blocks by type. Headings, lists, GFM tables and code fences are honoured. Empty markdown is refused, and so is overwriting without the flag."
     },
     {
       "name": "doc_read",
@@ -59,7 +59,7 @@
     },
     {
       "name": "doc_fill_template",
-      "description": "Call this tool to replace {{placeholders}} in an existing .docx and write a new file. Returns the new path and which placeholders were replaced, unfilled or ignored. Call with no values to list a template's placeholders."
+      "description": "Call this tool to replace {{placeholders}} in a .docx and write a new file, reporting what was filled, unfilled or ignored. Call it with no values to list them. Free: templates up to 10 placeholders."
     },
     {
       "name": "proposal_create",
@@ -75,11 +75,11 @@
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

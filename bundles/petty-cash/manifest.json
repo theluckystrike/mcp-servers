@@ -43,7 +43,7 @@
     },
     {
       "name": "topup_record",
-      "description": "Record cash put into the tin: the amount in whole minor units, the date and where it came from. It reimburses every voucher up to that date, which is what a replenishment cheque does. Free."
+      "description": "Record cash put into the tin, in whole MINOR units, with the date and source, and return the new balance against the imprest. It also reimburses every voucher up to that date, as a replenishment does."
     },
     {
       "name": "voucher_add",
@@ -51,11 +51,11 @@
     },
     {
       "name": "voucher_delete",
-      "description": "Delete a voucher that was entered wrongly, by its VOU number. A voucher already covered by a reconciliation is refused: the cash it took out was counted, so removing it would make a past count wrong. Free."
+      "description": "Delete a voucher entered wrongly, by its VOU number. One already covered by a reconciliation is refused, naming the count it would falsify: record a correcting voucher instead. Free."
     },
     {
       "name": "reconcile",
-      "description": "Count the cash and reconcile: the expected balance, the difference to the minor unit, and every voucher since the last count, which this marks reconciled. Records the count. Free and unlimited."
+      "description": "Count the tin: give the cash counted in whole MINOR units and the date, and get the expected balance, the difference, and every voucher since the last count, which this marks reconciled. Free."
     },
     {
       "name": "replenish_request",
@@ -63,15 +63,15 @@
     },
     {
       "name": "float_report",
-      "description": "Report every float: the balance against its imprest, what is unreconciled, the last count, and the history of what the counts found over or short, per float and in total. Pro."
+      "description": "Report each float: balance against imprest, what it takes to restore it, unreconciled vouchers with their total, the last count, and the history of what counts found over or short. Pro."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

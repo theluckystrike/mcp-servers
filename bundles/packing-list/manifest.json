@@ -1,0 +1,107 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-packing-list",
+  "display_name": "Packing List",
+  "version": "0.21.0",
+  "description": "Packing slips: cartons, contents, weights, chargeable weight and what is still to pack.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "packing_list_create",
+      "description": "Open a packing list against an order and return its PL-YYYY-NNNN number: the order reference, the consignee, where it ships to and the date. Free tier: 3 open at once; shipping or cancelling frees a slot."
+    },
+    {
+      "name": "packing_expect",
+      "description": "Add an ordered line to a packing list so the shortfall is real: a SKU, a description and a quantity. Nothing is read from the quotes, work order or invoice store; what the order says is stated here."
+    },
+    {
+      "name": "carton_add",
+      "description": "Add a carton to a packing list and return its C01-style id: a label, the empty weight in WHOLE GRAMS, and optionally length, width and height in WHOLE CENTIMETRES. Dimensions are what make a chargeable weight possible."
+    },
+    {
+      "name": "pack_item",
+      "description": "Put a quantity of one item into a named carton: a description, how many, and the per-unit weight in WHOLE GRAMS. Leave unit_grams out when it was not weighed and the carton gross comes back as a lower bound."
+    },
+    {
+      "name": "unpack_item",
+      "description": "Remove one packed line from a packing list by its L01-style id and return the carton it came out of. The line is deleted, not zeroed, so the slip does not print an item nobody packed."
+    },
+    {
+      "name": "packing_list_show",
+      "description": "The whole packing list: its cartons with contents and derived weights, the ordered lines, the shortfall, whether it is ready to ship and why not, and its status history. Nothing here is stored; it is computed."
+    },
+    {
+      "name": "packing_list_list",
+      "description": "Packing lists newest first, with cartons, units, gross weight and how many ordered lines are still short. Filter by status, by order reference or by consignee. Returns at most 500 rows."
+    },
+    {
+      "name": "carton_report",
+      "description": "Per carton and for the shipment: tare, net, gross, volume, volumetric weight and the chargeable weight, the greater of gross and volumetric. A carton with no dimensions makes the chargeable total null, never a guess."
+    },
+    {
+      "name": "packing_shortfall",
+      "description": "Ordered against packed, line by line: what is still short, what was over-packed, and what was packed that is not on the order at all. A packed line with no ordered line is reported, never dropped."
+    },
+    {
+      "name": "packing_list_status",
+      "description": "Move a packing list draft to packed to shipped, or cancel it. Shipping records the carrier, the tracking number and the date, and freezes the list. A shipped list cannot be reopened or edited."
+    },
+    {
+      "name": "packing_slip",
+      "description": "The packing slip as plain text on every tier: cartons, contents, weights and a signature line, and no prices anywhere. Pro also writes it to out_path as a .txt file. Refuses a URL and refuses to overwrite unless told to."
+    },
+    {
+      "name": "packing_list_delete",
+      "description": "Delete a packing list for good, with its cartons and packed lines. A shipped list is refused: it is the record of what left the building. Cancel a list you no longer want instead of deleting a real shipment."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "packing-list",
+    "packing-slip",
+    "cartons",
+    "chargeable-weight",
+    "shipping",
+    "logistics"
+  ]
+}

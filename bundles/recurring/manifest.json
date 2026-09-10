@@ -43,35 +43,35 @@
     },
     {
       "name": "schedule_list",
-      "description": "Every schedule with its cadence, per-period amount, next due date and status (active or paused)."
+      "description": "List schedules: id, client, cadence, per-period amount and currency, start and end dates, status, next due date and auto_generate. Filter by status; a paused schedule reports no next due date."
     },
     {
       "name": "schedule_get",
-      "description": "The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated."
+      "description": "Return one schedule in full by id or client: items, cadence, dates, due days, anchor rules, notes, per-period amount, next due date and how many invoices it generated. schedule_history is the log."
     },
     {
       "name": "schedule_update",
-      "description": "Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only."
+      "description": "Change one schedule by id: client, items, currency, cadence, dates, due_days, notes or auto_generate. Only the fields you pass change. Periods already invoiced are never re-issued, so a new amount applies to future ones."
     },
     {
       "name": "schedule_pause",
-      "description": "Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed."
+      "description": "Stop one schedule generating invoices without deleting it; invoice_generate_due and forecast skip it. Its periods keep falling due and resuming back-bills them, so use schedule_skip to drop just one."
     },
     {
       "name": "schedule_resume",
-      "description": "Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due."
+      "description": "Make a paused schedule active again. Every period missed while it was paused is still due and the next invoice_generate_due creates them all. Refused when it would pass the free tier's 3 active."
     },
     {
       "name": "schedule_delete",
-      "description": "Remove a schedule. Invoices it already generated stay in the invoice server untouched and its generation history is kept as an audit trail. Returns the client and how many invoices and history rows remain."
+      "description": "Delete one schedule permanently. Invoices already generated stay in the invoice server and the history is kept. Re-creating it gives a NEW id, so its old periods count as unbilled. schedule_pause is reversible."
     },
     {
       "name": "schedule_skip",
-      "description": "Skip a single occurrence of a schedule without pausing it: no invoice is ever created for that period, and every other period bills as normal. Returns the amount that will not be billed and how to undo it."
+      "description": "Close ONE occurrence for good without pausing the schedule, reporting what will not be billed. period must be a real occurrence of it. An invoiced period is refused; undo reopens a skip."
     },
     {
       "name": "schedule_upcoming",
-      "description": "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free lists the first 3 occurrences in the horizon you ask for."
+      "description": "Table every occurrence of every ACTIVE schedule due in the next N days (30 default), with its amount and the invoice due date, plus a total per currency. Free lists the first 3 in your horizon."
     },
     {
       "name": "invoice_generate_due",
@@ -79,19 +79,19 @@
     },
     {
       "name": "schedule_history",
-      "description": "The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path."
+      "description": "The audit log for one schedule id, oldest first: period, invoice number, issue and due dates, amount, PDF path, and whether that invoice is unpaid, paid, skipped or since deleted. schedule_list finds the id. Pro."
     },
     {
       "name": "forecast",
-      "description": "Expected invoiced revenue per calendar month per currency from every active schedule. Free covers 3 months ahead; Pro covers up to 120."
+      "description": "Expected invoiced revenue per calendar month per currency from active schedules. Invoiced and skipped periods are excluded and paused schedules listed apart. Free: 3 months; Pro: up to 120."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

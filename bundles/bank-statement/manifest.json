@@ -51,11 +51,11 @@
     },
     {
       "name": "category_rules",
-      "description": "Set the rules that categorise transactions, or call with none to list them. Each rule matches counterparty/description: plain is a substring; regex: true compiles only if not exponential. Reapplies to uncategorised rows."
+      "description": "Read the category rules, or pass rules to REPLACE the whole list. A plain match is a substring; a regex compiles only if it cannot backtrack exponentially. An empty match is refused. Free: 5 rules."
     },
     {
       "name": "transaction_categorize",
-      "description": "Set the category on one or more transactions by id. Nothing is changed unless every id exists, so a typo cannot half-apply."
+      "description": "Set or clear the category on transactions by id, for a one-off no rule is worth writing for. Every id is checked first, so one unknown id refuses the whole call. category_rules matches by text instead."
     },
     {
       "name": "statement_summary",
@@ -67,7 +67,7 @@
     },
     {
       "name": "recurring_detect",
-      "description": "Find charges that come back: same counterparty, steady amount and cadence. Reports cadence, typical amount, last/next due date, yearly cost per currency. Free: last 3 months, 5 charges; Pro: full history, every charge."
+      "description": "Find charges that come back: debits grouped by counterparty and currency with a steady amount and interval, with cadence, typical amount, next due date and annual cost. Free: 3 months, 5 charges."
     },
     {
       "name": "statement_export",
@@ -75,15 +75,15 @@
     },
     {
       "name": "accounts_list",
-      "description": "List the imported accounts with their bank, currency, transaction count and date range."
+      "description": "List the imported accounts: bank, currencies, transaction count, first and last date, and the closing balance when the file carried one. Start here for the account names transactions_list and statement_export take."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

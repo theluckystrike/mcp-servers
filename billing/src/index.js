@@ -211,7 +211,7 @@ const REPO = "https://github.com/theluckystrike/mcp-servers";
  * The home page previously claimed "399 of 399" against a real 951 of 951, and named
  * "Seventeen" servers when there were thirty.
  */
-export const VALIDATION = { at: "2026-09-10", pass: 1027, total: 1028, servers: 34, medianMs: 505 };
+export const VALIDATION = { at: "2026-09-10", pass: 1028, total: 1028, servers: 34, medianMs: 427 };
 
 /**
  * Unit tests in billing/test. Restated for the same reason as VALIDATION and pinned the

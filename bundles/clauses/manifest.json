@@ -43,7 +43,7 @@
     },
     {
       "name": "clause_get",
-      "description": "Return a clause in full by id or by title, with its variables and, in Pro, its revision count."
+      "description": "Return one clause in full by id or title: body, category, tags, jurisdiction, variables and the revision count, which stays 0 on free. A partial title matching several is refused with the candidates."
     },
     {
       "name": "clause_update",
@@ -51,11 +51,11 @@
     },
     {
       "name": "clause_delete",
-      "description": "Remove a clause from the library. A deleted starter clause is not re-seeded on the next call."
+      "description": "Delete one clause by id or exact title and report how many are left. There is no undo, and a deleted starter clause is not re-seeded. Use clause_update to change one you want to keep."
     },
     {
       "name": "clause_list",
-      "description": "List every clause, newest categories first, optionally narrowed to one category."
+      "description": "List the library as id, title, category, tags and variables, in contract order by category then title, which is the order contract_assemble uses. Narrow with category; use clause_search for words."
     },
     {
       "name": "clause_search",
@@ -63,27 +63,27 @@
     },
     {
       "name": "clause_import",
-      "description": "Call this tool to bulk-load clauses into the library from a markdown or JSON file. Returns how many clauses were added, replaced, skipped and blocked by the free clause cap, plus the new library total."
+      "description": "Call this tool to load clauses from a .md or .json file, reporting added, replaced, skipped and capped counts. A duplicate title is skipped unless overwrite. json is Pro. Free: 10 of your own."
     },
     {
       "name": "clause_export",
-      "description": "Call this tool to write the whole clause library out to one file. Returns the destination path, the format used and how many clauses were written."
+      "description": "Call this tool to write the whole library to one file and return the path, format and count. It is written in contract order, so it re-imports the same way. markdown is free; json is Pro."
     },
     {
       "name": "contract_assemble",
-      "description": "Call this tool to build a contract or proposal document from library clauses. Returns the path written, the clauses used in document order, which variables were filled, and the facts still missing as bracketed prompts."
+      "description": "Call this tool to build a contract from library clauses as .docx or markdown. A variable you omit stays as a bracketed prompt, never invented. clause_ids order is document order. Free: 8 clauses."
     },
     {
       "name": "variables_list",
-      "description": "Given a set of clauses, list every {{variable}} they use and which clause uses it, so nothing is missed before assembling."
+      "description": "List every {{variable}} the clauses you name use, and which clause uses each, so the facts are gathered before contract_assemble leaves bracketed prompts. Reads only; a title matching several is refused."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

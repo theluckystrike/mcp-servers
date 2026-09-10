@@ -47,7 +47,7 @@
     },
     {
       "name": "trip_record",
-      "description": "Calculate a trip and save it under a name, with the traveller taken from the shared business profile. Returns the TRIP-YYYY-NNNN id. Free tier: 5 trips a calendar month."
+      "description": "Calculate a trip and save it under a name, traveller taken from the shared business profile; returns the TRIP-YYYY-NNNN id. An identical record is refused and named, spending no slot. Free: 5 trips a calendar month."
     },
     {
       "name": "trip_list",
@@ -55,23 +55,23 @@
     },
     {
       "name": "trip_delete",
-      "description": "Delete one saved trip that has not been exported and has no expense booked against it, and free the free-tier slot it held that month. A trip with a dependent is refused, named. Free and unlimited."
+      "description": "Delete one saved trip and free the free-tier slot it held that month. A trip that has been exported or has an expense booked against it is refused with the blocker named, and nothing is written. Free and unlimited."
     },
     {
       "name": "trip_export",
-      "description": "Return the exact expense_add arguments for a saved trip, one payload per currency, ready to pass to the expense-tracker server. It writes nothing itself: see the note in the answer. Pro."
+      "description": "Return the exact expense_add arguments for a saved trip: one payload for subsistence and, with split_lodging, one for lodging. It writes nothing in the expense-tracker server; only mark_exported changes this trip. Pro."
     },
     {
       "name": "perdiem_report",
-      "description": "Total the saved trips per scheme and per calendar month, in each scheme's own currency, with the day count and the trips behind every figure. Pro."
+      "description": "Total saved trips per scheme and calendar month, bucketed by start date: trips, days, subsistence and lodging, each in the scheme's own currency, with the trip ids behind every figure. Pro."
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

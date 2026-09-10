@@ -11,7 +11,7 @@ Every server runs locally over stdio, keeps all data on your machine, and has a 
 Pro unlocks the limits for a one-time payment: $19 per server or $39 for the bundle, lifetime.
 
 <!-- gen:counts -->
-31 servers plus the office-suite aggregator, 30 of them also reachable as a hosted endpoint with no install.
+33 servers plus the office-suite aggregator, 30 of them also reachable as a hosted endpoint with no install.
 <!-- /gen:counts -->
 
 <!-- gen:install -->
@@ -41,6 +41,7 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-cash-book](servers/cash-book/README.md) | ![cash-book](assets/demo-cash-book.gif) | One double-entry ledger derived from the books you already keep, proved to the minor unit. | `cash-book.mcpb` |
 | [mcp-catalogue](servers/catalogue/README.md) | ![catalogue](assets/demo-catalogue.gif) | One price list and one rate card, kept where the invoice and the quote can both read them. | `catalogue.mcpb` |
 | [mcp-change-order](servers/change-order/README.md) | ![change-order](assets/demo-change-order.gif) | Change orders against a quote or a work order, with the running contract value derived from what the client approved. | `change-order.mcpb` |
+| [mcp-checklist](servers/checklist/README.md) |  | Checklists you build once and run many times, and the dated record of each run that somebody signs. | `checklist.mcpb` |
 | [mcp-clauses](servers/clauses/README.md) | ![clauses](assets/demo-clauses.gif) | Reusable contract clauses, searched and assembled into Word. | `clauses.mcpb` |
 | [mcp-currency](servers/currency/README.md) | ![currency](assets/demo-currency.gif) | ECB reference rates: convert, history, and fx_rates for rebilling. | `currency.mcpb` |
 | [mcp-delivery-schedule](servers/delivery-schedule/README.md) | ![delivery-schedule](assets/demo-delivery-schedule.gif) | Dated deliverables against a quote or a work order, and what is late as at any date you name. | `delivery-schedule.mcpb` |
@@ -50,6 +51,7 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-image](servers/image/README.md) | ![image](assets/demo-image.gif) | Resize, convert, compress and watermark images, pure JavaScript. | `image.mcpb` |
 | [mcp-invoice](servers/invoice/README.md) | ![invoice](assets/demo-invoice.gif) | Numbered invoices with tax lines, rendered to a professional PDF. | `invoice.mcpb` |
 | [mcp-kanban](servers/kanban/README.md) | ![kanban](assets/demo-kanban.gif) | A task board per project that hands off to the time tracker. | `kanban.mcpb` |
+| [mcp-packing-list](servers/packing-list/README.md) |  | Packing slips that carry no prices: what is in each carton, what it weighs, and what is still to pack. | `packing-list.mcpb` |
 | [mcp-pdf](servers/pdf/README.md) | ![pdf](assets/demo-pdf.gif) | Merge, split, stamp and read PDFs, pure JavaScript. | `pdf.mcpb` |
 | [mcp-per-diem](servers/per-diem/README.md) | ![per-diem](assets/demo-per-diem.gif) | Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them. | `per-diem.mcpb` |
 | [mcp-petty-cash](servers/petty-cash/README.md) | ![petty-cash](assets/demo-petty-cash.gif) | A petty cash float on the imprest system, reconciled to the minor unit. | `petty-cash.mcpb` |
@@ -63,7 +65,7 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-timezone](servers/timezone/README.md) | ![timezone](assets/demo-timezone.gif) | Find meeting slots inside everyone's working hours. | `timezone.mcpb` |
 | [mcp-work-order](servers/work-order/README.md) | ![work-order](assets/demo-work-order.gif) | Job orders for trades and field work, priced the way the invoice will be. | `work-order.mcpb` |
 | [mcp-zip](servers/zip/README.md) | ![zip](assets/demo-zip.gif) | Make a zip, look inside one, and unpack one, entirely on your machine. | `zip.mcpb` |
-| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that exposes every tool of all 31 servers, 292 of them. | `office-suite.mcpb` |
+| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that exposes every tool of all 33 servers, 318 of them. | `office-suite.mcpb` |
 <!-- /gen:table -->
 
 Or clone and build: `git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers`,

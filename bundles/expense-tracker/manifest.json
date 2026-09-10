@@ -43,15 +43,15 @@
     },
     {
       "name": "expense_list",
-      "description": "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed."
+      "description": "List expenses in a date range with each one's net/VAT split, category, merchant, project and billable flag, plus a total per currency. Free reads the last 30 days and says when your range predates it."
     },
     {
       "name": "expense_update",
-      "description": "Change any field of a stored expense by id. Only the fields you pass are changed."
+      "description": "Change one expense by id; only the fields you pass move. amount is in MAJOR units. A rebilled expense refuses an amount, currency or vat_rate edit unless unlink_rebill drops the invoice link."
     },
     {
       "name": "expense_delete",
-      "description": "Delete one expense by id. The receipt file itself is left on disk."
+      "description": "Delete one expense by id and report what went. The receipt FILE stays on disk. Deleting a rebilled expense loses the record of what an invoice charged, so correct it with expense_update instead."
     },
     {
       "name": "receipt_attach",
@@ -87,11 +87,11 @@
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [

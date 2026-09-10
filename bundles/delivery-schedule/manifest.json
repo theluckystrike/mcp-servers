@@ -43,31 +43,31 @@
     },
     {
       "name": "deliverable_add",
-      "description": "Add one deliverable to a schedule: what it is, the day it is due, and its value in whole minor units when it is separately priced. It starts as planned. Free on every tier."
+      "description": "Add one dated deliverable and return its D number and the new counts. value_minor is NET of VAT in whole MINOR units. A due date before the reference document's own date is refused. It starts as planned."
     },
     {
       "name": "deliverable_status",
-      "description": "Record a dated move on one deliverable: planned to in progress, to delivered, and delivered to accepted with the acceptance note. Accepting something never delivered is refused. Free."
+      "description": "Record a dated move on one deliverable: planned, in_progress, delivered, then accepted with a note. An out-of-order move, or a date before the reference document, is refused. The date drives lateness."
     },
     {
       "name": "deliverable_delete",
-      "description": "Delete a deliverable added by mistake. Only one still planned with nothing recorded against it can go: once it has been started or handed over it has a history. Free on every tier."
+      "description": "Delete one deliverable still planned with no history. One started, delivered or accepted is refused, naming when: add a corrected deliverable instead. The D number on a schedule is never reissued."
     },
     {
       "name": "delivery_schedule_get",
-      "description": "Show one schedule in full as at a date: every deliverable with its due date, status, delivered and accepted dates, acceptance note and value, plus what is late as at that date. Free."
+      "description": "Return one schedule in full as at a date: every deliverable with due date, status, delivered and accepted dates, note and value, plus what is late and the totals. The answer names the as_of it used."
     },
     {
       "name": "delivery_schedule_list",
-      "description": "List delivery schedules with their counts as at a date: what is late, what is still owed and what has been accepted. Filter by client, by reference and by whether the job is complete. Free."
+      "description": "List schedules oldest reference first with client, currency and counts as at a date: late, still owed, accepted. Filter by client, reference and state open or complete. Free."
     },
     {
       "name": "delivery_schedule_delete",
-      "description": "Delete a delivery schedule opened by mistake. Only one with no deliverables can go: once it carries one, it carries a record of what was owed. Free on every tier."
+      "description": "Delete a schedule carrying no deliverables, freeing an open slot. One holding any is refused, naming them, since they record what was owed. The DS number is never reissued. Free on every tier."
     },
     {
       "name": "late_report",
-      "description": "What has slipped as at a date you name: every deliverable still owed whose due date has passed, worst first, with the value at risk per currency and what was delivered late for the record. Free."
+      "description": "What has slipped as at a date: every deliverable still owed past its due date, worst first, with value at risk per currency, and what was delivered late kept apart. A reference with no schedule is refused."
     },
     {
       "name": "delivery_schedule_document",
@@ -79,11 +79,11 @@
     },
     {
       "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
     },
     {
       "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
   ],
   "keywords": [
