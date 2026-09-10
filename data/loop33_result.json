@@ -33,7 +33,8 @@
       "live_validation": "1028 of 1028 across 34 servers",
       "build_vendor": "exit 0",
       "billing_gates": "134 of 134",
-      "manifests": "no checksum drift"
+      "manifests": "no checksum drift",
+      "registry": "91 of 91 manifest names live at 0.21.0, zero unreachable, measured by exact membership rather than search"
     }
   },
   "agents": [],
@@ -53,7 +54,6 @@
   ],
   "human_gated": [],
   "open": [
-    "Registry entries at latest version reads 72 of 91, against 85 of 85 before. The target rose because new manifests exist, and the shortfall is names that have never been published, including the two new servers. Spot-checked live: existing entries are present at 0.21.0. Verify the count returns to full after the publish rather than assuming it.",
     "Whether the Gemini CLI gallery indexes the 30 mirrors. Its crawler runs daily, so check on or after 2026-09-11.",
     "Whether the GitHub vocabulary pass moves ranks once the index settles. Re-run scripts/gh-search-rank.mjs on 2026-09-17 and 2026-10-10; today measurement was 20 minutes after the change and its small moves are index noise.",
     "Whether IndexNow moves anything. 154 URLs accepted by Bing, Yandex, Seznam and Naver, and accepted is not indexed. Re-measure 2026-09-24. Brave is not an IndexNow participant, so this cannot move the one index we are proven to be in.",
@@ -79,7 +79,8 @@
     "The servers directory was recorded as an unenterable queue. It is not: we are on it with 2 of 34 mirrors and the discriminator appears to be head-of-queue residency in GitHub recently-pushed list. office-suite is last in the sync script and is the one that got in, which also explains lags previously recorded as 33 minutes for one repo and about 120 days for another.",
     "A watcher reported 6 of 34 mirrors indexed on Glama. That was an artifact: its HEAD probe flaps, and a nonexistent repo returned 404, 200, 404, 404, 404 on repeat. The sitemap gives the true figure of 2.",
     "Stars were assumed to be why our repos do not rank in GitHub search. Measured, they are not. Across 87 competitor repos captured in top-five results the median is 1 star and 35 have zero, and the top result for three separate buyer queries had zero, zero and three stars with no topics at all.",
-    "The public measurements repo re-measured five of this project own claims and corrected them. The registry holds 30,395 distinct latest servers; the 2,211 figure was a 6,000-row cursor sample, and the live page that quotes it says so explicitly, so nothing public was wrong. Download-count UNIFORMITY does not generalise, MCP repos run at CV 3.60 against 2.58 to 3.88 for non-MCP controls, so drop that argument and keep the one that survives: the median MCP release asset has 1 download. Endpoints requiring auth on discovery are 34.2 percent of a seeded sample of 120, not 25.4 percent, a different method rather than a contradiction. A capital letter ranks you EARLIER, since ASCII puts uppercase before lowercase; the live page already had this the right way round. And the VS Code subfolder hypothesis was refuted independently, before it was told the answer."
+    "The public measurements repo re-measured five of this project own claims and corrected them. The registry holds 30,395 distinct latest servers; the 2,211 figure was a 6,000-row cursor sample, and the live page that quotes it says so explicitly, so nothing public was wrong. Download-count UNIFORMITY does not generalise, MCP repos run at CV 3.60 against 2.58 to 3.88 for non-MCP controls, so drop that argument and keep the one that survives: the median MCP release asset has 1 download. Endpoints requiring auth on discovery are 34.2 percent of a seeded sample of 120, not 25.4 percent, a different method rather than a contradiction. A capital letter ranks you EARLIER, since ASCII puts uppercase before lowercase; the live page already had this the right way round. And the VS Code subfolder hypothesis was refuted independently, before it was told the answer.",
+    "The registry KPI itself was broken, and it was caught before the dashboard published it. It read 72 of 91 and then 41 of 91 entries at the latest version. A direct check of a random sample of 12 returned 12 of 12 present at the release version, so the number was measuring the instrument. The probe called /v0/servers?search=<name> and looked for an exact match in page one, which worked when the registry was small; full pagination now counts 30,395 distinct latest servers, so a substring search pushes the exact row off the first page. Replaced with the exact membership endpoint, GET /v0.1/servers/<name>/versions/latest, which answers 200 with the version or 404. True figure: 91 of 91, zero unreachable, 30 of them hosted. Better than the historical 85 of 85 because there are now more names."
   ],
   "answered_no": [
     "An agent-native payment rail is not reachable without a human step. The MCP specification has no payment primitive; the proposal for one closed unmerged. x402 is live and a no-account facilitator exists, but it needs a wallet address, which is a custody decision only the operator can take, and decisively no mainstream MCP client settles a 402, so every one of them would need a separately funded bridge. Median x402 price is a cent per call against a nineteen dollar one-time product.",
