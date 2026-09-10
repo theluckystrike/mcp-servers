@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "frozen_at": "2026-09-10",
+  "note": "Frozen question set for the blind recommendation KPI. Do NOT edit or reorder: the KPI is a time series and changing the questions breaks comparability. Add new questions only as v2 with the v1 set retained.",
+  "questions": [
+    {
+      "n": 1,
+      "q": "How can I get Claude to generate an invoice PDF for my freelance clients?"
+    },
+    {
+      "n": 2,
+      "q": "Is there an MCP server that merges and splits PDF files?"
+    },
+    {
+      "n": 3,
+      "q": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?"
+    },
+    {
+      "n": 4,
+      "q": "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?"
+    },
+    {
+      "n": 5,
+      "q": "Best MCP server for creating Word documents from a chat?"
+    },
+    {
+      "n": 6,
+      "q": "How do I let Claude fill in a quote or estimate template for a customer?"
+    },
+    {
+      "n": 7,
+      "q": "Is there an MCP server for time tracking and timesheets?"
+    },
+    {
+      "n": 8,
+      "q": "MCP server to convert currencies with real exchange rates?"
+    },
+    {
+      "n": 9,
+      "q": "What MCP server helps schedule a meeting across time zones?"
+    },
+    {
+      "n": 10,
+      "q": "I need an MCP server that builds a spreadsheet from data in my conversation."
+    },
+    {
+      "n": 11,
+      "q": "Is there an MCP server that generates barcodes or QR codes?"
+    },
+    {
+      "n": 12,
+      "q": "What MCP server can zip and unzip archives for Claude?"
+    },
+    {
+      "n": 13,
+      "q": "MCP server for a petty cash book or cash book ledger?"
+    },
+    {
+      "n": 14,
+      "q": "Is there an MCP server that produces a delivery schedule or work order document?"
+    },
+    {
+      "n": 15,
+      "q": "What MCP server handles recurring invoices or subscription billing documents?"
+    },
+    {
+      "n": 16,
+      "q": "Which MCP servers can I use without installing anything, just by pasting a URL?"
+    },
+    {
+      "n": 17,
+      "q": "What are the best MCP servers for small business accounting and paperwork?"
+    },
+    {
+      "n": 18,
+      "q": "Where do I find MCP servers that cost money, and how do I pay for one?"
+    }
+  ]
+}

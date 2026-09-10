@@ -1,0 +1,94 @@
+{
+  "captured_at": "2026-09-10T13:37:07.784Z",
+  "loop": 33,
+  "github": {
+    "stars": 0,
+    "forks": 0,
+    "watchers": 0,
+    "views_14d": 54,
+    "view_uniques_14d": 31,
+    "clones_14d": 3410,
+    "clone_uniques_14d": 502,
+    "clone_to_view_ratio": 63.1,
+    "referrers": [
+      {
+        "referrer": "registry.modelcontextprotocol.io",
+        "count": 21,
+        "uniques": 10
+      },
+      {
+        "referrer": "github.com",
+        "count": 1,
+        "uniques": 1
+      },
+      {
+        "referrer": "mcp.zovo.one",
+        "count": 1,
+        "uniques": 1
+      }
+    ],
+    "popular_paths": [
+      {
+        "path": "/theluckystrike/mcp-servers",
+        "title": "Overview",
+        "count": 38,
+        "uniques": 24
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/blob/main/assets/demo-expense-tracker.gif",
+        "title": "/blob/main/assets/demo-expense-tracker.gif",
+        "count": 2,
+        "uniques": 2
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/releases/tag/v0.21.0",
+        "title": "/releases/tag/v0.21.0",
+        "count": 2,
+        "uniques": 2
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/tree/main/servers/price-tracker",
+        "title": "/tree/main/servers/price-tracker",
+        "count": 2,
+        "uniques": 1
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/blob/main/servers/image/README.md",
+        "title": "/blob/main/servers/image/README.md",
+        "count": 1,
+        "uniques": 1
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/blob/main/servers/image/server.json",
+        "title": "/blob/main/servers/image/server.json",
+        "count": 1,
+        "uniques": 1
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/blob/main/servers/office-suite/README.md",
+        "title": "/blob/main/servers/office-suite/README.md",
+        "count": 1,
+        "uniques": 1
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/blob/main/servers/pdf/README.md",
+        "title": "/blob/main/servers/pdf/README.md",
+        "count": 1,
+        "uniques": 1
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/pulls",
+        "title": "/pulls",
+        "count": 1,
+        "uniques": 1
+      },
+      {
+        "path": "/theluckystrike/mcp-servers/releases/tag/v0.9.2",
+        "title": "/releases/tag/v0.9.2",
+        "count": 1,
+        "uniques": 1
+      }
+    ]
+  },
+  "note": "clone_to_view_ratio is the loop-33 finding: machine readers outnumber human viewers ~63x on the repo front door. Referrers confirm registry.modelcontextprotocol.io is the only channel delivering humans."
+}

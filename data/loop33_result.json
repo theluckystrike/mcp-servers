@@ -1,0 +1,48 @@
+{
+  "loop": 33,
+  "date": "2026-09-10",
+  "headline": "Two findings, either of which would have justified the loop. A blind assistant asked the buyer own question named 47 MCP servers and none were ours, and the sources it cited put GitHub first and the official registry at zero. And the zero-install URL this estate advertised everywhere lists its tools and then refuses every call.",
+  "primary_kpi": {
+    "name": "Named by a blind assistant",
+    "value": "0 of 18 buyer questions",
+    "how": "A subagent with no knowledge of this estate researched 18 frozen buyer-intent questions with web search and named the server it would recommend. Procedure in docs/BLIND_RECOMMENDATION_PROCEDURE.md, questions frozen in data/blind_questions.json.",
+    "why": "The buyer does not browse a registry. They ask an assistant and install what it names. Every other discovery metric this project tracked measures whether a machine can find the catalogue, not whether a person gets told about it."
+  },
+  "citation_sources": {
+    "table": "github.com 21, glama.ai 7, mcp.zovo.one 4, apify.com 4, mcpservers.org 3, 17 other hosts at 1 to 2 each, registry.modelcontextprotocol.io 0",
+    "github_detail": "20 of the 21 GitHub citations are individual one-server repositories and exactly one is an awesome-list. Ten map one for one onto servers we already ship.",
+    "glama_detail": "6 of the 7 Glama citations are /mcp/servers/<owner>/<repo> and none are /mcp/connectors/. We hold 25 connector listings and 1 of 33 server listings, so the surface we invested in is not the surface that is read.",
+    "consequence": "The official registry delivers about 10 human referrals per 14 days and no assistant recommendations. Its real job is as an upstream that api.mcp.github.com and Glama consume, not as a destination anyone reads. Those were being treated as one job."
+  },
+  "retrieval_vs_citation": {
+    "finding": "mcp.zovo.one was retrieved for 2 of 18 questions, at rank 8 and rank 10, both times the homepage, and cited in zero answers.",
+    "mechanism": "Reading the homepage as a machine reader explains it. Asked how to generate an invoice, an assistant needs a named server, an exact URL and enough certainty to commit. The homepage gives a category description and a pointer to see the full table elsewhere. A page that defers cannot be cited, because the assistant will not follow a link to finish an answer it can get whole somewhere else.",
+    "defect_found": "The live homepage stated three different counts of its own catalogue at once: Thirty-one three times, 32 servers, and 31 servers. ls servers/ returns 32."
+  },
+  "repo_front_door": {
+    "clones_vs_views": "3,410 clones from 502 unique clients against 54 views from 31 humans in 14 days, a ratio of 63 to 1",
+    "referrers": "registry.modelcontextprotocol.io 21 views from 10 uniques is the only human referrer; github.com 1 and mcp.zovo.one 1",
+    "read": "The repo front door serves machines by about 63 to 1, and machines are what produce recommendations, so this is not a problem to fix but an audience to write for."
+  },
+  "estate": {
+    "live_validation_baseline": "951/951 before any change this loop",
+    "servers": 32,
+    "hosted": 30
+  },
+  "agents": [],
+  "shipped": [],
+  "human_gated": [],
+  "open": [],
+  "dead_advertised_path": {
+    "what": "https://mcp.zovo.one/mcp/<server>, the headline connect-by-URL path, answers initialize and tools/list with 200 and the full tool list, and answers every tools/call with HTTP 401. The working shape is /mcp/<server>/t/<token>, and a token comes from /mcp/connect.",
+    "scope": "It was the above-the-fold hero on 30 of 30 product pages, on all 31 llms.txt lines, and 81 of 85 active registry rows landed there. So 100 percent of the only channel that delivers humans pointed at a path that delivers no value, hits no usage cap, and therefore never reaches checkout.",
+    "why_it_hid": "It looks alive from every direction an automated check looks. A previous loop deliberately opened initialize and tools/list to unauthenticated callers so directory health probes would stop publishing the servers as down. Every validation and every prober passed. Only a tools/call fails, and nothing was calling one against the tokenless URL. In a client the user sees the tools appear and then a tool error.",
+    "confirmed_by": "Two independent instruments: the funnel audit, and an orchestrator probe that ran the same tools/call against the tokenless URL (401) and against a freshly minted token URL (200, business profile saved).",
+    "lesson": "For a hosted endpoint the shipping test is a real tools/call through the exact URL the marketing prints, not a tools/list. Discovery succeeding is not the product working."
+  },
+  "click_instrument": {
+    "was_lying": "Proved unconfounded: a Googlebot user agent with Accept text/html, no probe header, on a dead product id was recorded as a click. The counter also moved 1,685 to 1,690 in 16 unattended minutes.",
+    "in_product": "In-product cap clicks stand at 3 of 1,685, which is 0.18 percent, and have not moved since 2026-09-07.",
+    "now": "A v2 counter starts at zero, counts opt-in on a browser navigation signal, buckets untagged hits out of the totals, and keeps v1 under a legacy key. Never quote v1."
+  }
+}

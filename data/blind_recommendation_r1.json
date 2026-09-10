@@ -1,0 +1,557 @@
+{
+  "run_date": "2026-09-10",
+  "method": "One or two neutral WebSearch queries per question, phrased as an ordinary user would type them, no vendor named in the query. Recommendations are servers that actually surfaced in organic results, ranked by prominence.",
+  "questions": [
+    {
+      "id": 1,
+      "question": "How can I get Claude to generate an invoice PDF for my freelance clients?",
+      "query": "MCP server generate invoice PDF Claude freelance",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "invoice-mcp (markslorach)",
+          "url": "https://github.com/markslorach/invoice-mcp"
+        },
+        {
+          "rank": 2,
+          "name": "invovate-mcp-server (LightSpeedPlusOne)",
+          "url": "https://github.com/LightSpeedPlusOne/invovate-mcp-server"
+        },
+        {
+          "rank": 3,
+          "name": "Invco built-in MCP",
+          "url": "https://invco.pro/ai-invoicing"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": true,
+      "zovo_line": {
+        "rank": 8,
+        "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+        "url": "https://mcp.zovo.one/"
+      }
+    },
+    {
+      "id": 2,
+      "question": "Is there an MCP server that merges and splits PDF files?",
+      "query": "MCP server merge split PDF files",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "mcp-server-stirling-pdf (gufao)",
+          "url": "https://github.com/gufao/mcp-server-stirling-pdf"
+        },
+        {
+          "rank": 2,
+          "name": "pdf-mcp-server (Sohaib-2)",
+          "url": "https://github.com/Sohaib-2/pdf-mcp-server"
+        },
+        {
+          "rank": 3,
+          "name": "PDF Tools (Apify, mrkrokko)",
+          "url": "https://apify.com/mrkrokko/pdf-tools/api/mcp"
+        },
+        {
+          "rank": 4,
+          "name": "mcp-pdf-tools (hanweg)",
+          "url": "https://github.com/hanweg/mcp-pdf-tools"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 3,
+      "question": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+      "query": "MCP server track business expenses mileage Claude Desktop",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "Self Employment Toolkit MCP",
+          "url": "https://selfemploymenttoolkit.com/integrations"
+        },
+        {
+          "rank": 2,
+          "name": "expense-tracker-mcp (bzheng29)",
+          "url": "https://github.com/bzheng29/expense-tracker-mcp"
+        },
+        {
+          "rank": 3,
+          "name": "expense-mcp-server (shivamprasad1001)",
+          "url": "https://github.com/shivamprasad1001/expense-mcp-server"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": true,
+      "zovo_line": {
+        "rank": 10,
+        "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+        "url": "https://mcp.zovo.one/"
+      }
+    },
+    {
+      "id": 4,
+      "question": "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?",
+      "query": "MCP server read bank statement PDF categorize transactions",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "Bankstatemently MCP Server",
+          "url": "https://bankstatemently.com/developers/mcp"
+        },
+        {
+          "rank": 2,
+          "name": "DocuClipper MCP",
+          "url": "https://www.docuclipper.com/integrations/mcp/"
+        },
+        {
+          "rank": 3,
+          "name": "Bank Statement PDF to Excel & CSV Converter (Apify, northbound_works)",
+          "url": "https://apify.com/northbound_works/bank-statement-to-csv/api/mcp"
+        },
+        {
+          "rank": 4,
+          "name": "kontozack-mcp",
+          "url": "https://glama.ai/mcp/servers/fukagawa-de/kontozack-mcp"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false,
+      "notes": "Categorisation specifically is only weakly supported; no result explicitly advertised rule-based categorisation with a named repo."
+    },
+    {
+      "id": 5,
+      "question": "Best MCP server for creating Word documents from a chat?",
+      "query": "best MCP server create Word documents docx from chat",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "Office-Word-MCP-Server (GongRzhe)",
+          "url": "https://github.com/GongRzhe/Office-Word-MCP-Server"
+        },
+        {
+          "rank": 2,
+          "name": "docx-mcp (SecurityRonin)",
+          "url": "https://github.com/SecurityRonin/docx-mcp"
+        },
+        {
+          "rank": 3,
+          "name": "docx-mcp (aiexplorations)",
+          "url": "https://github.com/aiexplorations/docx-mcp"
+        },
+        {
+          "rank": 4,
+          "name": "Gumloop Word MCP",
+          "url": "https://www.gumloop.com/mcp/word"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 6,
+      "question": "How do I let Claude fill in a quote or estimate template for a customer?",
+      "query": "MCP server fill quote estimate template customer",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "MCP Quoting System (r-long)",
+          "url": "https://glama.ai/mcp/servers/@r-long/mcp-quoting-system"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false,
+      "notes": "Effectively a null result: the only hit is a niche manufacturing RFQ-costing tool, not a generic template filler for freelancers/small business."
+    },
+    {
+      "id": 7,
+      "question": "Is there an MCP server for time tracking and timesheets?",
+      "query": "MCP server time tracking timesheets Claude",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "Clockify MCP (inakianduaga)",
+          "url": "https://github.com/inakianduaga/clockify-mcp"
+        },
+        {
+          "rank": 2,
+          "name": "Harvest MCP Server (taiste)",
+          "url": "https://mcpservers.org/servers/taiste/harvest-mcp-server"
+        },
+        {
+          "rank": 3,
+          "name": "TrackingTime MCP",
+          "url": "https://trackingtime.co/mcp-time-tracking-for-ai-assistants"
+        },
+        {
+          "rank": 4,
+          "name": "Timesheet.io MCP",
+          "url": "https://docs.timesheet.io/integrations/mcp-server/"
+        },
+        {
+          "rank": 5,
+          "name": "Jibble",
+          "url": "https://www.jibble.io/claude-time-tracking"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 8,
+      "question": "MCP server to convert currencies with real exchange rates?",
+      "query": "MCP server currency conversion real exchange rates",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "currency-conversion-mcp (wesbos)",
+          "url": "https://github.com/wesbos/currency-conversion-mcp"
+        },
+        {
+          "rank": 2,
+          "name": "exchange-rate-mcp (boy-373)",
+          "url": "https://glama.ai/mcp/servers/boy-373/exchange-rate-mcp"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 9,
+      "question": "What MCP server helps schedule a meeting across time zones?",
+      "query": "MCP server schedule meeting across time zones",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "Meeting MCP (stock-vibes)",
+          "url": "https://glama.ai/mcp/servers/stock-vibes/meeting-mcp"
+        },
+        {
+          "rank": 2,
+          "name": "Time MCP Server (beordle)",
+          "url": "https://mcpservers.org/servers/beordle/time-mcp-server"
+        },
+        {
+          "rank": 3,
+          "name": "Cronofy MCP",
+          "url": "https://learn.microsoft.com/en-us/connectors/cronofymcp/"
+        },
+        {
+          "rank": 4,
+          "name": "Zoho Calendar MCP",
+          "url": "https://www.zoho.com/blog/calendar/calendar-mcp-server.html"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 10,
+      "question": "I need an MCP server that builds a spreadsheet from data in my conversation.",
+      "query": "MCP server build spreadsheet Excel from conversation data",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "excel-mcp-server (haris-musa)",
+          "url": "https://github.com/haris-musa/excel-mcp-server"
+        },
+        {
+          "rank": 2,
+          "name": "excel-mcp-server (negokaz)",
+          "url": "https://github.com/negokaz/excel-mcp-server"
+        },
+        {
+          "rank": 3,
+          "name": "excel-mcp-server (sbraind)",
+          "url": "https://github.com/sbraind/excel-mcp-server"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false,
+      "notes": "Three unrelated repos share nearly the same name/description; user should check maintenance/stars before picking."
+    },
+    {
+      "id": 11,
+      "question": "Is there an MCP server that generates barcodes or QR codes?",
+      "query": "MCP server generate barcode QR code",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "mcp-server-qrcode (jwalsh)",
+          "url": "https://github.com/jwalsh/mcp-server-qrcode"
+        },
+        {
+          "rank": 2,
+          "name": "barcoding-mcp (cordfuse)",
+          "url": "https://glama.ai/mcp/servers/cordfuse/barcoding-mcp"
+        },
+        {
+          "rank": 3,
+          "name": "Barcode Generator (Apify, zsoftware)",
+          "url": "https://apify.com/zsoftware/barcode-generator/api/mcp"
+        },
+        {
+          "rank": 4,
+          "name": "qrmcp.dev",
+          "url": "https://qrmcp.dev/"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 12,
+      "question": "What MCP server can zip and unzip archives for Claude?",
+      "query": "MCP server zip unzip archive files Claude",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "zip-mcp (loscolmebrothers)",
+          "url": "https://github.com/loscolmebrothers/zip-mcp",
+          "install": "npx -y @loscolmebrothers/zip-mcp"
+        },
+        {
+          "rank": 2,
+          "name": "zip-mcp (7gugu)",
+          "url": "https://github.com/7gugu/zip-mcp"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 13,
+      "question": "MCP server for a petty cash book or cash book ledger?",
+      "query": "MCP server petty cash book ledger",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "mcp-server-ledger (minhyeoky)",
+          "url": "https://github.com/minhyeoky/mcp-server-ledger"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false,
+      "notes": "Null result for the literal ask: this wraps Ledger CLI (query/balances on an existing plain-text ledger file), not a petty-cash logging or receipt-capture tool. No dedicated petty-cash-book MCP server found."
+    },
+    {
+      "id": 14,
+      "question": "Is there an MCP server that produces a delivery schedule or work order document?",
+      "query": "MCP server delivery schedule work order document generation",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "OneStock MCP Server",
+          "url": "https://www.onestock-retail.com/platform/open-oms/mcp-server/"
+        },
+        {
+          "rank": 2,
+          "name": "scheduler-mcp (PhialsBasement)",
+          "url": "https://github.com/PhialsBasement/scheduler-mcp"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false,
+      "notes": "Null result: neither server actually generates a delivery-schedule or work-order document. OneStock computes delivery ETAs (an API, not a document); scheduler-mcp is a cron task runner unrelated to documents despite the name overlap."
+    },
+    {
+      "id": 15,
+      "question": "What MCP server handles recurring invoices or subscription billing documents?",
+      "query": "MCP server recurring invoices subscription billing",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "Stripe MCP Server (official)",
+          "url": "https://mcpservers.org/servers/stripe-mcp-server"
+        },
+        {
+          "rank": 2,
+          "name": "Chargebee MCP",
+          "url": "https://www.chargebee.com/mcp/"
+        },
+        {
+          "rank": 3,
+          "name": "Recurly MCP",
+          "url": "https://www.mcpbundles.com/providers/recurly"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 16,
+      "question": "Which MCP servers can I use without installing anything, just by pasting a URL?",
+      "query": "MCP servers no installation just paste a URL remote hosted",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "awesome-remote-mcp-servers (directory)",
+          "url": "https://github.com/jaw9c/awesome-remote-mcp-servers/"
+        },
+        {
+          "rank": 2,
+          "name": "mcpplaygroundonline.com (URL test harness, not itself a server)",
+          "url": "https://mcpplaygroundonline.com/mcp-test-server"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false,
+      "notes": "Category answer, no single dominant named server. Weakest answer of the 18 along with Q18."
+    },
+    {
+      "id": 17,
+      "question": "What are the best MCP servers for small business accounting and paperwork?",
+      "query": "best MCP servers small business accounting paperwork",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "QuickBooks Online MCP (Intuit, official)",
+          "url": "https://glama.ai/mcp/servers (referenced via uibakery.io summary; Intuit open-source repo)"
+        },
+        {
+          "rank": 2,
+          "name": "Xero MCP",
+          "url": "https://glama.ai/mcp/servers/integrations/xero"
+        },
+        {
+          "rank": 3,
+          "name": "Koncile",
+          "url": "referenced via lido.app comparison"
+        },
+        {
+          "rank": 4,
+          "name": "Lido",
+          "url": "https://www.lido.app/blog/best-mcp-servers-for-document-processing"
+        },
+        {
+          "rank": 5,
+          "name": "CorpusIQ",
+          "url": "https://www.corpusiq.io/docs/best-mcp-server-for-business"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false
+    },
+    {
+      "id": 18,
+      "question": "Where do I find MCP servers that cost money, and how do I pay for one?",
+      "query": "paid MCP servers marketplace how to pay for one",
+      "recommendations": [
+        {
+          "rank": 1,
+          "name": "AgenticMarket",
+          "url": "https://agenticmarket.dev/pricing"
+        },
+        {
+          "rank": 2,
+          "name": "MCPize",
+          "url": "referenced in search summary, publish-and-price platform"
+        },
+        {
+          "rank": 3,
+          "name": "Apify",
+          "url": "https://apify.com"
+        },
+        {
+          "rank": 4,
+          "name": "MCPBundles",
+          "url": "https://www.mcpbundles.com/pricing"
+        }
+      ],
+      "source": "WebSearch links array for query above",
+      "zovo_or_theluckystrike_present": false,
+      "notes": "Fragmented answer, four different payment models (per-call, creator-set/publish, pay-per-event, subscription), no consensus single marketplace. Weakest answer of the 18 along with Q16."
+    }
+  ],
+  "summary": {
+    "distinct_mcp_servers_named_total": 47,
+    "distinct_servers_list": [
+      "invoice-mcp (markslorach)",
+      "invovate-mcp-server",
+      "Invco MCP",
+      "mcp-server-stirling-pdf",
+      "pdf-mcp-server (Sohaib-2)",
+      "PDF Tools (Apify/mrkrokko)",
+      "mcp-pdf-tools (hanweg)",
+      "Self Employment Toolkit MCP",
+      "expense-tracker-mcp (bzheng29)",
+      "expense-mcp-server (shivamprasad1001)",
+      "Bankstatemently MCP",
+      "DocuClipper MCP",
+      "Bank Statement PDF to CSV (Apify/northbound_works)",
+      "kontozack-mcp",
+      "Office-Word-MCP-Server",
+      "docx-mcp (SecurityRonin)",
+      "docx-mcp (aiexplorations)",
+      "Gumloop Word MCP",
+      "MCP Quoting System (r-long)",
+      "Clockify MCP",
+      "Harvest MCP Server",
+      "TrackingTime MCP",
+      "Timesheet.io MCP",
+      "Jibble",
+      "currency-conversion-mcp (wesbos)",
+      "exchange-rate-mcp (boy-373)",
+      "Meeting MCP (stock-vibes)",
+      "Time MCP Server (beordle)",
+      "Cronofy MCP",
+      "Zoho Calendar MCP",
+      "excel-mcp-server (haris-musa)",
+      "excel-mcp-server (negokaz)",
+      "excel-mcp-server (sbraind)",
+      "mcp-server-qrcode (jwalsh)",
+      "barcoding-mcp (cordfuse)",
+      "Barcode Generator (Apify/zsoftware)",
+      "qrmcp.dev",
+      "zip-mcp (loscolmebrothers)",
+      "zip-mcp (7gugu)",
+      "mcp-server-ledger (minhyeoky)",
+      "Stripe MCP Server",
+      "Chargebee MCP",
+      "Recurly MCP",
+      "QuickBooks Online MCP",
+      "Xero MCP",
+      "Koncile",
+      "Lido"
+    ],
+    "excluded_as_platforms_not_servers": [
+      "AgenticMarket",
+      "MCPize",
+      "MCPBundles",
+      "Apify (platform)",
+      "awesome-remote-mcp-servers (directory)",
+      "mcpplaygroundonline.com (test tool)",
+      "CorpusIQ (connector platform)"
+    ],
+    "zovo_or_theluckystrike": {
+      "mcp_zovo_one_appeared": true,
+      "theluckystrike_appeared": false,
+      "occurrences": [
+        {
+          "question_id": 1,
+          "rank": 8,
+          "of": 10,
+          "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+          "url": "https://mcp.zovo.one/"
+        },
+        {
+          "question_id": 3,
+          "rank": 10,
+          "of": 10,
+          "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+          "url": "https://mcp.zovo.one/"
+        }
+      ],
+      "notes": "Both occurrences are the same generic aggregator/listing page, not a single named server, and were not mentioned in either WebSearch generated-answer text — only in the raw links array. theluckystrike (as GitHub user or any identifier) did not appear in any of the 18 searches."
+    },
+    "q16_and_q18_verdict": {
+      "q16": "Partial answer only. Real category (remote/hosted MCP over Streamable HTTP) with a curated directory (github.com/jaw9c/awesome-remote-mcp-servers) and a URL test harness (mcpplaygroundonline.com), but no single dominant named server the way most other questions produced one.",
+      "q18": "Partial/fragmented answer. Four different marketplaces surfaced (AgenticMarket per-call, MCPize creator-priced, Apify pay-per-event, MCPBundles subscription) with no consensus 'go here' marketplace and materially different pricing models.",
+      "overall": "These are the two weakest of the 18 answers — information exists but neither resolves to one confident named recommendation."
+    },
+    "named_ours_in_answer": 0,
+    "host_appeared_count": 2,
+    "identity_appeared_count": 0,
+    "kpi_note": "named_ours_in_answer is the KPI and is 0 of 18. host_appeared_count is 2 of 18, both the homepage at rank 8 and rank 10, and neither reached the generated answer. identity_appeared_count is 0 of 18. Retrieved-but-not-cited is a content defect; never-retrieved is an indexation defect. See docs/RECOMMENDATION_SOURCES_R1.md."
+  }
+}
