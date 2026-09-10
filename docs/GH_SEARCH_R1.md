@@ -713,7 +713,8 @@ it has a capability phrase taken verbatim from its own `server.json`; it still f
 theirs to make. `checklist` is `src/` and `test/` only with no manifest to read, so it was
 given **no** entry rather than an invented one, and the gate reports it as pending.
 
-`npm test` from the repo root: **45/45 pass, 0 fail**, including
+`npm test` from the repo root, re-run after the Gemini extension change landed: **exit 0,
+0 failing assertions across 10,649 lines of TAP**, tallies `45/45` and `105/105`, including
 `the estate lists this server everywhere a new server has to be registered`.
 
 One bug of my own, found and fixed during the round: `gh-search-rank.mjs` read its output
@@ -906,3 +907,53 @@ after this push, which supersedes the `mcp-timezone` prediction in section 10.
 ### Verification
 
 Read back from the live repository, not the local tree, in section 14.
+
+---
+
+## 14. Live verification of the Gemini manifests
+
+Read back from GitHub with `gh`, not from the local tree.
+
+```
+$ gh api repos/theluckystrike/mcp-invoice/contents/gemini-extension.json --jq .content | base64 -d
+{
+  "name": "mcp-invoice",
+  "version": "0.21.0",
+  "description": "MCP server for invoice generation: an invoice generator that can generate a numbered PDF invoice with VAT for your clients. Numbered invoices with tax lines, rendered to a professional PDF.",
+  "settings": [ { "name": "mcp.zovo.one token", "envVar": "ZOVO_MCP_TOKEN", "sensitive": true, "description": "..." } ],
+  "mcpServers": {
+    "invoice": {
+      "httpUrl": "https://mcp.zovo.one/mcp/invoice",
+      "headers": { "Authorization": "Bearer ${ZOVO_MCP_TOKEN}" },
+      "description": "Numbered invoices with tax lines, rendered to a professional PDF."
+    }
+  }
+}
+
+$ gh api repos/theluckystrike/mcp-invoice --jq '.topics|join(", ")'
+ai, billing, claude, claude-code, claude-desktop, cursor, freelance, gemini-cli-extension,
+invoice, invoice-generator, llm, mcp, mcp-server, model-context-protocol, nodejs, typescript, vat
+```
+
+Sweeping all 32 mirrors, checking on each that the manifest is present and its `name`,
+`httpUrl`, `Authorization` header and `envVar` are right, that the server alias carries no
+underscore, and that the `gemini-cli-extension` topic is set:
+
+```
+live and valid: 30   correctly absent: 2   wrong: 0
+```
+
+The two correctly absent are `mcp-delivery-schedule` and `mcp-office-suite`: manifest 404,
+topic not set. The applier reported `topics 30, gemini-extension.json 30 written / 0
+removed across 34 mirrors`.
+
+A `DRY_RUN=1` rehearsal of `sync-mirrors.sh zip` confirms the generator writes the file at
+the mirror root, so the next sync reproduces it rather than dropping it.
+
+**Caveat worth stating plainly.** What is verified is that the repositories now meet the
+three documented conditions and that the manifest is well formed against the reference. What
+is **not** verified is that the gallery has actually indexed us: the crawler runs daily, and
+the documentation says an extension appears "if it passes validation" without publishing the
+validator. The go/no-go check, on or after 2026-09-11, is whether these appear at
+`https://geminicli.com/extensions/browse/`. Until then this is deployed, not confirmed
+listed.

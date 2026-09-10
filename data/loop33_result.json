@@ -38,7 +38,9 @@
     "The fleet-wide minimum tool description moved from quote_create at 2.7 to a predicted clause_update at 3.5. 26 descriptions rewritten, no tool, parameter or schema field renamed, all within the 220-character contract, verified with a positive control that a 231-character injection fails the gate.",
     "A machine-readable payment descriptor now rides on the 429 body, with a pricing resource and an upgrade prompt on all 30 hosted endpoints, declaring honestly that the price cannot be settled by an agent.",
     "Two factual defects in shipped descriptions corrected: trip_export claimed one payload per currency when it emits subsistence and optional lodging in one currency, and delivery-schedule claimed a free tier of 5 open schedules when the code enforces 3.",
-    "The upgrade-click counter was rebuilt. v1 counted crawlers and our own probes; a Googlebot user agent on a dead product id was recorded as a click, and the counter moved 1,685 to 1,690 in 16 unattended minutes. v2 counts opt-in on a browser navigation signal and starts at zero."
+    "The upgrade-click counter was rebuilt. v1 counted crawlers and our own probes; a Googlebot user agent on a dead product id was recorded as a click, and the counter moved 1,685 to 1,690 in 16 unattended minutes. v2 counts opt-in on a browser navigation signal and starts at zero.",
+    "A new distribution surface with no submission step at all: the Gemini CLI extension gallery, which discovers a repository by a topic plus a manifest at its root and crawls daily. 30 of 32 mirrors now carry both, generated per server from its own manifest. Verified from the live repositories: 30 valid, 2 correctly absent, 0 wrong. delivery-schedule and office-suite get no manifest because their endpoints 404, and a manifest that breaks on first use is worse than none.",
+    "All 32 mirror repositories rewritten through one generator, so a sync reproduces the live bytes exactly, proved by a dry run producing a byte-identical README and a second run reporting zero changes. GitHub search coverage against the 18 frozen buyer questions moved 0.608 to 0.862, topics 8-9 to 15-16, and the README now leads with capability. The npx install block it used to lead with was dead: npm returns 404 for those packages against a passing control, and no dist is committed."
   ],
   "human_gated": [],
   "open": [],
@@ -71,7 +73,9 @@
     "stars_refuted": "Stars are not the ranking factor. Zero-star, zero-topic repos held rank 1 on fields of 14 to 91 results; across 87 competitors captured in top-fives the median is 1 star and 35 have zero.",
     "acted": "All 32 mirrors rewritten through a single generator so a sync reproduces the live bytes exactly. Coverage against the 18 frozen buyer questions moved 0.608 to 0.862, topics 8-9 to 15-16, and the README now leads with capability and only install paths that work.",
     "result": "22 of 34 to 32 of 34 surfaced, rank 1 from 10 to 15. Contested queries stayed 0 of 7 in the top three across all three runs, so coverage fixed appearing and not winning. The second pass ran about 20 minutes after the change, so its small moves are index noise and the honest re-measure dates are recorded as 2026-09-17 and 2026-10-10.",
-    "refused": "Four keyword additions were refused as untrue, notably putting pdf on bank-statement, which is CSV only."
+    "refused": "Four keyword additions were refused as untrue, notably putting pdf on bank-statement, which is CSV only.",
+    "gemini": "30 of 32 mirrors carry a Gemini CLI extension manifest and topic, verified live. No submission, no account, no queue.",
+    "independent_spot_check": "Verified by the orchestrator against the live GitHub search API, separately from the agent that made the change. mcp invoice generator: rank 6 of 11, having been absent because the word generator was missing. mcp server petty cash: rank 1 of 1. mcp zip unzip archives: rank 1 of 3. mcp quote estimate: rank 1 of 3. mcp currency converter: absent on a field of 30, which is a contested query and matches the agent stated caveat that coverage fixed appearing and not winning."
   },
   "product_gap": {
     "finding": "Blind question 4, whether an assistant can read a bank statement PDF and categorise the transactions, has NO honest answer in this estate. The bank-statement server takes CSV and text exports, not PDFs.",
@@ -87,5 +91,25 @@
     "counter_evidence": "Recorded against our own lever: three deep links placed the same way a day earlier have live targets that are still uncrawled. This may not work.",
     "stale_number_corrected": "The 0 Google impressions figure this loop opened with is now stale. It is 1."
   },
-  "sitemap_lastmod_decision": "The served sitemap carries zero lastmod across all 154 URLs. Deliberately not added. The only date available at build time is the deploy date, so every page would claim it changed on every deploy, and a lastmod that is not trustworthy is discounted by crawlers rather than ignored. A real per-page modification date would have to come from content history, which is worth doing properly or not at all."
+  "sitemap_lastmod_decision": "The served sitemap carries zero lastmod across all 154 URLs. Deliberately not added. The only date available at build time is the deploy date, so every page would claim it changed on every deploy, and a lastmod that is not trustworthy is discounted by crawlers rather than ignored. A real per-page modification date would have to come from content history, which is worth doing properly or not at all.",
+  "checked_not_a_defect": [
+    "The two different IndexNow keys in data/ were flagged as a latent defect. They are not. billing/src/index.js serves BOTH from a SITE_KEY_FILES set with a comment explaining that the submitted key string and its keyLocation must match exactly or every URL is rejected, so keeping an old key served is deliberate. data/indexnow.key has no reader; the submitting script reads data/indexnow.json, whose key and keyLocation agree with each other. Recorded so it is not re-raised."
+  ],
+  "new_servers": {
+    "method": "70 candidates probed with full cursor pagination of the registry to compute where each would actually land, rather than guessing.",
+    "top5": "checklist rank 7 (score .977), itinerary rank 1 (.926), glossary rank 1 (.837), supplier rank 6 (.677), readability rank 1 (.644).",
+    "built": "checklist, the top candidate, whose three registry names put one codebase on page one for checklist at 7, snag at 2, handover at 3 and onboarding at 7. And packing-list at rank 3, built because it is the strongest candidate inside the order-to-invoice chain the estate already covers.",
+    "honesty": "Bare-token GitHub counts turned out to be homonym-contaminated by up to 767x, so training ranked first on the raw count and 25th once qualified. Every candidate was re-queried with a qualified phrase and both counts published with the ratio. The MCP-spec axis was measured with a working positive control, returned zero real hits for all 70, and is recorded as empty rather than scored. 12 candidates are marked demand-unsourced and excluded rather than given a number.",
+    "not_sold_yet": "Deliberately not added to the billing catalogue. A product page that takes money for a server whose bundle is not downloadable and whose registry row does not exist is worse than no product page. Release, then publish, then sell."
+  },
+  "post_deploy_verified": [
+    "Accept negotiation live: a POST with no Accept header and one with */* both went 406 to 200, while application/json alone and text/html still 406 because they genuinely exclude one of the required media types. The auth and transport boundaries did not move.",
+    "The connect page live: a crawler gets the page with zero tokens minted and a button, and an explicit mint still works.",
+    "The 401 message live: it now names /mcp/connect, where a token comes from, rather than only where to put one.",
+    "Hosted zip_extract live: publishes one download link per entry again.",
+    "Checkout live: a browser navigation gets a real Stripe session, and a Googlebot-shaped request is sent to the product page instead of having a session created for it.",
+    "Content live: sitemap 154 to 164 including the connect page and both wedge pages, llms.txt no longer points at a URL that 404s, product pages say 31-server bundle instead of nineteen, and the home page opens with the count, the exact token command and a table of every server with the URL to paste.",
+    "Gemini CLI manifests live on 30 of 32 mirrors with the topic set, and correctly absent on the two whose endpoints 404.",
+    "Live validation 951 of 951 after both deploys."
+  ]
 }
