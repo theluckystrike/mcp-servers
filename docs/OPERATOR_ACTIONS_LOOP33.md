@@ -30,6 +30,21 @@ of every package needs one browser sign-in. Verified again today:
 
 The scope is unclaimed: `https://registry.npmjs.org/@theluckystrike/mcp-invoice` returns 404.
 
+**IT IS NOW BLOCKING, NOT MERELY VALUABLE.** Found on 2026-09-10 while republishing the
+catalogue: the MCP registry has started validating that a declared npm package actually
+exists, and refuses the manifest outright when it does not.
+
+    400 Bad Request: registry validation failed for package 0
+    (@theluckystrike/mcp-amortization): NPM package '@theluckystrike/mcp-amortization'
+    not found (status: 404)
+
+Four of about ninety manifests declare an npm package, and the rest declare an mcpb bundle and
+publish fine, so the catalogue is not stuck. But those four rows cannot exist until the
+packages do, and this is the likely reason the registry KPI moved from 85 of 85 to 72 of 91.
+The mirror READMEs also had to stop printing `npx -y @theluckystrike/mcp-<name>` this loop,
+because that command returns 404 against a passing control: it was the headline install line
+on the estate's best-ranked front doors and it failed for everyone who tried it.
+
 **The step.**
 
 1. In this session's terminal, type: `! npm login --auth-type=web`
