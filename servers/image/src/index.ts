@@ -634,7 +634,7 @@ server.registerTool("image_strip_metadata", {
 
 server.registerTool("image_batch_resize", {
   title: "Resize several images at once",
-  description: "Call this tool to resize every image into out_dir, keeping aspect ratio, named <name>-<W>x<H>.<ext>. One of width/height lets the other follow; with both, each fits inside the box. Free: 5 files/call, up to 4 MP.",
+  description: "Call this tool to resize every image in paths at once, keeping aspect ratio, each named <name>-<W>x<H>.<ext>. One of width/height lets the other follow; with both, each fits inside the box. Free: 5 files a call, 4 MP.",
   inputSchema: {
     paths: z.array(z.string()).min(1).describe("The image files to resize"),
     width: z.number().int().min(1).max(MAX_DIM).optional().describe("Target width in pixels"),

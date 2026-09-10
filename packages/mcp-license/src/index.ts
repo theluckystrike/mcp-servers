@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { z } from "zod";
+import { paymentDescriptor } from "./payment.js";
 
 // Raw 32-byte Ed25519 public key (base64). Private key never leaves the billing worker.
 export const PUBLIC_KEY_B64 = "VZXpvTpJn2XzaEn9ijFXk1vjPjtZvzAHZazC0Z+0pHU=";
@@ -17,7 +18,9 @@ export const PRICE_BUNDLE_USD = 39;
  * the number of sellable servers on disk, so adding a server fails the suite rather than
  * leaving "all 22 servers" stale in every cap message on every server.
  */
-export const SERVER_COUNT = 31;
+export const SERVER_COUNT = 33;
+/** The prose page a human reads when they want the free-versus-Pro context, not a form. */
+export const GUIDE_URL = "https://mcp.zovo.one/guides/mcp-server-free-vs-pro";
 
 /** The bundle checkout URL for a cap message, tagged `<product>.<tool>.bundle`. */
 export function bundleLink(src: string, tenant?: string): string {
@@ -143,10 +146,18 @@ export function hostedUpgradeText(feature: string, product: string, tenant: stri
 export interface LicenseGate {
   product: string;
   isPro(): boolean;
-  status(): { product: string; tier: "free" | "pro"; licenseId?: string; expires?: string | null; source?: string; reason?: string; upgradeUrl: string };
+  status(): { product: string; tier: "free" | "pro"; licenseId?: string; expires?: string | null; source?: string; reason?: string; upgradeUrl: string; payment: Record<string, unknown> };
   activate(key: string): VerifyResult & { savedTo?: string };
   upgradeText(feature: string, toolName?: string): string;
-  registerTools(server: { registerTool: Function }): void;
+  /** The cap message as one machine-readable object, for a client that wants fields not prose. */
+  payment(reason: "free_tier_cap" | "rate_limit" | "status", feature?: string, toolName?: string): Record<string, unknown>;
+  /**
+   * registerResource and registerPrompt are optional so a caller that only has
+   * registerTool (every server passes `server as unknown as { registerTool: Function }`)
+   * still type-checks, and so a host that does not implement them is skipped rather than
+   * throwing. Both are feature-detected at runtime.
+   */
+  registerTools(server: { registerTool: Function; registerResource?: Function; registerPrompt?: Function }): void;
 }
 
 export function createLicenseGate(opts: { product: string }): LicenseGate {
@@ -188,6 +199,10 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
         // conversion audit found 28 distinct .unknown sources for exactly this reason.
         source: r.source, reason: r.ok ? undefined : r.reason,
         upgradeUrl: `${upgradeUrl}?src=${encodeURIComponent(`product.${product}.status`)}`,
+        // The same facts as fields rather than prose, so a client can branch on them
+        // instead of parsing a sentence. See src/payment.ts for why agent_settleable
+        // is false and what a client is supposed to do about it.
+        payment: gate.payment("status"),
       };
     },
     activate(key: string) {
@@ -199,6 +214,24 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       cached = null;
       return { ...r, savedTo: configPath() };
     },
+    payment(reason: "free_tier_cap" | "rate_limit" | "status", feature?: string, toolName?: string) {
+      const src = `${product}.${slugifySrc(toolName ?? feature ?? reason)}`;
+      return paymentDescriptor({
+        product,
+        reason,
+        feature,
+        checkoutUrl: `${upgradeUrl}?src=${encodeURIComponent(src)}`,
+        bundleUrl: bundleLink(src),
+        guideUrl: GUIDE_URL,
+        priceUsd: PRICE_SINGLE_USD,
+        bundlePriceUsd: PRICE_BUNDLE_USD,
+        serverCount: SERVER_COUNT,
+        // stdio: the buyer gets a key back and installs it with license_activate. There is
+        // no anonymous token to bind a purchase to, so this is false on this transport.
+        tokenBound: false,
+        tier: resolve().ok ? "pro" : "free",
+      });
+    },
     upgradeText(feature: string, toolName?: string) {
       const src = `${product}.${slugifySrc(toolName ?? feature)}`;
       const taggedUrl = `${upgradeUrl}?src=${encodeURIComponent(src)}`;
@@ -208,6 +241,22 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
         bundleSentence(src);
     },
     registerTools(server) {
+      /**
+       * NOT registered here, deliberately: the pricing resource and the upgrade_to_pro
+       * prompt exist only on the hosted transport (remote/src/shims/license.ts).
+       *
+       * Adding them to the stdio gate adds one resource and one prompt to all 31 local
+       * servers at once, and 17 suites under servers/*​/test assert the exact resource and
+       * prompt lists with deepEqual, while scripts/gen-spec.mjs derives docs/spec output
+       * from those same lists. Both would have to be updated in the same change, and both
+       * live outside this package. The hosted endpoints are where an assistant meets a cap
+       * without a config file to fall back on, so that is where the two surfaces went
+       * first. The descriptor itself IS available on stdio: gate.payment() builds it and
+       * license_status returns it under `payment`.
+       *
+       * See docs/AGENT_PAYMENTS_R1.md, "What is still human-gated", for the exact
+       * follow-up: the same two registrations, plus the 17 list assertions.
+       */
       server.registerTool("license_status",
         { title: "License status", description: "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key.", inputSchema: {} },
         async () => ({ content: [{ type: "text", text: JSON.stringify(gate.status(), null, 2) }] }));
@@ -225,6 +274,8 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
   return gate;
 }
 
+export { paymentDescriptor } from "./payment.js";
+export type { PaymentDescriptorInput, PaymentReason } from "./payment.js";
 export { withFileLock, STALE_MS } from "./lock.js";
 export { readSharedProfile, writeSharedProfile, hasSharedProfile, profilePath, profileDir, resolveEmail, inferTimezoneFromAddress, PROFILE_FIELDS, EMAIL_PLACEHOLDER } from "./profile.js";
 export type { SharedProfile, ProfileField } from "./profile.js";

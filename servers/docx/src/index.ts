@@ -383,7 +383,7 @@ server.registerTool("doc_create", {
 
 server.registerTool("doc_from_markdown", {
   title: "Markdown to Word",
-  description: "Call this tool to turn markdown into a .docx and return the path with a count of blocks by type. Headings, lists, GFM tables and code fences are honoured. An existing file is kept unless overwrite.",
+  description: "Call this tool to turn markdown into a .docx, returning the file and a count of blocks by type. Headings, lists, GFM tables and code fences are honoured. Empty markdown is refused, and so is overwriting without the flag.",
   inputSchema: {
     markdown: z.string().describe("The markdown source. ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables and fenced code blocks as monospace are honoured, as are **bold**, *italic* and `code` inline"),
     out_path: z.string().optional().describe("Where to write the .docx. Defaults to the data directory"),

@@ -7513,9 +7513,35 @@
       "ceiling": "the monorepo itself was created 2026-09-02, so the deepest honest mirror history is 8 days"
     },
     "estate": {
-      "npm_test": "45/45 pass, 0 fail",
+      "npm_test": "exit 0, 0 failing assertions across 10649 TAP lines (45/45 and 105/105), re-run after the Gemini extension change",
       "registration_moved": "the per-server table left the sync-mirrors.sh case statement for scripts/mirror-seo.py; scripts/release-check.mjs and servers/delivery-schedule/test/contract.test.mjs were repointed, not relaxed",
       "gate": "python3 scripts/mirror-seo.py check -- 32/32 published servers described; checklist and packing-list pending"
+    },
+    "gemini_cli_gallery": {
+      "surface": "https://geminicli.com/extensions/browse/",
+      "requirement": "public repo + GitHub topic gemini-cli-extension + gemini-extension.json at the repository root; crawled daily",
+      "source": "google-gemini/gemini-cli docs/extensions/releasing.md, reference.md, writing-extensions.md, docs/reference/configuration.md",
+      "submission_step": "none -- no form, no account, no queue, no review, no fee; fine print re-read and holds",
+      "transport": "httpUrl + headers Authorization: Bearer ${ZOVO_MCP_TOKEN}, with the token declared in the manifest settings array",
+      "why_not_stdio": "the mirror does not commit dist/ and @theluckystrike/* is not on npm, so a node command would point at a file a fresh clone lacks",
+      "why_not_bare_url": "bare /mcp/<server> answers 401 on tools/call; the format supports headers so the token rides in one",
+      "hosted_endpoint_probe": {
+        "200": 30,
+        "404": [
+          "delivery-schedule",
+          "office-suite"
+        ]
+      },
+      "shipped": {
+        "manifests_live_and_valid": 30,
+        "correctly_absent": 2,
+        "wrong": 0,
+        "topic_set": 30
+      },
+      "generated_by": "scripts/mirror-seo.py gemini_extension(); written by sync-mirrors.sh step 5a1; pushed by apply-mirror-seo.mjs",
+      "verified": "read back from the live repos with gh, not the local tree",
+      "pending": "whether the gallery has indexed us; the crawler runs daily and the validator is not published. Check geminicli.com/extensions/browse/ on or after 2026-09-11",
+      "head_of_queue_after_this_push": "mcp-zip (last hosted mirror alphabetically), superseding the mcp-timezone prediction"
     }
   }
 }

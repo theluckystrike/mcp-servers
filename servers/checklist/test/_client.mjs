@@ -1,0 +1,149 @@
+// Shared stdio JSON-RPC client for the mcp-checklist suites.
+// One sandboxed data dir per client, so no test can see another's checklists.
+import { spawn, execFileSync } from "node:child_process";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const here = dirname(fileURLToPath(import.meta.url));
+export const ENTRY = join(here, "..", "dist", "index.js");
+export const REPO = join(here, "..", "..", "..");
+
+export function proKey(product = "checklist") {
+  return execFileSync(process.execPath, [join(REPO, "scripts", "sign-license.mjs"), product], { encoding: "utf8" }).trim();
+}
+
+export function sandbox(prefix = "mcp-checklist-") {
+  const dir = mkdtempSync(join(tmpdir(), prefix));
+  return { dir, dataHome: join(dir, "data") };
+}
+
+/** The shared business profile every suite runs against. Only the name and address are used. */
+export function writeProfile(dataHome, patch = {}) {
+  const dir = join(dataHome, "mcp-servers", "profile");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "business.json"), JSON.stringify({
+    name: "Nova Studio", address: "ul. Prosta 1, Warsaw", default_currency: "EUR",
+    default_tax_rate: 23, payment_terms_days: 14, timezone: "Europe/Warsaw", ...patch,
+  }, null, 2));
+}
+
+export function client({ dataHome, key } = {}) {
+  const home = dataHome ?? join(mkdtempSync(join(tmpdir(), "mcp-checklist-")), "data");
+  const env = { ...process.env, XDG_DATA_HOME: home, XDG_CONFIG_HOME: join(home, "..", "config") };
+  if (key) env.MCP_LICENSE_KEY = key; else delete env.MCP_LICENSE_KEY;
+  const child = spawn(process.execPath, [ENTRY], { stdio: ["pipe", "pipe", "pipe"], env });
+  child.stderr.resume();
+  const stdoutLines = [];
+  let buf = "";
+  const pending = new Map();
+  child.stdout.on("data", (d) => {
+    buf += d.toString();
+    let i;
+    while ((i = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, i);
+      buf = buf.slice(i + 1);
+      stdoutLines.push(line);
+      if (!line.trim()) continue;
+      let m;
+      try { m = JSON.parse(line); } catch { continue; }
+      const r = pending.get(m.id);
+      if (r) { pending.delete(m.id); r(m); }
+    }
+  });
+  let id = 0;
+  const send = (method, params) => new Promise((res, rej) => {
+    const mid = ++id;
+    pending.set(mid, res);
+    child.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: mid, method, params }) + "\n");
+    const t = setTimeout(() => { if (pending.has(mid)) { pending.delete(mid); rej(new Error(`timeout on ${method}`)); } }, 30000);
+    t.unref();
+  });
+  return {
+    home, send, stdoutLines,
+    async init() {
+      const r = await send("initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "test", version: "0" } });
+      child.stdin.write(JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized", params: {} }) + "\n");
+      return r.result;
+    },
+    async tools() { return (await send("tools/list", {})).result.tools; },
+    async call(name, args) {
+      const r = await send("tools/call", { name, arguments: args ?? {} });
+      if (!r.result) return { text: JSON.stringify(r.error), isError: true };
+      return { text: r.result.content.map((c) => c.text).join("\n"), isError: r.result.isError === true };
+    },
+    async json(name, args) { const r = await this.call(name, args); if (r.isError) throw new Error(r.text); return JSON.parse(r.text); },
+    close() { child.kill(); },
+  };
+}
+
+export function cleanup(dir) { try { rmSync(dir, { recursive: true, force: true }); } catch { /* best effort */ } }
+
+export function storeDir(dataHome) { return join(dataHome, "mcp-servers", "checklist"); }
+
+/**
+ * The worked checklist: a pre-delivery vehicle check, six steps in two sections, four of
+ * them required.
+ *
+ *   Exterior   I01 Tyre pressures checked and recorded   required
+ *              I02 Lights and indicators working         required
+ *              I03 Bodywork photographed                 optional
+ *   Load       I04 Load secured and strapped             required
+ *              I05 Weight within plated limit            required
+ *              I06 Spare strap in cab                    optional
+ *
+ * The worked run answers I01 pass, I02 pass, I03 na, I04 pass, I05 fail, I06 pending,
+ * which is 5 of 6 answered (83.3 percent), 3 pass, 1 fail, 1 na, 1 pending, and is NOT
+ * signable on two counts: a required step failed (I05) and an optional one is unanswered.
+ */
+export const CHECKLIST_NAME = "Pre-delivery vehicle check";
+export const ITEMS = [
+  { text: "Tyre pressures checked and recorded", section: "Exterior", required: true },
+  { text: "Lights and indicators working", section: "Exterior", required: true },
+  { text: "Bodywork photographed", section: "Exterior", required: false },
+  { text: "Load secured and strapped", section: "Load", required: true },
+  { text: "Weight within plated limit", section: "Load", required: true },
+  { text: "Spare strap in cab", section: "Load", required: false },
+];
+export const RUN_TITLE = "Van BX21 KLM, February service";
+export const RUN_REFERENCE = "WO-2026-0044";
+export const RUN_DATE = "2026-02-14";
+export const ANSWERS = [
+  { item: "I01", state: "pass", by: "Ada" },
+  { item: "I02", state: "pass", by: "Ada" },
+  { item: "I03", state: "na", by: "Ada", note: "No camera on site" },
+  { item: "I04", state: "pass", by: "Ben" },
+  { item: "I05", state: "fail", by: "Ben", note: "Plated 3500 kg, weighed 3620 kg" },
+];
+
+/** Create the worked checklist. Returns its id. */
+export async function seedChecklist(c, name = CHECKLIST_NAME) {
+  const r = await c.call("checklist_create", { name, category: "Pre delivery", description: "Run before every van leaves the yard." });
+  if (r.isError) throw new Error(`checklist_create: ${r.text}`);
+  const id = JSON.parse(r.text).created.id;
+  for (const i of ITEMS) {
+    const x = await c.call("checklist_item_add", { checklist: id, ...i });
+    if (x.isError) throw new Error(`checklist_item_add ${i.text}: ${x.text}`);
+  }
+  return id;
+}
+
+/** Start the worked run and answer five of its six steps. Returns the run id. */
+export async function seedRun(c, checklistId, answers = ANSWERS) {
+  const r = await c.call("run_start", { checklist: checklistId, title: RUN_TITLE, reference: RUN_REFERENCE, date: RUN_DATE });
+  if (r.isError) throw new Error(`run_start: ${r.text}`);
+  const id = JSON.parse(r.text).started.id;
+  for (const a of answers) {
+    const x = await c.call("run_check", { run: id, ...a });
+    if (x.isError) throw new Error(`run_check ${a.item}: ${x.text}`);
+  }
+  return id;
+}
+
+/** The whole worked example in one call. */
+export async function seed(c) {
+  const cl = await seedChecklist(c);
+  const run = await seedRun(c, cl);
+  return { checklist: cl, run };
+}

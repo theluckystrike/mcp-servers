@@ -10,7 +10,10 @@
   "service_account": "zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com",
   "same_identity_as_prior_loops": true,
   "permission_on_sc_domain_zovo_one": "siteFullUser (not siteOwner)",
-  "positive_control": "webmasters/v3/sites returned 51 properties including sc-domain:zovo.one"
+  "positive_control": "webmasters/v3/sites returned 51 properties including sc-domain:zovo.one",
+  "canonical_working_copy": "/Users/mike/.loop-creds/gsc-sa-key.json",
+  "canonical_working_copy_proof": "ls -lO shows no 'dataless' flag; timeout 10 /usr/bin/wc -l -> 13 lines, exit 0. Same service account as the dataless Desktop key, different private_key_id (66449afb... vs 60b25551... on the copy this run used); both live.",
+  "how_to_use_it": "scripts/traffic.mjs honours GSC_KEY: GSC_KEY=$HOME/.loop-creds/gsc-sa-key.json node scripts/traffic.mjs --indexation. The hardcoded default at scripts/traffic.mjs:39 still points at the dataless Desktop path."
  },
  "correction_to_the_brief": {
   "claim": "0 Google impressions in 99+ days",

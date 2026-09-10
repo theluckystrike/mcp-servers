@@ -1,1228 +1,1352 @@
 {
-  "time-tracker": [
-    {
-      "name": "timer_start",
-      "description": "Start tracking time on a project. Only one timer runs at a time: starting a new one stops and logs the previous one."
-    },
-    {
-      "name": "timer_stop",
-      "description": "Stop the running timer and log it as a time entry. Returns the duration and the entry id."
-    },
-    {
-      "name": "timer_status",
-      "description": "Show the running timer, how long it has been running, and today's total so far."
-    },
-    {
-      "name": "entry_add",
-      "description": "Log time you already worked. Give start plus either end or minutes."
-    },
-    {
-      "name": "entry_list",
-      "description": "List logged time entries as a compact table. Free tier shows the last 7 days."
-    },
-    {
-      "name": "entry_delete",
-      "description": "Delete one time entry by id."
-    },
-    {
-      "name": "entry_edit",
-      "description": "Change fields of an existing entry. Only the fields you pass are changed."
-    },
-    {
-      "name": "project_set_rate",
-      "description": "Set the hourly rate used to turn tracked hours into money for a project."
-    },
-    {
-      "name": "report",
-      "description": "Total tracked hours and money for a period, grouped by project, day, task or tag. Free tier covers the last 7 days."
-    },
-    {
-      "name": "export_csv",
-      "description": "Write time entries to a CSV file you can hand to a bookkeeper or import into a spreadsheet. Free tier exports the last 7 days."
-    },
-    {
-      "name": "invoice_summary",
-      "description": "Turn tracked time into invoice line items for one project: hours, rate, amount per task, plus the total."
-    }
-  ],
-  "price-tracker": [
-    {
-      "name": "price_check",
-      "description": "Fetch a product page right now and report its price, currency and title, plus the change against the last price stored for that URL. Does not create a watch."
-    },
-    {
-      "name": "watch_add",
-      "description": "Start tracking a product page. Fetches it once and stores the first observation. Optionally set a target price to be alerted about."
-    },
-    {
-      "name": "watch_list",
-      "description": "Show every tracked item with its current price, target and last check time."
-    },
-    {
-      "name": "watch_remove",
-      "description": "Stop tracking an item, by watch id or by URL. Its history is deleted."
-    },
-    {
-      "name": "watch_refresh",
-      "description": "Re-fetch one watch or every watch, append the new observations and show current, previous, min, max, change % and target hits."
-    },
-    {
-      "name": "price_history",
-      "description": "List the stored observations for one watch, newest last. Free shows the last 10."
-    },
-    {
-      "name": "price_add_manual",
-      "description": "Store a price you read yourself, for shops that block automated requests. Creates the watch if it does not exist yet."
-    },
-    {
-      "name": "alerts_pending",
-      "description": "Show watches whose latest price is at or below the target, or which dropped ${DROP_ALERT_PCT}% or more against the previous observation."
-    }
-  ],
-  "spreadsheet": [
-    {
-      "name": "sheet_info",
-      "description": "Open an xlsx or csv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading or querying."
-    },
-    {
-      "name": "sheet_read",
-      "description": "Read rows from a sheet as a text table, JSON records or CSV. Use limit/offset to page through big files, or range for an A1 block like B2:F40."
-    },
-    {
-      "name": "sheet_query",
-      "description": "Filter, pick columns and sort rows without writing any code. where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. "
-    },
-    {
-      "name": "sheet_stats",
-      "description": "Per-column count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too."
-    },
-    {
-      "name": "sheet_find",
-      "description": "Search every cell for text (case insensitive) and return cell addresses with a preview of the row it is on."
-    },
-    {
-      "name": "sheet_write",
-      "description": "Write rows to a spreadsheet. rows may be objects (keys become headers) or arrays (first array is the header row). "
-    },
-    {
-      "name": "sheet_add_column",
-      "description": "Convert a sheet to csv, xlsx or json. Writes a new file next to the source unless out_path is given."
-    }
-  ],
-  "invoice": [
-    {
-      "name": "business_set",
-      "description": "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices."
-    },
-    {
-      "name": "client_add",
-      "description": "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details."
-    },
-    {
-      "name": "client_list",
-      "description": "List every stored client with their id, address, email and VAT id."
-    },
-    {
-      "name": "invoice_create",
-      "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is"
-    },
-    {
-      "name": "invoice_from_hours",
-      "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice."
-    },
-    {
-      "name": "invoice_list",
-      "description": "List invoices, optionally filtered by status (unpaid, paid, partial), client, and an issue-date range."
-    },
-    {
-      "name": "invoice_get",
-      "description": "Return the full stored record for one invoice number, including every line and tax breakdown."
-    },
-    {
-      "name": "invoice_mark_paid",
-      "description": "Record a payment. Without an amount the invoice is marked fully paid; a smaller amount marks it partial and reports the remaining balance."
-    },
-    {
-      "name": "invoice_pdf",
-      "description": "Render an invoice as an A4 PDF you can send: issuer block, client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Returns the file path."
-    },
-    {
-      "name": "overdue_report",
-      "description": "List every unpaid or partly paid invoice past its due date with days overdue, plus outstanding totals per currency. Pro."
-    }
-  ],
-  "expense-tracker": [
-    {
-      "name": "expense_add",
-      "description": "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when "
-    },
-    {
-      "name": "expense_list",
-      "description": "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed."
-    },
-    {
-      "name": "expense_update",
-      "description": "Change any field of a stored expense by id. Only the fields you pass are changed."
-    },
-    {
-      "name": "expense_delete",
-      "description": "Delete one expense by id. The receipt file itself is left on disk."
-    },
-    {
-      "name": "receipt_attach",
-      "description": "Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed."
-    },
-    {
-      "name": "category_rules",
-      "description": "Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, a"
-    },
-    {
-      "name": "expense_settings",
-      "description": "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to"
-    },
-    {
-      "name": "expense_summary",
-      "description": "Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together."
-    },
-    {
-      "name": "mileage_add",
-      "description": "Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, "
-    },
-    {
-      "name": "expense_export",
-      "description": "Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all."
-    },
-    {
-      "name": "expense_to_invoice",
-      "description": "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate rec"
-    },
-    {
-      "name": "expense_mark_rebilled",
-      "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range mar"
-    }
-  ],
-  "currency": [
-    {
-      "name": "rates_latest",
-      "description": "The most recent European Central Bank daily reference rates, re-expressed against any base. The answer always states the rate date, because ECB rates are published once a day around 16:00 CET on TARGET business days and "
-    },
-    {
-      "name": "convert",
-      "description": "Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounde"
-    },
-    {
-      "name": "convert_many",
-      "description": "One amount, one source currency, many targets, all off the same ECB rate date. Each result is rounded to that target's own minor units."
-    },
-    {
-      "name": "fx_rates_for",
-      "description": "The ECB rate for one currency pair over a window, with min, max, average and the change across the window. Give days for a trailing window, or from_date and to_date for an explicit one. Only TARGET business days have rat"
-    },
-    {
-      "name": "rate_on",
-      "description": "The ECB rate for a pair on one date. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the a"
-    },
-    {
-      "name": "currencies_list",
-      "description": "Every currency in the ECB daily reference set, with its rate against the euro and the number of decimal places it is rounded to. Anything not on this list cannot be converted here."
-    },
-    {
-      "name": "cache_status",
-      "description": "What is cached on this machine, how old it is, and when it will next be refreshed. Answer this before trusting a rate on a machine that has been offline."
-    }
-  ],
-  "docx": [
-    {
-      "name": "business_set",
-      "description": "Store the sender profile printed on every proposal, contract and letter: your name, address, email, VAT id, bank details and defaults (currency, payment terms). Same profile shape as mcp-invoice. Call this once before cr"
-    },
-    {
-      "name": "doc_create",
-      "description": "Write a real .docx file from structured sections: headings, paragraphs, bullet or numbered lists and tables. Choose plain, letter (sender block top right, date, addressee) or proposal (letterhead band and cover title) la"
-    },
-    {
-      "name": "doc_from_markdown",
-      "description": "Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and **bold** / *italic* / `code` inline. Returns the file path. Free and unlimited."
-    },
-    {
-      "name": "doc_read",
-      "description": "Extract the text of an existing .docx: headings with their levels, paragraphs, list items and tables, in document order. Works on files Word, Google Docs or this server produced. Free and unlimited."
-    },
-    {
-      "name": "doc_to_html",
-      "description": "Convert a .docx to semantic HTML you can open in a browser and print to PDF. Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native dependency or a headless browser, and this server "
-    },
-    {
-      "name": "doc_fill_template",
-      "description": "Replace {{placeholders}} in an existing .docx and write a new file, keeping every style, table, header, footer and image of the original. Placeholders split across runs by Word's editor are handled, because the substitut"
-    },
-    {
-      "name": "proposal_create",
-      "description": "Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number t"
-    },
-    {
-      "name": "contract_create",
-      "description": "Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. Thi"
-    }
-  ],
-  "timezone": [
-    {
-      "name": "now",
-      "description": "The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC."
-    },
-    {
-      "name": "convert_time",
-      "description": "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'."
-    },
-    {
-      "name": "overlap",
-      "description": "The window each day when every listed place is inside working hours. Computed on a real date, so a DST week that widens or narrows the overlap is reflected."
-    },
-    {
-      "name": "find_meeting_slots",
-      "description": "Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that "
-    },
-    {
-      "name": "dst_changes",
-      "description": "The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October."
-    },
-    {
-      "name": "business_days",
-      "description": "Business days between two dates in a place, excluding weekends and any holidays you pass. Use it for delivery dates and payment terms across a client's calendar."
-    },
-    {
-      "name": "contacts_set",
-      "description": "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later."
-    },
-    {
-      "name": "contacts_list",
-      "description": "Everyone you have saved, with their current local time and whether they are inside working hours right now."
-    },
-    {
-      "name": "ics_create",
-      "description": "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale."
-    }
-  ],
-  "resume": [
-    {
-      "name": "profile_set",
-      "description": "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. One profile per data directory; Pro adds named variants. Nothi"
-    },
-    {
-      "name": "profile_get",
-      "description": "Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job."
-    },
-    {
-      "name": "resume_create",
-      "description": "Write the stored profile to a Word .docx. Bullets are ordered by relevance to the target role and keywords, then trimmed to fit max_pages using a measured word budget. Keywords that appear anywhere in the profile are pri"
-    },
-    {
-      "name": "resume_to_markdown",
-      "description": "Return the stored profile as markdown: paste it into a form, an email or an ATS box."
-    },
-    {
-      "name": "resume_to_html",
-      "description": "Write the resume as semantic HTML with a print stylesheet. Open it and print to PDF: there is no doc_to_pdf here because every pure-JavaScript route to PDF needs a native dependency."
-    },
-    {
-      "name": "resume_read",
-      "description": "Extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Best effort, section by heading. Nothing is saved unless save is true."
-    },
-    {
-      "name": "cover_letter_create",
-      "description": "Write a one-page cover letter from the stored profile: opening, fit, proof, close. It states no fact that is not in your profile. Anything it does not know is left as a bracketed prompt such as [add: metric] for you to f"
-    },
-    {
-      "name": "tailor_to_job",
-      "description": "Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new"
-    }
-  ],
-  "recurring": [
-    {
-      "name": "schedule_create",
-      "description": "Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due run"
-    },
-    {
-      "name": "schedule_list",
-      "description": "Every schedule with its cadence, per-period amount, next due date and status (active or paused)."
-    },
-    {
-      "name": "schedule_get",
-      "description": "The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated."
-    },
-    {
-      "name": "schedule_update",
-      "description": "Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only."
-    },
-    {
-      "name": "schedule_pause",
-      "description": "Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed."
-    },
-    {
-      "name": "schedule_resume",
-      "description": "Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due."
-    },
-    {
-      "name": "schedule_delete",
-      "description": "Remove a schedule. Invoices it already generated stay in the invoice server untouched; its generation history is kept so a re-created schedule cannot double-bill a period it already covered."
-    },
-    {
-      "name": "schedule_upcoming",
-      "description": "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days."
-    },
-    {
-      "name": "invoice_generate_due",
-      "description": "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Idempotent: one invoice per schedule per period, keyed by the occurrence d"
-    },
-    {
-      "name": "schedule_history",
-      "description": "The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path."
-    },
-    {
-      "name": "forecast",
-      "description": "Expected invoiced revenue per calendar month per currency from every active schedule. Free covers 3 months ahead; Pro covers up to 120."
-    }
-  ],
-  "clauses": [
-    {
-      "name": "clause_add",
-      "description": "Save a reusable contract or proposal clause to the library. Use {{variables}} in the body for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}. Free tier: 10 own clauses on top of"
-    },
-    {
-      "name": "clause_get",
-      "description": "Return a clause in full by id or by title, with its variables and, in Pro, its revision count."
-    },
-    {
-      "name": "clause_update",
-      "description": "Change the text, category, tags, variables or jurisdiction of a clause. In Pro the previous text is kept as a version; in the free tier the change is applied without history."
-    },
-    {
-      "name": "clause_delete",
-      "description": "Remove a clause from the library. A deleted starter clause is not re-seeded on the next call."
-    },
-    {
-      "name": "clause_list",
-      "description": "List every clause, newest categories first, optionally narrowed to one category."
-    },
-    {
-      "name": "clause_search",
-      "description": "Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature."
-    },
-    {
-      "name": "clause_import",
-      "description": "Bulk-load clauses from a file. Markdown form: '## Title', optional 'category:' / 'tags:' / 'variables:' lines, blank line, body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the "
-    },
-    {
-      "name": "clause_export",
-      "description": "Write the whole library to a file. Markdown export is free; JSON export is a Pro feature."
-    },
-    {
-      "name": "contract_assemble",
-      "description": "Build a contract or proposal from library clauses: orders them, fills {{variables}} from the values you pass, leaves every missing fact as a bracketed prompt like [late fee percent], prepends the not-legal-advice line, a"
-    },
-    {
-      "name": "variables_list",
-      "description": "Given a set of clauses, list every {{variable}} they use and which clause uses it, so nothing is missed before assembling."
-    }
-  ],
-  "pdf": [
-    {
-      "name": "pdf_info",
-      "description": "Page count, page sizes in points and millimetres, paper name, metadata (title, author, producer, dates) and whether the file is encrypted. Read-only: the file is never modified. Free tier: unlimited."
-    },
-    {
-      "name": "pdf_count",
-      "description": "Page count per file plus the total, for any number of PDFs. Read-only. A file that cannot be read is reported per file; the others still count. Free tier: unlimited."
-    },
-    {
-      "name": "pdf_merge",
-      "description": "Join several PDFs into one, in the order given. Page sizes are kept as they are - a merged file may have mixed page sizes, and the answer says so. Inputs are never modified. Free tier: up to 5 files per merge."
-    },
-    {
-      "name": "pdf_split",
-      "description": "Write one new PDF per range. Ranges are 1-based and may be open-ended: \\\"1-3,5,7-\\\" gives pages 1-3, page 5, and page 7 to the end. The input is never modified. Free tier: files up to 30 pages."
-    },
-    {
-      "name": "pdf_pages",
-      "description": "Pull selected pages out into one new PDF, in the order written: \\\"2,4-6\\\" gives four pages. Asking for a page twice copies it twice. The input is never modified. Free tier: files up to 30 pages."
-    },
-    {
-      "name": "pdf_rotate",
-      "description": "Turn pages by a multiple of 90 degrees, clockwise for a positive number. The rotation is added to whatever the page already had, which is what a sideways scan needs. Writes a new file; the input is never modified. Free t"
-    },
-    {
-      "name": "pdf_stamp",
-      "description": "Draw a word such as PAID or DRAFT across the pages, in a colour and position you choose. Writes a new file; the input is never modified. Free tier: the PAID and DRAFT presets in their preset colours."
-    },
-    {
-      "name": "pdf_watermark_business",
-      "description": "Put your own business name and VAT id in the footer of every page, from the shared business profile that mcp-invoice and mcp-docx write. Use it before sending a document out. Pro."
-    },
-    {
-      "name": "pdf_reorder",
-      "description": "Write a new PDF with the pages in the order you give. The order must name every page exactly once, so nothing is dropped by accident - use pdf_pages when you do want a subset. Pro."
-    },
-    {
-      "name": "pdf_text",
-      "description": "Best-effort text extraction: the page content streams are decompressed and the text-showing operators are read. It works on PDFs written with standard fonts (exports from word processors, invoices, reports). It returns n"
-    }
-  ],
-  "calendar": [
-    {
-      "name": "ics_import",
-      "description": "Read a calendar export and keep it locally under a name. Give exactly one of path (a .ics file on this machine), "
-    },
-    {
-      "name": "calendars_list",
-      "description": "Every calendar imported into this server: its name, where it came from, how many event definitions it holds and when it was imported."
-    },
-    {
-      "name": "events_list",
-      "description": "Every event between two dates, with recurring events expanded to their real occurrences and sorted by start. "
-    },
-    {
-      "name": "events_search",
-      "description": "Find events whose title, description, location or attendees contain a phrase. Searches every imported calendar. "
-    },
-    {
-      "name": "free_busy",
-      "description": "Where the time actually went and what is left: merged busy blocks from the calendars you name, and the gaps inside "
-    },
-    {
-      "name": "conflicts",
-      "description": "Every pair of events that overlap in time, with how many minutes they collide. Across all imported calendars unless you "
-    },
-    {
-      "name": "next_event",
-      "description": "The next event that has not started yet, with how long until it begins. Looks ahead up to a year."
-    },
-    {
-      "name": "event_export",
-      "description": "Write chosen events to a new .ics file you can send or import elsewhere. Either pass ids (from events_list) or a "
-    },
-    {
-      "name": "event_to_time_entry",
-      "description": "Take one event and return the exact arguments for the time-tracker's entry_add, so a meeting that already happened "
-    },
-    {
-      "name": "ics_forget",
-      "description": "Remove one imported calendar and the local copy of its .ics file. Nothing else is touched."
-    }
-  ],
-  "kanban": [
-    {
-      "name": "task_add",
-      "description": "Add a task to a project board (todo list / kanban card). Optional column, due date, estimate, priority, tags and notes."
-    },
-    {
-      "name": "task_list",
-      "description": "List tasks as a table, filtered by project, column, tag, due date or overdue."
-    },
-    {
-      "name": "task_move",
-      "description": "Move a task to another column on its board."
-    },
-    {
-      "name": "task_update",
-      "description": "Change any field of a task: title, notes, due date, estimate, priority, tags or project."
-    },
-    {
-      "name": "task_done",
-      "description": "Mark a task done: it moves to the done column and is stamped with the time."
-    },
-    {
-      "name": "task_delete",
-      "description": "Delete a task permanently."
-    },
-    {
-      "name": "task_search",
-      "description": "Find tasks whose title, notes, tags or id match a query."
-    },
-    {
-      "name": "board",
-      "description": "Column-by-column summary of a project board: task counts and estimate totals."
-    },
-    {
-      "name": "task_start_timer",
-      "description": "Return the exact arguments to pass to the time-tracker server's timer_start for this task, and record the link on the task."
-    },
-    {
-      "name": "task_log_time",
-      "description": "Add real minutes worked to a task, so estimate and actual can be compared."
-    },
-    {
-      "name": "project_list",
-      "description": "All project boards with open task counts, remaining estimate and overdue counts."
-    },
-    {
-      "name": "overdue",
-      "description": "Every task past its due date, across all boards."
-    },
-    {
-      "name": "weekly_review",
-      "description": "Done versus planned for a week, with estimate against actual minutes per project."
-    },
-    {
-      "name": "columns_set",
-      "description": "Replace the columns of one board (Pro). Tasks sitting in a removed column move to the first column."
-    }
-  ],
-  "image": [
-    {
-      "name": "image_info",
-      "description": "Format, pixel dimensions, megapixels, file size in bytes and whether the image carries an alpha channel. Read-only: the file is never modified. Free tier: unlimited, at any size."
-    },
-    {
-      "name": "image_resize",
-      "description": "Write a resized copy. fit: \\\"inside\\\" scales to fit the box and keeps the aspect ratio; \\\"cover\\\" fills the box and crops the overflow; \\\"exact\\\" stretches to the given width and height. With only one of width or height,"
-    },
-    {
-      "name": "image_convert",
-      "description": "Re-encode an image as PNG, JPEG, BMP, GIF or TIFF. quality is a JPEG parameter only and is reported as ignored for the lossless formats. Converting an image with transparency to JPEG flattens it onto white, and the answe"
-    },
-    {
-      "name": "image_compress",
-      "description": "Re-encode an image smaller and report the byte count before and after. quality (default 80) applies when the output is a JPEG; for a PNG output only max_width reduces bytes, and the answer says which of the two did the w"
-    },
-    {
-      "name": "image_crop",
-      "description": "Cut a rectangle out of an image. x and y are the top-left corner in pixels, counted from the top-left of the image. A rectangle that runs past an edge is refused with the image's real size, never silently clamped. Free t"
-    },
-    {
-      "name": "image_thumbnails",
-      "description": "One thumbnail per input, written into out_dir as <name>-thumb.<ext>. Each thumbnail fits inside size by size and keeps its aspect ratio, so a wide photo stays wide. Every output path is reserved before any file is writte"
-    },
-    {
-      "name": "image_watermark",
-      "description": "Draw text over an image at a chosen corner and opacity. With no text the shared business profile name is used, the same profile mcp-invoice and mcp-docx write. The text is drawn white on a translucent dark plate so it st"
-    },
-    {
-      "name": "image_strip_metadata",
-      "description": "Write a copy carrying pixels and nothing else. It works by decoding the image and re-encoding it from the raw pixels: EXIF, GPS coordinates, the camera and lens, the capture time, XMP and colour-profile blocks are not ca"
-    },
-    {
-      "name": "image_batch_resize",
-      "description": "Resize every image into out_dir, keeping each one's aspect ratio, named <name>-<W>x<H>.<ext>. With one of width or height the other follows; with both, each image is scaled to fit inside that box. Free tier: up to 5 file"
-    },
-    {
-      "name": "image_dominant_colors",
-      "description": "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Pro only."
-    }
-  ],
-  "bank-statement": [
-    {
-      "name": "statement_import",
-      "description": "Read a bank CSV export into the local ledger. Columns are detected from the headers (date, description, one signed amount or a debit and a credit column, currency, balance), amounts are read in the file's own locale, and"
-    },
-    {
-      "name": "transactions_list",
-      "description": "List stored transactions in a date range, optionally for one account or category, or only the ones no rule has categorised yet. Totals are reported per currency and never added across currencies."
-    },
-    {
-      "name": "transactions_search",
-      "description": "Find transactions whose description, counterparty, category or account contains the query. Case-insensitive substring search, never a regex, so a query with brackets in it cannot hang the server."
-    },
-    {
-      "name": "category_rules",
-      "description": "Set the rules that categorise transactions, or call with no arguments to list them. Each rule is matched against the counterparty and the description: a plain match is a case-insensitive substring, and regex: true compil"
-    },
-    {
-      "name": "transaction_categorize",
-      "description": "Set the category on one or more transactions by id. Nothing is changed unless every id exists, so a typo cannot half-apply."
-    },
-    {
-      "name": "statement_summary",
-      "description": "Money in, money out and the net for a date range, grouped by category, month, account or counterparty. Every total is reported per currency; amounts in different currencies are never added together and never converted."
-    },
-    {
-      "name": "reconcile_expenses",
-      "description": "Match bank debits against the expenses recorded by mcp-expense-tracker: same currency, same amount, and a date within a few days. Reports what matched, which bank lines have no expense behind them and which expenses neve"
-    },
-    {
-      "name": "recurring_detect",
-      "description": "Find the charges that come back: the same counterparty, an amount that barely moves and a steady cadence. Reports the cadence, the typical amount, when it was last taken, when it is next due and what it costs per year, p"
-    },
-    {
-      "name": "statement_export",
-      "description": "Write the transactions of a date range to a .csv or .json file and return the path. The file is written atomically, so a failed export never leaves a half-written file behind."
-    },
-    {
-      "name": "accounts_list",
-      "description": "List the imported accounts with their bank, currency, transaction count and date range."
-    }
-  ],
-  "quotes": [
-    {
-      "name": "quote_create",
-      "description": "Quote a client: line items with quantity and unit price in minor units, VAT per line or the business default, an optional discount and a validity window. Returns the quote id and the totals."
-    },
-    {
-      "name": "quote_list",
-      "description": "Every quote with its client, total, validity and state (open, expired, accepted or declined). Filter by state, by client or by quote date range."
-    },
-    {
-      "name": "quote_get",
-      "description": "The full stored record for one quote: every line with its unit price and VAT, the totals, the validity date, the notes and, when it was accepted, the invoice it became."
-    },
-    {
-      "name": "quote_update",
-      "description": "Revise a quote that is still open: line items, currency, discount, VAT default, validity or notes. Totals are recomputed. An accepted or declined quote is never edited."
-    },
-    {
-      "name": "quote_send_text",
-      "description": "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier."
-    },
-    {
-      "name": "quote_accept",
-      "description": "Mark a quote accepted and turn it into an invoice: created directly in the invoice server when its store is present, otherwise returned as invoice_create-ready line items. The numbers are copied, never recomputed."
-    },
-    {
-      "name": "quote_decline",
-      "description": "Mark a quote as lost, with an optional reason, so it stops counting against the open quotes and shows up in the win rate. An accepted quote is never turned back."
-    },
-    {
-      "name": "quote_pdf",
-      "description": "Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro."
-    },
-    {
-      "name": "quote_report",
-      "description": "Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Pro."
-    }
-  ],
-  "barcode": [
-    {
-      "name": "qr_create",
-      "description": "Call this tool to turn text or a URL into a QR code, as an SVG returned inline or written to out_path, or as a PNG at a chosen pixel size (Pro)."
-    },
-    {
-      "name": "qr_wifi",
-      "description": "Call this tool to make a QR code that joins a WiFi network when scanned: network name, password and security type, written to out_path or returned as SVG."
-    },
-    {
-      "name": "qr_vcard",
-      "description": "Call this tool to make a QR code that adds a contact when scanned (vCard 3.0: name, org, phone, email, URL, address), written to out_path or returned as SVG."
-    },
-    {
-      "name": "qr_payment_sepa",
-      "description": "Call this tool to make an EPC069-12 payment QR code a euro banking app can scan: IBAN, beneficiary name, optional amount and reference. The IBAN is checked before drawing."
-    },
-    {
-      "name": "invoice_payment_qr",
-      "description": "Call this tool to make the payment QR code for an invoice: your IBAN and name come from the shared business profile, the amount and reference from invoice_id or from the arguments."
-    },
-    {
-      "name": "barcode_create",
-      "description": "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG or PNG. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn."
-    },
-    {
-      "name": "barcode_batch",
-      "description": "Call this tool to draw many barcodes or QR codes at once from a list of rows, each with its own value and file name, into out_dir. Pro; the free tier does one code per call."
-    },
-    {
-      "name": "code_list",
-      "description": "List the codes this server generated, newest first, with what each one carried and where it was written, plus how many of this month's free allowance are left."
-    }
-  ],
-  "zip": [
-    {
-      "name": "zip_create",
-      "description": "Call this tool to pack files or a whole directory (with glob patterns) into a new .zip at out_path. Entry names are always relative, so the archive cannot write outside where it is unpacked."
-    },
-    {
-      "name": "zip_list",
-      "description": "Call this tool to list an archive's entries with sizes, compressed sizes and ratios, and to flag what is dangerous in it: absolute paths, .., symlinks, encrypted entries, duplicate names and compression bombs."
-    },
-    {
-      "name": "zip_extract",
-      "description": "Call this tool to unpack an archive into out_dir. Traversal, absolute-path and symlink entries are refused, a size and ratio cap stops a zip bomb, and dry_run reports exactly what would be written."
-    },
-    {
-      "name": "zip_add",
-      "description": "Call this tool to add files to an existing archive. The archive is rebuilt from its entries and written tmp-then-rename, so a failure part way leaves the original file exactly as it was."
-    },
-    {
-      "name": "zip_extract_text",
-      "description": "Call this tool to read one text entry out of an archive without unpacking anything: give the entry name and the text comes back inline. Binary entries are refused by name rather than printed as noise."
-    },
-    {
-      "name": "zip_bundle_month",
-      "description": "Call this tool to zip one month of invoices, quotes and exports written by the sibling servers into their default output folders. Best effort: it names every folder it looked in and what it found."
-    },
-    {
-      "name": "zip_history",
-      "description": "List the archives this server created, newest first, with their entry counts and sizes, plus how many of this month's free allowance are left."
-    }
-  ],
-  "billing-docs": [
-    {
-      "name": "credit_note_create",
-      "description": "Issue a credit note against one invoice: the whole invoice, a gross amount, or named lines with quantities. Line totals are stored negative in minor units and the invoice's VAT rates are reused."
-    },
-    {
-      "name": "credit_note_list",
-      "description": "Every credit note with its invoice, client, reason and negative total. Filter by invoice number, by client or by issue date range."
-    },
-    {
-      "name": "credit_note_get",
-      "description": "The full stored record for one credit note: every negated line, the VAT lines, the totals, the reason and the invoice it was issued against."
-    },
-    {
-      "name": "credit_note_pdf",
-      "description": "Call this tool to write the A4 PDF of one credit note and return the file path. The invoice layout, titled CREDIT NOTE and carrying the invoice number it reverses. Pro."
-    },
-    {
-      "name": "credit_note_text",
-      "description": "Turn a credit note into a plain-text summary with the negated line table, the VAT lines, the total and the invoice it reverses, ready to paste into an email. Free on every tier."
-    },
-    {
-      "name": "purchase_order_create",
-      "description": "Order from a supplier: line items with quantity and unit price in minor units, VAT, a currency and an expected delivery date. You are the buyer, from the shared business profile."
-    },
-    {
-      "name": "purchase_order_list",
-      "description": "Every purchase order with its supplier, total, expected delivery date and status (open, partially received or received). Filter by status, by supplier or by order date range."
-    },
-    {
-      "name": "purchase_order_get",
-      "description": "The full stored record for one purchase order: the buyer and supplier blocks, every line with its unit price and VAT, the totals, the expected delivery date and what has been received."
-    },
-    {
-      "name": "purchase_order_pdf",
-      "description": "Call this tool to write the A4 PDF of one purchase order and return the file path. The invoice layout, titled PURCHASE ORDER, with the buyer, the supplier and the delivery date. Pro."
-    },
-    {
-      "name": "purchase_order_text",
-      "description": "Turn a purchase order into a plain-text summary with the line table, the VAT lines, the total and the delivery date, ready to paste into an email to the supplier. Free on every tier."
-    },
-    {
-      "name": "purchase_order_receive",
-      "description": "Record that a purchase order arrived, in full or in part. A partial receipt keeps the order open and is kept on the record with its date and note; a full receipt closes it."
-    },
-    {
-      "name": "billing_docs_report",
-      "description": "What has been credited back per currency, against how many invoices, and what is still on order per currency, with the purchase orders whose delivery date has passed. Pro."
-    }
-  ],
-  "deposits": [
-    {
-      "name": "deposit_record",
-      "description": "Record a security or retainer deposit received from a client, in minor units, with its currency, the date it arrived and the bank reference. Returns the DEP-YYYY-NNNN id."
-    },
-    {
-      "name": "deposit_list",
-      "description": "List deposits with what was received, applied, refunded and still held on each. Filter by client, by status held, applied or refunded, by kind and by received date range."
-    },
-    {
-      "name": "deposit_apply",
-      "description": "Apply part or all of a held deposit to one invoice: records that amount as a payment on the invoice through the invoice engine. Refuses more than is held or more than the invoice still owes."
-    },
-    {
-      "name": "deposit_refund",
-      "description": "Give part or all of a held deposit back to the client, with the date and how it was sent. Refuses more than is still held. The invoice server is not touched: a refund is not a payment."
-    },
-    {
-      "name": "deposit_balance",
-      "description": "Answer \"how much of theirs am I holding?\" for one client or for everyone: received, applied to invoices, refunded and still held, one row per currency, never added across currencies."
-    },
-    {
-      "name": "deposit_statement_text",
-      "description": "Turn one client's deposits into a plain-text statement with every movement in date order and the closing balance, ready to paste into an email. Free on every tier."
-    },
-    {
-      "name": "deposit_statement_pdf",
-      "description": "Call this tool to write one client's A4 deposit statement and return the file path. Titled DEPOSIT STATEMENT, every movement in date order, closing with what is still held. Pro."
-    },
-    {
-      "name": "deposits_report",
-      "description": "What is held per currency, the oldest held deposits, and every deposit received more than N days ago with none of it applied to an invoice. Pro."
-    }
-  ],
-  "per-diem": [
-    {
-      "name": "perdiem_rates",
-      "description": "List a scheme's bundled daily allowance rates with the authority, instrument, source URL and effective date they came from. Filter by country or city. Free and unlimited."
-    },
-    {
-      "name": "perdiem_calc",
-      "description": "Calculate the daily travel allowance for one trip: the amount per day and the total in the scheme's currency, with the partial-day fraction and the meal deductions the scheme's own rule applies. Free and unlimited."
-    },
-    {
-      "name": "trip_record",
-      "description": "Calculate a trip and save it under a name, with the traveller taken from the shared business profile. Returns the TRIP-YYYY-NNNN id. Free tier: 5 trips a calendar month."
-    },
-    {
-      "name": "trip_list",
-      "description": "List saved trips with the scheme, destination, dates and total on each, and a total per currency. Filter by scheme, destination, traveller, project and start date range. Free and unlimited."
-    },
-    {
-      "name": "trip_export",
-      "description": "Return the exact expense_add arguments for a saved trip, one payload per currency, ready to pass to the expense-tracker server. It writes nothing itself: see the note in the answer. Pro."
-    },
-    {
-      "name": "perdiem_report",
-      "description": "Total the saved trips per scheme and per calendar month, in each scheme's own currency, with the day count and the trips behind every figure. Pro."
-    }
-  ],
-  "asset-register": [
-    {
-      "name": "asset_add",
-      "description": "Add one fixed asset to the register and return its id with the rate, useful life and convention taken from the bundled tax table. Cost and residual are whole minor units. Free tier holds ten assets."
-    },
-    {
-      "name": "asset_list",
-      "description": "List the assets in the register with cost, method, rate and net book value at a date, filtered by scheme, category, project, currency or disposal state. Free and unlimited."
-    },
-    {
-      "name": "asset_schedule",
-      "description": "Build the depreciation schedule for a stored asset, or price one not yet in the register, per year or per month, to zero or residual, with the table convention applied and the periods summing exactly to the base. Free."
-    },
-    {
-      "name": "asset_journal",
-      "description": "Return the depreciation journal for one month: debit depreciation expense and credit accumulated depreciation, per asset and in total, plus an expense_add-ready payload per currency. It writes nothing itself. Pro."
-    },
-    {
-      "name": "asset_dispose",
-      "description": "Record the sale, scrapping or write-off of an asset on a date for a proceeds amount, and return the gain or loss against net book value at that date. Free."
-    },
-    {
-      "name": "asset_report",
-      "description": "Report net book value by category and currency at a date, the year's depreciation charge, and every disposal in the year with its gain or loss. Pro."
-    }
-  ],
-  "statement-of-account": [
-    {
-      "name": "statement_build",
-      "description": "Build one client's statement of account for a period: opening balance, invoices issued, payments received, credit notes, deposits applied and closing balance, in minor units and formatted."
-    },
-    {
-      "name": "statement_aging",
-      "description": "Break what is owed into 0-30, 31-60, 61-90 and over 90 days past the invoice due date as at a chosen date, for one client or for every client, per currency. Free and unlimited."
-    },
-    {
-      "name": "statement_text",
-      "description": "Turn one client's statement into a plain-text ledger with every movement in date order, the opening and closing balances and a sign-off, ready to paste into an email."
-    },
-    {
-      "name": "statement_pdf",
-      "description": "Call this tool to write one client's A4 statement of account and return the file path. Titled STATEMENT OF ACCOUNT, every movement in date order, closing with the balance outstanding. Pro."
-    },
-    {
-      "name": "dunning_text",
-      "description": "Write a payment chaser for one client at level 1 friendly, 2 firm or 3 final demand, listing every overdue invoice with its age and total, plus your bank details when the profile has them. Level 3 is Pro."
-    },
-    {
-      "name": "statements_report",
-      "description": "Show what is outstanding across every client, totalled per currency and aged, with the oldest overdue invoice and the clients carrying it. Pro."
-    },
-    {
-      "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
-    },
-    {
-      "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
-    }
-  ],
-  "cash-book": [
-    {
-      "name": "ledger_build",
-      "description": "Derive the double-entry ledger for one period in one currency from the invoice, credit note, deposit, expense, bank and asset stores. Every line names its source server, source id and date. Nothing is written back."
-    },
-    {
-      "name": "trial_balance",
-      "description": "Total the debits and the credits for a period and prove they are equal to the minor unit. When they are not, name the entries whose own legs do not add up and the source document behind each. Free and unlimited."
-    },
-    {
-      "name": "ledger_lines",
-      "description": "List the ledger lines for a period, filtered by account, by source server or source document id, and by date. Each line carries its debit and its credit in minor units and the bank row that evidences it."
-    },
-    {
-      "name": "month_close",
-      "description": "List what a month leaves unposted or inconsistent: invoices with no VAT rate, bank debits with no expense, deposits applied to unknown invoices. Then close it with a trial balance snapshot. Pro."
-    },
-    {
-      "name": "ledger_export_csv",
-      "description": "Return the period's ledger lines as RFC 4180 CSV, one row per leg with its date, entry, account, debit, credit, currency, source server, source id and description. No file is written. Pro."
-    },
-    {
-      "name": "ledger_report",
-      "description": "Report every account for a period with its debits, its credits, its movement and its closing balance, plus the purchase commitments held as a memo and the exceptions the period carries. Pro."
-    },
-    {
-      "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
-    },
-    {
-      "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
-    }
-  ],
-  "amortization": [
-    {
-      "name": "loan_create",
-      "description": "Record a loan or a lease from its terms and return its id, its level payment and its effective annual rate. Principal, fees and balloon are whole minor units; the rate is nominal annual basis points."
-    },
-    {
-      "name": "loan_schedule",
-      "description": "Build the schedule for one loan: opening balance, payment, interest, principal and closing balance for every period, with the total interest. The closing balance reaches the balloon, or zero, exactly. Free."
-    },
-    {
-      "name": "loan_repay_early",
-      "description": "Work out what settling or overpaying costs as of a period: the outstanding balance, the penalty if one is given, the recalculated remaining schedule and the interest saved, stated gross and net of the penalty. Pro."
-    },
-    {
-      "name": "loan_journal",
-      "description": "Return the double entry for one payment period or one month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Pro."
-    },
-    {
-      "name": "loan_list",
-      "description": "List the loans and leases in the register with their terms, the level payment, the effective annual rate and the balance outstanding at a date. Free and unlimited."
-    },
-    {
-      "name": "loans_report",
-      "description": "Report the debt: what is outstanding per currency, when each next payment falls due, and the interest charged in a calendar year, per loan and in total. Pro."
-    },
-    {
-      "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
-    },
-    {
-      "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
-    }
-  ],
-  "petty-cash": [
-    {
-      "name": "float_open",
-      "description": "Open a petty cash float on the imprest system and return its id. The imprest is the cash the tin is topped back up to at every replenishment, in whole minor units. Free tier: one float."
-    },
-    {
-      "name": "voucher_add",
-      "description": "Record one voucher paid out of the tin and return its VOU-YYYY-NNNN number. More than the float holds is refused, and so is a byte-identical duplicate. Free tier: 20 vouchers a calendar month."
-    },
-    {
-      "name": "voucher_delete",
-      "description": "Delete a voucher that was entered wrongly, by its VOU number. A voucher already covered by a reconciliation is refused: the cash it took out was counted, so removing it would make a past count wrong. Free."
-    },
-    {
-      "name": "reconcile",
-      "description": "Count the cash and reconcile: the expected balance, the difference to the minor unit, and every voucher since the last count, which this marks reconciled. Records the count. Free and unlimited."
-    },
-    {
-      "name": "replenish_request",
-      "description": "Work out what puts the float back to its imprest: the amount, the vouchers it reimburses, the totals per category as an expense_add-ready payload, and the double entry. Writes nothing. Pro."
-    },
-    {
-      "name": "topup_record",
-      "description": "Record cash put into the tin: the amount in whole minor units, the date and where it came from. It reimburses every voucher up to that date, which is what a replenishment cheque does. Free."
-    },
-    {
-      "name": "float_report",
-      "description": "Report every float: the balance against its imprest, what is unreconciled, the last count, and the history of what the counts found over or short, per float and in total. Pro."
-    },
-    {
-      "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
-    },
-    {
-      "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
-    }
-  ],
-  "work-order": [
-    {
-      "name": "work_order_create",
-      "description": "Raise a job order and return its WO-YYYY-NNNN number: the client, the site address, the date it was asked for, what the job is and how urgent. Free tier: 5 open orders."
-    },
-    {
-      "name": "work_order_add_line",
-      "description": "Add one line to a work order: parts with a quantity and a unit cost in minor units and an optional markup percent, or labour with hours and an hourly rate. Free."
-    },
-    {
-      "name": "work_order_status",
-      "description": "Move a work order one step: draft to scheduled to in_progress to done to invoiced, stamping the date and a note. A skipped or backwards step is refused by name. Free."
-    },
-    {
-      "name": "work_order_get",
-      "description": "Show one work order in full: the client and the site, every parts and labour line with its billed unit, the hours, the materials, the net and VAT, and the status history. Free."
-    },
-    {
-      "name": "work_order_list",
-      "description": "List work orders with their status, hours and value. Filter by status, by client, and by a requested-date range. Free."
-    },
-    {
-      "name": "work_order_delete",
-      "description": "Delete a work order raised by mistake. Only a draft with no lines can go: once there is a line or a status past draft, the job has a history and is corrected, not erased. Free on every tier."
-    },
-    {
-      "name": "completion_report_text",
-      "description": "Turn a work order into a plain-text completion report: what was done, the labour hours, the materials, the totals and a sign-off block, ready to paste into an email. Free on every tier."
-    },
-    {
-      "name": "completion_report_pdf",
-      "description": "Call this tool to write the A4 completion report of one work order and return the file path: the lines, the hours, the materials, the totals and the sign-off block. Pro."
-    },
-    {
-      "name": "work_order_invoice_payload",
-      "description": "Build an invoice_create-ready payload from the lines, with VAT at the shared profile rate. Writes nothing and marks nothing: raise the invoice in the invoice server, then set this order invoiced. Pro."
-    },
-    {
-      "name": "work_orders_report",
-      "description": "Report the whole board: how many work orders sit at each status, the hours logged this month, and the value not yet invoiced per currency, with the oldest open jobs named. Pro."
-    },
-    {
-      "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
-    },
-    {
-      "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
-    }
-  ],
-  "catalogue": [
-    {
-      "name": "sku_set",
-      "description": "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and a price in minor units for one currency, tier and valid-from date. Free tier: 25 SKUs."
-    },
-    {
-      "name": "sku_get",
-      "description": "Show the price of one SKU as of a date, in one currency and tier: the row picked is the latest valid_from at or before that date, and the answer names the row and any later one already booked. Free."
-    },
-    {
-      "name": "sku_list",
-      "description": "List catalogue lines with the price in force today, filtered by code prefix, by currency and by tier. A SKU with no price in that currency and tier is listed and said to have none. Free."
-    },
-    {
-      "name": "sku_delete",
-      "description": "Delete a catalogue line raised by mistake. Only one that no rate card points at and that has never priced a resolved line can go; the refusal names what depends on it. Free on every tier."
-    },
-    {
-      "name": "rate_set",
-      "description": "Set the hourly rate on a labour rate card: a role, a currency, an hourly rate in minor units and the day it comes into force. An update replaces the row for that currency and date. Free."
-    },
-    {
-      "name": "rate_get",
-      "description": "Show the hourly rate for a role as of a date and currency: the row picked is the latest valid_from at or before that date, and the answer names it. With no role given, lists every card. Free."
-    },
-    {
-      "name": "lines_resolve",
-      "description": "Turn a list of sku or role lines into invoice_create-ready and quote_create-ready items priced from the catalogue as of each line's date. An unknown code is refused by name and never priced. Free."
-    },
-    {
-      "name": "price_list_text",
-      "description": "Print the price list as plain text: every SKU with the price in force on a date, per currency and tier, with the valid-from date and any later price already booked, then the labour rates. Free."
-    },
-    {
-      "name": "price_list_pdf",
-      "description": "Call this tool to write the A4 price list for one currency and tier and return the file path: every SKU with its unit, its price in force and the day that price started. Pro."
-    },
-    {
-      "name": "catalogue_report",
-      "description": "Report the catalogue: how many SKUs there are, how many price rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Pro."
-    },
-    {
-      "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
-    },
-    {
-      "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
-    }
-  ],
-  "change-order": [
-    {
-      "name": "change_order_create",
-      "description": "Raise a change order against a quote or work order and return its CO-YYYY-NNNN number: the reference, the client, a title, the date, and the original contract value in minor units. Free tier: 5 open."
-    },
-    {
-      "name": "change_order_add_line",
-      "description": "Add one line to a draft change order: added or removed with a quantity and a unit price in minor units, or changed with the old and the new quantity and price, each with a reason and a date. Free."
-    },
-    {
-      "name": "change_order_status",
-      "description": "Move a change order: draft to sent, sent to approved or rejected, draft or sent to void, stamping the date and a note. Approved, rejected and void are final, and a draft cannot be approved unsent. Free."
-    },
-    {
-      "name": "change_order_get",
-      "description": "Show one change order in full: every added, removed and changed line with its reason and delta, the VAT, the delta gross, the status history and the running value of the reference. Free."
-    },
-    {
-      "name": "change_order_list",
-      "description": "List change orders with their status and delta. Filter by reference, by status, by client, and by a date range. Free."
-    },
-    {
-      "name": "change_order_delete",
-      "description": "Delete a change order raised by mistake. Only a draft with no lines can go: once there is a line or it has been sent, it has a history and is voided, not erased. Free on every tier."
-    },
-    {
-      "name": "contract_value",
-      "description": "The running value of one quote or work order: the original, the approved deltas and the current value, with pending draft and sent deltas shown separately and never added in. Free on every tier."
-    },
-    {
-      "name": "change_order_document",
-      "description": "Render one change order as a plain-text document for the client to approve: every line with its reason, the delta net and gross, the contract value before and after, and an approval block. Pro."
-    },
-    {
-      "name": "change_order_invoice_payload",
-      "description": "Build the approved delta as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing and creates nothing. Pro."
-    },
-    {
-      "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
-    },
-    {
-      "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
-    }
-  ],
-  "delivery-schedule": [
-    {
-      "name": "delivery_schedule_create",
-      "description": "Open a delivery schedule against a quote, work order or change order and return its DS-YYYY-NNNN number: the reference, its own date, the client, a title and the currency. Free tier: 3 open."
-    },
-    {
-      "name": "deliverable_add",
-      "description": "Add one deliverable to a schedule: what it is, the day it is due, and its value in whole minor units when it is separately priced. It starts as planned. Free on every tier."
-    },
-    {
-      "name": "deliverable_status",
-      "description": "Record a dated move on one deliverable: planned to in progress, to delivered, and delivered to accepted with the acceptance note. Accepting something never delivered is refused. Free."
-    },
-    {
-      "name": "deliverable_delete",
-      "description": "Delete a deliverable added by mistake. Only one still planned with nothing recorded against it can go: once it has been started or handed over it has a history. Free on every tier."
-    },
-    {
-      "name": "delivery_schedule_get",
-      "description": "Show one schedule in full as at a date: every deliverable with its due date, status, delivered and accepted dates, acceptance note and value, plus what is late as at that date. Free."
-    },
-    {
-      "name": "delivery_schedule_list",
-      "description": "List delivery schedules with their counts as at a date: what is late, what is still owed and what has been accepted. Filter by client, by reference and by whether the job is complete. Free."
-    },
-    {
-      "name": "delivery_schedule_delete",
-      "description": "Delete a delivery schedule opened by mistake. Only one with no deliverables can go: once it carries one, it carries a record of what was owed. Free on every tier."
-    },
-    {
-      "name": "late_report",
-      "description": "What has slipped as at a date you name: every deliverable still owed whose due date has passed, worst first, with the value at risk per currency and what was delivered late for the record. Free."
-    },
-    {
-      "name": "delivery_schedule_document",
-      "description": "Render one schedule as a plain-text document for the client: every deliverable with its due date, status, delivered and accepted dates and value, the counts as at a date, and a sign-off block. Pro."
-    },
-    {
-      "name": "milestone_payload",
-      "description": "Build the delivered-and-accepted deliverables as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing. Pro."
-    },
-    {
-      "name": "license_status",
-      "description": "Show whether this server runs in free or Pro mode and where to upgrade."
-    },
-    {
-      "name": "license_activate",
-      "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
-    }
-  ]
+ "time-tracker": [
+  {
+   "name": "timer_start",
+   "description": "Start tracking time on a project. Only one timer runs at a time: starting a new one stops and logs the previous one."
+  },
+  {
+   "name": "timer_stop",
+   "description": "Stop the running timer and log it as a time entry. Returns the duration and the entry id."
+  },
+  {
+   "name": "timer_status",
+   "description": "Show the running timer, how long it has been running, and today's total so far."
+  },
+  {
+   "name": "entry_add",
+   "description": "Log time you already worked. Give start plus either end or minutes."
+  },
+  {
+   "name": "entry_list",
+   "description": "List logged time entries as a compact table. Free tier shows the last 7 days."
+  },
+  {
+   "name": "entry_delete",
+   "description": "Delete one time entry by id."
+  },
+  {
+   "name": "entry_edit",
+   "description": "Change fields of an existing entry. Only the fields you pass are changed."
+  },
+  {
+   "name": "project_set_rate",
+   "description": "Set the hourly rate used to turn tracked hours into money for a project."
+  },
+  {
+   "name": "report",
+   "description": "Total tracked hours and money for a period, grouped by project, day, task or tag. Free tier covers the last 7 days."
+  },
+  {
+   "name": "export_csv",
+   "description": "Write time entries to a CSV file you can hand to a bookkeeper or import into a spreadsheet. Free tier exports the last 7 days."
+  },
+  {
+   "name": "invoice_summary",
+   "description": "Turn tracked time into invoice line items for one project: hours, rate, amount per task, plus the total."
+  }
+ ],
+ "price-tracker": [
+  {
+   "name": "price_check",
+   "description": "Fetch a product page right now and report its price, currency and title, plus the change against the last price stored for that URL. Does not create a watch."
+  },
+  {
+   "name": "watch_add",
+   "description": "Start tracking a product page. Fetches it once and stores the first observation. Optionally set a target price to be alerted about."
+  },
+  {
+   "name": "watch_list",
+   "description": "Show every tracked item with its current price, target and last check time."
+  },
+  {
+   "name": "watch_remove",
+   "description": "Stop tracking an item, by watch id or by URL. Its history is deleted."
+  },
+  {
+   "name": "watch_refresh",
+   "description": "Re-fetch one watch or every watch, append the new observations and show current, previous, min, max, change % and target hits."
+  },
+  {
+   "name": "price_history",
+   "description": "List the stored observations for one watch, newest last. Free shows the last 10."
+  },
+  {
+   "name": "price_add_manual",
+   "description": "Store a price you read yourself, for shops that block automated requests. Creates the watch if it does not exist yet."
+  },
+  {
+   "name": "alerts_pending",
+   "description": "Show watches whose latest price is at or below the target, or which dropped ${DROP_ALERT_PCT}% or more against the previous observation."
+  }
+ ],
+ "spreadsheet": [
+  {
+   "name": "sheet_info",
+   "description": "Open an xlsx or csv file and describe it: sheet names, size, guessed header row, per-column type, sample values and empty counts. Start here before reading or querying."
+  },
+  {
+   "name": "sheet_read",
+   "description": "Read rows from a sheet as a text table, JSON records or CSV. Use limit/offset to page through big files, or range for an A1 block like B2:F40."
+  },
+  {
+   "name": "sheet_query",
+   "description": "Filter, pick columns and sort rows without writing any code. where uses a small safe expression language: comparisons = != > >= < <= plus contains / startswith / endswith, combined with AND, OR, NOT and parentheses. "
+  },
+  {
+   "name": "sheet_stats",
+   "description": "Per-column count, empty count, distinct values, min, max, sum, mean and median. Numbers are parsed from currency and percent text too."
+  },
+  {
+   "name": "sheet_find",
+   "description": "Search every cell for text (case insensitive) and return cell addresses with a preview of the row it is on."
+  },
+  {
+   "name": "sheet_write",
+   "description": "Write rows to a spreadsheet. rows may be objects (keys become headers) or arrays (first array is the header row). "
+  },
+  {
+   "name": "sheet_add_column",
+   "description": "Convert a sheet to csv, xlsx or json. Writes a new file next to the source unless out_path is given."
+  }
+ ],
+ "invoice": [
+  {
+   "name": "business_set",
+   "description": "Store the issuer profile printed at the top of every invoice: your name, address, VAT id, bank details and defaults (currency, tax rate, payment terms, invoice number prefix). Call this once before creating invoices."
+  },
+  {
+   "name": "client_add",
+   "description": "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details."
+  },
+  {
+   "name": "client_list",
+   "description": "List every stored client with their id, address, email and VAT id."
+  },
+  {
+   "name": "invoice_create",
+   "description": "Create an invoice for a client from a list of items. Allocates the next invoice number (never reused), computes subtotal, discount, tax lines per rate and the total. Amounts are held as integer minor units; every line is"
+  },
+  {
+   "name": "invoice_from_hours",
+   "description": "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates a single-line invoice."
+  },
+  {
+   "name": "invoice_list",
+   "description": "List invoices, optionally filtered by status (unpaid, paid, partial), client, and an issue-date range."
+  },
+  {
+   "name": "invoice_get",
+   "description": "Return the full stored record for one invoice number, including every line and tax breakdown."
+  },
+  {
+   "name": "invoice_mark_paid",
+   "description": "Record a payment. Without an amount the invoice is marked fully paid; a smaller amount marks it partial and reports the remaining balance."
+  },
+  {
+   "name": "invoice_pdf",
+   "description": "Render an invoice as an A4 PDF you can send: issuer block, client block, dates, item table with wrapped descriptions, subtotal, discount, tax lines per rate, total, payment details and notes. Returns the file path."
+  },
+  {
+   "name": "overdue_report",
+   "description": "List every unpaid or partly paid invoice past its due date with days overdue, plus outstanding totals per currency. Pro."
+  }
+ ],
+ "expense-tracker": [
+  {
+   "name": "expense_add",
+   "description": "Record one expense. The amount is the gross amount on the receipt; vat_rate splits it into net and VAT. If no category is given, the stored category rules are matched against the merchant. billable defaults to true when "
+  },
+  {
+   "name": "expense_list",
+   "description": "List expenses in a date range, optionally filtered by project, category or billable flag. Totals are grouped by currency and never mixed."
+  },
+  {
+   "name": "expense_update",
+   "description": "Change any field of a stored expense by id. Only the fields you pass are changed."
+  },
+  {
+   "name": "expense_delete",
+   "description": "Delete one expense by id. The receipt file itself is left on disk."
+  },
+  {
+   "name": "receipt_attach",
+   "description": "Attach a receipt file to a stored expense. The file must exist; its path and sha256 are stored so a later audit can prove the file has not changed."
+  },
+  {
+   "name": "category_rules",
+   "description": "Replace the merchant-to-category rules, or call with no rules to list them. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex. The first matching rule wins, a"
+  },
+  {
+   "name": "expense_settings",
+   "description": "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate (the VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany) and default_currency. Call with no arguments to"
+  },
+  {
+   "name": "expense_summary",
+   "description": "Totals for a date range grouped by category, project, month or merchant. Every group is reported per currency with the gross, the net and the VAT; currencies are never added together."
+  },
+  {
+   "name": "mileage_add",
+   "description": "Record a business trip as an expense. Money is distance x rate. The built-in table (PL 1.15 PLN/km, UK 0.45 GBP/mile, US 0.70 USD/mile, EU 0.30 EUR/km) is one flat approximate rate per region: it has no effective dates, "
+  },
+  {
+   "name": "expense_export",
+   "description": "Write the expenses in a date range to a csv, xlsx or json file and return its path. Nothing partial is ever written: if a limit is hit the file is not created at all."
+  },
+  {
+   "name": "expense_to_invoice",
+   "description": "Turn the unbilled billable expenses of one project into invoice line items shaped exactly as invoice_create expects: description, quantity, unit_price, tax_rate. unit_price is the net amount, tax_rate is the VAT rate rec"
+  },
+  {
+   "name": "expense_mark_rebilled",
+   "description": "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or the same project and date range plus that group's currency. A range mar"
+  }
+ ],
+ "currency": [
+  {
+   "name": "rates_latest",
+   "description": "The most recent European Central Bank daily reference rates, re-expressed against any base. The answer always states the rate date, because ECB rates are published once a day around 16:00 CET on TARGET business days and "
+  },
+  {
+   "name": "convert",
+   "description": "Convert an amount between any two ECB-quoted currencies, today or on a past date. Cross rates go through the euro because that is the only pair the ECB publishes; the rate is stated to 6 decimals and the result is rounde"
+  },
+  {
+   "name": "convert_many",
+   "description": "One amount, one source currency, many targets, all off the same ECB rate date. Each result is rounded to that target's own minor units."
+  },
+  {
+   "name": "fx_rates_for",
+   "description": "The ECB rate for one currency pair over a window, with min, max, average and the change across the window. Give days for a trailing window, or from_date and to_date for an explicit one. Only TARGET business days have rat"
+  },
+  {
+   "name": "rate_on",
+   "description": "The ECB rate for a pair on one date. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last published rate on or before it is returned and the a"
+  },
+  {
+   "name": "currencies_list",
+   "description": "Every currency in the ECB daily reference set, with its rate against the euro and the number of decimal places it is rounded to. Anything not on this list cannot be converted here."
+  },
+  {
+   "name": "cache_status",
+   "description": "What is cached on this machine, how old it is, and when it will next be refreshed. Answer this before trusting a rate on a machine that has been offline."
+  }
+ ],
+ "docx": [
+  {
+   "name": "business_set",
+   "description": "Store the sender profile printed on every proposal, contract and letter: your name, address, email, VAT id, bank details and defaults (currency, payment terms). Same profile shape as mcp-invoice. Call this once before cr"
+  },
+  {
+   "name": "doc_create",
+   "description": "Write a real .docx file from structured sections: headings, paragraphs, bullet or numbered lists and tables. Choose plain, letter (sender block top right, date, addressee) or proposal (letterhead band and cover title) la"
+  },
+  {
+   "name": "doc_from_markdown",
+   "description": "Turn markdown into a .docx: ATX headings, paragraphs, bullet and numbered lists, GFM pipe tables, fenced code blocks as monospace, and **bold** / *italic* / `code` inline. Returns the file path. Free and unlimited."
+  },
+  {
+   "name": "doc_read",
+   "description": "Extract the text of an existing .docx: headings with their levels, paragraphs, list items and tables, in document order. Works on files Word, Google Docs or this server produced. Free and unlimited."
+  },
+  {
+   "name": "doc_to_html",
+   "description": "Convert a .docx to semantic HTML you can open in a browser and print to PDF. Direct PDF output is deliberately not offered: every pure-JS Word-to-PDF path needs a native dependency or a headless browser, and this server "
+  },
+  {
+   "name": "doc_fill_template",
+   "description": "Replace {{placeholders}} in an existing .docx and write a new file, keeping every style, table, header, footer and image of the original. Placeholders split across runs by Word's editor are handled, because the substitut"
+  },
+  {
+   "name": "proposal_create",
+   "description": "Produce a client-ready .docx proposal from the parts you already know: summary, scope, deliverables, a timeline table, price and terms. Uses your business_set profile for the letterhead and allocates a reference number t"
+  },
+  {
+   "name": "contract_create",
+   "description": "Produce a plain freelance service agreement .docx: parties, services, term, fee and schedule, plus standard clauses on intellectual property, confidentiality, independent contractor status, liability and termination. Thi"
+  }
+ ],
+ "timezone": [
+  {
+   "name": "now",
+   "description": "The current time in one or more places. Accepts IANA zones (Europe/Warsaw), city names (Warsaw), country names (Poland) or abbreviations (PST, IST). With no zones it reports this machine's local zone and UTC."
+  },
+  {
+   "name": "convert_time",
+   "description": "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'."
+  },
+  {
+   "name": "overlap",
+   "description": "The window each day when every listed place is inside working hours. Computed on a real date, so a DST week that widens or narrows the overlap is reflected."
+  },
+  {
+   "name": "find_meeting_slots",
+   "description": "Rank the times when every participant is inside their own working hours. Ranked by fairness: the score is the WORST participant's distance from 13:00 local, so a slot that is 07:00 for one person never outranks one that "
+  },
+  {
+   "name": "dst_changes",
+   "description": "The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October."
+  },
+  {
+   "name": "business_days",
+   "description": "Business days between two dates in a place, excluding weekends and any holidays you pass. Use it for delivery dates and payment terms across a client's calendar."
+  },
+  {
+   "name": "contacts_set",
+   "description": "Remember a client or teammate's time zone and working hours so you can say 'find a slot with Maria and Raj' later."
+  },
+  {
+   "name": "contacts_list",
+   "description": "Everyone you have saved, with their current local time and whether they are inside working hours right now."
+  },
+  {
+   "name": "ics_create",
+   "description": "Write a .ics calendar file for one meeting. Times are stored in UTC, so the invite lands at the right local time in every attendee's calendar with no time zone block to go stale."
+  }
+ ],
+ "resume": [
+  {
+   "name": "profile_set",
+   "description": "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. One profile per data directory; Pro adds named variants. Nothi"
+  },
+  {
+   "name": "profile_get",
+   "description": "Return the stored profile as JSON, exactly as it will be used by resume_create, cover_letter_create and tailor_to_job."
+  },
+  {
+   "name": "resume_create",
+   "description": "Write the stored profile to a Word .docx. Bullets are ordered by relevance to the target role and keywords, then trimmed to fit max_pages using a measured word budget. Keywords that appear anywhere in the profile are pri"
+  },
+  {
+   "name": "resume_to_markdown",
+   "description": "Return the stored profile as markdown: paste it into a form, an email or an ATS box."
+  },
+  {
+   "name": "resume_to_html",
+   "description": "Write the resume as semantic HTML with a print stylesheet. Open it and print to PDF: there is no doc_to_pdf here because every pure-JavaScript route to PDF needs a native dependency."
+  },
+  {
+   "name": "resume_read",
+   "description": "Extract an existing Word resume into the profile shape: name, contact, summary, skills, roles with bullets, education. Best effort, section by heading. Nothing is saved unless save is true."
+  },
+  {
+   "name": "cover_letter_create",
+   "description": "Write a one-page cover letter from the stored profile: opening, fit, proof, close. It states no fact that is not in your profile. Anything it does not know is left as a bracketed prompt such as [add: metric] for you to f"
+  },
+  {
+   "name": "tailor_to_job",
+   "description": "Extract what a job description actually asks for, check it against your profile, and report matched, missing and coverage. Rewrites only reorder facts you already stated; a missing keyword produces a warning, never a new"
+  }
+ ],
+ "recurring": [
+  {
+   "name": "schedule_create",
+   "description": "Define a repeating invoice: a client, the line items, how often to bill (weekly, monthly, quarterly, yearly or every N days), when it starts and optionally when it ends. Nothing is invoiced until invoice_generate_due run"
+  },
+  {
+   "name": "schedule_list",
+   "description": "Every schedule with its cadence, per-period amount, next due date and status (active or paused)."
+  },
+  {
+   "name": "schedule_get",
+   "description": "The full stored record for one schedule: items, cadence, dates, rules and how many invoices it has generated."
+  },
+  {
+   "name": "schedule_update",
+   "description": "Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only."
+  },
+  {
+   "name": "schedule_pause",
+   "description": "Stop a schedule from generating invoices without deleting it. Its history is kept and it can be resumed."
+  },
+  {
+   "name": "schedule_resume",
+   "description": "Make a paused schedule active again. Periods that fell due while it was paused are still due and will be created by the next invoice_generate_due."
+  },
+  {
+   "name": "schedule_delete",
+   "description": "Remove a schedule. Invoices it already generated stay in the invoice server untouched; its generation history is kept so a re-created schedule cannot double-bill a period it already covered."
+  },
+  {
+   "name": "schedule_upcoming",
+   "description": "Table of every schedule occurrence falling due in the next N days, with the amount per occurrence and the total per currency. Free covers 30 days."
+  },
+  {
+   "name": "invoice_generate_due",
+   "description": "Create a real invoice in the invoice server for every schedule occurrence on or before as_of that has not been invoiced yet, and render each PDF. Idempotent: one invoice per schedule per period, keyed by the occurrence d"
+  },
+  {
+   "name": "schedule_history",
+   "description": "The audit log for one schedule: every period it has generated, the invoice number, dates, amount and PDF path."
+  },
+  {
+   "name": "forecast",
+   "description": "Expected invoiced revenue per calendar month per currency from every active schedule. Free covers 3 months ahead; Pro covers up to 120."
+  }
+ ],
+ "clauses": [
+  {
+   "name": "clause_add",
+   "description": "Save a reusable contract or proposal clause to the library. Use {{variables}} in the body for the facts that change per client, for example {{client}}, {{fee}} or {{late_fee_percent}}. Free tier: 10 own clauses on top of"
+  },
+  {
+   "name": "clause_get",
+   "description": "Return a clause in full by id or by title, with its variables and, in Pro, its revision count."
+  },
+  {
+   "name": "clause_update",
+   "description": "Change the text, category, tags, variables or jurisdiction of a clause. In Pro the previous text is kept as a version; in the free tier the change is applied without history."
+  },
+  {
+   "name": "clause_delete",
+   "description": "Remove a clause from the library. A deleted starter clause is not re-seeded on the next call."
+  },
+  {
+   "name": "clause_list",
+   "description": "List every clause, newest categories first, optionally narrowed to one category."
+  },
+  {
+   "name": "clause_search",
+   "description": "Ranked search over clause titles, tags, categories and bodies. Title and tag matches outrank body matches. Filtering by jurisdiction or tags is a Pro feature."
+  },
+  {
+   "name": "clause_import",
+   "description": "Bulk-load clauses from a file. Markdown form: '## Title', optional 'category:' / 'tags:' / 'variables:' lines, blank line, body. JSON form: an array of clauses. JSON import is a Pro feature; markdown import works in the "
+  },
+  {
+   "name": "clause_export",
+   "description": "Write the whole library to a file. Markdown export is free; JSON export is a Pro feature."
+  },
+  {
+   "name": "contract_assemble",
+   "description": "Build a contract or proposal from library clauses: orders them, fills {{variables}} from the values you pass, leaves every missing fact as a bracketed prompt like [late fee percent], prepends the not-legal-advice line, a"
+  },
+  {
+   "name": "variables_list",
+   "description": "Given a set of clauses, list every {{variable}} they use and which clause uses it, so nothing is missed before assembling."
+  }
+ ],
+ "pdf": [
+  {
+   "name": "pdf_info",
+   "description": "Page count, page sizes in points and millimetres, paper name, metadata (title, author, producer, dates) and whether the file is encrypted. Read-only: the file is never modified. Free tier: unlimited."
+  },
+  {
+   "name": "pdf_count",
+   "description": "Page count per file plus the total, for any number of PDFs. Read-only. A file that cannot be read is reported per file; the others still count. Free tier: unlimited."
+  },
+  {
+   "name": "pdf_merge",
+   "description": "Join several PDFs into one, in the order given. Page sizes are kept as they are - a merged file may have mixed page sizes, and the answer says so. Inputs are never modified. Free tier: up to 5 files per merge."
+  },
+  {
+   "name": "pdf_split",
+   "description": "Write one new PDF per range. Ranges are 1-based and may be open-ended: \\\"1-3,5,7-\\\" gives pages 1-3, page 5, and page 7 to the end. The input is never modified. Free tier: files up to 30 pages."
+  },
+  {
+   "name": "pdf_pages",
+   "description": "Pull selected pages out into one new PDF, in the order written: \\\"2,4-6\\\" gives four pages. Asking for a page twice copies it twice. The input is never modified. Free tier: files up to 30 pages."
+  },
+  {
+   "name": "pdf_rotate",
+   "description": "Turn pages by a multiple of 90 degrees, clockwise for a positive number. The rotation is added to whatever the page already had, which is what a sideways scan needs. Writes a new file; the input is never modified. Free t"
+  },
+  {
+   "name": "pdf_stamp",
+   "description": "Draw a word such as PAID or DRAFT across the pages, in a colour and position you choose. Writes a new file; the input is never modified. Free tier: the PAID and DRAFT presets in their preset colours."
+  },
+  {
+   "name": "pdf_watermark_business",
+   "description": "Put your own business name and VAT id in the footer of every page, from the shared business profile that mcp-invoice and mcp-docx write. Use it before sending a document out. Pro."
+  },
+  {
+   "name": "pdf_reorder",
+   "description": "Write a new PDF with the pages in the order you give. The order must name every page exactly once, so nothing is dropped by accident - use pdf_pages when you do want a subset. Pro."
+  },
+  {
+   "name": "pdf_text",
+   "description": "Best-effort text extraction: the page content streams are decompressed and the text-showing operators are read. It works on PDFs written with standard fonts (exports from word processors, invoices, reports). It returns n"
+  }
+ ],
+ "calendar": [
+  {
+   "name": "ics_import",
+   "description": "Read a calendar export and keep it locally under a name. Give exactly one of path (a .ics file on this machine), "
+  },
+  {
+   "name": "calendars_list",
+   "description": "Every calendar imported into this server: its name, where it came from, how many event definitions it holds and when it was imported."
+  },
+  {
+   "name": "events_list",
+   "description": "Every event between two dates, with recurring events expanded to their real occurrences and sorted by start. "
+  },
+  {
+   "name": "events_search",
+   "description": "Find events whose title, description, location or attendees contain a phrase. Searches every imported calendar. "
+  },
+  {
+   "name": "free_busy",
+   "description": "Where the time actually went and what is left: merged busy blocks from the calendars you name, and the gaps inside "
+  },
+  {
+   "name": "conflicts",
+   "description": "Every pair of events that overlap in time, with how many minutes they collide. Across all imported calendars unless you "
+  },
+  {
+   "name": "next_event",
+   "description": "The next event that has not started yet, with how long until it begins. Looks ahead up to a year."
+  },
+  {
+   "name": "event_export",
+   "description": "Write chosen events to a new .ics file you can send or import elsewhere. Either pass ids (from events_list) or a "
+  },
+  {
+   "name": "event_to_time_entry",
+   "description": "Take one event and return the exact arguments for the time-tracker's entry_add, so a meeting that already happened "
+  },
+  {
+   "name": "ics_forget",
+   "description": "Remove one imported calendar and the local copy of its .ics file. Nothing else is touched."
+  }
+ ],
+ "kanban": [
+  {
+   "name": "task_add",
+   "description": "Add a task to a project board (todo list / kanban card). Optional column, due date, estimate, priority, tags and notes."
+  },
+  {
+   "name": "task_list",
+   "description": "List tasks as a table, filtered by project, column, tag, due date or overdue."
+  },
+  {
+   "name": "task_move",
+   "description": "Move a task to another column on its board."
+  },
+  {
+   "name": "task_update",
+   "description": "Change any field of a task: title, notes, due date, estimate, priority, tags or project."
+  },
+  {
+   "name": "task_done",
+   "description": "Mark a task done: it moves to the done column and is stamped with the time."
+  },
+  {
+   "name": "task_delete",
+   "description": "Delete a task permanently."
+  },
+  {
+   "name": "task_search",
+   "description": "Find tasks whose title, notes, tags or id match a query."
+  },
+  {
+   "name": "board",
+   "description": "Column-by-column summary of a project board: task counts and estimate totals."
+  },
+  {
+   "name": "task_start_timer",
+   "description": "Return the exact arguments to pass to the time-tracker server's timer_start for this task, and record the link on the task."
+  },
+  {
+   "name": "task_log_time",
+   "description": "Add real minutes worked to a task, so estimate and actual can be compared."
+  },
+  {
+   "name": "project_list",
+   "description": "All project boards with open task counts, remaining estimate and overdue counts."
+  },
+  {
+   "name": "overdue",
+   "description": "Every task past its due date, across all boards."
+  },
+  {
+   "name": "weekly_review",
+   "description": "Done versus planned for a week, with estimate against actual minutes per project."
+  },
+  {
+   "name": "columns_set",
+   "description": "Replace the columns of one board (Pro). Tasks sitting in a removed column move to the first column."
+  }
+ ],
+ "image": [
+  {
+   "name": "image_info",
+   "description": "Format, pixel dimensions, megapixels, file size in bytes and whether the image carries an alpha channel. Read-only: the file is never modified. Free tier: unlimited, at any size."
+  },
+  {
+   "name": "image_resize",
+   "description": "Write a resized copy. fit: \\\"inside\\\" scales to fit the box and keeps the aspect ratio; \\\"cover\\\" fills the box and crops the overflow; \\\"exact\\\" stretches to the given width and height. With only one of width or height,"
+  },
+  {
+   "name": "image_convert",
+   "description": "Re-encode an image as PNG, JPEG, BMP, GIF or TIFF. quality is a JPEG parameter only and is reported as ignored for the lossless formats. Converting an image with transparency to JPEG flattens it onto white, and the answe"
+  },
+  {
+   "name": "image_compress",
+   "description": "Re-encode an image smaller and report the byte count before and after. quality (default 80) applies when the output is a JPEG; for a PNG output only max_width reduces bytes, and the answer says which of the two did the w"
+  },
+  {
+   "name": "image_crop",
+   "description": "Cut a rectangle out of an image. x and y are the top-left corner in pixels, counted from the top-left of the image. A rectangle that runs past an edge is refused with the image's real size, never silently clamped. Free t"
+  },
+  {
+   "name": "image_thumbnails",
+   "description": "One thumbnail per input, written into out_dir as <name>-thumb.<ext>. Each thumbnail fits inside size by size and keeps its aspect ratio, so a wide photo stays wide. Every output path is reserved before any file is writte"
+  },
+  {
+   "name": "image_watermark",
+   "description": "Draw text over an image at a chosen corner and opacity. With no text the shared business profile name is used, the same profile mcp-invoice and mcp-docx write. The text is drawn white on a translucent dark plate so it st"
+  },
+  {
+   "name": "image_strip_metadata",
+   "description": "Write a copy carrying pixels and nothing else. It works by decoding the image and re-encoding it from the raw pixels: EXIF, GPS coordinates, the camera and lens, the capture time, XMP and colour-profile blocks are not ca"
+  },
+  {
+   "name": "image_batch_resize",
+   "description": "Resize every image into out_dir, keeping each one's aspect ratio, named <name>-<W>x<H>.<ext>. With one of width or height the other follows; with both, each image is scaled to fit inside that box. Free tier: up to 5 file"
+  },
+  {
+   "name": "image_dominant_colors",
+   "description": "The colours that cover most of an image, as hex codes with the share of pixels each one covers, for picking a background or a brand palette. Read-only. Pro only."
+  }
+ ],
+ "bank-statement": [
+  {
+   "name": "statement_import",
+   "description": "Read a bank CSV export into the local ledger. Columns are detected from the headers (date, description, one signed amount or a debit and a credit column, currency, balance), amounts are read in the file's own locale, and"
+  },
+  {
+   "name": "transactions_list",
+   "description": "List stored transactions in a date range, optionally for one account or category, or only the ones no rule has categorised yet. Totals are reported per currency and never added across currencies."
+  },
+  {
+   "name": "transactions_search",
+   "description": "Find transactions whose description, counterparty, category or account contains the query. Case-insensitive substring search, never a regex, so a query with brackets in it cannot hang the server."
+  },
+  {
+   "name": "category_rules",
+   "description": "Set the rules that categorise transactions, or call with no arguments to list them. Each rule is matched against the counterparty and the description: a plain match is a case-insensitive substring, and regex: true compil"
+  },
+  {
+   "name": "transaction_categorize",
+   "description": "Set the category on one or more transactions by id. Nothing is changed unless every id exists, so a typo cannot half-apply."
+  },
+  {
+   "name": "statement_summary",
+   "description": "Money in, money out and the net for a date range, grouped by category, month, account or counterparty. Every total is reported per currency; amounts in different currencies are never added together and never converted."
+  },
+  {
+   "name": "reconcile_expenses",
+   "description": "Match bank debits against the expenses recorded by mcp-expense-tracker: same currency, same amount, and a date within a few days. Reports what matched, which bank lines have no expense behind them and which expenses neve"
+  },
+  {
+   "name": "recurring_detect",
+   "description": "Find the charges that come back: the same counterparty, an amount that barely moves and a steady cadence. Reports the cadence, the typical amount, when it was last taken, when it is next due and what it costs per year, p"
+  },
+  {
+   "name": "statement_export",
+   "description": "Write the transactions of a date range to a .csv or .json file and return the path. The file is written atomically, so a failed export never leaves a half-written file behind."
+  },
+  {
+   "name": "accounts_list",
+   "description": "List the imported accounts with their bank, currency, transaction count and date range."
+  }
+ ],
+ "quotes": [
+  {
+   "name": "quote_create",
+   "description": "Quote a client: line items with quantity and unit price in minor units, VAT per line or the business default, an optional discount and a validity window. Returns the quote id and the totals."
+  },
+  {
+   "name": "quote_list",
+   "description": "Every quote with its client, total, validity and state (open, expired, accepted or declined). Filter by state, by client or by quote date range."
+  },
+  {
+   "name": "quote_get",
+   "description": "The full stored record for one quote: every line with its unit price and VAT, the totals, the validity date, the notes and, when it was accepted, the invoice it became."
+  },
+  {
+   "name": "quote_update",
+   "description": "Revise a quote that is still open: line items, currency, discount, VAT default, validity or notes. Totals are recomputed. An accepted or declined quote is never edited."
+  },
+  {
+   "name": "quote_send_text",
+   "description": "Turn a quote into a plain-text summary with the line table, the VAT lines, the total and the validity date, ready to paste into an email. Free on every tier."
+  },
+  {
+   "name": "quote_accept",
+   "description": "Mark a quote accepted and turn it into an invoice: created directly in the invoice server when its store is present, otherwise returned as invoice_create-ready line items. The numbers are copied, never recomputed."
+  },
+  {
+   "name": "quote_decline",
+   "description": "Mark a quote as lost, with an optional reason, so it stops counting against the open quotes and shows up in the win rate. An accepted quote is never turned back."
+  },
+  {
+   "name": "quote_pdf",
+   "description": "Call this tool to write the A4 PDF of one quote and return the file path. Same layout as the invoice PDF, with the validity date and an acceptance block. Pro."
+  },
+  {
+   "name": "quote_report",
+   "description": "Totals per currency for open, accepted, declined and expired quotes, with counts, the value still open and the win rate. Pro."
+  }
+ ],
+ "barcode": [
+  {
+   "name": "qr_create",
+   "description": "Call this tool to turn text or a URL into a QR code, as an SVG returned inline or written to out_path, or as a PNG at a chosen pixel size (Pro)."
+  },
+  {
+   "name": "qr_wifi",
+   "description": "Call this tool to make a QR code that joins a WiFi network when scanned: network name, password and security type, written to out_path or returned as SVG."
+  },
+  {
+   "name": "qr_vcard",
+   "description": "Call this tool to make a QR code that adds a contact when scanned (vCard 3.0: name, org, phone, email, URL, address), written to out_path or returned as SVG."
+  },
+  {
+   "name": "qr_payment_sepa",
+   "description": "Call this tool to make an EPC069-12 payment QR code a euro banking app can scan: IBAN, beneficiary name, optional amount and reference. The IBAN is checked before drawing."
+  },
+  {
+   "name": "invoice_payment_qr",
+   "description": "Call this tool to make the payment QR code for an invoice: your IBAN and name come from the shared business profile, the amount and reference from invoice_id or from the arguments."
+  },
+  {
+   "name": "barcode_create",
+   "description": "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG or PNG. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn."
+  },
+  {
+   "name": "barcode_batch",
+   "description": "Call this tool to draw many barcodes or QR codes at once from a list of rows, each with its own value and file name, into out_dir. Pro; the free tier does one code per call."
+  },
+  {
+   "name": "code_list",
+   "description": "List the codes this server generated, newest first, with what each one carried and where it was written, plus how many of this month's free allowance are left."
+  }
+ ],
+ "zip": [
+  {
+   "name": "zip_create",
+   "description": "Call this tool to pack files or a whole directory (with glob patterns) into a new .zip at out_path. Entry names are always relative, so the archive cannot write outside where it is unpacked."
+  },
+  {
+   "name": "zip_list",
+   "description": "Call this tool to list an archive's entries with sizes, compressed sizes and ratios, and to flag what is dangerous in it: absolute paths, .., symlinks, encrypted entries, duplicate names and compression bombs."
+  },
+  {
+   "name": "zip_extract",
+   "description": "Call this tool to unpack an archive into out_dir. Traversal, absolute-path and symlink entries are refused, a size and ratio cap stops a zip bomb, and dry_run reports exactly what would be written."
+  },
+  {
+   "name": "zip_add",
+   "description": "Call this tool to add files to an existing archive. The archive is rebuilt from its entries and written tmp-then-rename, so a failure part way leaves the original file exactly as it was."
+  },
+  {
+   "name": "zip_extract_text",
+   "description": "Call this tool to read one text entry out of an archive without unpacking anything: give the entry name and the text comes back inline. Binary entries are refused by name rather than printed as noise."
+  },
+  {
+   "name": "zip_bundle_month",
+   "description": "Call this tool to zip one month of invoices, quotes and exports written by the sibling servers into their default output folders. Best effort: it names every folder it looked in and what it found."
+  },
+  {
+   "name": "zip_history",
+   "description": "List the archives this server created, newest first, with their entry counts and sizes, plus how many of this month's free allowance are left."
+  }
+ ],
+ "billing-docs": [
+  {
+   "name": "credit_note_create",
+   "description": "Issue a credit note against one invoice: the whole invoice, a gross amount, or named lines with quantities. Line totals are stored negative in minor units and the invoice's VAT rates are reused."
+  },
+  {
+   "name": "credit_note_list",
+   "description": "Every credit note with its invoice, client, reason and negative total. Filter by invoice number, by client or by issue date range."
+  },
+  {
+   "name": "credit_note_get",
+   "description": "The full stored record for one credit note: every negated line, the VAT lines, the totals, the reason and the invoice it was issued against."
+  },
+  {
+   "name": "credit_note_pdf",
+   "description": "Call this tool to write the A4 PDF of one credit note and return the file path. The invoice layout, titled CREDIT NOTE and carrying the invoice number it reverses. Pro."
+  },
+  {
+   "name": "credit_note_text",
+   "description": "Turn a credit note into a plain-text summary with the negated line table, the VAT lines, the total and the invoice it reverses, ready to paste into an email. Free on every tier."
+  },
+  {
+   "name": "purchase_order_create",
+   "description": "Order from a supplier: line items with quantity and unit price in minor units, VAT, a currency and an expected delivery date. You are the buyer, from the shared business profile."
+  },
+  {
+   "name": "purchase_order_list",
+   "description": "Every purchase order with its supplier, total, expected delivery date and status (open, partially received or received). Filter by status, by supplier or by order date range."
+  },
+  {
+   "name": "purchase_order_get",
+   "description": "The full stored record for one purchase order: the buyer and supplier blocks, every line with its unit price and VAT, the totals, the expected delivery date and what has been received."
+  },
+  {
+   "name": "purchase_order_pdf",
+   "description": "Call this tool to write the A4 PDF of one purchase order and return the file path. The invoice layout, titled PURCHASE ORDER, with the buyer, the supplier and the delivery date. Pro."
+  },
+  {
+   "name": "purchase_order_text",
+   "description": "Turn a purchase order into a plain-text summary with the line table, the VAT lines, the total and the delivery date, ready to paste into an email to the supplier. Free on every tier."
+  },
+  {
+   "name": "purchase_order_receive",
+   "description": "Record that a purchase order arrived, in full or in part. A partial receipt keeps the order open and is kept on the record with its date and note; a full receipt closes it."
+  },
+  {
+   "name": "billing_docs_report",
+   "description": "What has been credited back per currency, against how many invoices, and what is still on order per currency, with the purchase orders whose delivery date has passed. Pro."
+  }
+ ],
+ "deposits": [
+  {
+   "name": "deposit_record",
+   "description": "Record a security or retainer deposit received from a client, in minor units, with its currency, the date it arrived and the bank reference. Returns the DEP-YYYY-NNNN id."
+  },
+  {
+   "name": "deposit_list",
+   "description": "List deposits with what was received, applied, refunded and still held on each. Filter by client, by status held, applied or refunded, by kind and by received date range."
+  },
+  {
+   "name": "deposit_apply",
+   "description": "Apply part or all of a held deposit to one invoice: records that amount as a payment on the invoice through the invoice engine. Refuses more than is held or more than the invoice still owes."
+  },
+  {
+   "name": "deposit_refund",
+   "description": "Give part or all of a held deposit back to the client, with the date and how it was sent. Refuses more than is still held. The invoice server is not touched: a refund is not a payment."
+  },
+  {
+   "name": "deposit_balance",
+   "description": "Answer \"how much of theirs am I holding?\" for one client or for everyone: received, applied to invoices, refunded and still held, one row per currency, never added across currencies."
+  },
+  {
+   "name": "deposit_statement_text",
+   "description": "Turn one client's deposits into a plain-text statement with every movement in date order and the closing balance, ready to paste into an email. Free on every tier."
+  },
+  {
+   "name": "deposit_statement_pdf",
+   "description": "Call this tool to write one client's A4 deposit statement and return the file path. Titled DEPOSIT STATEMENT, every movement in date order, closing with what is still held. Pro."
+  },
+  {
+   "name": "deposits_report",
+   "description": "What is held per currency, the oldest held deposits, and every deposit received more than N days ago with none of it applied to an invoice. Pro."
+  }
+ ],
+ "per-diem": [
+  {
+   "name": "perdiem_rates",
+   "description": "List a scheme's bundled daily allowance rates with the authority, instrument, source URL and effective date they came from. Filter by country or city. Free and unlimited."
+  },
+  {
+   "name": "perdiem_calc",
+   "description": "Calculate the daily travel allowance for one trip: the amount per day and the total in the scheme's currency, with the partial-day fraction and the meal deductions the scheme's own rule applies. Free and unlimited."
+  },
+  {
+   "name": "trip_record",
+   "description": "Calculate a trip and save it under a name, with the traveller taken from the shared business profile. Returns the TRIP-YYYY-NNNN id. Free tier: 5 trips a calendar month."
+  },
+  {
+   "name": "trip_list",
+   "description": "List saved trips with the scheme, destination, dates and total on each, and a total per currency. Filter by scheme, destination, traveller, project and start date range. Free and unlimited."
+  },
+  {
+   "name": "trip_export",
+   "description": "Return the exact expense_add arguments for a saved trip, one payload per currency, ready to pass to the expense-tracker server. It writes nothing itself: see the note in the answer. Pro."
+  },
+  {
+   "name": "perdiem_report",
+   "description": "Total the saved trips per scheme and per calendar month, in each scheme's own currency, with the day count and the trips behind every figure. Pro."
+  }
+ ],
+ "asset-register": [
+  {
+   "name": "asset_add",
+   "description": "Add one fixed asset to the register and return its id with the rate, useful life and convention taken from the bundled tax table. Cost and residual are whole minor units. Free tier holds ten assets."
+  },
+  {
+   "name": "asset_list",
+   "description": "List the assets in the register with cost, method, rate and net book value at a date, filtered by scheme, category, project, currency or disposal state. Free and unlimited."
+  },
+  {
+   "name": "asset_schedule",
+   "description": "Build the depreciation schedule for a stored asset, or price one not yet in the register, per year or per month, to zero or residual, with the table convention applied and the periods summing exactly to the base. Free."
+  },
+  {
+   "name": "asset_journal",
+   "description": "Return the depreciation journal for one month: debit depreciation expense and credit accumulated depreciation, per asset and in total, plus an expense_add-ready payload per currency. It writes nothing itself. Pro."
+  },
+  {
+   "name": "asset_dispose",
+   "description": "Record the sale, scrapping or write-off of an asset on a date for a proceeds amount, and return the gain or loss against net book value at that date. Free."
+  },
+  {
+   "name": "asset_report",
+   "description": "Report net book value by category and currency at a date, the year's depreciation charge, and every disposal in the year with its gain or loss. Pro."
+  }
+ ],
+ "statement-of-account": [
+  {
+   "name": "statement_build",
+   "description": "Build one client's statement of account for a period: opening balance, invoices issued, payments received, credit notes, deposits applied and closing balance, in minor units and formatted."
+  },
+  {
+   "name": "statement_aging",
+   "description": "Break what is owed into 0-30, 31-60, 61-90 and over 90 days past the invoice due date as at a chosen date, for one client or for every client, per currency. Free and unlimited."
+  },
+  {
+   "name": "statement_text",
+   "description": "Turn one client's statement into a plain-text ledger with every movement in date order, the opening and closing balances and a sign-off, ready to paste into an email."
+  },
+  {
+   "name": "statement_pdf",
+   "description": "Call this tool to write one client's A4 statement of account and return the file path. Titled STATEMENT OF ACCOUNT, every movement in date order, closing with the balance outstanding. Pro."
+  },
+  {
+   "name": "dunning_text",
+   "description": "Write a payment chaser for one client at level 1 friendly, 2 firm or 3 final demand, listing every overdue invoice with its age and total, plus your bank details when the profile has them. Level 3 is Pro."
+  },
+  {
+   "name": "statements_report",
+   "description": "Show what is outstanding across every client, totalled per currency and aged, with the oldest overdue invoice and the clients carrying it. Pro."
+  },
+  {
+   "name": "license_status",
+   "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+  }
+ ],
+ "cash-book": [
+  {
+   "name": "ledger_build",
+   "description": "Derive the double-entry ledger for one period in one currency from the invoice, credit note, deposit, expense, bank and asset stores. Every line names its source server, source id and date. Nothing is written back."
+  },
+  {
+   "name": "trial_balance",
+   "description": "Total the debits and the credits for a period and prove they are equal to the minor unit. When they are not, name the entries whose own legs do not add up and the source document behind each. Free and unlimited."
+  },
+  {
+   "name": "ledger_lines",
+   "description": "List the ledger lines for a period, filtered by account, by source server or source document id, and by date. Each line carries its debit and its credit in minor units and the bank row that evidences it."
+  },
+  {
+   "name": "month_close",
+   "description": "List what a month leaves unposted or inconsistent: invoices with no VAT rate, bank debits with no expense, deposits applied to unknown invoices. Then close it with a trial balance snapshot. Pro."
+  },
+  {
+   "name": "ledger_export_csv",
+   "description": "Return the period's ledger lines as RFC 4180 CSV, one row per leg with its date, entry, account, debit, credit, currency, source server, source id and description. No file is written. Pro."
+  },
+  {
+   "name": "ledger_report",
+   "description": "Report every account for a period with its debits, its credits, its movement and its closing balance, plus the purchase commitments held as a memo and the exceptions the period carries. Pro."
+  },
+  {
+   "name": "license_status",
+   "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+  }
+ ],
+ "amortization": [
+  {
+   "name": "loan_create",
+   "description": "Record a loan or a lease from its terms and return its id, its level payment and its effective annual rate. Principal, fees and balloon are whole minor units; the rate is nominal annual basis points."
+  },
+  {
+   "name": "loan_schedule",
+   "description": "Build the schedule for one loan: opening balance, payment, interest, principal and closing balance for every period, with the total interest. The closing balance reaches the balloon, or zero, exactly. Free."
+  },
+  {
+   "name": "loan_repay_early",
+   "description": "Work out what settling or overpaying costs as of a period: the outstanding balance, the penalty if one is given, the recalculated remaining schedule and the interest saved, stated gross and net of the penalty. Pro."
+  },
+  {
+   "name": "loan_journal",
+   "description": "Return the double entry for one payment period or one month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Pro."
+  },
+  {
+   "name": "loan_list",
+   "description": "List the loans and leases in the register with their terms, the level payment, the effective annual rate and the balance outstanding at a date. Free and unlimited."
+  },
+  {
+   "name": "loans_report",
+   "description": "Report the debt: what is outstanding per currency, when each next payment falls due, and the interest charged in a calendar year, per loan and in total. Pro."
+  },
+  {
+   "name": "license_status",
+   "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+  }
+ ],
+ "petty-cash": [
+  {
+   "name": "float_open",
+   "description": "Open a petty cash float on the imprest system and return its id. The imprest is the cash the tin is topped back up to at every replenishment, in whole minor units. Free tier: one float."
+  },
+  {
+   "name": "voucher_add",
+   "description": "Record one voucher paid out of the tin and return its VOU-YYYY-NNNN number. More than the float holds is refused, and so is a byte-identical duplicate. Free tier: 20 vouchers a calendar month."
+  },
+  {
+   "name": "voucher_delete",
+   "description": "Delete a voucher that was entered wrongly, by its VOU number. A voucher already covered by a reconciliation is refused: the cash it took out was counted, so removing it would make a past count wrong. Free."
+  },
+  {
+   "name": "reconcile",
+   "description": "Count the cash and reconcile: the expected balance, the difference to the minor unit, and every voucher since the last count, which this marks reconciled. Records the count. Free and unlimited."
+  },
+  {
+   "name": "replenish_request",
+   "description": "Work out what puts the float back to its imprest: the amount, the vouchers it reimburses, the totals per category as an expense_add-ready payload, and the double entry. Writes nothing. Pro."
+  },
+  {
+   "name": "topup_record",
+   "description": "Record cash put into the tin: the amount in whole minor units, the date and where it came from. It reimburses every voucher up to that date, which is what a replenishment cheque does. Free."
+  },
+  {
+   "name": "float_report",
+   "description": "Report every float: the balance against its imprest, what is unreconciled, the last count, and the history of what the counts found over or short, per float and in total. Pro."
+  },
+  {
+   "name": "license_status",
+   "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+  }
+ ],
+ "work-order": [
+  {
+   "name": "work_order_create",
+   "description": "Raise a job order and return its WO-YYYY-NNNN number: the client, the site address, the date it was asked for, what the job is and how urgent. Free tier: 5 open orders."
+  },
+  {
+   "name": "work_order_add_line",
+   "description": "Add one line to a work order: parts with a quantity and a unit cost in minor units and an optional markup percent, or labour with hours and an hourly rate. Free."
+  },
+  {
+   "name": "work_order_status",
+   "description": "Move a work order one step: draft to scheduled to in_progress to done to invoiced, stamping the date and a note. A skipped or backwards step is refused by name. Free."
+  },
+  {
+   "name": "work_order_get",
+   "description": "Show one work order in full: the client and the site, every parts and labour line with its billed unit, the hours, the materials, the net and VAT, and the status history. Free."
+  },
+  {
+   "name": "work_order_list",
+   "description": "List work orders with their status, hours and value. Filter by status, by client, and by a requested-date range. Free."
+  },
+  {
+   "name": "work_order_delete",
+   "description": "Delete a work order raised by mistake. Only a draft with no lines can go: once there is a line or a status past draft, the job has a history and is corrected, not erased. Free on every tier."
+  },
+  {
+   "name": "completion_report_text",
+   "description": "Turn a work order into a plain-text completion report: what was done, the labour hours, the materials, the totals and a sign-off block, ready to paste into an email. Free on every tier."
+  },
+  {
+   "name": "completion_report_pdf",
+   "description": "Call this tool to write the A4 completion report of one work order and return the file path: the lines, the hours, the materials, the totals and the sign-off block. Pro."
+  },
+  {
+   "name": "work_order_invoice_payload",
+   "description": "Build an invoice_create-ready payload from the lines, with VAT at the shared profile rate. Writes nothing and marks nothing: raise the invoice in the invoice server, then set this order invoiced. Pro."
+  },
+  {
+   "name": "work_orders_report",
+   "description": "Report the whole board: how many work orders sit at each status, the hours logged this month, and the value not yet invoiced per currency, with the oldest open jobs named. Pro."
+  },
+  {
+   "name": "license_status",
+   "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+  }
+ ],
+ "catalogue": [
+  {
+   "name": "sku_set",
+   "description": "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and a price in minor units for one currency, tier and valid-from date. Free tier: 25 SKUs."
+  },
+  {
+   "name": "sku_get",
+   "description": "Show the price of one SKU as of a date, in one currency and tier: the row picked is the latest valid_from at or before that date, and the answer names the row and any later one already booked. Free."
+  },
+  {
+   "name": "sku_list",
+   "description": "List catalogue lines with the price in force today, filtered by code prefix, by currency and by tier. A SKU with no price in that currency and tier is listed and said to have none. Free."
+  },
+  {
+   "name": "sku_delete",
+   "description": "Delete a catalogue line raised by mistake. Only one that no rate card points at and that has never priced a resolved line can go; the refusal names what depends on it. Free on every tier."
+  },
+  {
+   "name": "rate_set",
+   "description": "Set the hourly rate on a labour rate card: a role, a currency, an hourly rate in minor units and the day it comes into force. An update replaces the row for that currency and date. Free."
+  },
+  {
+   "name": "rate_get",
+   "description": "Show the hourly rate for a role as of a date and currency: the row picked is the latest valid_from at or before that date, and the answer names it. With no role given, lists every card. Free."
+  },
+  {
+   "name": "lines_resolve",
+   "description": "Turn a list of sku or role lines into invoice_create-ready and quote_create-ready items priced from the catalogue as of each line's date. An unknown code is refused by name and never priced. Free."
+  },
+  {
+   "name": "price_list_text",
+   "description": "Print the price list as plain text: every SKU with the price in force on a date, per currency and tier, with the valid-from date and any later price already booked, then the labour rates. Free."
+  },
+  {
+   "name": "price_list_pdf",
+   "description": "Call this tool to write the A4 price list for one currency and tier and return the file path: every SKU with its unit, its price in force and the day that price started. Pro."
+  },
+  {
+   "name": "catalogue_report",
+   "description": "Report the catalogue: how many SKUs there are, how many price rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Pro."
+  },
+  {
+   "name": "license_status",
+   "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+  }
+ ],
+ "change-order": [
+  {
+   "name": "change_order_create",
+   "description": "Raise a change order against a quote or work order and return its CO-YYYY-NNNN number: the reference, the client, a title, the date, and the original contract value in minor units. Free tier: 5 open."
+  },
+  {
+   "name": "change_order_add_line",
+   "description": "Add one line to a draft change order: added or removed with a quantity and a unit price in minor units, or changed with the old and the new quantity and price, each with a reason and a date. Free."
+  },
+  {
+   "name": "change_order_status",
+   "description": "Move a change order: draft to sent, sent to approved or rejected, draft or sent to void, stamping the date and a note. Approved, rejected and void are final, and a draft cannot be approved unsent. Free."
+  },
+  {
+   "name": "change_order_get",
+   "description": "Show one change order in full: every added, removed and changed line with its reason and delta, the VAT, the delta gross, the status history and the running value of the reference. Free."
+  },
+  {
+   "name": "change_order_list",
+   "description": "List change orders with their status and delta. Filter by reference, by status, by client, and by a date range. Free."
+  },
+  {
+   "name": "change_order_delete",
+   "description": "Delete a change order raised by mistake. Only a draft with no lines can go: once there is a line or it has been sent, it has a history and is voided, not erased. Free on every tier."
+  },
+  {
+   "name": "contract_value",
+   "description": "The running value of one quote or work order: the original, the approved deltas and the current value, with pending draft and sent deltas shown separately and never added in. Free on every tier."
+  },
+  {
+   "name": "change_order_document",
+   "description": "Render one change order as a plain-text document for the client to approve: every line with its reason, the delta net and gross, the contract value before and after, and an approval block. Pro."
+  },
+  {
+   "name": "change_order_invoice_payload",
+   "description": "Build the approved delta as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing and creates nothing. Pro."
+  },
+  {
+   "name": "license_status",
+   "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+  }
+ ],
+ "delivery-schedule": [
+  {
+   "name": "delivery_schedule_create",
+   "description": "Open a delivery schedule against a quote, work order or change order and return its DS-YYYY-NNNN number: the reference, its own date, the client, a title and the currency. Free tier: 3 open."
+  },
+  {
+   "name": "deliverable_add",
+   "description": "Add one deliverable to a schedule: what it is, the day it is due, and its value in whole minor units when it is separately priced. It starts as planned. Free on every tier."
+  },
+  {
+   "name": "deliverable_status",
+   "description": "Record a dated move on one deliverable: planned to in progress, to delivered, and delivered to accepted with the acceptance note. Accepting something never delivered is refused. Free."
+  },
+  {
+   "name": "deliverable_delete",
+   "description": "Delete a deliverable added by mistake. Only one still planned with nothing recorded against it can go: once it has been started or handed over it has a history. Free on every tier."
+  },
+  {
+   "name": "delivery_schedule_get",
+   "description": "Show one schedule in full as at a date: every deliverable with its due date, status, delivered and accepted dates, acceptance note and value, plus what is late as at that date. Free."
+  },
+  {
+   "name": "delivery_schedule_list",
+   "description": "List delivery schedules with their counts as at a date: what is late, what is still owed and what has been accepted. Filter by client, by reference and by whether the job is complete. Free."
+  },
+  {
+   "name": "delivery_schedule_delete",
+   "description": "Delete a delivery schedule opened by mistake. Only one with no deliverables can go: once it carries one, it carries a record of what was owed. Free on every tier."
+  },
+  {
+   "name": "late_report",
+   "description": "What has slipped as at a date you name: every deliverable still owed whose due date has passed, worst first, with the value at risk per currency and what was delivered late for the record. Free."
+  },
+  {
+   "name": "delivery_schedule_document",
+   "description": "Render one schedule as a plain-text document for the client: every deliverable with its due date, status, delivered and accepted dates and value, the counts as at a date, and a sign-off block. Pro."
+  },
+  {
+   "name": "milestone_payload",
+   "description": "Build the delivered-and-accepted deliverables as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing. Pro."
+  },
+  {
+   "name": "license_status",
+   "description": "Show whether this server runs in free or Pro mode and where to upgrade."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro license key (format MCPL1.xxx.yyy). Verified offline and saved locally."
+  }
+ ],
+ "packing-list": [
+  {
+   "name": "packing_list_create",
+   "description": "Open a packing list against an order and return its PL-YYYY-NNNN number: the order reference, the consignee, where it ships to and the date. Free tier: 3 open at once; shipping or cancelling frees a slot."
+  },
+  {
+   "name": "packing_expect",
+   "description": "Add an ordered line to a packing list so the shortfall is real: a SKU, a description and a quantity. Nothing is read from the quotes, work order or invoice store; what the order says is stated here."
+  },
+  {
+   "name": "carton_add",
+   "description": "Add a carton to a packing list and return its C01-style id: a label, the empty weight in WHOLE GRAMS, and optionally length, width and height in WHOLE CENTIMETRES. Dimensions are what make a chargeable weight possible."
+  },
+  {
+   "name": "pack_item",
+   "description": "Put a quantity of one item into a named carton: a description, how many, and the per-unit weight in WHOLE GRAMS. Leave unit_grams out when it was not weighed and the carton gross comes back as a lower bound."
+  },
+  {
+   "name": "unpack_item",
+   "description": "Remove one packed line from a packing list by its L01-style id and return the carton it came out of. The line is deleted, not zeroed, so the slip does not print an item nobody packed."
+  },
+  {
+   "name": "packing_list_show",
+   "description": "The whole packing list: its cartons with contents and derived weights, the ordered lines, the shortfall, whether it is ready to ship and why not, and its status history. Nothing here is stored; it is computed."
+  },
+  {
+   "name": "packing_list_list",
+   "description": "Packing lists newest first, with cartons, units, gross weight and how many ordered lines are still short. Filter by status, by order reference or by consignee. Returns at most 500 rows."
+  },
+  {
+   "name": "carton_report",
+   "description": "Per carton and for the shipment: tare, net, gross, volume, volumetric weight and the chargeable weight, the greater of gross and volumetric. A carton with no dimensions makes the chargeable total null, never a guess."
+  },
+  {
+   "name": "packing_shortfall",
+   "description": "Ordered against packed, line by line: what is still short, what was over-packed, and what was packed that is not on the order at all. A packed line with no ordered line is reported, never dropped."
+  },
+  {
+   "name": "packing_list_status",
+   "description": "Move a packing list draft to packed to shipped, or cancel it. Shipping records the carrier, the tracking number and the date, and freezes the list. A shipped list cannot be reopened or edited."
+  },
+  {
+   "name": "packing_slip",
+   "description": "The packing slip as plain text on every tier: cartons, contents, weights and a signature line, and no prices anywhere. Pro also writes it to out_path as a .txt file. Refuses a URL and refuses to overwrite unless told to."
+  },
+  {
+   "name": "packing_list_delete",
+   "description": "Delete a packing list for good, with its cartons and packed lines. A shipped list is refused: it is the record of what left the building. Cancel a list you no longer want instead of deleting a real shipment."
+  },
+  {
+   "name": "license_status",
+   "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+  }
+ ],
+ "checklist": [
+  {
+   "name": "checklist_create",
+   "description": "Create a reusable checklist and return its CL-NNNN id: a name, a category and an optional description. Add the steps with checklist_item_add. Free tier: 3 checklists, and unlimited runs of them."
+  },
+  {
+   "name": "checklist_item_add",
+   "description": "Add one step to a checklist and return its I01-style id: the text, an optional section heading, and whether it is required. A required step that is unanswered or failed blocks sign-off; an optional one does not."
+  },
+  {
+   "name": "checklist_item_remove",
+   "description": "Remove one step from a checklist by its I01-style id and bump the checklist version. Runs already under way keep the step they started with, so nothing anybody already ticked is rewritten."
+  },
+  {
+   "name": "checklist_show",
+   "description": "One checklist with its steps in order, grouped by section, plus how many are required and how many runs have been started from it. Pass as_text for a blank printable copy with a box against each step."
+  },
+  {
+   "name": "checklist_list",
+   "description": "Every checklist with its category, version, step count and how many runs came from it. Filter by category or by a word in the name. Returns at most 500 rows, newest change first."
+  },
+  {
+   "name": "checklist_delete",
+   "description": "Delete a checklist and its steps for good. Runs already started from it are untouched and stay readable: a run carries its own copy of the steps, so deleting the checklist does not erase what anybody signed."
+  },
+  {
+   "name": "run_start",
+   "description": "Start a dated run of a checklist and return its RUN-YYYY-NNNN id. The steps are COPIED into the run, so editing the checklist afterwards never changes a run already under way. Runs are free and never capped."
+  },
+  {
+   "name": "run_check",
+   "description": "Mark one step pass, fail or na, with who did it and when. na means the step did not apply; it counts as answered and never as passed. A step can be answered again while the run is open, and the last answer stands."
+  },
+  {
+   "name": "run_show",
+   "description": "The whole run: every step with its answer, who answered it and when, grouped by section, plus the pass, fail and outstanding counts, the failures in full, and whether it can be signed off and why not."
+  },
+  {
+   "name": "run_list",
+   "description": "Runs newest first, with their checklist, progress and sign-off state. Filter by checklist, by status, by reference or to open runs only. Returns at most 500 rows."
+  },
+  {
+   "name": "run_sign_off",
+   "description": "Sign off a completed run with a name and a date, which freezes it. Refused while a required step is unanswered or failed, unless force is true, and either way the exceptions stay on the record and print on the report."
+  },
+  {
+   "name": "run_status",
+   "description": "Move a run back to open so a step can be answered again, or abandon it when the job did not happen. A signed-off run is refused: a signature is the point at which a run stops moving."
+  },
+  {
+   "name": "run_report",
+   "description": "The run as plain text on every tier: every step with its mark, who answered it, the notes, the counts and a signature block or the recorded signature. Pro also writes it to out_path as a .txt file."
+  },
+  {
+   "name": "run_delete",
+   "description": "Delete a run for good, with every answer on it. A signed-off run is refused: it is the record of what somebody put their name to. Abandon a run you no longer want instead of deleting a signed one."
+  },
+  {
+   "name": "license_status",
+   "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+  }
+ ]
 }

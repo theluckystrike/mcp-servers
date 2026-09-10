@@ -308,7 +308,7 @@ test("the estate lists this server everywhere a new server has to be registered"
     ["scripts/build-mcpb.sh", /^\s*\[delivery-schedule\]="/m, "DISPLAY_NAME"],
     ["scripts/build-mcpb.sh", /^\s*\[delivery-schedule\]='\[/m, "KEYWORDS"],
     ["scripts/sync-mirrors.sh", /^ALL_SERVERS="[^"]*\bdelivery-schedule\b/m, "ALL_SERVERS"],
-    ["scripts/sync-mirrors.sh", /^\s*delivery-schedule\)\s*echo/m, "topics_for"],
+    ["scripts/mirror-seo.py", /^\s*"delivery-schedule":/m, "mirror-seo CAPABILITY"],
     ["scripts/build-pages.mjs", /const ids = \[[^\]]*"delivery-schedule"/, "page ids"],
     ["scripts/gen-spec.mjs", /"delivery-schedule"/, "SPEC generator"],
     ["servers/office-suite/src/index.ts", /id: "delivery-schedule"/, "office-suite CHILDREN"],

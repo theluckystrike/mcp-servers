@@ -169,7 +169,7 @@ export function registerImageUpload(server: { registerTool: Function }): void {
 
   server.registerTool("image_delete_upload", {
     title: "Delete a stored image",
-    description: "Delete one image stored for your token, uploaded or generated.",
+    description: "Delete one image stored for your token, uploaded or generated: name is the name it is stored under. image_files lists them. A name nothing is stored under is refused and nothing is deleted.",
     inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {
     try {

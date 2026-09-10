@@ -311,7 +311,7 @@ server.registerTool("loan_repay_early", {
 
 server.registerTool("loan_journal", {
   title: "Journal a loan payment",
-  description: "Return the double entry for one payment period or one month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Pro.",
+  description: "Return the double entry for one payment period or month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Give period or month, not both. Pro.",
   inputSchema: {
     loan: loanArg,
     period: z.number().int().min(1).max(MAX_PERIODS).optional().describe("The payment period to journal. Give this or month"),
@@ -401,7 +401,7 @@ server.registerTool("loan_journal", {
 
 server.registerTool("loan_list", {
   title: "List the loan register",
-  description: "List the register with terms, level payment, effective annual rate and, at a date, periods paid, balance outstanding, interest to date and the next payment, totalled per currency. Free and unlimited.",
+  description: "List the register with terms, level payment, effective annual rate and, at as_of, periods paid, balance outstanding, interest to date and the next payment, totalled per currency. Free; loans_report is the Pro roll-up.",
   inputSchema: {
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Only agreements in this currency"),
     kind: z.enum(["loan", "lease"]).optional().describe("Only loans, or only leases"),
@@ -484,7 +484,7 @@ server.registerTool("loan_delete", {
 
 server.registerTool("loans_report", {
   title: "Report what is owed and what it costs",
-  description: "The debt at a date: per loan what is outstanding, whether it is settled, the next payment, and the interest and principal charged in a year, then totals per currency. It is the contractual balance. Pro.",
+  description: "The debt at as_of: per loan what is outstanding, whether it is settled, the next payment, and the interest and principal charged in a year, then totals per currency. Contractual balance, not cash paid. Pro.",
   inputSchema: {
     as_of: str("as_of", 10).optional().describe("Value the debt at this date, YYYY-MM-DD. Default today"),
     year: str("year", 4).optional().describe("The calendar year to total the interest for, YYYY. Default the year of as_of"),

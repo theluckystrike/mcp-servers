@@ -948,7 +948,7 @@ function patchClausesIndex(src) {
 
   // clause_export and both assembly outputs become one-hour download links.
   src = must(src,
-    "    const file = expandPath(a.path);\n    mkdirSync(dirname(file), { recursive: true });\n" +
+    "    const file = expandPath(a.path);\n    ensureDirBounded(dirname(file));\n" +
     "    if (a.overwrite !== true) {\n" +
     "      try { closeSync(openSync(file, \"wx\")); } catch (e) {\n" +
     "        if ((e as NodeJS.ErrnoException).code !== \"EEXIST\") throw e;\n" +
@@ -2012,7 +2012,7 @@ function collect(a: { paths?: string[]; dir?: string; patterns?: string[]; exclu
     '  // Every guard below is decided from the central directory, before one byte is inflated.',
     "zip zip_extract entry cap");
   src = must(src,
-    '    mkdirSync(dirname(p.target), { recursive: true });\n' +
+    '    ensureDirBounded(dirname(p.target));\n' +
     '    writeFileSync(p.target, data);\n' +
     '    written++;\n' +
     '    done.push(`  ${humanBytes(data.length).padStart(9)}  ${p.target}`);',

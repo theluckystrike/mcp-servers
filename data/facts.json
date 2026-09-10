@@ -1,709 +1,729 @@
 {
-  "research": {
-    "source": "file:///Users/mike/Desktop/platform-analysis-2026/index.html",
-    "decision": "Section 0 allocates 20% of build capacity to MCP servers on the TypeScript SDK; MCP is an option on 2027 with zero native billing, so billing had to be built.",
-    "numbers": [
-      [
-        "MCP new-entrant capture ratio",
-        "1.17",
-        "vs Chrome 0.033; 35.5x like-for-like"
-      ],
-      [
-        "MCP servers for 'price tracker'",
-        "0",
-        "vs 683 Chrome listings"
-      ],
-      [
-        "MCP servers for 'time tracker'",
-        "0",
-        "vs 897 Chrome listings"
-      ],
-      [
-        "MCP servers for 'spreadsheet'",
-        "4",
-        "vs 564 Chrome listings"
-      ],
-      [
-        "MCP servers for 'invoice'",
-        "60",
-        "vs 414 Chrome listings"
-      ],
-      [
-        "Servers first published Aug 2026",
-        "9,355",
-        "36% of all-time supply in one month"
-      ],
-      [
-        "Sampled servers at zero use",
-        "66.3%",
-        "of 4,811; distribution is the whole game"
-      ],
-      [
-        "@modelcontextprotocol/sdk major bumps 12mo",
-        "0",
-        "1.30.0, 29 releases; fastmcp had 2"
-      ],
-      [
-        "Stripe Payment Links conversion (estate)",
-        "0 of 74",
-        "backend Checkout Sessions 21.3%"
-      ]
-    ]
-  },
-  "pricing": {
-    "single_usd": 19,
-    "bundle_usd": 39,
-    "model": "one-time, lifetime, offline Ed25519 key"
-  },
-  "billing": {
-    "storefront": "https://mcp.zovo.one",
-    "workers_dev": "https://mcp-billing.lipmichal.workers.dev",
-    "health": "https://mcp.zovo.one/health",
-    "stripe_mode": "live",
-    "webhook": "we_1UBDXNJKCamubEm1bVV0lqnX",
-    "kv": "LICENSES 75f8bf4872a0433285d11575cece8641",
-    "products": [
-      [
-        "time-tracker",
-        "prod_VBaes22x8ep6dy",
-        "price_1UBDU5JKCamubEm1wPMZI8Zf",
-        19
-      ],
-      [
-        "price-tracker",
-        "prod_VBaf0G0s9cXwUA",
-        "price_1UBDU6JKCamubEm1ufsEKwSS",
-        19
-      ],
-      [
-        "spreadsheet",
-        "prod_VBafhH6MyyTg6X",
-        "price_1UBDU7JKCamubEm1LZTfrsMd",
-        19
-      ],
-      [
-        "invoice",
-        "prod_VBaftxRo2s4HVY",
-        "price_1UBDU8JKCamubEm1Ybcp5IUs",
-        19
-      ],
-      [
-        "expense-tracker",
-        "prod_VBc2BK0DpkMjY1",
-        "price_1UBEoOJKCamubEm1ryEKWxIg",
-        19
-      ],
-      [
-        "currency",
-        "prod_VBnXWCZw5JkXo3",
-        "price_1UBPwqJKCamubEm1dTtEN9PY",
-        19
-      ],
-      [
-        "docx",
-        "prod_VBnXUOfncmuGRj",
-        "price_1UBPwtJKCamubEm1PPpj1fPE",
-        19
-      ],
-      [
-        "timezone",
-        "prod_VBnY3j4hjqbaAw",
-        "price_1UBPwwJKCamubEm13LZyFsDw",
-        19
-      ],
-      [
-        "resume",
-        "prod_VBqFiD4h8BQQId",
-        "price_1UBSYxJKCamubEm1uaUEIGBI",
-        19
-      ],
-      [
-        "recurring",
-        "prod_VBqQaTPyG0MWjP",
-        "price_1UBSjCJKCamubEm1gOmfW2db",
-        19
-      ],
-      [
-        "clauses",
-        "prod_VBqQnbiMOGUcFJ",
-        "price_1UBSjDJKCamubEm1sA7KYyQs",
-        19
-      ],
-      [
-        "calendar",
-        "prod_VC1Tw0VGBIZZwa",
-        "price_1UBdQYJKCamubEm1CaxadXyX",
-        19
-      ],
-      [
-        "pdf",
-        "prod_VC1TQ28Nov4BDs",
-        "price_1UBdQaJKCamubEm16HxaiJWK",
-        19
-      ],
-      [
-        "image",
-        "prod_VC9jq3PiYVOeVh",
-        "price_1UBlQEJKCamubEm1u1SKu720",
-        19
-      ],
-      [
-        "bank-statement",
-        "prod_VC9jfclRZ7sNFK",
-        "price_1UBlQGJKCamubEm11cATuyBV",
-        19
-      ],
-      [
-        "kanban",
-        "prod_VC9lLKtbyJ68tW",
-        "price_1UBlSJJKCamubEm1U7CP7tmo",
-        19
-      ],
-      [
-        "bundle",
-        "prod_VBafU5C9o9d0f3",
-        "price_1UBDU9JKCamubEm1dWgRjtoW",
-        39
-      ]
-    ]
-  },
-  "gates": [
-    [
-      "Build clean (tsc strict)",
-      "npm run build",
-      "per server"
-    ],
-    [
-      "Protocol smoke over stdio, free + pro",
-      "npm test",
-      "per server"
-    ],
-    [
-      "License package",
-      "npm test -w packages/mcp-license",
-      "6 cases"
-    ],
-    [
-      "Fresh-machine start < 5 s (.mcpb bundle, or node dist/index.js from a clone)",
-      "docs/AUDIT.md section 1",
-      "per release; the npx form of this gate cannot run until the first npm publish"
-    ],
-    [
-      "Abuse probes (bad input, 1 MB strings, traversal, 0-byte files)",
-      "docs/AUDIT.md section 2",
-      "before publish"
-    ],
-    [
-      "Concurrency: two writers, valid JSON",
-      "docs/AUDIT.md section 3",
-      "before publish"
-    ],
-    [
-      "Checkout 303 to Stripe + /verify round trip",
-      "curl mcp.zovo.one",
-      "after every worker deploy"
-    ],
-    [
-      "Independent model review (Codex)",
-      "docs/CODEX_REVIEW.md",
-      "per release"
-    ]
+ "research": {
+  "source": "file:///Users/mike/Desktop/platform-analysis-2026/index.html",
+  "decision": "Section 0 allocates 20% of build capacity to MCP servers on the TypeScript SDK; MCP is an option on 2027 with zero native billing, so billing had to be built.",
+  "numbers": [
+   [
+    "MCP new-entrant capture ratio",
+    "1.17",
+    "vs Chrome 0.033; 35.5x like-for-like"
+   ],
+   [
+    "MCP servers for 'price tracker'",
+    "0",
+    "vs 683 Chrome listings"
+   ],
+   [
+    "MCP servers for 'time tracker'",
+    "0",
+    "vs 897 Chrome listings"
+   ],
+   [
+    "MCP servers for 'spreadsheet'",
+    "4",
+    "vs 564 Chrome listings"
+   ],
+   [
+    "MCP servers for 'invoice'",
+    "60",
+    "vs 414 Chrome listings"
+   ],
+   [
+    "Servers first published Aug 2026",
+    "9,355",
+    "36% of all-time supply in one month"
+   ],
+   [
+    "Sampled servers at zero use",
+    "66.3%",
+    "of 4,811; distribution is the whole game"
+   ],
+   [
+    "@modelcontextprotocol/sdk major bumps 12mo",
+    "0",
+    "1.30.0, 29 releases; fastmcp had 2"
+   ],
+   [
+    "Stripe Payment Links conversion (estate)",
+    "0 of 74",
+    "backend Checkout Sessions 21.3%"
+   ]
+  ]
+ },
+ "pricing": {
+  "single_usd": 19,
+  "bundle_usd": 39,
+  "model": "one-time, lifetime, offline Ed25519 key"
+ },
+ "billing": {
+  "storefront": "https://mcp.zovo.one",
+  "workers_dev": "https://mcp-billing.lipmichal.workers.dev",
+  "health": "https://mcp.zovo.one/health",
+  "stripe_mode": "live",
+  "webhook": "we_1UBDXNJKCamubEm1bVV0lqnX",
+  "kv": "LICENSES 75f8bf4872a0433285d11575cece8641",
+  "products": [
+   [
+    "time-tracker",
+    "prod_VBaes22x8ep6dy",
+    "price_1UBDU5JKCamubEm1wPMZI8Zf",
+    19
+   ],
+   [
+    "price-tracker",
+    "prod_VBaf0G0s9cXwUA",
+    "price_1UBDU6JKCamubEm1ufsEKwSS",
+    19
+   ],
+   [
+    "spreadsheet",
+    "prod_VBafhH6MyyTg6X",
+    "price_1UBDU7JKCamubEm1LZTfrsMd",
+    19
+   ],
+   [
+    "invoice",
+    "prod_VBaftxRo2s4HVY",
+    "price_1UBDU8JKCamubEm1Ybcp5IUs",
+    19
+   ],
+   [
+    "expense-tracker",
+    "prod_VBc2BK0DpkMjY1",
+    "price_1UBEoOJKCamubEm1ryEKWxIg",
+    19
+   ],
+   [
+    "currency",
+    "prod_VBnXWCZw5JkXo3",
+    "price_1UBPwqJKCamubEm1dTtEN9PY",
+    19
+   ],
+   [
+    "docx",
+    "prod_VBnXUOfncmuGRj",
+    "price_1UBPwtJKCamubEm1PPpj1fPE",
+    19
+   ],
+   [
+    "timezone",
+    "prod_VBnY3j4hjqbaAw",
+    "price_1UBPwwJKCamubEm13LZyFsDw",
+    19
+   ],
+   [
+    "resume",
+    "prod_VBqFiD4h8BQQId",
+    "price_1UBSYxJKCamubEm1uaUEIGBI",
+    19
+   ],
+   [
+    "recurring",
+    "prod_VBqQaTPyG0MWjP",
+    "price_1UBSjCJKCamubEm1gOmfW2db",
+    19
+   ],
+   [
+    "clauses",
+    "prod_VBqQnbiMOGUcFJ",
+    "price_1UBSjDJKCamubEm1sA7KYyQs",
+    19
+   ],
+   [
+    "calendar",
+    "prod_VC1Tw0VGBIZZwa",
+    "price_1UBdQYJKCamubEm1CaxadXyX",
+    19
+   ],
+   [
+    "pdf",
+    "prod_VC1TQ28Nov4BDs",
+    "price_1UBdQaJKCamubEm16HxaiJWK",
+    19
+   ],
+   [
+    "image",
+    "prod_VC9jq3PiYVOeVh",
+    "price_1UBlQEJKCamubEm1u1SKu720",
+    19
+   ],
+   [
+    "bank-statement",
+    "prod_VC9jfclRZ7sNFK",
+    "price_1UBlQGJKCamubEm11cATuyBV",
+    19
+   ],
+   [
+    "kanban",
+    "prod_VC9lLKtbyJ68tW",
+    "price_1UBlSJJKCamubEm1U7CP7tmo",
+    19
+   ],
+   [
+    "bundle",
+    "prod_VBafU5C9o9d0f3",
+    "price_1UBDU9JKCamubEm1dWgRjtoW",
+    39
+   ]
+  ]
+ },
+ "gates": [
+  [
+   "Build clean (tsc strict)",
+   "npm run build",
+   "per server"
   ],
-  "servers": {
-    "time-tracker": {
-      "title": "MCP Time Tracker",
-      "tagline": "Track billable time without leaving the chat.",
-      "does": "Starts and stops timers, records manual entries, sets hourly rates per project, and turns the log into reports grouped by project, day, task or tag, CSV exports and invoice-ready line items. Money is computed from seconds and integer cents in one rounding step so totals always add up.",
-      "for": "Freelancers, consultants and developers who already work inside Claude Code, Cursor or Claude Desktop and bill by the hour.",
-      "example": "\"Start a timer for Acme, task: API refactor\" ... \"Stop it and show me this week's hours per project with amounts.\"",
-      "free": "Unlimited timers and entries; reports, lists and CSV cover the last 7 days; 2 projects with rates. Currency per entry (EUR, USD, GBP, PLN).",
-      "pro": "Full history, invoice_summary, group by tag, unlimited rated projects.",
-      "storage": "~/.local/share/mcp-servers/time-tracker/"
-    },
-    "price-tracker": {
-      "title": "MCP Price Tracker",
-      "tagline": "Check and watch product prices on ordinary shop pages.",
-      "does": "Fetches a product page and extracts the price from JSON-LD, microdata, Open Graph tags, common price markup or a currency-aware text fallback, normalising 1.299,00 EUR and 1,299.00 USD alike. Stores watches with a price history, refreshes them, computes min, max and change, and flags target hits and drops of 5% or more. Manual entry covers pages that block bots.",
-      "for": "Anyone who asks their assistant what something costs now, whether it dropped, or to keep an eye on it.",
-      "example": "\"What does this laptop cost right now?\" ... \"Watch it and tell me when it drops under 900.\"",
-      "free": "Unlimited price checks with extraction confidence; 3 watches with 30 observations each; alerts_pending free; redirects off product pages are refused.",
-      "pro": "Unlimited watches, full history, refresh all.",
-      "storage": "~/.local/share/mcp-servers/price-tracker/watches.json"
-    },
-    "spreadsheet": {
-      "title": "MCP Spreadsheet",
-      "tagline": "Read, query, edit and convert xlsx and csv files safely.",
-      "does": "Opens xlsx, xlsm, xlsb, ods, csv and tsv files, guesses the header row on messy exports, sniffs delimiters, and answers questions with a safe expression language (no eval): filters, sorts, per-column stats, find, computed columns such as [Qty] * [Unit Price], and conversion between formats. It never overwrites the source unless told to.",
-      "for": "Anyone who says: open this file, tell me what is in it, filter it, add a column, save it.",
-      "example": "\"Open orders.xlsx and show open orders over 5 units sorted by amount\" ... \"Add a Total column and save as CSV.\"",
-      "free": "Read, query (filters, group by, sum/avg/min/max), stats and find on files up to 5,000 rows; writes up to 500 rows, never a partial file above that.",
-      "pro": "No limits.",
-      "storage": "Works on the user's own files; nothing else stored."
-    },
-    "invoice": {
-      "title": "MCP Invoice",
-      "tagline": "Numbered invoices with tax lines, rendered to a professional PDF.",
-      "does": "Stores the issuer profile and clients, allocates invoice numbers that never repeat (INV-YYYY-NNNN), computes per-line rounding, multiple VAT rates and discounts in integer minor units, renders an A4 PDF with pdfkit (multi-page tables, totals, payment details), tracks paid status and reports overdue invoices. Pairs with the time tracker: hours become an invoice in the same chat.",
-      "for": "Freelancers and small businesses that want to say: make an invoice for Acme, 12 hours at 90 EUR, due in 14 days.",
-      "example": "\"Invoice Acme for 12 h at 90 EUR with 23% VAT, due in 14 days, and give me the PDF.\"",
-      "free": "3 invoices per calendar month; overdue report free; PDF carries a small footer line.",
-      "pro": "Unlimited invoices, no branding, logo, custom prefix.",
-      "storage": "~/.local/share/mcp-servers/invoice/"
-    },
-    "expense-tracker": {
-      "title": "MCP Expense Tracker",
-      "tagline": "Receipts, mileage and expenses that turn into invoice lines.",
-      "does": "Logs expenses with per-expense currency, VAT split and receipt attachment (path + sha256), auto-categorises merchants by rules, records mileage with country rate tables, summarises by category, project, month or merchant per currency, exports CSV or xlsx, and emits invoice-ready line items (net + tax rate, so nothing is taxed twice) for rebilling a project with optional markup.",
-      "for": "Freelancers and small businesses who already track time and invoice from chat and want the receipts side closed in the same place.",
-      "example": "\"I paid 61.50 EUR at Media Markt for a USB hub, Acme project, billable\" ... \"Give me the invoice lines to rebill Acme this month with 10% markup.\"",
-      "free": "Unlimited logging; list and summary cover the last 30 days; 3 projects; 5 rules; CSV export up to 200 rows, never partial.",
-      "pro": "Full history, unlimited projects and rules, xlsx export, unlimited rebill items with markup.",
-      "storage": "~/.local/share/mcp-servers/expense-tracker/"
-    },
-    "office-suite": {
-      "title": "MCP Office Suite (bundle server)",
-      "tagline": "One install that exposes every tool of all 31 servers, 292 of them.",
-      "does": "A stdio proxy that starts every sibling server in this repository as a child process and exposes all their tools, resources and prompts under one server, with a single license_status and license_activate. Measured on the running v0.21.0 bundle on 2026-09-07: tools/list returns 292 distinct tools and office://tools_map names 31 children. Measured reason for existing: the most-used server in this category is an aggregator, so one install beats thirty-one.",
-      "for": "Anyone who wants the whole back-office workflow in one config line instead of thirty-one.",
-      "example": "\"Start a timer for Acme\" ... \"Invoice Acme for this week's hours plus the USB hub receipt.\"",
-      "free": "Each child's free tier.",
-      "pro": "The $39 bundle key unlocks every child.",
-      "storage": "Each child's own data folder."
-    },
-    "currency": {
-      "title": "MCP Currency Converter",
-      "tagline": "ECB reference rates: convert, history, and fx_rates for rebilling.",
-      "does": "Fetches and caches the European Central Bank daily and historical reference rates (keyless, free), converts any amount between currencies via EUR cross rates with the rate date stated, returns history tables with min, max and average, and emits the exact fx_rates object the expense tracker needs to rebill a project in one currency, so a model can chain the two without the user supplying rates.",
-      "for": "Freelancers billing across currencies and anyone who wants an honest, dated exchange rate without an API key.",
-      "example": "\"What is 4,500 EUR in USD today?\" ... \"Rebill Nova in USD using today's rates.\"",
-      "free": "Latest rates, convert, convert_many, fx_rates_for, history up to 90 days (a wider window is shortened and answered, not refused).",
-      "pro": "Full history back to 1999, any-date rates, unlimited history windows.",
-      "storage": "~/.local/share/mcp-servers/currency/ (rate cache)"
-    },
-    "docx": {
-      "title": "MCP Docx",
-      "tagline": "Real Word documents from chat: proposals, contracts, quotes.",
-      "does": "Creates .docx files from structured sections or markdown (headings, lists, tables, bold and italic), reads text back from existing Word files, fills {{placeholders}} in templates while keeping formatting, and generates structured proposals and freelance service agreements from the business profile, with an HTML export for printing.",
-      "for": "Freelancers who send proposals and contracts and want them as editable Word files, not PDFs.",
-      "example": "\"Write a proposal for Acme: redesign, 3 phases, 4,500 EUR, valid two weeks.\" ... \"Fill my NDA template with these names.\"",
-      "free": "Create, convert and read documents without limit; 3 proposals or contracts per calendar month; templates up to 10 placeholders.",
-      "pro": "Unlimited proposals and contracts, letterhead with logo and colours, unlimited template fills.",
-      "storage": "~/.local/share/mcp-servers/docx/"
-    },
-    "timezone": {
-      "title": "MCP Timezone Planner",
-      "tagline": "Find meeting slots inside everyone's working hours.",
-      "does": "Converts times between IANA zones with correct DST via Intl, resolves cities and countries to zones, finds ranked meeting slots where every participant is inside working hours with a fairness score, computes daily overlap windows, DST change dates and business days, stores contacts with their zones, and writes valid .ics calendar files.",
-      "for": "Freelancers and small teams with clients in other time zones.",
-      "example": "\"When can I meet Sara in Sydney and Tom in Austin next week, one hour?\" ... \"Send me an ics for Tuesday 15:00 Warsaw.\"",
-      "free": "Conversions, overlap, DST, business days, slots for up to 3 participants over 5 days, 5 contacts, 3 ics per month.",
-      "pro": "Unlimited participants, days, contacts and ics files, recurring slot search.",
-      "storage": "~/.local/share/mcp-servers/timezone/ (contacts)"
-    },
-    "resume": {
-      "title": "MCP Resume and Cover Letter",
-      "tagline": "Resumes and cover letters as Word files from one profile, never invented.",
-      "does": "Stores a structured profile (experience, education, skills, links), writes resumes in three styles trimmed to a page budget with keyword highlighting, drafts one-page cover letters whose every claim traces to the profile with bracketed prompts for anything unknown, runs a gap analysis against a job description with suggested bullet rewrites from existing facts, reads an existing resume .docx back into the profile shape, and exports markdown and printable HTML. Built on the docx engine.",
-      "for": "Anyone applying for jobs who wants editable Word output and honest tailoring, not hallucinated achievements.",
-      "example": "\"Tailor my resume to this job post and write a direct cover letter for the hiring manager.\" ... \"What am I missing for this role?\"",
-      "free": "Profile, modern-style resume, markdown and HTML exports, 3 cover letters per calendar month, tailoring on job posts up to 2,000 characters.",
-      "pro": "All styles, unlimited cover letters and tailoring, profile variants, letterhead colours.",
-      "storage": "~/.local/share/mcp-servers/resume/"
-    },
-    "recurring": {
-      "title": "MCP Recurring Invoices",
-      "tagline": "Scheduled invoices, generated into your invoice book with PDFs.",
-      "does": "Keeps billing schedules per client (weekly, monthly, quarterly, yearly or every N days) with month-end and leap-day rules, shows what falls due, generates exactly one invoice per schedule per period into the invoice server store with PDF rendering, never duplicates on a rerun, keeps a history, and forecasts revenue per month per currency.",
-      "for": "Freelancers and small studios with retainers and subscriptions.",
-      "example": "\"Bill Acme 12 hours a month at 90 EUR starting September.\" ... \"Generate what is due and show me the next 30 days.\"",
-      "free": "3 active schedules, 30-day upcoming view, generate due invoices.",
-      "pro": "Unlimited schedules, 12-month forecast, audit history, end-of-month and anchor-day rules.",
-      "storage": "~/.local/share/mcp-servers/recurring/ plus the invoice store"
-    },
-    "clauses": {
-      "title": "MCP Clause Library",
-      "tagline": "Reusable contract clauses, searched and assembled into Word.",
-      "does": "Ships 25 generic freelance clauses (scope, payment terms, IP, confidentiality, termination, liability, governing law and more), each marked as a template with variables, lets you add and search your own, extracts variables, fills them, and assembles a contract or proposal into .docx or markdown through the docx engine with a not-legal-advice line.",
-      "for": "Freelancers who reuse the same terms across contracts and proposals.",
-      "example": "\"Assemble a contract for Acme with payment terms, late fees, IP assignment and Polish governing law, 4,500 EUR.\" ... \"What variables are still open?\"",
-      "free": "Starter set plus 10 own clauses, search with the jurisdiction filter, assembly up to 8 clauses, markdown export.",
-      "pro": "Unlimited clauses, tag filters, JSON import and export, unlimited assembly, clause versions.",
-      "storage": "~/.local/share/mcp-servers/clauses/"
-    },
-    "calendar": {
-      "title": "MCP Calendar",
-      "tagline": "Read .ics calendars: events, free and busy, conflicts, exports.",
-      "does": "Parses .ics files and feeds from Google, Apple and Outlook (recurrence rules, exceptions, time zones, all-day events), lists events in a window in your home zone, computes busy blocks and free windows, flags overlapping events, exports selections as valid .ics, and turns a meeting into the arguments for a billable time entry.",
-      "for": "Freelancers who live in a calendar and bill by the hour.",
-      "example": "\"What is on my calendar next week and where am I free for a two-hour block?\" ... \"Log yesterday's Nova call as billable time.\"",
-      "free": "2 calendars, windows up to 31 days, exports up to 50 events, conflict checks answered over the first 31 days of any window.",
-      "pro": "Unlimited calendars, any window, unlimited exports, URL refresh.",
-      "storage": "~/.local/share/mcp-servers/calendar/"
-    },
-    "pdf": {
-      "title": "MCP PDF Tools",
-      "tagline": "Merge, split, stamp and read PDFs, pure JavaScript.",
-      "does": "Merges and splits PDFs, extracts and reorders pages, rotates, stamps PAID or DRAFT or any text at a chosen position, watermarks the business name and VAT id from the shared profile, extracts text best effort, and reports page counts and metadata. Never edits inputs in place and refuses encrypted files with a clear message.",
-      "for": "Anyone who sends invoices, proposals and contracts as PDFs and needs to mark, combine or split them without a desktop app.",
-      "example": "\"Merge these three invoices into one PDF and stamp it PAID.\" ... \"Split the contract into signature pages.\"",
-      "free": "Info, count, text, merge up to 5 files, edits on files up to 30 pages, PAID and DRAFT stamps.",
-      "pro": "Unlimited files and pages, custom stamp text and colours, business watermark, page reorder.",
-      "storage": "Works on your own files; a recent list only."
-    },
-    "image": {
-      "title": "MCP Image Tools",
-      "tagline": "Resize, convert, compress and watermark images, pure JavaScript.",
-      "does": "Reads PNG, JPEG, BMP, GIF and TIFF, resizes with inside, cover or exact fit, converts formats, compresses with a byte report, crops, makes thumbnails in batches, strips metadata by re-encoding, watermarks with the shared business name or custom text, and reports dominant colours. Never edits inputs in place; refuses decompression bombs.",
-      "for": "Anyone preparing logos, screenshots and product photos for documents, proposals and the web without a desktop app.",
-      "example": "\"Make a 1200 px wide web version of this photo under 300 KB.\" ... \"Thumbnail these five and watermark them.\"",
-      "free": "Info, resize, convert, compress, crop, strip metadata on images up to 4 MP; batches of 5.",
-      "pro": "Unlimited size and batches, custom watermark text, dominant colours.",
-      "storage": "Works on your own files; a recent list only."
-    },
-    "bank-statement": {
-      "title": "MCP Bank Statement",
-      "tagline": "Bank CSV exports categorised, summarised and reconciled with expenses.",
-      "does": "Imports CSV exports from Revolut, Wise, mBank, PKO, ING, N26 and generic banks with locale-aware amounts and duplicate detection, categorises by your rules, summarises by category, month, account or counterparty per currency, reconciles bank lines against the expense tracker, detects subscriptions and recurring charges, and exports.",
-      "for": "Freelancers who reconcile bank statements against receipts at month end.",
-      "example": "\"Import my September Revolut export and categorise it.\" ... \"Which expenses have no bank line and which subscriptions am I paying?\"",
-      "free": "2 accounts, 12 months of transactions, 5 rules, summary and search, reconciliation 31 days at a time, recurring detection over the last 3 months (5 charges).",
-      "pro": "Unlimited accounts, history and rules, reconciliation over any range, every recurring charge, export.",
-      "storage": "~/.local/share/mcp-servers/bank-statement/"
-    },
-    "kanban": {
-      "title": "MCP Kanban",
-      "tagline": "A task board per project that hands off to the time tracker.",
-      "does": "Keeps tasks per project in columns (backlog, todo, doing, review, done) with due dates, estimates, priorities and tags; shows the board, overdue items and a weekly review of planned versus done and estimates versus actuals; starts a time-tracker timer from a task and records the link. Local dates in your home time zone.",
-      "for": "Freelancers who plan the week in a board and bill the hours from the same tasks.",
-      "example": "\"Add: Nova API design, due Friday, 3 hours.\" ... \"What is overdue, and start the timer on the API task.\"",
-      "free": "3 projects, 200 open tasks, default columns.",
-      "pro": "Unlimited projects and tasks, custom columns, weekly review history, estimates versus actuals.",
-      "storage": "~/.local/share/mcp-servers/kanban/"
-    },
-    "quotes": {
-      "title": "MCP Quotes",
-      "tagline": "Priced, VAT-correct quotes from chat, and the yes turns into an invoice.",
-      "does": "Creates numbered quotes (Q-YYYY-NNNN) with line items in integer minor units, VAT per line or from the shared business profile, discounts, multi-currency and a validity date computed in your own timezone; renders a pasteable plain-text quote and an A4 PDF in the invoice layout; accepting a quote writes a real invoice into the mcp-invoice store with the agreed numbers copied, never recomputed; reports pipeline value and win rate.",
-      "for": "Freelancers and small studios who quote before they invoice.",
-      "example": "\"Quote Acme for 12 hours at 90 EUR plus a 300 EUR setup, 23% VAT, good for 14 days.\" ... \"Acme said yes, turn quote Q-2026-0001 into an invoice.\"",
-      "free": "5 open quotes at a time, unlimited pasteable text quotes, accept, decline, revise, VAT, discounts and multi-currency, pipeline and win-rate report for the current calendar year to date.",
-      "pro": "Unlimited open quotes, A4 PDF with your logo and no footer credit, pipeline and win-rate report over any date range.",
-      "storage": "~/.local/share/mcp-servers/quotes/"
-    },
-    "barcode": {
-      "title": "MCP Barcode",
-      "tagline": "QR codes and barcodes drawn on your machine, with no upload and no network call.",
-      "does": "Turns text or a URL into a QR code, and draws WiFi join codes, vCard contact codes, EPC069-12 SEPA payment codes a euro banking app can scan, and Code 128, EAN-13, EAN-8 and UPC-A linear barcodes; the IBAN is validated with ISO 7064 mod 97 and an EAN or UPC check digit is computed when it is missing and refused when it is wrong, never silently redrawn; output is SVG returned inline or written to a path, or PNG at any size up to 4000 px, with every code recorded in a local register.",
-      "for": "Anyone who needs a code on a label, an invoice, a flyer or a badge without opening a QR-generator website.",
-      "example": "\"Make a QR code for this URL as an SVG.\" ... \"Draw an EAN-13 for 590123412345.\" ... \"Payment QR for invoice INV-2026-0007.\"",
-      "free": "20 codes per calendar month, SVG output at any size, every symbology, EPC SEPA payment codes, WiFi and vCard codes, and the local register.",
-      "pro": "Unlimited codes, PNG output from 32 to 4000 px, and barcode_batch for up to 500 codes in one call.",
-      "storage": "~/.local/share/mcp-servers/barcode/"
-    },
-    "zip": {
-      "title": "MCP Zip",
-      "tagline": "Make a zip, look inside one, and unpack one, entirely on your machine.",
-      "does": "Packs a file list or a whole directory tree with glob patterns into a .zip, lists an archive's entries with sizes, compressed sizes and ratios, reads one text entry inline without unpacking anything, adds files to an archive that already exists, and bundles a month of invoices, quotes and exports from the sibling servers into one file; the central directory is read here, so absolute paths, .., symlinks, encrypted entries, duplicate names and compression bombs are all refused from the headers before anything is inflated, and every entry written out is proved against its CRC-32.",
-      "for": "Anyone who has to send a folder, or was sent an archive and wants to know what is in it before opening it.",
-      "example": "\"Zip every CSV in this folder except node_modules.\" ... \"What is inside this archive somebody sent me?\" ... \"Read the README out of it without unpacking.\" ... \"Bundle August's invoices and quotes for my accountant.\"",
-      "free": "20 archives per calendar month, up to 25 MB and 200 entries each, and unlimited reading: zip_list, zip_extract and zip_extract_text are never metered, along with every bomb, traversal and symlink guard.",
-      "pro": "Unlimited archives, no size cap and no entry cap.",
-      "storage": "~/.local/share/mcp-servers/zip/"
-    },
-    "billing-docs": {
-      "title": "MCP Billing Docs",
-      "tagline": "Credit notes and purchase orders, on the same engine as your invoices.",
-      "does": "Writes credit notes against the invoices the mcp-invoice server already holds, in full, by gross amount or by named lines and quantities, with every money field stored negative in minor units so a period's documents sum to the net of what was billed; a credit note by amount splits that gross across the VAT rates the invoice actually used, and no credit note can ever give back more than the invoice's remaining creditable amount. It also raises purchase orders to suppliers with line items, VAT, currency and an expected delivery date, receives them in full or in part, and reports credited and on-order totals per currency alongside deliveries past their date.",
-      "for": "Anyone who invoices clients and has to reverse one, and anyone who orders from suppliers and needs the order on paper.",
-      "example": "\"Credit invoice INV-2026-0001 in full, the client returned the work.\" ... \"Credit 177 euro of that invoice, they were overcharged.\" ... \"Raise a purchase order to Nordic Print for 500 brochures at 1.20 each, due the 20th.\" ... \"Which orders are past their delivery date?\"",
-      "free": "5 documents per calendar month, credit notes and purchase orders together, counted by issue date, with full, partial and per-line credit notes, VAT, multiple currencies and receiving orders all included, and both text exports never metered.",
-      "pro": "Unlimited documents, both A4 PDFs with your logo and no footer credit, and the billing_docs_report of credited, on-order and overdue deliveries.",
-      "storage": "~/.local/share/mcp-servers/billing-docs/"
-    },
-    "deposits": {
-      "title": "MCP Deposits",
-      "tagline": "Security and retainer deposits, held per client, on the same engine as your invoices.",
-      "does": "Records a security or retainer deposit when the money arrives, in minor units and in the currency it arrived in, and then answers for it: what is held per client and per currency, since when, and what has already gone. Applying a deposit to an invoice writes the payment onto that invoice under both locks, adding to what was already paid rather than replacing it, so a bank transfer that landed first is not erased; it can never pay out more than the deposit still holds or more than the invoice still owes, and a deposit is never converted between currencies. Refunds hand money back without touching the invoice, the stored status is derived from the movements every time one is written, and the statement is one client in one currency, as text or as an A4 PDF that matches the invoice and credit note next to it.",
-      "for": "Anyone who takes money before the work: landlords and letting agents on security deposits, agencies and consultants on retainers, trades on up-front payments.",
-      "example": "\"Record a 500 euro security deposit from Nordic Print, received today.\" ... \"Apply 300 of that deposit to INV-2026-0001.\" ... \"How much are we holding for Nordic Print?\" ... \"Refund the rest, paid back by bank transfer.\"",
-      "free": "5 deposits recorded per calendar month, counted by received date, with applying to invoices, refunds, lists, balances and the text statement all unlimited on every tier: a cap that trapped a client's deposit would be a limit on their money rather than on yours.",
-      "pro": "Unlimited deposits recorded, the A4 deposit statement PDF with your logo and no footer credit, and the deposits_report of held per currency, oldest held and what has sat unapplied.",
-      "storage": "~/.local/share/mcp-servers/deposits/"
-    },
-    "per-diem": {
-      "title": "MCP Per Diem",
-      "tagline": "Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them.",
-      "does": "Prices one business trip against a bundled rate table and shows the arithmetic: the allowance per day, the partial-day fraction the scheme's own ladder produced, every deduction for a meal somebody else paid for, and the total in the scheme's own currency. Three schemes ship with it: the Polish delegation regulation at home and per country, the HMRC benchmark scale rates for travel inside the UK, and the US GSA CONUS standard M&IE with the lodging cap. Start and end are instants rather than wall clocks, so a trip across a clock change is 23 or 25 hours and the Polish 24-hour period and the US calendar day give different, correct answers to the same trip. Trips can be saved under a name with a TRIP-YYYY-NNNN id, listed with a total per currency, reported per scheme and per month, and handed to the expense tracker as ready-made expense_add arguments. The tables are files inside the package, not a feed, so the same trip priced twice gives the same answer, and every rate carries its authority, instrument, source URL and effective date.",
-      "for": "Anyone who claims or pays a statutory travel allowance: Polish contractors and employers on delegacja and diety, UK sole traders and companies on the HMRC benchmark rates, and US federal or corporate travellers on the GSA standard.",
-      "example": "\"What is the per diem for 58 hours in Krakow, leaving Tuesday 8am, with breakfast on the first day and two nights in a hotel?\" ... \"Same trip under the HMRC rates.\" ... \"Save it as the Krakow audit trip.\" ... \"Total my per diems this quarter per scheme.\"",
-      "free": "Rate lookups and calculations are unlimited on every tier: the tables are public regulation, and metering the reading of a regulation would be charging for the tax authority's work. 5 trips saved per calendar month, counted by start date, and unlimited trip lists.",
-      "pro": "Unlimited trips saved, the expense-tracker export payloads (one per currency, ready for expense_add), and the report of totals per scheme and per calendar month.",
-      "storage": "~/.local/share/mcp-servers/per-diem/"
-    },
-    "asset-register": {
-      "title": "MCP Asset Register",
-      "tagline": "A fixed asset register that depreciates on the rates the tax authorities actually publish, with the schedule, the journal and the gain on sale.",
-      "does": "Keeps a register of what you bought, what it cost, when it went into use and which category it falls in, and returns the rate, the useful life, the convention, the full schedule year by year or month by month, one month's journal entry, and the gain or loss when you sell. Three tables ship with it: the Polish annual rates from the annex to the CIT and PIT acts keyed to the KST classification (33 rows, with declining-balance eligibility and the art. 16k switch to straight line), the UK capital allowance pools at 18 and 6 percent with the annual investment allowance, and the US MACRS GDS half-year percentages for 3, 5 and 7 year property exactly as IRS Pub 946 Table A-1 publishes them. The convention is the table's, not the caller's: Poland charges from the month AFTER the asset enters the register, so an asset in service on 15 March starts on 1 April and year one is nine twelfths, while the MACRS percentages already carry the half-year convention and a UK writing down allowance is not prorated by month at all. The same asset gives three different year-one figures under the three schemes and all three are right. Money is integer minor units end to end and the schedule is allocated by cumulative rounding, so the periods sum to cost less residual to the minor unit and the months sum to their year. The tables are files inside the package, not a feed, and every rate carries its authority, instrument, source URL and effective date.",
-      "for": "Anyone who has to put a depreciation figure on a return or in a ledger: Polish companies and sole traders on the KST annex rates, UK businesses claiming capital allowances on the main and special rate pools, and US filers on MACRS GDS.",
-      "example": "\"Add the Dell workstation, 8,499 zloty, in service 15 March 2026, computers.\" ... \"Show me the schedule month by month.\" ... \"Depreciate the same truck under declining balance.\" ... \"What is April's journal entry?\" ... \"We sold the van for 12,000 in September, what is the gain?\"",
-      "free": "Depreciation schedules are unlimited on every tier: the rates are public information a tax authority published, and metering the reading of a regulation would be charging for the government's work. The cap is on the SIZE of the register, 10 assets, plus unlimited asset_list and asset_dispose.",
-      "pro": "Unlimited assets in the register, the monthly journal entry with its ready-made expense_add payload (one per currency, no vat_rate because depreciation is a book charge), and the report of net book value by category and currency with the year's charge and every disposal in it.",
-      "storage": "~/.local/share/mcp-servers/asset-register/"
-    },
-    "statement-of-account": {
-      "title": "MCP Statement of Account",
-      "tagline": "The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted.",
-      "does": "Reads the three books this suite already keeps -- the invoice ledger, the credit notes and the deposits -- and turns them into a statement of account for a period: the balance carried at the start, every invoice issued, every payment received, every credit note given, the deposits applied broken out of the receipts rather than added again, and the closing balance. The movements are in date order and the opening balance plus their sum equals the closing balance, so the document is auditable line by line. statement_aging splits what is still open into 0-30, 31-60, 61-90 and over 90 days past the due date AS AT the date asked for, which means an invoice issued after that date is not on the books, a payment made after it has not happened and a credit note issued after it has not been given. Due today is not overdue: day zero sits in a not-yet-due line reported beside the four buckets. paid_minor on the invoice is the authority and the payment rows are only the attribution, so a deposit application that raised paid_minor without writing a payment row still appears. It writes into no book it reports on: bytes and mtimes of the sibling stores are unchanged across all six tools, and the only file it owns is a register of the statements it built. Nothing here invents a late fee, an interest rate or a legal cost, and a dunning letter escalates in tone and never in figures.",
-      "for": "Anyone who invoices and then has to chase: freelancers and small firms who need to send a client a statement rather than forwarding five invoices, and anyone who has to answer what was owed on a given date rather than what is owed now.",
-      "example": "\"Send Acme a statement for June.\" ... \"Who owes me money, aged.\" ... \"What was outstanding on 10 June?\" ... \"Draft a firm chaser for Acme.\" ... \"Show me every client, per currency, with the oldest overdue invoice.\"",
-      "free": "statement_aging is free and unlimited on every tier, for one client or for everyone: who owes me money is the question this server exists for, and a free tier that hides it is a demo. The meter is on the document that goes to a client, five distinct statements a calendar month, counted by client, period and currency, so rebuilding one already in the register is free forever. Plain-text statements and dunning at the friendly and firm levels are free.",
-      "pro": "Unlimited statements, the A4 PDF on the same page layout as your invoices with your logo and no footer credit, the level 3 final demand, and statements_report: every client at once, totalled per currency, ranked by what is overdue rather than by what is large, with the oldest overdue invoice in the whole book named.",
-      "storage": "~/.local/share/mcp-servers/statement-of-account/"
-    },
-    "cash-book": {
-      "title": "MCP Cash Book",
-      "tagline": "One double-entry ledger derived from the books you already keep, proved to the minor unit.",
-      "does": "Reads six sibling stores read-only -- the invoice ledger, the credit note and purchase order store, the deposit store, the expense ledger, the bank import and the fixed asset register -- and derives a debit and a credit for every movement in a period. Revenue and VAT output come off the invoices, receivables and the payments that clear them, deposits held as the liability they are, expenses by category with the VAT taken OUT of the gross rather than added on top, fixed assets entering service, and depreciation charged by month. The bank import posts nothing: a bank line and a payment record are one transaction seen twice, so cash is posted from the documents and each bank row is matched to a posted cash movement of the same amount, the same direction and a date within three days, as evidence written onto the line as bank_ref. What is left over is the output that matters, because a bank debit with no expense behind it is a payment nobody entered. Nothing is ever balanced with a plug: an entry whose own legs do not add up is posted exactly as the document states it and the difference is raised by name, with the entry, the source server and the source document behind every unit of it. Currencies are never added together, a purchase order is a memo that is never posted, a deposit applied to an invoice moves the liability rather than cash, and the ledger opens at nothing because an opening figure nobody can walk back to a document is the first invented number in a set of books. Every line carries the server, the document id and the ISO date it came from, and no sibling store changes bytes or mtime across any of the six tools.",
-      "for": "Anyone running this suite who has to answer whether the books add up, and anyone who has to hand an accountant a ledger rather than six exports: freelancers and small firms at month end, and bookkeepers who need every figure to name the document it came from.",
-      "example": "\"Build the ledger for June.\" ... \"Does June balance?\" ... \"Show me every line hitting receivables.\" ... \"Close June and tell me what is unposted.\" ... \"Export the June ledger as CSV.\"",
-      "free": "trial_balance and ledger_lines are free and unlimited on every tier: whether the books add up is the question this server exists for, and a free tier that hides the answer is a demo. The meter is on the PERIOD, three distinct periods a calendar month, keyed by from, to and currency, so rebuilding one already in the register is free forever on every tier.",
-      "pro": "Unlimited periods, month_close with its trial balance snapshot and its list of what the month leaves unposted or inconsistent, ledger_export_csv as RFC 4180 text with no file written, and ledger_report with the movement and closing balance per account plus the purchase commitments held as a memo.",
-      "storage": "~/.local/share/mcp-servers/cash-book/"
-    },
-    "amortization": {
-      "title": "MCP Amortization",
-      "tagline": "Loan and lease schedules from the terms of the agreement, to the minor unit.",
-      "does": "Takes the terms of a credit agreement -- principal in minor units, the nominal annual rate in basis points, how often interest compounds, how often a payment falls due, the term in periods, annuity or straight principal, any arrangement fee, any balloon and the drawdown date -- and derives the level payment, the effective annual rate beside the nominal one, and the schedule period by period: opening balance, payment, interest, principal, closing balance, every figure an integer minor unit and every closing balance reaching the balloon, or zero, exactly. Compounding and payment frequency are two different clocks: the rate for one payment period is the equivalent rate taken through the compounding clock, (1 + r/m)^(m/p) - 1, never the nominal rate divided by the number of payments. The payment never varies and the last period absorbs the rounding residual in the interest and principal SPLIT rather than in the payment, because the payment is what the borrower is contractually due to pay and the split is not. A level payment rounded once can clear the debt before the declared term ends, and the schedule stops where the debt does rather than reporting periods the borrower does not owe. Early settlement and partial overpayment are costed gross AND net of the penalty, and a penalty larger than the interest saved is reported as a COST rather than a smaller saving. The journal debits interest expense and loan liability and credits cash in the cash book's own account ids, and only the interest reaches the expense payload, because booking the whole payment as an expense overstates the cost of the business by the principal every period and still reconciles perfectly against the bank. Nothing is posted from here, no schedule is stored, currencies are never added together, and month arithmetic clamps so a loan drawn on the 31st pays on the 28th in February.",
-      "for": "Anyone who has to answer what a credit agreement actually costs before signing it, and anyone who has to book the payments afterwards: freelancers and small firms with equipment finance, a car lease or a working-capital loan, and the bookkeepers who have to split each payment between interest and principal.",
-      "example": "\"Record the van finance: 40,000 EUR, 12 percent nominal compounded monthly, 12 monthly payments, drawn 15 January.\" ... \"Show me the schedule.\" ... \"What would settling at period 6 cost me?\" ... \"Give me the journal for March.\" ... \"What do I owe across all of them at 30 June?\"",
-      "free": "loan_schedule is free and unlimited on every tier: the payment and the interest are the question this server exists to answer, and a free tier that hides the answer is a demo. The meter is on the number of agreements held, three loans in the register, which is the unit of work.",
-      "pro": "Unlimited loans, loan_repay_early for settling or overpaying at any period costed gross and net of the penalty, loan_journal with its expense-tracker payload carrying the interest alone, and loans_report: what is owed per currency, when each next payment falls due, and the interest charged in a calendar year.",
-      "storage": "~/.local/share/mcp-servers/amortization/"
-    },
-    "work-order": {
-      "title": "MCP Work Order",
-      "tagline": "Job orders for trades and field work, priced the way the invoice will be.",
-      "does": "Raises a work order against a client the invoice server already knows -- the same client record, not a second spelling of the name -- with a site address, the date it was asked for, what the job is and how urgent. Lines are logged as the job goes: labour as hours at an hourly rate, parts as a quantity at a unit cost in minor units with an optional markup percent. THE MARKUP GOES ON THE UNIT COST, NEVER ON THE LINE TOTAL, because the invoice server rounds a unit price into minor units first and computes the line from that stored value, so the marked-up unit is the only basis an invoice can reproduce: seven parts at 1299 with 15 percent is 1494 a unit and 10,458 on the line, where marking up the line total is 10,457, and the unit suite asserts that gap is exactly 1 so a change of basis fails the build rather than quietly re-pricing every job on the board. The status moves one step at a time, draft to scheduled to in_progress to done to invoiced, each step stamped with its date and a note; a skipped step is refused naming the step that IS next, because every step carries its own date and a job that went straight to invoiced was never marked done, so no completion report was produced and nothing records the day the work finished. Backwards is refused too: a job that has to go back is a new work order. No total is stored -- value, hours, materials and VAT are derived from the lines on every call, because a stored total is the copy that gets believed after somebody edits a line. Hours are counted on the LINE date, not on the order date, so a February call worked in March logs its hours in March. work_order_invoice_payload builds the invoice_create items and then runs the invoice server's own computeTotals over those items, so there is no second implementation to disagree, it posts nothing and marks nothing, and an order already invoiced refuses a second payload by name. An unknown client name with no address is refused, because a bare name that matches no client record is a misspelling far more often than a new customer. A labour rate is never improvised: there is no default rate in the shared profile today, so rate_minor is refused by name rather than invented onto a report the customer signs.",
-      "for": "One-van trades and small field-service outfits: electricians, plumbers, heating engineers, appliance and equipment repair, groundworks, and anyone who takes a call, does the job, hands over a signed completion report and then has to raise the invoice without retyping a single figure.",
-      "example": "\"Raise a work order for Harbour Cafe, 12 Quay Street, urgent, the walk-in is not holding temperature.\" ... \"Three hours labour on the 8th at 85 an hour.\" ... \"Seven thermostats at 12.99 each, 15 percent markup.\" ... \"Mark it done on the 9th.\" ... \"Completion report, then the invoice payload.\"",
-      "free": "Five OPEN work orders, which is a one-van trade, and 200 lines each on every tier. The cap counts open jobs (draft, scheduled, in progress) rather than jobs ever raised, so finishing one frees its slot, and work_order_delete on a draft with no lines is free on every tier because a way back that only a Pro key can reach is not a way back. The text completion report is free: handing the customer what was done is the thing the job was for. A byte-identical work order is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade, and burns neither a slot nor a WO number.",
-      "pro": "Unlimited open work orders, the A4 completion report PDF with the sign-off block, work_order_invoice_payload with VAT at the shared profile rate and rounding_drift_minor asserted to zero, and work_orders_report: the whole board by status, hours logged this month, and unbilled value per currency.",
-      "storage": "~/.local/share/mcp-servers/work-order/"
-    },
-    "catalogue": {
-      "title": "MCP Catalogue",
-      "tagline": "One price list and one rate card, kept where the invoice and the quote can both read them.",
-      "does": "Holds a SKU as a code, a name, a unit, an optional VAT rate and price ROWS, each row a currency, a tier, a valid-from date and an amount in MINOR units; a role carries an hourly rate the same way. The price on a date is the latest valid_from at or before it, worked out on the call, so raising a price in July does not rewrite what June was quoted at, and sku_get names the row it picked, how many it considered and any later row already booked. THE STORE HOLDS MINOR UNITS BECAUSE THE TWO SERVERS THIS CATALOGUE FEEDS TAKE THE SAME PRICE IN DIFFERENT SCALES AND THE GAP IS EXACTLY 100x: invoice_create's item carries unit_price in MAJOR units (90 for 90 EUR) and quote_create's item carries unit_price_minor in MINOR units (9000 for 90.00 EUR), both are plain numbers, both are called the unit price, and neither tool can tell that the number it was handed was scaled for the other one, so 45000 passed as unit_price is a perfectly valid invoice line for EUR 45,000.00 that reconciles against itself. The unit suite measures the gap on the worked resolution: the correct payload nets 261,363 minor and the quote payload's field fed into the invoice engine nets 26,136,300, asserted as exactly 100x, and 1000x in a 3-decimal currency such as KWD. So lines_resolve builds BOTH payloads itself in one call with the scale printed against each, rather than returning the price and letting the caller pick the field, which would be wrong half the time and wrong by two orders of magnitude when it was. A date before every row has no price and that is a refusal naming the earliest row, because filling it with the earliest row reprices history: a job done in December 2024 would be billed at the January 2025 price and reconcile perfectly against a price list that did not exist yet. One row per currency, tier and valid-from date; setting that key again REPLACES the row and the response says what it was and what it became, because two rows on one key make the price that day a coin toss decided by array order. A price is never invented: no fallback, no profile default, no nearest match, and an unknown code or a code with no price in the currency and tier asked for is refused by name. No current price is stored, because a stored current price is the copy still being quoted a month after the rise. This server creates no invoice and no quote: lines_resolve returns arguments and says posted false.",
-      "for": "Anyone who quotes and invoices the same catalogue twice: agencies and studios with a day rate and a handful of retained products, trades with a parts list and a labour card, and any small business whose prices are currently a spreadsheet somebody retypes into every quote.",
-      "example": "\"Add WEB-AUDIT, a fixed price audit, 450 from the first of January.\" ... \"We are putting it up to 495 from July.\" ... \"What was it in March?\" ... \"Senior developer 85 an hour, junior 45.\" ... \"Three audits, twelve months hosting, seven and a half hours senior and three and a quarter junior, priced as of the 15th of March, ready for an invoice.\"",
-      "free": "25 SKUs, the one standard price tier, unlimited rate cards, and every text answer including lines_resolve and price_list_text. Withholding lines_resolve would withhold the one thing the sibling servers came here for, and a price list nobody can read is not a price list. sku_delete is free on every tier and the resolution register is what makes that safe: a code that has priced a line, or that a rate card points at, is refused by name with the times it was used and the last resolution id, because a code printed on a document somebody sent is a fact about that document. A byte-identical duplicate is refused BEFORE the free cap is consulted, and the adversarial suite asserts that refusal text does not contain \"free tier\": a duplicate is one product filed twice far more often than it is two products, and it burns neither a slot nor a place in the list.",
-      "pro": "An unlimited catalogue, price tiers beyond standard so trade and wholesale are a second column rather than a second catalogue, price_list_pdf as an A4 page, and catalogue_report: how many rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency, which are the rows that stop a resolution dead.",
-      "storage": "~/.local/share/mcp-servers/catalogue/"
-    },
-    "petty-cash": {
-      "title": "MCP Petty Cash",
-      "tagline": "A petty cash float on the imprest system, reconciled to the minor unit.",
-      "does": "Opens a tin with an imprest amount and a custodian, records one voucher for every receipt paid out of it -- amount in whole minor units, date, category, description, payee and receipt reference -- and counts the cash whenever you ask, returning the expected balance, the difference to the minor unit and every voucher that count covers, all marked reconciled. A count is a FACT, so it moves the book balance: the difference is carried forward as an over or short rather than re-reported at every later count, which is what makes a tin that is short by a little every month visible as a run rather than as one number. The replenishment is imprest minus balance and never the sum of the vouchers: the two differ by exactly what the counts found over or short, and reimbursing the voucher total instead restores the float short by that difference every cycle while every reconciliation still reports clean. The difference comes back as its own cash_over_short journal line rather than folded into an expense category where it would look like postage. Under the imprest system the petty_cash account does not move at a replenishment at all: the journal credits cash and debits the expenses, per category, in the cash book's own account ids, so a category spelled three ways is one account and not three. A voucher larger than the balance on its own date is refused, and so is a back-dated one that would make any LATER day negative. A reconciled voucher cannot be deleted, because the cash it took out was counted. No balance is stored: every balance is derived on the call from the imprest, the top-ups, the vouchers and what each count found.",
-      "for": "Anyone who holds cash for the small things and has to prove what happened to it: a one-tin office, a workshop, a site hut, a shop, a charity with a float, and the bookkeepers who have to turn a shoebox of receipts into a replenishment cheque and a journal that balances.",
-      "example": "\"Open a EUR 500 office float, Anna holds it.\" ... \"Stamps, 12.50, 2 March.\" ... \"Taxi 34.80 on the 5th, receipt 4471.\" ... \"I counted 297.95 in the tin on the 31st.\" ... \"What does the replenishment cheque have to be, and what is the journal?\"",
-      "free": "reconcile is free and unlimited on every tier: whether the cash in the tin matches the paperwork is the question this server exists to answer, and a free tier that withholds the answer is a demo. voucher_delete and topup_record are free for the same reason -- a voucher typed in twice would otherwise cost a slot with no way back but a key. The meter is on the volume of record keeping: one float, and twenty vouchers a calendar month, which is a real one-tin office.",
-      "pro": "Unlimited floats and vouchers, replenish_request with the amount that restores the imprest, the vouchers it reimburses, the per-category expense_add-ready payload and the balanced double entry, and float_report with the balance against the imprest, what is unreconciled, the last count and the history of every difference a count has found.",
-      "storage": "~/.local/share/mcp-servers/petty-cash/"
-    },
-    "change-order": {
-      "title": "MCP Change Order",
-      "tagline": "Change orders against a quote or a work order, with the running contract value derived from what the client approved.",
-      "does": "Raises a change order against a quote or a work order, kept the way a variation is kept on site: added, removed and changed lines, each with a quantity, a unit price in minor units, a reason and a date; a status that moves draft to sent, sent to approved or rejected, draft or sent to void, with every step dated and a step dated before the last one refused; and the running contract value as the original plus the deltas the client has APPROVED, with pending draft and sent deltas shown apart and never added in. The original contract value is stated ONCE per reference on the first change order and inherited by every later one, and a different figure is refused by name, because a contract with two original values has two running values and the customer sees whichever was typed last. No delta is stored: the delta, the VAT and the running value are derived from the lines on every call with the invoice server's own computeTotals, so there is no second implementation to disagree. A CHANGED LINE IS TWO ITEMS, NOT ONE, because one net item shows the customer nothing they can check: 3 x 450.00 becoming 5 x 420.00 is +750.00, and an item of quantity 1 at 750.00 reproduces from nothing on the change order the client signed, where a reversal of -3 x 450.00 and the revised 5 x 420.00 both reproduce on a calculator and sum to the same +750.00 because roundHalfUp is symmetric in sign. That symmetry is what lets a removal ride as a negative quantity through invoice_create, and it is what quote_create refuses, so the quote payload carries a ready flag instead of a promise. Once approved, the delta comes back as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units in one call, the scale printed against each, and the unit suite feeds the MINOR figure into the invoice engine as though it were MAJOR and asserts the net is exactly 100x, re-derived from each payload's own items: on the worked change order 11,701,200 against the correct 117,012. Lines are added only while a change order is a draft; a sent one that needs another line is voided and raised again, so the client's approval always refers to what they were sent. A draft cannot be approved directly, because approval is the client's answer to something they were sent. Nothing is invented: a reference with no change order on file has no running value and says so rather than starting from nothing but its own delta. It reads exactly one file it does not own, the shared business profile, read-only and best-effort, and writes into no store but its own.",
-      "for": "Agencies, studios and trades whose quoted jobs change after the quote: a second page added after the kickoff, hosting dropped, an audit widened, and then the argument three months later about what the contract is worth now and which of those changes the client actually agreed to.",
-      "example": "\"Raise a change order against Q-2026-0003 for Harbour Cafe, original value 20,000: a second landing page, drop the hosting, widen the audit to five sites.\" ... \"Add two landing pages at 450, remove twelve months of hosting at 39.99, and the audit was three at 450, now five at 420.\" ... \"Sent on the 12th.\" ... \"They approved it on the 15th, what is the contract worth now?\" ... \"Build the invoice payload for the approved delta.\"",
-      "free": "Five OPEN change orders, draft and sent, and 200 lines each on every tier. The cap counts the ones the client has not answered rather than the ones ever raised, so approving, rejecting or voiding one frees its slot, and change_order_delete on a draft with no lines is free on every tier, because a way back that only a Pro key can reach is not a way back. contract_value is free on every tier: the running value is the thing the change orders exist to answer, and withholding it would withhold the record. A byte-identical change order is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade, and burns neither a slot nor a CO number.",
-      "pro": "Unlimited open change orders, change_order_document as a plain-text document with every line, its reason, the contract value before and after and an approval block for the client to sign, and change_order_invoice_payload: the approved delta as invoice_create items in MAJOR units and quote_create items in MINOR units at once, with VAT at the shared profile rate and rounding_drift_minor asserted to zero.",
-      "storage": "~/.local/share/mcp-servers/change-order/"
-    },
-    "delivery-schedule": {
-      "title": "MCP Delivery Schedule",
-      "tagline": "Dated deliverables against a quote or a work order, and what is late as at any date you name.",
-      "does": "Opens a delivery schedule against a quote, a work order or a change order, and holds the dated deliverables on it: what is being handed over, the day it is due, its value in whole minor units when it is separately priced, and a status history that runs planned to in progress to delivered to accepted, each move carrying the day it actually happened and the client's acceptance note on the accepted one. LATE IS NOT A STATUS HERE, IT IS A READING: a stored late flag is a fact about the afternoon somebody last ran the report and goes on being reported long after the work lands, so nothing derived is stored and late, due today, not yet due, delivered on time and delivered late are all worked out on the call against the as_of the CALLER passes. The same deliverable due 2026-04-20 and delivered 2026-04-24 reads not yet due at 2026-04-19, late by two days at 2026-04-22 and delivered late by four days at 2026-05-01, from one unchanged store, and the unit suite asserts all three. A deliverable is late only once as_of is PAST its due date, so one due on as_of sits in due_today, which is the same rule the statement server ages an invoice by. Every comparison is between two YYYY-MM-DD strings and every day count is the difference of two UTC midnights, and a suite replays every call under four timezones fourteen hours apart and asserts the responses are byte-identical, so a laptop that travelled cannot move a client's deadline. Nothing may predate the reference document: its own date is stated once on the schedule, and a due date or a status move before it is refused, because nothing can be owed, or delivered, before the document that ordered it exists. Accepting something that was never delivered is refused by name, because acceptance is the client's answer to a handover and there would be no delivered date to bill from. A deliverable with no value is NOT worth zero: it is counted apart wherever a total is printed and excluded by name from the milestone payload, because a price this server invented would be printed on a document a customer pays from. Once milestones are signed off, milestone_payload returns them as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units at once, with the scale printed against each, and the unit suite feeds the MINOR figure into the invoice engine as though it were MAJOR and asserts the net is exactly 100x. It reads exactly one file it does not own, the shared business profile, read-only and best-effort, and writes into no store but its own.",
-      "for": "Agencies, studios, consultancies and trades who quote a job in phases and then have to say, months later and on a date somebody else chose, which deliverables slipped, by how many days, and which ones the client has actually signed off and can therefore be invoiced.",
-      "example": "\"Open a delivery schedule against WO-2026-0011 for Harbour Cafe, dated 1 April: wireframes due the 10th at 900, page copy due the 20th at 479.88, the built site due 1 May at 2100, handover training on the 8th.\" ... \"Wireframes went out on the 9th, signed off on the 12th.\" ... \"What was late as at 22 April?\" ... \"And as at 5 May?\" ... \"Build the invoice for everything they have accepted.\"",
-      "free": "Three OPEN delivery schedules, and 200 deliverables on each on every tier. The cap counts the jobs that still owe something rather than the jobs ever run, so accepting the last deliverable completes a schedule and frees its slot without deleting the record, and delivery_schedule_delete on an empty one is free on every tier, because a way back that only a Pro key can reach is not a way back. late_report is free on every tier: what is late is the question the server exists for, and withholding it would withhold the one answer the client is going to ask for. A second schedule against a reference that already has one is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade.",
-      "pro": "Unlimited open schedules, delivery_schedule_document as a plain-text document with every deliverable, its due date, its status, the delivered and accepted dates, the counts as at a date and a sign-off block for the client, and milestone_payload: the delivered-and-accepted deliverables as invoice_create items in MAJOR units and quote_create items in MINOR units at once, with VAT at the shared profile rate, rounding_drift_minor asserted to zero, and anything left out listed by name under excluded rather than billed as zero.",
-      "storage": "~/.local/share/mcp-servers/delivery-schedule/"
-    }
+  [
+   "Protocol smoke over stdio, free + pro",
+   "npm test",
+   "per server"
+  ],
+  [
+   "License package",
+   "npm test -w packages/mcp-license",
+   "6 cases"
+  ],
+  [
+   "Fresh-machine start < 5 s (.mcpb bundle, or node dist/index.js from a clone)",
+   "docs/AUDIT.md section 1",
+   "per release; the npx form of this gate cannot run until the first npm publish"
+  ],
+  [
+   "Abuse probes (bad input, 1 MB strings, traversal, 0-byte files)",
+   "docs/AUDIT.md section 2",
+   "before publish"
+  ],
+  [
+   "Concurrency: two writers, valid JSON",
+   "docs/AUDIT.md section 3",
+   "before publish"
+  ],
+  [
+   "Checkout 303 to Stripe + /verify round trip",
+   "curl mcp.zovo.one",
+   "after every worker deploy"
+  ],
+  [
+   "Independent model review (Codex)",
+   "docs/CODEX_REVIEW.md",
+   "per release"
+  ]
+ ],
+ "servers": {
+  "time-tracker": {
+   "title": "MCP Time Tracker",
+   "tagline": "Track billable time without leaving the chat.",
+   "does": "Starts and stops timers, records manual entries, sets hourly rates per project, and turns the log into reports grouped by project, day, task or tag, CSV exports and invoice-ready line items. Money is computed from seconds and integer cents in one rounding step so totals always add up.",
+   "for": "Freelancers, consultants and developers who already work inside Claude Code, Cursor or Claude Desktop and bill by the hour.",
+   "example": "\"Start a timer for Acme, task: API refactor\" ... \"Stop it and show me this week's hours per project with amounts.\"",
+   "free": "Unlimited timers and entries; reports, lists and CSV cover the last 7 days; 2 projects with rates. Currency per entry (EUR, USD, GBP, PLN).",
+   "pro": "Full history, invoice_summary, group by tag, unlimited rated projects.",
+   "storage": "~/.local/share/mcp-servers/time-tracker/"
   },
-  "version": "0.1.1",
-  "compare_none": {
-    "zip": {
-      "date": "2026-09-04",
-      "tokens": [
-        "zip",
-        "archive",
-        "compress",
-        "unzip",
-        "tar",
-        "gzip",
-        "7z",
-        "decompress",
-        "file compression",
-        "extract",
-        "zip file",
-        "zip archive",
-        "archiver",
-        "unpack",
-        "inflate",
-        "deflate",
-        "file archive",
-        "tarball"
-      ],
-      "note": "Searched the official MCP registry search API for each token; nothing found packs, lists or unpacks a .zip file (zip = postal-code servers; archive = Internet Archive wrappers; compress = image/LLM-prompt/scientific-data compressors). See docs/CONTENT_R12_RESULT.md for the per-token breakdown and the guide it produced.",
-      "guide": "zip-archives-safely-from-chat",
-      "ttl_days": 30
-    },
-    "billing-docs": {
-      "date": "2026-09-05",
-      "tokens": [
-        "credit-note",
-        "credit note",
-        "purchase-order",
-        "purchase order",
-        "po",
-        "debit note",
-        "refund",
-        "invoice reversal",
-        "procurement",
-        "supplier order",
-        "goods receipt",
-        "accounts payable"
-      ],
-      "note": "Searched the official MCP registry search API for each token; nothing found writes a credit note against an invoice or raises a purchase order (credit = credit-scoring and API-credit meters; purchase order = e-commerce order lookups; procurement = RFP text search). Per docs/INTEL_R9_RESULT.md the registry returns 0 results for the credit-note and purchase-order tokens. See docs/DIST_R13_RESULT.md.",
-      "guide": "credit-notes-and-purchase-orders-from-chat",
-      "ttl_days": 30
-    },
-    "deposits": {
-      "date": "2026-09-05",
-      "tokens": [
-        "deposit",
-        "deposits",
-        "retainer",
-        "security deposit",
-        "escrow",
-        "client funds",
-        "trust account",
-        "damage deposit",
-        "advance payment",
-        "held funds"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-05; nothing found holds a client's money on a ledger and applies it to an invoice. deposit, deposits, security deposit, client funds and trust account return 0 results each. retainer returns 12 rows that are all one server, io.github.theluckystrike/retainer, which is this estate's own mcp-recurring (recurring retainer BILLING, a schedule that raises invoices, not money held). escrow returns 10 rows, all agent-to-agent crypto settlement on Base, Robinhood Chain or USDC (0xdirectping/escrow, jdhart81/agent-escrow, kustodia-escrow, hive-mcp-escrow, Evozim's cross-chain bridge readers), which hold tokens between two agents rather than a client deposit against an invoice. Nothing to compare against honestly. See docs/DIST_R14_RESULT.md.",
-      "guide": "client-deposits-and-retainers-from-chat",
-      "ttl_days": 30
-    },
-    "asset-register": {
-      "date": "2026-09-05",
-      "tokens": [
-        "asset-register",
-        "asset register",
-        "depreciation",
-        "fixed-assets",
-        "fixed assets",
-        "capital-allowances",
-        "capital allowances",
-        "macrs",
-        "amortization",
-        "book value"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-05; nine of the ten return 0 results and nothing found keeps a register of assets and depreciates it on a published rate table. depreciation returns exactly one row, io.github.Evozim/depreciation-value-calculator-mcp, and it is not a server this estate can write a comparison page against: it is a remote SSE endpoint on api.m2mcent.com behind an x402 payment header that charges $0.30 USDC on Base per call, its own description says only \"Premium agentic endpoint for depreciation-value-calculator-mcp\", and it is one of the same publisher's generated calculator wrappers rather than a register. It holds no asset, no scheme, no KST, capital allowance or MACRS table, no convention, no journal and no disposal, and it was NOT called: paying per invocation to probe a competitor is a paid API call. A comparison page would be setting a metered arithmetic endpoint against a bundled statutory rate table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R16_RESULT.md.",
-      "guide": "fixed-assets-and-depreciation-from-chat",
-      "ttl_days": 30
-    },
-    "statement-of-account": {
-      "date": "2026-09-05",
-      "tokens": [
-        "statement-of-account",
-        "statement of account",
-        "aging",
-        "dunning",
-        "receivables",
-        "accounts receivable",
-        "debt collection",
-        "payment reminder"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-05. Seven of the eight return 0 results: statement-of-account, statement of account, dunning, receivables, accounts receivable, debt collection and payment reminder. The eighth, aging, returns 20 rows and every one of them is a substring match on another word rather than a match on the concept: imaging (CAST Imaging, a DICOM analyser), staging (three placeholder staging endpoints), messaging (WhatsApp, SMS and private-agent messaging servers), paging (an on-call pager) and one healthy-aging supplement atlas. Nothing in the registry reads an invoice ledger, computes what is outstanding as at a date, buckets it by days past due or drafts a chaser. There is no honest comparison page to write, so this note stands in place of one and expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R17_RESULT.md.",
-      "guide": "client-statements-and-dunning-from-chat",
-      "ttl_days": 30
-    },
-    "cash-book": {
-      "date": "2026-09-06",
-      "tokens": [
-        "cash-book",
-        "ledger",
-        "trial-balance",
-        "bookkeeping",
-        "double-entry"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-06. Three of the five return 0 results: cash-book, trial-balance and double-entry. bookkeeping returns exactly one row and ledger returns 30, and the ones that are genuinely accounting rather than a substring match on ledger -- ai.craneledger/crane-ledger, io.helloledger/bookkeeping, com.npledger/np-ledger and com.ledgerbeaver/finance -- are all the same shape: a remote streamable-http endpoint in front of a hosted book you keep on their platform, reached with a bearer key and an account. Not one of them was called: probing a metered remote endpoint is a paid API call. The rest of the ledger rows are the word used for something else entirely, tamper-evident action logs, run receipts, congressional trade registers, tariff tables and an EU tutoring platform. This server is not that shape and a comparison page would be dishonest about which one a reader wants: it posts nothing, it stores no book of its own beyond a register of the periods it built, and it derives the whole ledger on the call from six local stores it never writes to. The comparison a reader would actually want is against a spreadsheet, and the measured result of that comparison is the guide /guides/one-ledger-from-every-server rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R18_RESULT.md.",
-      "guide": "one-ledger-from-every-server",
-      "ttl_days": 30
-    },
-    "amortization": {
-      "date": "2026-09-06",
-      "tokens": [
-        "amortization",
-        "loan-schedule",
-        "lease",
-        "mortgage-calculator",
-        "effective-rate"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-06. Three of the five return 0 results: amortization, loan-schedule and effective-rate. lease returns 30 rows and 28 of them are a substring match on the word release rather than a match on the concept: release trackers for npm, PyPI, HuggingFace and LLM launches, release gates, release-note tooling and CI signoff binders. The one genuine lease row, io.github.amadeuserras/leaseclear-mcp, is document Q&A over a lease you already signed rather than a schedule derived from its terms. mortgage-calculator returns 4 rows and all four are the same server, io.github.CSOAI-ORG/mortgage-calculator-ai-mcp, listed at four versions: a remote US-mortgage payment calculator with comparison and affordability tools. It was not called: probing a remote endpoint someone else meters is a paid API call. That server answers what a monthly payment would be on a hypothetical mortgage. This server holds a register of agreements you actually signed, derives every row in integer minor units so the closing balance reaches the balloon exactly, costs an early settlement net of its penalty, and hands back a balanced double entry in the cash book's own account ids. A comparison table between the two would be dishonest about which one a reader wants, and nothing in the registry does the second thing at all. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R19_RESULT.md.",
-      "guide": "loan-and-lease-schedules-from-chat",
-      "ttl_days": 30
-    },
-    "petty-cash": {
-      "date": "2026-09-06",
-      "tokens": [
-        "petty-cash",
-        "cash-float",
-        "imprest",
-        "expense-float"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-06. All four return 0 rows, and so does the bare token petty. The run carried a control: expense returns 30 rows on the same API in the same minute, so the four zeroes are the registry answering rather than the search being broken. The nearest rows the control turns up are expense trackers -- com.expense-budget-tracker/expense-budget-tracker and io.github.CSOAI-ORG/expense-tracker-ai-mcp among them -- and an expense tracker is a different object: it records what was spent, against a card or a bank account, and nothing in it counts a tin. None were called: probing a remote endpoint someone else meters is a paid API call. What has no row at all in the registry is the imprest system itself: a float that is topped back up to a fixed amount, a count that is a fact and moves the book balance, a replenishment computed as imprest minus balance rather than as the sum of the vouchers, and the cash_over_short line that carries the difference between the two. A comparison table would have to compare this against a spreadsheet, and the measured result of that comparison is the guide /guides/petty-cash-float-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R20_RESULT.md.",
-      "guide": "petty-cash-float-from-chat",
-      "ttl_days": 30
-    },
-    "work-order": {
-      "date": "2026-09-06",
-      "tokens": [
-        "work-order",
-        "job-card",
-        "service-report",
-        "field-service"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-06. All four return 0 rows, and so does the two-word form work order. The run carried a control, because a search API that has broken returns zero for everything: service returns 100 rows on the same API in the same minute and maintenance returns 12, so the four zeroes are the registry answering rather than the search failing. The nearest rows the control turns up are a different object in both directions. com.checkmycontractorquote/maintenance-concierge-ai triages a property maintenance problem and generates a vendor packet, which is the step BEFORE a work order exists: it decides who to call, not what the job used. io.github.LGDiMaggio/predictive-maintenance-mcp is industrial vibration analysis and bearing fault diagnosis to ISO 20816, which decides when a machine will need work, not what the customer is billed for the visit. Neither holds a job card. None were called: probing a remote endpoint someone else meters is a paid API call. What has no row at all in the registry is the thing this server exists for: a markup that goes on the UNIT cost so the invoice reproduces the job to the minor unit, a status machine where every step carries its own date and a skipped step is refused, and an invoice payload whose totals are computed by the invoice server's own function rather than by a second implementation. A comparison table would have to compare this against a paper duplicate book, and the measured result of that comparison is the guide /guides/work-orders-and-job-cards-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R21_RESULT.md.",
-      "guide": "work-orders-and-job-cards-from-chat",
-      "ttl_days": 30
-    },
-    "catalogue": {
-      "date": "2026-09-06",
-      "tokens": [
-        "price-list",
-        "rate-card",
-        "catalogue",
-        "pricing"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-06. The run carried a control, because a search API that has broken returns zero for everything. What the four tokens do not turn up is a server that HOLDS a price list as a history: rows with valid-from dates, the price on a date worked out on the call, and a refusal for a date before every row. The rows the control surfaces are a different object. They are e-commerce and marketplace connectors that READ a price out of somebody else's system, or currency and market-data servers that fetch a rate, which is a price nobody set and nobody has to stand behind on an invoice. None of them is a catalogue the business owns and reprices, and none carries the thing this server exists for: the same price scaled two ways for two sibling payloads, unit_price in MAJOR units for invoice_create and unit_price_minor in MINOR units for quote_create, exactly 100x apart in a 2-decimal currency and 1000x in a 3-decimal one, both plain numbers that reconcile against themselves when they are wrong. None were called: probing a remote endpoint someone else meters is a paid API call. A comparison table would have to compare this against a spreadsheet somebody retypes into every quote, and the measured result of that comparison is the guide /guides/price-lists-and-rate-cards-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R22_RESULT.md.",
-      "guide": "price-lists-and-rate-cards-from-chat",
-      "ttl_days": 30
-    },
-    "change-order": {
-      "date": "2026-09-06",
-      "tokens": [
-        "change-order",
-        "variation-order",
-        "scope-change",
-        "contract-value"
-      ],
-      "note": "Searched the official MCP registry search API for each token on 2026-09-06. All four return 0 rows, and so does the two-word form change order. The run carried a control, because a search API that has broken returns zero for everything: service returns 100 rows on the same API in the same minute, so the four zeroes are the registry answering rather than the search failing. What the tokens do not turn up is a server that HOLDS a change order as a record: added, removed and changed lines against a quote or work order, a status machine where every step carries its own date, and a running contract value that counts only what the client approved. The rows the control surfaces are a different object: service discovery, name services and pay-per-call trading tools, none of which records a variation to a contract or states what a contract is worth after it. None were called: probing a remote endpoint someone else meters is a paid API call. Nothing in the registry carries the thing this server exists for: a changed line emitted as a reversal and a revised item rather than one net item, and the approved delta in both sibling scales at once, invoice_create's MAJOR units and quote_create's MINOR units, asserted exactly 100x apart from each payload's own items. A comparison table would have to compare this against an email thread and a spreadsheet column called extras, and the measured result of that comparison is the guide /guides/change-orders-and-contract-value-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R23_RESULT.md.",
-      "guide": "change-orders-and-contract-value-from-chat",
-      "ttl_days": 30
-    }
+  "price-tracker": {
+   "title": "MCP Price Tracker",
+   "tagline": "Check and watch product prices on ordinary shop pages.",
+   "does": "Fetches a product page and extracts the price from JSON-LD, microdata, Open Graph tags, common price markup or a currency-aware text fallback, normalising 1.299,00 EUR and 1,299.00 USD alike. Stores watches with a price history, refreshes them, computes min, max and change, and flags target hits and drops of 5% or more. Manual entry covers pages that block bots.",
+   "for": "Anyone who asks their assistant what something costs now, whether it dropped, or to keep an eye on it.",
+   "example": "\"What does this laptop cost right now?\" ... \"Watch it and tell me when it drops under 900.\"",
+   "free": "Unlimited price checks with extraction confidence; 3 watches with 30 observations each; alerts_pending free; redirects off product pages are refused.",
+   "pro": "Unlimited watches, full history, refresh all.",
+   "storage": "~/.local/share/mcp-servers/price-tracker/watches.json"
+  },
+  "spreadsheet": {
+   "title": "MCP Spreadsheet",
+   "tagline": "Read, query, edit and convert xlsx and csv files safely.",
+   "does": "Opens xlsx, xlsm, xlsb, ods, csv and tsv files, guesses the header row on messy exports, sniffs delimiters, and answers questions with a safe expression language (no eval): filters, sorts, per-column stats, find, computed columns such as [Qty] * [Unit Price], and conversion between formats. It never overwrites the source unless told to.",
+   "for": "Anyone who says: open this file, tell me what is in it, filter it, add a column, save it.",
+   "example": "\"Open orders.xlsx and show open orders over 5 units sorted by amount\" ... \"Add a Total column and save as CSV.\"",
+   "free": "Read, query (filters, group by, sum/avg/min/max), stats and find on files up to 5,000 rows; writes up to 500 rows, never a partial file above that.",
+   "pro": "No limits.",
+   "storage": "Works on the user's own files; nothing else stored."
+  },
+  "invoice": {
+   "title": "MCP Invoice",
+   "tagline": "Numbered invoices with tax lines, rendered to a professional PDF.",
+   "does": "Stores the issuer profile and clients, allocates invoice numbers that never repeat (INV-YYYY-NNNN), computes per-line rounding, multiple VAT rates and discounts in integer minor units, renders an A4 PDF with pdfkit (multi-page tables, totals, payment details), tracks paid status and reports overdue invoices. Pairs with the time tracker: hours become an invoice in the same chat.",
+   "for": "Freelancers and small businesses that want to say: make an invoice for Acme, 12 hours at 90 EUR, due in 14 days.",
+   "example": "\"Invoice Acme for 12 h at 90 EUR with 23% VAT, due in 14 days, and give me the PDF.\"",
+   "free": "3 invoices per calendar month; overdue report free; PDF carries a small footer line.",
+   "pro": "Unlimited invoices, no branding, logo, custom prefix.",
+   "storage": "~/.local/share/mcp-servers/invoice/"
+  },
+  "expense-tracker": {
+   "title": "MCP Expense Tracker",
+   "tagline": "Receipts, mileage and expenses that turn into invoice lines.",
+   "does": "Logs expenses with per-expense currency, VAT split and receipt attachment (path + sha256), auto-categorises merchants by rules, records mileage with country rate tables, summarises by category, project, month or merchant per currency, exports CSV or xlsx, and emits invoice-ready line items (net + tax rate, so nothing is taxed twice) for rebilling a project with optional markup.",
+   "for": "Freelancers and small businesses who already track time and invoice from chat and want the receipts side closed in the same place.",
+   "example": "\"I paid 61.50 EUR at Media Markt for a USB hub, Acme project, billable\" ... \"Give me the invoice lines to rebill Acme this month with 10% markup.\"",
+   "free": "Unlimited logging; list and summary cover the last 30 days; 3 projects; 5 rules; CSV export up to 200 rows, never partial.",
+   "pro": "Full history, unlimited projects and rules, xlsx export, unlimited rebill items with markup.",
+   "storage": "~/.local/share/mcp-servers/expense-tracker/"
+  },
+  "office-suite": {
+   "title": "MCP Office Suite (bundle server)",
+   "tagline": "One install that exposes every tool of all 33 servers, 318 of them.",
+   "does": "A stdio proxy that starts every sibling server in this repository as a child process and exposes all their tools, resources and prompts under one server, with a single license_status and license_activate. Measured on the running v0.21.0 bundle on 2026-09-10: tools/list returns 318 distinct tools and the suite reports proxying 33 children, 316 of those tools coming from the children and 2 being its own licence pair. Four colliding child tool names are renamed and the renames are published in office://tools_map. Measured reason for existing: the most-used server in this category is an aggregator, so one install beats thirty-three.",
+   "for": "Anyone who wants the whole back-office workflow in one config line instead of thirty-one.",
+   "example": "\"Start a timer for Acme\" ... \"Invoice Acme for this week's hours plus the USB hub receipt.\"",
+   "free": "Each child's free tier.",
+   "pro": "The $39 bundle key unlocks every child.",
+   "storage": "Each child's own data folder."
+  },
+  "currency": {
+   "title": "MCP Currency Converter",
+   "tagline": "ECB reference rates: convert, history, and fx_rates for rebilling.",
+   "does": "Fetches and caches the European Central Bank daily and historical reference rates (keyless, free), converts any amount between currencies via EUR cross rates with the rate date stated, returns history tables with min, max and average, and emits the exact fx_rates object the expense tracker needs to rebill a project in one currency, so a model can chain the two without the user supplying rates.",
+   "for": "Freelancers billing across currencies and anyone who wants an honest, dated exchange rate without an API key.",
+   "example": "\"What is 4,500 EUR in USD today?\" ... \"Rebill Nova in USD using today's rates.\"",
+   "free": "Latest rates, convert, convert_many, fx_rates_for, history up to 90 days (a wider window is shortened and answered, not refused).",
+   "pro": "Full history back to 1999, any-date rates, unlimited history windows.",
+   "storage": "~/.local/share/mcp-servers/currency/ (rate cache)"
+  },
+  "docx": {
+   "title": "MCP Docx",
+   "tagline": "Real Word documents from chat: proposals, contracts, quotes.",
+   "does": "Creates .docx files from structured sections or markdown (headings, lists, tables, bold and italic), reads text back from existing Word files, fills {{placeholders}} in templates while keeping formatting, and generates structured proposals and freelance service agreements from the business profile, with an HTML export for printing.",
+   "for": "Freelancers who send proposals and contracts and want them as editable Word files, not PDFs.",
+   "example": "\"Write a proposal for Acme: redesign, 3 phases, 4,500 EUR, valid two weeks.\" ... \"Fill my NDA template with these names.\"",
+   "free": "Create, convert and read documents without limit; 3 proposals or contracts per calendar month; templates up to 10 placeholders.",
+   "pro": "Unlimited proposals and contracts, letterhead with logo and colours, unlimited template fills.",
+   "storage": "~/.local/share/mcp-servers/docx/"
+  },
+  "timezone": {
+   "title": "MCP Timezone Planner",
+   "tagline": "Find meeting slots inside everyone's working hours.",
+   "does": "Converts times between IANA zones with correct DST via Intl, resolves cities and countries to zones, finds ranked meeting slots where every participant is inside working hours with a fairness score, computes daily overlap windows, DST change dates and business days, stores contacts with their zones, and writes valid .ics calendar files.",
+   "for": "Freelancers and small teams with clients in other time zones.",
+   "example": "\"When can I meet Sara in Sydney and Tom in Austin next week, one hour?\" ... \"Send me an ics for Tuesday 15:00 Warsaw.\"",
+   "free": "Conversions, overlap, DST, business days, slots for up to 3 participants over 5 days, 5 contacts, 3 ics per month.",
+   "pro": "Unlimited participants, days, contacts and ics files, recurring slot search.",
+   "storage": "~/.local/share/mcp-servers/timezone/ (contacts)"
+  },
+  "resume": {
+   "title": "MCP Resume and Cover Letter",
+   "tagline": "Resumes and cover letters as Word files from one profile, never invented.",
+   "does": "Stores a structured profile (experience, education, skills, links), writes resumes in three styles trimmed to a page budget with keyword highlighting, drafts one-page cover letters whose every claim traces to the profile with bracketed prompts for anything unknown, runs a gap analysis against a job description with suggested bullet rewrites from existing facts, reads an existing resume .docx back into the profile shape, and exports markdown and printable HTML. Built on the docx engine.",
+   "for": "Anyone applying for jobs who wants editable Word output and honest tailoring, not hallucinated achievements.",
+   "example": "\"Tailor my resume to this job post and write a direct cover letter for the hiring manager.\" ... \"What am I missing for this role?\"",
+   "free": "Profile, modern-style resume, markdown and HTML exports, 3 cover letters per calendar month, tailoring on job posts up to 2,000 characters.",
+   "pro": "All styles, unlimited cover letters and tailoring, profile variants, letterhead colours.",
+   "storage": "~/.local/share/mcp-servers/resume/"
+  },
+  "recurring": {
+   "title": "MCP Recurring Invoices",
+   "tagline": "Scheduled invoices, generated into your invoice book with PDFs.",
+   "does": "Keeps billing schedules per client (weekly, monthly, quarterly, yearly or every N days) with month-end and leap-day rules, shows what falls due, generates exactly one invoice per schedule per period into the invoice server store with PDF rendering, never duplicates on a rerun, keeps a history, and forecasts revenue per month per currency.",
+   "for": "Freelancers and small studios with retainers and subscriptions.",
+   "example": "\"Bill Acme 12 hours a month at 90 EUR starting September.\" ... \"Generate what is due and show me the next 30 days.\"",
+   "free": "3 active schedules, 30-day upcoming view, generate due invoices.",
+   "pro": "Unlimited schedules, 12-month forecast, audit history, end-of-month and anchor-day rules.",
+   "storage": "~/.local/share/mcp-servers/recurring/ plus the invoice store"
+  },
+  "clauses": {
+   "title": "MCP Clause Library",
+   "tagline": "Reusable contract clauses, searched and assembled into Word.",
+   "does": "Ships 25 generic freelance clauses (scope, payment terms, IP, confidentiality, termination, liability, governing law and more), each marked as a template with variables, lets you add and search your own, extracts variables, fills them, and assembles a contract or proposal into .docx or markdown through the docx engine with a not-legal-advice line.",
+   "for": "Freelancers who reuse the same terms across contracts and proposals.",
+   "example": "\"Assemble a contract for Acme with payment terms, late fees, IP assignment and Polish governing law, 4,500 EUR.\" ... \"What variables are still open?\"",
+   "free": "Starter set plus 10 own clauses, search with the jurisdiction filter, assembly up to 8 clauses, markdown export.",
+   "pro": "Unlimited clauses, tag filters, JSON import and export, unlimited assembly, clause versions.",
+   "storage": "~/.local/share/mcp-servers/clauses/"
+  },
+  "calendar": {
+   "title": "MCP Calendar",
+   "tagline": "Read .ics calendars: events, free and busy, conflicts, exports.",
+   "does": "Parses .ics files and feeds from Google, Apple and Outlook (recurrence rules, exceptions, time zones, all-day events), lists events in a window in your home zone, computes busy blocks and free windows, flags overlapping events, exports selections as valid .ics, and turns a meeting into the arguments for a billable time entry.",
+   "for": "Freelancers who live in a calendar and bill by the hour.",
+   "example": "\"What is on my calendar next week and where am I free for a two-hour block?\" ... \"Log yesterday's Nova call as billable time.\"",
+   "free": "2 calendars, windows up to 31 days, exports up to 50 events, conflict checks answered over the first 31 days of any window.",
+   "pro": "Unlimited calendars, any window, unlimited exports, URL refresh.",
+   "storage": "~/.local/share/mcp-servers/calendar/"
+  },
+  "pdf": {
+   "title": "MCP PDF Tools",
+   "tagline": "Merge, split, stamp and read PDFs, pure JavaScript.",
+   "does": "Merges and splits PDFs, extracts and reorders pages, rotates, stamps PAID or DRAFT or any text at a chosen position, watermarks the business name and VAT id from the shared profile, extracts text best effort, and reports page counts and metadata. Never edits inputs in place and refuses encrypted files with a clear message.",
+   "for": "Anyone who sends invoices, proposals and contracts as PDFs and needs to mark, combine or split them without a desktop app.",
+   "example": "\"Merge these three invoices into one PDF and stamp it PAID.\" ... \"Split the contract into signature pages.\"",
+   "free": "Info, count, text, merge up to 5 files, edits on files up to 30 pages, PAID and DRAFT stamps.",
+   "pro": "Unlimited files and pages, custom stamp text and colours, business watermark, page reorder.",
+   "storage": "Works on your own files; a recent list only."
+  },
+  "image": {
+   "title": "MCP Image Tools",
+   "tagline": "Resize, convert, compress and watermark images, pure JavaScript.",
+   "does": "Reads PNG, JPEG, BMP, GIF and TIFF, resizes with inside, cover or exact fit, converts formats, compresses with a byte report, crops, makes thumbnails in batches, strips metadata by re-encoding, watermarks with the shared business name or custom text, and reports dominant colours. Never edits inputs in place; refuses decompression bombs.",
+   "for": "Anyone preparing logos, screenshots and product photos for documents, proposals and the web without a desktop app.",
+   "example": "\"Make a 1200 px wide web version of this photo under 300 KB.\" ... \"Thumbnail these five and watermark them.\"",
+   "free": "Info, resize, convert, compress, crop, strip metadata on images up to 4 MP; batches of 5.",
+   "pro": "Unlimited size and batches, custom watermark text, dominant colours.",
+   "storage": "Works on your own files; a recent list only."
+  },
+  "bank-statement": {
+   "title": "MCP Bank Statement",
+   "tagline": "Bank CSV exports categorised, summarised and reconciled with expenses.",
+   "does": "Imports CSV exports from Revolut, Wise, mBank, PKO, ING, N26 and generic banks with locale-aware amounts and duplicate detection, categorises by your rules, summarises by category, month, account or counterparty per currency, reconciles bank lines against the expense tracker, detects subscriptions and recurring charges, and exports.",
+   "for": "Freelancers who reconcile bank statements against receipts at month end.",
+   "example": "\"Import my September Revolut export and categorise it.\" ... \"Which expenses have no bank line and which subscriptions am I paying?\"",
+   "free": "2 accounts, 12 months of transactions, 5 rules, summary and search, reconciliation 31 days at a time, recurring detection over the last 3 months (5 charges).",
+   "pro": "Unlimited accounts, history and rules, reconciliation over any range, every recurring charge, export.",
+   "storage": "~/.local/share/mcp-servers/bank-statement/"
+  },
+  "kanban": {
+   "title": "MCP Kanban",
+   "tagline": "A task board per project that hands off to the time tracker.",
+   "does": "Keeps tasks per project in columns (backlog, todo, doing, review, done) with due dates, estimates, priorities and tags; shows the board, overdue items and a weekly review of planned versus done and estimates versus actuals; starts a time-tracker timer from a task and records the link. Local dates in your home time zone.",
+   "for": "Freelancers who plan the week in a board and bill the hours from the same tasks.",
+   "example": "\"Add: Nova API design, due Friday, 3 hours.\" ... \"What is overdue, and start the timer on the API task.\"",
+   "free": "3 projects, 200 open tasks, default columns.",
+   "pro": "Unlimited projects and tasks, custom columns, weekly review history, estimates versus actuals.",
+   "storage": "~/.local/share/mcp-servers/kanban/"
+  },
+  "quotes": {
+   "title": "MCP Quotes",
+   "tagline": "Priced, VAT-correct quotes from chat, and the yes turns into an invoice.",
+   "does": "Creates numbered quotes (Q-YYYY-NNNN) with line items in integer minor units, VAT per line or from the shared business profile, discounts, multi-currency and a validity date computed in your own timezone; renders a pasteable plain-text quote and an A4 PDF in the invoice layout; accepting a quote writes a real invoice into the mcp-invoice store with the agreed numbers copied, never recomputed; reports pipeline value and win rate.",
+   "for": "Freelancers and small studios who quote before they invoice.",
+   "example": "\"Quote Acme for 12 hours at 90 EUR plus a 300 EUR setup, 23% VAT, good for 14 days.\" ... \"Acme said yes, turn quote Q-2026-0001 into an invoice.\"",
+   "free": "5 open quotes at a time, unlimited pasteable text quotes, accept, decline, revise, VAT, discounts and multi-currency, pipeline and win-rate report for the current calendar year to date.",
+   "pro": "Unlimited open quotes, A4 PDF with your logo and no footer credit, pipeline and win-rate report over any date range.",
+   "storage": "~/.local/share/mcp-servers/quotes/"
+  },
+  "barcode": {
+   "title": "MCP Barcode",
+   "tagline": "QR codes and barcodes drawn on your machine, with no upload and no network call.",
+   "does": "Turns text or a URL into a QR code, and draws WiFi join codes, vCard contact codes, EPC069-12 SEPA payment codes a euro banking app can scan, and Code 128, EAN-13, EAN-8 and UPC-A linear barcodes; the IBAN is validated with ISO 7064 mod 97 and an EAN or UPC check digit is computed when it is missing and refused when it is wrong, never silently redrawn; output is SVG returned inline or written to a path, or PNG at any size up to 4000 px, with every code recorded in a local register.",
+   "for": "Anyone who needs a code on a label, an invoice, a flyer or a badge without opening a QR-generator website.",
+   "example": "\"Make a QR code for this URL as an SVG.\" ... \"Draw an EAN-13 for 590123412345.\" ... \"Payment QR for invoice INV-2026-0007.\"",
+   "free": "20 codes per calendar month, SVG output at any size, every symbology, EPC SEPA payment codes, WiFi and vCard codes, and the local register.",
+   "pro": "Unlimited codes, PNG output from 32 to 4000 px, and barcode_batch for up to 500 codes in one call.",
+   "storage": "~/.local/share/mcp-servers/barcode/"
+  },
+  "zip": {
+   "title": "MCP Zip",
+   "tagline": "Make a zip, look inside one, and unpack one, entirely on your machine.",
+   "does": "Packs a file list or a whole directory tree with glob patterns into a .zip, lists an archive's entries with sizes, compressed sizes and ratios, reads one text entry inline without unpacking anything, adds files to an archive that already exists, and bundles a month of invoices, quotes and exports from the sibling servers into one file; the central directory is read here, so absolute paths, .., symlinks, encrypted entries, duplicate names and compression bombs are all refused from the headers before anything is inflated, and every entry written out is proved against its CRC-32.",
+   "for": "Anyone who has to send a folder, or was sent an archive and wants to know what is in it before opening it.",
+   "example": "\"Zip every CSV in this folder except node_modules.\" ... \"What is inside this archive somebody sent me?\" ... \"Read the README out of it without unpacking.\" ... \"Bundle August's invoices and quotes for my accountant.\"",
+   "free": "20 archives per calendar month, up to 25 MB and 200 entries each, and unlimited reading: zip_list, zip_extract and zip_extract_text are never metered, along with every bomb, traversal and symlink guard.",
+   "pro": "Unlimited archives, no size cap and no entry cap.",
+   "storage": "~/.local/share/mcp-servers/zip/"
+  },
+  "billing-docs": {
+   "title": "MCP Billing Docs",
+   "tagline": "Credit notes and purchase orders, on the same engine as your invoices.",
+   "does": "Writes credit notes against the invoices the mcp-invoice server already holds, in full, by gross amount or by named lines and quantities, with every money field stored negative in minor units so a period's documents sum to the net of what was billed; a credit note by amount splits that gross across the VAT rates the invoice actually used, and no credit note can ever give back more than the invoice's remaining creditable amount. It also raises purchase orders to suppliers with line items, VAT, currency and an expected delivery date, receives them in full or in part, and reports credited and on-order totals per currency alongside deliveries past their date.",
+   "for": "Anyone who invoices clients and has to reverse one, and anyone who orders from suppliers and needs the order on paper.",
+   "example": "\"Credit invoice INV-2026-0001 in full, the client returned the work.\" ... \"Credit 177 euro of that invoice, they were overcharged.\" ... \"Raise a purchase order to Nordic Print for 500 brochures at 1.20 each, due the 20th.\" ... \"Which orders are past their delivery date?\"",
+   "free": "5 documents per calendar month, credit notes and purchase orders together, counted by issue date, with full, partial and per-line credit notes, VAT, multiple currencies and receiving orders all included, and both text exports never metered.",
+   "pro": "Unlimited documents, both A4 PDFs with your logo and no footer credit, and the billing_docs_report of credited, on-order and overdue deliveries.",
+   "storage": "~/.local/share/mcp-servers/billing-docs/"
+  },
+  "deposits": {
+   "title": "MCP Deposits",
+   "tagline": "Security and retainer deposits, held per client, on the same engine as your invoices.",
+   "does": "Records a security or retainer deposit when the money arrives, in minor units and in the currency it arrived in, and then answers for it: what is held per client and per currency, since when, and what has already gone. Applying a deposit to an invoice writes the payment onto that invoice under both locks, adding to what was already paid rather than replacing it, so a bank transfer that landed first is not erased; it can never pay out more than the deposit still holds or more than the invoice still owes, and a deposit is never converted between currencies. Refunds hand money back without touching the invoice, the stored status is derived from the movements every time one is written, and the statement is one client in one currency, as text or as an A4 PDF that matches the invoice and credit note next to it.",
+   "for": "Anyone who takes money before the work: landlords and letting agents on security deposits, agencies and consultants on retainers, trades on up-front payments.",
+   "example": "\"Record a 500 euro security deposit from Nordic Print, received today.\" ... \"Apply 300 of that deposit to INV-2026-0001.\" ... \"How much are we holding for Nordic Print?\" ... \"Refund the rest, paid back by bank transfer.\"",
+   "free": "5 deposits recorded per calendar month, counted by received date, with applying to invoices, refunds, lists, balances and the text statement all unlimited on every tier: a cap that trapped a client's deposit would be a limit on their money rather than on yours.",
+   "pro": "Unlimited deposits recorded, the A4 deposit statement PDF with your logo and no footer credit, and the deposits_report of held per currency, oldest held and what has sat unapplied.",
+   "storage": "~/.local/share/mcp-servers/deposits/"
+  },
+  "per-diem": {
+   "title": "MCP Per Diem",
+   "tagline": "Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them.",
+   "does": "Prices one business trip against a bundled rate table and shows the arithmetic: the allowance per day, the partial-day fraction the scheme's own ladder produced, every deduction for a meal somebody else paid for, and the total in the scheme's own currency. Three schemes ship with it: the Polish delegation regulation at home and per country, the HMRC benchmark scale rates for travel inside the UK, and the US GSA CONUS standard M&IE with the lodging cap. Start and end are instants rather than wall clocks, so a trip across a clock change is 23 or 25 hours and the Polish 24-hour period and the US calendar day give different, correct answers to the same trip. Trips can be saved under a name with a TRIP-YYYY-NNNN id, listed with a total per currency, reported per scheme and per month, and handed to the expense tracker as ready-made expense_add arguments. The tables are files inside the package, not a feed, so the same trip priced twice gives the same answer, and every rate carries its authority, instrument, source URL and effective date.",
+   "for": "Anyone who claims or pays a statutory travel allowance: Polish contractors and employers on delegacja and diety, UK sole traders and companies on the HMRC benchmark rates, and US federal or corporate travellers on the GSA standard.",
+   "example": "\"What is the per diem for 58 hours in Krakow, leaving Tuesday 8am, with breakfast on the first day and two nights in a hotel?\" ... \"Same trip under the HMRC rates.\" ... \"Save it as the Krakow audit trip.\" ... \"Total my per diems this quarter per scheme.\"",
+   "free": "Rate lookups and calculations are unlimited on every tier: the tables are public regulation, and metering the reading of a regulation would be charging for the tax authority's work. 5 trips saved per calendar month, counted by start date, and unlimited trip lists.",
+   "pro": "Unlimited trips saved, the expense-tracker export payloads (one per currency, ready for expense_add), and the report of totals per scheme and per calendar month.",
+   "storage": "~/.local/share/mcp-servers/per-diem/"
+  },
+  "asset-register": {
+   "title": "MCP Asset Register",
+   "tagline": "A fixed asset register that depreciates on the rates the tax authorities actually publish, with the schedule, the journal and the gain on sale.",
+   "does": "Keeps a register of what you bought, what it cost, when it went into use and which category it falls in, and returns the rate, the useful life, the convention, the full schedule year by year or month by month, one month's journal entry, and the gain or loss when you sell. Three tables ship with it: the Polish annual rates from the annex to the CIT and PIT acts keyed to the KST classification (33 rows, with declining-balance eligibility and the art. 16k switch to straight line), the UK capital allowance pools at 18 and 6 percent with the annual investment allowance, and the US MACRS GDS half-year percentages for 3, 5 and 7 year property exactly as IRS Pub 946 Table A-1 publishes them. The convention is the table's, not the caller's: Poland charges from the month AFTER the asset enters the register, so an asset in service on 15 March starts on 1 April and year one is nine twelfths, while the MACRS percentages already carry the half-year convention and a UK writing down allowance is not prorated by month at all. The same asset gives three different year-one figures under the three schemes and all three are right. Money is integer minor units end to end and the schedule is allocated by cumulative rounding, so the periods sum to cost less residual to the minor unit and the months sum to their year. The tables are files inside the package, not a feed, and every rate carries its authority, instrument, source URL and effective date.",
+   "for": "Anyone who has to put a depreciation figure on a return or in a ledger: Polish companies and sole traders on the KST annex rates, UK businesses claiming capital allowances on the main and special rate pools, and US filers on MACRS GDS.",
+   "example": "\"Add the Dell workstation, 8,499 zloty, in service 15 March 2026, computers.\" ... \"Show me the schedule month by month.\" ... \"Depreciate the same truck under declining balance.\" ... \"What is April's journal entry?\" ... \"We sold the van for 12,000 in September, what is the gain?\"",
+   "free": "Depreciation schedules are unlimited on every tier: the rates are public information a tax authority published, and metering the reading of a regulation would be charging for the government's work. The cap is on the SIZE of the register, 10 assets, plus unlimited asset_list and asset_dispose.",
+   "pro": "Unlimited assets in the register, the monthly journal entry with its ready-made expense_add payload (one per currency, no vat_rate because depreciation is a book charge), and the report of net book value by category and currency with the year's charge and every disposal in it.",
+   "storage": "~/.local/share/mcp-servers/asset-register/"
+  },
+  "statement-of-account": {
+   "title": "MCP Statement of Account",
+   "tagline": "The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted.",
+   "does": "Reads the three books this suite already keeps -- the invoice ledger, the credit notes and the deposits -- and turns them into a statement of account for a period: the balance carried at the start, every invoice issued, every payment received, every credit note given, the deposits applied broken out of the receipts rather than added again, and the closing balance. The movements are in date order and the opening balance plus their sum equals the closing balance, so the document is auditable line by line. statement_aging splits what is still open into 0-30, 31-60, 61-90 and over 90 days past the due date AS AT the date asked for, which means an invoice issued after that date is not on the books, a payment made after it has not happened and a credit note issued after it has not been given. Due today is not overdue: day zero sits in a not-yet-due line reported beside the four buckets. paid_minor on the invoice is the authority and the payment rows are only the attribution, so a deposit application that raised paid_minor without writing a payment row still appears. It writes into no book it reports on: bytes and mtimes of the sibling stores are unchanged across all six tools, and the only file it owns is a register of the statements it built. Nothing here invents a late fee, an interest rate or a legal cost, and a dunning letter escalates in tone and never in figures.",
+   "for": "Anyone who invoices and then has to chase: freelancers and small firms who need to send a client a statement rather than forwarding five invoices, and anyone who has to answer what was owed on a given date rather than what is owed now.",
+   "example": "\"Send Acme a statement for June.\" ... \"Who owes me money, aged.\" ... \"What was outstanding on 10 June?\" ... \"Draft a firm chaser for Acme.\" ... \"Show me every client, per currency, with the oldest overdue invoice.\"",
+   "free": "statement_aging is free and unlimited on every tier, for one client or for everyone: who owes me money is the question this server exists for, and a free tier that hides it is a demo. The meter is on the document that goes to a client, five distinct statements a calendar month, counted by client, period and currency, so rebuilding one already in the register is free forever. Plain-text statements and dunning at the friendly and firm levels are free.",
+   "pro": "Unlimited statements, the A4 PDF on the same page layout as your invoices with your logo and no footer credit, the level 3 final demand, and statements_report: every client at once, totalled per currency, ranked by what is overdue rather than by what is large, with the oldest overdue invoice in the whole book named.",
+   "storage": "~/.local/share/mcp-servers/statement-of-account/"
+  },
+  "cash-book": {
+   "title": "MCP Cash Book",
+   "tagline": "One double-entry ledger derived from the books you already keep, proved to the minor unit.",
+   "does": "Reads six sibling stores read-only -- the invoice ledger, the credit note and purchase order store, the deposit store, the expense ledger, the bank import and the fixed asset register -- and derives a debit and a credit for every movement in a period. Revenue and VAT output come off the invoices, receivables and the payments that clear them, deposits held as the liability they are, expenses by category with the VAT taken OUT of the gross rather than added on top, fixed assets entering service, and depreciation charged by month. The bank import posts nothing: a bank line and a payment record are one transaction seen twice, so cash is posted from the documents and each bank row is matched to a posted cash movement of the same amount, the same direction and a date within three days, as evidence written onto the line as bank_ref. What is left over is the output that matters, because a bank debit with no expense behind it is a payment nobody entered. Nothing is ever balanced with a plug: an entry whose own legs do not add up is posted exactly as the document states it and the difference is raised by name, with the entry, the source server and the source document behind every unit of it. Currencies are never added together, a purchase order is a memo that is never posted, a deposit applied to an invoice moves the liability rather than cash, and the ledger opens at nothing because an opening figure nobody can walk back to a document is the first invented number in a set of books. Every line carries the server, the document id and the ISO date it came from, and no sibling store changes bytes or mtime across any of the six tools.",
+   "for": "Anyone running this suite who has to answer whether the books add up, and anyone who has to hand an accountant a ledger rather than six exports: freelancers and small firms at month end, and bookkeepers who need every figure to name the document it came from.",
+   "example": "\"Build the ledger for June.\" ... \"Does June balance?\" ... \"Show me every line hitting receivables.\" ... \"Close June and tell me what is unposted.\" ... \"Export the June ledger as CSV.\"",
+   "free": "trial_balance and ledger_lines are free and unlimited on every tier: whether the books add up is the question this server exists for, and a free tier that hides the answer is a demo. The meter is on the PERIOD, three distinct periods a calendar month, keyed by from, to and currency, so rebuilding one already in the register is free forever on every tier.",
+   "pro": "Unlimited periods, month_close with its trial balance snapshot and its list of what the month leaves unposted or inconsistent, ledger_export_csv as RFC 4180 text with no file written, and ledger_report with the movement and closing balance per account plus the purchase commitments held as a memo.",
+   "storage": "~/.local/share/mcp-servers/cash-book/"
+  },
+  "amortization": {
+   "title": "MCP Amortization",
+   "tagline": "Loan and lease schedules from the terms of the agreement, to the minor unit.",
+   "does": "Takes the terms of a credit agreement -- principal in minor units, the nominal annual rate in basis points, how often interest compounds, how often a payment falls due, the term in periods, annuity or straight principal, any arrangement fee, any balloon and the drawdown date -- and derives the level payment, the effective annual rate beside the nominal one, and the schedule period by period: opening balance, payment, interest, principal, closing balance, every figure an integer minor unit and every closing balance reaching the balloon, or zero, exactly. Compounding and payment frequency are two different clocks: the rate for one payment period is the equivalent rate taken through the compounding clock, (1 + r/m)^(m/p) - 1, never the nominal rate divided by the number of payments. The payment never varies and the last period absorbs the rounding residual in the interest and principal SPLIT rather than in the payment, because the payment is what the borrower is contractually due to pay and the split is not. A level payment rounded once can clear the debt before the declared term ends, and the schedule stops where the debt does rather than reporting periods the borrower does not owe. Early settlement and partial overpayment are costed gross AND net of the penalty, and a penalty larger than the interest saved is reported as a COST rather than a smaller saving. The journal debits interest expense and loan liability and credits cash in the cash book's own account ids, and only the interest reaches the expense payload, because booking the whole payment as an expense overstates the cost of the business by the principal every period and still reconciles perfectly against the bank. Nothing is posted from here, no schedule is stored, currencies are never added together, and month arithmetic clamps so a loan drawn on the 31st pays on the 28th in February.",
+   "for": "Anyone who has to answer what a credit agreement actually costs before signing it, and anyone who has to book the payments afterwards: freelancers and small firms with equipment finance, a car lease or a working-capital loan, and the bookkeepers who have to split each payment between interest and principal.",
+   "example": "\"Record the van finance: 40,000 EUR, 12 percent nominal compounded monthly, 12 monthly payments, drawn 15 January.\" ... \"Show me the schedule.\" ... \"What would settling at period 6 cost me?\" ... \"Give me the journal for March.\" ... \"What do I owe across all of them at 30 June?\"",
+   "free": "loan_schedule is free and unlimited on every tier: the payment and the interest are the question this server exists to answer, and a free tier that hides the answer is a demo. The meter is on the number of agreements held, three loans in the register, which is the unit of work.",
+   "pro": "Unlimited loans, loan_repay_early for settling or overpaying at any period costed gross and net of the penalty, loan_journal with its expense-tracker payload carrying the interest alone, and loans_report: what is owed per currency, when each next payment falls due, and the interest charged in a calendar year.",
+   "storage": "~/.local/share/mcp-servers/amortization/"
+  },
+  "work-order": {
+   "title": "MCP Work Order",
+   "tagline": "Job orders for trades and field work, priced the way the invoice will be.",
+   "does": "Raises a work order against a client the invoice server already knows -- the same client record, not a second spelling of the name -- with a site address, the date it was asked for, what the job is and how urgent. Lines are logged as the job goes: labour as hours at an hourly rate, parts as a quantity at a unit cost in minor units with an optional markup percent. THE MARKUP GOES ON THE UNIT COST, NEVER ON THE LINE TOTAL, because the invoice server rounds a unit price into minor units first and computes the line from that stored value, so the marked-up unit is the only basis an invoice can reproduce: seven parts at 1299 with 15 percent is 1494 a unit and 10,458 on the line, where marking up the line total is 10,457, and the unit suite asserts that gap is exactly 1 so a change of basis fails the build rather than quietly re-pricing every job on the board. The status moves one step at a time, draft to scheduled to in_progress to done to invoiced, each step stamped with its date and a note; a skipped step is refused naming the step that IS next, because every step carries its own date and a job that went straight to invoiced was never marked done, so no completion report was produced and nothing records the day the work finished. Backwards is refused too: a job that has to go back is a new work order. No total is stored -- value, hours, materials and VAT are derived from the lines on every call, because a stored total is the copy that gets believed after somebody edits a line. Hours are counted on the LINE date, not on the order date, so a February call worked in March logs its hours in March. work_order_invoice_payload builds the invoice_create items and then runs the invoice server's own computeTotals over those items, so there is no second implementation to disagree, it posts nothing and marks nothing, and an order already invoiced refuses a second payload by name. An unknown client name with no address is refused, because a bare name that matches no client record is a misspelling far more often than a new customer. A labour rate is never improvised: there is no default rate in the shared profile today, so rate_minor is refused by name rather than invented onto a report the customer signs.",
+   "for": "One-van trades and small field-service outfits: electricians, plumbers, heating engineers, appliance and equipment repair, groundworks, and anyone who takes a call, does the job, hands over a signed completion report and then has to raise the invoice without retyping a single figure.",
+   "example": "\"Raise a work order for Harbour Cafe, 12 Quay Street, urgent, the walk-in is not holding temperature.\" ... \"Three hours labour on the 8th at 85 an hour.\" ... \"Seven thermostats at 12.99 each, 15 percent markup.\" ... \"Mark it done on the 9th.\" ... \"Completion report, then the invoice payload.\"",
+   "free": "Five OPEN work orders, which is a one-van trade, and 200 lines each on every tier. The cap counts open jobs (draft, scheduled, in progress) rather than jobs ever raised, so finishing one frees its slot, and work_order_delete on a draft with no lines is free on every tier because a way back that only a Pro key can reach is not a way back. The text completion report is free: handing the customer what was done is the thing the job was for. A byte-identical work order is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade, and burns neither a slot nor a WO number.",
+   "pro": "Unlimited open work orders, the A4 completion report PDF with the sign-off block, work_order_invoice_payload with VAT at the shared profile rate and rounding_drift_minor asserted to zero, and work_orders_report: the whole board by status, hours logged this month, and unbilled value per currency.",
+   "storage": "~/.local/share/mcp-servers/work-order/"
+  },
+  "catalogue": {
+   "title": "MCP Catalogue",
+   "tagline": "One price list and one rate card, kept where the invoice and the quote can both read them.",
+   "does": "Holds a SKU as a code, a name, a unit, an optional VAT rate and price ROWS, each row a currency, a tier, a valid-from date and an amount in MINOR units; a role carries an hourly rate the same way. The price on a date is the latest valid_from at or before it, worked out on the call, so raising a price in July does not rewrite what June was quoted at, and sku_get names the row it picked, how many it considered and any later row already booked. THE STORE HOLDS MINOR UNITS BECAUSE THE TWO SERVERS THIS CATALOGUE FEEDS TAKE THE SAME PRICE IN DIFFERENT SCALES AND THE GAP IS EXACTLY 100x: invoice_create's item carries unit_price in MAJOR units (90 for 90 EUR) and quote_create's item carries unit_price_minor in MINOR units (9000 for 90.00 EUR), both are plain numbers, both are called the unit price, and neither tool can tell that the number it was handed was scaled for the other one, so 45000 passed as unit_price is a perfectly valid invoice line for EUR 45,000.00 that reconciles against itself. The unit suite measures the gap on the worked resolution: the correct payload nets 261,363 minor and the quote payload's field fed into the invoice engine nets 26,136,300, asserted as exactly 100x, and 1000x in a 3-decimal currency such as KWD. So lines_resolve builds BOTH payloads itself in one call with the scale printed against each, rather than returning the price and letting the caller pick the field, which would be wrong half the time and wrong by two orders of magnitude when it was. A date before every row has no price and that is a refusal naming the earliest row, because filling it with the earliest row reprices history: a job done in December 2024 would be billed at the January 2025 price and reconcile perfectly against a price list that did not exist yet. One row per currency, tier and valid-from date; setting that key again REPLACES the row and the response says what it was and what it became, because two rows on one key make the price that day a coin toss decided by array order. A price is never invented: no fallback, no profile default, no nearest match, and an unknown code or a code with no price in the currency and tier asked for is refused by name. No current price is stored, because a stored current price is the copy still being quoted a month after the rise. This server creates no invoice and no quote: lines_resolve returns arguments and says posted false.",
+   "for": "Anyone who quotes and invoices the same catalogue twice: agencies and studios with a day rate and a handful of retained products, trades with a parts list and a labour card, and any small business whose prices are currently a spreadsheet somebody retypes into every quote.",
+   "example": "\"Add WEB-AUDIT, a fixed price audit, 450 from the first of January.\" ... \"We are putting it up to 495 from July.\" ... \"What was it in March?\" ... \"Senior developer 85 an hour, junior 45.\" ... \"Three audits, twelve months hosting, seven and a half hours senior and three and a quarter junior, priced as of the 15th of March, ready for an invoice.\"",
+   "free": "25 SKUs, the one standard price tier, unlimited rate cards, and every text answer including lines_resolve and price_list_text. Withholding lines_resolve would withhold the one thing the sibling servers came here for, and a price list nobody can read is not a price list. sku_delete is free on every tier and the resolution register is what makes that safe: a code that has priced a line, or that a rate card points at, is refused by name with the times it was used and the last resolution id, because a code printed on a document somebody sent is a fact about that document. A byte-identical duplicate is refused BEFORE the free cap is consulted, and the adversarial suite asserts that refusal text does not contain \"free tier\": a duplicate is one product filed twice far more often than it is two products, and it burns neither a slot nor a place in the list.",
+   "pro": "An unlimited catalogue, price tiers beyond standard so trade and wholesale are a second column rather than a second catalogue, price_list_pdf as an A4 page, and catalogue_report: how many rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency, which are the rows that stop a resolution dead.",
+   "storage": "~/.local/share/mcp-servers/catalogue/"
+  },
+  "petty-cash": {
+   "title": "MCP Petty Cash",
+   "tagline": "A petty cash float on the imprest system, reconciled to the minor unit.",
+   "does": "Opens a tin with an imprest amount and a custodian, records one voucher for every receipt paid out of it -- amount in whole minor units, date, category, description, payee and receipt reference -- and counts the cash whenever you ask, returning the expected balance, the difference to the minor unit and every voucher that count covers, all marked reconciled. A count is a FACT, so it moves the book balance: the difference is carried forward as an over or short rather than re-reported at every later count, which is what makes a tin that is short by a little every month visible as a run rather than as one number. The replenishment is imprest minus balance and never the sum of the vouchers: the two differ by exactly what the counts found over or short, and reimbursing the voucher total instead restores the float short by that difference every cycle while every reconciliation still reports clean. The difference comes back as its own cash_over_short journal line rather than folded into an expense category where it would look like postage. Under the imprest system the petty_cash account does not move at a replenishment at all: the journal credits cash and debits the expenses, per category, in the cash book's own account ids, so a category spelled three ways is one account and not three. A voucher larger than the balance on its own date is refused, and so is a back-dated one that would make any LATER day negative. A reconciled voucher cannot be deleted, because the cash it took out was counted. No balance is stored: every balance is derived on the call from the imprest, the top-ups, the vouchers and what each count found.",
+   "for": "Anyone who holds cash for the small things and has to prove what happened to it: a one-tin office, a workshop, a site hut, a shop, a charity with a float, and the bookkeepers who have to turn a shoebox of receipts into a replenishment cheque and a journal that balances.",
+   "example": "\"Open a EUR 500 office float, Anna holds it.\" ... \"Stamps, 12.50, 2 March.\" ... \"Taxi 34.80 on the 5th, receipt 4471.\" ... \"I counted 297.95 in the tin on the 31st.\" ... \"What does the replenishment cheque have to be, and what is the journal?\"",
+   "free": "reconcile is free and unlimited on every tier: whether the cash in the tin matches the paperwork is the question this server exists to answer, and a free tier that withholds the answer is a demo. voucher_delete and topup_record are free for the same reason -- a voucher typed in twice would otherwise cost a slot with no way back but a key. The meter is on the volume of record keeping: one float, and twenty vouchers a calendar month, which is a real one-tin office.",
+   "pro": "Unlimited floats and vouchers, replenish_request with the amount that restores the imprest, the vouchers it reimburses, the per-category expense_add-ready payload and the balanced double entry, and float_report with the balance against the imprest, what is unreconciled, the last count and the history of every difference a count has found.",
+   "storage": "~/.local/share/mcp-servers/petty-cash/"
+  },
+  "change-order": {
+   "title": "MCP Change Order",
+   "tagline": "Change orders against a quote or a work order, with the running contract value derived from what the client approved.",
+   "does": "Raises a change order against a quote or a work order, kept the way a variation is kept on site: added, removed and changed lines, each with a quantity, a unit price in minor units, a reason and a date; a status that moves draft to sent, sent to approved or rejected, draft or sent to void, with every step dated and a step dated before the last one refused; and the running contract value as the original plus the deltas the client has APPROVED, with pending draft and sent deltas shown apart and never added in. The original contract value is stated ONCE per reference on the first change order and inherited by every later one, and a different figure is refused by name, because a contract with two original values has two running values and the customer sees whichever was typed last. No delta is stored: the delta, the VAT and the running value are derived from the lines on every call with the invoice server's own computeTotals, so there is no second implementation to disagree. A CHANGED LINE IS TWO ITEMS, NOT ONE, because one net item shows the customer nothing they can check: 3 x 450.00 becoming 5 x 420.00 is +750.00, and an item of quantity 1 at 750.00 reproduces from nothing on the change order the client signed, where a reversal of -3 x 450.00 and the revised 5 x 420.00 both reproduce on a calculator and sum to the same +750.00 because roundHalfUp is symmetric in sign. That symmetry is what lets a removal ride as a negative quantity through invoice_create, and it is what quote_create refuses, so the quote payload carries a ready flag instead of a promise. Once approved, the delta comes back as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units in one call, the scale printed against each, and the unit suite feeds the MINOR figure into the invoice engine as though it were MAJOR and asserts the net is exactly 100x, re-derived from each payload's own items: on the worked change order 11,701,200 against the correct 117,012. Lines are added only while a change order is a draft; a sent one that needs another line is voided and raised again, so the client's approval always refers to what they were sent. A draft cannot be approved directly, because approval is the client's answer to something they were sent. Nothing is invented: a reference with no change order on file has no running value and says so rather than starting from nothing but its own delta. It reads exactly one file it does not own, the shared business profile, read-only and best-effort, and writes into no store but its own.",
+   "for": "Agencies, studios and trades whose quoted jobs change after the quote: a second page added after the kickoff, hosting dropped, an audit widened, and then the argument three months later about what the contract is worth now and which of those changes the client actually agreed to.",
+   "example": "\"Raise a change order against Q-2026-0003 for Harbour Cafe, original value 20,000: a second landing page, drop the hosting, widen the audit to five sites.\" ... \"Add two landing pages at 450, remove twelve months of hosting at 39.99, and the audit was three at 450, now five at 420.\" ... \"Sent on the 12th.\" ... \"They approved it on the 15th, what is the contract worth now?\" ... \"Build the invoice payload for the approved delta.\"",
+   "free": "Five OPEN change orders, draft and sent, and 200 lines each on every tier. The cap counts the ones the client has not answered rather than the ones ever raised, so approving, rejecting or voiding one frees its slot, and change_order_delete on a draft with no lines is free on every tier, because a way back that only a Pro key can reach is not a way back. contract_value is free on every tier: the running value is the thing the change orders exist to answer, and withholding it would withhold the record. A byte-identical change order is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade, and burns neither a slot nor a CO number.",
+   "pro": "Unlimited open change orders, change_order_document as a plain-text document with every line, its reason, the contract value before and after and an approval block for the client to sign, and change_order_invoice_payload: the approved delta as invoice_create items in MAJOR units and quote_create items in MINOR units at once, with VAT at the shared profile rate and rounding_drift_minor asserted to zero.",
+   "storage": "~/.local/share/mcp-servers/change-order/"
+  },
+  "delivery-schedule": {
+   "title": "MCP Delivery Schedule",
+   "tagline": "Dated deliverables against a quote or a work order, and what is late as at any date you name.",
+   "does": "Opens a delivery schedule against a quote, a work order or a change order, and holds the dated deliverables on it: what is being handed over, the day it is due, its value in whole minor units when it is separately priced, and a status history that runs planned to in progress to delivered to accepted, each move carrying the day it actually happened and the client's acceptance note on the accepted one. LATE IS NOT A STATUS HERE, IT IS A READING: a stored late flag is a fact about the afternoon somebody last ran the report and goes on being reported long after the work lands, so nothing derived is stored and late, due today, not yet due, delivered on time and delivered late are all worked out on the call against the as_of the CALLER passes. The same deliverable due 2026-04-20 and delivered 2026-04-24 reads not yet due at 2026-04-19, late by two days at 2026-04-22 and delivered late by four days at 2026-05-01, from one unchanged store, and the unit suite asserts all three. A deliverable is late only once as_of is PAST its due date, so one due on as_of sits in due_today, which is the same rule the statement server ages an invoice by. Every comparison is between two YYYY-MM-DD strings and every day count is the difference of two UTC midnights, and a suite replays every call under four timezones fourteen hours apart and asserts the responses are byte-identical, so a laptop that travelled cannot move a client's deadline. Nothing may predate the reference document: its own date is stated once on the schedule, and a due date or a status move before it is refused, because nothing can be owed, or delivered, before the document that ordered it exists. Accepting something that was never delivered is refused by name, because acceptance is the client's answer to a handover and there would be no delivered date to bill from. A deliverable with no value is NOT worth zero: it is counted apart wherever a total is printed and excluded by name from the milestone payload, because a price this server invented would be printed on a document a customer pays from. Once milestones are signed off, milestone_payload returns them as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units at once, with the scale printed against each, and the unit suite feeds the MINOR figure into the invoice engine as though it were MAJOR and asserts the net is exactly 100x. It reads exactly one file it does not own, the shared business profile, read-only and best-effort, and writes into no store but its own.",
+   "for": "Agencies, studios, consultancies and trades who quote a job in phases and then have to say, months later and on a date somebody else chose, which deliverables slipped, by how many days, and which ones the client has actually signed off and can therefore be invoiced.",
+   "example": "\"Open a delivery schedule against WO-2026-0011 for Harbour Cafe, dated 1 April: wireframes due the 10th at 900, page copy due the 20th at 479.88, the built site due 1 May at 2100, handover training on the 8th.\" ... \"Wireframes went out on the 9th, signed off on the 12th.\" ... \"What was late as at 22 April?\" ... \"And as at 5 May?\" ... \"Build the invoice for everything they have accepted.\"",
+   "free": "Three OPEN delivery schedules, and 200 deliverables on each on every tier. The cap counts the jobs that still owe something rather than the jobs ever run, so accepting the last deliverable completes a schedule and frees its slot without deleting the record, and delivery_schedule_delete on an empty one is free on every tier, because a way back that only a Pro key can reach is not a way back. late_report is free on every tier: what is late is the question the server exists for, and withholding it would withhold the one answer the client is going to ask for. A second schedule against a reference that already has one is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade.",
+   "pro": "Unlimited open schedules, delivery_schedule_document as a plain-text document with every deliverable, its due date, its status, the delivered and accepted dates, the counts as at a date and a sign-off block for the client, and milestone_payload: the delivered-and-accepted deliverables as invoice_create items in MAJOR units and quote_create items in MINOR units at once, with VAT at the shared profile rate, rounding_drift_minor asserted to zero, and anything left out listed by name under excluded rather than billed as zero.",
+   "storage": "~/.local/share/mcp-servers/delivery-schedule/"
+  },
+  "packing-list": {
+   "title": "MCP Packing List",
+   "tagline": "Packing slips that carry no prices: what is in each carton, what it weighs, and what is still to pack.",
+   "does": "Raises a packing list against an order you name, kept the way a warehouse keeps one: a consignee, a ship-to address, cartons carrying a tare weight in WHOLE GRAMS and their outside dimensions in WHOLE CENTIMETRES, and goods packed into a named carton one line at a time with a per-unit weight. What the order says should ship is DECLARED on the list with packing_expect and is never read out of a sibling store, because the quotes, work-order and invoice dataDir() functions create a directory on read and a packing list that refused to exist until its order could be found on this machine would refuse every order raised on another one. The shortfall then reports every line in one of four states, matched on SKU where there is one and on the normalised description where there is not, so eight shelves in one carton and four in another are ONE row of twelve with both carton ids on it: short, complete, over, and not_on_order for a line that was packed and is not on the order at all. That fourth state is reported and never dropped, because dropping it is exactly how a wrong item ships: the report reads clean, the box is heavier than the order, and nobody looks again until the consignee calls. Nothing derived is stored. Net is the sum of quantity times unit_grams over the lines in a carton, gross is tare plus net, volume is the three dimensions multiplied, and the chargeable weight is max(gross, volumetric) where volumetric is ceil(volume / divisor x 1000) grams, rounded UP because carriers round the chargeable figure up and never down. THE DIVISOR IS A TARIFF TERM, NOT A CONSTANT: 5000 cm3/kg is the courier air default, 6000 the older IATA air figure, 4000 appears on some road tariffs, and it is a parameter on every tool that reports one. On the worked shipment the chargeable weight is 20.000 kg at 5000 and 20.400 kg at 4000, and only the second carton changes basis, so a server that hardcoded 5000 would under-state that shipment by 400 g and nobody would find it until the carrier's account was reconciled. A carton with two of three dimensions is refused outright, because two of three cannot make a volume and a partly measured box drops silently out of the shipment total; a carton with none makes the shipment volumetric and chargeable totals null rather than a total that quietly skipped it. A line with no unit_grams is allowed, because things genuinely ship unweighed, and it makes every net and gross figure a LOWER BOUND that is printed in the slip body and not only returned as a field. THE DOCUMENT CARRIES NO PRICES, and that is enforced rather than promised: the invoice engine is not a dependency, no money function name appears in non-comment source, and the unit suite asserts no currency symbol reaches the rendered slip. The invoice against the same order is a different document in a different server. A shipped list is frozen on every editing tool and readable on every reading one, because a packing slip that changed after the van did is a document nobody can reconcile against what arrived.",
+   "for": "Anyone who puts goods in boxes against an order: a maker shipping a batch, a trade delivering materials to a site, a small warehouse that wants the slip, the gross weight and the chargeable weight without a WMS.",
+   "example": "\"Open a packing list against WO-2026-0044 for Harbour Cafe, shipping to 12 Dock Road, Bristol.\" ... \"The order says twelve oak shelves, twenty-four brackets and a fixing pack.\" ... \"Box 1 is 40 by 30 by 25, tare 800 grams: eight shelves at 1250 grams and all twenty-four brackets at 150.\" ... \"What is still to pack?\" ... \"What will DHL charge me for at their 5000 divisor?\" ... \"Print the slip and mark it shipped with DPD, tracking 1Z-77-4412.\"",
+   "free": "Three OPEN packing lists, draft and packed, with unlimited cartons, packed lines and declared order lines on every tier. The cap counts shipments in flight rather than shipments ever made, so marking one shipped or cancelling it frees its slot, and deleting a draft is free on every tier, because a way back that only a Pro key can reach is not a way back. carton_report, packing_shortfall, packing_list_show and the packing slip TEXT are free on every tier: those are the questions this server exists to answer, and a free tier that withheld them would withhold the reason to install it.",
+   "pro": "Unlimited open packing lists, and packing_slip writing the slip to a .txt file at a path you name. The path goes through a bounded ancestor walk rather than mkdirSync with recursive, so a caller-supplied path under /proc, /sys or /dev fails in milliseconds instead of retrying forever; a URL is refused by name before any resolution, so the refusal never leaks the server's working directory; and an existing file is refused unless overwrite is passed.",
+   "storage": "~/.local/share/mcp-servers/packing-list/"
+  },
+  "checklist": {
+   "title": "MCP Checklist",
+   "tagline": "Checklists you build once and run many times, and the dated record of each run that somebody signs.",
+   "does": "Holds a checklist as a named list of steps, optionally grouped into sections, each one required or optional, and runs it against a job as many times as you like. A run marks every step pass, fail or not applicable, with who marked it, on what day, and a note saying what was found, and run_sign_off puts a name and a date on it and freezes it. A RUN COPIES ITS CHECKLIST WHEN IT STARTS, and that one rule decides the whole server: the steps are copied into the run, text and all, with the checklist's version number recorded beside them, so editing the checklist afterwards never changes a run already under way and deleting the checklist leaves every run readable and complete. Without it, editing a checklist rewrites history: a handover certificate signed for ten checks silently becomes a certificate for eleven, and no field anywhere in the record shows that it happened, so no reader could ever detect it. The contract suite asserts it on the raw runs.json bytes and not only through the API. NOT APPLICABLE IS NOT A PASS: na counts as ANSWERED and never as passed, because a step that was looked at and dismissed is a different fact from a step that passed, and merging the two is how a checklist reports full marks for a job where half the steps did not apply. The arithmetic that catches it is that pass plus fail plus na plus pending equals the item count AND answered plus pending equals it too, which only both hold if na sits on the answered side. Nothing derived is stored: the counts, the failures, the outstanding list and whether a run can be signed off are computed on every call, and complete is a READING rather than a claim, appearing when the last step is answered and going away again when one is set back to pending, with each change written to the run's history. Setting a step back to pending clears who answered it and when, because a name against an unanswered step is a false record and it is the kind that survives into a signed document. A required step unanswered or failed blocks the signature and an optional one failing does not, which is the only reason required exists; force signs anyway and the exceptions stay on the record and print on the report under a heading that names them, so a signature taken over an exception is visible rather than lost. Sign-off refuses a closed run on the status machine and an open one on the reasons, because an open run cannot go straight to signed_off is true and useless when what the caller needs is which steps are outstanding. A signed-off run cannot be edited or deleted, because it is the record of what somebody put their name to; an abandoned one is closed but is not a signature and can be deleted.",
+   "for": "Trades, field service, hire and delivery: pre-delivery vehicle checks, site handover certificates, snag and defect lists, plant inspections, and the onboarding checklist somebody has to sign at the end.",
+   "example": "\"Make a pre-delivery vehicle check: tyre pressures, lights, load secured, weight within the plated limit, and photograph the bodywork if you can.\" ... \"Start a run for van BX21 KLM against WO-2026-0044.\" ... \"Ada passed the tyres and the lights, no camera on site so the photos are not applicable.\" ... \"Ben found it at 3620 kilos against a plated 3500, that one fails.\" ... \"Can I sign it off?\" ... \"Cara signs it with the overweight accepted and the load split; print the report.\"",
+   "free": "Three checklists, and UNLIMITED RUNS of them on every tier, because capping the running of a checklist would cap the only thing a checklist is for. Up to 500 steps on a checklist on every tier. Every read, every count, the failures, the outstanding list and the run report TEXT are free. Deleting a checklist frees its slot, and the runs already made from it stay readable, because each run carries its own copy of the steps.",
+   "pro": "Unlimited checklists, and run_report writing the report to a .txt file at a path you name. The path goes through a bounded ancestor walk rather than mkdirSync with recursive, so a caller-supplied path under /proc, /sys or /dev fails in milliseconds instead of retrying forever; a URL is refused by name before any resolution, so the refusal never leaks the server's working directory; and an existing file is refused unless overwrite is passed.",
+   "storage": "~/.local/share/mcp-servers/checklist/"
   }
+ },
+ "version": "0.1.1",
+ "compare_none": {
+  "zip": {
+   "date": "2026-09-04",
+   "tokens": [
+    "zip",
+    "archive",
+    "compress",
+    "unzip",
+    "tar",
+    "gzip",
+    "7z",
+    "decompress",
+    "file compression",
+    "extract",
+    "zip file",
+    "zip archive",
+    "archiver",
+    "unpack",
+    "inflate",
+    "deflate",
+    "file archive",
+    "tarball"
+   ],
+   "note": "Searched the official MCP registry search API for each token; nothing found packs, lists or unpacks a .zip file (zip = postal-code servers; archive = Internet Archive wrappers; compress = image/LLM-prompt/scientific-data compressors). See docs/CONTENT_R12_RESULT.md for the per-token breakdown and the guide it produced.",
+   "guide": "zip-archives-safely-from-chat",
+   "ttl_days": 30
+  },
+  "billing-docs": {
+   "date": "2026-09-05",
+   "tokens": [
+    "credit-note",
+    "credit note",
+    "purchase-order",
+    "purchase order",
+    "po",
+    "debit note",
+    "refund",
+    "invoice reversal",
+    "procurement",
+    "supplier order",
+    "goods receipt",
+    "accounts payable"
+   ],
+   "note": "Searched the official MCP registry search API for each token; nothing found writes a credit note against an invoice or raises a purchase order (credit = credit-scoring and API-credit meters; purchase order = e-commerce order lookups; procurement = RFP text search). Per docs/INTEL_R9_RESULT.md the registry returns 0 results for the credit-note and purchase-order tokens. See docs/DIST_R13_RESULT.md.",
+   "guide": "credit-notes-and-purchase-orders-from-chat",
+   "ttl_days": 30
+  },
+  "deposits": {
+   "date": "2026-09-05",
+   "tokens": [
+    "deposit",
+    "deposits",
+    "retainer",
+    "security deposit",
+    "escrow",
+    "client funds",
+    "trust account",
+    "damage deposit",
+    "advance payment",
+    "held funds"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-05; nothing found holds a client's money on a ledger and applies it to an invoice. deposit, deposits, security deposit, client funds and trust account return 0 results each. retainer returns 12 rows that are all one server, io.github.theluckystrike/retainer, which is this estate's own mcp-recurring (recurring retainer BILLING, a schedule that raises invoices, not money held). escrow returns 10 rows, all agent-to-agent crypto settlement on Base, Robinhood Chain or USDC (0xdirectping/escrow, jdhart81/agent-escrow, kustodia-escrow, hive-mcp-escrow, Evozim's cross-chain bridge readers), which hold tokens between two agents rather than a client deposit against an invoice. Nothing to compare against honestly. See docs/DIST_R14_RESULT.md.",
+   "guide": "client-deposits-and-retainers-from-chat",
+   "ttl_days": 30
+  },
+  "asset-register": {
+   "date": "2026-09-05",
+   "tokens": [
+    "asset-register",
+    "asset register",
+    "depreciation",
+    "fixed-assets",
+    "fixed assets",
+    "capital-allowances",
+    "capital allowances",
+    "macrs",
+    "amortization",
+    "book value"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-05; nine of the ten return 0 results and nothing found keeps a register of assets and depreciates it on a published rate table. depreciation returns exactly one row, io.github.Evozim/depreciation-value-calculator-mcp, and it is not a server this estate can write a comparison page against: it is a remote SSE endpoint on api.m2mcent.com behind an x402 payment header that charges $0.30 USDC on Base per call, its own description says only \"Premium agentic endpoint for depreciation-value-calculator-mcp\", and it is one of the same publisher's generated calculator wrappers rather than a register. It holds no asset, no scheme, no KST, capital allowance or MACRS table, no convention, no journal and no disposal, and it was NOT called: paying per invocation to probe a competitor is a paid API call. A comparison page would be setting a metered arithmetic endpoint against a bundled statutory rate table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R16_RESULT.md.",
+   "guide": "fixed-assets-and-depreciation-from-chat",
+   "ttl_days": 30
+  },
+  "statement-of-account": {
+   "date": "2026-09-05",
+   "tokens": [
+    "statement-of-account",
+    "statement of account",
+    "aging",
+    "dunning",
+    "receivables",
+    "accounts receivable",
+    "debt collection",
+    "payment reminder"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-05. Seven of the eight return 0 results: statement-of-account, statement of account, dunning, receivables, accounts receivable, debt collection and payment reminder. The eighth, aging, returns 20 rows and every one of them is a substring match on another word rather than a match on the concept: imaging (CAST Imaging, a DICOM analyser), staging (three placeholder staging endpoints), messaging (WhatsApp, SMS and private-agent messaging servers), paging (an on-call pager) and one healthy-aging supplement atlas. Nothing in the registry reads an invoice ledger, computes what is outstanding as at a date, buckets it by days past due or drafts a chaser. There is no honest comparison page to write, so this note stands in place of one and expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R17_RESULT.md.",
+   "guide": "client-statements-and-dunning-from-chat",
+   "ttl_days": 30
+  },
+  "cash-book": {
+   "date": "2026-09-06",
+   "tokens": [
+    "cash-book",
+    "ledger",
+    "trial-balance",
+    "bookkeeping",
+    "double-entry"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-06. Three of the five return 0 results: cash-book, trial-balance and double-entry. bookkeeping returns exactly one row and ledger returns 30, and the ones that are genuinely accounting rather than a substring match on ledger -- ai.craneledger/crane-ledger, io.helloledger/bookkeeping, com.npledger/np-ledger and com.ledgerbeaver/finance -- are all the same shape: a remote streamable-http endpoint in front of a hosted book you keep on their platform, reached with a bearer key and an account. Not one of them was called: probing a metered remote endpoint is a paid API call. The rest of the ledger rows are the word used for something else entirely, tamper-evident action logs, run receipts, congressional trade registers, tariff tables and an EU tutoring platform. This server is not that shape and a comparison page would be dishonest about which one a reader wants: it posts nothing, it stores no book of its own beyond a register of the periods it built, and it derives the whole ledger on the call from six local stores it never writes to. The comparison a reader would actually want is against a spreadsheet, and the measured result of that comparison is the guide /guides/one-ledger-from-every-server rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R18_RESULT.md.",
+   "guide": "one-ledger-from-every-server",
+   "ttl_days": 30
+  },
+  "amortization": {
+   "date": "2026-09-06",
+   "tokens": [
+    "amortization",
+    "loan-schedule",
+    "lease",
+    "mortgage-calculator",
+    "effective-rate"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-06. Three of the five return 0 results: amortization, loan-schedule and effective-rate. lease returns 30 rows and 28 of them are a substring match on the word release rather than a match on the concept: release trackers for npm, PyPI, HuggingFace and LLM launches, release gates, release-note tooling and CI signoff binders. The one genuine lease row, io.github.amadeuserras/leaseclear-mcp, is document Q&A over a lease you already signed rather than a schedule derived from its terms. mortgage-calculator returns 4 rows and all four are the same server, io.github.CSOAI-ORG/mortgage-calculator-ai-mcp, listed at four versions: a remote US-mortgage payment calculator with comparison and affordability tools. It was not called: probing a remote endpoint someone else meters is a paid API call. That server answers what a monthly payment would be on a hypothetical mortgage. This server holds a register of agreements you actually signed, derives every row in integer minor units so the closing balance reaches the balloon exactly, costs an early settlement net of its penalty, and hands back a balanced double entry in the cash book's own account ids. A comparison table between the two would be dishonest about which one a reader wants, and nothing in the registry does the second thing at all. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R19_RESULT.md.",
+   "guide": "loan-and-lease-schedules-from-chat",
+   "ttl_days": 30
+  },
+  "petty-cash": {
+   "date": "2026-09-06",
+   "tokens": [
+    "petty-cash",
+    "cash-float",
+    "imprest",
+    "expense-float"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-06. All four return 0 rows, and so does the bare token petty. The run carried a control: expense returns 30 rows on the same API in the same minute, so the four zeroes are the registry answering rather than the search being broken. The nearest rows the control turns up are expense trackers -- com.expense-budget-tracker/expense-budget-tracker and io.github.CSOAI-ORG/expense-tracker-ai-mcp among them -- and an expense tracker is a different object: it records what was spent, against a card or a bank account, and nothing in it counts a tin. None were called: probing a remote endpoint someone else meters is a paid API call. What has no row at all in the registry is the imprest system itself: a float that is topped back up to a fixed amount, a count that is a fact and moves the book balance, a replenishment computed as imprest minus balance rather than as the sum of the vouchers, and the cash_over_short line that carries the difference between the two. A comparison table would have to compare this against a spreadsheet, and the measured result of that comparison is the guide /guides/petty-cash-float-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R20_RESULT.md.",
+   "guide": "petty-cash-float-from-chat",
+   "ttl_days": 30
+  },
+  "work-order": {
+   "date": "2026-09-06",
+   "tokens": [
+    "work-order",
+    "job-card",
+    "service-report",
+    "field-service"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-06. All four return 0 rows, and so does the two-word form work order. The run carried a control, because a search API that has broken returns zero for everything: service returns 100 rows on the same API in the same minute and maintenance returns 12, so the four zeroes are the registry answering rather than the search failing. The nearest rows the control turns up are a different object in both directions. com.checkmycontractorquote/maintenance-concierge-ai triages a property maintenance problem and generates a vendor packet, which is the step BEFORE a work order exists: it decides who to call, not what the job used. io.github.LGDiMaggio/predictive-maintenance-mcp is industrial vibration analysis and bearing fault diagnosis to ISO 20816, which decides when a machine will need work, not what the customer is billed for the visit. Neither holds a job card. None were called: probing a remote endpoint someone else meters is a paid API call. What has no row at all in the registry is the thing this server exists for: a markup that goes on the UNIT cost so the invoice reproduces the job to the minor unit, a status machine where every step carries its own date and a skipped step is refused, and an invoice payload whose totals are computed by the invoice server's own function rather than by a second implementation. A comparison table would have to compare this against a paper duplicate book, and the measured result of that comparison is the guide /guides/work-orders-and-job-cards-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R21_RESULT.md.",
+   "guide": "work-orders-and-job-cards-from-chat",
+   "ttl_days": 30
+  },
+  "catalogue": {
+   "date": "2026-09-06",
+   "tokens": [
+    "price-list",
+    "rate-card",
+    "catalogue",
+    "pricing"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-06. The run carried a control, because a search API that has broken returns zero for everything. What the four tokens do not turn up is a server that HOLDS a price list as a history: rows with valid-from dates, the price on a date worked out on the call, and a refusal for a date before every row. The rows the control surfaces are a different object. They are e-commerce and marketplace connectors that READ a price out of somebody else's system, or currency and market-data servers that fetch a rate, which is a price nobody set and nobody has to stand behind on an invoice. None of them is a catalogue the business owns and reprices, and none carries the thing this server exists for: the same price scaled two ways for two sibling payloads, unit_price in MAJOR units for invoice_create and unit_price_minor in MINOR units for quote_create, exactly 100x apart in a 2-decimal currency and 1000x in a 3-decimal one, both plain numbers that reconcile against themselves when they are wrong. None were called: probing a remote endpoint someone else meters is a paid API call. A comparison table would have to compare this against a spreadsheet somebody retypes into every quote, and the measured result of that comparison is the guide /guides/price-lists-and-rate-cards-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R22_RESULT.md.",
+   "guide": "price-lists-and-rate-cards-from-chat",
+   "ttl_days": 30
+  },
+  "change-order": {
+   "date": "2026-09-06",
+   "tokens": [
+    "change-order",
+    "variation-order",
+    "scope-change",
+    "contract-value"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-06. All four return 0 rows, and so does the two-word form change order. The run carried a control, because a search API that has broken returns zero for everything: service returns 100 rows on the same API in the same minute, so the four zeroes are the registry answering rather than the search failing. What the tokens do not turn up is a server that HOLDS a change order as a record: added, removed and changed lines against a quote or work order, a status machine where every step carries its own date, and a running contract value that counts only what the client approved. The rows the control surfaces are a different object: service discovery, name services and pay-per-call trading tools, none of which records a variation to a contract or states what a contract is worth after it. None were called: probing a remote endpoint someone else meters is a paid API call. Nothing in the registry carries the thing this server exists for: a changed line emitted as a reversal and a revised item rather than one net item, and the approved delta in both sibling scales at once, invoice_create's MAJOR units and quote_create's MINOR units, asserted exactly 100x apart from each payload's own items. A comparison table would have to compare this against an email thread and a spreadsheet column called extras, and the measured result of that comparison is the guide /guides/change-orders-and-contract-value-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R23_RESULT.md.",
+   "guide": "change-orders-and-contract-value-from-chat",
+   "ttl_days": 30
+  }
+ }
 }

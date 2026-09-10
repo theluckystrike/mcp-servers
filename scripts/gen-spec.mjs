@@ -27,6 +27,7 @@ const SERVERS = [
   "amortization", "asset-register", "bank-statement", "cash-book", "billing-docs", "calendar", "catalogue", "change-order", "clauses", "currency", "delivery-schedule", "deposits", "docx",
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "petty-cash", "price-tracker", "recurring",
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone", "work-order",
+  "packing-list", "checklist",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -135,6 +136,58 @@ const CURATED = {
       "A DELIVERABLE ID IS NEVER REISSUED. The D series is allocated from a per-schedule counter that only goes up, not from the deliverable count, so deleting D04 does not hand D04 to a different piece of work. A gap in the series is the record that one was removed.",
       "VALUE IS NEVER SUMMED ACROSS CURRENCIES. This server holds no exchange rate, so `value_at_risk` is a row per currency and a single figure over two of them is never printed.",
       "NO SIBLING STORE IS OPENED. The reference is a name and its date is stated here; the quotes, work-order and change-order `dataDir()` functions create a directory on read, and a schedule that refused to exist until its reference could be found on this machine would refuse every job quoted on another one. `milestone_payload` returns arguments and says `posted: false`; it creates no invoice and no quote.",
+    ],
+  },
+  "packing-list": {
+    summary: "Packing slips for a shipment, kept the way a warehouse keeps one: an order reference and a consignee, the lines that order says should ship declared on the list itself, cartons carrying a tare weight in whole grams and their outside dimensions in whole centimetres, and goods packed into a named carton one line at a time with a per-unit weight. The shortfall reports every line as short, complete, over-packed or packed and not on the order at all. The tare, net, gross, volume, volumetric and chargeable weights are derived per carton and for the shipment. No weight and no shortfall is stored, and the document carries no prices at all.",
+    storageFiles: [
+      ["packing-lists.json", "the packing lists, each carrying its order reference, its consignee, its cartons, its declared order lines and its packed lines, and nothing derived from them"],
+      ["counter.json", "the PL number series, per year of the packing list date"],
+    ],
+    primaryFile: "packing-lists.json",
+    caps: [
+      "`FREE_OPEN_LISTS` = 3 OPEN packing lists on free, where open means draft or packed. Marking a list shipped or cancelling it frees its slot without deleting it, and deleting a draft is free on every tier.",
+      "`packing_slip` writing a FILE with `out_path` is Pro. The slip TEXT comes back on every tier, because the slip is the reason to install this at all. The refusal is an answer, not a protocol error, and nothing is written to disk before it.",
+      "`MAX_CARTONS` = 500 cartons and `MAX_LINES` = 2000 packed lines and 2000 declared lines on one list; `MAX_QUANTITY` = 1e6 units per line; `MAX_GRAMS` = 1e8 (100 tonnes) per mass field; `MAX_CM` = 2000 per dimension.",
+      "`MAX_ROWS` = 500 packing lists in one `packing_list_list` answer. A cut list reports `truncated` with the total and how to narrow it.",
+    ],
+    extra: [
+      "A PACKING SLIP CARRIES NO PRICES, AND THAT IS ENFORCED RATHER THAN ASSUMED. The document travels inside the box and the consignee's warehouse is not the party that sees what the goods cost. So `@theluckystrike/mcp-invoice` is not a dependency, no money function name appears in non-comment source, no currency is stored on a record, and the unit suite asserts no currency symbol reaches the rendered slip. The invoice against the same order is a different document in a different server.",
+      "MASS IS IN WHOLE GRAMS AND DIMENSIONS IN WHOLE CENTIMETRES, for the reason money is in minor units: a kilogram carried as a float accumulates error over a hundred lines and then disagrees with the carrier's scale. Every mass the server emits is an integer, the contract suite asserts it, and the kilogram figures beside them are formatting at the edge only.",
+      "THE CHARGEABLE WEIGHT IS THE NUMBER THAT COSTS MONEY, AND ITS DIVISOR IS A TARIFF TERM, NOT A CONSTANT. Volumetric grams are `ceil(length x width x height / divisor x 1000)`, rounded UP because carriers round the chargeable figure up and never down, and the chargeable weight is `max(gross, volumetric)`. The divisor is a parameter on every tool that reports one: 5000 cm3/kg courier air (default), 6000 the older IATA air figure, 4000 some road tariffs. On the worked shipment the shipment chargeable weight is 20.000 kg at 5000 and 20.400 kg at 4000, and only the second carton changes basis; a server that hardcoded 5000 would under-state that shipment by 400 g and nobody would find it until the carrier's account was reconciled.",
+      "A CARTON WITH TWO OF THREE DIMENSIONS IS REFUSED, AND ONE WITH NONE MAKES THE SHIPMENT CHARGEABLE TOTAL NULL. Two of three cannot make a volume, and a partially measured box would drop silently out of the shipment total. A total that quietly skipped three unmeasured boxes reads like a complete figure and is not one, so it comes back as null with the count of cartons that caused it.",
+      "AN UNWEIGHED LINE MAKES EVERY NET AND GROSS FIGURE A LOWER BOUND, SAID OUT LOUD. `unit_grams` is optional because things genuinely ship unweighed. When any line in a carton carries none, `net_complete` goes false and the caveat is printed in the slip BODY as well as returned as a field, because a caveat that lives only in the JSON does not travel with the text somebody pastes into an email. A `unit_grams` of ZERO is a real weight and is not treated as unweighed.",
+      "A PACKED LINE WITH NO ORDERED LINE IS REPORTED, NEVER DROPPED. The shortfall has four states and `not_on_order` is one of them. Dropping it is how a wrong item ships: the report reads clean, the box is heavier than the order, and nobody looks again until the consignee calls. Lines are matched on SKU where there is one and on the normalised description where there is not, so eight shelves in one carton and four in another are ONE row of twelve, with both carton ids on it.",
+      "A SHIPPED LIST IS FROZEN ON EVERY EDITING TOOL AND READABLE ON EVERY READING ONE. The goods have gone; a packing slip that changed after the van did is a document nobody can reconcile against what arrived. It cannot be reopened, edited or deleted, and the slip stays reproducible afterwards. Shipping while anything is short, over-packed or unordered is refused unless `force` is passed, and either way the exceptions come back and are recorded as `shipped_with_exceptions`.",
+      "NO SIBLING STORE IS OPENED. The order is a name, and what it says should ship is DECLARED here with `packing_expect`. The quotes, work-order and invoice `dataDir()` functions create a directory on read, and a packing list that refused to exist until its order could be found on this machine would refuse every order raised on another one.",
+      "THIS SERVER IS STDIO AND .MCPB ONLY. It has no hosted endpoint, so there is no `remotes.json` and no manifest carries a `remotes` block. The registry binds one endpoint URL to exactly one server name, so advertising a URL that does not answer would burn the name; the contract suite asserts the absence rather than trusting it.",
+    ],
+  },
+  "checklist": {
+    summary: "Checklists you build once and run many times, and the dated record of each run that somebody signs. A checklist is a named list of steps, optionally grouped into sections, each required or optional. A run is one pass of that checklist against a job: every step marked pass, fail or not applicable, with who marked it, on what day, and a note. A run COPIES its checklist's steps when it starts and records the version it copied. Sign-off puts a name and a date on it and freezes it. No count is stored: progress, the failures, and whether a run can be signed off are derived on every call.",
+    storageFiles: [
+      ["templates.json", "the checklists, each carrying its name, category, version and its steps in order, and nothing derived from them"],
+      ["runs.json", "the runs, each carrying its own COPY of the steps it started with, the checklist version it copied, every answer with who and when, and its dated status history"],
+      ["counter.json", "the CL and RUN number series, the RUN series per year of the run date"],
+    ],
+    primaryFile: "runs.json",
+    caps: [
+      "`FREE_TEMPLATES` = 3 checklists on free. RUNS ARE NEVER CAPPED on any tier, because capping the running of a checklist would cap the only thing a checklist is for. Deleting a checklist frees its slot.",
+      "`run_report` writing a FILE with `out_path` is Pro. The report TEXT comes back on every tier. The refusal is an answer, not a protocol error, and nothing is written to disk before it.",
+      "`MAX_ITEMS` = 500 steps on one checklist; `MAX_TEMPLATES` = 500 checklists; `MAX_SECTION` = 60 characters for a section heading or a category, refused at the schema rather than trimmed.",
+      "`MAX_ROWS` = 500 rows in one `run_list` or `checklist_list` answer. A cut list reports `truncated` with the total and how to narrow it.",
+    ],
+    extra: [
+      "A RUN SNAPSHOTS ITS CHECKLIST, AND THAT IS THE WHOLE SERVER. The steps are copied into the run when it starts, text and all, with the checklist's version number recorded beside them. Editing the checklist afterwards never changes a run already under way, and deleting the checklist leaves every run readable and complete. Without it, editing a checklist rewrites history: a handover certificate signed for ten checks silently becomes a certificate for eleven, and no field anywhere in the record shows that it happened, so no reader could ever detect it. The contract suite asserts it on the raw `runs.json` bytes and not only through the API.",
+      "NOT APPLICABLE IS NOT A PASS. `na` counts as ANSWERED and never as passed. A step that was looked at and dismissed is a different fact from a step that passed, and merging the two is how a checklist reports full marks for a job where half the steps did not apply. The arithmetic that catches it: `pass + fail + na + pending` equals the item count AND `answered + pending` equals the item count, which only both hold if na sits on the answered side.",
+      "COMPLETE IS A READING, NEVER A CLAIM. A run becomes complete when its last step is answered and goes back to open when a step is set back to pending, and each change is written to the run's history. It is recomputed inside `run_check` rather than set by any tool, so no caller can assert a completeness the steps do not support.",
+      "SETTING A STEP BACK TO PENDING CLEARS WHO ANSWERED IT AND WHEN. A name against an unanswered step is a false record, and it is the kind that survives into a signed document.",
+      "A REQUIRED STEP IS THE ONLY REASON `required` EXISTS. A required step unanswered or failed blocks the signature; an optional one failing does not, though an optional one unanswered does. `force: true` signs anyway and the exceptions stay on the record and print on the report under a heading that names them, so a signature taken over an exception is visible rather than lost.",
+      "SIGN-OFF REFUSES ON THE REASONS, NOT ON THE STATUS MACHINE. A CLOSED run is refused on the machine, because a signature is the point at which a run stops moving. An OPEN one is refused on which steps are outstanding, because `an open run cannot go straight to signed_off` is true and useless. The two can never disagree: the sign-off test is only ready when nothing is pending, and a run with nothing pending is already complete.",
+      "A SIGNED-OFF RUN IS IMMUTABLE ON EVERY EDITING TOOL AND READABLE ON EVERY READING ONE, and it cannot be deleted, because it is the record of what somebody put their name to. An ABANDONED run is closed but is not a signature: it prints the blank signature block and it CAN be deleted.",
+      "NO SIBLING STORE IS OPENED. The job a run is against is a name and nothing more, so a run raised against a work order created on another machine still exists here.",
+      "THERE IS NO MONEY ANYWHERE. A checklist has no amounts: `@theluckystrike/mcp-invoice` is not a dependency, no money function name appears in non-comment source, and no currency symbol appears in src. The contract suite asserts all three.",
+      "THIS SERVER IS STDIO AND .MCPB ONLY, and it ships THREE registry names on one bundle: `checklist`, `snag-list-defect-handover-signoff` and `onboarding-checklist-inspection-runs`. Registry search matches a substring of the full name and never the description, so more names is the only way to be findable on more tokens; the measured landing ranks are 7, 2, 3 and 7 on checklist, snag, handover and onboarding (docs/TOKEN_DEMAND_R1.md). A contract test asserts the tokens are actually present in the names, because a name that lost its token in an edit is a server that silently stops being findable.",
     ],
   },
   "change-order": {

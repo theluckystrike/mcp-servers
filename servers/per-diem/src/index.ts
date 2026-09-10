@@ -247,7 +247,7 @@ server.registerTool("perdiem_calc", {
 
 server.registerTool("trip_record", {
   title: "Save a calculated trip",
-  description: "Calculate a trip and save it under a name, with the traveller taken from the shared business profile. Returns the TRIP-YYYY-NNNN id. Free tier: 5 trips a calendar month.",
+  description: "Calculate a trip and save it under a name, traveller taken from the shared business profile; returns the TRIP-YYYY-NNNN id. An identical record is refused and named, spending no slot. Free: 5 trips a calendar month.",
   inputSchema: {
     name: str("name", MAX_NAME).min(1, "name is required").describe('What to call it, e.g. "Berlin client workshop"'),
     ...calcInput,
@@ -346,7 +346,7 @@ server.registerTool("trip_list", {
  */
 server.registerTool("trip_delete", {
   title: "Delete a saved trip",
-  description: "Delete one saved trip that has not been exported and has no expense booked against it, and free the free-tier slot it held that month. A trip with a dependent is refused, named. Free and unlimited.",
+  description: "Delete one saved trip and free the free-tier slot it held that month. A trip that has been exported or has an expense booked against it is refused with the blocker named, and nothing is written. Free and unlimited.",
   inputSchema: {
     trip: z.string().min(1, "trip is required").describe("Trip id such as TRIP-2026-0001, or an exact or partial trip name. A partial name matching more than one trip is refused with the list"),
   },
@@ -397,7 +397,7 @@ server.registerTool("trip_delete", {
  */
 server.registerTool("trip_export", {
   title: "Export a trip as expenses",
-  description: "Return the exact expense_add arguments for a saved trip, one payload per currency, ready to pass to the expense-tracker server. It writes nothing itself: see the note in the answer. Pro.",
+  description: "Return the exact expense_add arguments for a saved trip: one payload for subsistence and, with split_lodging, one for lodging. It writes nothing in the expense-tracker server; only mark_exported changes this trip. Pro.",
   inputSchema: {
     trip: z.string().min(1, "trip is required").describe("Trip id such as TRIP-2026-0001, or an exact or partial trip name"),
     category: str("category", MAX_NAME).optional().describe('Expense category to put on the payload. Default "travel"'),

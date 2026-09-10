@@ -358,7 +358,7 @@ server.registerTool("resume_to_markdown", {
 
 server.registerTool("resume_to_html", {
   title: "Printable resume HTML",
-  description: "Call this tool to write the resume as semantic HTML with a print stylesheet and return the path; print it to PDF from a browser. Bullets are trimmed to fit max_pages. Free and unlimited.",
+  description: "Call this tool to write the resume as semantic HTML with a print stylesheet and return where it went; print it to PDF from a browser, because there is no doc_to_pdf here. Bullets are trimmed to fit max_pages. Free.",
   inputSchema: {
     variant: z.string().optional(), target_role: z.string().optional(),
     max_pages: z.number().int().min(1).max(5).default(2).describe("Bullets are trimmed to fit this many pages against a measured word budget. Default 2."),

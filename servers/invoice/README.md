@@ -219,7 +219,7 @@ All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/invoice/`
 - [mcp-time-tracker](../time-tracker/README.md) -- `invoice_summary` output there maps directly onto `invoice_create` line items here.
 - [mcp-spreadsheet](../spreadsheet/README.md) -- pull line items or client lists out of a sheet before invoicing.
 - [mcp-price-tracker](../price-tracker/README.md) -- invoice a client for something you tracked the price of.
-- [office-suite](../office-suite/README.md) -- all four servers behind one install, one config entry.
+- [office-suite](../office-suite/README.md) -- every sibling server behind one install, one config entry.
 - Guide: [Create an invoice PDF from a chat message with an MCP server](https://mcp.zovo.one/guides/invoice-pdf-from-chat)
 
 ## FAQ

@@ -181,7 +181,7 @@ const currencyArg = z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-lett
 
 server.registerTool("sku_set", {
   title: "Add or reprice a SKU",
-  description: "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and a price in minor units for one currency, tier and valid-from date. Free tier: 25 SKUs.",
+  description: "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and price_minor in whole minor units for one currency, tier and valid_from. A repriced line keeps its old rows. Free: 25 SKUs, one tier.",
   inputSchema: {
     sku: str("sku", 64).describe("The code, e.g. WEB-AUDIT. Upper case, no spaces. This is what an invoice line is filed under"),
     name: str("name", MAX_NAME).describe("What it is on the customer's document, e.g. Website audit"),
@@ -818,7 +818,7 @@ server.registerTool("price_list_pdf", {
 
 server.registerTool("catalogue_report", {
   title: "Report the catalogue",
-  description: "Report the catalogue: how many SKUs there are, how many price rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Pro.",
+  description: "Report the catalogue as at date: how many SKUs there are, how many price rows are in force, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Reads only. Pro.",
   inputSchema: {
     date: str("date", 10).optional().describe("The day the report is in force, YYYY-MM-DD. Default today"),
     limit: z.number().int().min(1).max(MAX_ROWS).optional().describe(`Maximum rows listed in each section, default and ceiling ${MAX_ROWS}`),

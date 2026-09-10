@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/snag-list-defect-handover-signoff",
+  "description": "Snag and defect lists at handover: every step marked, the failures listed, and a signature.",
+  "version": "0.21.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/checklist"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/checklist",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/checklist.mcpb",
+      "version": "0.21.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "c004888c0418a0ddaa4c96a659e082551c3a00dbfd36f980456deb891c84a3d4"
+    }
+  ]
+}

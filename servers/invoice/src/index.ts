@@ -35,8 +35,8 @@ const gate = createLicenseGate({ product: "invoice" });
  * stops) reading the shared profile cannot go unnoticed here again.
  */
 export const PROFILE_READERS = [
-  "asset-register", "bank-statement", "barcode", "calendar", "catalogue", "change-order", "clauses", "currency", "delivery-schedule", "docx", "expense-tracker",
-  "image", "kanban", "pdf", "per-diem", "petty-cash", "quotes", "resume", "statement-of-account", "time-tracker", "timezone",
+  "asset-register", "bank-statement", "barcode", "calendar", "catalogue", "change-order", "checklist", "clauses", "currency", "delivery-schedule", "docx", "expense-tracker",
+  "image", "kanban", "packing-list", "pdf", "per-diem", "petty-cash", "quotes", "resume", "statement-of-account", "time-tracker", "timezone",
   "work-order",
 ];
 
@@ -288,7 +288,7 @@ function clientFingerprint(c: { name: string; address?: string; email?: string; 
 
 server.registerTool("client_add", {
   title: "Add a client",
-  description: "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details; a record identical to one already stored is refused, naming the id that holds it.",
+  description: "Store a client so invoice_create can refer to them by name. Re-adding the same name updates the stored address, email and VAT id; a record identical to a stored one is refused, naming the id that already holds it.",
   inputSchema: {
     name: z.string(),
     address: z.string().optional(),

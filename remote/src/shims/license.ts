@@ -7,12 +7,13 @@
 import { z } from "zod";
 import { ctx } from "./ctx.js";
 import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "./fs.js";
+import { paymentDescriptor } from "../payment.js";
 
 export const CHECKOUT_BASE = "https://mcp.zovo.one";
 export const PRICE_SINGLE_USD = 19;
 export const PRICE_BUNDLE_USD = 39;
 /** Mirrors packages/mcp-license/src/index.ts. One number, asserted equal by its test. */
-export const SERVER_COUNT = 31;
+export const SERVER_COUNT = 33;
 export const STALE_MS = 30_000;
 export const GUIDE_URL = "https://mcp.zovo.one/guides/mcp-server-free-vs-pro";
 
@@ -182,7 +183,10 @@ export interface LicenseGate {
   isPro(): boolean;
   status(): Record<string, unknown>;
   upgradeText(feature: string, toolName?: string): string;
-  registerTools(server: { registerTool: Function }): void;
+  /** The cap message as one machine-readable object. Mirrors the stdio gate. */
+  payment(reason: "free_tier_cap" | "rate_limit" | "status", feature?: string, toolName?: string): Record<string, unknown>;
+  /** registerResource and registerPrompt are optional and feature-detected at runtime. */
+  registerTools(server: { registerTool: Function; registerResource?: Function; registerPrompt?: Function }): void;
 }
 
 /**
@@ -234,7 +238,28 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       price_usd: { single: PRICE_SINGLE_USD, every_server: PRICE_BUNDLE_USD },
       limits: `This tool does not count your usage. The free-tier caps of every server are listed at ${GUIDE_URL}; a call that exceeds one is refused with the cap named and an upgrade link.`,
       guide: GUIDE_URL,
+      // The same facts as fields rather than prose. See ../payment.ts.
+      payment: gate.payment("status"),
     }),
+    payment: (reason: "free_tier_cap" | "rate_limit" | "status", feature?: string, toolName?: string) => {
+      const src = `${product}.${slugifySrc(toolName ?? feature ?? reason)}`;
+      return paymentDescriptor({
+        product,
+        reason,
+        feature,
+        checkoutUrl: buyUrl(product, src),
+        bundleUrl: bundleUrl(`${src}.bundle`),
+        guideUrl: GUIDE_URL,
+        priceUsd: PRICE_SINGLE_USD,
+        bundlePriceUsd: PRICE_BUNDLE_USD,
+        serverCount: SERVER_COUNT,
+        // Hosted: an anonymous caller's checkout URL carries their token, so paying binds
+        // Pro to this same connection and this same data. A licence-key caller is Pro
+        // already and has no anonymous token to bind, so there is nothing to carry.
+        tokenBound: Boolean(ctx().anonToken),
+        tier: ctx().isPro ? "pro" : "free",
+      });
+    },
     upgradeText: (feature: string, toolName?: string) => {
       const src = `${product}.${slugifySrc(toolName ?? feature)}`;
       const url = buyUrl(product, src);
@@ -252,13 +277,48 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
         `Or all ${SERVER_COUNT} servers for $${PRICE_BUNDLE_USD}: ${bundleUrl(`${src}.bundle`)}`;
     },
     registerTools(server) {
+      // Mirrors packages/mcp-license/src/index.ts: a cap is a question the assistant has to
+      // answer, so the answer is a resource and a prompt as well as a tool. Registered here
+      // rather than in servers/*/src so no tool description changes - descriptions are a
+      // build input for remote/build-vendor.mjs and resources are not.
+      if (typeof server.registerResource === "function") {
+        server.registerResource("pricing", `pricing://${product}`, {
+          title: "Pricing and upgrade",
+          description: `What ${product} costs, what Pro unlocks, the checkout link that carries this connection's token, and the one step a person has to take. Machine-readable; read it before telling a user how to lift a free-tier cap.`,
+          mimeType: "application/json",
+        }, async (uri: { href: string }) => ({
+          contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(gate.payment("status"), null, 2) }],
+        }));
+      }
+      if (typeof server.registerPrompt === "function") {
+        server.registerPrompt("upgrade_to_pro", {
+          title: "Explain the upgrade",
+          description: `Explain what Pro on the ${product} server costs and exactly what the user has to do, without leaving the conversation.`,
+          argsSchema: { feature: z.string().optional().describe("The capped feature that prompted this, if there was one") },
+        }, ({ feature }: { feature?: string }) => ({
+          messages: [{
+            role: "user" as const,
+            content: {
+              type: "text" as const,
+              text: [
+                `Read the resource pricing://${product} and call license_status, then tell me in three or four sentences:`,
+                feature ? `1. Why "${feature}" was refused, and whether a free tool can get me the same answer.` : `1. Which tier this connection is on and what the free tier still does.`,
+                `2. The price and what it covers - quote the price.amount and price.grants fields, do not restate them from memory.`,
+                `3. The one step I have to take, from the human_step field, and the checkout link from price.url. Say plainly that you cannot complete the payment yourself: agent_settleable is false.`,
+                `4. Whether the bundle in the alternative field is the better buy for what I am doing.`,
+                `Do not invent a price, a discount, a trial or a refund policy. If a field is not in the resource, say you do not know it.`,
+              ].join("\n"),
+            },
+          }],
+        }));
+      }
       server.registerTool("license_status",
         { title: "License status", description: "Report this endpoint's licence state for your token as JSON: the product, the tier free or pro, why it is not Pro, and the checkout URL. Call it to explain a free-tier refusal. No arguments, nothing changes.", inputSchema: {} },
         async () => ({ content: [{ type: "text", text: JSON.stringify(gate.status(), null, 2) }] }));
       server.registerTool("license_activate",
         { title: "Activate license", description:
-          "Turn Pro on for this hosted connection using a key from checkout, keeping the data already stored under your " +
-          "current token. Pass key as MCPL1.<payload>.<signature>. A wrong or expired key changes nothing.",
+          "Turn Pro on for this connection with key, an MCPL1.<payload>.<signature> issued at checkout for this server " +
+          "or the bundle. Data under your token stays; a wrong or expired key changes nothing. license_status confirms it.",
           inputSchema: { key: z.string().describe("License key from checkout, MCPL1.<payload>.<signature>") } },
         async (a: { key?: string }) => {
           const c = ctx();

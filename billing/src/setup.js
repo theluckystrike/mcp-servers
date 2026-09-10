@@ -1,3 +1,4 @@
+import { CHILD_COUNT, OFFICE_SUITE_TOOLS } from "./figures.js";
 /**
  * /setup/<client>/<server> long-tail pages.
  *
@@ -824,7 +825,7 @@ const ANGLE = {
     cursor: "Every sibling server's tools arrive as one entry, so mcp.json holds one object with one required type field instead of 31, and the Customize page lists one server to enable or disable. Only four of the 292 names needed a server-name prefix to stay unique: invoice_business_set and docx_business_set, expense-tracker_category_rules and bank-statement_category_rules.",
     vscode: "One entry under the servers key, one trust prompt to answer, and 292 tools arrive as one group in the tools picker, which is easier to switch on and off per chat than 31 separate ones.",
     windsurf: "One entry rather than 31 does not mean one entry fits: 292 tools is far past Cascade's ceiling of 100 on its own, so this bundle is the wrong shape here. Install the two or three single servers you actually use instead, 9 to 16 tools each.",
-    cline: "One entry with one autoApprove array covering 292 tools. Set that array deliberately rather than emptying it, ideally per child if the interface allows it: it now spans 31 servers that write invoices, quotes, spreadsheets, PDFs, images, bank ledgers and calendars.",
+    cline: `One entry with one autoApprove array covering ${OFFICE_SUITE_TOOLS} tools. Set that array deliberately rather than emptying it, ideally per child if the interface allows it: it now spans ${CHILD_COUNT} servers that write invoices, quotes, spreadsheets, PDFs, images, bank ledgers and calendars.`,
   },
   pdf: {
     "claude-desktop": "Claude Desktop has no filesystem sandbox of its own restricting where pdf_stamp or pdf_merge can write, so the out_path you give is exactly where the file lands, absolute path required like every other entry in this config.",

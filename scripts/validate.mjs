@@ -658,6 +658,305 @@ const PROBES = {
         .every((f) => ["counter.json", "rates.json", "register.json", "skus.json"].includes(f) || (tier === "pro" && f === "pdf")),
       `${dirs.join(",")} | ${readdirSync(join(tmp, "data", "mcp-servers", "catalogue")).sort().join(",")}`);
   },
+  "packing-list": async (c, tmp, tier, ok) => {
+    // STDIO ONLY. This server has no hosted endpoint and no remotes block, so it is probed
+    // here and deliberately NOT in remote(); adding it there would assert a URL that has
+    // never existed. It reads no sibling STORE: the shared business profile, read-only and
+    // best-effort, and nothing else. Every weight asserted below is one
+    // servers/packing-list/test/_client.mjs works out by hand in its header, so this probe
+    // fails if the arithmetic moves and not only if the shape does.
+    mkdirSync(join(tmp, "data", "mcp-servers", "profile"), { recursive: true });
+    writeFileSync(join(tmp, "data", "mcp-servers", "profile", "business.json"), JSON.stringify({
+      name: "Nova Studio", address: "ul. Prosta 1, Warsaw", default_currency: "EUR",
+      default_tax_rate: 23, payment_terms_days: 14, timezone: "Europe/Warsaw",
+    }));
+
+    // 1. A packing list is raised against an order, and its reference kind is inferred.
+    const created = await c.tool("packing_list_create", { reference: "WO-2026-0044", consignee: "Harbour Cafe", ship_to: "12 Dock Road, Bristol", date: "2026-04-02" });
+    ok(`${tier}: the first packing list is PL-2026-0001, against a work order, in draft`,
+      !created.isError && /"id": "PL-2026-0001"/.test(created.text) && /"reference_kind": "work_order"/.test(created.text) && /"status": "draft"/.test(created.text),
+      created.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 2. What the order says should ship is DECLARED here; no sibling store is opened for it.
+    for (const e of [
+      { sku: "OAK-900", description: "Oak shelf 900mm", quantity: 12 },
+      { sku: "BRK-STL", description: "Steel bracket", quantity: 24 },
+      { description: "Fixing pack", quantity: 1 },
+    ]) await c.tool("packing_expect", { packing_list: "PL-2026-0001", ...e });
+
+    // 3. Two cartons, both fully measured. Two of three dimensions is refused outright,
+    //    because a partly measured box drops silently out of the shipment total.
+    const half = await c.tool("carton_add", { packing_list: "PL-2026-0001", label: "Half measured", tare_grams: 100, length_cm: 40, width_cm: 30 });
+    ok(`${tier}: a carton with two of three dimensions is refused with nothing written`,
+      half.isError && /all three of length_cm, width_cm and height_cm, or none/.test(half.text) && /Nothing was written/.test(half.text),
+      half.text.replace(/\s+/g, " ").slice(0, 120));
+    await c.tool("carton_add", { packing_list: "PL-2026-0001", label: "Box 1 of 2", tare_grams: 800, length_cm: 40, width_cm: 30, height_cm: 25 });
+    await c.tool("carton_add", { packing_list: "PL-2026-0001", label: "Box 2 of 2", tare_grams: 600, length_cm: 40, width_cm: 30, height_cm: 20 });
+    for (const l of [
+      { carton: "C01", sku: "OAK-900", description: "Oak shelf 900mm", quantity: 8, unit_grams: 1250 },
+      { carton: "C01", sku: "BRK-STL", description: "Steel bracket", quantity: 24, unit_grams: 150 },
+      { carton: "C02", sku: "OAK-900", description: "Oak shelf 900mm", quantity: 4, unit_grams: 1250 },
+      { carton: "C02", description: "Fixing pack", quantity: 1 },
+    ]) await c.tool("pack_item", { packing_list: "PL-2026-0001", ...l });
+
+    // 4. Every weight is derived: C01 tare 800 + net 13600 = gross 14400; volume
+    //    40x30x25 = 30000 cm3, volumetric at 5000 = 6000 g, so chargeable = gross (actual).
+    const rep5 = await c.tool("carton_report", { packing_list: "PL-2026-0001" });
+    ok(`${tier}: C01 gross 14400 g, volumetric 6000 g at divisor 5000, chargeable 14400 g on the actual weight`,
+      !rep5.isError && /"gross_grams": 14400/.test(rep5.text) && /"volumetric_grams": 6000/.test(rep5.text)
+      && /"chargeable_grams": 14400/.test(rep5.text) && /"chargeable_basis": "actual"/.test(rep5.text),
+      rep5.text.replace(/\s+/g, " ").slice(0, 140));
+    ok(`${tier}: the shipment sums to tare 1400 + net 18600 = gross 20000 g, chargeable 20000 g`,
+      /"tare_grams": 1400/.test(rep5.text) && /"net_grams": 18600/.test(rep5.text)
+      && /"gross_grams": 20000/.test(rep5.text) && /"chargeable_grams": 20000/.test(rep5.text) && /"gross_kg": "20\.000 kg"/.test(rep5.text),
+      rep5.text.replace(/\s+/g, " ").slice(-160));
+
+    // 5. The divisor is a TARIFF TERM, not a constant: at 4000 the second carton flips onto
+    //    its volume and the shipment costs 400 g more. A hardcoded 5000 under-bills this.
+    const rep4 = await c.tool("carton_report", { packing_list: "PL-2026-0001", divisor: 4000 });
+    ok(`${tier}: at divisor 4000 the chargeable weight is 20400 g and only C02 flips to volumetric`,
+      !rep4.isError && /"chargeable_grams": 20400/.test(rep4.text) && /"chargeable_basis": "volumetric"/.test(rep4.text) && /"gross_grams": 20000/.test(rep4.text),
+      rep4.text.replace(/\s+/g, " ").slice(-160));
+    const badDiv = await c.tool("carton_report", { packing_list: "PL-2026-0001", divisor: 5500 });
+    ok(`${tier}: a divisor outside 4000, 5000, 6000 is refused rather than used`, badDiv.isError, badDiv.text.replace(/\s+/g, " ").slice(0, 90));
+
+    // 6. One unweighed line makes every gross a LOWER BOUND, and it says so.
+    ok(`${tier}: the unweighed Fixing pack makes the gross a lower bound, named in the answer`,
+      /"net_complete": false/.test(rep5.text) && /"unweighed_lines": 1/.test(rep5.text) && /LOWER BOUND/.test(rep5.text),
+      (rep5.text.match(/"weight_caveat":[^\n]*/) || [""])[0].slice(0, 130));
+
+    // 7. The shortfall matches on SKU, so 8 shelves in one carton and 4 in another are ONE
+    //    row of twelve, and the list is ready to ship.
+    const shortfall = await c.tool("packing_shortfall", { packing_list: "PL-2026-0001" });
+    ok(`${tier}: 12 oak shelves across two cartons are one complete row, and the list is ready to ship`,
+      !shortfall.isError && /"short": 0/.test(shortfall.text) && /"over": 0/.test(shortfall.text)
+      && /"not_on_order": 0/.test(shortfall.text) && /"ready_to_ship": true/.test(shortfall.text)
+      && /"packed": 12/.test(shortfall.text) && /"cartons": \[\s*"C01",\s*"C02"\s*\]/.test(shortfall.text),
+      shortfall.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 8. A line packed that is NOT on the order is reported, never dropped: dropping it is
+    //    how the wrong item ships with a report that reads clean.
+    await c.tool("pack_item", { packing_list: "PL-2026-0001", carton: "C01", description: "Free sample mug", quantity: 2, unit_grams: 400 });
+    const extra = await c.tool("packing_shortfall", { packing_list: "PL-2026-0001" });
+    const shipShort = await c.tool("packing_list_status", { packing_list: "PL-2026-0001", status: "packed", date: "2026-04-03" });
+    const shipRefused = await c.tool("packing_list_status", { packing_list: "PL-2026-0001", status: "shipped", date: "2026-04-04" });
+    ok(`${tier}: an unordered line reads not_on_order and blocks the shipment until forced`,
+      /"state": "not_on_order"/.test(extra.text) && /"not_on_order": 1/.test(extra.text)
+      && !shipShort.isError && shipRefused.isError && /not on the order/.test(shipRefused.text) && /Nothing was written/.test(shipRefused.text),
+      shipRefused.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 9. The slip is free on EVERY tier and carries no price anywhere; writing it to a FILE
+    //    is Pro. The free refusal must write nothing to disk before it refuses.
+    const slip = await c.tool("packing_slip", { packing_list: "PL-2026-0001" });
+    // The no-currency assertion is made on the SLIP STRING, not on the JSON envelope: on the
+    // free tier the envelope also carries pro_note, whose upgrade sentence legitimately
+    // contains a dollar price. Testing the envelope would have failed the wrong thing, which
+    // is exactly what it did on the first run of this probe.
+    const slipText = (() => { try { return JSON.parse(slip.text).slip ?? ""; } catch { return ""; } })();
+    ok(`${tier}: the slip text comes back on every tier, with the weights and no currency symbol in the document`,
+      !slip.isError && /"written": false/.test(slip.text) && /PACKING SLIP {2}PL-2026-0001/.test(slipText)
+      && /Chargeable 20\.800 kg at divisor 5000/.test(slipText) && /carries no prices and is not an invoice/.test(slipText)
+      && !/[$\u20ac\u00a3]/.test(slipText),
+      slipText.replace(/\s+/g, " ").slice(0, 130));
+    const slipPath = join(tmp, "slips", "PL-2026-0001.txt");
+    const w = await c.tool("packing_slip", { packing_list: "PL-2026-0001", out_path: slipPath });
+    ok(`${tier}: packing_slip out_path ${tier === "pro" ? "writes the .txt" : "refused, zero bytes written + tagged upgrade"}`,
+      tier === "pro"
+        ? (!w.isError && existsSync(slipPath) && readFileSync(slipPath, "utf8").startsWith("Nova Studio") && statSync(slipPath).size > 400)
+        : (w.isError && !existsSync(slipPath) && /Nothing was written/.test(w.text)
+          && /mcp\.zovo\.one\/buy\/packing-list\?src=packing-list\.packing_slip/.test(w.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=packing-list\.packing_slip\.bundle/.test(w.text)),
+      `${existsSync(slipPath) ? statSync(slipPath).size : 0} bytes | ${w.text.replace(/\s+/g, " ").slice(0, 90)}`);
+
+    // 10. A caller-supplied path under a pseudo-filesystem must FAIL, not hang. Before the
+    //     bounded ancestor walk this call never returned on Linux and the 8-second client
+    //     timeout above would fire. Skipped where there is no /proc rather than faked.
+    if (tier === "pro" && existsSync("/proc")) {
+      const t0 = Date.now();
+      const procOut = await c.tool("packing_slip", { packing_list: "PL-2026-0001", out_path: "/proc/nope/slip.txt" });
+      ok(`${tier}: an out_path under /proc fails fast instead of livelocking the server`,
+        procOut.isError && Date.now() - t0 < 5000 && !existsSync("/proc/nope"), `${Date.now() - t0} ms | ${procOut.text.slice(0, 70)}`);
+    }
+
+    // 11. The free cap is on shipments IN FLIGHT, and closing one gives the slot back.
+    const ids = [];
+    for (let i = 1; i <= 3; i++) { const r = await c.tool("packing_list_create", { reference: `PO-${i}`, consignee: "Harbour Cafe" }); ids.push(r); }
+    const fourth = await c.tool("packing_list_create", { reference: "PO-4", consignee: "Harbour Cafe" });
+    ok(`${tier}: a 4th OPEN packing list ${tier === "pro" ? "is allowed" : "is gated, and the message names the count and the bundle"}`,
+      tier === "pro" ? !fourth.isError : (fourth.isError && /free tier holds 3 open packing lists/.test(fourth.text)
+        && /mcp\.zovo\.one\/buy\/packing-list\?src=packing-list\.packing_list_create/.test(fourth.text) && /buy\/bundle/.test(fourth.text)),
+      fourth.text.replace(/\s+/g, " ").slice(0, 120));
+    if (tier === "free") {
+      await c.tool("packing_list_status", { packing_list: "PO-1", status: "cancelled" });
+      const recovered = await c.tool("packing_list_create", { reference: "PO-4", consignee: "Harbour Cafe" });
+      ok(`${tier}: cancelling a list gives the slot back without a key`, !recovered.isError, recovered.text.replace(/\s+/g, " ").slice(0, 90));
+    }
+
+    // 12. It writes its own directory and brings no sibling store into existence.
+    const dirs = readdirSync(join(tmp, "data", "mcp-servers")).sort();
+    ok(`${tier}: this server writes only its own directory and brings no sibling store into existence`,
+      dirs.join(",") === "packing-list,profile"
+      && readdirSync(join(tmp, "data", "mcp-servers", "packing-list")).sort()
+        .every((f) => ["counter.json", "packing-lists.json"].includes(f) || /^\.lock/.test(f))
+      && readdirSync(join(tmp, "data", "mcp-servers", "profile")).join(",") === "business.json",
+      `${dirs.join(",")} | ${readdirSync(join(tmp, "data", "mcp-servers", "packing-list")).sort().join(",")}`);
+  },
+  checklist: async (c, tmp, tier, ok) => {
+    // STDIO ONLY, for the reason packing-list is: no hosted endpoint, no remotes block, and
+    // deliberately absent from remote(). It reads no sibling STORE. Every count asserted
+    // below is one servers/checklist/test/_client.mjs works out by hand in its header.
+    mkdirSync(join(tmp, "data", "mcp-servers", "profile"), { recursive: true });
+    writeFileSync(join(tmp, "data", "mcp-servers", "profile", "business.json"), JSON.stringify({
+      name: "Nova Studio", address: "ul. Prosta 1, Warsaw", default_currency: "EUR",
+      default_tax_rate: 23, payment_terms_days: 14, timezone: "Europe/Warsaw",
+    }));
+
+    // 1. A checklist, then six steps in two sections, four of them required. The version
+    //    starts at 1 and bumps once per step, so it reads 7.
+    const made = await c.tool("checklist_create", { name: "Pre-delivery vehicle check", category: "Pre delivery", description: "Run before every van leaves the yard." });
+    ok(`${tier}: the first checklist is CL-0001 with a hyphenated category and version 1`,
+      !made.isError && /"id": "CL-0001"/.test(made.text) && /"category": "pre-delivery"/.test(made.text) && /"version": 1/.test(made.text),
+      made.text.replace(/\s+/g, " ").slice(0, 120));
+    for (const i of [
+      { text: "Tyre pressures checked and recorded", section: "Exterior", required: true },
+      { text: "Lights and indicators working", section: "Exterior", required: true },
+      { text: "Bodywork photographed", section: "Exterior", required: false },
+      { text: "Load secured and strapped", section: "Load", required: true },
+      { text: "Weight within plated limit", section: "Load", required: true },
+      { text: "Spare strap in cab", section: "Load", required: false },
+    ]) await c.tool("checklist_item_add", { checklist: "CL-0001", ...i });
+    const shown = await c.tool("checklist_show", { checklist: "CL-0001", as_text: true });
+    ok(`${tier}: six steps, four required, two sections, version 7, and a blank copy with six boxes`,
+      !shown.isError && /"items": 6/.test(shown.text) && /"required": 4/.test(shown.text) && /"sections": 2/.test(shown.text)
+      && /"version": 7/.test(shown.text) && (shown.text.match(/\[ \]/g) || []).length === 6,
+      shown.text.replace(/\s+/g, " ").slice(0, 120));
+    const empty = await c.tool("run_start", { checklist: "CL-0002", title: "Nothing" });
+    ok(`${tier}: a run of a checklist that does not exist is refused by name`, empty.isError && /no checklist matches/.test(empty.text), empty.text.slice(0, 90));
+
+    // 2. One run, five of six steps answered: 3 pass, 1 fail, 1 na, 1 pending.
+    const run = await c.tool("run_start", { checklist: "CL-0001", title: "Van BX21 KLM, February service", reference: "WO-2026-0044", date: "2026-02-14" });
+    ok(`${tier}: the run is RUN-2026-0001 and copies all six steps out of the checklist`,
+      !run.isError && /"id": "RUN-2026-0001"/.test(run.text) && /"items": 6/.test(run.text) && /"checklist_version": 7/.test(run.text),
+      run.text.replace(/\s+/g, " ").slice(0, 120));
+    for (const a of [
+      { item: "I01", state: "pass", by: "Ada" },
+      { item: "I02", state: "pass", by: "Ada" },
+      { item: "I03", state: "na", by: "Ada", note: "No camera on site" },
+      { item: "I04", state: "pass", by: "Ben" },
+      { item: "I05", state: "fail", by: "Ben", note: "Plated 3500 kg, weighed 3620 kg" },
+    ]) await c.tool("run_check", { run: "RUN-2026-0001", ...a });
+
+    // 3. na counts as ANSWERED and never as passed. That is the arithmetic that catches a
+    //    checklist reporting full marks for a job where half the steps did not apply.
+    const show = await c.tool("run_show", { run: "RUN-2026-0001" });
+    ok(`${tier}: 3 pass, 1 fail, 1 na, 1 pending, 5 answered, 83.3 percent, and na is not a pass`,
+      !show.isError && /"pass": 3/.test(show.text) && /"fail": 1/.test(show.text) && /"na": 1/.test(show.text)
+      && /"pending": 1/.test(show.text) && /"answered": 5/.test(show.text) && /"percent_answered": 83\.3/.test(show.text)
+      && /"required_fail": 1/.test(show.text),
+      show.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 4. A failed required step and an unanswered optional one BOTH block the signature,
+    //    and the refusal names them rather than quoting the status machine.
+    const refused = await c.tool("run_sign_off", { run: "RUN-2026-0001", by: "Cara Nowak", date: "2026-02-15" });
+    ok(`${tier}: sign-off is refused on the reasons, naming the failed required step and the unanswered optional one`,
+      refused.isError && /not ready for sign-off/.test(refused.text) && /required item\(s\) failed/.test(refused.text)
+      && /optional item\(s\) not answered/.test(refused.text) && /Nothing was written/.test(refused.text),
+      refused.text.replace(/\s+/g, " ").slice(0, 140));
+
+    // 5. complete is a READING: it appears when the last step is answered and goes when one
+    //    is reopened, and reopening clears who answered it.
+    await c.tool("run_check", { run: "RUN-2026-0001", item: "I06", state: "pass", by: "Ben" });
+    const complete = await c.tool("run_show", { run: "RUN-2026-0001" });
+    await c.tool("run_check", { run: "RUN-2026-0001", item: "I06", state: "pending" });
+    const reopened = await c.tool("run_show", { run: "RUN-2026-0001" });
+    ok(`${tier}: complete is derived from the steps, not set, and reopening one clears its answerer`,
+      /"status": "complete"/.test(complete.text) && /"status": "open"/.test(reopened.text)
+      && /"pending": 1/.test(reopened.text) && !/"by": "Ben",\s*\n\s*"at": "2026-02-14",\s*\n\s*"required": false,\s*\n\s*"state": "pending"/.test(reopened.text),
+      `${(complete.text.match(/"status": "\w+"/) || [""])[0]} then ${(reopened.text.match(/"status": "\w+"/) || [""])[0]}`);
+
+    // 6. THE SNAPSHOT RULE. Editing the checklist must not touch a run already under way.
+    //    Without it a certificate signed for six checks silently becomes one for seven and
+    //    no field anywhere in the record shows that it happened.
+    await c.tool("checklist_item_add", { checklist: "CL-0001", text: "Fuel card in cab", section: "Load", required: true });
+    await c.tool("checklist_item_remove", { checklist: "CL-0001", item: "I01" });
+    const afterEdit = await c.tool("run_show", { run: "RUN-2026-0001" });
+    const freshRun = await c.tool("run_start", { checklist: "CL-0001", title: "Van CX22 LMN", date: "2026-02-20" });
+    ok(`${tier}: the run keeps the six steps and the version it started with while the checklist moves to nine`,
+      /"items": 6/.test(afterEdit.text) && /"checklist_version": 7/.test(afterEdit.text)
+      && !/Fuel card in cab/.test(afterEdit.text) && /Tyre pressures checked and recorded/.test(afterEdit.text)
+      && /"checklist_version": 9/.test(freshRun.text) && /Fuel card in cab/.test(freshRun.text) && !/Tyre pressures/.test(freshRun.text),
+      `${(afterEdit.text.match(/"checklist_version": \d+/) || [""])[0]} vs ${(freshRun.text.match(/"checklist_version": \d+/) || [""])[0]}`);
+
+    // 7. Forcing a signature keeps the exceptions on the record and prints them, and the
+    //    run is frozen afterwards on every editing tool.
+    await c.tool("run_check", { run: "RUN-2026-0001", item: "I06", state: "pass", by: "Ben" });
+    const signed = await c.tool("run_sign_off", { run: "RUN-2026-0001", by: "Cara Nowak", date: "2026-02-15", note: "Overweight accepted, load split", force: true });
+    const frozen = await c.tool("run_check", { run: "RUN-2026-0001", item: "I01", state: "fail" });
+    const undeletable = await c.tool("run_delete", { run: "RUN-2026-0001", confirm: true });
+    ok(`${tier}: force signs with the exception recorded, and the run is frozen and undeletable afterwards`,
+      !signed.isError && /"status": "signed_off"/.test(signed.text) && /"signed_by": "Cara Nowak"/.test(signed.text)
+      && /required item\(s\) failed/.test(signed.text)
+      && frozen.isError && /cannot be edited/.test(frozen.text)
+      && undeletable.isError && /cannot be deleted/.test(undeletable.text),
+      signed.text.replace(/\s+/g, " ").slice(0, 130));
+
+    // 8. The report is free on EVERY tier; writing it to a FILE is Pro. The free refusal
+    //    must write nothing to disk before it refuses.
+    const report = await c.tool("run_report", { run: "RUN-2026-0001" });
+    ok(`${tier}: the report text comes back on every tier, with the marks, the note and the signature`,
+      !report.isError && /"written": false/.test(report.text) && /CHECKLIST {2}RUN-2026-0001/.test(report.text)
+      && /\[!\] I05 Weight within plated limit/.test(report.text) && /Plated 3500 kg, weighed 3620 kg/.test(report.text)
+      && /\[-\] I03 Bodywork photographed {2}\(optional\)/.test(report.text)
+      && /Signed off by Cara Nowak on 2026-02-15/.test(report.text) && /Signed with exceptions:/.test(report.text),
+      report.text.replace(/\s+/g, " ").slice(0, 130));
+    const reportPath = join(tmp, "reports", "RUN-2026-0001.txt");
+    const w = await c.tool("run_report", { run: "RUN-2026-0001", out_path: reportPath });
+    ok(`${tier}: run_report out_path ${tier === "pro" ? "writes the .txt" : "refused, zero bytes written + tagged upgrade"}`,
+      tier === "pro"
+        ? (!w.isError && existsSync(reportPath) && readFileSync(reportPath, "utf8").startsWith("Nova Studio") && statSync(reportPath).size > 400)
+        : (w.isError && !existsSync(reportPath) && /Nothing was written/.test(w.text)
+          && /mcp\.zovo\.one\/buy\/checklist\?src=checklist\.run_report/.test(w.text)
+          && /mcp\.zovo\.one\/buy\/bundle\?src=checklist\.run_report\.bundle/.test(w.text)),
+      `${existsSync(reportPath) ? statSync(reportPath).size : 0} bytes | ${w.text.replace(/\s+/g, " ").slice(0, 90)}`);
+
+    if (tier === "pro" && existsSync("/proc")) {
+      const t0 = Date.now();
+      const procOut = await c.tool("run_report", { run: "RUN-2026-0001", out_path: "/proc/nope/report.txt" });
+      ok(`${tier}: an out_path under /proc fails fast instead of livelocking the server`,
+        procOut.isError && Date.now() - t0 < 5000 && !existsSync("/proc/nope"), `${Date.now() - t0} ms | ${procOut.text.slice(0, 70)}`);
+    }
+
+    // 9. The meter is on CHECKLISTS, never on runs: capping the running of a checklist would
+    //    cap the only thing a checklist is for.
+    for (let i = 0; i < 8; i++) await c.tool("run_start", { checklist: "CL-0001", title: `Job ${i}`, date: "2026-02-21" });
+    const runs = await c.tool("run_list", {});
+    ok(`${tier}: ten runs on one checklist are allowed on every tier and listed newest first`,
+      !runs.isError && /"total": 10/.test(runs.text) && /"date": "2026-02-21"/.test(runs.text), (runs.text.match(/"total": \d+/) || [""])[0]);
+    await c.tool("checklist_create", { name: "Site handover" });
+    await c.tool("checklist_create", { name: "Snag list" });
+    const fourth = await c.tool("checklist_create", { name: "Onboarding" });
+    ok(`${tier}: a 4th checklist ${tier === "pro" ? "is allowed" : "is gated, and the message names the count and the bundle"}`,
+      tier === "pro" ? !fourth.isError : (fourth.isError && /free tier holds 3 checklists/.test(fourth.text)
+        && /mcp\.zovo\.one\/buy\/checklist\?src=checklist\.checklist_create/.test(fourth.text) && /buy\/bundle/.test(fourth.text)),
+      fourth.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 10. Deleting a checklist leaves its runs readable, which is the point of the snapshot.
+    await c.tool("checklist_delete", { checklist: "CL-0001", confirm: true });
+    const survivor = await c.tool("run_show", { run: "RUN-2026-0001" });
+    ok(`${tier}: deleting the checklist leaves its signed run complete and named`,
+      !survivor.isError && /"items": 6/.test(survivor.text) && /"checklist_name": "Pre-delivery vehicle check"/.test(survivor.text)
+      && /"status": "signed_off"/.test(survivor.text),
+      survivor.text.replace(/\s+/g, " ").slice(0, 120));
+
+    // 11. It writes its own directory and brings no sibling store into existence.
+    const dirs = readdirSync(join(tmp, "data", "mcp-servers")).sort();
+    ok(`${tier}: this server writes only its own directory and brings no sibling store into existence`,
+      dirs.join(",") === "checklist,profile"
+      && readdirSync(join(tmp, "data", "mcp-servers", "checklist")).sort()
+        .every((f) => ["counter.json", "runs.json", "templates.json"].includes(f) || /^\.lock/.test(f))
+      && readdirSync(join(tmp, "data", "mcp-servers", "profile")).join(",") === "business.json",
+      `${dirs.join(",")} | ${readdirSync(join(tmp, "data", "mcp-servers", "checklist")).sort().join(",")}`);
+  },
   "change-order": async (c, tmp, tier, ok) => {
     // This server reads no sibling STORE: it reads the shared business profile, read-only
     // and best-effort, and nothing else. Every figure asserted below is one
@@ -2630,15 +2929,65 @@ async function billing() {
   return { id: "billing (mcp.zovo.one)", pass: checks.filter((c) => c.pass).length, total: checks.length, ms: Date.now() - t0, checks };
 }
 
+/**
+ * Selecting a subset, so debugging one server does not cost a full estate run.
+ *
+ *   node scripts/validate.mjs                       every server + remote + billing, appended to the db
+ *   node scripts/validate.mjs packing-list          just that server, stdio only, NOT appended
+ *   node scripts/validate.mjs pdf zip --remote      those two plus the hosted probes
+ *   node scripts/validate.mjs --list                print the probe ids and exit
+ *   node scripts/validate.mjs --failures            print every failing check in full, not truncated
+ *
+ * Two rules make the filter safe to have.
+ *
+ * 1. A FILTERED RUN NEVER WRITES data/validation.json. That file is the estate's record of
+ *    "the whole estate passed", and a partial run appended to it reads afterwards exactly
+ *    like a full one that lost most of its checks. The db write is the reason this filter
+ *    did not simply exist before, and refusing the write is the reason it can now.
+ * 2. A filtered run still exits non-zero on a failure, so it is usable in a loop.
+ *
+ * `--failures` exists because the recorded `detail` is capped at 160 characters, and a
+ * compound assertion that fails past that cap tells you nothing about WHICH conjunct went.
+ * That cost one round of guessing on packing-list step 9; the answer turned out to be a
+ * conjunct the truncated detail never reached.
+ */
+const argv = process.argv.slice(2);
+const FLAGS = new Set(argv.filter((a) => a.startsWith("--")));
+const ONLY = argv.filter((a) => !a.startsWith("--"));
+const SHOW_FAILURES = FLAGS.has("--failures");
+
+if (FLAGS.has("--list")) {
+  console.log([...Object.keys(PROBES), "remote", "billing"].join("\n"));
+  process.exit(0);
+}
+const unknown = ONLY.filter((id) => !PROBES[id] && id !== "remote" && id !== "billing");
+if (unknown.length) {
+  console.error(`unknown probe id(s): ${unknown.join(", ")}. Run --list to see them.`);
+  process.exit(2);
+}
+const FILTERED = ONLY.length > 0;
+const wanted = FILTERED ? ONLY.filter((id) => PROBES[id]) : Object.keys(PROBES);
+const wantRemote = FILTERED ? (ONLY.includes("remote") || FLAGS.has("--remote")) : true;
+const wantBilling = FILTERED ? (ONLY.includes("billing") || FLAGS.has("--billing")) : true;
+
 const results = [];
-for (const id of Object.keys(PROBES)) { results.push(await runServer(id, PROBES[id])); console.log(`${id}: ${results.at(-1).pass}/${results.at(-1).total} in ${results.at(-1).ms} ms`); }
-results.push(await remote()); console.log(`remote: ${results.at(-1).pass}/${results.at(-1).total}`);
-results.push(await billing()); console.log(`billing: ${results.at(-1).pass}/${results.at(-1).total}`);
+for (const id of wanted) { results.push(await runServer(id, PROBES[id])); console.log(`${id}: ${results.at(-1).pass}/${results.at(-1).total} in ${results.at(-1).ms} ms`); }
+if (wantRemote) { results.push(await remote()); console.log(`remote: ${results.at(-1).pass}/${results.at(-1).total}`); }
+if (wantBilling) { results.push(await billing()); console.log(`billing: ${results.at(-1).pass}/${results.at(-1).total}`); }
+
+if (SHOW_FAILURES) {
+  for (const r of results) for (const ch of r.checks) if (!ch.pass) console.log(`FAIL  ${r.id}  ${ch.name}\n      ${ch.detail}`);
+}
+
 const unit = JSON.parse(readFileSync(join(ROOT, "data/ledger.json"), "utf8")).servers.map((s) => ({ id: s.id, summary: s.test_summary }));
 const run = { at: new Date().toISOString(), node: process.version, sdk: JSON.parse(readFileSync(join(ROOT, "node_modules/@modelcontextprotocol/sdk/package.json"), "utf8")).version, results, unit_tests: unit,
   pass: results.reduce((a, r) => a + r.pass, 0), total: results.reduce((a, r) => a + r.total, 0) };
-const db = existsSync(DB) ? JSON.parse(readFileSync(DB, "utf8")) : { runs: [] };
-db.runs.push(run); db.runs = db.runs.slice(-50);
-writeFileSync(DB, JSON.stringify(db, null, 2));
-console.log(`validation db: ${DB} run ${db.runs.length}: ${run.pass}/${run.total}`);
+if (FILTERED) {
+  console.log(`filtered run (${wanted.join(", ")}${wantRemote ? ", remote" : ""}${wantBilling ? ", billing" : ""}): ${run.pass}/${run.total}. data/validation.json NOT written: a partial run must not be recorded as an estate pass.`);
+} else {
+  const db = existsSync(DB) ? JSON.parse(readFileSync(DB, "utf8")) : { runs: [] };
+  db.runs.push(run); db.runs = db.runs.slice(-50);
+  writeFileSync(DB, JSON.stringify(db, null, 2));
+  console.log(`validation db: ${DB} run ${db.runs.length}: ${run.pass}/${run.total}`);
+}
 process.exit(run.pass === run.total ? 0 : 1);

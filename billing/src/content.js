@@ -14,6 +14,7 @@ import {
   LISTED_COUNT, LISTED_CHILD_COUNT, HOSTED_COUNT, HOSTED_IDS as HOSTED_ID_LIST, TOOLS, LICENSE_TOOLS,
   RATE_LIMIT_FREE, RATE_LIMIT_PRO, DISCOVERY_LIMIT, TOKEN_MINTS_PER_IP,
   ANON_TOKEN_DAYS, SWEEP_AFTER_DAYS, SINGLE_USD, BUNDLE_USD, VERSION, FREE, Word,
+  CHILD_COUNT, OFFICE_SUITE_TOOLS,
 } from "./figures.js";
 
 /**
@@ -3223,7 +3224,7 @@ ${FOOT}`,
     title: "One install, every server: the office-suite bundle",
     description: "One stdio server proxies 31 sibling servers as 292 tools in one tools/list, measured off a built v0.20.0 bundle on 2026-09-07. What it is, how to install it, the four prefixed tool names, and when a single server is the better choice.",
     html: `<h1>One install, every server: the office-suite bundle</h1>
-<p><strong>One config entry, 31 servers, 292 tools.</strong> That is what office-suite is, and both
+<p><strong>One config entry, ${CHILD_COUNT} servers, ${OFFICE_SUITE_TOOLS} tools.</strong> That is what office-suite is, and both
 numbers were read off a built v0.20.0 bundle on 2026-09-07 rather than off any document: one MCP
 client connected over stdio, one <code>tools/list</code> returning 292 distinct names, and the
 bundle's own <code>office://tools_map</code> resource naming 31 children and mapping 290 of those
@@ -3339,7 +3340,7 @@ list of clients or contacts before writing to it, not a wrong pick. This was mea
 against the nineteen-server build with 186 tools, 1.7x the 108 tools measured when this bundle held
 five children; tool selection did not get worse: 20 of 20 correct against 50 of 51 at the smaller
 count. The total score was 13 of 18 across six prompts, 226.5 seconds of wall clock. The bundle has
-since grown to 31 servers and 292 tools, measured 2026-09-07; that growth has not been re-measured
+since grown to ${CHILD_COUNT} servers and ${OFFICE_SUITE_TOOLS} tools; that growth has not been re-measured
 against this six-prompt audit.</p>
 <p>Three defects came out of the same round and are already fixed in the shipped server: a URL handed
 to a tool that expects a local file path used to be silently resolved against the server's own
@@ -3372,7 +3373,7 @@ ${FOOT}`,
       { q: "What exactly is office-suite?", a: "One MCP server, run over stdio, that starts all 31 sibling servers as child processes and proxies their tools, resources and prompts under one connection. Each child stores its data exactly as it does standalone; the bundle adds no storage of its own." },
       { q: "How many tools does it expose?", a: "292 distinct names on one tools/list, and 31 children, both read off a built v0.20.0 bundle on 2026-09-07 by connecting an MCP client to it. The bundle's office://tools_map resource maps 290 of those to the child that owns them; the other two are the merged license_status and license_activate pair, one for the whole bundle rather than one per child. If a page or a README anywhere gives a different figure, this measurement is the one to trust, because it came from the running server." },
       { q: "Which tool names needed a prefix?", a: "Four out of 292: invoice and docx both register business_set, and expense-tracker and bank-statement both register category_rules. The bundle exposes invoice_business_set, docx_business_set, expense-tracker_category_rules and bank-statement_category_rules, and rewrites each child's own replies to match. Every other tool keeps its bare name. That list is the renamed array of office://tools_map, read on 2026-09-07." },
-      { q: "Does adding more children make tool selection worse?", a: "Not as of the last measurement. A six-prompt audit needing two or more children per sentence, run on 2026-09-04 against the nineteen-server build with 186 tools, put 20 of 20 tool calls in the correct child and the correct tool, against 50 of 51 at 108 tools with five children. Every remaining defect was a tool declining to say something it already knew, not a wrong pick. The bundle has since grown to 31 servers and 292 tools, measured 2026-09-07; that growth has not been re-measured against this audit." },
+      { q: "Does adding more children make tool selection worse?", a: "Not as of the last measurement. A six-prompt audit needing two or more children per sentence, run on 2026-09-04 against the nineteen-server build with 186 tools, put 20 of 20 tool calls in the correct child and the correct tool, against 50 of 51 at 108 tools with five children. Every remaining defect was a tool declining to say something it already knew, not a wrong pick. The bundle has since grown to ${CHILD_COUNT} servers and ${OFFICE_SUITE_TOOLS} tools; that growth has not been re-measured against this audit." },
       { q: "When should I install a single server instead of the whole bundle?", a: "When a client caps total tools, such as Windsurf's Cascade agent at 100, 292 tools in one entry is nearly three times the ceiling. It is also the better choice when you already know you only need two or three of the 31: same free tier, fewer license checks, no dormant sibling processes started for servers you never call." },
       { q: "How do I buy it?", a: "One bundle key, 39 dollars once, at /buy/office-suite, which routes to the same bundle checkout as /bundle. It activates Pro on every child at once instead of buying each server's own 19 dollar key, and activation is all-or-nothing with a per-child OK or FAILED table printed, so a bundle that is half Pro cannot look like a full success." },
     ],
@@ -3785,7 +3786,7 @@ npm run build -w packages/mcp-license -w servers/invoice</code></pre>
 <p>These servers read and write real files, so the paths you say out loud matter too. A drive letter
 path is fine. What does not work is a bare <code>http://</code> argument where a file is expected: it
 resolves as a relative filesystem path rather than being downloaded. That behaviour was found and
-recorded during a scored run and is written up in <code>docs/USER_VALUE_R27.md</code> as defect D-R83.
+recorded during a scored run and is written up in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md"><code>docs/USER_VALUE_R27.md</code></a> as defect D-R83.
 Download the file first, then hand over the local path.</p>
 ${FOOT}`,
     faq: [
@@ -4044,7 +4045,7 @@ ${FOOT}`,
     description: "A worked run through four servers: price a job, take a retainer, bill it, apply the retainer, and produce the statement that says what is actually owed.",
     html: `<h1>From quote to cash, in one conversation</h1>
 <p>Four servers, five steps, and every figure below came off a scored run recorded in
-<code>docs/USER_VALUE_R27.md</code> on 2026-09-05. The prompts are quoted as they were typed.</p>
+<a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md"><code>docs/USER_VALUE_R27.md</code></a> on 2026-09-05. The prompts are quoted as they were typed.</p>
 
 <h2>1. Price it</h2>
 <pre class="prompt">Quote Acme for 20 hours of design at 90 EUR plus 23 percent VAT, valid 30 days.</pre>
@@ -4084,7 +4085,7 @@ engine as the invoices, same numbering discipline.</p>
 <p>Mid-cycle, <code>deposit_apply</code> reported a balance of EUR 607.00, because the invoice store
 does not know credit notes exist. The statement nets the credit note and returns EUR 496.30. The
 document you send a client is right; the mid-month balance question is the one that is not. This is
-recorded as open defect D-R96 in <code>docs/USER_VALUE_R27.md</code>, and it is written here rather
+recorded as open defect D-R96 in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md"><code>docs/USER_VALUE_R27.md</code></a>, and it is written here rather
 than left for you to find.</p>
 
 <h2>What this costs</h2>
@@ -4182,7 +4183,7 @@ of what you remembered to write down.</p>
 <p class="muted">Paste this into Claude with the server connected.</p>
 <p><code>statement_import</code>, then <code>reconcile_expenses</code>. That second call is the useful
 one: it names the bank debits with no receipt behind them, which is your list of missing paperwork.
-In the recorded run in <code>docs/USER_VALUE_R27.md</code> a 41-transaction Revolut export produced 33
+In the recorded run in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md"><code>docs/USER_VALUE_R27.md</code></a> a 41-transaction Revolut export produced 33
 August debits and EUR 1,283.73 unreceipted. On the free tier reconciliation runs 31 days at a time,
 so a year is twelve calls rather than one.</p>
 
@@ -4291,7 +4292,7 @@ rather than the step that confirms it is all there.</p>
 <p class="muted">Paste this into Claude with the server connected.</p>
 <p><code>statement_import</code>. It sniffs the delimiter and the header row, which is what makes an
 export from any bank work rather than one specific format. A run recorded in
-<code>docs/USER_VALUE_R27.md</code> on 2026-09-05 imported a 4,422-byte Revolut export and read
+<a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md"><code>docs/USER_VALUE_R27.md</code></a> on 2026-09-05 imported a 4,422-byte Revolut export and read
 <strong>41 transactions</strong>, of which 33 were August debits.</p>
 <p>One thing that trips people: hand it a local path. A bare <code>http://</code> argument where a
 file is expected resolves as a relative filesystem path rather than being downloaded. That is recorded
@@ -4429,7 +4430,7 @@ rather than by what is large and names the oldest overdue invoice in the whole b
 <p class="muted">Paste this into Claude with the server connected.</p>
 <p><code>statement_build</code> then <code>statement_text</code>. A statement is not an invoice
 reprint: it is opening balance, everything invoiced, everything paid, everything credited, closing
-balance. In the recorded run in <code>docs/USER_VALUE_R27.md</code> that came to opening 0.00,
+balance. In the recorded run in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md"><code>docs/USER_VALUE_R27.md</code></a> that came to opening 0.00,
 invoiced 1,107.00, paid 500.00, credited 110.70, closing <strong>EUR 496.30</strong>.</p>
 <p>Note what that closing balance did that nothing else in the run managed: it netted a credit note
 the invoice store could not see. <code>deposit_apply</code> in the same run reported EUR 607.00 for
@@ -5172,7 +5173,7 @@ existing invoices and the overdue report keep working.</p>
 
 <h2>7. Is there anything to read about how it fails?</h2>
 <p>A project that publishes its defects is telling you it looked. This repository records
-<code>docs/USER_VALUE_R27.md</code> with two open defects named in it, D-R95 where a hand-written
+<a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/USER_VALUE_R27.md"><code>docs/USER_VALUE_R27.md</code></a> with two open defects named in it, D-R95 where a hand-written
 <code>vat_rate</code> silently produced a zero-VAT invoice, and D-R96 where <code>invoice_get</code>
 reported a balance that ignored a credit note. Both are written down rather than waiting to be found.
 The test suite is 1,518 tests with 1,507 passing, 0 failing and 11 skipped at release v0.20.0, from
@@ -5599,7 +5600,7 @@ publishes its own catalogue of MCP servers and used both login methods while wor
 re-measured on 2026-09-09 and returned the same numbers: 3 against 15 of 22 servers on
 <code>schedule</code>, 2 against 17 of 18 on <code>delivery</code>. The full working, including the
 ranks the same servers took under six candidate namespaces, is in
-<code>docs/NAMESPACE_R1.md</code>.</p>
+<a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/NAMESPACE_R1.md"><code>docs/NAMESPACE_R1.md</code></a>.</p>
 ${FOOT}`,
     faq: [
       { q: "Does the registry search descriptions or keywords?", a: "Not through search=. It matches the name. A server whose description is a perfect answer to a query and whose name does not contain the token does not come back at all, which is why the local name still matters even though the namespace outranks it." },
@@ -6125,7 +6126,7 @@ ${FOOT}`,
     html: `<h1>Two ways to ship an MCP server to someone who will not open a terminal</h1>
 <p>A bundle is a file they double-click. A hosted URL is a line they paste. Both were walked end to end
 from a stranger's position on 2026-09-08, with no repository access and no credentials, and both work.
-The write-up of that walk is <code>docs/NEW_USER_E2E_R1.md</code> in this repository.</p>
+The write-up of that walk is <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/NEW_USER_E2E_R1.md"><code>docs/NEW_USER_E2E_R1.md</code></a> in this repository.</p>
 
 <table>
 <thead><tr><th></th><th>Bundle (<code>.mcpb</code>)</th><th>Hosted URL</th></tr></thead>
@@ -6285,7 +6286,7 @@ Developer section, Install Extension. The format was previously named <code>.dxt
 recorded with its source URL in <code>billing/src/setup.js</code>, read off the vendor documentation on
 2026-09-02.</p>
 <p>A bundle downloaded from a public GitHub release, opened with no terminal involved, was verified
-working from a stranger's position on 2026-09-08 in <code>docs/NEW_USER_E2E_R1.md</code>.</p>
+working from a stranger's position on 2026-09-08 in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/NEW_USER_E2E_R1.md"><code>docs/NEW_USER_E2E_R1.md</code></a>.</p>
 ${FOOT}`,
     faq: [
       { q: "Is a .mcpb signed?", a: "Nothing in the manifest carries a signature, so trust comes from where you downloaded it. Publishing bundles as release assets on the repository that contains the source is what lets someone check that the two match." },
@@ -6718,7 +6719,7 @@ independent survey filed as
 <p>Sources: the registry's own source at <code>internal/service/registry_service.go</code> and
 <code>internal/database/postgres.go</code>, read from the main branch on 2026-09-09; the publish
 failure above, produced by <code>mcp-publisher publish</code> against the live registry on
-2026-09-08 and recorded in <code>docs/NAMESPACE_R1.md</code> in this repository; the registry FAQ at
+2026-09-08 and recorded in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/NAMESPACE_R1.md"><code>docs/NAMESPACE_R1.md</code></a> in this repository; the registry FAQ at
 modelcontextprotocol.io/registry/faq; the linked issues.</p>
 ${FOOT}`,
     faq: [
@@ -7681,7 +7682,7 @@ and it has an MCP server you install locally to talk to it".</p>
 
 <h2>Where the remote servers are</h2>
 <p>No single index exists. A blind search run recorded in this repository on 2026-09-10, in
-<code>docs/BLIND_RECOMMENDATION_R1.md</code>, asked an assistant this exact question and it came back with
+<a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/BLIND_RECOMMENDATION_R1.md"><code>docs/BLIND_RECOMMENDATION_R1.md</code></a>, asked an assistant this exact question and it came back with
 a category and two artifacts rather than a server, which is the honest state of the answer today. What it
 found, and what each thing is actually good for:</p>
 <table>
@@ -7694,7 +7695,7 @@ found, and what each thing is actually good for:</p>
 <p>Two of those are directories and one is a debugger, so none of them is an answer to "which server
 should I use". The registry is the only one you can query, and it is worth knowing what a query returns.
 An independent count filed on the registry's issue tracker as issue 1626 on 2026-09-07, and recorded in
-<code>docs/CONTENT_R3.md</code> here, looked at 16,305 endpoints declaring a remote: 58.5% answered
+<a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/CONTENT_R3.md"><code>docs/CONTENT_R3.md</code></a> here, looked at 16,305 endpoints declaring a remote: 58.5% answered
 <code>tools/list</code> without a credential, 25.4% required authentication, and 8.6% answered HTTP but
 did not speak MCP at all. So roughly one URL in twelve on that list is already dead.</p>
 
@@ -7789,7 +7790,7 @@ comparison against a local install is that a local server keeps working when thi
 <p>The MCP specification has no billing layer. Nothing in the protocol carries a price, a plan, a card or
 an entitlement, so every paid MCP server has bolted payment on somewhere outside the protocol. They have
 not agreed on where, and that is why this question does not have a clean answer yet.</p>
-<p>A blind search run recorded here on 2026-09-10 in <code>docs/BLIND_RECOMMENDATION_R1.md</code> asked
+<p>A blind search run recorded here on 2026-09-10 in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/BLIND_RECOMMENDATION_R1.md"><code>docs/BLIND_RECOMMENDATION_R1.md</code></a> asked
 exactly this and came back with four marketplaces using four different pricing models and no dominant
 one. That is the real answer, so this page describes the models rather than picking a winner.</p>
 
@@ -7874,7 +7875,7 @@ so a number in this table can be stale without anything here being wrong.</li>
     description: `Almost no MCP server does this. What the one existing option does, why a Word template is usually the wrong tool, and a quote server with ${TOOLS.quotes} tools and a free tier of five open quotes.`,
     html: `<h1>Getting an assistant to fill in a quote or estimate for a customer</h1>
 <p>Search for an MCP server that fills in a quote or estimate template and you get almost nothing. A blind
-search recorded here on 2026-09-10, in <code>docs/BLIND_RECOMMENDATION_R1.md</code>, could name exactly one
+search recorded here on 2026-09-10, in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/BLIND_RECOMMENDATION_R1.md"><code>docs/BLIND_RECOMMENDATION_R1.md</code></a>, could name exactly one
 MCP-shaped result for this question, and it was not really an answer. Everything else the search returned
 was an AWS pricing calculator or a plain Word template with no MCP in it.</p>
 <p>So the useful thing to write down is why the category is empty, and what the two working approaches
@@ -7943,7 +7944,7 @@ about last year needs a key.</li>
     description: `One MCP server exists in this area and it only reads an existing Ledger file. What a petty cash float actually needs, and two servers with ${TOOLS["petty-cash"]} and ${TOOLS["cash-book"]} tools that write one.`,
     html: `<h1>Is there an MCP server for a petty cash book or a cash ledger</h1>
 <p>Almost nothing. A blind search recorded here on 2026-09-10, in
-<code>docs/BLIND_RECOMMENDATION_R1.md</code>, found one MCP server anywhere near this question and it does
+<a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/BLIND_RECOMMENDATION_R1.md"><code>docs/BLIND_RECOMMENDATION_R1.md</code></a>, found one MCP server anywhere near this question and it does
 not do the job people are asking about. Everything else the search returned was a book on Amazon or a
 blog template.</p>
 <p>Before the alternatives, one honest caveat about the thin result. A category with no servers in it is
@@ -8149,7 +8150,7 @@ hosted URL are the working paths today.</li>
     description: `No MCP server produced one when a blind search looked. Two servers here do, with ${TOOLS["delivery-schedule"]} and ${TOOLS["work-order"]} tools, and one of them has no hosted endpoint.`,
     html: `<h1>Producing a delivery schedule or a work order document from a chat</h1>
 <p>Nothing came back. A blind search recorded here on 2026-09-10, in
-<code>docs/BLIND_RECOMMENDATION_R1.md</code>, looked for an MCP server that produces a delivery schedule or
+<a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/BLIND_RECOMMENDATION_R1.md"><code>docs/BLIND_RECOMMENDATION_R1.md</code></a>, looked for an MCP server that produces a delivery schedule or
 a work order document and found neither. The two results that surfaced were a retail promise-date API from
 OneStock, which calculates delivery estimates from live inventory and does not produce a document, and
 scheduler-mcp by PhialsBasement, which is a cron job runner that shares a word with the question.</p>
@@ -8286,7 +8287,7 @@ for a scan and tells you that is the case. If your receipts arrive as photograph
 pulled out automatically, you need a different tool, and the next section names some.</p>
 
 <h2>Servers that do read scans</h2>
-<p>A blind search recorded here on 2026-09-10 in <code>docs/BLIND_RECOMMENDATION_R1.md</code> turned up
+<p>A blind search recorded here on 2026-09-10 in <a href="https://github.com/theluckystrike/mcp-servers/blob/main/docs/BLIND_RECOMMENDATION_R1.md"><code>docs/BLIND_RECOMMENDATION_R1.md</code></a> turned up
 several, all in the document-extraction category rather than the bookkeeping one.</p>
 <ul>
 <li>DocuClipper's MCP server, at <code>docuclipper.com/integrations/mcp/</code>, takes a PDF in Claude

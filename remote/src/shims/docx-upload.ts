@@ -130,7 +130,7 @@ export function registerDocxUpload(server: { registerTool: Function }): void {
 
   server.registerTool("doc_delete_upload", {
     title: "Delete an uploaded document",
-    description: "Delete one document uploaded for your token.",
+    description: "Delete one document uploaded for your token: name is the name it was uploaded under, without .docx. doc_files lists them. A name nothing is stored under is refused and nothing is deleted.",
     inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {
     try {

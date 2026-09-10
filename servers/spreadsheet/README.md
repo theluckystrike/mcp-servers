@@ -251,7 +251,7 @@ All data stays local. Files are read from and written to your own disk, license 
 - [mcp-time-tracker](../time-tracker/README.md) -- export a CSV with `export_csv`, then query and reshape it here.
 - [mcp-invoice](../invoice/README.md) -- pull line items out of a spreadsheet before turning them into an invoice.
 - [mcp-price-tracker](../price-tracker/README.md) -- analyze exported price history as a sheet.
-- [office-suite](../office-suite/README.md) -- all four servers behind one install, one config entry.
+- [office-suite](../office-suite/README.md) -- every sibling server behind one install, one config entry.
 - Guide: [Ask questions about an Excel or CSV file from Cursor or Claude](https://mcp.zovo.one/guides/read-excel-in-cursor)
 
 ## FAQ

@@ -11,9 +11,18 @@ Machine-readable: `data/google_index_r1.json`. Every number below carries the ca
     $ timeout 20 /usr/bin/wc -l /Users/mike/Desktop/keys/gsc-sa-key.json
     (no output)  exit 124
 
-That is the failure that looks like an outage. The working copy is elsewhere on disk, off iCloud:
+That is the failure that looks like an outage. **Two working copies exist off iCloud.** The one to use
+is the canonical one: it reads instantly and carries the filename `scripts/traffic.mjs` expects.
 
-    /Users/mike/.config/gcloud/legacy_credentials/zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com/adc.json
+    /Users/mike/.loop-creds/gsc-sa-key.json      # ls -lO: no 'dataless' flag; wc -l -> 13, exit 0
+    /Users/mike/.config/gcloud/legacy_credentials/zovo-gsc-cleanup@…/adc.json    # the copy this run used
+
+Both are live keys on the same service account with different `private_key_id`s. `traffic.mjs` honours a
+`GSC_KEY` env var, so the fix for every future loop is one variable:
+
+    GSC_KEY=$HOME/.loop-creds/gsc-sa-key.json node scripts/traffic.mjs --indexation
+
+The hardcoded default at `scripts/traffic.mjs:39` still points at the dataless Desktop path.
 
 Same service account `data/indexation.json` records for prior loops, so these numbers are comparable to
 theirs. Positive control before trusting anything from it: `webmasters/v3/sites` returned 51 properties

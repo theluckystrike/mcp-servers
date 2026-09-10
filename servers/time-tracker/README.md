@@ -251,7 +251,7 @@ internet connection.
 - [mcp-invoice](../invoice/README.md) -- turn `invoice_summary` output straight into a numbered PDF invoice.
 - [mcp-spreadsheet](../spreadsheet/README.md) -- export a CSV with `export_csv` and query or reshape it.
 - [mcp-price-tracker](../price-tracker/README.md) -- if you also buy things for the client, watch those prices.
-- [office-suite](../office-suite/README.md) -- all four servers behind one install, one config entry.
+- [office-suite](../office-suite/README.md) -- every sibling server behind one install, one config entry.
 - Guide: [Track billable hours in Claude Code and Cursor](https://mcp.zovo.one/guides/track-time-in-claude-code)
 
 ## FAQ

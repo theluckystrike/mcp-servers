@@ -138,7 +138,11 @@ const servers = ledger.servers.filter((s) => s.id !== "office-suite").length;
 // the URL was appended in the v0.6.0 ledger rewrite and the equality test silently read 0.
 const hostedServers = Object.values(dist.per_server || {}).filter((s) => /^published\b/.test(String(s.hosted ?? ""))).length;
 const latestRound = uvi.rounds.at(-1) || {};
-const surfacesLive = Object.values(dist.surfaces || {}).filter((s) => s.status === "published").length;
+// "published" and "live" mean the same thing in data/distribution.json and both are in use:
+// the awesome-list entries that were merged are recorded as "live", so an equality test on
+// "published" alone undercounted them. Same class of defect as the hostedServers line above,
+// where an appended URL made an equality test silently read 0.
+const surfacesLive = Object.values(dist.surfaces || {}).filter((s) => /^(published|live)\b/.test(String(s.status ?? ""))).length;
 const surfacesTotal = Object.keys(dist.surfaces || {}).length;
 const regFind = (org.surfaces || []).find((s) => /Official MCP registry/i.test(s.surface));
 
