@@ -4,6 +4,9 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { marked } from "marked";
 const ids = ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order", "delivery-schedule", "office-suite"];
 const facts = JSON.parse(readFileSync("data/facts.json", "utf8"));
+// Servers the bundle actually covers as separate purchases: every page in `ids` except the
+// office-suite aggregator, which has no price of its own and is unlocked by the bundle key.
+const singleIds = ids.filter((id) => id !== "office-suite");
 const out = {};
 
 /** Append ?src=<src> to every untagged /buy/<product> href in a block of rendered HTML. */
@@ -19,7 +22,11 @@ function tagBuyLinks(html, src) {
  * from a same-server buy click on /stats/clicks.
  */
 function addBundleCta(html, id) {
-  const bundleLink = `<a href="https://mcp.zovo.one/buy/bundle?src=store.s.${id}.bundle">the nineteen-server bundle for $39</a>`;
+  // Was "the nineteen-server bundle for $39", typed once and left on all 32 generated
+  // product pages while the bundle grew to sell ${singleIds.length}. These are the pages
+  // most registry rows and every mirror repo link to, so the count and the price are read
+  // from data/facts.json and the priced-server list rather than written into the sentence.
+  const bundleLink = `<a href="https://mcp.zovo.one/buy/bundle?src=store.s.${id}.bundle">the ${singleIds.length}-server bundle for $${facts.pricing.bundle_usd}</a>`;
   const taggedHref = new RegExp(`(<p>[^<]*<a href="https://mcp\\.zovo\\.one/buy/${id}\\?src=store\\.s\\.${id}"[\\s\\S]*?<\\/a>[^<]*)(<\\/p>)`);
   if (taggedHref.test(html)) {
     return html.replace(taggedHref, (m, before, after) => `${before} Or ${bundleLink}.${after}`);

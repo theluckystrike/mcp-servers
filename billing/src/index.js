@@ -3,6 +3,13 @@ import { PAGES, CHANGELOG } from "./pages.js";
 import { GUIDES, GUIDE_INDEX } from "./content.js";
 import { COMPARE, COMPARE_INDEX } from "./compare.js";
 import { setupPage, clientHub, setupIndex, setupUrls, serversFor, CLIENTS, CLIENT_ORDER, SETUP_SERVERS } from "./setup.js";
+// Counts derived from the manifests by scripts/build-figures.mjs. Before this import the
+// home page stated its own catalogue size three different ways in one document: "Thirty-one"
+// in the h1, title and JSON-LD (the number of single-server PRODUCTS), "32 servers" in the
+// validation line (the number of server directories), and "The 31 servers" over a table.
+// `ls servers/ | wc -l` is 32. Every count on the page now comes from here, as a numeral,
+// and billing/test/figures.test.mjs fails if a count on the rendered page is not one of them.
+import { LISTED_IDS, HOSTED_IDS as HOSTED_ID_LIST, LISTED_COUNT, LISTED_CHILD_COUNT, HOSTED_COUNT, ANON_TOKEN_DAYS, RATE_LIMIT_FREE, RATE_LIMIT_PRO, FREE as FREE_TIER } from "./figures.js";
 
 export const PRODUCTS = {
   "time-tracker": { desc: "Track billable time from chat: timers, entries, reports, CSV, invoice-ready totals.", free: "Free: unlimited timers, last 7 days of reports, 2 rated projects, currency per entry.", pro: "Pro: full history, invoice summaries, group by tag, unlimited projects.", name: "MCP Time Tracker Pro", price: "price_1UBDU5JKCamubEm1wPMZI8Zf", usd: 19, pkg: "@theluckystrike/mcp-time-tracker", bin: "mcp-time-tracker", payload: "time-tracker" },
@@ -35,7 +42,7 @@ export const PRODUCTS = {
   "work-order": { desc: "Job orders for trades and field work, kept the way a job card is kept: a client the invoice server already knows, a site address, labour as hours at a rate and parts as a quantity at a unit cost with an optional markup, a status that moves one step at a time with every step dated, a completion report with a sign-off block, and an invoice_create-ready payload. No total is stored: value, hours, materials and VAT are derived from the lines on every call.", free: "Free: 5 open work orders, 200 lines each, and the text completion report on every tier. Closing a job frees its slot, and deleting an empty draft is free on every tier.", pro: "Pro: unlimited open work orders, the A4 completion report PDF with the sign-off block, the invoice payload, and the board report with hours this month and unbilled value per currency.", name: "MCP Work Order Pro", usd: 19, pkg: "@theluckystrike/mcp-work-order", bin: "mcp-work-order", payload: "work-order" },
   "catalogue": { desc: "One price list and one labour rate card, kept where the invoice and the quote servers can both read them. A SKU carries a code, a unit, an optional VAT rate and price ROWS with valid-from dates, so the price on a date is worked out on the call and raising a price in July does not rewrite what June was quoted at. lines_resolve hands back the same lines already priced, in the invoice_create argument shape and in the quote_create argument shape at once. Nothing is invented: an unknown code is refused by name.", free: "Free: 25 SKUs, the standard price tier, unlimited rate cards, and every text answer including lines_resolve and the plain-text price list. Deleting an unused SKU is free on every tier.", pro: "Pro: an unlimited catalogue, price tiers beyond standard for trade and wholesale columns, the A4 price list PDF, and the catalogue report naming the rows a later row already replaces.", name: "MCP Catalogue Pro", usd: 19, pkg: "@theluckystrike/mcp-catalogue", bin: "mcp-catalogue", payload: "catalogue" },
   "change-order": { desc: "Change orders against a quote or a work order, kept the way a variation is kept on site: added, removed and changed lines with a quantity, a unit price in minor units, a reason and a date; a status that moves draft to sent to approved or rejected with every step dated; the running contract value as the original plus approved deltas, with pending deltas held apart; and the approved delta as invoice_create-ready items in major units and quote_create-ready items in minor units at once. No delta is stored: value and VAT are derived from the lines on every call.", free: "Free: 5 open change orders, 200 lines each, and the running contract value on every tier. Approving, rejecting or voiding one frees its slot, and deleting an empty draft is free on every tier.", pro: "Pro: unlimited open change orders, the change order document for the client to approve, and the invoice-ready delta payload in both scales.", name: "MCP Change Order Pro", usd: 19, pkg: "@theluckystrike/mcp-change-order", bin: "mcp-change-order", payload: "change-order" },
-  "delivery-schedule": { desc: "Dated deliverables against a quote, a work order or a change order. Each one carries what is being handed over, the day it is due, its value in minor units, and a status that moves planned to in progress to delivered to accepted, every step with the day it actually happened. late_report answers the question anybody actually asks about a schedule: what has slipped, as at a date you name. Lateness is never stored, because a stored late flag is a fact about the afternoon somebody last ran the report; it is derived on the call against the date you pass. Accepted milestones come back as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units in one call, with the scale printed against each.", free: "Free: 5 open schedules, 200 deliverables each, and the late report on every tier. Deleting a schedule frees its slot.", pro: "Pro: unlimited open schedules, the delivery schedule document for the client, and the invoice-ready milestone payload in both scales.", name: "MCP Delivery Schedule Pro", usd: 19, pkg: "@theluckystrike/mcp-delivery-schedule", bin: "mcp-delivery-schedule", payload: "delivery-schedule" },
+  "delivery-schedule": { desc: "Dated deliverables against a quote, a work order or a change order. Each one carries what is being handed over, the day it is due, its value in minor units, and a status that moves planned to in progress to delivered to accepted, every step with the day it actually happened. late_report answers the question anybody actually asks about a schedule: what has slipped, as at a date you name. Lateness is never stored, because a stored late flag is a fact about the afternoon somebody last ran the report; it is derived on the call against the date you pass. Accepted milestones come back as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units in one call, with the scale printed against each.", free: "Free: 3 open schedules and the late report on every tier. Deleting a schedule frees its slot.", pro: "Pro: unlimited open schedules, the delivery schedule document for the client, and the invoice-ready milestone payload in both scales.", name: "MCP Delivery Schedule Pro", usd: 19, pkg: "@theluckystrike/mcp-delivery-schedule", bin: "mcp-delivery-schedule", payload: "delivery-schedule" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
@@ -202,14 +209,14 @@ const REPO = "https://github.com/theluckystrike/mcp-servers";
  * The home page previously claimed "399 of 399" against a real 951 of 951, and named
  * "Seventeen" servers when there were thirty.
  */
-export const VALIDATION = { at: "2026-09-09", pass: 951, total: 951, servers: 32, medianMs: 462 };
+export const VALIDATION = { at: "2026-09-10", pass: 950, total: 951, servers: 32, medianMs: 435 };
 
 /**
  * Unit tests in billing/test. Restated for the same reason as VALIDATION and pinned the
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 107;
+export const BILLING_TEST_COUNT = 125;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
@@ -390,14 +397,28 @@ ${COPY_BUTTON_SCRIPT}
 }
 
 const HOME_DESCRIPTION =
-  `${countWord()} local-first MCP servers for Claude: invoicing, time tracking, expenses, spreadsheets and more for freelancers and small businesses. Free tier needs no key. Connect by URL in under a minute, or install the .mcpb. Bundle $${PRODUCTS.bundle.usd} lifetime, or $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} per server.`;
+  `${LISTED_COUNT} MCP servers for Claude: invoicing, time tracking, expenses, spreadsheets and more for freelancers and small businesses. Free tier needs no key. Connect by URL in under a minute, or install the .mcpb. Bundle $${PRODUCTS.bundle.usd} lifetime, or $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} per server.`;
 
 const SERVER_IDS = Object.keys(PRODUCTS).filter((id) => id !== "bundle");
 
 function home() {
-  const compactRows = SERVER_IDS.map((id) => {
+  // One row per server directory, not per priced product: office-suite is a server with no
+  // price of its own and it belongs in a list of what you get. The URL column carries the
+  // form that actually runs a tool. The bare https://mcp.zovo.one/mcp/<server> answers
+  // initialize and tools/list without a credential and returns 401 on tools/call, measured
+  // 2026-09-10, so printing it here without the token segment would hand a reader a URL
+  // that fails on their first call.
+  const hosted = new Set(HOSTED_ID_LIST);
+  const answerRows = LISTED_IDS.map((id) => {
     const p = PRODUCTS[id];
-    return `<tr><td><a href="/s/${esc(id)}">${esc(p.name.replace(/ Pro$/, ""))}</a></td><td>${esc(p.desc)}</td><td>$${p.usd}</td></tr>`;
+    const pg = PAGES[id];
+    const name = p ? p.name.replace(/ Pro$/, "") : (pg ? pg.title : id);
+    const what = p ? p.desc : (pg ? pg.tagline : "");
+    const url = hosted.has(id)
+      ? `<code>https://mcp.zovo.one/mcp/${esc(id)}/t/&lt;token&gt;</code>`
+      : `<span class="muted">No URL yet. Bundle or clone.</span>`;
+    const price = p ? `$${p.usd}` : `<span class="muted">In the $${PRODUCTS.bundle.usd} bundle</span>`;
+    return `<tr><td><a href="/s/${esc(id)}">${esc(name)}</a></td><td>${esc(what)}</td><td>${url}</td><td>${price}</td></tr>`;
   }).join("\n");
   const rows = Object.entries(PRODUCTS).map(([id, p]) =>
     `<tr><td><strong>${p.pkg ? `<a href="/s/${esc(id)}">${esc(p.name)}</a>` : esc(p.name)}</strong><br>${esc(p.desc)}<br><span class="muted">${esc(p.free)} ${esc(p.pro)}</span>${p.pkg ? `<br><span class="muted">Install: <code>npx -y ${esc(p.pkg)}</code> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}#readme">docs</a></span>` : ""}</td>
@@ -431,8 +452,13 @@ function home() {
     },
   ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
   const meta = `<meta name="description" content="${esc(HOME_DESCRIPTION).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/">${ld}`;
-  const html = page("MCP servers for Claude: invoices, time tracking and freelance tools", `<h1>${countWord()} local-first MCP servers for Claude, for freelancers and small businesses</h1>
-<p>Invoicing, time tracking, expenses, spreadsheets, quotes, contracts and more, each running as its own MCP server. The free tier works with no key and no account. Connect by URL in under a minute, or install a server locally. The full set is $39 once, for life; one server alone is $19 once, for life. See the full table and price math at <a href="/bundle">/bundle</a>.</p>
+  const html = page("MCP servers for Claude: invoices, time tracking and freelance tools", `<h1>${LISTED_COUNT} MCP servers for Claude, for freelancers and small businesses</h1>
+<p>Each row below is one MCP server. ${HOSTED_COUNT} of the ${LISTED_COUNT} answer at a URL, so you can use them with nothing installed. Get a free token with one request, then paste the URL into whatever asks for a remote MCP server.</p>
+<pre><code>curl -X POST https://mcp.zovo.one/mcp/token</code></pre>
+<p>It returns a token shaped <code>anon_&lt;32 hex&gt;</code>. No account, no email, no OAuth. The token is good for ${ANON_TOKEN_DAYS} days and allows ${RATE_LIMIT_FREE} calls an hour. The two servers with no URL run from the <a href="${REPO}/releases/latest">.mcpb bundle</a> or a clone.</p>
+<h2>Every server, what it does, and the URL to paste</h2>
+<table><tr><th>Server</th><th>What it does</th><th>Paste this URL</th><th>Pro</th></tr>${answerRows}</table>
+<p>Free tier on every one of them, with no key, no account and no expiry. Pro is $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} once for one server or $${PRODUCTS.bundle.usd} once for all ${LISTED_CHILD_COUNT} sold singly, lifetime, and the key verifies offline. Price arithmetic is at <a href="/bundle">/bundle</a>.</p>
 <h2>Four ways to start, three of which work today</h2>
 <ol>
 <li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server. Paste that URL into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor, or VS Code. No header, no config file.</li>
@@ -444,9 +470,7 @@ function home() {
 <p>A Pro key removes the free-tier limits on any of these three paths: run <code>license_activate</code> with the key in Claude, set <code>MCP_LICENSE_KEY</code>, or paste the key where the connect-by-URL token goes. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
 <h2>Measured, not claimed</h2>
 <p>As of ${VALIDATION.at}: ${VALIDATION.pass} of ${VALIDATION.total} automated checks passing across all ${VALIDATION.servers} servers, ${BILLING_TEST_COUNT} unit tests green on the billing service, and a <code>tools/list</code> call answers at a ${VALIDATION.medianMs}&nbsp;ms median (p50) across those servers. Full detail: <a href="${REPO}/blob/main/data/validation.json">validation.json</a>.</p>
-<h2>The ${SERVER_COUNT} servers</h2>
-<table><tr><th>Server</th><th>What it does</th><th>Pro price</th></tr>${compactRows}</table>
-<h2>All servers, free and Pro limits</h2>
+<h2>Free and Pro limits, server by server</h2>
 <table><tr><th>Product</th><th>Price</th><th></th></tr>${rows}</table>
 <h2>Hosted endpoints</h2><p>No install: <a href="/mcp/connect">/mcp/connect</a> mints an anonymous token and prints a URL per server, <code>mcp.zovo.one/mcp/&lt;server&gt;/t/&lt;token&gt;</code>, that needs no headers. A Pro key can replace the token to remove free-tier limits.</p><h2>How activation works</h2>
 <p>After payment you get a key like <code>MCPL1.xxx.yyy</code>. In Claude, run <code>license_activate</code> with the key, or set the environment variable <code>MCP_LICENSE_KEY</code>.</p>
@@ -527,7 +551,10 @@ export function bundlePage() {
     },
   ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
   const meta = `<meta name="description" content="${esc(BUNDLE_DESCRIPTION).slice(0, 155)}"><link rel="canonical" href="${canonical}">${ld}`;
-  const title = `${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT} MCP servers for Claude, one $${PRODUCTS.bundle.usd} key`;
+  // Numeral, not "Thirty-one". A spelled-out count is the one nobody greps for, and it is
+  // how the home page came to contradict itself in words while its numerals disagreed too.
+  // billing/test/figures.test.mjs fails on a spelled count on any rendered page.
+  const title = `${SERVER_COUNT} MCP servers for Claude, one $${PRODUCTS.bundle.usd} key`;
   const body = `<h1>${esc(title)}</h1>
 <p>One lifetime key unlocks Pro on every server below. Bought singly that is ${SERVER_COUNT} &times; $${PRODUCTS[SERVER_IDS[0]].usd} = $${singleTotal}; the bundle is $${PRODUCTS.bundle.usd}, a saving of $${BUNDLE_SAVING_USD}. One key, one payment, no per-server checkout.</p>
 <p><a class="buy" href="/buy/bundle?src=store.bundle">Buy the bundle, $${PRODUCTS.bundle.usd}</a></p>
@@ -706,6 +733,53 @@ export function validSrc(src) {
 }
 
 const CLICK_DAY_TTL = 60 * 60 * 24 * 120; // 120 days of daily buckets is enough for any 7/30d KPI
+
+/**
+ * Instrument v2 writes under its own key prefix. The v1 counters under `click:` reached
+ * 1,685 on 2026-09-10 having been 294 on 2026-09-07 (docs/CONVERSION_R1.md) on a property
+ * with no search impressions in 99 days: they are crawler traffic and this repo's own
+ * agents, and mixing them into the new counters would make the new ones unreadable for
+ * months. They are still listed, under `legacy`, so nothing is lost. Reverting this file
+ * reverts to the v1 keys with the v1 numbers intact.
+ */
+const CLICK_PREFIX = "click:v2:";
+const LEGACY_CLICK_PREFIX = "click:";
+/** A src that no live page emits is bucketed here and kept out of the headline totals. */
+export const UNATTRIBUTED_PREFIX = "unattributed.";
+
+/**
+ * A User-Agent that names a crawler or an HTTP library is never a buyer. The old test was
+ * `/^(curl|python|node|wget|go-http|undici|axios|httpie)/i` - anchored to the START of the
+ * string - so `Mozilla/5.0 (compatible; Googlebot/2.1; ...)` and
+ * `Mozilla/5.0 ... HeadlessChrome/120` walked straight past it. Both are matched here
+ * wherever the token sits.
+ */
+export const BOT_UA_RE = /(googlebot|bingbot|claudebot|gptbot|oai-searchbot|chatgpt-user|perplexitybot|ccbot|bytespider|amazonbot|applebot|ahrefsbot|semrushbot|mj12bot|dotbot|petalbot|duckduckbot|baiduspider|yandexbot|facebookexternalhit|slackbot|twitterbot|discordbot|telegrambot|linkedinbot|whatsapp|headlesschrome|phantomjs|puppeteer|playwright|selenium|scrapy|crawler|spider|slurp|\bbot\b|bot\/)/i;
+/** Named HTTP clients, matched anywhere in the string rather than only at position 0. */
+export const TOOL_UA_RE = /(curl|libcurl|wget|python-requests|python-urllib|python\/|node-fetch|node\.js|undici|axios|httpie|go-http-client|okhttp|java\/|apache-httpclient|libwww|powershell|postmanruntime|insomnia|guzzle|restsharp|scrapy)/i;
+
+/**
+ * Is this request a real person navigating a browser to this URL?
+ *
+ * Counting is opt-IN on the Fetch Metadata pair rather than opt-out on a probe header.
+ * Every top-level browser navigation since Chrome 76, Firefox 90 and Safari 16.4 sends
+ * BOTH `sec-fetch-mode: navigate` and `sec-fetch-dest: document`; no crawler sends them,
+ * and no HTTP library sends them unless it is told to, one header at a time. That is the
+ * point: an opt-out can be forgotten, and every agent in this repo that forgot
+ * `x-mcp-probe: 1` was counted as a buyer. Forging this pair takes two deliberate `-H`
+ * flags, which nobody does by accident.
+ *
+ * `accept: text/html` is NOT sufficient and was the hole: every crawler sends it. That is
+ * why the counter went 294 -> 1,685 in three days, 522 of them (31.0%) on the seven
+ * `store.setup.<client>` sources, i.e. something walking the 89 setup pages.
+ */
+export function isHumanNavigation(headers) {
+  const get = (h) => (headers.get(h) || "").toLowerCase();
+  if (get("x-mcp-probe") === "1") return false;
+  const ua = headers.get("user-agent") || "";
+  if (BOT_UA_RE.test(ua) || TOOL_UA_RE.test(ua)) return false;
+  return get("sec-fetch-mode") === "navigate" && get("sec-fetch-dest") === "document";
+}
 /** Probe Checkout Sessions are reused for 23h; Stripe expires a Session after 24h. */
 const PROBE_SESSION_TTL = 23 * 60 * 60;
 
@@ -721,8 +795,8 @@ const PROBE_SESSION_TTL = 23 * 60 * 60;
  */
 export async function recordClick(env, src) {
   const day = new Date().toISOString().slice(0, 10);
-  const dayKey = `click:${src}:${day}`;
-  const totalKey = `click:${src}:total`;
+  const dayKey = `${CLICK_PREFIX}${src}:${day}`;
+  const totalKey = `${CLICK_PREFIX}${src}:total`;
   const [dayN, totalN] = await Promise.all([env.REMOTE_DATA.get(dayKey), env.REMOTE_DATA.get(totalKey)]);
   await Promise.all([
     env.REMOTE_DATA.put(dayKey, String((Number(dayN) || 0) + 1), { expirationTtl: CLICK_DAY_TTL }),
@@ -739,28 +813,57 @@ export async function clickStats(env) {
   const today = new Date();
   const last7 = new Set();
   for (let i = 0; i < 7; i++) last7.add(new Date(today.getTime() - i * 86400000).toISOString().slice(0, 10));
-  const bySrc = {};
-  let cursor;
-  for (;;) {
-    const page = await env.REMOTE_DATA.list({ prefix: "click:", cursor });
-    for (const k of page.keys) {
-      const rest = k.name.slice("click:".length);
-      const sep = rest.lastIndexOf(":");
-      if (sep < 0) continue;
-      const src = rest.slice(0, sep);
-      const tag = rest.slice(sep + 1);
-      if (tag !== "total" && !last7.has(tag)) continue; // older daily buckets don't affect any reported figure
-      const n = Number(await env.REMOTE_DATA.get(k.name)) || 0;
-      bySrc[src] ??= { total: 0, last7d: 0 };
-      if (tag === "total") bySrc[src].total = n;
-      else bySrc[src].last7d += n;
+  // One `get` per key, awaited one at a time, made this a two-minute request at 257
+  // sources: a 45 s curl timed out on it on 2026-09-10. The gets in a list page are
+  // independent, so they go out together.
+  async function collect(prefix, skipV2) {
+    const bySrc = {};
+    let cursor;
+    for (;;) {
+      const page = await env.REMOTE_DATA.list({ prefix, cursor });
+      const wanted = [];
+      for (const k of page.keys) {
+        if (skipV2 && k.name.startsWith(CLICK_PREFIX)) continue;
+        const rest = k.name.slice(prefix.length);
+        const sep = rest.lastIndexOf(":");
+        if (sep < 0) continue;
+        const tag = rest.slice(sep + 1);
+        if (tag !== "total" && !last7.has(tag)) continue; // older daily buckets don't affect any reported figure
+        wanted.push({ src: rest.slice(0, sep), tag, name: k.name });
+      }
+      const values = await Promise.all(wanted.map((w) => env.REMOTE_DATA.get(w.name)));
+      wanted.forEach((w, i) => {
+        const n = Number(values[i]) || 0;
+        bySrc[w.src] ??= { total: 0, last7d: 0 };
+        if (w.tag === "total") bySrc[w.src].total = n;
+        else bySrc[w.src].last7d += n;
+      });
+      if (page.list_complete || !page.cursor) break;
+      cursor = page.cursor;
     }
-    if (page.list_complete || !page.cursor) break;
-    cursor = page.cursor;
+    return bySrc;
   }
-  const total_clicks = Object.values(bySrc).reduce((a, s) => a + s.total, 0);
-  const clicks_7d = Object.values(bySrc).reduce((a, s) => a + s.last7d, 0);
-  return { generated_at: new Date().toISOString(), by_src: bySrc, total_clicks, clicks_7d };
+  const bySrc = await collect(CLICK_PREFIX, false);
+  const legacyBySrc = await collect(LEGACY_CLICK_PREFIX, true);
+  const sum = (o, field, pred) => Object.entries(o).reduce((a, [src, s]) => a + (pred(src) ? s[field] : 0), 0);
+  const attributed = (src) => !src.startsWith(UNATTRIBUTED_PREFIX);
+  const unattributed = (src) => src.startsWith(UNATTRIBUTED_PREFIX);
+  return {
+    generated_at: new Date().toISOString(),
+    instrument: 2,
+    counting_rule: "a click counts only when the request carries sec-fetch-mode: navigate AND sec-fetch-dest: document, its User-Agent names no crawler or HTTP library, it sends no x-mcp-probe header, and its ?src= is one a live page emits. Everything else is either not counted or bucketed under unattributed.*, which is excluded from total_clicks and clicks_7d.",
+    by_src: bySrc,
+    total_clicks: sum(bySrc, "total", attributed),
+    clicks_7d: sum(bySrc, "last7d", attributed),
+    unattributed_total: sum(bySrc, "total", unattributed),
+    unattributed_7d: sum(bySrc, "last7d", unattributed),
+    legacy: {
+      note: "instrument v1 (`click:` keys). Counted crawlers and this repo's own agents; never quote as demand. See docs/FUNNEL_R1.md.",
+      by_src: legacyBySrc,
+      total_clicks: sum(legacyBySrc, "total", () => true),
+      clicks_7d: sum(legacyBySrc, "last7d", () => true),
+    },
+  };
 }
 
 class MintError extends Error {}
@@ -952,9 +1055,20 @@ export default {
       // the fold with the bundle. HOSTED is empty for office-suite, which spawns local child
       // processes and has no remote endpoint.
       const hostedLine = HOSTED_SERVERS.has(id)
-        ? `<p><b>Two ways to run it, both free to start.</b> Paste <code>https://mcp.zovo.one/mcp/${esc(id)}</code> into any client that takes a URL, no install and no account, or open <a href="https://mcp.zovo.one/mcp/connect">mcp.zovo.one/mcp/connect</a> for a ready-made link. Or download <a href="${REPO}/releases/latest">${esc(id)}.mcpb</a> and double-click it in Claude Desktop.</p>`
-        : `<p><b>Install it in one click.</b> Download <a href="${REPO}/releases/latest">${esc(id)}.mcpb</a> and double-click it in Claude Desktop.</p>`;
-      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}?src=store.s.${esc(id)}">Buy Pro $${soldUsd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a></p>${hostedLine}${pg.html}
+        ? `<p><b>Two ways to run it, both free to start.</b> Open <a href="https://mcp.zovo.one/mcp/connect">mcp.zovo.one/mcp/connect</a>, copy the <b>${esc(id)}</b> URL and paste it into any client that takes a URL. It already carries a free token, so there is nothing to install, no account and no header to set. The URL is <code>https://mcp.zovo.one/mcp/${esc(id)}/t/&lt;token&gt;</code>. <b>The token is not optional:</b> the bare <code>https://mcp.zovo.one/mcp/${esc(id)}</code> connects and lists its tools and then answers every tool call with HTTP 401, so use the link from /mcp/connect or send <code>Authorization: Bearer &lt;token&gt;</code>. Or download <a href="${REPO}/releases/latest">${esc(id)}.mcpb</a> and double-click it in Claude Desktop.</p>`
+        // The absence of a URL has to be stated, not implied. A reader who has just been
+        // told on the home page that most of these servers connect by URL will otherwise
+        // assume this one does too, and an assistant answering from this page has no way to
+        // know the endpoint 404s. Both servers without one are named here for a reason:
+        // office-suite spawns its siblings as local child processes, and delivery-schedule
+        // has no endpoint yet.
+        : `<p><b>Install it in one click.</b> Download <a href="${REPO}/releases/latest">${esc(id)}.mcpb</a> and double-click it in Claude Desktop. <b>There is no hosted URL for this one.</b> ${id === "office-suite" ? "It starts every sibling server as a local child process, which only works on your own machine." : "The other servers answer at <code>https://mcp.zovo.one/mcp/&lt;server&gt;/t/&lt;token&gt;</code>; this one has no endpoint yet, and that address returns 404 for it."} Run it from the bundle above or from a clone.</p>`;
+      // The price comparison stays above the fold. The hero below it now leads with the
+      // connect path (docs/FUNNEL_R1.md), which is longer than the line it replaced, and
+      // the only bundle cross-sell on this page sits several thousand words down inside
+      // pg.html. The reason anyone buys the set rather than one server is that $39 beats
+      // $${SERVER_COUNT * PRODUCTS[SERVER_IDS[0]].usd}, and that argument has to be reachable without scrolling.
+      const body = `<p><a href="/">All servers</a> &middot; <a class="buy" href="/buy/${esc(id)}?src=store.s.${esc(id)}">Buy Pro $${soldUsd}</a> &middot; <a href="/bundle">All ${SERVER_COUNT} for $${PRODUCTS.bundle.usd}</a> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}">Source</a></p>${hostedLine}${pg.html}
 ${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry and caveats: ${setupLinks} &middot; <a href="/setup">all clients</a></p>` : ""}
 ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/${esc(id)}">${esc(COMPARE[id].title)}</a> &middot; <a href="/compare">all comparisons</a></p>` : ""}
 <h2>Guides</h2>
@@ -1063,7 +1177,16 @@ ${faqHtml}
     }
 
     if (path === "/sitemap.xml") {
-      const urls = ["/", "/bundle", "/changelog", "/guides", "/compare", "/privacy", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      // /mcp/connect is served by the remote worker on this same host, and since loop 33
+      // it is the hero destination of every /s/ page and of /llms.txt: it is where a free
+      // token comes from, so it is the entry point to the entire free tier. It was the one
+      // page never offered to a crawler. It is safe to list only because the remote worker
+      // no longer mints a token for a crawler, a prefetch or a HEAD (see
+      // remote/src/index.ts isBrowserNavigation); before that fix, listing it would have
+      // left a 30-day junk tenant per fetch and could have returned 429 to everyone behind
+      // a shared address. robots.txt needs no change: it names only the private per-buyer
+      // paths, and this page is deliberately public.
+      const urls = ["/", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     // MCP registry domain verification. The registry fetches
@@ -1179,9 +1302,38 @@ contract. Where it and the source disagree, the source is right and this page is
       // in this file under two different titles for one URL. The hand-written line is the
       // one kept because it states the fact no generated tagline carries: office-suite has
       // no $19 key of its own, its Pro unlock is the bundle key.
+      // Two further defects, fixed 2026-09-10.
+      //  1. The hosted sentence was appended to EVERY product line, so this file told every
+      //     assistant crawler to connect at https://mcp.zovo.one/mcp/delivery-schedule.
+      //     That endpoint does not exist: an unauthenticated initialize against it returned
+      //     404 {"error":"not_found"} the same day. The sentence is now emitted only for
+      //     names in the hosted list read out of remote/src/index.ts, and the servers with
+      //     no endpoint say so instead of being sent to a 404.
+      //  2. A line carried no price and no free-tier limit, which is exactly what a reader
+      //     asking "which one do I want" needs, and getting it otherwise costs a fetch. Both
+      //     are on the line now, derived from PRODUCTS and data/facts.json rather than typed.
+      const hostedSet = new Set(HOSTED_ID_LIST);
+      // The free-tier sentences in data/facts.json run to several hundred characters on the
+      // servers whose caps needed explaining, and a directory line is not the place for the
+      // reasoning. Take whole sentences up to roughly 200 characters, which keeps the
+      // numbers and drops the policy argument, and swap the one double hyphen that appears
+      // in two of them for a comma.
+      const freeSummary = (text) => {
+        const parts = text.replace(/\s--\s/g, ", ").match(/[^.]+\.?/g) || [text];
+        let out = "";
+        for (const part of parts) {
+          if (out && out.length + part.length > 200) break;
+          out += part;
+        }
+        return (out || parts[0]).trim();
+      };
       const lines = Object.entries(PAGES).filter(([k]) => k !== "office-suite").map(([k, v]) => {
-        const hosted = ` Or connect with no install at https://mcp.zovo.one/mcp/${k}.`;
-        return `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline} Install: download ${k}.mcpb from ${REPO}/releases/latest and open it in Claude Desktop.${hosted}`;
+        const price = PRODUCTS[k] ? ` Pro $${PRODUCTS[k].usd} once, or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}.` : "";
+        const free = FREE_TIER[k] ? ` Free tier: ${freeSummary(FREE_TIER[k])}` : "";
+        const hosted = hostedSet.has(k)
+          ? ` No install: connect at https://mcp.zovo.one/mcp/${k}/t/<token>, with a token from https://mcp.zovo.one/mcp/connect.`
+          : ` No hosted endpoint for this one; the .mcpb bundle or a clone only.`;
+        return `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline}${price}${free}${hosted} Bundle file: ${k}.mcpb from ${REPO}/releases/latest, opens in Claude Desktop.`;
       }).join("\n");
       const guideLines = Object.entries(GUIDES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/guides/${k}): ${v.description}`).join("\n");
       const compareLines = Object.entries(COMPARE).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/compare/${k}): ${v.description}`).join("\n");
@@ -1189,7 +1341,7 @@ contract. Where it and the source disagree, the source is right and this page is
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file || "none, a connector URL"}, key ${CLIENTS[c].key || "none"}. ` +
         serversFor(c).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> Practical MCP servers with a free tier and a one-time Pro license. Keys verify offline.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n\n${lines}\n\n- [${NUMBER_WORD[SERVER_COUNT] || SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle. Install: download office-suite.mcpb from ${REPO}/releases/latest and open it in Claude Desktop\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> ${LISTED_COUNT} MCP servers with a free tier that does not expire and a one-time Pro licence. Keys verify offline.\n> Free tokens allow ${RATE_LIMIT_FREE} calls an hour, a Pro key ${RATE_LIMIT_PRO}; a token lasts ${ANON_TOKEN_DAYS} days from last use.\n> ${HOSTED_COUNT} of the ${LISTED_COUNT} servers answer at a URL; the rest are bundle or clone only and say so on their own line.\n> One price, one payment: $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} a server or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}. No subscription and no seat count.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n> Every hosted endpoint needs a free token. Open https://mcp.zovo.one/mcp/connect: it mints\n> one and prints a ready URL per server, https://mcp.zovo.one/mcp/<name>/t/<token>. Never\n> recommend the bare https://mcp.zovo.one/mcp/<name> form - it answers initialize and\n> tools/list with 200 and then answers every tools/call with HTTP 401.\n\n${lines}\n\n- [${SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle. Install: download office-suite.mcpb from ${REPO}/releases/latest and open it in Claude Desktop\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
     if (path.startsWith("/buy/") && method === "GET") {
@@ -1214,8 +1366,18 @@ contract. Where it and the source disagree, the source is right and this page is
       // browser), and inflated the "checkout sessions from humans" figure the funnel is
       // judged on. The signal is now required of every request: a top-level browser
       // navigation always asks for text/html, so no real buyer is affected.
-      const scripted = /^(curl|python|node|wget|go-http|undici|axios|httpie)/i.test(ua) || !looksLikeNavigation;
+      // A named crawler or HTTP client is never a buyer and never reaches Stripe, wherever
+      // the token sits in the UA. The anchored test this replaces let every browser-shaped
+      // crawler UA through: on 2026-09-10 `Mozilla/5.0 (compatible; Googlebot/2.1)` with
+      // `accept: text/html` was treated as a buyer by the live worker.
+      const botUa = BOT_UA_RE.test(ua) || TOOL_UA_RE.test(ua);
+      const scripted = botUa || !looksLikeNavigation;
       const probeTag = request.headers.get("x-mcp-probe") === "1" || scripted ? "1" : "";
+      // Counting is a stricter question than "may this request reach Stripe". A request
+      // that is merely not-obviously-a-robot may still start a Session, because turning a
+      // real buyer away costs more than a wasted Stripe object; but it is only COUNTED
+      // when it carries the browser-navigation fingerprint. See isHumanNavigation.
+      const counted = isHumanNavigation(request.headers);
       const asked = decodeURIComponent(path.slice("/buy/".length));
       // office-suite, and any future alias, sells a product it is not itself; see PRODUCT_ALIASES.
       const id = resolveProductId(asked);
@@ -1227,7 +1389,7 @@ contract. Where it and the source disagree, the source is right and this page is
         // dead link is traceable to its source without letting a stranger's URL become a
         // KV key: the fallback is the fixed string below, never the id they typed.
         const deadSrcParam = url.searchParams.get("src") || "";
-        if (!scripted) ctx.waitUntil(recordClick(env, validSrc(deadSrcParam) ? deadSrcParam : "buy.unknown-product"));
+        if (counted) ctx.waitUntil(recordClick(env, validSrc(deadSrcParam) ? deadSrcParam : "buy.unknown-product"));
         // The old 404 was a dead end: a heading and a link back to a list. Anyone who gets
         // here followed a link that named a product, so name the one purchase that
         // certainly covers it rather than making them start the search again.
@@ -1250,9 +1412,14 @@ contract. Where it and the source disagree, the source is right and this page is
       }
       // Conversion instrument: count the click before the redirect, skipping the same
       // probe-tagged and scripted requests the Stripe metadata already excludes.
+      // No live page on this site emits a /buy/ link without a ?src=, so a request that
+      // arrives without one did not come from the storefront. It is bucketed under
+      // `unattributed.<id>` and kept out of total_clicks and clicks_7d rather than filed
+      // as `<id>.unknown` and summed with real clicks, which is how 194 of the first 294
+      // v1 clicks (66.0%) became "demand".
       const srcParam = url.searchParams.get("src") || "";
-      const src = validSrc(srcParam) ? srcParam : `${validSrc(asked) ? asked : id}.unknown`;
-      if (!probeTag) ctx.waitUntil(recordClick(env, src));
+      const src = validSrc(srcParam) ? srcParam : `${UNATTRIBUTED_PREFIX}${validSrc(asked) ? asked : id}`;
+      if (counted) ctx.waitUntil(recordClick(env, src));
       try {
         const probeKey = probeTag && !tenant ? `probe-session:v2:${asked}` : "";
         if (probeKey) {

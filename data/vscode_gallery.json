@@ -1,13 +1,37 @@
 {
-  "at": "2026-09-09T11:30:21.845Z",
-  "gallery": "https://api.mcp.github.com/v0/servers",
-  "pages": 1,
-  "total_rows": 100,
+  "at": "2026-09-10T14:14:49.045Z",
+  "gallery": "https://api.mcp.github.com/v0.1/servers",
+  "pages": 3,
+  "total_rows": 252,
   "control": "microsoft/markitdown",
   "ours": [],
-  "partial": "pagination stopped at page 2: HTTP 400 on a cursor the service itself issued",
-  "coverage": "PARTIAL: only the rows above were seen, so an absence below them is unmeasured, not proven",
-  "entries_with_repository_subfolder": 0,
-  "subfolder_hypothesis": "still holds: zero gallery entries use a monorepo subfolder",
-  "note": "Registry-backed and syncs from the official MCP registry. No submission path exists; appearing is a ranked cut. If ours is non-empty, VS Code users can now find these servers in the built-in picker."
+  "partial": false,
+  "coverage": "complete",
+  "membership_probes": [
+    {
+      "name": "microsoft/markitdown",
+      "status": 200,
+      "in_gallery": true
+    },
+    {
+      "name": "com.bestremotetools/office-suite-all-servers-one-install",
+      "status": 404,
+      "in_gallery": false
+    },
+    {
+      "name": "com.bestremotetools/archive-zip-unzip-bomb-guard",
+      "status": 404,
+      "in_gallery": false
+    }
+  ],
+  "entries_with_repository_subfolder": 14,
+  "subfolder_examples": [
+    "io.github.netdata/mcp-server -> docs/netdata-ai/mcp",
+    "com.microsoft/azure -> servers/Azure.Mcp.Server",
+    "com.microsoft/microsoft-fabric -> servers/Fabric.Mcp.Server",
+    "com.supabase/mcp -> packages/mcp-server-supabase",
+    "com.microsoft/nuget -> mcp"
+  ],
+  "subfolder_hypothesis": "REFUTED: 14 gallery entries do use a monorepo subfolder, so a subfolder is not what excludes us",
+  "note": "Registry-backed but hand-curated: 252 rows against a registry of 20,000+. The only known request path is an onboarding-request comment on github/github-mcp-server discussion #1257, whose measured yield is 2 of 11 (docs/VSCODE_GALLERY_R2.md). If ours is non-empty, VS Code users can find these servers in the built-in picker."
 }

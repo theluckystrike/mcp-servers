@@ -6,19 +6,34 @@ const FOOT = "";
 const BASE = "https://mcp.zovo.one";
 const RELEASES = "https://github.com/theluckystrike/mcp-servers/releases/latest";
 
+// Every number these pages quote comes from billing/src/figures.js, which
+// scripts/build-figures.mjs writes out of servers/*/src/index.ts, remote/src/index.ts,
+// packages/mcp-license and data/facts.json. A page that types a count instead of
+// interpolating one is the defect billing/test/figures.test.mjs exists to catch.
+import {
+  LISTED_COUNT, LISTED_CHILD_COUNT, HOSTED_COUNT, HOSTED_IDS as HOSTED_ID_LIST, TOOLS, LICENSE_TOOLS,
+  RATE_LIMIT_FREE, RATE_LIMIT_PRO, DISCOVERY_LIMIT, TOKEN_MINTS_PER_IP,
+  ANON_TOKEN_DAYS, SWEEP_AFTER_DAYS, SINGLE_USD, BUNDLE_USD, VERSION, FREE, Word,
+} from "./figures.js";
+
+/**
+ * The free-tier sentence for a server, verbatim from data/facts.json apart from one
+ * punctuation swap: a couple of those sentences contain a double hyphen, which the estate's
+ * prose gate treats as an em dash. Facts, numbers and wording are untouched.
+ */
+function freeText(id) {
+  const t = FREE[id];
+  if (!t) throw new Error(`freeText: no free-tier sentence for ${id} in data/facts.json`);
+  return t.replace(/\s--\s/g, ", ");
+}
+
 /**
  * The servers that answer at https://mcp.zovo.one/mcp/<name>, read off the SERVERS map in
  * remote/src/index.ts (30 of them). office-suite spawns every sibling as a local child
  * process, so it has no hosted form; delivery-schedule has no endpoint yet. A guide about
  * either one gets the bundle and the clone, and is not offered a URL that would 404.
  */
-const HOSTED_IDS = new Set([
-  "time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency",
-  "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image",
-  "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem",
-  "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash",
-  "work-order", "catalogue", "change-order",
-]);
+const HOSTED_IDS = new Set(HOSTED_ID_LIST);
 
 /**
  * The install block every guide shares.
@@ -385,16 +400,18 @@ ${FOOT}`,
 
   "mcp-server-free-vs-pro": {
     title: "What the free tier includes and what Pro adds",
-    description: "Exact free and Pro limits for all four MCP servers, the one-time price, how offline Ed25519 keys work, and the refund terms. No subscription.",
+    description: `Exact free and Pro limits, the one-time price, how offline Ed25519 keys work, and the refund terms. $${SINGLE_USD} a server or $${BUNDLE_USD} for all ${LISTED_CHILD_COUNT}. No subscription.`,
     html: `<h1>What the free tier includes and what Pro adds</h1>
-<p>Four servers, one pricing rule: $19 once for a server, $39 once for all of them, lifetime, no
+<p>${LISTED_CHILD_COUNT} servers, one pricing rule: $${SINGLE_USD} once for a server, $${BUNDLE_USD} once for all of them, lifetime, no
 subscription and no seat count. The free tier is meant to be the whole product for light use rather than
 a demo that stops at the interesting part. This page lists the exact limits so you can decide before
 paying rather than after.</p>
 
 <h2>The table</h2>
+<p>Four of them in full, below. Every other server states its own free and Pro limits on its
+<a href="/">product page</a>, and the rule underneath them is the same one.</p>
 <table>
-<tr><th>Server</th><th>Free</th><th>Pro ($19 once)</th></tr>
+<tr><th>Server</th><th>Free</th><th>Pro ($${SINGLE_USD} once)</th></tr>
 <tr><td><a href="/s/time-tracker">Time Tracker</a></td>
 <td>Unlimited timers and entries. Reports, listings and CSV export cover the last 7 days. 2 projects with an hourly rate. Currency per entry (EUR, USD, GBP, PLN).</td>
 <td>Full history, <code>invoice_summary</code>, grouping by tag, unlimited rated projects.</td></tr>
@@ -407,7 +424,7 @@ paying rather than after.</p>
 <tr><td><a href="/s/invoice">Invoice</a></td>
 <td>3 invoices per calendar month, small footer line on the PDF. Overdue report free.</td>
 <td>Unlimited invoices, no footer, logo, custom invoice number prefix.</td></tr>
-<tr><td>Bundle</td><td>-</td><td><strong>$39 once</strong> for all four, lifetime. Saves $37 against buying them separately.</td></tr>
+<tr><td>Bundle</td><td>-</td><td><strong>$${BUNDLE_USD} once</strong> for all ${LISTED_CHILD_COUNT}, lifetime. Saves $${LISTED_CHILD_COUNT * SINGLE_USD - BUNDLE_USD} against buying them separately.</td></tr>
 </table>
 
 <h2>What a limit does when you hit it</h2>
@@ -433,7 +450,7 @@ export MCP_LICENSE_KEY=MCPL1.xxxxxxxx.yyyyyyyy
 mkdir -p ~/.config/mcp-servers
 printf '{"key":"MCPL1.xxxxxxxx.yyyyyyyy"}' > ~/.config/mcp-servers/license.json</code></pre>
 <p>Lookup order is the environment variable, then that config file, then the free tier. The bundle key
-carries a wildcard product, so one key covers all four servers with the same steps. Every tool ships in
+carries a wildcard product, so one key covers every server with the same steps. Every tool ships in
 the free build; a Pro key removes limits rather than downloading anything.</p>
 
 <h2>Buying, and getting your money back</h2>
@@ -7635,9 +7652,696 @@ ${FOOT}`,
       { q: "Should I use the Indexing API instead?", a: "It answers a different question. The Indexing API asks Google to crawl and is limited to specific content types; URL Inspection reports state. Neither makes a page get indexed, and on a new domain the constraint is authority rather than notification." },
     ],
   },
+  "which-mcp-servers-work-by-pasting-a-url": {
+    title: "Which MCP servers work by pasting a URL, with nothing installed",
+    description: `A remote MCP server is a URL, not a program. How to tell one from a local server, what to paste into each client, and ${HOSTED_COUNT} endpoints that need no account and no OAuth.`,
+    html: `<h1>Which MCP servers work by pasting a URL, with nothing installed</h1>
+<p>Most MCP servers you will find are programs. The listing hands you <code>npx -y something</code> or a
+JSON block with <code>command</code> and <code>args</code>, and your client starts a process on your
+machine. A remote MCP server is different. It is a URL that speaks the MCP streamable HTTP transport,
+your client opens an HTTP connection to it, and the tools show up. No process starts, nothing gets
+installed, and there is nothing to keep updated.</p>
+<p>This page is about how to find those, how to tell a real one from a URL that will not work, and what
+you give up by using one. ${HOSTED_COUNT} of the servers in this catalogue are remote endpoints and they
+are listed at the bottom, but the first half of the page is not about them.</p>
+
+<h2>How to tell a remote server from a local one</h2>
+<p>Read the install instructions, not the description. Three signals settle it.</p>
+<ul>
+<li>A local server gives you a command. <code>npx</code>, <code>uvx</code>, <code>docker run</code>, or
+a config entry with <code>command</code> and <code>args</code> in it.</li>
+<li>A remote server gives you a URL, and a client config entry with a <code>url</code> field and no
+<code>command</code>. In Claude Code it is <code>claude mcp add --transport http</code>.</li>
+<li>In the MCP registry's <code>server.json</code> the difference is structural. A local server carries a
+<code>packages</code> array; a remote one carries a <code>remotes</code> array with a
+<code>type</code> of <code>streamable-http</code> and a <code>url</code>.</li>
+</ul>
+<p>The word "hosted" on a product page is not a signal. Plenty of hosted products mean "we run a web app
+and it has an MCP server you install locally to talk to it".</p>
+
+<h2>Where the remote servers are</h2>
+<p>No single index exists. A blind search run recorded in this repository on 2026-09-10, in
+<code>docs/BLIND_RECOMMENDATION_R1.md</code>, asked an assistant this exact question and it came back with
+a category and two artifacts rather than a server, which is the honest state of the answer today. What it
+found, and what each thing is actually good for:</p>
+<table>
+<tr><th>What</th><th>Where</th><th>Use it for</th></tr>
+<tr><td>awesome-remote-mcp-servers, a curated list by jaw9c</td><td><code>github.com/jaw9c/awesome-remote-mcp-servers</code></td><td>Browsing. It is the closest thing to a directory of URL-only servers.</td></tr>
+<tr><td>Vendor remotes from Notion, Linear, Sentry, Stripe and Azure DevOps</td><td>Each vendor's own docs</td><td>Connecting an assistant to an account you already pay for.</td></tr>
+<tr><td>An in-browser tester</td><td><code>mcpplaygroundonline.com/mcp-test-server</code></td><td>Checking that a URL answers before you wire it into a client.</td></tr>
+<tr><td>The MCP registry itself</td><td><code>registry.modelcontextprotocol.io</code></td><td>Filtering on the <code>remotes</code> array. Noisier, but it is the only machine-readable source.</td></tr>
+</table>
+<p>Two of those are directories and one is a debugger, so none of them is an answer to "which server
+should I use". The registry is the only one you can query, and it is worth knowing what a query returns.
+An independent count filed on the registry's issue tracker as issue 1626 on 2026-09-07, and recorded in
+<code>docs/CONTENT_R3.md</code> here, looked at 16,305 endpoints declaring a remote: 58.5% answered
+<code>tools/list</code> without a credential, 25.4% required authentication, and 8.6% answered HTTP but
+did not speak MCP at all. So roughly one URL in twelve on that list is already dead.</p>
+
+<h2>The two things that decide whether you can use a URL today</h2>
+<p>A remote server is usable with nothing installed only if both of these hold, and most vendor remotes
+fail the second one.</p>
+<ol>
+<li>It answers <code>initialize</code> and <code>tools/list</code> with no credential. If it does not,
+your client cannot even show you what the server offers before you sign in, and several directories will
+list it as offline.</li>
+<li>It gives you a credential without an account. A vendor remote that starts an OAuth flow into your
+Notion or Stripe account is not a paste-a-URL server for someone who does not already have that account.
+It is a connector to a product you own.</li>
+</ol>
+
+<h2>What this catalogue offers, and the exact URL</h2>
+<p>${HOSTED_COUNT} servers here answer at <code>https://mcp.zovo.one/mcp/&lt;server&gt;</code>. No
+account, no OAuth and no email address appears anywhere in the flow. One POST gets you a token:</p>
+<pre><code>curl -X POST https://mcp.zovo.one/mcp/token</code></pre>
+<p>It returns a token shaped <code>anon_&lt;32 hex&gt;</code>. Put it in the path and you have a URL that
+works in a client that cannot set headers, which is most of them:</p>
+<pre><code>https://mcp.zovo.one/mcp/invoice/t/anon_0dbe552cc87465e0f00bcbf5ff44adfe</code></pre>
+<p>The bare form without <code>/t/&lt;token&gt;</code> is not the same thing, and this is the part that
+catches people. Probed on 2026-09-10, an unauthenticated <code>initialize</code> against
+<code>/mcp/invoice</code> returned 200 with <code>serverInfo</code> naming <code>mcp-invoice</code> version
+${VERSION}, and an unauthenticated <code>tools/call</code> against the same URL returned 401 with a body
+naming both credential forms. So the bare URL is enough for a directory to introspect and not enough to
+run a tool. Use the token form.</p>
+<p><a href="/mcp/connect">/mcp/connect</a> does the mint and prints one ready line per server if you would
+rather not run curl. The client-by-client detail, including the Claude.ai custom connector dialog and the
+Cursor and VS Code entries, is on
+<a href="/guides/connect-mcp-servers-without-installing">connect without installing</a>.</p>
+${install("invoice")}
+
+<h2>What the free tier allows, in numbers</h2>
+<table>
+<tr><th>Limit</th><th>Value</th></tr>
+<tr><td>Calls per hour on a free token</td><td>${RATE_LIMIT_FREE}</td></tr>
+<tr><td>Calls per hour on a Pro key</td><td>${RATE_LIMIT_PRO}</td></tr>
+<tr><td>Unauthenticated discovery calls per hour</td><td>${DISCOVERY_LIMIT}</td></tr>
+<tr><td>New tokens per hour from one IP</td><td>${TOKEN_MINTS_PER_IP}</td></tr>
+<tr><td>Token lifetime, refreshed on every write</td><td>${ANON_TOKEN_DAYS} days</td></tr>
+<tr><td>Documents deleted after this long untouched</td><td>${SWEEP_AFTER_DAYS} days</td></tr>
+</table>
+<p>Per-server free limits are separate from the rate limit and are listed on each server's page. The
+invoice server, for example, allows ${FREE.invoice.replace(/\\.$/, "")}.</p>
+
+<h2>What it costs</h2>
+<p>The free tier has no expiry and no card. Pro is $${SINGLE_USD} once for one server or $${BUNDLE_USD}
+once for all ${LISTED_CHILD_COUNT} that are sold singly, and a Pro key replaces the anonymous token in the same
+URL. No subscription, and no seat count.</p>
+
+<h2>What a remote MCP server cannot do</h2>
+<p>This is the section that decides whether you want one, so it is longer than the pitch.</p>
+<ul>
+<li>It cannot touch your files. The stdio build of these servers reads and writes under your own data
+directory. The hosted build has no access to your disk at all, so anything the tool needs has to arrive
+in the call or through an upload tool.</li>
+<li>The tool list is not always identical. The hosted wrapper adds file-transfer tools to some servers.
+The zip server registers ${TOOLS.zip} tools over stdio and its hosted endpoint returned
+${TOOLS.zip + LICENSE_TOOLS + 3} in a <code>tools/list</code> on 2026-09-10, because three upload and
+download tools only exist in the hosted form.</li>
+<li>The token is a bearer secret sitting in a URL. Anyone who has the URL can read the data under it, and
+URLs end up in shell history and screenshots. Treat it as a password.</li>
+<li>Your data is not backed up. Documents are deleted ${SWEEP_AFTER_DAYS} days after the last touch. That
+is a design decision about retention, not a storage product.</li>
+<li>Some clients re-handshake every registered endpoint on every turn, which spends several of your
+${RATE_LIMIT_FREE} hourly calls before a tool runs. If you register twenty endpoints and hit the ceiling
+without doing anything, this is why.</li>
+<li>${LISTED_COUNT - HOSTED_COUNT} of the ${LISTED_COUNT} servers here have no hosted form. The office-suite server spawns its
+siblings as local child processes, which only makes sense on your own machine, and delivery-schedule has
+no endpoint yet. Both are bundle-and-clone only.</li>
+<li>One person runs this, with no status page and no service level agreement, and the honest
+comparison against a local install is that a local server keeps working when this domain does not.</li>
+</ul>
+
+<h2>The servers you can paste today</h2>
+<p>Every one of these takes <code>https://mcp.zovo.one/mcp/&lt;name&gt;/t/&lt;token&gt;</code>.</p>
+<p><code>${HOSTED_ID_LIST.join("</code>, <code>")}</code></p>`,
+    faq: [
+      { q: "Do I need an account to use these URLs?", a: "No. One POST to https://mcp.zovo.one/mcp/token returns an anonymous token shaped anon_ plus 32 hex characters. No email field, no password and no OAuth screen appears anywhere in the flow." },
+      { q: "Why does the URL without a token return 401?", a: "The bare endpoint answers initialize, tools/list, resources/list and ping so that a directory can introspect it, and refuses tools/call. That split is deliberate: discovery is open, running a tool is not, because a tool call reads and writes data that belongs to a tenant." },
+      { q: "Can I use a remote server and a local one at the same time?", a: "Yes, and most people should. Register the local build for anything that has to read files on your disk, and the remote URL for anything you want on a machine you do not control. They are separate data stores, so entries made in one do not appear in the other." },
+      { q: "What happens to my data when I stop using the token?", a: "Documents are deleted 35 days after the last touch and the token itself lapses 30 days after its last use. Nothing is archived and there is no export-on-close step, so pull anything you want to keep before you walk away." },
+      { q: "Is a remote server slower than a local one?", a: "It adds a network round trip per call, so yes, measurably. For a tool that renders a PDF the difference is small against the render itself. For a chatty sequence of small calls it is noticeable." },
+    ],
+  },
+  "paid-mcp-servers-and-how-you-pay-for-one": {
+    title: "Where to find MCP servers that cost money, and how you actually pay",
+    description: `The MCP protocol carries no payment. Five different ways paid servers charge, what each one means for your bill, and how an offline licence key works.`,
+    html: `<h1>Where to find MCP servers that cost money, and how you actually pay</h1>
+<p>The MCP specification has no billing layer. Nothing in the protocol carries a price, a plan, a card or
+an entitlement, so every paid MCP server has bolted payment on somewhere outside the protocol. They have
+not agreed on where, and that is why this question does not have a clean answer yet.</p>
+<p>A blind search run recorded here on 2026-09-10 in <code>docs/BLIND_RECOMMENDATION_R1.md</code> asked
+exactly this and came back with four marketplaces using four different pricing models and no dominant
+one. That is the real answer, so this page describes the models rather than picking a winner.</p>
+
+<h2>The five ways a paid MCP server charges you</h2>
+<table>
+<tr><th>Model</th><th>Where it turns up</th><th>What you are actually agreeing to</th></tr>
+<tr><td>Per call</td><td>AgenticMarket, roughly $0.03 to $0.50 a call with free trial calls, as recorded in that run</td><td>The meter runs on tool calls, not on results. An assistant that retries a failed call pays twice.</td></tr>
+<tr><td>Creator-priced, platform-hosted</td><td>MCPize, which handles hosting, payment and tax</td><td>Whatever the author picked. Subscription, per install, usage or freemium all appear on the same platform.</td></tr>
+<tr><td>Pay per event</td><td>Apify, an actor marketplace that added MCP hosting; the creator keeps around 80% less compute</td><td>Compute is billed separately from the tool, so a long-running job and a quick lookup cost very differently.</td></tr>
+<tr><td>Execution quota</td><td>MCPBundles, a free tier of 25 executions a month plus paid tiers</td><td>A monthly allowance across servers. Cheap until an agent loop eats the allowance in an afternoon.</td></tr>
+<tr><td>A licence key sold directly</td><td>The server's own site. This catalogue works this way.</td><td>You buy a key, the key unlocks the software, and the protocol never sees the money.</td></tr>
+</table>
+<p>The four marketplace rows come from that recorded run and describe what the search returned on one day.
+Check the current page before you sign up for any of them; none of these prices is a quote from us.</p>
+
+<h2>Why the model matters more than the price</h2>
+<p>Per-call pricing and an agent are an awkward pair. Assistants retry, they list tools on every turn, and
+they call a cheap tool five times to answer one question. A meter that counts calls counts all of that.
+Subscription pricing has the reverse problem, which is that you keep paying in the months you never open
+the client. A one-time key sits in the middle: you pay once, and the vendor then has no ongoing revenue
+reason to keep the service running, which is a risk you should price in.</p>
+<p>One more difference goes unadvertised. A per-call or quota model needs a server that
+phones home, because somebody has to count. A key that verifies offline does not, and that changes what
+the vendor can see about your work.</p>
+
+<h2>How an offline key works, concretely</h2>
+<p>A key here looks like <code>MCPL1.xxx.yyy</code>. It is an Ed25519 signature over a small payload
+holding the product, an id and the issue time, and the public key is compiled into the server. Nothing is
+checked over the network, so activation works on a plane and there is no activation server that can go
+away. The code is in <code>packages/mcp-license</code> in this repository if you want to read it rather
+than take the claim.</p>
+<p>Two consequences follow from that and both are worth stating plainly. The server has no way to count
+your usage, revoke your key or notice that you moved machines. And a leaked key cannot be turned off,
+which is the cost of the same design.</p>
+
+<h2>What this catalogue charges</h2>
+<p>One server is $${SINGLE_USD} once. All ${LISTED_CHILD_COUNT} servers that are sold singly are $${BUNDLE_USD}
+once, which is where the office-suite server gets its key from as well, since it has no price of its own.
+Lifetime, no subscription, no seat count. Checkout is Stripe's own page, the card never touches this
+site, and if you lose the key you can recover it at <a href="/recover">/recover</a> with the email Stripe
+collected.</p>
+<p>The free tier is not a trial. It has no expiry, needs no card and no account, and on most servers it is
+meant to be the whole product for light use. Three examples, read from
+<code>data/facts.json</code>:</p>
+<ul>
+<li>Invoice. ${FREE.invoice}</li>
+<li>Spreadsheet. ${FREE.spreadsheet}</li>
+<li>Cash book. ${freeText("cash-book")}</li>
+</ul>
+
+<h2>Activating a key you bought</h2>
+<p>Three routes, all equivalent. Run the <code>license_activate</code> tool in the chat with the key. Or
+set <code>MCP_LICENSE_KEY</code> in the environment of the stdio server. Or, on a hosted endpoint, put the
+key where the anonymous token goes in the URL.</p>
+${install("invoice")}
+
+<h2>The honest limits of buying this way</h2>
+<ul>
+<li>On a hosted endpoint the credential is the tenant. Data written under an anonymous token does not
+follow you when you switch that URL to a Pro key, because they are different tenants. Activate first, or
+export before you switch.</li>
+<li>A one-time key means there is no funded support contract behind it. Refunds are within 14 days by
+email, and issues are read on GitHub. No phone number, and no ticket queue.</li>
+<li>The npm packages are not published yet, so any purchase you make is used through the bundle, a clone
+or a hosted URL. If your workflow depends on <code>npx</code>, wait.</li>
+<li>Nothing here is escrowed. If this project stops, the stdio servers you already installed keep
+working offline forever and the hosted endpoints do not. That asymmetry is the main reason to install
+locally if the work matters.</li>
+<li>Prices on the four marketplaces above change, and two of them let individual authors set their own,
+so a number in this table can be stale without anything here being wrong.</li>
+</ul>`,
+    faq: [
+      { q: "Is there a marketplace where I can just browse paid MCP servers?", a: "At least four exist and none of them dominates, which is why the search that prompted this page returned no consensus. AgenticMarket, MCPize, Apify and MCPBundles each list paid servers under a different pricing model, so browsing one of them shows you a slice rather than the market." },
+      { q: "Can I pay per call for the servers on this site?", a: "No. One price, once, per server or for the whole set, and a free tier that does not expire. Per-call billing would need the server to phone home on every call, and these servers do not have that path." },
+      { q: "What stops me from sharing a licence key?", a: "Nothing technical, because verification is offline and there is no activation server to notice. The key is sold on the same basis as a book. If it leaks it cannot be revoked, which is the trade for it working with the network off." },
+      { q: "Do I pay again when a new server is added?", a: "Not with the bundle. The bundle key unlocks every server in the catalogue, including ones added after the purchase, and that is why the office-suite server has no separate price." },
+      { q: "How do I know a paid MCP server is not going to disappear?", a: "You do not, for any of them. The thing you can check is whether the software keeps working without the vendor. A server you run locally with an offline key keeps working; a hosted endpoint or a per-call meter stops the day the company does." },
+    ],
+  },
+  "fill-a-quote-or-estimate-template-from-chat": {
+    title: "Getting an assistant to fill in a quote or estimate for a customer",
+    description: `Almost no MCP server does this. What the one existing option does, why a Word template is usually the wrong tool, and a quote server with ${TOOLS.quotes} tools and a free tier of five open quotes.`,
+    html: `<h1>Getting an assistant to fill in a quote or estimate for a customer</h1>
+<p>Search for an MCP server that fills in a quote or estimate template and you get almost nothing. A blind
+search recorded here on 2026-09-10, in <code>docs/BLIND_RECOMMENDATION_R1.md</code>, could name exactly one
+MCP-shaped result for this question, and it was not really an answer. Everything else the search returned
+was an AWS pricing calculator or a plain Word template with no MCP in it.</p>
+<p>So the useful thing to write down is why the category is empty, and what the two working approaches
+actually are.</p>
+
+<h2>The one server that exists, and what it is for</h2>
+<p>MCP Quoting System by r-long, listed at <code>glama.ai/mcp/servers/@r-long/mcp-quoting-system</code>, is
+a manufacturing quoting tool. It compares an incoming request for quote against historical quotes and does
+activity-based costing. If you run a machine shop and you are pricing a part, that is a far better fit
+than anything here, and you should use it. It is not a template filler and it is not aimed at a freelancer
+sending a price for a website.</p>
+
+<h2>Why filling a template is usually the wrong shape</h2>
+<p>The obvious approach is to keep your existing quote as a Word or spreadsheet template and have the
+assistant substitute values into it. That works, and there are good servers for it, including the Word
+servers by GongRzhe and SecurityRonin. The problem shows up a week later.</p>
+<p>A filled template is a dead file. Nothing knows the quote was sent, nothing knows the customer said yes,
+and the invoice you raise afterwards is retyped from the document by hand. Every arithmetic error in a
+small business quote-to-invoice chain comes from that retyping step. If your quotes are one-offs, a
+template is fine and simpler. If the same quote turns into an invoice, you want the numbers stored once.</p>
+
+<h2>The other approach, a quote that keeps state</h2>
+<p>The quotes server here stores the quote instead of rendering it and forgetting it. It registers
+${TOOLS.quotes} tools over stdio: ${["quote_create", "quote_list", "quote_get", "quote_update", "quote_send_text", "quote_accept", "quote_decline", "quote_delete", "quote_pdf", "quote_report"].map((t) => `<code>${t}</code>`).join(", ")}, plus the two shared licence tools.</p>
+<p>What that buys you is the accept step. When a customer says yes, <code>quote_accept</code> marks the
+quote and the accepted lines become the payload the invoice server raises an invoice from, at the prices
+that were quoted rather than the prices somebody remembers. VAT, discounts and a second currency are
+handled in the quote rather than being reapplied later.</p>
+<p>You can still have the document. <code>quote_pdf</code> renders one, and
+<code>quote_send_text</code> gives you the plain text to paste into an email if you would rather not
+attach anything.</p>
+${install("quotes")}
+
+<h2>What it does with your own template</h2>
+<p>Nothing, and this is the honest answer to the literal question. The quote server has its own layout and
+will not read your existing Word or spreadsheet template. If keeping your exact document is the
+requirement, use a Word server with a template file and accept that the state lives in your head.</p>
+
+<h2>Free tier and price</h2>
+<p>Free tier, verbatim from <code>data/facts.json</code>: ${freeText("quotes")}</p>
+<p>The cap counts quotes that are still open, so accepting or declining one frees its slot. Pro is
+$${SINGLE_USD} once, or $${BUNDLE_USD} once for all ${LISTED_CHILD_COUNT} servers, which is the sensible buy if
+you also want the invoice that comes after the yes.</p>
+
+<h2>What it cannot do</h2>
+<ul>
+<li>It will not fill in a template you already have. The layout is the server's.</li>
+<li>No customer portal, and no accept-online link. Acceptance is you recording that the customer
+said yes, by email or on the phone. Nothing here is a signature.</li>
+<li>It does not send anything. No email goes out from this server or any other one here.</li>
+<li>No activity-based costing and no historical-quote comparison, which is exactly where r-long's server is
+better.</li>
+<li>The win-rate report covers the current calendar year to date on the free tier, so a January question
+about last year needs a key.</li>
+</ul>`,
+    faq: [
+      { q: "Can it read the quote template I already use?", a: "No. The server renders its own layout and has no template import. If your document is the requirement, use a Word MCP server with placeholder substitution and keep the numbers somewhere else." },
+      { q: "What happens when the customer accepts?", a: "quote_accept marks the quote accepted and the accepted lines become the payload the invoice server raises from, so the invoice carries the prices that were quoted rather than retyped ones." },
+      { q: "Does it handle VAT and a discount on the same quote?", a: "Yes, and both are free-tier features. Discounts and tax lines are computed in the quote, and multi-currency quotes are supported, so the accepted figure is the one the invoice uses." },
+      { q: "Is five open quotes enough to work with?", a: "For a one-person business it usually is, because the cap counts open quotes rather than quotes ever raised. Accepting or declining one frees the slot immediately. If you routinely have more than five live at once, that is the point at which the key pays for itself." },
+      { q: "Can the customer accept the quote themselves?", a: "No. No hosted acceptance page, no link to click and no e-signature. Somebody records the acceptance in the chat." },
+    ],
+  },
+  "petty-cash-book-and-cash-ledger-mcp-servers": {
+    title: "Is there an MCP server for a petty cash book or a cash ledger",
+    description: `One MCP server exists in this area and it only reads an existing Ledger file. What a petty cash float actually needs, and two servers with ${TOOLS["petty-cash"]} and ${TOOLS["cash-book"]} tools that write one.`,
+    html: `<h1>Is there an MCP server for a petty cash book or a cash ledger</h1>
+<p>Almost nothing. A blind search recorded here on 2026-09-10, in
+<code>docs/BLIND_RECOMMENDATION_R1.md</code>, found one MCP server anywhere near this question and it does
+not do the job people are asking about. Everything else the search returned was a book on Amazon or a
+blog template.</p>
+<p>Before the alternatives, one honest caveat about the thin result. A category with no servers in it is
+sometimes a gap and sometimes a signal that few people want it. Petty cash is probably closer to the
+second than, say, invoicing is. If you handle three cash receipts a month, a note in a spreadsheet is a
+perfectly good answer and you can stop reading here.</p>
+
+<h2>The one server that exists</h2>
+<p>mcp-server-ledger by minhyeoky, at <code>github.com/minhyeoky/mcp-server-ledger</code>, wraps the Ledger
+command line tool. It lists accounts, reports balances and prints transaction registers out of a plain-text
+Ledger file you already keep. If you are a Ledger user, that is a genuinely good fit and better than
+anything here, because it reads the file you already trust.</p>
+<p>What it does not do is write. It has no way to record a voucher, no float, no reconciliation of the cash
+in the tin against the paperwork, and no receipt handling. It is a query layer over an existing book, not
+a way to keep one.</p>
+
+<h2>The two things a petty cash book actually has to answer</h2>
+<p>The first is whether the money in the tin matches the paperwork. That is the whole reason the book
+exists, and it is arithmetic that people get wrong: the cheque you write to top the float back up is not
+the sum of the vouchers, it is the amount needed to bring the float back to its fixed level, which differs
+whenever the last reconciliation left a discrepancy.</p>
+<p>The second is whether the totals feed the accounts without being retyped. A petty cash book that ends in
+a number somebody copies into a ledger by hand has moved the error rather than removed it.</p>
+
+<h2>The petty cash server</h2>
+<p>The petty-cash server here runs the imprest system, which is the one with a fixed float. It registers
+${TOOLS["petty-cash"]} tools over stdio: ${["float_open", "topup_record", "voucher_add", "voucher_delete", "reconcile", "replenish_request", "float_report"].map((t) => `<code>${t}</code>`).join(", ")}, plus the two shared licence tools.</p>
+<p>The tool that matters is <code>reconcile</code>. You count the cash, tell it the number, and it tells you
+whether the tin agrees with the vouchers and by how much. <code>replenish_request</code> then works out the
+cheque, which is the float less what is actually in the tin, not the voucher total.</p>
+${install("petty-cash")}
+
+<h2>The cash book, for the ledger half of the question</h2>
+<p>A petty cash tin is one book. If the question was about a cash ledger in the accounting sense, that is a
+different server. The cash-book server builds one double-entry ledger out of the records the other servers
+already hold, with ${TOOLS["cash-book"]} tools: ${["ledger_build", "period_delete", "trial_balance", "ledger_lines", "month_close", "ledger_export_csv", "ledger_report"].map((t) => `<code>${t}</code>`).join(", ")}.</p>
+<p><code>trial_balance</code> proves the thing to the minor unit, and <code>ledger_export_csv</code> hands
+your accountant a file rather than a screenshot. The full walk-through is in
+<a href="/guides/one-ledger-from-every-server">one ledger from every server</a>.</p>
+
+<h2>Free tier and price</h2>
+<p>Both free tiers deliberately leave the answer free and meter the volume. Petty cash: ${freeText("petty-cash")}</p>
+<p>Cash book: ${freeText("cash-book")}</p>
+<p>Pro is $${SINGLE_USD} once per server or $${BUNDLE_USD} once for all ${LISTED_CHILD_COUNT}. These two are
+usually bought as part of the set rather than alone, because a ledger with one book in it is not a
+ledger.</p>
+
+<h2>What they cannot do</h2>
+<ul>
+<li>Neither reads a Ledger or Beancount file, so if you already keep plain-text accounting, minhyeoky's
+server fits your setup and these do not.</li>
+<li>No bank feed. The cash book reads what the other servers here recorded, and bank transactions arrive
+through the bank-statement server from a CSV export you download yourself.</li>
+<li>No receipt scanning. A voucher is a line you type or dictate, not a photograph.</li>
+<li>Petty cash meters at twenty vouchers a calendar month on the free tier, which is a one-tin office. A
+busy site office will hit that.</li>
+<li>Neither files anything with a tax authority, and neither is a substitute for an accountant looking at
+the year end.</li>
+</ul>`,
+    faq: [
+      { q: "Does this replace my accounting software?", a: "No. It keeps the books that sit underneath one, and exports CSV. If you already run accounting software with a bank feed, the honest answer is that you do not need either of these servers." },
+      { q: "Why is the replenishment cheque not the sum of the vouchers?", a: "Because the imprest system tops the float back to a fixed level. If the last count came up short, the cheque covers the vouchers plus the shortfall, and if it came up over, the cheque is smaller. The server does that arithmetic in replenish_request." },
+      { q: "Can I use it with an existing Ledger or Beancount file?", a: "No. These servers keep their own JSON records under your data directory. For plain-text accounting, mcp-server-ledger by minhyeoky reads the file you already have." },
+      { q: "Is reconcile really free?", a: "Yes, on every tier and without a limit, along with voucher_delete and topup_record. Whether the tin matches the paperwork is the question the server exists for, and metering it would make the free tier a demo rather than a tier." },
+      { q: "What counts against the twenty vouchers a month?", a: "Vouchers added in the calendar month. Deleting a voucher you typed twice does not cost anything, which is why voucher_delete is free on every tier." },
+    ],
+  },
+  "currency-conversion-mcp-servers-compared": {
+    title: "Currency conversion in an assistant, and which MCP server to use",
+    description: `Two MCP servers do this and both use ECB rates with no API key. What separates them, the ${TOOLS.currency} tools here, and why rebilling needs a different call from converting.`,
+    html: `<h1>Currency conversion in an assistant, and which MCP server to use</h1>
+<p>Start with the honest recommendation, because this small question already has a good answer. If all
+you want is a plain "convert this to dollars", install currency-conversion-mcp by wesbos, at
+<code>github.com/wesbos/currency-conversion-mcp</code>. It reads the Frankfurter API, which serves European
+Central Bank reference rates, it needs no API key, and it covers more than thirty currencies with history
+back to 1999. It installs with npx today. Nothing here beats it at that job.</p>
+<p>A blind search recorded in this repository on 2026-09-10 could name two servers for this question, that
+one and exchange-rate-mcp by boy-373. So the field is small but it is not empty, and the incumbent is
+good.</p>
+
+<h2>Where a converter stops being enough</h2>
+<p>The reason to want a second one is rebilling. When you invoice a client in a currency you did not spend
+in, the number you need is not today's rate. It is the rate on the date of the expense, applied to the
+expense, and stated on the invoice so the client can check it. Ask a plain converter for that and you get
+a spot rate for now, which is the wrong figure and a very easy one to put on a document without noticing.</p>
+<p>The second reason is auditability. A rate that arrives as a number in a chat message cannot be checked
+six months later. A rate that arrives with its date and its source can.</p>
+
+<h2>The currency server here</h2>
+<p>It registers ${TOOLS.currency} tools over stdio, plus the two shared licence tools:
+${["rates_latest", "convert", "convert_many", "fx_rates_for", "rate_history", "rate_on", "currencies_list", "cache_status"].map((t) => `<code>${t}</code>`).join(", ")}.</p>
+<p><code>rate_on</code> answers a dated question, and <code>fx_rates_for</code> is the one built for
+rebilling: it returns the rates a set of expenses needs, keyed to the dates those expenses happened, in the
+shape the invoice and expense servers here consume. <code>convert_many</code> does a batch in one call
+rather than one call per line, which matters if you are converting a month of receipts.</p>
+<p>Rates are European Central Bank reference rates, the same source the wesbos server reads, so the two
+should agree on any date the ECB published. They are cached, and <code>cache_status</code> tells you how
+old the cached set is rather than leaving you to guess.</p>
+${install("currency")}
+
+<h2>Where the other server is better</h2>
+<ul>
+<li>It is on npm. <code>npx -y</code> starts it today, and the packages here are not published yet, so
+installing this one means a bundle, a clone or a hosted URL.</li>
+<li>It is a single-purpose tool with a smaller surface, which is a real advantage if you do not want eight
+more tool descriptions in your context on every turn.</li>
+<li>Its history goes back to 1999. The free tier here answers a 90-day window and shortens a wider request
+rather than refusing it, so a rate from several years back needs a key.</li>
+</ul>
+
+<h2>Free tier and price</h2>
+<p>Free tier, verbatim from <code>data/facts.json</code>: ${freeText("currency")}</p>
+<p>Pro is $${SINGLE_USD} once, or $${BUNDLE_USD} for all ${LISTED_CHILD_COUNT} servers. Buying this one alone is
+hard to justify against a free npm package; it earns its place next to the expense and invoice servers,
+not on its own.</p>
+
+<h2>What it cannot do</h2>
+<ul>
+<li>European Central Bank reference rates are published once a working day. They are not live market
+rates, they are not what your bank gave you, and they are not a tradeable price.</li>
+<li>No weekend or public holiday rates exist, because the ECB does not publish them. A Saturday expense
+resolves to the last published working day.</li>
+<li>Crypto is not covered at all, and neither is any currency the ECB does not publish.</li>
+<li>It makes a network call, which almost nothing else in this catalogue does. If you need a fully offline
+setup, this is the server that breaks it.</li>
+<li>It will not tell you what your bank charged. The spread and the fee on a real transfer are not in any
+reference rate, so a rebilled figure computed this way is the honest reference number and not your actual
+cost.</li>
+</ul>`,
+    faq: [
+      { q: "Which server should I install if I only want to convert numbers?", a: "currency-conversion-mcp by wesbos. It reads the same European Central Bank rates, needs no key, and installs with npx today. There is no reason to prefer this one for that job." },
+      { q: "What is fx_rates_for actually for?", a: "Rebilling. It returns the rates a set of expenses needs, keyed to the date each expense happened, in the shape the expense and invoice servers here consume. A spot rate for today is the wrong number for an expense from three weeks ago." },
+      { q: "Where do the rates come from?", a: "European Central Bank reference rates, published once per working day. The same source the wesbos server reads through Frankfurter, so the two should agree for any date the ECB published." },
+      { q: "Does it work offline?", a: "Only from cache. It is the one server here that makes a network call in normal use, so a fully offline machine gets whatever was cached and cache_status tells you how old that is." },
+      { q: "How far back does the free tier go?", a: "Ninety days. A wider request is shortened and answered rather than refused, so you get a result plus a note about the window instead of an error." },
+    ],
+  },
+  "zip-and-unzip-mcp-servers-compared": {
+    title: "Zipping and unzipping archives from an assistant, and what the guards do",
+    description: `Two zip MCP servers exist and one installs with npx today. What a zip bomb guard and a traversal guard actually check, and a ${TOOLS.zip}-tool server whose reading is never metered.`,
+    html: `<h1>Zipping and unzipping archives from an assistant, and what the guards do</h1>
+<p>Two MCP servers do this and they are easy to confuse, because they have the same name. A blind search
+recorded here on 2026-09-10 named zip-mcp by loscolmebrothers and zip-mcp by 7gugu, different authors,
+different repositories, both widely mirrored.</p>
+<p>Start with the practical recommendation. loscolmebrothers publishes to npm, so
+<code>npx -y @loscolmebrothers/zip-mcp</code> starts a server right now, it handles compress, decompress
+and inspect, and it does password-protected archives, which nothing here does. If you want a zip tool in
+your client this afternoon and you need passwords, that is the one.</p>
+
+<h2>The part nobody writes about, which is the unpacking</h2>
+<p>Creating an archive is easy. Unpacking one that arrived from outside is where the interesting failures
+live, and an assistant unpacking a file on your behalf is exactly the case that deserves guards.</p>
+<p>Three things can go wrong. A path inside the archive can point outside the directory you are extracting
+into, using <code>..</code> segments or an absolute path, and overwrite something it should not. An entry
+can be a symbolic link that points at a file elsewhere on your disk. And an archive can be small on disk
+and enormous when expanded, which exhausts memory or fills the volume.</p>
+<p>The zip server here refuses all three, and the compression ceiling is set at 100 times rather than a
+tighter number for a measured reason: real files, particularly logs and CSV exports, legitimately compress
+past 50 times, so a 50x ceiling refuses honest archives. The measurement behind that is on
+<a href="/s/zip">the zip server's page</a>.</p>
+
+<h2>The server here</h2>
+<p>It registers ${TOOLS.zip} tools over stdio, plus the two shared licence tools:
+${["zip_create", "zip_list", "zip_extract", "zip_add", "zip_extract_text", "zip_bundle_month", "zip_history"].map((t) => `<code>${t}</code>`).join(", ")}.</p>
+<p><code>zip_extract_text</code> is the one people do not expect. It pulls the text out of the files inside
+an archive without unpacking them onto your disk, so you can ask what is in a zip somebody sent you before
+you decide to trust it. <code>zip_bundle_month</code> collects a month of paperwork from the other servers
+here into one archive, which is the actual reason this server exists.</p>
+<p>It runs on fflate rather than a hand-written zip writer, and it is pure JavaScript, so there is no
+native module to compile and no system <code>zip</code> binary to find.</p>
+${install("zip")}
+<p>The hosted endpoint has three more tools than the stdio build, for uploading a file to it and fetching
+one back, because a server running on somebody else's machine cannot reach your disk. A
+<code>tools/list</code> against <code>https://mcp.zovo.one/mcp/zip</code> on 2026-09-10 returned
+${TOOLS.zip + LICENSE_TOOLS + 3} tools against the ${TOOLS.zip + LICENSE_TOOLS} the local build has.</p>
+
+<h2>Free tier and price</h2>
+<p>Free tier, verbatim from <code>data/facts.json</code>: ${freeText("zip")}</p>
+<p>Reading is never metered, and neither are the guards. Pro is $${SINGLE_USD} once or $${BUNDLE_USD} for
+all ${LISTED_CHILD_COUNT} servers.</p>
+
+<h2>What it cannot do</h2>
+<ul>
+<li>No passwords. It neither creates an encrypted archive nor opens one, which is where the
+loscolmebrothers server is straightforwardly better.</li>
+<li>Zip only. No tar, no gzip on its own, no 7z, no rar.</li>
+<li>The free tier caps an archive at 25 MB and 200 entries. A photo library is not the use case.</li>
+<li>It will not fetch an archive from a URL. The file has to be on your disk for the local build, or
+uploaded for the hosted one.</li>
+<li>The npm package is not published, so <code>npx</code> does not start it. The bundle, a clone or the
+hosted URL are the working paths today.</li>
+</ul>`,
+    faq: [
+      { q: "Which zip MCP server should I install?", a: "If you need password-protected archives or you want an npx one-liner today, zip-mcp by loscolmebrothers. If you want the extraction guards and the ability to read text out of an archive without unpacking it, use this one." },
+      { q: "What does the bomb guard actually check?", a: "The ratio of expanded bytes to archive bytes, with a ceiling of 100 times. That number was chosen from measurement rather than convention: real log and CSV archives compress past 50 times, so a tighter ceiling refuses honest files." },
+      { q: "Can I look inside an archive without extracting it?", a: "Yes, and it is free on every tier. zip_list gives you the entries and zip_extract_text pulls text content out without writing anything to disk." },
+      { q: "Does it handle tar or 7z?", a: "No. Zip only, with no tar, gzip, 7z or rar support and none planned, because the archives this catalogue produces are zip." },
+      { q: "Why does the hosted version have more tools?", a: "Because a server running elsewhere cannot read your disk. Three upload and download tools exist only in the hosted build, which is why a tools/list against the endpoint returns more than the local server registers." },
+    ],
+  },
+  "delivery-schedule-and-work-order-documents-from-mcp": {
+    title: "Producing a delivery schedule or a work order document from a chat",
+    description: `No MCP server produced one when a blind search looked. Two servers here do, with ${TOOLS["delivery-schedule"]} and ${TOOLS["work-order"]} tools, and one of them has no hosted endpoint.`,
+    html: `<h1>Producing a delivery schedule or a work order document from a chat</h1>
+<p>Nothing came back. A blind search recorded here on 2026-09-10, in
+<code>docs/BLIND_RECOMMENDATION_R1.md</code>, looked for an MCP server that produces a delivery schedule or
+a work order document and found neither. The two results that surfaced were a retail promise-date API from
+OneStock, which calculates delivery estimates from live inventory and does not produce a document, and
+scheduler-mcp by PhialsBasement, which is a cron job runner that shares a word with the question.</p>
+<p>The practical answer the search settled on is reasonable: use a Word or spreadsheet MCP server with your
+own template. That is genuinely fine for a one-off. What follows is what you get instead when the schedule
+is a record rather than a document.</p>
+
+<h2>The two documents are not the same thing</h2>
+<p>A work order says what will be done, by whom, at what price. A delivery schedule says what is owed and
+when, and its whole job is answering what is late. People ask for them together because a trade business
+raises one and tracks the other, but the data is different and so is the question each one answers.</p>
+
+<h2>The work order server</h2>
+<p>It registers ${TOOLS["work-order"]} tools over stdio, plus the two shared licence tools:
+${["work_order_create", "work_order_add_line", "work_order_status", "work_order_get", "work_order_list", "work_order_delete", "completion_report_text", "completion_report_pdf", "work_order_invoice_payload", "work_orders_report"].map((t) => `<code>${t}</code>`).join(", ")}.</p>
+<p>Pricing is where a hand-filled template goes wrong. Markup belongs on the unit cost, not on the line
+total, and those give different answers the moment a quantity is not one. The server applies it at the unit
+and <code>work_order_invoice_payload</code> hands the finished job to the invoice server at the prices the
+work order carried, so nothing is retyped.</p>
+${install("work-order")}
+
+<h2>The delivery schedule server</h2>
+<p>It registers ${TOOLS["delivery-schedule"]} tools over stdio:
+${["delivery_schedule_create", "deliverable_add", "deliverable_status", "deliverable_delete", "delivery_schedule_get", "delivery_schedule_list", "delivery_schedule_delete", "late_report", "delivery_schedule_document", "milestone_payload"].map((t) => `<code>${t}</code>`).join(", ")}, plus the licence pair.</p>
+<p><code>delivery_schedule_document</code> is the document the question asked for.
+<code>late_report</code> is the reason to keep the record: it answers what is late as at any date you name,
+not just today, which is what you need when a client asks in March what the position was at the end of
+January. <code>milestone_payload</code> turns a completed milestone into an invoice.</p>
+<p>One thing to know before you plan around it. Delivery schedule is one of the two servers here with no
+hosted endpoint, so there is no URL to paste. It runs from the bundle or a clone.</p>
+${install("delivery-schedule")}
+
+<h2>Free tier and price</h2>
+<p>Work order: ${freeText("work-order")}</p>
+<p>Delivery schedule: ${freeText("delivery-schedule")}</p>
+<p>Both caps count open jobs rather than jobs ever raised, so finishing one frees its slot. Pro is
+$${SINGLE_USD} once per server, or $${BUNDLE_USD} once for all ${LISTED_CHILD_COUNT}.</p>
+
+<h2>What they cannot do</h2>
+<ul>
+<li>Delivery schedule has no hosted endpoint. ${HOSTED_COUNT} of the ${LISTED_COUNT} servers here answer
+at a URL and this is not one of them.</li>
+<li>Neither reads your own template. The document layout is the server's, so if the customer expects your
+exact form, use a Word server and keep the tracking elsewhere.</li>
+<li>No inventory, no stock levels and no live logistics data. A promise date here is a date somebody
+entered, which is the opposite of what the OneStock server does.</li>
+<li>No scheduling engine. Nothing reflows dates when one deliverable slips; the schedule records what was
+agreed and tells you what is late against it.</li>
+<li>Nothing is sent to anyone. No email, no SMS, no customer notification of any kind.</li>
+<li>Delivery schedule has never been covered by one of the measured user-value rounds in
+<code>data/</code>, so its product page has no first-five-minutes section. It is the least exercised server
+in the catalogue and you should treat it accordingly.</li>
+</ul>`,
+    faq: [
+      { q: "Is there an MCP server that generates a delivery schedule document?", a: "A blind search on 2026-09-10 found none. The two nearest results were a retail promise-date API and a cron scheduler that shares a word with the question. The delivery-schedule server here has a delivery_schedule_document tool that produces one." },
+      { q: "Can I paste a URL for the delivery schedule server?", a: "No. It is one of the two servers here with no hosted endpoint, so it runs from the .mcpb bundle or a clone. The work order server does have a hosted URL." },
+      { q: "Why does markup go on the unit cost?", a: "Because markup on the line total gives a different answer once quantity is not one, and the difference compounds across a job. The server applies markup at the unit and carries that through to the invoice payload." },
+      { q: "What does late mean here?", a: "Owed as at a date you name, which does not have to be today. That matters when somebody asks in March what the position was at the end of January, and it is why the record is worth more than the document." },
+      { q: "Does it tell the customer anything?", a: "No. Nothing in this catalogue sends email, SMS or notifications. It produces the document and the report; delivering them to a person is your job." },
+    ],
+  },
+  "will-an-mcp-server-email-the-invoice-to-my-client": {
+    title: "Will an MCP server email the invoice to my client",
+    description: `Not this one, and the reason is worth knowing before you pick. Which servers do send, what invoice_pdf and quote_send_text give you instead, and how to keep the sending in your own mail client.`,
+    html: `<h1>Will an MCP server email the invoice to my client</h1>
+<p>Not from this catalogue. No server here sends email, SMS or any other message, and none of them has an
+outbound network path for it. If sending is the feature you are shopping for, stop here and read the next
+section, which names servers that do.</p>
+
+<h2>Servers that do send</h2>
+<p>A blind search recorded here on 2026-09-10 found one in this shape. Invco, at
+<code>invco.pro/ai-invoicing</code>, is a hosted invoicing product with a built-in MCP server that creates
+clients, generates invoices on templates and emails them. It is paid and it uses a per-user API key. If you
+want the whole chain inside the assistant, that is the category you want.</p>
+<p>The general pattern is that anything which sends on your behalf is a hosted product with an account,
+because sending needs a mail domain, a sender reputation and somebody to answer when a message bounces.
+None of that fits a server that runs as a local process on your laptop.</p>
+
+<h2>What you get here instead</h2>
+<p>Two tools cover the handover. <code>invoice_pdf</code> renders the invoice as a file on your disk, which
+you attach in your own mail client. <code>quote_send_text</code>, on the quotes server, returns the plain
+text of a quote formatted to paste straight into a message body, for people who would rather not send an
+attachment at all.</p>
+<p>The overdue side works the same way. <code>overdue_report</code> on the invoice server, and the dunning
+tools on the statement-of-account server, draft the chaser at a friendly or a firm level and hand you the
+text. You send it.</p>
+${install(["invoice", "quotes"])}
+
+<h2>Why this is a deliberate choice and not a missing feature</h2>
+<p>Three things follow from an invoice server that cannot send.</p>
+<ul>
+<li>It has no reason to hold your contact list, your mail credentials or an OAuth grant to your mailbox.
+The privacy claim on <a href="/privacy">the privacy page</a> stays simple because there is nothing to
+qualify.</li>
+<li>An assistant cannot send something to a client by mistake. A tool that emails is a tool a model can
+fire during a misread instruction, and the recipient is a customer.</li>
+<li>The message goes out from your own address, in your own thread, with your own signature, which is
+where a client expects to see it and where your reply lands.</li>
+</ul>
+<p>The cost is real too. It is one more manual step per invoice, and if you send forty invoices a month
+that step is the whole argument for a hosted product.</p>
+
+<h2>Free tier and price</h2>
+<p>Invoice free tier: ${freeText("invoice")}</p>
+<p>Quotes free tier: ${freeText("quotes")}</p>
+<p>Pro is $${SINGLE_USD} once per server, or $${BUNDLE_USD} once for all ${LISTED_CHILD_COUNT}. No subscription,
+and the key verifies offline.</p>
+
+<h2>What this cannot do, stated plainly</h2>
+<ul>
+<li>No email, no SMS, no webhook, no push notification, from any server in this catalogue.</li>
+<li>No payment link on the invoice that a client can click to pay. The invoice can carry a SEPA payment QR
+code, which a banking app scans, and that is the nearest thing.</li>
+<li>No read receipts, no open tracking and no record of whether the client ever got it.</li>
+<li>No scheduled sending. The recurring server generates invoices on a schedule into your invoice book; it
+does not deliver them.</li>
+<li>No client portal. A customer has nothing to log into.</li>
+</ul>`,
+    faq: [
+      { q: "Can I connect it to Gmail or Outlook myself?", a: "Not through these servers. They have no outbound mail path and no place to put credentials. If you want the assistant to send, register a mail MCP server alongside this one and have it attach the PDF that invoice_pdf produced." },
+      { q: "Which invoicing MCP server does email?", a: "Invco's built-in MCP server, at invco.pro/ai-invoicing, was the one a blind search turned up on 2026-09-10. It is a hosted product with a per-user API key and it sends as part of the flow." },
+      { q: "How does the client pay if there is no payment link?", a: "The same way they did before. The invoice carries your bank details, and it can carry a SEPA payment QR code that a European banking app scans to prefill the transfer. No card checkout sits on the invoice." },
+      { q: "What about chasing an unpaid invoice?", a: "overdue_report tells you what is outstanding and the statement-of-account server drafts the chaser at a friendly or a firm level. Both hand you text. Sending it is yours." },
+      { q: "Is this ever going to send email?", a: "It is not planned. An invoice server that sends needs a mail domain, a sender reputation and somebody to handle bounces, which is a hosted product rather than a local process, and the privacy position here depends on there being no outbound path." },
+    ],
+  },
+  "can-an-mcp-server-read-a-photo-of-a-receipt": {
+    title: "Can an assistant read a photo of a receipt and log the expense",
+    description: `No OCR exists in this catalogue and the code says so in the tool description. Which servers do OCR, what receipt_attach stores instead, and why the hash matters more than the scan.`,
+    html: `<h1>Can an assistant read a photo of a receipt and log the expense</h1>
+<p>Not with these servers. No optical character recognition exists anywhere in this catalogue, and the
+PDF server says so in its own tool description rather than failing quietly: text extraction returns nothing
+for a scan and tells you that is the case. If your receipts arrive as photographs and you want the numbers
+pulled out automatically, you need a different tool, and the next section names some.</p>
+
+<h2>Servers that do read scans</h2>
+<p>A blind search recorded here on 2026-09-10 in <code>docs/BLIND_RECOMMENDATION_R1.md</code> turned up
+several, all in the document-extraction category rather than the bookkeeping one.</p>
+<ul>
+<li>DocuClipper's MCP server, at <code>docuclipper.com/integrations/mcp/</code>, takes a PDF in Claude
+Desktop and gives back CSV through a <code>convert_bank_statement</code> tool.</li>
+<li>Bankstatemently, at <code>bankstatemently.com/developers/mcp</code>, parses bank statement PDFs across
+a large set of banks.</li>
+<li>On Apify, a bank-statement-to-CSV actor by northbound_works advertises OCR for scanned statements, and
+a PDF Tools actor by mrkrokko includes OCR among eleven tools.</li>
+<li>mcp-server-stirling-pdf by gufao wraps a self-hosted Stirling-PDF instance, which does OCR among other
+things, if you would rather run it yourself.</li>
+</ul>
+<p>Worth saying plainly: the assistant itself can often read a photograph you paste into the chat. If you
+drop a receipt image into Claude and ask for the total, you will usually get it. That path needs no MCP
+server at all, and for a handful of receipts a month it is the right answer.</p>
+
+<h2>What the expense server does instead</h2>
+<p>It stores the file and proves it later. <code>receipt_attach</code> takes a path to a receipt that
+already exists on your disk, records the path against the expense, and stores a SHA-256 hash of the file's
+contents. The point of the hash is an audit: two years later you can show that the file on disk is
+byte-for-byte the one that was attached, which is a different and more useful claim than having read the
+number off it.</p>
+<p>The amount, the date, the category and the VAT come from what you say, not from the image. In practice
+the workflow that works is to paste the photo into the chat, let the assistant read it, and have it call
+<code>expense_add</code> with the figures plus <code>receipt_attach</code> with the file. The server never
+sees the picture; the model does.</p>
+${install("expense-tracker")}
+
+<h2>Free tier and price</h2>
+<p>Expense tracker free tier: ${freeText("expense-tracker")}</p>
+<p>Category rules are part of that, so recurring receipts classify themselves once you have taught it five
+rules. Pro is $${SINGLE_USD} once, or $${BUNDLE_USD} once for all ${LISTED_CHILD_COUNT} servers.</p>
+
+<h2>What it cannot do</h2>
+<ul>
+<li>No OCR, no image reading, no PDF text extraction from a scan. The PDF server returns nothing for a
+scanned page and names the reason.</li>
+<li>No inbox that receipts can be forwarded to, and no mobile capture app.</li>
+<li>It does not copy or move the receipt file. Only the path and the hash are stored, so moving the file
+later breaks the link, and the hash then proves that too.</li>
+<li>No supplier or merchant lookup. A receipt from a shop it has never seen is categorised by your rules or
+by what you say, and by nothing else.</li>
+<li>The free tier exports up to 200 rows of CSV and never writes a partial file, so a large year-end export
+needs a key.</li>
+</ul>`,
+    faq: [
+      { q: "Can Claude read the receipt if I paste the photo into the chat?", a: "Usually yes, and that path needs no MCP server. The model reads the image and can then call expense_add with the figures and receipt_attach with the file. The server itself never sees the picture." },
+      { q: "What does receipt_attach actually store?", a: "The path to the file and a SHA-256 hash of its contents, against the expense. It does not copy the file and it does not read what is on it. The hash exists so an audit can prove the file has not changed." },
+      { q: "Which MCP server should I use for scanned bank statements?", a: "DocuClipper or Bankstatemently, both of which are built for that job, or a self-hosted Stirling-PDF behind gufao's wrapper if you want to keep the documents on your own machine. The bank-statement server here takes a CSV export instead." },
+      { q: "Why is there no OCR here?", a: "OCR is either a large native dependency or a network service, and every server in this catalogue is pure JavaScript that runs offline. Adding it would change what the whole set is, so the tool descriptions say no OCR rather than guessing at a scan." },
+      { q: "Does moving the receipt file break anything?", a: "The link to it, yes. The expense record keeps the old path and the hash, so you will see that the file is no longer where it was. The stored figures are unaffected." },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
-  description: "Eighty-nine guides: how MCP itself works, from config file locations and transports to protocol versions, registry search and shipping a server; getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline, and then doing real work with it. then real work with one: billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.",
+  description: `${Word(Object.keys(GUIDES).length)} guides. How MCP itself works, from config file locations and transports to protocol versions, registry search and shipping a server. Getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline. Then real work with one: billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.`,
 };

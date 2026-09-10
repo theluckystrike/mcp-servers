@@ -1,0 +1,488 @@
+{
+  "updated_at": "2026-09-10",
+  "round": "DISTRIBUTION_R2",
+  "owner_doc": "docs/DISTRIBUTION_R2.md",
+  "scope": "NEW surfaces only. The ~48 surfaces already enumerated in data/distribution.json were not re-walked.",
+  "headline": {
+    "new_surfaces_recorded": 40,
+    "submitted_this_round": 5,
+    "pull_requests_opened": 4,
+    "other_submissions": 1,
+    "free_and_agent_submittable_not_yet_used": 9,
+    "human_gated": 6,
+    "dead_or_no_route": 17,
+    "paid_surfaces_encountered": 0,
+    "accounts_created": 0,
+    "logins_performed": 0
+  },
+  "vscode_gallery_experiment": {
+    "verdict": "REFUTED",
+    "doc": "docs/VSCODE_GALLERY_R2.md",
+    "hypothesis": "entries whose registry record points at a monorepo subfolder are excluded from the VS Code MCP gallery",
+    "why_r1_measured_zero": "api.mcp.github.com/v0/servers is deprecated and flattens repository into a legacy shape with no subfolder field, for every row. The 0 of 252 was the v0 schema, not the gallery.",
+    "gallery_total": 252,
+    "entries_with_repository_subfolder": 14,
+    "subfolder_examples_with_zero_stars": [
+      "ai.certscore/mcp-light -> packages/certscore-mcp",
+      "co.axiom/mcp -> apps/mcp",
+      "com.mailrith/mailrith -> packages/mcp-server"
+    ],
+    "closest_analogue_to_ours": "com.soracom/knowledge, 4 stars, subfolder servers/knowledge, in the gallery",
+    "control_entry": {
+      "name": "com.bestremotetools/office-suite-all-servers-one-install",
+      "repository": "https://github.com/theluckystrike/mcp-office-suite",
+      "subfolder": null,
+      "published_at": "2026-09-09T11:49Z",
+      "in_gallery": false,
+      "probe": "GET /v0.1/servers/<name>/versions/latest -> 404",
+      "syncs_since_publication": 2,
+      "last_oss_snapshot_at": "2026-09-10T13:27:07Z"
+    },
+    "base_rates_registry_wide": {
+      "gallery_members": {
+        "n": 169,
+        "subfolder_pct": 7.7,
+        "remotes_pct": 66.3,
+        "icons_pct": 28.4,
+        "title_pct": 76.9
+      },
+      "non_members": {
+        "n": 19831,
+        "subfolder_pct": 6.1,
+        "remotes_pct": 57.9,
+        "icons_pct": 7.7,
+        "title_pct": 55.9
+      },
+      "reading": "A subfolder is slightly MORE common inside the gallery than outside it."
+    },
+    "instrument_repair": {
+      "broken_endpoint": "https://api.mcp.github.com/v0/servers (deprecation: true, cursor is the last row id and is then rejected 400)",
+      "working_endpoint": "https://api.mcp.github.com/v0.1/servers (opaque mcp.cursor.<base64>, pages all 3 pages)",
+      "membership_probe": "GET https://api.mcp.github.com/v0.1/servers/<url-encoded name>/versions/latest -> 200 in, 404 out",
+      "script": "scripts/vscode-gallery-watch.mjs rewritten; runs the probe with microsoft/markitdown as a fail-closed positive control"
+    },
+    "real_separator": "Not a readable field. 252 rows against a registry of at least 20,000 is a 1.3% hand-curated slice; stars, organisation, namespace, namespace-owner match, package type, remotes, server.json at root, publication month and one-entry-per-repo were all falsified.",
+    "submission_route_exists": true,
+    "submission_route": "An onboarding-request comment on github/github-mcp-server discussion #1257, confirmed by GitHub staff as the manual curation queue. Free, no account beyond an existing GitHub login.",
+    "our_request": "https://github.com/github/github-mcp-server/discussions/1257#discussioncomment-18387359",
+    "route_measured_yield": "2 of 11 requesters are in the gallery; the 2026-07..09 cohort is 0 of 8",
+    "migration_plan": "DO NOT MIGRATE. R1's contingency (repoint 89 registry entries at the 32 one-server mirrors) was justified only by the subfolder hypothesis. With the hypothesis refuted it buys nothing and would still put a single squashed force-pushed commit in front of every server, which is exactly what earns Glama's Maintenance C. Decide the mirror commit-history question on Glama's merits alone."
+  },
+  "surfaces": {
+    "github-mcp-registry-onboarding": {
+      "kind": "client_gallery_queue",
+      "status": "submitted",
+      "url": "https://github.com/github/github-mcp-server/discussions/1257",
+      "submit_route": "Post an 'Onboarding request' comment with a metadata table on discussion #1257. Public Q&A discussion, closed and answered but not locked.",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "submission": "https://github.com/github/github-mcp-server/discussions/1257#discussioncomment-18387359",
+      "submitted_at": "2026-09-10T13:56:45Z",
+      "evidence": "GitHub staff @hstaudacher 2025-11-10 'the GitHub MCP registry is a curated list'; @trent-j 2026-05-19 'onboarding a new server is still a manual curation process today'",
+      "measured_yield": "2 of 11 servers requested in the thread are in the gallery today (membership probe); both belong to the one publisher a GitHub engineer engaged with directly. The 2026-07..09 cohort is 0 of 8.",
+      "note": "This is the route R1 recorded as non-existent. It reaches the VS Code picker. Do not re-post; watch the thread."
+    },
+    "sagargupta16-awesome-mcp-servers": {
+      "kind": "directory",
+      "status": "submitted",
+      "url": "https://github.com/Sagargupta16/awesome-mcp-servers",
+      "submit_route": "PR adding one table row to README.md in an existing category, alphabetical; fill the PR template including the affiliation box; one server per PR",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "submission": "https://github.com/Sagargupta16/awesome-mcp-servers/pull/88",
+      "entry": "Invoice MCP -> Finance",
+      "verified_state": "OPEN, 1 file changed, author theluckystrike",
+      "rules": "Description 80 chars max, capital first letter, no trailing period, no em/en dash; self-promotion allowed if disclosed; python scripts/validate.py must pass",
+      "note": "validate.py reports 2 problems that already exist on main and none about this entry; that is stated in the PR body rather than hidden behind a ticked box"
+    },
+    "blockrunai-awesome-finance-mcp": {
+      "kind": "directory",
+      "status": "submitted",
+      "url": "https://github.com/BlockRunAI/awesome-finance-mcp",
+      "submit_route": "PR adding one table row to README.md, Community Contributions -> Personal Finance",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "submission": "https://github.com/BlockRunAI/awesome-finance-mcp/pull/69",
+      "entry": "Bank Statement MCP -> Personal Finance",
+      "verified_state": "OPEN, 1 file changed",
+      "rules": "Description under 60 chars; pricing from a fixed vocabulary; PR title 'Add [MCP Name]'; no promotional language; must be finance-related",
+      "stars": 209,
+      "note": "Five outside-contributor merges on 2026-09-05 alone. Only the ~10 finance-shaped servers qualify here."
+    },
+    "kilo-code-marketplace": {
+      "kind": "client_gallery",
+      "status": "submitted",
+      "url": "https://github.com/Kilo-Org/kilo-marketplace",
+      "submit_route": "PR adding mcps/<id>/MCP.yaml; the index is regenerated by .github/workflows/generate-marketplace.yml",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "submission": "https://github.com/Kilo-Org/kilo-marketplace/pull/269",
+      "entry": "zovo-back-office, one entry with six selectable streamable-http toolsets",
+      "verified_state": "OPEN, 1 file changed",
+      "rules": "category must be one of business|data|development|observability|productivity|search|web-automation; id matches the directory; each content variant is a JSON client config; headers supported",
+      "note": "This is the in-IDE Marketplace tab of the Kilo Code editor, not a web directory. 126 MCP entries today, so a fleet drop would be spam; one multi-toolset entry follows the mcps/agent-platform-mcp precedent."
+    },
+    "wundercorp-awesome-mcp": {
+      "kind": "directory",
+      "status": "submitted",
+      "url": "https://github.com/wundercorp/awesome-mcp",
+      "submit_route": "PR adding servers/<category>/<slug>/server.json, then run node scripts/validate-catalog.mjs and node scripts/generate-readme.mjs and commit the regenerated README",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "submission": "https://github.com/wundercorp/awesome-mcp/pull/60",
+      "entry": "zovo-spreadsheet -> files",
+      "verified_state": "OPEN, 2 files changed",
+      "rules": "One server per PR; schema requires slug,name,category,description,homepage_url,license,status; folder must match category and slug",
+      "checks_run": "validate-catalog.mjs -> Validated 23 MCP server entries; generate-readme.mjs -> Generated README.md with 9 populated categories"
+    },
+    "chat2anyllm-awesome-mcp-servers": {
+      "kind": "directory",
+      "status": "new: queued",
+      "url": "https://github.com/Chat2AnyLLM/awesome-mcp-servers",
+      "submit_route": "PR adding servers/<slug>.yaml, run make ci, commit dist/",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "Four outside merges on 2026-09-03. Not submitted this round only for time; the build step is the only friction. Category 'productivity' fits most servers."
+    },
+    "punkpeye-awesome-remote-mcp-servers": {
+      "kind": "directory",
+      "status": "skipped: per-entry emoji and a required star",
+      "url": "https://github.com/punkpeye/awesome-remote-mcp-servers",
+      "stars": 110,
+      "submit_route": "PR editing README.md, three lines per entry, alphabetical within category",
+      "free": true,
+      "needs_account": false,
+      "needs_human": true,
+      "blocking_rules": [
+        "Every entry must carry an authentication marker emoji (open lock / key / closed lock) and agent PRs opt in by putting three robot emoji in the PR title",
+        "'Star the repository. This is required -- PRs are not merged unless the account opening them has starred the repo.'",
+        "A Glama connector badge is mandatory and CI verifies it resolves"
+      ],
+      "note": "Best topical fit found anywhere: remote-only list, merging several outside PRs per day, and this project has 30 hosted endpoints. Skipped to stay consistent with the operator's no-emoji rule, which already cost yzfly/Awesome-MCP-ZH, AlexMili/Awesome-MCP and tolkonepiu/best-of-mcp-servers. Reversible in one PR if the operator waives it; the star is a separate account action and is also the operator's call."
+    },
+    "mcpfind": {
+      "kind": "directory",
+      "status": "blocked: needs a published npm/PyPI/Docker package",
+      "url": "https://github.com/MCPFind/mcp-find",
+      "website": "https://mcpfind.org/submit",
+      "submit_route": "PR appending to community-servers.yml, PR title exactly 'Add: <server-name>'",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "CONTRIBUTING requires 'published to npm, PyPI, or available as a Docker image'. mcpb bundles on GitHub releases do not satisfy it, and npm publishing is human-gated (see distribution.json npm). Unblocks the day npm login happens. No verified outside-contributor merge found either."
+    },
+    "jaw9c-awesome-remote-mcp-servers": {
+      "kind": "directory",
+      "status": "new: low odds",
+      "url": "https://github.com/jaw9c/awesome-remote-mcp-servers",
+      "stars": 1110,
+      "submit_route": "PR editing README.md",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "Highest star count of any remote-server list, and the scope is an exact fit, but 755 open PRs and no maintainer activity for ~80 days. A cheap lottery ticket, not a plan."
+    },
+    "appnova-awesome-remote-mcp-servers": {
+      "kind": "directory",
+      "status": "new: low odds",
+      "url": "https://github.com/Appnova-EU-OU/awesome-remote-mcp-servers",
+      "submit_route": "PR adding servers/<category>/<kebab-name>.json; feeds freemcp.space",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "604 open PRs; last outside merge 2026-08-10."
+    },
+    "toolhive-catalog": {
+      "kind": "client_gallery",
+      "status": "new: gated by a repo hygiene rule",
+      "url": "https://github.com/stacklok/toolhive-catalog",
+      "submit_route": "PR adding a server record in the official server.schema.json shape with remotes[]; automated verification then maintainer review",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "docs/server-criteria.md requires pinned dependencies AND GitHub Actions pinned to commit SHAs. Check our workflows before spending a PR. This is where stacklok/toolhive's registry moved."
+    },
+    "chatbox-registry": {
+      "kind": "client_gallery",
+      "status": "human-gated: contributor agreement",
+      "url": "https://github.com/Bin-Huang/chatbox",
+      "stars": 41710,
+      "submit_route": "PR editing src/renderer/components/settings/mcp/registries.ts, MCP_ENTRIES_COMMUNITY array, alphabetical by name; stdio only, so a remote endpoint must be wrapped in npx -y mcp-remote <url>",
+      "free": true,
+      "needs_account": false,
+      "needs_human": true,
+      "note": "The PR template requires ticking a contributor agreement that grants the proprietary edition free commercial rights. That is a licensing decision for the operator, not an agent. Largest installed base of any client catalogue found."
+    },
+    "zencoder-zenagents-library": {
+      "kind": "client_gallery",
+      "status": "new: unproven route",
+      "url": "https://github.com/zencoderai/zenagents-library",
+      "submit_route": "PR editing mcp-library.json (99 servers); mirrored at zencoder.ai/marketplace/mcp/<id>",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "A workflow copies mcp-library.json to a public GCS bucket on push to main, so the file is the live product. Submission guidelines in the README cover agents/*.json rather than MCP, so the precedent is unwritten and the maintainers reserve rejection at their sole discretion. Every entry carries a base64 64x64 PNG icon."
+    },
+    "flowise-mcp-nodes": {
+      "kind": "client_gallery",
+      "status": "new: code contribution not a listing",
+      "url": "https://github.com/FlowiseAI/Flowise",
+      "submit_route": "PR adding packages/components/nodes/tools/MCP/<Name>/<Name>MCP.ts plus an icon, or a marketplace template under packages/server/marketplaces",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "The artefact is a TypeScript node implementing INode with category 'Tools (MCP)', not a catalogue row, so it carries maintenance cost. No existing marketplace template references MCP, which makes that slot uncontested."
+    },
+    "mcpsvr-5ire": {
+      "kind": "client_gallery",
+      "status": "blocked: stdio command-only index",
+      "url": "https://github.com/nanbingxyz/mcpsvr",
+      "website": "https://mcpsvr.com/servers.json",
+      "submit_route": "PR editing public/servers.json (60 entries); powers the 5ire client's in-app market",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "Every entry is a command plus args. Our stdio artefact is an mcpb bundle, which is not an npx target, and the mcp-remote wrapper cannot carry a per-user token cleanly. Also 6 PRs have sat open since 2026-06-18. Unblocks with npm."
+    },
+    "gemini-cli-extensions": {
+      "kind": "client_gallery",
+      "status": "new: ready, needs a commit we do not own",
+      "url": "https://geminicli.com/extensions/browse/",
+      "submit_route": "No submission at all. A public GitHub repo with the topic gemini-cli-extension and a gemini-extension.json at the repo ROOT is crawled daily.",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "evidence": "docs/extensions/releasing.md in google-gemini/gemini-cli: 'You don't need to submit an issue or email us.' 664 repos already carry the topic (gh api search/repositories?q=topic:gemini-cli-extension).",
+      "note": "Cheapest unlock found. Two steps: gh repo edit --add-topic gemini-cli-extension, and commit gemini-extension.json to the repo root with an mcpServers map (httpUrl is supported). Blocked here only because committing to servers/ and repo roots is outside this round's file ownership, and the mirrors are force-pushed by sync-mirrors.sh so a manual commit there would be wiped. Hand to the orchestrator."
+    },
+    "claude-code-plugin-marketplaces": {
+      "kind": "client_gallery",
+      "status": "new: community route only",
+      "url": "https://github.com/wshobson/agents",
+      "submit_route": "PR adding a plugin with an .mcp.json to a community marketplace repo's .claude-plugin/marketplace.json; wshobson/agents requires make validate and make garden",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "anthropics/claude-code's own marketplace.json holds only first-party ./plugins/*, so there is no official route. composio-community/awesome-claude-plugins is a second target."
+    },
+    "tuanone123-awesome-mcp-registries": {
+      "kind": "meta_directory",
+      "status": "new: destination list, not a server list",
+      "url": "https://github.com/tuanone123/awesome-mcp-registries",
+      "submit_route": "PR adding a destination to both README.md and README.vi.md, one item per PR",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "Useful as an input to future rounds rather than a place to list a server."
+    },
+    "postman-mcp-network": {
+      "kind": "client_gallery",
+      "status": "human-gated",
+      "url": "https://learning.postman.com/docs/postman-ai/mcp-servers/promote/",
+      "submit_route": "Become a verified Postman publisher, publish a public workspace, then email api-network@postman.com",
+      "free": true,
+      "needs_account": true,
+      "needs_human": true,
+      "fields_required": [
+        "Postman account",
+        "verified publisher status",
+        "public workspace containing the MCP server",
+        "an email to api-network@postman.com"
+      ]
+    },
+    "apify-store-mcp": {
+      "kind": "marketplace",
+      "status": "human-gated",
+      "url": "https://apify.com/store/categories/mcp-servers",
+      "submit_route": "Publish an Actor from console.apify.com",
+      "free": true,
+      "needs_account": true,
+      "needs_human": true,
+      "fields_required": [
+        "Apify account (OAuth or password)",
+        "an Actor built and published from the console"
+      ],
+      "note": "apify/actor-mcp-servers CONTRIBUTING explicitly refuses code contributions, so there is no PR route."
+    },
+    "n8n-creator-hub": {
+      "kind": "marketplace",
+      "status": "human-gated and structurally disqualifying",
+      "url": "https://creators.n8n.io/nodes",
+      "submit_route": "Publish a community node to npm with provenance from GitHub Actions, then submit for verification",
+      "free": true,
+      "needs_account": true,
+      "needs_human": true,
+      "note": "From 2026-05-01 npm provenance via GitHub Actions is mandatory, and the verification rule is one third-party service per package. A 32-server fleet is disqualified unless split into 32 packages. npm is already human-gated for this project."
+    },
+    "findmcp-dev": {
+      "kind": "directory",
+      "status": "human-gated",
+      "url": "https://findmcp.dev/submit",
+      "submit_route": "Web form",
+      "free": true,
+      "needs_account": null,
+      "needs_human": true,
+      "note": "'Listing is free and takes under 2 minutes.' Account requirement not stated on the public page; it is a browser step either way."
+    },
+    "mcp-so-submit": {
+      "kind": "directory",
+      "status": "human-gated: OAuth sign-in",
+      "url": "https://mcp.so/submit",
+      "submit_route": "Web form behind a GitHub Sign In",
+      "free": true,
+      "needs_account": true,
+      "needs_human": true,
+      "note": "Already in distribution.json as a paid form; this records the free issue route's gate precisely."
+    },
+    "refact-mcp-marketplace": {
+      "kind": "client_gallery",
+      "status": "dead: repository archived",
+      "url": "https://github.com/smallcloudai/refact",
+      "evidence": "gh api repos/smallcloudai/refact -> archived true, pushed 2026-05-30; gh pr create -> 'Repository was archived so is read-only'",
+      "note": "Its refact-agent/engine/src/yaml_configs/mcp_marketplace_index.json holds 161 servers and is stale since 2026-04-26. Worth recording for a second reason: its fetch_official_registry_servers calls the official registry with ?limit=<=100, drops the search query and never follows nextCursor, so a client that claims to pass through the official registry surfaces only its first page. Do not assume 'registry-backed' means 'we are in it'."
+    },
+    "roo-code-marketplace": {
+      "kind": "client_gallery",
+      "status": "dead: retired",
+      "url": "https://api.roocode.com/api/marketplace",
+      "evidence": "RooCodeInc/Roo-Code-Marketplace -> 404; api.roocode.com/api/marketplace and /marketplace/mcps -> HTTP 410 Gone; no marketplace code left in the source tree",
+      "note": "Only remnants are an issue template and an editorial docs page listing Context7."
+    },
+    "mcphub-dev": {
+      "kind": "directory",
+      "status": "dead: retired",
+      "url": "https://mcphub.dev",
+      "evidence": "site text: 'MCP Hub has been retired... This directory is no longer maintained.'"
+    },
+    "pulsemcp-submissions": {
+      "kind": "directory",
+      "status": "dead for now: submissions paused",
+      "url": "https://www.pulsemcp.com/submit",
+      "evidence": "page dated 2026-09-03: 'We are not accepting new MCP server or client submissions right now, and we are not making changes to existing listings.'",
+      "note": "distribution.json records this as 'blocked'; the reason is now known and it is not our end."
+    },
+    "e2b-dev-awesome-mcp-gateways": {
+      "kind": "directory",
+      "status": "out of scope: wrong vertical",
+      "url": "https://github.com/e2b-dev/awesome-mcp-gateways",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "Alive and merging, but the list is gateways / OSINT / DevOps. These 32 servers are back-office tools. Submitting would be spam."
+    },
+    "soxoj-awesome-osint-mcp-servers": {
+      "kind": "directory",
+      "status": "out of scope: wrong vertical",
+      "url": "https://github.com/soxoj/awesome-osint-mcp-servers",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "Alive and merging, but the list is gateways / OSINT / DevOps. These 32 servers are back-office tools. Submitting would be spam."
+    },
+    "wagneragent-awesome-mcp-servers-devops": {
+      "kind": "directory",
+      "status": "out of scope: wrong vertical",
+      "url": "https://github.com/WagnerAgent/awesome-mcp-servers-devops",
+      "free": true,
+      "needs_account": false,
+      "needs_human": false,
+      "note": "Alive and merging, but the list is gateways / OSINT / DevOps. These 32 servers are back-office tools. Submitting would be spam."
+    },
+    "cherry-studio": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://github.com/CherryHQ/cherry-studio",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "Its marketplace screen is outbound links only; actual discovery is an npm search box. The only lever is publishing to npm."
+    },
+    "deepchat": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://github.com/ThinkInAIXYZ/deepchat",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "Its market is a third-party call to api.mcprouter.to with the user's own bearer key. Listing means being on mcprouter.co, not DeepChat."
+    },
+    "kiro-aws": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://kiro.dev/docs/mcp/servers",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "Curated one-click directory, site closed-source, issues-only repo; overflow is deferred to the official registry."
+    },
+    "antigravity-mcp-store": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://antigravity.google/docs/ide/mcp",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "Has an MCP Store of about 33 servers. No form, no email, no repo named anywhere in the docs."
+    },
+    "trae-marketplace": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://docs.trae.ai/ide/add-mcp-servers",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "Marketplace confirmed in the docs; no submit route discoverable, docs are an SPA."
+    },
+    "warp": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://docs.warp.dev/knowledge-and-collaboration/mcp",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "Ships some servers under Shared but has no browsable marketplace and no index repo; warp.dev/mcp is 404."
+    },
+    "cloudflare-mcp-directory": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://developers.cloudflare.com",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "The page loads a remote manifest and is titled 'Cloudflare's own MCP servers'. No file to PR."
+    },
+    "tome": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://github.com/runebookai/tome",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "Repository archived 2025-10-20; its catalogue was Smithery."
+    },
+    "jan": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://github.com/menloresearch/jan",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "First-party DEFAULT_MCP_CONFIG compiled in, not a market."
+    },
+    "witsy": {
+      "kind": "client_gallery",
+      "status": "no route",
+      "url": "https://github.com/nbonamy/witsy",
+      "free": null,
+      "needs_account": null,
+      "needs_human": null,
+      "note": "Now a redirect stub; the successor repo has no catalogue file."
+    }
+  }
+}

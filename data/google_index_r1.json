@@ -1,0 +1,681 @@
+{
+ "generated_at": "2026-09-10T14:20:54Z",
+ "agent": "A2, loop 33",
+ "status": "MEASURED",
+ "question": "mcp.zovo.one draws ~0 Google impressions while zovo.one draws thousands on the same verified property. Find and fix the cause.",
+ "credential": {
+  "memory_note_confirmed": "~/Desktop/keys/gsc-sa-key.json is iCloud-dataless; google-auth hangs silently on it",
+  "hang_proof": "timeout 20 /usr/bin/wc -l /Users/mike/Desktop/keys/gsc-sa-key.json  ->  exit 124, zero output",
+  "working_copy_used": "/Users/mike/.config/gcloud/legacy_credentials/zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com/adc.json",
+  "service_account": "zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com",
+  "same_identity_as_prior_loops": true,
+  "permission_on_sc_domain_zovo_one": "siteFullUser (not siteOwner)",
+  "positive_control": "webmasters/v3/sites returned 51 properties including sc-domain:zovo.one"
+ },
+ "correction_to_the_brief": {
+  "claim": "0 Google impressions in 99+ days",
+  "measured": "1 impression",
+  "row": {
+   "url": "https://mcp.zovo.one/",
+   "date": "2026-09-08",
+   "impressions": 1,
+   "clicks": 0,
+   "position": 7.0
+  },
+  "windows_checked": [
+   [
+    "2026-08-13",
+    "2026-09-09"
+   ],
+   [
+    "2026-06-12",
+    "2026-09-09"
+   ]
+  ],
+  "reading": "The day the homepage entered the index is the day it drew an impression, at average position 7.0. Ranking is not the constraint; indexation is."
+ },
+ "search_analytics": {
+  "site": "sc-domain:zovo.one",
+  "dimensions": [
+   "page"
+  ],
+  "window": [
+   "2026-08-13",
+   "2026-09-09"
+  ],
+  "pages_with_impressions": 429,
+  "clicks": 53,
+  "impressions": 4505,
+  "impressions_by_host": {
+   "zovo.one": 4435,
+   "www.zovo.one": 69,
+   "mcp.zovo.one": 1
+  }
+ },
+ "hypothesis": {
+  "as_briefed": "A subdomain is a separate crawl-budget unit; mcp.zovo.one has earned none because almost no internal link equity flows to it from the indexed part of zovo.one.",
+  "verdict": "FALSE as stated. The link volume is large; its distribution is degenerate.",
+  "method": "Fetched all 429 zovo.one URLs that drew an impression in the 28-day window with the documented Googlebot UA and parsed every href.",
+  "pages_fetched": 429,
+  "pages_carrying_a_link_to_mcp_zovo_one": 129,
+  "share_of_impression_drawing_pages": 0.301,
+  "distinct_mcp_target_urls_across_all_of_them": 1,
+  "target_href_counts": {
+   "https://mcp.zovo.one": 129
+  },
+  "link_shape": "one sitewide <footer> anchor, text 'MCP servers for Claude', no rel attribute, emitted server-side (survives a Googlebot-UA fetch with scripts stripped)",
+  "link_sources_actually_indexed": {
+   "sampled": 15,
+   "pass": 15,
+   "rows": {
+    "https://zovo.one/guides": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-09-06T16:17:26Z"
+    },
+    "https://zovo.one/use-cases/productivity": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-09-03T19:52:30Z"
+    },
+    "https://zovo.one/articles/regex-patterns-real-world": {
+     "verdict": "PASS",
+     "coverageState": "Indexed, though blocked by robots.txt",
+     "lastCrawlTime": "2026-07-18T14:45:20Z"
+    },
+    "https://zovo.one/tasks/how-to-generate-qr-code": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-08-22T22:34:02Z"
+    },
+    "https://zovo.one/use-cases/privacy": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-09-07T10:25:24Z"
+    },
+    "https://zovo.one/vision": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-08-29T14:45:27Z"
+    },
+    "https://zovo.one/use-cases/downloading-reference-images-for-design": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-07-12T01:38:22Z"
+    },
+    "https://zovo.one/use-cases/archiving-website-assets": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-08-04T21:02:32Z"
+    },
+    "https://zovo.one/compare/tab-suspender-pro-vs-ansrs-chrome-extension-mcnpmplh": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-07-16T22:21:33Z"
+    },
+    "https://zovo.one/tasks/count-words-online": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-09-09T14:36:56Z"
+    },
+    "https://zovo.one/expert/chrome-extension-awards-2026": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-09-07T06:10:25Z"
+    },
+    "https://zovo.one/legal/billing": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-07-22T13:42:29Z"
+    },
+    "https://zovo.one/tab-suspender/zh-tw": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-08-27T03:28:11Z"
+    },
+    "https://zovo.one/research/cws-localization": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-09-04T23:56:14Z"
+    },
+    "https://zovo.one/use-cases/verifying-file-downloads": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-08-04T07:22:34Z"
+    }
+   }
+  },
+  "deep_mcp_urls_linked_from_zovo_one": 0,
+  "corrected": "129 indexed zovo.one pages link to the subdomain and 100% of that lands on one URL. That URL is the only one crawled, the only one indexed and the only one with an impression. The other 153 have no inbound link from zovo.one and none has ever been fetched.",
+  "note_on_the_130th": "A 130th page in the raw scan was https://mcp.zovo.one/ itself (it appears in the page dimension because of its single impression) and its match is its own canonical. Excluded: 129 zovo.one pages, 0 www.zovo.one pages."
+ },
+ "url_inspection_census": {
+  "api": "POST https://searchconsole.googleapis.com/v1/urlInspection/index:inspect, siteUrl sc-domain:zovo.one, one call per sitemap URL",
+  "n": 154,
+  "api_errors": 0,
+  "by_coverage_state": {
+   "Submitted and indexed": 1,
+   "Discovered - currently not indexed": 115,
+   "URL is unknown to Google": 38
+  },
+  "in_google_index": 1,
+  "ever_crawled_by_google": 1,
+  "by_section": {
+   "/": {
+    "Submitted and indexed": 1
+   },
+   "/bundle": {
+    "Discovered - currently not indexed": 1
+   },
+   "/changelog": {
+    "Discovered - currently not indexed": 1
+   },
+   "/guides": {
+    "URL is unknown to Google": 22,
+    "Discovered - currently not indexed": 68
+   },
+   "/compare": {
+    "URL is unknown to Google": 7,
+    "Discovered - currently not indexed": 13
+   },
+   "/privacy": {
+    "URL is unknown to Google": 1
+   },
+   "/s": {
+    "URL is unknown to Google": 5,
+    "Discovered - currently not indexed": 27
+   },
+   "/setup": {
+    "URL is unknown to Google": 3,
+    "Discovered - currently not indexed": 5
+   }
+  },
+  "signature": "Discovered - currently not indexed with lastCrawlTime null. Google holds the URLs and has never fetched them.",
+  "comparison_to_2026_09_09_baseline": {
+   "source": "data/indexation.json",
+   "then": {
+    "n": 141,
+    "in_index": 1,
+    "ever_crawled": 1,
+    "known": 52,
+    "unknown": 89
+   },
+   "now": {
+    "n": 154,
+    "in_index": 1,
+    "ever_crawled": 1,
+    "known": 116,
+    "unknown": 38
+   }
+  },
+  "split_instability_reproduced": "guides/mcp-config-scopes-and-precedence read 'Discovered' at 20:45Z and 'URL is unknown to Google' at 21:15Z the same evening, while guides/mcp-tool-errors-versus-protocol-errors moved the other way. Only in_index and ever_crawled are stable, and both are 1."
+ },
+ "comparable_depth_test": {
+  "why": "Settle whether the split is host-level at all.",
+  "rows": {
+   "https://mcp.zovo.one/": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-09-08T17:20:24Z"
+   },
+   "https://mcp.zovo.one/bundle": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/s/invoice": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/s/time-tracker": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/s/spreadsheet": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/guides/mcp-config-scopes-and-precedence": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/guides/mcp-tool-errors-versus-protocol-errors": {
+    "verdict": "NEUTRAL",
+    "coverageState": "URL is unknown to Google",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/guides/answer-questions-about-a-spreadsheet-without-formulas": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/compare/invoice-vs-quickbooks": {
+    "verdict": "NEUTRAL",
+    "coverageState": "URL is unknown to Google",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/changelog": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://mcp.zovo.one/privacy": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://zovo.one/": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-09-10T13:26:31Z"
+   },
+   "https://zovo.one/tools": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-08-10T02:04:41Z"
+   },
+   "https://zovo.one/free-tools/html-entity-encoder": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-07-16T01:11:21Z"
+   },
+   "https://zovo.one/free-tools/flow-chart-maker": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-08-15T23:01:01Z"
+   },
+   "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html": {
+    "verdict": "PASS",
+    "coverageState": "Indexed, though blocked by robots.txt",
+    "lastCrawlTime": "2026-05-20T11:42:41Z"
+   },
+   "https://zovo.one/best/best-free-tab-manager-chrome-extensions": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-08-29T13:37:06Z"
+   },
+   "https://zovo.one/use-cases/recovering-accidentally-overwritten-text": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-09-06T18:38:50Z"
+   },
+   "https://zovo.one/glossary": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-08-15T12:16:53Z"
+   }
+  },
+  "zovo_one_pass": 8,
+  "zovo_one_n": 8,
+  "mcp_pass": 1,
+  "mcp_n": 11,
+  "reading": "At identical depth-2 shapes (zovo.one/free-tools/html-entity-encoder vs mcp.zovo.one/s/invoice) the parent is indexed and the subdomain has never been fetched. The split IS host-level."
+ },
+ "sibling_subdomain_control": {
+  "why": "tg.zovo.one is a second new subdomain of the same parent carrying the same single sitewide footer link. If it behaves the same way the effect is generic to new hosts on this parent, not specific to mcp.zovo.one's content.",
+  "rows": {
+   "https://tg.zovo.one/": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-09-04T01:10:15Z"
+   },
+   "https://tg.zovo.one/ru/": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-09-09T04:30:10Z"
+   },
+   "https://tg.zovo.one/es/": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-09-06T11:44:33Z"
+   },
+   "https://tg.zovo.one/pt/": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-09-09T04:17:28Z"
+   },
+   "https://tg.zovo.one/id/": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Crawled - currently not indexed",
+    "lastCrawlTime": "2026-09-08T09:39:34Z"
+   },
+   "https://tg.zovo.one/de/": {
+    "verdict": "PASS",
+    "coverageState": "Submitted and indexed",
+    "lastCrawlTime": "2026-09-06T14:25:15Z"
+   },
+   "https://tg.zovo.one/bots/whisper/": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://tg.zovo.one/ru/bots/whisper/": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://tg.zovo.one/es/bots/whisper/": {
+    "verdict": "NEUTRAL",
+    "coverageState": "URL is unknown to Google",
+    "lastCrawlTime": null
+   },
+   "https://tg.zovo.one/pt/bots/whisper/": {
+    "verdict": "NEUTRAL",
+    "coverageState": "URL is unknown to Google",
+    "lastCrawlTime": null
+   },
+   "https://tg.zovo.one/id/bots/whisper/": {
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "lastCrawlTime": null
+   },
+   "https://tg.zovo.one/de/bots/whisper/": {
+    "verdict": "NEUTRAL",
+    "coverageState": "URL is unknown to Google",
+    "lastCrawlTime": null
+   }
+  },
+  "depth1_pass": "5 of 6 locale roots indexed, three of them crawled 2026-09-06 to 2026-09-09",
+  "depth3_pass": "0 of 6 /bots/<name>/ pages; all Discovered-never-crawled or unknown",
+  "reading": "Same shape. A new host on this parent gets its entry ring crawled and nothing below it. mcp.zovo.one is not being singled out; it is four days behind tg.zovo.one on the same ramp and its entry ring is one URL wide."
+ },
+ "killed_explanations": [
+  {
+   "explanation": "robots.txt on the subdomain, or Cloudflare injecting Disallow lines for AI crawlers into the served file",
+   "test": "curl https://mcp.zovo.one/robots.txt vs the literal in billing/src/index.js:1088",
+   "result": "154 served bytes, character-identical to the repo string. 'Allow: /'. Disallows are /buy/, /success, /recover, /verify, /bound only. No AI-crawler injection.",
+   "verdict": "KILLED"
+  },
+  {
+   "explanation": "canonical tags pointing off-host",
+   "test": "parsed <link rel=canonical> on /, /s/invoice, /guides/mcp-config-scopes-and-precedence",
+   "result": "self-referential on all three",
+   "verdict": "KILLED"
+  },
+  {
+   "explanation": "noindex header or meta",
+   "test": "curl -I on three URLs; robots meta scan on 12 sitemap URLs",
+   "result": "no x-robots-tag anywhere; 0 of 12 carry a robots meta. The noindex,follow rule in billing/src/index.js:1059 fires only on 3-segment paths and no sitemap URL has three segments.",
+   "verdict": "KILLED"
+  },
+  {
+   "explanation": "hreflang",
+   "test": "grep hreflang on / and /s/invoice",
+   "result": "0 elements",
+   "verdict": "KILLED"
+  },
+  {
+   "explanation": "Cloudflare serving Googlebot different bytes",
+   "test": "fetched / and /s/invoice with the Googlebot UA and with a Chrome UA and diffed",
+   "result": "identical lengths (60135 and 38335); the only differing bytes are the Cloudflare challenge-platform ray id and unix timestamp",
+   "verdict": "KILLED"
+  },
+  {
+   "explanation": "JS-dependent rendering",
+   "test": "stripped <script> and <style>, counted text",
+   "result": "33,535 chars on /, 23,042 on /s/invoice",
+   "verdict": "KILLED"
+  },
+  {
+   "explanation": "sitemap invalid, unreachable or unread",
+   "test": "webmasters/v3 sitemaps on sc-domain:zovo.one",
+   "result": "https://mcp.zovo.one/sitemap.xml lastSubmitted 2026-09-04T01:41:21Z, lastDownloaded 2026-09-09T22:42:45Z, errors 0, warnings 0, isPending false, submitted 154",
+   "verdict": "KILLED"
+  },
+  {
+   "explanation": "thin or duplicate content across the setup permutations (loop 29's operative hypothesis)",
+   "test": "census lastCrawlTime across all 154 sitemap URLs",
+   "result": "1 of 154 has ever been fetched. Google has not read the content of the other 153.",
+   "verdict": "KILLED AS THE OPERATIVE CAUSE. Content cannot be why a page was declined if the crawler never fetched it. The 312 -> 154 sitemap trim was defensible hygiene but it addressed an evaluation Google has not performed."
+  }
+ ],
+ "instrument_notes": [
+  {
+   "instrument": "sitemaps API 'indexed' field",
+   "finding": "reads 0 for every sitemap on the property including zovo.one's own 714-URL sitemap, whose pages are demonstrably indexed. Not an instrument. Do not quote it."
+  },
+  {
+   "instrument": "crt.sh certificate transparency, used to date the subdomain",
+   "finding": "returned 0 certificates for mcp.zovo.one because Cloudflare universal SSL covers it under a wildcard, and the zovo.one control query failed to parse. UNMEASURED, not zero. No host-age number is claimed from it."
+  }
+ ],
+ "cause": {
+  "statement": "mcp.zovo.one is a new host whose entire inbound link graph resolves to a single URL. Google has discovered all 154 sitemap URLs, has fetched exactly one of them - the one that is linked - and is rationing the rest in a Discovered queue that has not drained in the six days since the sitemap was first submitted.",
+  "evidence_chain": [
+   "129 indexed zovo.one pages link to exactly one mcp.zovo.one URL",
+   "that URL is the only one ever crawled (2026-09-08)",
+   "it is the only one indexed",
+   "it is the only one with an impression (2026-09-08, position 7)",
+   "the other 153 have no inbound link and lastCrawlTime null",
+   "the sibling new subdomain tg.zovo.one shows the identical depth-graded pattern"
+  ],
+  "not_the_cause": [
+   "robots",
+   "canonical",
+   "noindex",
+   "hreflang",
+   "cloaking",
+   "JS rendering",
+   "sitemap validity",
+   "content quality"
+  ]
+ },
+ "prior_lever_null_result": {
+  "what": "Loop 32 placed 3 honest deep contextual links to mcp.zovo.one guides from indexed claudflow.com and claudhq.com pages on 2026-09-09.",
+  "links_still_live": "3 of 3 verified by exact-href grep today",
+  "target_state_24h_later": {
+   "guides/answer-questions-about-a-spreadsheet-without-formulas": "Discovered - currently not indexed, never crawled",
+   "guides/mcp-config-scopes-and-precedence": "Discovered / unknown (flipped within 30 minutes), never crawled",
+   "guides/mcp-tool-errors-versus-protocol-errors": "Discovered - currently not indexed, never crawled"
+  },
+  "reading": "The deep-link lever has produced zero movement at n=3 after one day. The edits below are the same lever at larger n and must be judged on a later census, not on this one."
+ },
+ "actions": {
+  "repo": "/Users/mike/extension-insiders (git@github.com:theluckystrike/extension-insiders.git) - the SSR renderer for zovo.one",
+  "file": "api/render.ts",
+  "committed": false,
+  "pushed": false,
+  "deployed": false,
+  "diff_numstat": "6 additions, 1 deletion",
+  "typecheck": "npx tsc --noEmit --skipLibCheck api/render.ts -> exit 0, no diagnostics",
+  "backup": "scratchpad/render.ts.bak",
+  "contextual_links_added": [
+   {
+    "host_page": "https://zovo.one/open-source",
+    "host_index_state": "PASS / Submitted and indexed / last crawl 2026-09-08",
+    "href": "https://mcp.zovo.one/s/invoice",
+    "anchor": "the invoice server and its source",
+    "placement": "body prose, 'Reading the Code' section"
+   },
+   {
+    "host_page": "https://zovo.one/free-tools",
+    "host_index_state": "PASS / Submitted and indexed / last crawl 2026-09-06",
+    "href": "https://mcp.zovo.one/guides/free-mcp-servers-for-freelancers",
+    "anchor": "what those servers actually do on the free tier",
+    "placement": "body prose, 'Elsewhere on Zovo' section"
+   },
+   {
+    "host_page": "https://zovo.one/tools",
+    "host_index_state": "PASS / Submitted and indexed / last crawl 2026-08-10",
+    "href": "https://mcp.zovo.one/s/spreadsheet",
+    "anchor": "ask a spreadsheet on your own disk what is in it",
+    "placement": "body prose, 'Free Browser Tools' section"
+   },
+   {
+    "host_page": "https://zovo.one/about",
+    "host_index_state": "PASS / Submitted and indexed / last crawl 2026-09-10",
+    "href": "https://mcp.zovo.one/s/time-tracker",
+    "anchor": "Tracking billable time from inside an AI chat",
+    "placement": "list item, 'Where to Start'"
+   },
+   {
+    "host_page": "https://zovo.one/guides",
+    "host_index_state": "PASS / Submitted and indexed / last crawl 2026-09-06",
+    "href": "https://mcp.zovo.one/guides/claude-mcp-add-command-reference",
+    "anchor": "claude mcp add, flag by flag",
+    "placement": "list item, 'Explore More'"
+   }
+  ],
+  "also": {
+   "change": "restored the tg.zovo.one footer anchor",
+   "why": "the live footer serves '<a href=\"https://mcp.zovo.one\">MCP servers for Claude</a> \u00b7 <a href=\"https://tg.zovo.one/\">Telegram bots for reminders, expenses &amp; habits</a>' but repo source emitted only the first anchor. Deploying the repo as it stood would have deleted a live link on every page. The restored bytes are copied from the live response.",
+   "line": "api/render.ts:1244"
+  },
+  "effect_on_the_measurement": {
+   "deep_mcp_urls_with_an_inbound_link_from_an_indexed_page_before": 3,
+   "after_deploy": 8
+  }
+ },
+ "before_and_after": {
+  "note": "Both readings are from the same API on the same evening. The edits are not deployed, so no change is expected between them and none is claimed. This records the baseline the next census must be compared against.",
+  "rows": {
+   "https://mcp.zovo.one/s/invoice": {
+    "before": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    },
+    "after": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    }
+   },
+   "https://mcp.zovo.one/s/spreadsheet": {
+    "before": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    },
+    "after": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    }
+   },
+   "https://mcp.zovo.one/s/time-tracker": {
+    "before": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    },
+    "after": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    }
+   },
+   "https://mcp.zovo.one/guides/free-mcp-servers-for-freelancers": {
+    "before": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+     "indexingState": "INDEXING_STATE_UNSPECIFIED",
+     "lastCrawlTime": null,
+     "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+     "googleCanonical": null,
+     "userCanonical": null,
+     "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED",
+     "sitemap": [
+      "https://mcp.zovo.one/sitemap.xml"
+     ],
+     "referringUrls": null
+    },
+    "after": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    }
+   },
+   "https://mcp.zovo.one/guides/claude-mcp-add-command-reference": {
+    "before": {
+     "verdict": "NEUTRAL",
+     "coverageState": "URL is unknown to Google",
+     "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+     "indexingState": "INDEXING_STATE_UNSPECIFIED",
+     "lastCrawlTime": null,
+     "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+     "googleCanonical": null,
+     "userCanonical": null,
+     "crawledAs": null,
+     "sitemap": null,
+     "referringUrls": null
+    },
+    "after": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    }
+   },
+   "https://mcp.zovo.one/guides/answer-questions-about-a-spreadsheet-without-formulas": {
+    "before": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    },
+    "after": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    }
+   },
+   "https://mcp.zovo.one/guides/mcp-config-scopes-and-precedence": {
+    "before": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    },
+    "after": {
+     "verdict": "NEUTRAL",
+     "coverageState": "URL is unknown to Google",
+     "lastCrawlTime": null
+    }
+   },
+   "https://mcp.zovo.one/guides/mcp-tool-errors-versus-protocol-errors": {
+    "before": {
+     "verdict": "NEUTRAL",
+     "coverageState": "URL is unknown to Google",
+     "lastCrawlTime": null
+    },
+    "after": {
+     "verdict": "NEUTRAL",
+     "coverageState": "Discovered - currently not indexed",
+     "lastCrawlTime": null
+    }
+   },
+   "https://mcp.zovo.one/": {
+    "before": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-09-08T17:20:24Z"
+    },
+    "after": {
+     "verdict": "PASS",
+     "coverageState": "Submitted and indexed",
+     "lastCrawlTime": "2026-09-08T17:20:24Z"
+    }
+   }
+  }
+ },
+ "blocked_human_gated": {
+  "what": "Google Indexing API (indexing.googleapis.com/v3/urlNotifications:publish) would let us submit all 154 URLs for crawl with no browser and no cost.",
+  "attempt": "POST with the working service account, type URL_UPDATED, url https://mcp.zovo.one/s/invoice",
+  "response": "HTTP 403 PERMISSION_DENIED - 'Permission denied. Failed to verify the URL ownership.'",
+  "reason": "the service account is siteFullUser on sc-domain:zovo.one, not siteOwner, and Search Console exposes no API to add an owner",
+  "exact_unlock": "Search Console -> sc-domain:zovo.one -> Settings -> Users and permissions -> Add user -> zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com -> permission Owner",
+  "cost": "free",
+  "time": "about 30 seconds in a browser",
+  "caveat": "Google documents the Indexing API as supporting JobPosting and BroadcastEvent only. The ownership 403 fires before any type check, so whether it would accept these URLs is untested behind it."
+ },
+ "defect_reported_not_owned": {
+  "file": "billing/src/index.js (mcp.zovo.one is served entirely by this Worker; remote/wrangler.toml routes only mcp.zovo.one/mcp*)",
+  "defect": "sitemap.xml emits zero <lastmod> elements across all 154 URLs",
+  "proof": "curl -sS https://mcp.zovo.one/sitemap.xml | /usr/bin/grep -c '<lastmod>'  ->  0",
+  "why_it_matters": "lastmod is the only field the sitemap protocol gives a crawler for ordering its queue. On a host whose entire problem is a Discovered queue that has not drained in six days, shipping no freshness signal at all removes the one scheduling hint under our control.",
+  "owner": "whichever agent owns billing/src/index.js"
+ }
+}

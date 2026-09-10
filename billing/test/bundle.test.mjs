@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { bundlePage, PRODUCTS, SERVER_COUNT, BUNDLE_SAVING_USD, countWord } from "../src/index.js";
+import worker, { bundlePage, PRODUCTS, SERVER_COUNT, BUNDLE_SAVING_USD, countWord } from "../src/index.js";
 import { PAGES } from "../src/pages.js";
 
 const INDEX = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "index.js"), "utf8");
@@ -17,7 +17,7 @@ test("/bundle is routed", () => {
 test("bundle page title, price math and one CTA", () => {
   const html = bundlePage();
   const singleTotal = SERVER_COUNT * 19;
-  assert.equal(html.includes(`<title>${countWord()} MCP servers for Claude, one $39 key</title>`), true, "title does not name the count and the price");
+  assert.equal(html.includes(`<title>${SERVER_COUNT} MCP servers for Claude, one $39 key</title>`), true, "title does not name the count and the price");
   assert.ok(html.includes(`${SERVER_COUNT} &times; $19 = $${singleTotal}`), `page does not show ${SERVER_COUNT} &times; $19 = $${singleTotal}`);
   assert.match(html, /\$39/);
   assert.ok(html.includes(`saving of $${BUNDLE_SAVING_USD}`), `page does not name the saving $${BUNDLE_SAVING_USD}`);
@@ -53,8 +53,14 @@ test("bundle page carries a Product/Offer JSON-LD block", () => {
   assert.equal(product.offers.priceCurrency, "USD");
 });
 
-test("sitemap.xml and llms.txt derivation both cover /bundle", () => {
-  assert.match(INDEX, /\["\/", "\/bundle", "\/changelog", "\/guides", "\/compare"/, "sitemap urls array must include /bundle");
+test("sitemap.xml and llms.txt derivation both cover /bundle", async () => {
+  // This asserted the literal order of the sitemap's urls array, so it failed the moment
+  // /mcp/connect was added to it in loop 33 - a false alarm about a page that was still
+  // covered. What the test is for is coverage, so it now reads the rendered sitemap. That
+  // cannot be broken by reordering and cannot pass while the entry is actually missing.
+  const env = { STRIPE_SECRET_KEY: "sk_test_stub", REMOTE_DATA: { get: async () => null, put: async () => {}, list: async () => ({ keys: [] }) }, LICENSES: { get: async () => null, put: async () => {}, list: async () => ({ keys: [] }) } };
+  const xml = await (await worker.fetch(new Request("https://mcp.zovo.one/sitemap.xml"), env, { waitUntil: () => {} })).text();
+  assert.ok(xml.includes("<loc>https://mcp.zovo.one/bundle</loc>"), "sitemap.xml does not list /bundle");
   assert.match(INDEX, /https:\/\/mcp\.zovo\.one\/bundle/, "llms.txt line must link https://mcp.zovo.one/bundle");
 });
 

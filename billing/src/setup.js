@@ -821,7 +821,7 @@ const ANGLE = {
   "office-suite": {
     "claude-desktop": "One entry in claude_desktop_config.json instead of 31, which matters more here than anywhere else: this is the client where each extra server is another absolute path to get right, and a six-prompt audit at 186 tools put all 20 tool calls in the correct child, zero wrong-server picks.",
     "claude-code": "One `claude mcp add` instead of 31, and one bundle key. The audited round that asked for a logo resize, an invoice PDF and a PAID stamp in one sentence, three children at once, called the right tool in the right child every time.",
-    cursor: "Thirty-one servers' worth of tools arrive as one entry, so mcp.json holds one object with one required type field instead of 31, and the Customize page lists one server to enable or disable. Only four of the 292 names needed a server-name prefix to stay unique: invoice_business_set and docx_business_set, expense-tracker_category_rules and bank-statement_category_rules.",
+    cursor: "Every sibling server's tools arrive as one entry, so mcp.json holds one object with one required type field instead of 31, and the Customize page lists one server to enable or disable. Only four of the 292 names needed a server-name prefix to stay unique: invoice_business_set and docx_business_set, expense-tracker_category_rules and bank-statement_category_rules.",
     vscode: "One entry under the servers key, one trust prompt to answer, and 292 tools arrive as one group in the tools picker, which is easier to switch on and off per chat than 31 separate ones.",
     windsurf: "One entry rather than 31 does not mean one entry fits: 292 tools is far past Cascade's ceiling of 100 on its own, so this bundle is the wrong shape here. Install the two or three single servers you actually use instead, 9 to 16 tools each.",
     cline: "One entry with one autoApprove array covering 292 tools. Set that array deliberately rather than emptying it, ideally per child if the interface allows it: it now spans 31 servers that write invoices, quotes, spreadsheets, PDFs, images, bank ledgers and calendars.",
@@ -1386,7 +1386,7 @@ export function clientHub(clientId) {
   if (!c) return null;
   const canonical = `${BASE}/setup/${clientId}`;
   const title = `MCP servers for ${c.name}: install guides`;
-  const description = fitDesc(`Twelve MCP servers set up in ${c.name}, each with the exact ${c.file} entry: time, invoices, recurring billing, expenses, spreadsheets, prices, currency, Word, clauses, resumes and time zones.`);
+  const description = fitDesc(`${serversFor(clientId).length} MCP servers set up in ${c.name}, each with the exact ${c.file} entry: time, invoices, recurring billing, expenses, spreadsheets, prices, currency, Word, clauses, resumes and time zones.`);
   const rows = serversFor(clientId).map(
     (id) =>
       `<tr><td><a href="/setup/${clientId}/${id}">${esc(SETUP_SERVERS[id].title)} in ${esc(c.name)}</a><br><span class="muted">${esc(SETUP_SERVERS[id].tagline)}</span></td></tr>`
@@ -1411,7 +1411,10 @@ export function clientHub(clientId) {
 export function setupIndex() {
   const canonical = `${BASE}/setup`;
   const title = "Set up an MCP server in your client";
-  const description = "Exact config file paths and entries for twelve MCP servers in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline.";
+  // Was "twelve MCP servers" and "Twelve servers, six clients" while the page listed 31
+  // servers across 7 clients. A spelled-out count is the kind nobody greps for, so both are
+  // derived from the maps the page is built from.
+  const description = `Exact config file paths and entries for ${Object.keys(SETUP_SERVERS).length} MCP servers in ${CLIENT_ORDER.map((id) => CLIENTS[id].name).slice(0, -1).join(", ")} and ${CLIENTS[CLIENT_ORDER[CLIENT_ORDER.length - 1]].name}.`;
   const clientRows = CLIENT_ORDER.map(
     (id) =>
       `<tr><td><a href="/setup/${id}">${esc(CLIENTS[id].name)}</a></td><td><code>${esc(CLIENTS[id].file)}</code></td><td><code>${esc(CLIENTS[id].key)}</code></td><td>${esc(CLIENTS[id].caveatShort)}</td></tr>`
@@ -1422,7 +1425,7 @@ export function setupIndex() {
   ).join("");
   const body = `<p class="muted"><a href="/">Home</a></p>
 <h1>${esc(title)}</h1>
-<p>Twelve servers, six clients, one page each: the config file that client actually reads, the entry to put in it, three prompts that were run against the server, and the hosted endpoint if you would rather install nothing. The two facts that cause most failed installs are in the table below: the file name and the top-level key are not the same across clients.</p>
+<p>${Object.keys(SETUP_SERVERS).length} servers and ${CLIENT_ORDER.length} clients, one page each: the config file that client actually reads, the entry to put in it, three prompts that were run against the server, and the hosted endpoint if you would rather install nothing. The two facts that cause most failed installs are in the table below: the file name and the top-level key are not the same across clients.</p>
 <table><tr><th>Client</th><th>Config file</th><th>Key</th><th>Watch out for</th></tr>${clientRows}</table>
 <h2>Pages</h2>
 <table><tr><th>Server</th><th>In</th></tr>${serverRows}</table>

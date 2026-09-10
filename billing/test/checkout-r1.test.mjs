@@ -15,6 +15,7 @@
 // that is proved and not a description of it.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { LISTED_COUNT } from "../src/figures.js";
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,15 +23,30 @@ import worker, {
   PRODUCTS, PRODUCT_ALIASES, SINGLE_PRODUCT_IDS, resolveProductId,
   checkoutLineItem, firstSentences, fulfillmentAllowed, checkoutCustomText, SITE_KEY_FILES, probeHeaders,
   VALIDATION, BILLING_TEST_COUNT, successPage, countWord,
+
 } from "../src/index.js";
 
 const INDEX = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "index.js"), "utf8");
 const BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 const STUB_URL = "https://checkout.stripe.com/c/pay/cs_test_stub";
 
-/** A request that looks like a person clicking a Buy link in a browser. */
+/**
+ * A request that looks like a person clicking a Buy link in a browser. The Fetch Metadata
+ * pair is part of that shape, not decoration: since loop 33 a click is only COUNTED when
+ * the request carries `sec-fetch-mode: navigate` and `sec-fetch-dest: document`, which
+ * every browser sends on a top-level navigation and no crawler sends at all.
+ */
 const buy = (path, headers = {}) =>
-  new Request(`https://mcp.zovo.one${path}`, { headers: { "user-agent": BROWSER_UA, accept: "text/html,application/xhtml+xml", ...headers } });
+  new Request(`https://mcp.zovo.one${path}`, {
+    headers: {
+      "user-agent": BROWSER_UA,
+      accept: "text/html,application/xhtml+xml",
+      "sec-fetch-mode": "navigate",
+      "sec-fetch-dest": "document",
+      "sec-fetch-site": "same-origin",
+      ...headers,
+    },
+  });
 
 /** env + ctx enough for the /buy route: KV that answers nothing, waitUntil that runs nothing. */
 const emptyKv = () => ({ get: async () => null, put: async () => {}, list: async () => ({ keys: [] }) });
@@ -271,7 +287,7 @@ test("a real click is recorded before the redirect, and a probe is not", async (
   const ctxCollect = { waitUntil: (p) => run.push(p) };
   await withStripeStub(() => worker.fetch(buy("/buy/work-order?src=store.home.table.work-order"), env, ctxCollect));
   await Promise.all(run);
-  assert.ok(written.some((k) => k.startsWith("click:store.home.table.work-order:")), `no click recorded, wrote ${written}`);
+  assert.ok(written.some((k) => k.startsWith("click:v2:store.home.table.work-order:")), `no click recorded, wrote ${written}`);
 
   const written2 = [];
   const env2 = testEnv();
@@ -279,7 +295,7 @@ test("a real click is recorded before the redirect, and a probe is not", async (
   const run2 = [];
   await withStripeStub(() => worker.fetch(buy("/buy/work-order?src=probe.loop29", { "x-mcp-probe": "1" }), env2, { waitUntil: (p) => run2.push(p) }));
   await Promise.all(run2);
-  assert.ok(!written2.some((k) => k.startsWith("click:")), `a probe recorded a conversion click: ${written2}`);
+  assert.ok(!written2.some((k) => k.startsWith("click:v2:")), `a probe recorded a conversion click: ${written2}`);
 });
 
 test("the IndexNow key file serves its key and nothing else", async () => {
@@ -423,7 +439,13 @@ test("the home page and /bundle no longer state the npx line without the disclos
   }
   const home = await (await worker.fetch(new Request("https://mcp.zovo.one/"), testEnv(), ctx)).text();
   assert.ok(home.includes(`${VALIDATION.pass} of ${VALIDATION.total} automated checks`), "the home page does not state the measured check count");
-  assert.ok(home.includes(`${countWord()} local-first MCP servers`), "the home page H1 is not derived from the catalogue");
+  // Was `${countWord()} local-first MCP servers`. The home page now counts server
+  // directories rather than separately-priced products, and prints the numeral, because it
+  // used to state its own catalogue size three ways in one document (Thirty-one in the h1,
+  // 32 in the validation line, 31 over a table). SERVER_DIR_COUNT is derived from the
+  // manifests by scripts/build-figures.mjs. LISTED_COUNT counts servers with a README, so a
+  // directory still being built does not show up in the headline.
+  assert.ok(home.includes(`${LISTED_COUNT} MCP servers for Claude`), "the home page H1 is not derived from the catalogue");
 });
 
 test("the success page leads with an install path that works, not with a command that 404s", () => {
@@ -449,7 +471,7 @@ test("a click on a dead /buy/ link is counted, so the leak is measurable", async
   const res = await worker.fetch(buy("/buy/gone-server?src=store.home.table.gone-server"), env, { waitUntil: (pr) => run.push(pr) });
   await Promise.all(run);
   assert.equal(res.status, 404);
-  assert.ok(written.some((k) => k.startsWith("click:store.home.table.gone-server:")), `dead click not recorded: ${written}`);
+  assert.ok(written.some((k) => k.startsWith("click:v2:store.home.table.gone-server:")), `dead click not recorded: ${written}`);
 
   // A stranger's URL must never become a KV key: an unvalidated src falls back to a fixed tag.
   const w2 = [];
@@ -458,7 +480,7 @@ test("a click on a dead /buy/ link is counted, so the leak is measurable", async
   const run2 = [];
   await worker.fetch(buy("/buy/gone?src=" + encodeURIComponent("../../etc/passwd")), env2, { waitUntil: (pr) => run2.push(pr) });
   await Promise.all(run2);
-  assert.ok(w2.every((k) => k.startsWith("click:buy.unknown-product:")), `unvalidated src leaked into a key: ${w2}`);
+  assert.ok(w2.every((k) => k.startsWith("click:v2:buy.unknown-product:")), `unvalidated src leaked into a key: ${w2}`);
 
   // A crawler on a dead route still counts for nothing.
   const w3 = [];

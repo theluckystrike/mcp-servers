@@ -1,0 +1,538 @@
+{
+  "status": "MEASURED",
+  "generated_at": "2026-09-10T14:21:08.164234Z",
+  "loop": "33",
+  "question": "Is mcp.zovo.one present in the search indexes AI assistants retrieve from (Claude->Brave, ChatGPT->Bing, Perplexity->own crawler), and at what DEPTH?",
+  "instrument": "scripts/ai-index-probe.mjs",
+  "user_agent_note": "<chrome-ua> = Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+  "control_policy": "An endpoint is UNMEASURED until it passes LIVENESS (a query whose known host must appear) AND DISCRIMINATION (two disjoint queries must return different host sets). site: numbers are void unless the site-operator control passes (site:github.com -> >=3 on-host, >=50% ratio). A DOMAIN control (a near-verbatim homepage-title query) gates whether an endpoint may contribute an absence for mcp.zovo.one at all. Throttled/challenge responses are recorded as unmeasured with present:null, never present:false.",
+  "headline": {
+    "mcp_zovo_one_present_in_an_assistant_retrievable_index": true,
+    "which": "Brave Search (the index Claude's web search retrieves from)",
+    "depth_distinct_urls": 1,
+    "sitemap_urls": 154,
+    "pct_of_sitemap": 0.65,
+    "the_one_url": "https://mcp.zovo.one/",
+    "buyer_intent_top10_appearances": 0,
+    "buyer_intent_any_appearances": 2,
+    "buyer_intent_queries_measured": 14,
+    "buyer_intent_queries_unmeasured": 1,
+    "verdict": "Present but not a channel. One indexed URL of 154; zero top-10 buyer-intent placements."
+  },
+  "endpoint_qualification": {
+    "brave": {
+      "verdict": "MEASURABLE",
+      "site_mode": "SUPPORTED",
+      "holds_our_domain": true,
+      "controls": {
+        "site_operator": "site:github.com model context protocol -> 55 distinct github.com URLs (PASS)",
+        "domain_control": "'MCP servers for Claude invoices time tracking' -> https://mcp.zovo.one/ returned (PASS)",
+        "apex_control": "site:zovo.one -> 20+ distinct zovo.one URLs (PASS)"
+      },
+      "transport_defect": "Brave returns HTTP 429 to node fetch/undici on the first request regardless of headers (measured 429/73898B for full headers, UA-only, and no headers) while curl with the same UA returns 200/101264B. The instrument shells out to /usr/bin/curl for this reason.",
+      "rate_limit": "~2 requests per ~24s window before 429; a full sweep must space requests >=30s"
+    },
+    "bing_rss": {
+      "verdict": "MEASURABLE",
+      "site_mode": "IGNORED_BY_ENDPOINT",
+      "holds_our_domain": false,
+      "can_prove_absence": false,
+      "defect": "Answers the head term, not the query. Identical 10 results for 'mcp.zovo.one', '\"mcp.zovo.one\"' and 'MCP servers for Claude invoices time tracking and freelance tools'. 'best hiking boots wide feet' -> dictionary definitions of 'best'. site: ignored: site:mcp.zovo.one -> eventbrite.com; site:zovo.one -> zhihu.com, meu.inss.gov.br."
+    },
+    "bing_html": {
+      "verdict": "MEASURABLE",
+      "site_mode": "IGNORED_BY_ENDPOINT",
+      "holds_our_domain": false,
+      "can_prove_absence": false,
+      "defect": "site:github.com model context protocol decodes (base64 in /ck/a?u=a1...) to anthropic.com, geeksforgeeks.org, cloud.google.com, en.wikipedia.org - the operator is ignored."
+    },
+    "marginalia": {
+      "verdict": "INTERMITTENT",
+      "evidence": "HTTP 200 with 'Wait For A Moment / The search engine is currently barraged' backoff page (1039 bytes vs 53121 healthy). Qualified MEASURABLE on one pass, UNMEASURED on another."
+    },
+    "ddg_html": {
+      "verdict": "INTERMITTENT",
+      "evidence": "HTTP 202, 14217 bytes, 'Please complete the following challenge... Select all squares containing a duck'. Qualified MEASURABLE once, blocked on later attempts."
+    },
+    "ddg_lite": {
+      "verdict": "BLOCKED",
+      "evidence": "HTTP 202, 14212 bytes, same duck captcha"
+    },
+    "mojeek": {
+      "verdict": "BLOCKED",
+      "evidence": "HTTP 200, 5511 bytes, 'Captcha ... JavaScript is required to complete this challenge'"
+    },
+    "startpage": {
+      "verdict": "BLOCKED",
+      "evidence": "HTTP 200, 22106 bytes, Anubis proof-of-work challenge (anubis_version v1.26.4)"
+    },
+    "ecosia": {
+      "verdict": "BLOCKED",
+      "evidence": "HTTP 403, 4645 bytes, 'Ecosia Firewall'"
+    },
+    "yandex": {
+      "verdict": "BLOCKED",
+      "evidence": "HTTP 302, 0 bytes"
+    },
+    "seznam": {
+      "verdict": "UNUSABLE",
+      "evidence": "HTTP 200, 235999 bytes, JS-rendered; 0 result URLs parseable from HTML"
+    },
+    "rightdao": {
+      "verdict": "BLOCKED",
+      "evidence": "HTTP 503 'service unavailable'"
+    },
+    "stract": {
+      "verdict": "NOT_FOUND",
+      "evidence": "HTTP 404 on /search"
+    }
+  },
+  "site_presence_and_depth": {
+    "brave": {
+      "source": "direct curl, HTTP 200 each, recorded commands below",
+      "mcp.zovo.one": {
+        "present": true,
+        "distinct_urls_retrievable": 1,
+        "urls": [
+          "https://mcp.zovo.one/"
+        ],
+        "sitemap_urls": 154,
+        "pct_of_sitemap": 0.65,
+        "is_a_channel": "NO - host present but only 1 URL; a single page is a listing, not a channel",
+        "serp_title": "Zovo mcp.zovo.one - MCP servers for Claude: invoices, time tracking and freelance tools",
+        "probes": [
+          {
+            "probe": "site: page 1",
+            "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one'",
+            "http": 200,
+            "bytes": 101264,
+            "on_host": 1,
+            "urls": [
+              "https://mcp.zovo.one/"
+            ]
+          },
+          {
+            "probe": "site: page 2",
+            "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one'&offset=1",
+            "http": 200,
+            "bytes": 94760,
+            "on_host": 0,
+            "urls": []
+          },
+          {
+            "probe": "section /guides",
+            "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one%2Fguides'",
+            "http": 200,
+            "bytes": 95676,
+            "on_host": 0,
+            "urls": []
+          }
+        ]
+      },
+      "zovo.one": {
+        "present": true,
+        "role": "POSITIVE CONTROL - apex domain, known live",
+        "distinct_urls_retrievable": 20,
+        "note": "20+ distinct URLs returned; proves a low subdomain number is a fact about the subdomain, not the instrument",
+        "urls": [
+          "https://zovo.one/",
+          "https://zovo.one/about",
+          "https://zovo.one/about/michael-lip",
+          "https://zovo.one/best-for",
+          "https://zovo.one/download",
+          "https://zovo.one/for/students",
+          "https://zovo.one/free-tools/anagram-solver",
+          "https://zovo.one/free-tools/internet-speed-checker",
+          "https://zovo.one/free-tools/scientific-notation-converter",
+          "https://zovo.one/free-tools/unit-converter",
+          "https://zovo.one/free-tools/unit-price-calculator",
+          "https://zovo.one/free/developer-tools",
+          "https://zovo.one/industries/freelancers",
+          "https://zovo.one/open-source",
+          "https://zovo.one/pricing",
+          "https://zovo.one/services"
+        ],
+        "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one'"
+      },
+      "github.com": {
+        "role": "POSITIVE CONTROL",
+        "distinct_urls_retrievable": 55,
+        "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Agithub.com+model+context+protocol'"
+      }
+    },
+    "bing_rss": {
+      "unmeasured": true,
+      "reason": "site: operator ignored by endpoint (control failed); no honest number obtainable"
+    },
+    "bing_html": {
+      "unmeasured": true,
+      "reason": "site: operator ignored by endpoint (control failed); no honest number obtainable"
+    },
+    "google": {
+      "source": "data/indexation.json, URL Inspection API, 2026-09-09",
+      "in_google_index": 1,
+      "sitemap_urls": 141,
+      "known_to_google": 52,
+      "unknown_to_google": 89,
+      "ever_crawled": 1
+    },
+    "perplexity": {
+      "unmeasured": true,
+      "reason": "no public keyless index-query surface exists",
+      "crawler_evidence": "PerplexityBot fetched 5 of 141 sitemap URLs (3.5%) in the 7d Cloudflare window"
+    }
+  },
+  "buyer_intent": {
+    "brave": {
+      "source": "direct curl spaced 14s apart, ranks computed over de-duplicated organic result URLs",
+      "queries": {
+        "mcp server invoice": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20invoice'",
+          "http": 200,
+          "organic_results": 19,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server pdf merge": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20pdf%20merge'",
+          "http": 200,
+          "organic_results": 18,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "claude mcp expense tracker": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=claude%20mcp%20expense%20tracker'",
+          "http": 200,
+          "organic_results": 22,
+          "our_rank": 21,
+          "our_url": "https://mcp.zovo.one",
+          "in_top10": false
+        },
+        "mcp server generate quotes": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20generate%20quotes'",
+          "http": 200,
+          "organic_results": 15,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp timezone meeting planner": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20timezone%20meeting%20planner'",
+          "http": 200,
+          "organic_results": 23,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server time tracking": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20time%20tracking'",
+          "http": 200,
+          "organic_results": 23,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server read excel spreadsheet": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20read%20excel%20spreadsheet'",
+          "http": 200,
+          "organic_results": 24,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "claude mcp currency converter": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=claude%20mcp%20currency%20converter'",
+          "http": 200,
+          "organic_results": 23,
+          "our_rank": 16,
+          "our_url": "https://mcp.zovo.one",
+          "in_top10": false
+        },
+        "mcp server word document docx": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20word%20document%20docx'",
+          "http": 200,
+          "organic_results": 24,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server resume builder": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20resume%20builder'",
+          "http": 200,
+          "organic_results": 24,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server recurring invoices": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20recurring%20invoices'",
+          "http": 200,
+          "organic_results": 21,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server bank statement csv": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20bank%20statement%20csv'",
+          "http": 200,
+          "organic_results": 22,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server barcode qr code": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20barcode%20qr%20code'",
+          "http": 200,
+          "organic_results": 23,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server kanban board": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20kanban%20board'",
+          "http": 200,
+          "organic_results": 24,
+          "our_rank": null,
+          "our_url": null,
+          "in_top10": false
+        },
+        "mcp server for freelancers": {
+          "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20for%20freelancers'",
+          "http": 429,
+          "unmeasured": true,
+          "reason": "HTTP 429 on two spaced attempts; a throttled body parses as zero and must not be reported as absence",
+          "organic_results": null,
+          "our_rank": null,
+          "in_top10": null
+        }
+      },
+      "summary": {
+        "queries_total": 15,
+        "measured": 14,
+        "unmeasured": 1,
+        "appearances": 2,
+        "in_top10": 0,
+        "appearances_detail": [
+          {
+            "query": "claude mcp currency converter",
+            "rank": 16,
+            "url": "https://mcp.zovo.one"
+          },
+          {
+            "query": "claude mcp expense tracker",
+            "rank": 21,
+            "url": "https://mcp.zovo.one"
+          }
+        ],
+        "github_theluckystrike_appearances": 0,
+        "who_wins": [
+          "github.com",
+          "reddit.com",
+          "mcpmarket.com",
+          "mcpservers.org",
+          "mcp.directory",
+          "mcpbundles.com",
+          "claudemarketplaces.com",
+          "youtube.com"
+        ]
+      }
+    },
+    "bing_rss": {
+      "source": "scripts/ai-index-probe.mjs --only bing_rss,bing_html",
+      "runs_measured": 15,
+      "ours_in_top10": 0,
+      "can_prove_absence": false,
+      "reason": "domain control FAILED - this endpoint does not return mcp.zovo.one even for a near-verbatim homepage-title query, so its zeros are unmeasured, not absence"
+    },
+    "bing_html": {
+      "source": "scripts/ai-index-probe.mjs --only bing_rss,bing_html",
+      "runs_measured": 15,
+      "ours_in_top10": 0,
+      "can_prove_absence": false,
+      "reason": "domain control FAILED - see bing_rss"
+    }
+  },
+  "technical_indexability": {
+    "verdict": "NOT AT FAULT - pages are technically indexable and simply not indexed",
+    "robots_txt": "User-agent: * / Allow: / ; Disallow: /buy/ /success /recover /verify /bound ; Sitemap: https://mcp.zovo.one/sitemap.xml",
+    "sitemap_urls_live": 154,
+    "pages_checked": [
+      {
+        "url": "/",
+        "http": 200,
+        "canonical": "https://mcp.zovo.one/",
+        "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+        "noindex": false
+      },
+      {
+        "url": "/s/invoice",
+        "http": 200,
+        "canonical": "https://mcp.zovo.one/s/invoice",
+        "title": "MCP Invoice for Claude, Cursor and any MCP client",
+        "noindex": false
+      },
+      {
+        "url": "/guides/invoice-pdf-from-chat",
+        "http": 200,
+        "canonical": "self",
+        "title": "Create an invoice PDF from a chat message with an MCP server",
+        "noindex": false
+      },
+      {
+        "url": "/setup/claude-desktop",
+        "http": 200,
+        "canonical": "self",
+        "title": "MCP servers for Claude Desktop: install guides",
+        "noindex": false
+      },
+      {
+        "url": "/compare/invoice",
+        "http": 200,
+        "canonical": "self",
+        "title": "MCP Invoice vs einvoice-mcp and IMW Invoice: which MCP server to pick",
+        "noindex": false
+      }
+    ],
+    "homepage_catalogue_coverage": {
+      "servers_named": 32,
+      "servers_total": 32,
+      "visible_text_chars": 35698,
+      "note": "the single retrievable URL carries the entire catalogue, which is the best possible case for depth 1"
+    }
+  },
+  "crawler_coverage": {
+    "source": "data/traffic.json, Cloudflare, 7d window to 2026-09-09, sitemap 141 URLs",
+    "ClaudeBot": {
+      "urls": 140,
+      "pct": 99.3
+    },
+    "GPTBot": {
+      "urls": 90,
+      "pct": 63.8
+    },
+    "bingbot": {
+      "urls": 35,
+      "pct": 24.8
+    },
+    "Applebot": {
+      "urls": 33,
+      "pct": 23.4
+    },
+    "PerplexityBot": {
+      "urls": 5,
+      "pct": 3.5
+    },
+    "Googlebot": {
+      "urls": 2,
+      "pct": 1.4
+    },
+    "DuckDuckBot": {
+      "urls": 1,
+      "pct": 0.7
+    },
+    "interpretation": "Being crawled is not being indexed. ClaudeBot fetched 140 of 141 URLs while Brave - the index Claude's web search actually queries - retrieves 1. ClaudeBot does not populate the retrieval index."
+  },
+  "indexnow": {
+    "status": "SUBMITTED - ACCEPTED, NOT INDEXED",
+    "key_file_verified": {
+      "command": "curl -sSI https://mcp.zovo.one/db6dbf5cfdbc08d1cc9b5365d398145b.txt",
+      "http": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "body_matches_key": true
+    },
+    "urls_submitted": 154,
+    "aggregator": {
+      "command": "node scripts/indexnow.mjs",
+      "endpoint": "https://api.indexnow.org/indexnow",
+      "batches": [
+        {
+          "range": "0-99",
+          "http": 200
+        },
+        {
+          "range": "100-153",
+          "http": 200
+        }
+      ],
+      "accepted": 154,
+      "failed": 0
+    },
+    "direct_per_engine": [
+      {
+        "endpoint": "https://www.bing.com/indexnow",
+        "http": 200,
+        "body": ""
+      },
+      {
+        "endpoint": "https://yandex.com/indexnow",
+        "http": 200,
+        "body": "{\"success\":true}"
+      },
+      {
+        "endpoint": "https://search.seznam.cz/indexnow",
+        "http": 200,
+        "body": ""
+      },
+      {
+        "endpoint": "https://searchadvisor.naver.com/indexnow",
+        "http": 200,
+        "body": ""
+      }
+    ],
+    "honest_caveat": "HTTP 200 from IndexNow means ACCEPTED FOR CONSIDERATION. It does not mean crawled and it does not mean indexed. IndexNow exposes no status or read-back API, so effect can only be established by re-measuring the index later.",
+    "brave_is_not_a_participant": "Brave does not accept IndexNow, so this submission cannot move the one index we have proven we are in.",
+    "remeasure_on": "2026-09-24",
+    "remeasure_command": "node scripts/ai-index-probe.mjs --only brave",
+    "remeasure_metrics": [
+      "Brave depth for mcp.zovo.one (currently 1)",
+      "bingbot urls_fetched in data/traffic.json (currently 35/141)"
+    ],
+    "defect_found": "data/indexnow.json and data/indexnow_key.txt carry key db6dbf5cfdbc08d1cc9b5365d398145b; data/indexnow.key carries a DIFFERENT key 22fad93b71a88e2e60acae203c4288ae. Both are served with HTTP 200 so nothing is broken today (IndexNow allows multiple keys per host), but a script that reads indexnow.key while quoting the indexnow.json keyLocation would submit a mismatched key/keyLocation pair and be rejected. Not my file; flagged for the owner."
+  },
+  "bing_webmaster": {
+    "status": "HUMAN_GATED - not attempted, per brief rule 6",
+    "keyless_api_exists": false,
+    "probe": {
+      "command": "curl -sS 'https://ssl.bing.com/webmaster/api.svc/json/GetUrlSubmissionQuota?siteUrl=https%3A%2F%2Fmcp.zovo.one&apikey=x'",
+      "response": "{\"ErrorCode\":3,\"Message\":\"ERROR!!! InvalidApiKey\"}"
+    },
+    "exact_url": "https://www.bing.com/webmasters/",
+    "exact_path": "sign in -> add and verify mcp.zovo.one -> Settings -> API access -> API Key -> Generate",
+    "docs": "https://learn.microsoft.com/en-us/bingwebmaster/getting-access",
+    "fields_the_human_supplies": [
+      "Microsoft/Google/Facebook sign-in",
+      "site verification for https://mcp.zovo.one/ via XML file, meta tag, or CNAME"
+    ],
+    "why_it_matters": "Bing's public surfaces provably cannot answer 'how many of our URLs are in Bing' (site: operator ignored, domain control failed). Bing Webmaster is the only route to the ChatGPT-facing index count - the one number this loop could not obtain."
+  },
+  "script_run_artifacts": {
+    "bing_pass": {
+      "command": "node scripts/ai-index-probe.mjs --only bing_rss,bing_html",
+      "exit": 0,
+      "summary": {
+        "endpoints_tested": 2,
+        "endpoints_defined": 10,
+        "endpoints_measurable": [
+          "bing_rss",
+          "bing_html"
+        ],
+        "endpoints_unmeasured": [],
+        "endpoints_site_capable": [],
+        "mcp_zovo_one_present_in": [],
+        "buyer_intent_top10_hits_total": 0,
+        "buyer_intent_queries": 15,
+        "buyer_intent_query_runs_measured": 30,
+        "buyer_intent_query_runs_unmeasured": 0,
+        "depth_distinct_urls": {},
+        "endpoints_holding_our_domain": [],
+        "endpoints_that_cannot_prove_absence": [
+          "bing_rss",
+          "bing_html"
+        ]
+      }
+    },
+    "note": "The Brave blocks in this file were measured by direct curl spaced 14-30s apart because Brave rate-limits to roughly 2 requests per 24s window and a scripted sweep spends its time in backoff. Every Brave number here carries the exact command that produced it and was taken from an HTTP 200 response. A later re-run of `node scripts/ai-index-probe.mjs --only brave` from a cooled-down IP will regenerate them automatically."
+  }
+}

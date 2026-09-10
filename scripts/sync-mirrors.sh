@@ -55,6 +55,11 @@ NO_RELEASE="${NO_RELEASE:-0}"
 LOCAL_REMOTE="${LOCAL_REMOTE:-}"
 export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
 
+# Fail fast if a server this run would publish has no capability phrase or facts entry:
+# without one it would be pushed with a broken description, and finding that out half way
+# through 32 mirrors is expensive.
+python3 "$ROOT/scripts/mirror-seo.py" check
+
 SERVERS="${*:-$ALL_SERVERS}"
 SHA="$(git -C "$ROOT" rev-parse HEAD)"
 FAILED_MIRRORS=()
@@ -93,42 +98,20 @@ with_retry() {
   done
 }
 
-# Repo-specific topics, appended to the five shared ones.
+# Search-facing metadata (repo description, topics, README first screen) lives in one
+# place: scripts/mirror-seo.py. It is shared with scripts/apply-mirror-seo.mjs, so what a
+# sync writes and what is live on the mirrors are the same bytes by construction and a
+# metadata fix applied to a live mirror is not reverted by the next sync.
+# The full topic list, shared plus repo-specific, comes back from `topics`.
 topics_for() {
-  case "$1" in
-    time-tracker)    echo "time-tracking timesheet freelance" ;;
-    price-tracker)   echo "price-tracking price-drop shopping" ;;
-    spreadsheet)     echo "spreadsheet xlsx csv" ;;
-    invoice)         echo "invoice pdf vat" ;;
-    expense-tracker) echo "expenses receipts mileage" ;;
-    currency) echo "currency exchange-rates ecb" ;;
-    docx) echo "docx word proposal" ;;
-    timezone) echo "timezone meeting-planner ics" ;;
-    resume) echo "resume cover-letter job-application" ;;
-    recurring) echo "recurring-billing subscription forecast" ;;
-    clauses) echo "contract clause proposal" ;;
-    quotes) echo "quote estimate proposal" ;;
-    barcode) echo "qr-code barcode ean13" ;;
-    zip) echo "zip archive compression unzip" ;;
-    billing-docs) echo "credit-note purchase-order invoicing vat" ;;
-    deposits) echo "deposit retainer escrow invoicing" ;;
-    per-diem) echo "per-diem travel-allowance expenses tax" ;;
-    asset-register) echo "fixed-assets depreciation capital-allowances accounting" ;;
-    statement-of-account) echo "accounts-receivable aging dunning invoicing" ;;
-    cash-book) echo "bookkeeping double-entry ledger accounting" ;;
-    amortization) echo "amortization loan-schedule lease finance" ;;
-    petty-cash) echo "petty-cash imprest cash-float bookkeeping" ;;
-    work-order) echo "work-order job-card field-service trades" ;;
-    catalogue) echo "catalogue price-list rate-card pricing" ;;
-    change-order) echo "change-order variation-order scope-change contract-value" ;;
-    delivery-schedule) echo "delivery-schedule deliverables milestones due-dates" ;;
-    pdf) echo "pdf merge split stamp" ;;
-    calendar) echo "calendar ics free-busy" ;;
-    kanban) echo "kanban tasks project-board" ;;
-    image) echo "image resize thumbnail" ;;
-    bank-statement) echo "bank-statement transactions reconcile" ;;
-    office-suite)    echo "office productivity bundle" ;;
-  esac
+  python3 "$ROOT/scripts/mirror-seo.py" topics "$1"
+}
+
+# The repo `description`. GitHub repository search matches on name, description and
+# topics only -- measured, see the note in mirror-seo.py -- so this carries the buyer
+# vocabulary rather than the marketing tagline alone.
+description_for() {
+  python3 "$ROOT/scripts/mirror-seo.py" description "$1"
 }
 
 tagline_for() {
@@ -399,34 +382,20 @@ EOF
   elif [ -f "$ROOT/assets/$NAME-logo.png" ]; then
     DEMO="![$NAME]($RAW/assets/$NAME-logo.png)"
   fi
-  python3 - "$MIRROR/README.md" "$NAME" "$DEMO" "$MONOREPO" "$RAW" <<'PY'
-import re, sys
-path, name, demo, monorepo, raw = sys.argv[1:6]
-text = open(path).read()
-lines = text.split("\n")
-i = 1 if lines and lines[0].startswith("# ") else 0
-head = []
-if demo:
-    head.append(demo)
-head += [
-    "",
-    "**One-click install:** download `%s.mcpb` from the [latest release](%s/releases/latest) and double-click it in Claude Desktop." % (name, monorepo),
-    "",
-    "**Hosted endpoint (no install):** `https://mcp.zovo.one/mcp/%s` (streamable-http; send `Authorization: Bearer <Pro key or anonymous token from https://mcp.zovo.one/mcp/token>`)." % name,
-    "",
-    "Read-only mirror of [%s/servers/%s](%s/tree/main/servers/%s). See [MIRROR.md](MIRROR.md)." % (monorepo.split("/")[-1], name, monorepo, name),
-    "",
-]
-body = "\n".join(lines[:i] + [""] + head + lines[i:])
-# relative monorepo asset paths do not resolve in a mirror -> absolute raw URLs
-body = body.replace("](../../assets/", "](%s/assets/" % raw)
-# the monorepo README already carries the same demo image further down: keep one copy
-if demo:
-    first = body.index(demo) + len(demo)
-    body = body[:first] + body[first:].replace(demo + "\n", "", 1)
-body = re.sub(r"\]\(\.\./\.\./(?!assets/)([^)]*)\)", r"](%s/tree/main/\1)" % monorepo, body)
-open(path, "w").write(body)
-PY
+  python3 "$ROOT/scripts/mirror-seo.py" readme \
+    "$MIRROR/README.md" "$NAME" "$DEMO" "$MONOREPO" "$RAW"
+
+  # 5a1. gemini-extension.json at the mirror ROOT. The Gemini CLI extension gallery
+  #      indexes a public repo automatically when it carries the gemini-cli-extension
+  #      topic and this file at the repository root; there is no submission step. Only
+  #      written for a server with a live hosted endpoint -- see hosted() in mirror-seo.py
+  #      for why shipping one without an endpoint would break on first use. A stale file
+  #      is removed if a server ever loses its endpoint.
+  if python3 "$ROOT/scripts/mirror-seo.py" gemini "$NAME" > "$MIRROR/gemini-extension.json.tmp" 2>/dev/null; then
+    mv "$MIRROR/gemini-extension.json.tmp" "$MIRROR/gemini-extension.json"
+  else
+    rm -f "$MIRROR/gemini-extension.json.tmp" "$MIRROR/gemini-extension.json"
+  fi
 
   # 5a2. office-suite test fixtures (proxy.test.mjs, round7.test.mjs, ...) symlink the
   #      monorepo's node_modules three levels up from test/; in a mirror the package root
@@ -886,7 +855,7 @@ PYRESULT
   fi
 
   # 7. repo, push, metadata
-  DESC="$(tagline_for "$NAME")"
+  DESC="$(description_for "$NAME")"
   if [ -n "$LOCAL_REMOTE" ]; then
     mkdir -p "$LOCAL_REMOTE"
     [ -d "$LOCAL_REMOTE/$REPO.git" ] || git init -q --bare "$LOCAL_REMOTE/$REPO.git"
@@ -955,7 +924,7 @@ PYRESULT
     gh repo edit "$OWNER/$REPO" --description "$DESC" \
       --homepage "https://mcp.zovo.one/s/$NAME" --default-branch main >/dev/null
     TOPIC_ARGS=()
-    for t in mcp mcp-server model-context-protocol claude cursor $(topics_for "$NAME"); do
+    for t in $(topics_for "$NAME"); do
       TOPIC_ARGS+=(-f "names[]=$t")
     done
     if ! with_retry "topics $REPO" gh api -X PUT "repos/$OWNER/$REPO/topics" "${TOPIC_ARGS[@]}"; then

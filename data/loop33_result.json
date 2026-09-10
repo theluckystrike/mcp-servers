@@ -77,5 +77,15 @@
     "finding": "Blind question 4, whether an assistant can read a bank statement PDF and categorise the transactions, has NO honest answer in this estate. The bank-statement server takes CSV and text exports, not PDFs.",
     "why_it_matters": "It is the one question of the 18 where our own catalogue implies an answer we cannot give, and the market named four competitors for it. A PDF-to-transactions path is the clearest demand-evidenced product gap the loop found.",
     "status": "Recorded, not acted on. Adding it late in this loop would have been scope creep."
-  }
+  },
+  "google": {
+    "cause": "The inbound link graph into mcp.zovo.one resolves to ONE url. 129 of the 429 indexed zovo.one pages carry a followed sitewide anchor into the host and every one of them points at the bare root. That root is the only URL Google has ever crawled, the only one indexed, and the only one with an impression, at position 7.0 on 2026-09-08.",
+    "census": "A full 154-URL inspection census returns 1 indexed, 1 ever crawled, 115 Discovered-currently-not-indexed and 38 unknown, every one with lastCrawlTime null.",
+    "killed": "Eight competing explanations were tested and killed: robots.txt served byte-identical to the source with no Cloudflare injection, off-host canonicals, noindex, hreflang, Googlebot-versus-browser cloaking, JS-dependent rendering, sitemap validity, and loop 29 thin-content hypothesis. That last one is killed by arithmetic: Google has fetched 1 of 154 pages, so it cannot have declined 153 on content, and the earlier 312-to-154 sitemap trim could not have moved this.",
+    "host_level": "Yes, but not specific to us. 8 of 8 zovo.one URLs at comparable depth are indexed against 1 of 11 on mcp, and the sibling subdomain tg.zovo.one shows the identical shape. This is ordinary new-host crawl rationing spent on whatever is linked, and the linked set was one URL wide.",
+    "acted": "Five deep contextual links added on pages verified as indexed first, and pushed. A footer repair went with them: the repo had lost a live anchor, so deploying as it stood would have deleted a link across the estate.",
+    "counter_evidence": "Recorded against our own lever: three deep links placed the same way a day earlier have live targets that are still uncrawled. This may not work.",
+    "stale_number_corrected": "The 0 Google impressions figure this loop opened with is now stale. It is 1."
+  },
+  "sitemap_lastmod_decision": "The served sitemap carries zero lastmod across all 154 URLs. Deliberately not added. The only date available at build time is the deploy date, so every page would claim it changed on every deploy, and a lastmod that is not trustworthy is discounted by crawlers rather than ignored. A real per-page modification date would have to come from content history, which is worth doing properly or not at all."
 }

@@ -1,10 +1,15 @@
 {
-  "at": "2026-09-09T07:03:50.723Z",
-  "checked": 33,
+  "at": "2026-09-10T13:36:49.731Z",
+  "checked": 34,
   "listed": [
-    "mcp-statement-of-account"
+    "mcp-kanban",
+    "mcp-office-suite",
+    "mcp-recurring",
+    "mcp-spreadsheet",
+    "mcp-statement-of-account",
+    "mcp-time-tracker"
   ],
-  "absent_count": 32,
+  "absent_count": 28,
   "absent": [
     "mcp-amortization",
     "mcp-asset-register",
@@ -17,36 +22,67 @@
     "mcp-change-order",
     "mcp-clauses",
     "mcp-currency",
+    "mcp-delivery-schedule",
     "mcp-deposits",
     "mcp-docx",
     "mcp-expense-tracker",
     "mcp-image",
     "mcp-invoice",
-    "mcp-kanban",
-    "mcp-office-suite",
     "mcp-pdf",
     "mcp-per-diem",
     "mcp-petty-cash",
     "mcp-price-tracker",
     "mcp-quotes",
-    "mcp-recurring",
     "mcp-registry",
     "mcp-resume",
     "mcp-servers",
-    "mcp-spreadsheet",
-    "mcp-time-tracker",
     "mcp-timezone",
     "mcp-work-order",
     "mcp-zip"
   ],
   "badge_url_pattern": "https://glama.ai/mcp/servers/theluckystrike/<repo>/badges/score.svg",
   "badges": {
+    "mcp-kanban": {
+      "status": 404,
+      "bytes": 0,
+      "is_placeholder": false,
+      "safe_to_publish": false,
+      "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-kanban/badges/score.svg"
+    },
+    "mcp-office-suite": {
+      "status": 200,
+      "bytes": 4529,
+      "is_placeholder": false,
+      "safe_to_publish": true,
+      "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-office-suite/badges/score.svg"
+    },
+    "mcp-recurring": {
+      "status": 404,
+      "bytes": 0,
+      "is_placeholder": false,
+      "safe_to_publish": false,
+      "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-recurring/badges/score.svg"
+    },
+    "mcp-spreadsheet": {
+      "status": 404,
+      "bytes": 0,
+      "is_placeholder": false,
+      "safe_to_publish": false,
+      "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-spreadsheet/badges/score.svg"
+    },
     "mcp-statement-of-account": {
       "status": 200,
-      "bytes": 4558,
+      "bytes": 4543,
       "is_placeholder": false,
       "safe_to_publish": true,
       "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/badges/score.svg"
+    },
+    "mcp-time-tracker": {
+      "status": 404,
+      "bytes": 0,
+      "is_placeholder": false,
+      "safe_to_publish": false,
+      "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-time-tracker/badges/score.svg"
     }
   },
   "control": "mcp-statement-of-account",
@@ -54,7 +90,7 @@
   "negative_control_badge_bytes": 2880,
   "connector_namespace": "io.github.theluckystrike",
   "connector_count": 25,
-  "connector_count_note": "Cumulative across runs. The anonymous listing page renders at most 20 rows and rotates which 20, so a single page is a floor, not a total. connectors_listed is seeded with every connector observed across loop 31's sweeps; the ones in connectors_pending_first_fetch have not had their rubric read yet and will be picked up next run.",
+  "connector_count_note": "Cumulative across runs. The anonymous listing page renders at most 20 rows and rotates which 20, so a single page is a floor, not a total.",
   "connectors_on_listing_page": 20,
   "connectors_listed": [
     "amortization",
@@ -90,50 +126,210 @@
     "note": "40% of the definition-quality score is the single worst-described tool."
   },
   "servers": {
-    "mcp-statement-of-account": {
+    "mcp-kanban": {
+      "surface": "server",
+      "error": "score page HTTP 404"
+    },
+    "mcp-office-suite": {
       "surface": "server",
       "tools": [
         {
-          "name": "statement_build",
+          "name": "doc_from_markdown",
+          "grade": "C",
+          "score": 2.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 3,
+            "Completeness": 2,
+            "Parameters": 3,
+            "Purpose": 2,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "client_add",
           "grade": "C",
           "score": 2.9,
           "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 2,
+            "Parameters": 2,
+            "Purpose": 4,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "schedule_history",
+          "grade": "B",
+          "score": 3,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 4,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "invoice_summary",
+          "grade": "B",
+          "score": 3.1,
+          "dimensions": {
             "Behavior": 2,
             "Conciseness": 5,
-            "Completeness": 2,
+            "Completeness": 3,
             "Parameters": 3,
             "Purpose": 4,
             "Usage Guidelines": 2
           }
         },
         {
-          "name": "statement_aging",
+          "name": "doc_create",
           "grade": "B",
-          "score": 3.1,
+          "score": 3.2,
           "dimensions": {
             "Behavior": 2,
             "Conciseness": 4,
-            "Completeness": 2,
+            "Completeness": 3,
             "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "docx_business_set",
+          "grade": "B",
+          "score": 3.2,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "resume_to_html",
+          "grade": "B",
+          "score": 3.2,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 2,
             "Purpose": 4,
             "Usage Guidelines": 3
           }
         },
         {
-          "name": "license_activate",
-          "grade": "A",
-          "score": 3.6,
+          "name": "schedule_update",
+          "grade": "B",
+          "score": 3.2,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 2,
+            "Parameters": 2,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "overlap",
+          "grade": "B",
+          "score": 3.3,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "convert_time",
+          "grade": "B",
+          "score": 3.4,
           "dimensions": {
             "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 3,
             "Parameters": 4,
             "Purpose": 4,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "report",
+          "grade": "B",
+          "score": 3.4,
+          "dimensions": {
+            "Behavior": 2,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 4,
             "Usage Guidelines": 3
           }
         },
         {
-          "name": "statements_report",
+          "name": "clause_update",
+          "grade": "A",
+          "score": 3.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "ics_import",
+          "grade": "A",
+          "score": 3.5,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "invoice_list",
+          "grade": "A",
+          "score": 3.5,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "pdf_watermark_business",
+          "grade": "A",
+          "score": 3.5,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 3,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "free_busy",
           "grade": "A",
           "score": 3.6,
           "dimensions": {
@@ -141,25 +337,259 @@
             "Conciseness": 4,
             "Completeness": 3,
             "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "schedule_upcoming",
+          "grade": "A",
+          "score": 3.6,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "sheet_stats",
+          "grade": "A",
+          "score": 3.6,
+          "dimensions": {
+            "Behavior": 2,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 3
           }
         },
         {
-          "name": "dunning_text",
+          "name": "invoice_business_set",
           "grade": "A",
-          "score": 3.9,
+          "score": 3.7,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "invoice_mark_paid",
+          "grade": "A",
+          "score": 3.7,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "sheet_query",
+          "grade": "A",
+          "score": 3.7,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "calendars_list",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "clause_add",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "contract_create",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "entry_add",
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
             "Behavior": 3,
             "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "entry_list",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
             "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "events_list",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "find_meeting_slots",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "fx_rates_for",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_count",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "pdf_reorder",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
         },
         {
-          "name": "statement_pdf",
+          "name": "rates_latest",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "schedule_list",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "sheet_info",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "events_search",
+          "grade": "A",
+          "score": 3.9,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "invoice_get",
           "grade": "A",
           "score": 3.9,
           "dimensions": {
@@ -167,12 +597,298 @@
             "Conciseness": 4,
             "Completeness": 4,
             "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "business_days",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "clause_import",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "clause_search",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "client_delete",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "dst_changes",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
             "Purpose": 4,
             "Usage Guidelines": 4
           }
         },
         {
-          "name": "statement_text",
+          "name": "invoice_from_hours",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 2,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "invoice_generate_due",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "invoice_pdf",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "next_event",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "pdf_rotate",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_stamp",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "profile_get",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "profile_set",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "project_set_rate",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "resume_to_markdown",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "sheet_find",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "sheet_write",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "tailor_to_job",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "conflicts",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "schedule_resume",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "sheet_read",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "timer_status",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "clause_export",
           "grade": "A",
           "score": 4.2,
           "dimensions": {
@@ -180,6 +896,500 @@
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "clause_get",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "contacts_set",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "convert_many",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "doc_to_html",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "event_to_time_entry",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "export_csv",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "ics_create",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "invoice_create",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_info",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_merge",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "price_history",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "proposal_create",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "proposal_update",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "rate_history",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "rate_on",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "resume_create",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "resume_read",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "schedule_create",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "schedule_get",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "sheet_convert",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "timer_start",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "watch_add",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "watch_refresh",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "contract_assemble",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "currencies_list",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "doc_read",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "event_export",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "ics_forget",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "license_activate",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "timer_stop",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "clause_delete",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "clause_list",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "client_list",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "contacts_list",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "doc_fill_template",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "entry_edit",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "entry_mark_billed",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "forecast",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
@@ -196,31 +1406,439 @@
             "Purpose": 5,
             "Usage Guidelines": 4
           }
+        },
+        {
+          "name": "now",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_pages",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_text",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "price_add_manual",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "variables_list",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "watch_remove",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "alerts_pending",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "cache_status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "convert",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "cover_letter_create",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "entry_delete",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "overdue_report",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "price_check",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "schedule_delete",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "schedule_pause",
+          "grade": "A",
+          "score": 4.7,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "schedule_skip",
+          "grade": "A",
+          "score": 4.7,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "sheet_add_column",
+          "grade": "A",
+          "score": 4.7,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "watch_list",
+          "grade": "A",
+          "score": 4.7,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_split",
+          "grade": "A",
+          "score": 4.8,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 5,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
         }
       ],
       "profile_completion_pct": 75,
-      "glama_release_version": "0.14.0",
+      "glama_release_version": "0.21.0",
+      "coherence_grade": "B",
+      "coherence": {
+        "Disambiguation": 4,
+        "Naming Consistency": 3,
+        "Tool Count": 1,
+        "Completeness": 5
+      },
+      "definition_quality_grade": "A",
+      "definition_quality_mean": 4,
+      "tools_scored": 117,
+      "tools_total": 117,
+      "definition_quality_min": 2.8,
+      "maintenance_grade": "B",
+      "maintenance_checklist": [
+        "No community issues in the last 6 months",
+        "2 commits in the last 12 weeks",
+        "Last stable release on",
+        "September 9, 2026",
+        "No critical vulnerability alerts",
+        "No high-severity vulnerability alerts",
+        "No code scanning findings",
+        "CI is passing",
+        "Has a permissive license (",
+        "MIT License",
+        ")"
+      ],
+      "license_grade": "A",
+      "license": "MIT License",
+      "observed_at": "2026-09-09T10:57:35.511131Z",
+      "observed_release_version": "0.20.0",
+      "record_touched_at": "2026-09-10T15:00:00Z",
+      "claimed": false,
+      "derived": {
+        "tool_mean": 4.04,
+        "tool_min": 2.8,
+        "worst_tool": "doc_from_markdown",
+        "definition_quality": 3.544,
+        "coherence_mean": 3.25,
+        "overall": 3.456,
+        "tier": "B"
+      }
+    },
+    "mcp-recurring": {
+      "surface": "server",
+      "error": "score page HTTP 404"
+    },
+    "mcp-spreadsheet": {
+      "surface": "server",
+      "error": "score page HTTP 404"
+    },
+    "mcp-statement-of-account": {
+      "surface": "server",
+      "tools": [
+        {
+          "name": "statement_build",
+          "grade": "A",
+          "score": 3.5,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "statement_pdf",
+          "grade": "A",
+          "score": 3.6,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "dunning_text",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "statement_text",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "statement_aging",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "license_activate",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "statements_report",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "license_status",
+          "grade": "A",
+          "score": 4.7,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        }
+      ],
+      "profile_completion_pct": 75,
+      "glama_release_version": "0.21.0",
       "coherence_grade": "A",
       "coherence": {
         "Disambiguation": 4,
         "Naming Consistency": 4,
         "Tool Count": 5,
-        "Completeness": 4
+        "Completeness": 5
       },
-      "definition_quality_grade": "B",
-      "definition_quality_mean": 3.7,
+      "definition_quality_grade": "A",
+      "definition_quality_mean": 4.1,
       "tools_scored": 8,
       "tools_total": 8,
-      "definition_quality_min": 2.9,
-      "maintenance_grade": "C",
+      "definition_quality_min": 3.5,
+      "maintenance_grade": "B",
       "maintenance_checklist": [
         "No community issues in the last 6 months",
-        "1 commit in the last 12 weeks",
-        "No stable releases found",
+        "4 commits in the last 12 weeks",
+        "Last stable release on",
+        "September 9, 2026",
         "No critical vulnerability alerts",
         "No high-severity vulnerability alerts",
         "No code scanning findings",
-        "CI status not available",
+        "CI is passing",
         "Has a permissive license (",
         "MIT License",
         ")"
@@ -229,17 +1847,21 @@
       "license": "MIT License",
       "observed_at": "2026-09-05T18:06:49.992918Z",
       "observed_release_version": "0.14.0",
-      "record_touched_at": "2026-09-09T05:05:07.536450Z",
+      "record_touched_at": "2026-09-09T17:35:08.265429Z",
       "claimed": false,
       "derived": {
-        "tool_mean": 3.7,
-        "tool_min": 2.9,
+        "tool_mean": 4.075,
+        "tool_min": 3.5,
         "worst_tool": "statement_build",
-        "definition_quality": 3.38,
-        "coherence_mean": 4.25,
-        "overall": 3.641,
+        "definition_quality": 3.845,
+        "coherence_mean": 4.5,
+        "overall": 4.042,
         "tier": "A"
       }
+    },
+    "mcp-time-tracker": {
+      "surface": "server",
+      "error": "score page HTTP 404"
     }
   },
   "connectors": {
@@ -249,27 +1871,27 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 2,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 1
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4.3,
+          "score": 4.5,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 5,
-            "Parameters": 3,
+            "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
@@ -278,14 +1900,14 @@
           "name": "loan_create",
           "title": "Record a loan or lease",
           "grade": "A",
-          "score": 4.2,
+          "score": 3.6,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 3
           }
         },
         {
@@ -319,15 +1941,15 @@
         {
           "name": "loan_list",
           "title": "List the loan register",
-          "grade": "A",
-          "score": 3.7,
+          "grade": "B",
+          "score": 3.2,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 5,
+            "Conciseness": 4,
             "Completeness": 4,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 4,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 2
           }
         },
         {
@@ -348,10 +1970,10 @@
           "name": "loan_schedule",
           "title": "Build the amortization schedule",
           "grade": "A",
-          "score": 3.9,
+          "score": 4.2,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 4,
+            "Behavior": 4,
+            "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
@@ -361,15 +1983,15 @@
         {
           "name": "loans_report",
           "title": "Report what is owed and what it costs",
-          "grade": "A",
-          "score": 3.5,
+          "grade": "B",
+          "score": 3.2,
           "dimensions": {
-            "Behavior": 2,
+            "Behavior": 3,
             "Conciseness": 4,
-            "Completeness": 4,
+            "Completeness": 3,
             "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 3
+            "Purpose": 4,
+            "Usage Guidelines": 2
           }
         }
       ],
@@ -384,13 +2006,13 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.689,
-        "tool_min": 2,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.013,
+        "tool_mean": 3.789,
+        "tool_min": 3.2,
+        "worst_tool": "loan_journal",
+        "definition_quality": 3.553,
         "coherence_mean": 4.5,
-        "overall": 3.459,
-        "tier": "B"
+        "overall": 3.837,
+        "tier": "A"
       }
     },
     "asset-register": {
@@ -427,15 +2049,15 @@
         {
           "name": "asset_dispose",
           "title": "Dispose of an asset",
-          "grade": "C",
-          "score": 2.9,
+          "grade": "A",
+          "score": 4,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 4,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 4,
-            "Usage Guidelines": 2
+            "Usage Guidelines": 4
           }
         },
         {
@@ -469,15 +2091,15 @@
         {
           "name": "asset_report",
           "title": "Report the register",
-          "grade": "A",
-          "score": 3.6,
+          "grade": "B",
+          "score": 3.2,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 5,
-            "Completeness": 4,
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
             "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 3
+            "Purpose": 4,
+            "Usage Guidelines": 2
           }
         },
         {
@@ -489,37 +2111,37 @@
             "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 3,
-            "Parameters": 3,
+            "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 2,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 1
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         }
       ],
@@ -534,12 +2156,12 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.7,
-        "tool_min": 2,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.02,
+        "tool_mean": 4.033,
+        "tool_min": 3.2,
+        "worst_tool": "asset_report",
+        "definition_quality": 3.7,
         "coherence_mean": 4.75,
-        "overall": 3.539,
+        "overall": 4.015,
         "tier": "A"
       }
     },
@@ -550,14 +2172,14 @@
           "name": "accounts_list",
           "title": "List accounts",
           "grade": "A",
-          "score": 4,
+          "score": 4.7,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 5
           }
         },
         {
@@ -606,12 +2228,12 @@
           "name": "category_rules",
           "title": "Set or list category rules",
           "grade": "A",
-          "score": 4.1,
+          "score": 4.4,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 5,
             "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 3,
+            "Completeness": 4,
+            "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 3
           }
@@ -619,26 +2241,26 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.6,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 4,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 2
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4.2,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -662,14 +2284,14 @@
           "name": "recurring_detect",
           "title": "Subscriptions and recurring charges in the bank data",
           "grade": "A",
-          "score": 4.4,
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 3
           }
         },
         {
@@ -718,14 +2340,14 @@
           "name": "transaction_categorize",
           "title": "Categorise transactions by id",
           "grade": "A",
-          "score": 4,
+          "score": 4.2,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
@@ -768,49 +2390,21 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 4.02,
-        "tool_min": 2.6,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.452,
+        "tool_mean": 4.16,
+        "tool_min": 3.6,
+        "worst_tool": "transactions_list",
+        "definition_quality": 3.936,
         "coherence_mean": 4.25,
-        "overall": 3.691,
+        "overall": 4.03,
         "tier": "A"
       }
     },
-    "billing-docs-credit-notes-purchase-orders": {
+    "barcode-qr-code-sepa-payment-ean13": {
       "surface": "connector",
       "tools": [
         {
-          "name": "billing_docs_report",
-          "title": "Credited money and open orders",
-          "grade": "B",
-          "score": 3.1,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 4,
-            "Completeness": 2,
-            "Parameters": 3,
-            "Purpose": 4,
-            "Usage Guidelines": 2
-          }
-        },
-        {
-          "name": "credit_note_create",
-          "title": "Credit an invoice",
-          "grade": "A",
-          "score": 4.4,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "credit_note_delete",
-          "title": "Delete a credit note",
+          "name": "barcode_batch",
+          "title": "Barcodes in bulk",
           "grade": "A",
           "score": 4.2,
           "dimensions": {
@@ -823,44 +2417,236 @@
           }
         },
         {
-          "name": "credit_note_get",
-          "title": "Show one credit note",
+          "name": "barcode_create",
+          "title": "Barcode",
           "grade": "A",
-          "score": 4,
+          "score": 4.2,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "code_list",
+          "title": "Codes generated",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "invoice_payment_qr",
+          "title": "Payment QR for an invoice",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
             "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_status",
+          "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "qr_create",
+          "title": "QR code",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "qr_payment_sepa",
+          "title": "SEPA payment QR code",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 5,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "qr_vcard",
+          "title": "Contact QR code",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 2,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "qr_wifi",
+          "title": "WiFi QR code",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        }
+      ],
+      "tdqs_grade": "B",
+      "tdqs_score": 3.1,
+      "scored_at": "2026-09-08 09:16",
+      "tools_total": 10,
+      "coherence": {
+        "Disambiguation": 3,
+        "Naming Consistency": 2,
+        "Tool Count": 5,
+        "Completeness": 4
+      },
+      "derived": {
+        "tool_mean": 4.17,
+        "tool_min": 3.8,
+        "worst_tool": "license_activate",
+        "definition_quality": 4.022,
+        "coherence_mean": 3.5,
+        "overall": 3.865,
+        "tier": "A"
+      }
+    },
+    "billing-docs-credit-notes-purchase-orders": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "billing_docs_report",
+          "title": "Credited money and open orders",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "credit_note_create",
+          "title": "Credit an invoice",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "credit_note_delete",
+          "title": "Delete a credit note",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "credit_note_get",
+          "title": "Show one credit note",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
           }
         },
         {
           "name": "credit_note_list",
           "title": "List credit notes",
           "grade": "A",
-          "score": 4,
+          "score": 3.8,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 5,
+            "Purpose": 4,
             "Usage Guidelines": 3
           }
         },
         {
           "name": "credit_note_pdf",
           "title": "Render the credit note as a PDF",
-          "grade": "B",
-          "score": 3.4,
+          "grade": "A",
+          "score": 4,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 2,
-            "Completeness": 3,
+            "Behavior": 4,
+            "Conciseness": 3,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 4,
+            "Purpose": 5,
             "Usage Guidelines": 4
           }
         },
@@ -881,48 +2667,90 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.7,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 3,
-            "Completeness": 2,
-            "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 2
-          }
-        },
-        {
-          "name": "license_status",
-          "title": "License status",
           "grade": "A",
-          "score": 4.2,
+          "score": 3.8,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 3
-          }
-        },
-        {
-          "name": "purchase_order_create",
-          "title": "Raise a purchase order",
-          "grade": "A",
-          "score": 3.5,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 5,
-            "Completeness": 3,
             "Parameters": 3,
             "Purpose": 4,
             "Usage Guidelines": 3
           }
         },
         {
+          "name": "license_status",
+          "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "purchase_order_create",
+          "title": "Raise a purchase order",
+          "grade": "B",
+          "score": 3.2,
+          "dimensions": {
+            "Behavior": 2,
+            "Conciseness": 4,
+            "Completeness": 2,
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
           "name": "purchase_order_delete",
           "title": "Delete a purchase order",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "purchase_order_get",
+          "title": "Show one purchase order",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "purchase_order_list",
+          "title": "List purchase orders",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "purchase_order_pdf",
+          "title": "Render the purchase order as a PDF",
           "grade": "A",
           "score": 4.1,
           "dimensions": {
@@ -935,68 +2763,26 @@
           }
         },
         {
-          "name": "purchase_order_get",
-          "title": "Show one purchase order",
-          "grade": "A",
-          "score": 4.2,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "purchase_order_list",
-          "title": "List purchase orders",
-          "grade": "A",
-          "score": 4.3,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "purchase_order_pdf",
-          "title": "Render the purchase order as a PDF",
-          "grade": "B",
-          "score": 3.4,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 2,
-            "Completeness": 3,
-            "Parameters": 3,
-            "Purpose": 4,
-            "Usage Guidelines": 4
-          }
-        },
-        {
           "name": "purchase_order_receive",
           "title": "Mark a purchase order received",
           "grade": "A",
-          "score": 4,
+          "score": 5,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 5,
             "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 3,
+            "Completeness": 5,
+            "Parameters": 5,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 5
           }
         },
         {
           "name": "purchase_order_text",
           "title": "Plain-text purchase order to paste into email",
           "grade": "A",
-          "score": 4,
+          "score": 4.2,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
@@ -1016,12 +2802,12 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.856,
-        "tool_min": 2.7,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.394,
+        "tool_mean": 4.169,
+        "tool_min": 3.2,
+        "worst_tool": "purchase_order_create",
+        "definition_quality": 3.781,
         "coherence_mean": 4.25,
-        "overall": 3.651,
+        "overall": 3.922,
         "tier": "A"
       }
     },
@@ -1032,14 +2818,14 @@
           "name": "calendars_list",
           "title": "List imported calendars",
           "grade": "A",
-          "score": 4.2,
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 2
           }
         },
         {
@@ -1060,39 +2846,39 @@
           "name": "events_list",
           "title": "List events in a window",
           "grade": "A",
-          "score": 4.7,
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 5,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 4
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "events_search",
           "title": "Search events",
           "grade": "A",
-          "score": 4.4,
+          "score": 3.9,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 3,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 3,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "event_to_time_entry",
           "title": "Turn a meeting into a time entry",
           "grade": "A",
-          "score": 4.5,
+          "score": 4.2,
           "dimensions": {
-            "Behavior": 5,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -1102,13 +2888,13 @@
           "name": "free_busy",
           "title": "Busy blocks and free windows",
           "grade": "A",
-          "score": 4.4,
+          "score": 3.6,
           "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
             "Usage Guidelines": 4
           }
         },
@@ -1116,11 +2902,11 @@
           "name": "ics_forget",
           "title": "Forget a calendar",
           "grade": "A",
-          "score": 4.2,
+          "score": 4.3,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -1143,43 +2929,43 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "B",
-          "score": 3.1,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 4,
-            "Completeness": 3,
-            "Parameters": 4,
-            "Purpose": 3,
-            "Usage Guidelines": 2
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4.3,
+          "score": 4.5,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "next_event",
           "title": "Next event",
-          "grade": "B",
-          "score": 3.3,
+          "grade": "A",
+          "score": 4,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 3,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 4,
-            "Usage Guidelines": 2
+            "Purpose": 5,
+            "Usage Guidelines": 3
           }
         }
       ],
@@ -1194,12 +2980,12 @@
         "Completeness": 5
       },
       "derived": {
-        "tool_mean": 4.145,
-        "tool_min": 3.1,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.727,
+        "tool_mean": 4.036,
+        "tool_min": 3.6,
+        "worst_tool": "free_busy",
+        "definition_quality": 3.862,
         "coherence_mean": 4.25,
-        "overall": 3.884,
+        "overall": 3.978,
         "tier": "A"
       }
     },
@@ -1210,13 +2996,13 @@
           "name": "ledger_build",
           "title": "Build the ledger for a period",
           "grade": "A",
-          "score": 3.8,
+          "score": 3.7,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 3,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 3,
             "Parameters": 3,
-            "Purpose": 4,
+            "Purpose": 5,
             "Usage Guidelines": 3
           }
         },
@@ -1252,10 +3038,10 @@
           "name": "ledger_report",
           "title": "Report movement and balance per account",
           "grade": "A",
-          "score": 3.6,
+          "score": 3.7,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 3,
+            "Conciseness": 4,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
@@ -1265,26 +3051,26 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.6,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 3,
-            "Completeness": 2,
-            "Parameters": 4,
-            "Purpose": 2,
-            "Usage Guidelines": 2
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4.2,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -1293,15 +3079,15 @@
         {
           "name": "month_close",
           "title": "Close a month",
-          "grade": "B",
-          "score": 3.4,
+          "grade": "C",
+          "score": 2.9,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 4,
-            "Completeness": 3,
+            "Conciseness": 3,
+            "Completeness": 2,
             "Parameters": 3,
             "Purpose": 4,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 2
           }
         },
         {
@@ -1344,13 +3130,13 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.644,
-        "tool_min": 2.6,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.226,
+        "tool_mean": 3.756,
+        "tool_min": 2.9,
+        "worst_tool": "ledger_lines",
+        "definition_quality": 3.414,
         "coherence_mean": 4,
-        "overall": 3.458,
-        "tier": "B"
+        "overall": 3.59,
+        "tier": "A"
       }
     },
     "catalogue": {
@@ -1373,29 +3159,29 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 2,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 1
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 3.9,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 5,
-            "Parameters": 3,
+            "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
@@ -1430,13 +3216,13 @@
           "name": "price_list_text",
           "title": "The price list as plain text",
           "grade": "A",
-          "score": 3.9,
+          "score": 4.3,
           "dimensions": {
             "Behavior": 4,
-            "Conciseness": 4,
-            "Completeness": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
             "Parameters": 3,
-            "Purpose": 4,
+            "Purpose": 5,
             "Usage Guidelines": 4
           }
         },
@@ -1458,28 +3244,28 @@
           "name": "rate_set",
           "title": "Set a labour rate",
           "grade": "A",
-          "score": 4.4,
+          "score": 3.6,
           "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "sku_delete",
           "title": "Delete an unused SKU",
           "grade": "A",
-          "score": 4,
+          "score": 4.4,
           "dimensions": {
             "Behavior": 4,
-            "Conciseness": 4,
-            "Completeness": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 5
           }
         },
         {
@@ -1536,13 +3322,13 @@
         "Completeness": 5
       },
       "derived": {
-        "tool_mean": 3.717,
-        "tool_min": 2,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.03,
+        "tool_mean": 3.917,
+        "tool_min": 3.3,
+        "worst_tool": "catalogue_report",
+        "definition_quality": 3.67,
         "coherence_mean": 4.25,
-        "overall": 3.396,
-        "tier": "B"
+        "overall": 3.844,
+        "tier": "A"
       }
     },
     "contract-clause-library-proposal-template-docx": {
@@ -1554,11 +3340,11 @@
           "grade": "A",
           "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 5,
+            "Purpose": 4,
             "Usage Guidelines": 3
           }
         },
@@ -1566,75 +3352,33 @@
           "name": "clause_delete",
           "title": "Delete a clause",
           "grade": "A",
-          "score": 4,
+          "score": 4.4,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 5
           }
         },
         {
           "name": "clause_export",
           "title": "Export clauses",
           "grade": "A",
-          "score": 4.1,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 3
-          }
-        },
-        {
-          "name": "clause_get",
-          "title": "Read one clause",
-          "grade": "A",
-          "score": 4,
+          "score": 4.2,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 3
-          }
-        },
-        {
-          "name": "clause_import",
-          "title": "Import clauses",
-          "grade": "A",
-          "score": 4.6,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 5,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
         },
         {
-          "name": "clause_list",
-          "title": "List clauses",
-          "grade": "A",
-          "score": 4,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 3
-          }
-        },
-        {
-          "name": "clause_search",
-          "title": "Search clauses",
+          "name": "clause_get",
+          "title": "Read one clause",
           "grade": "A",
           "score": 4.2,
           "dimensions": {
@@ -1647,8 +3391,8 @@
           }
         },
         {
-          "name": "clause_update",
-          "title": "Update a clause",
+          "name": "clause_import",
+          "title": "Import clauses",
           "grade": "A",
           "score": 4,
           "dimensions": {
@@ -1658,6 +3402,48 @@
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "clause_list",
+          "title": "List clauses",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "clause_search",
+          "title": "Search clauses",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "clause_update",
+          "title": "Update a clause",
+          "grade": "A",
+          "score": 3.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
@@ -1667,51 +3453,51 @@
           "score": 4.3,
           "dimensions": {
             "Behavior": 4,
-            "Conciseness": 5,
+            "Conciseness": 4,
             "Completeness": 4,
-            "Parameters": 5,
+            "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "D",
-          "score": 1.4,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 1,
-            "Conciseness": 2,
-            "Completeness": 1,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 1,
-            "Usage Guidelines": 1
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4.2,
+          "score": 4.5,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "variables_list",
           "title": "List the variables a selection needs",
           "grade": "A",
-          "score": 4.6,
+          "score": 4.4,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 5,
+            "Completeness": 4,
+            "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
@@ -1728,13 +3514,163 @@
         "Completeness": 5
       },
       "derived": {
-        "tool_mean": 3.933,
-        "tool_min": 1.4,
-        "worst_tool": "license_activate",
-        "definition_quality": 2.92,
+        "tool_mean": 4.125,
+        "tool_min": 3.5,
+        "worst_tool": "clause_update",
+        "definition_quality": 3.875,
         "coherence_mean": 4.75,
-        "overall": 3.469,
-        "tier": "B"
+        "overall": 4.138,
+        "tier": "A"
+      }
+    },
+    "currency-converter-ecb-rates-daily-keyless": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "cache_status",
+          "title": "Rate cache status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "convert_many",
+          "title": "Convert one amount into several currencies",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "currencies_list",
+          "title": "Currencies the ECB quotes",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "fx_rates_for",
+          "title": "FX rates in the shape expense-tracker wants",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_status",
+          "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "rate_history",
+          "title": "Rate history for a pair",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "rate_on",
+          "title": "Rate on a given date",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "rates_latest",
+          "title": "Latest ECB reference rates",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        }
+      ],
+      "tdqs_grade": "C",
+      "tdqs_score": 2.8,
+      "scored_at": "2026-09-08 08:55",
+      "tools_total": 10,
+      "coherence": {
+        "Disambiguation": 2,
+        "Naming Consistency": 2,
+        "Tool Count": 3,
+        "Completeness": 3
+      },
+      "derived": {
+        "tool_mean": 4.144,
+        "tool_min": 3.8,
+        "worst_tool": "fx_rates_for",
+        "definition_quality": 4.006,
+        "coherence_mean": 2.5,
+        "overall": 3.554,
+        "tier": "A"
       }
     },
     "deposits": {
@@ -1744,12 +3680,12 @@
           "name": "deposit_apply",
           "title": "Apply a deposit to an invoice",
           "grade": "A",
-          "score": 3.8,
+          "score": 4.1,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 3,
+            "Completeness": 3,
+            "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 3
           }
@@ -1786,14 +3722,14 @@
           "name": "deposit_list",
           "title": "List deposits",
           "grade": "A",
-          "score": 3.9,
+          "score": 3.6,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 3
+            "Purpose": 4,
+            "Usage Guidelines": 2
           }
         },
         {
@@ -1827,15 +3763,15 @@
         {
           "name": "deposits_report",
           "title": "What is held, and for how long",
-          "grade": "C",
-          "score": 2.9,
+          "grade": "A",
+          "score": 3.6,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 3,
+            "Behavior": 3,
+            "Conciseness": 4,
             "Completeness": 3,
             "Parameters": 3,
-            "Purpose": 4,
-            "Usage Guidelines": 2
+            "Purpose": 5,
+            "Usage Guidelines": 3
           }
         },
         {
@@ -1856,11 +3792,11 @@
           "name": "deposit_statement_text",
           "title": "Plain-text deposit statement",
           "grade": "A",
-          "score": 4.5,
+          "score": 4.2,
           "dimensions": {
-            "Behavior": 5,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -1869,29 +3805,29 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "D",
-          "score": 1.5,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 1,
-            "Conciseness": 2,
-            "Completeness": 1,
-            "Parameters": 2,
-            "Purpose": 2,
-            "Usage Guidelines": 1
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 3,
-            "Parameters": 5,
+            "Completeness": 5,
+            "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         }
       ],
@@ -1906,13 +3842,13 @@
         "Completeness": 5
       },
       "derived": {
-        "tool_mean": 3.636,
-        "tool_min": 1.5,
-        "worst_tool": "license_activate",
-        "definition_quality": 2.782,
+        "tool_mean": 3.927,
+        "tool_min": 3.3,
+        "worst_tool": "deposit_balance",
+        "definition_quality": 3.676,
         "coherence_mean": 4.5,
-        "overall": 3.297,
-        "tier": "B"
+        "overall": 3.923,
+        "tier": "A"
       }
     },
     "excel-spreadsheet-xlsx-csv": {
@@ -1921,29 +3857,29 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 2,
-            "Completeness": 1,
-            "Parameters": 4,
-            "Purpose": 2,
-            "Usage Guidelines": 1
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4.4,
+          "score": 4.5,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 5,
-            "Parameters": 5,
+            "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
@@ -1964,12 +3900,12 @@
           "name": "sheet_convert",
           "title": "Convert file",
           "grade": "A",
-          "score": 4.4,
+          "score": 4.2,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
@@ -1994,26 +3930,26 @@
           "grade": "A",
           "score": 4,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 3
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "sheet_info",
           "title": "Spreadsheet overview",
           "grade": "A",
-          "score": 3.9,
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 2,
+            "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 4,
-            "Usage Guidelines": 5
+            "Usage Guidelines": 4
           }
         },
         {
@@ -2034,11 +3970,11 @@
           "name": "sheet_query",
           "title": "Filter, group and sort rows",
           "grade": "A",
-          "score": 3.6,
+          "score": 3.7,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 4,
-            "Completeness": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
             "Parameters": 3,
             "Purpose": 4,
             "Usage Guidelines": 4
@@ -2048,28 +3984,28 @@
           "name": "sheet_read",
           "title": "Read rows",
           "grade": "A",
-          "score": 4.2,
+          "score": 4.1,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 5,
+            "Parameters": 4,
+            "Purpose": 4,
             "Usage Guidelines": 4
           }
         },
         {
           "name": "sheet_stats",
           "title": "Column statistics",
-          "grade": "B",
-          "score": 3.3,
+          "grade": "A",
+          "score": 3.6,
           "dimensions": {
             "Behavior": 2,
             "Conciseness": 5,
-            "Completeness": 3,
-            "Parameters": 2,
-            "Purpose": 4,
-            "Usage Guidelines": 4
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
           }
         },
         {
@@ -2092,12 +4028,12 @@
           "grade": "A",
           "score": 4,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         }
       ],
@@ -2112,12 +4048,12 @@
         "Completeness": 5
       },
       "derived": {
-        "tool_mean": 4.015,
-        "tool_min": 2,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.209,
+        "tool_mean": 4.162,
+        "tool_min": 3.6,
+        "worst_tool": "sheet_stats",
+        "definition_quality": 3.937,
         "coherence_mean": 5,
-        "overall": 3.746,
+        "overall": 4.256,
         "tier": "A"
       }
     },
@@ -2156,14 +4092,14 @@
           "name": "expense_delete",
           "title": "Delete an expense",
           "grade": "A",
-          "score": 3.8,
+          "score": 4.6,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 3,
+            "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 5
           }
         },
         {
@@ -2183,15 +4119,15 @@
         {
           "name": "expense_list",
           "title": "List expenses",
-          "grade": "B",
-          "score": 3.3,
+          "grade": "A",
+          "score": 3.5,
           "dimensions": {
             "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 2,
-            "Parameters": 4,
-            "Purpose": 4,
-            "Usage Guidelines": 2
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 3
           }
         },
         {
@@ -2254,6 +4190,20 @@
           "name": "expense_update",
           "title": "Update an expense",
           "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
           "score": 3.8,
           "dimensions": {
             "Behavior": 4,
@@ -2265,31 +4215,17 @@
           }
         },
         {
-          "name": "license_activate",
-          "title": "Activate license",
-          "grade": "C",
-          "score": 2.9,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 3,
-            "Completeness": 2,
-            "Parameters": 4,
-            "Purpose": 3,
-            "Usage Guidelines": 2
-          }
-        },
-        {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
@@ -2332,12 +4268,12 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.886,
-        "tool_min": 2.9,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.492,
+        "tool_mean": 4.079,
+        "tool_min": 3.5,
+        "worst_tool": "expense_export",
+        "definition_quality": 3.847,
         "coherence_mean": 4.25,
-        "overall": 3.719,
+        "overall": 3.968,
         "tier": "A"
       }
     },
@@ -2418,11 +4354,11 @@
           "name": "image_dominant_colors",
           "title": "Read the dominant colours of an image",
           "grade": "A",
-          "score": 4.5,
+          "score": 4.2,
           "dimensions": {
-            "Behavior": 5,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -2529,26 +4465,26 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.4,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 3,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 2
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4.4,
+          "score": 4.5,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -2566,12 +4502,12 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 4,
-        "tool_min": 2.4,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.36,
+        "tool_mean": 4.08,
+        "tool_min": 3.2,
+        "worst_tool": "image_delete_upload",
+        "definition_quality": 3.728,
         "coherence_mean": 4,
-        "overall": 3.552,
+        "overall": 3.81,
         "tier": "A"
       }
     },
@@ -2581,43 +4517,43 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "D",
-          "score": 1.4,
-          "dimensions": {
-            "Behavior": 1,
-            "Conciseness": 2,
-            "Completeness": 1,
-            "Parameters": 3,
-            "Purpose": 1,
-            "Usage Guidelines": 1
-          }
-        },
-        {
-          "name": "license_status",
-          "title": "License status",
           "grade": "A",
           "score": 3.8,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 2
-          }
-        },
-        {
-          "name": "pdf_count",
-          "title": "Count pages in several PDFs",
-          "grade": "A",
-          "score": 3.6,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 4,
-            "Usage Guidelines": 2
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_status",
+          "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_count",
+          "title": "Count pages in several PDFs",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
           }
         },
         {
@@ -2800,49 +4736,49 @@
         "Completeness": 5
       },
       "derived": {
-        "tool_mean": 3.94,
-        "tool_min": 1.4,
-        "worst_tool": "license_activate",
-        "definition_quality": 2.924,
+        "tool_mean": 4.207,
+        "tool_min": 3.6,
+        "worst_tool": "pdf_watermark_business",
+        "definition_quality": 3.964,
         "coherence_mean": 4.25,
-        "overall": 3.322,
-        "tier": "B"
+        "overall": 4.05,
+        "tier": "A"
       }
     },
-    "price-tracker-drop-alert-watch": {
+    "per-diem": {
       "surface": "connector",
       "tools": [
         {
-          "name": "alerts_pending",
-          "title": "Pending alerts",
+          "name": "license_activate",
+          "title": "Activate license",
           "grade": "A",
-          "score": 4.4,
+          "score": 3.8,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "license_activate",
-          "title": "Activate license",
-          "grade": "B",
-          "score": 3,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 3,
-            "Completeness": 2,
-            "Parameters": 4,
-            "Purpose": 2,
+            "Parameters": 3,
+            "Purpose": 4,
             "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "perdiem_calc",
+          "title": "Calculate a travel allowance",
           "grade": "A",
           "score": 4,
           "dimensions": {
@@ -2855,12 +4791,298 @@
           }
         },
         {
-          "name": "price_add_manual",
-          "title": "Record a price by hand",
+          "name": "perdiem_rates",
+          "title": "List the bundled per diem rates",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "perdiem_report",
+          "title": "Totals per scheme and month",
+          "grade": "A",
+          "score": 3.9,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "trip_delete",
+          "title": "Delete a saved trip",
+          "grade": "B",
+          "score": 3,
+          "dimensions": {
+            "Behavior": 2,
+            "Conciseness": 2,
+            "Completeness": 2,
+            "Parameters": 4,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "trip_export",
+          "title": "Export a trip as expenses",
+          "grade": "C",
+          "score": 2.9,
+          "dimensions": {
+            "Behavior": 1,
+            "Conciseness": 4,
+            "Completeness": 2,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "trip_list",
+          "title": "List saved trips",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "trip_record",
+          "title": "Save a calculated trip",
+          "grade": "B",
+          "score": 3.3,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 2
+          }
+        }
+      ],
+      "tdqs_grade": "B",
+      "tdqs_score": 3.1,
+      "scored_at": "2026-09-08 08:55",
+      "tools_total": 9,
+      "coherence": {
+        "Disambiguation": 4,
+        "Naming Consistency": 4,
+        "Tool Count": 5,
+        "Completeness": 4
+      },
+      "derived": {
+        "tool_mean": 3.667,
+        "tool_min": 2.9,
+        "worst_tool": "trip_export",
+        "definition_quality": 3.36,
+        "coherence_mean": 4.25,
+        "overall": 3.627,
+        "tier": "A"
+      }
+    },
+    "petty-cash": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "float_open",
+          "title": "Open a petty cash float",
+          "grade": "A",
+          "score": 3.9,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "float_report",
+          "title": "Report the state of the float",
+          "grade": "A",
+          "score": 3.5,
+          "dimensions": {
+            "Behavior": 2,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_status",
+          "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "replenish_request",
+          "title": "Request a replenishment",
+          "grade": "A",
+          "score": 3.6,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 4,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "topup_record",
+          "title": "Record cash put into the float",
+          "grade": "A",
+          "score": 3.7,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "voucher_add",
+          "title": "Record a petty cash voucher",
+          "grade": "A",
+          "score": 3.7,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "voucher_delete",
+          "title": "Delete a voucher",
           "grade": "A",
           "score": 4.2,
           "dimensions": {
             "Behavior": 4,
+            "Conciseness": 3,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        }
+      ],
+      "tdqs_grade": "C",
+      "tdqs_score": 2.6,
+      "scored_at": "2026-09-08 08:55",
+      "tools_total": 9,
+      "coherence": {
+        "Disambiguation": 2,
+        "Naming Consistency": 2,
+        "Tool Count": 3,
+        "Completeness": 3
+      },
+      "derived": {
+        "tool_mean": 3.862,
+        "tool_min": 3.5,
+        "worst_tool": "float_report",
+        "definition_quality": 3.717,
+        "coherence_mean": 2.5,
+        "overall": 3.352,
+        "tier": "B"
+      }
+    },
+    "price-tracker-drop-alert-watch": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "alerts_pending",
+          "title": "Pending alerts",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_status",
+          "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "price_add_manual",
+          "title": "Record a price by hand",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 5,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
@@ -2872,11 +5094,11 @@
           "name": "price_check",
           "title": "Check a price now",
           "grade": "A",
-          "score": 4,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 5,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -2900,11 +5122,11 @@
           "name": "watch_add",
           "title": "Watch a price",
           "grade": "A",
-          "score": 3.9,
+          "score": 4.2,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 3,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -2914,9 +5136,9 @@
           "name": "watch_list",
           "title": "List watches",
           "grade": "A",
-          "score": 4.5,
+          "score": 4.7,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 5,
             "Conciseness": 5,
             "Completeness": 5,
             "Parameters": 4,
@@ -2928,11 +5150,11 @@
           "name": "watch_refresh",
           "title": "Refresh prices",
           "grade": "A",
-          "score": 4.5,
+          "score": 4.2,
           "dimensions": {
-            "Behavior": 5,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -2942,10 +5164,10 @@
           "name": "watch_remove",
           "title": "Remove a watch",
           "grade": "A",
-          "score": 4.1,
+          "score": 4.4,
           "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 4,
+            "Behavior": 5,
+            "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
@@ -2964,12 +5186,12 @@
         "Completeness": 3
       },
       "derived": {
-        "tool_mean": 4.08,
-        "tool_min": 3,
+        "tool_mean": 4.34,
+        "tool_min": 3.8,
         "worst_tool": "license_activate",
-        "definition_quality": 3.648,
+        "definition_quality": 4.124,
         "coherence_mean": 3.75,
-        "overall": 3.679,
+        "overall": 4.012,
         "tier": "A"
       }
     },
@@ -2979,26 +5201,26 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.1,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 2,
-            "Completeness": 2,
-            "Parameters": 4,
-            "Purpose": 2,
-            "Usage Guidelines": 1
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4.4,
+          "score": 4.5,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -3021,29 +5243,29 @@
         {
           "name": "quote_create",
           "title": "Create a quote",
-          "grade": "A",
-          "score": 3.9,
+          "grade": "C",
+          "score": 2.7,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 2,
             "Conciseness": 4,
-            "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 4
+            "Completeness": 2,
+            "Parameters": 2,
+            "Purpose": 4,
+            "Usage Guidelines": 2
           }
         },
         {
           "name": "quote_decline",
           "title": "Decline a quote",
           "grade": "A",
-          "score": 4.2,
+          "score": 3.5,
           "dimensions": {
             "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
+            "Conciseness": 3,
+            "Completeness": 3,
             "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 4
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
@@ -3092,11 +5314,11 @@
           "name": "quote_pdf",
           "title": "Render the quote as a PDF",
           "grade": "A",
-          "score": 3.8,
+          "score": 4.1,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 4,
-            "Completeness": 3,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -3120,11 +5342,11 @@
           "name": "quote_send_text",
           "title": "Plain-text quote to paste into email",
           "grade": "A",
-          "score": 4.3,
+          "score": 4.2,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -3156,12 +5378,12 @@
         "Completeness": 5
       },
       "derived": {
-        "tool_mean": 3.958,
-        "tool_min": 2.1,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.215,
+        "tool_mean": 3.967,
+        "tool_min": 2.7,
+        "worst_tool": "quote_create",
+        "definition_quality": 3.46,
         "coherence_mean": 4.75,
-        "overall": 3.675,
+        "overall": 3.847,
         "tier": "A"
       }
     },
@@ -3172,54 +5394,54 @@
           "name": "invoice_generate_due",
           "title": "Generate the invoices that are due",
           "grade": "A",
-          "score": 4.4,
+          "score": 4,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.4,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 3,
-            "Completeness": 2,
-            "Parameters": 4,
-            "Purpose": 2,
-            "Usage Guidelines": 1
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 3.8,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 2
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "schedule_create",
           "title": "Create a recurring invoice schedule",
           "grade": "A",
-          "score": 4.6,
+          "score": 4.2,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 5,
+            "Completeness": 4,
+            "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
@@ -3233,65 +5455,65 @@
             "Behavior": 5,
             "Conciseness": 5,
             "Completeness": 5,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "schedule_get",
           "title": "Get one schedule",
-          "grade": "B",
-          "score": 3.2,
+          "grade": "A",
+          "score": 4.2,
           "dimensions": {
-            "Behavior": 2,
+            "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 4,
-            "Usage Guidelines": 2
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "schedule_history",
-          "title": "Schedule history (Pro)",
-          "grade": "A",
-          "score": 3.6,
+          "title": "Schedule history",
+          "grade": "B",
+          "score": 3,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 3
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 4,
+            "Usage Guidelines": 2
           }
         },
         {
           "name": "schedule_list",
           "title": "List schedules",
-          "grade": "C",
-          "score": 2.8,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 2,
+            "Behavior": 3,
             "Conciseness": 5,
-            "Completeness": 2,
-            "Parameters": 2,
-            "Purpose": 4,
-            "Usage Guidelines": 2
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "schedule_pause",
           "title": "Pause a schedule",
           "grade": "A",
-          "score": 4.1,
+          "score": 4.7,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 5,
             "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 2,
+            "Completeness": 5,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 5
           }
         },
         {
@@ -3301,9 +5523,9 @@
           "score": 4.1,
           "dimensions": {
             "Behavior": 4,
-            "Conciseness": 5,
+            "Conciseness": 4,
             "Completeness": 4,
-            "Parameters": 2,
+            "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
@@ -3312,11 +5534,11 @@
           "name": "schedule_skip",
           "title": "Skip one period",
           "grade": "A",
-          "score": 4.4,
+          "score": 4.7,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 5,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 3,
             "Purpose": 5,
             "Usage Guidelines": 5
@@ -3326,28 +5548,28 @@
           "name": "schedule_upcoming",
           "title": "What falls due soon",
           "grade": "A",
-          "score": 4.2,
+          "score": 3.6,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 2
           }
         },
         {
           "name": "schedule_update",
           "title": "Update a schedule",
           "grade": "B",
-          "score": 3.3,
+          "score": 3.2,
           "dimensions": {
             "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 2,
             "Parameters": 2,
-            "Purpose": 5,
-            "Usage Guidelines": 2
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         }
       ],
@@ -3362,12 +5584,218 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.8,
-        "tool_min": 2.4,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.24,
+        "tool_mean": 4.023,
+        "tool_min": 3,
+        "worst_tool": "schedule_history",
+        "definition_quality": 3.614,
         "coherence_mean": 4.5,
-        "overall": 3.618,
+        "overall": 3.88,
+        "tier": "A"
+      }
+    },
+    "resume-cover-letter-docx-generator": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "cover_letter_create",
+          "title": "Write a cover letter .docx",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "doc_delete_upload",
+          "title": "Delete an uploaded document",
+          "grade": "B",
+          "score": 3.4,
+          "dimensions": {
+            "Behavior": 2,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "doc_files",
+          "title": "List uploaded documents",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "doc_upload",
+          "title": "Upload a .docx to work on",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 5,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_status",
+          "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "profile_get",
+          "title": "Show the stored profile",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "profile_set",
+          "title": "Store your CV facts",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "resume_create",
+          "title": "Write a resume .docx",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "resume_read",
+          "title": "Read an existing resume .docx",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "resume_to_html",
+          "title": "Printable resume HTML",
+          "grade": "B",
+          "score": 3.2,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "resume_to_markdown",
+          "title": "Resume as markdown",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "tailor_to_job",
+          "title": "Gap analysis against a posting",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        }
+      ],
+      "tdqs_grade": "B",
+      "tdqs_score": 3.2,
+      "scored_at": "2026-09-08 09:07",
+      "tools_total": 13,
+      "coherence": {
+        "Disambiguation": 5,
+        "Naming Consistency": 3,
+        "Tool Count": 4,
+        "Completeness": 3
+      },
+      "derived": {
+        "tool_mean": 4.031,
+        "tool_min": 3.2,
+        "worst_tool": "resume_to_html",
+        "definition_quality": 3.699,
+        "coherence_mean": 3.75,
+        "overall": 3.714,
         "tier": "A"
       }
     },
@@ -3377,57 +5805,57 @@
         {
           "name": "dunning_text",
           "title": "Write a dunning letter",
-          "grade": "A",
-          "score": 3.9,
+          "grade": "B",
+          "score": 3.3,
           "dimensions": {
             "Behavior": 4,
-            "Conciseness": 4,
-            "Completeness": 4,
+            "Conciseness": 3,
+            "Completeness": 3,
             "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 3
+            "Purpose": 4,
+            "Usage Guidelines": 2
           }
         },
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.8,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 4,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 3,
-            "Usage Guidelines": 2
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 4,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "statement_aging",
           "title": "Age the open invoices",
           "grade": "A",
-          "score": 3.9,
+          "score": 4.2,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 4,
+            "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 5
           }
         },
         {
@@ -3448,41 +5876,41 @@
           "name": "statement_pdf",
           "title": "Render the statement of account as a PDF",
           "grade": "A",
-          "score": 3.5,
+          "score": 3.9,
           "dimensions": {
             "Behavior": 4,
-            "Conciseness": 3,
-            "Completeness": 3,
+            "Conciseness": 4,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 4,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "statements_report",
           "title": "What every client owes",
           "grade": "A",
-          "score": 3.9,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 4,
-            "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "statement_text",
-          "title": "Plain-text statement of account",
-          "grade": "A",
-          "score": 4.2,
+          "score": 4.4,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "statement_text",
+          "title": "Plain-text statement of account",
+          "grade": "A",
+          "score": 3.9,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
             "Usage Guidelines": 4
           }
         }
@@ -3498,13 +5926,13 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.712,
-        "tool_min": 2.8,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.347,
+        "tool_mean": 3.938,
+        "tool_min": 3.3,
+        "worst_tool": "dunning_text",
+        "definition_quality": 3.683,
         "coherence_mean": 3.75,
-        "overall": 3.468,
-        "tier": "B"
+        "overall": 3.703,
+        "tier": "A"
       }
     },
     "time-tracker-timesheet-billable-hours": {
@@ -3514,24 +5942,10 @@
           "name": "entry_add",
           "title": "Add time entry",
           "grade": "A",
-          "score": 4.2,
+          "score": 3.8,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "entry_delete",
-          "title": "Delete time entry",
-          "grade": "A",
-          "score": 3.7,
-          "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 5,
+            "Conciseness": 4,
             "Completeness": 3,
             "Parameters": 4,
             "Purpose": 5,
@@ -3539,15 +5953,29 @@
           }
         },
         {
+          "name": "entry_delete",
+          "title": "Delete time entry",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
           "name": "entry_edit",
           "title": "Edit time entry",
           "grade": "A",
-          "score": 3.9,
+          "score": 4.4,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 3,
-            "Parameters": 3,
+            "Completeness": 4,
+            "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
           }
@@ -3555,28 +5983,28 @@
         {
           "name": "entry_list",
           "title": "List time entries",
-          "grade": "B",
-          "score": 3.3,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 3,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 4,
-            "Usage Guidelines": 2
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "entry_mark_billed",
           "title": "Mark time entries as billed",
           "grade": "A",
-          "score": 3.9,
+          "score": 4.4,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 4,
-            "Purpose": 4,
+            "Purpose": 5,
             "Usage Guidelines": 4
           }
         },
@@ -3584,225 +6012,19 @@
           "name": "export_csv",
           "title": "Export entries to CSV",
           "grade": "A",
-          "score": 4,
+          "score": 4.2,
           "dimensions": {
             "Behavior": 4,
             "Conciseness": 5,
             "Completeness": 4,
             "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "invoice_summary",
           "title": "Invoice summary",
-          "grade": "A",
-          "score": 3.8,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 3
-          }
-        },
-        {
-          "name": "license_activate",
-          "title": "Activate license",
-          "grade": "C",
-          "score": 2,
-          "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 2,
-            "Completeness": 2,
-            "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 1
-          }
-        },
-        {
-          "name": "license_status",
-          "title": "License status",
-          "grade": "A",
-          "score": 4.4,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "project_set_rate",
-          "title": "Set project rate",
-          "grade": "A",
-          "score": 4.8,
-          "dimensions": {
-            "Behavior": 5,
-            "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 5,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "timer_start",
-          "title": "Start timer",
-          "grade": "A",
-          "score": 4.4,
-          "dimensions": {
-            "Behavior": 5,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "timer_status",
-          "title": "Timer status",
-          "grade": "A",
-          "score": 4.2,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 3
-          }
-        },
-        {
-          "name": "timer_stop",
-          "title": "Stop timer",
-          "grade": "A",
-          "score": 4.5,
-          "dimensions": {
-            "Behavior": 5,
-            "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 3
-          }
-        }
-      ],
-      "tdqs_grade": "A",
-      "tdqs_score": 3.6,
-      "scored_at": "2026-09-08 09:10",
-      "tools_total": 14,
-      "coherence": {
-        "Disambiguation": 5,
-        "Naming Consistency": 4,
-        "Tool Count": 5,
-        "Completeness": 5
-      },
-      "derived": {
-        "tool_mean": 3.931,
-        "tool_min": 2,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.159,
-        "coherence_mean": 4.75,
-        "overall": 3.636,
-        "tier": "A"
-      }
-    },
-    "timezone-world-clock-meeting-slots-overlap-ics": {
-      "surface": "connector",
-      "tools": [
-        {
-          "name": "business_days",
-          "title": "Count business days",
-          "grade": "A",
-          "score": 4.2,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "contacts_list",
-          "title": "List saved contacts",
-          "grade": "A",
-          "score": 4.7,
-          "dimensions": {
-            "Behavior": 5,
-            "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 4,
-            "Purpose": 5,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "contacts_set",
-          "title": "Save a contact&#x27;s zone",
-          "grade": "B",
-          "score": 3.4,
-          "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 3,
-            "Purpose": 4,
-            "Usage Guidelines": 3
-          }
-        },
-        {
-          "name": "convert_time",
-          "title": "Convert a time between zones",
-          "grade": "A",
-          "score": 4.2,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 3,
-            "Parameters": 5,
-            "Purpose": 5,
-            "Usage Guidelines": 3
-          }
-        },
-        {
-          "name": "dst_changes",
-          "title": "Daylight-saving changes",
-          "grade": "A",
-          "score": 3.7,
-          "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 5,
-            "Completeness": 3,
-            "Parameters": 3,
-            "Purpose": 4,
-            "Usage Guidelines": 4
-          }
-        },
-        {
-          "name": "find_meeting_slots",
-          "title": "Find meeting slots",
-          "grade": "A",
-          "score": 4.8,
-          "dimensions": {
-            "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 5,
-            "Parameters": 5,
-            "Purpose": 5,
-            "Usage Guidelines": 5
-          }
-        },
-        {
-          "name": "ics_create",
-          "title": "Write a calendar invite",
           "grade": "B",
           "score": 3.1,
           "dimensions": {
@@ -3817,26 +6039,232 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.2,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 3,
-            "Conciseness": 2,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 1
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "project_set_rate",
+          "title": "Set project rate",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "timer_start",
+          "title": "Start timer",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "timer_status",
+          "title": "Timer status",
+          "grade": "A",
           "score": 4.1,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "timer_stop",
+          "title": "Stop timer",
+          "grade": "A",
+          "score": 4.3,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        }
+      ],
+      "tdqs_grade": "A",
+      "tdqs_score": 3.6,
+      "scored_at": "2026-09-08 09:10",
+      "tools_total": 14,
+      "coherence": {
+        "Disambiguation": 5,
+        "Naming Consistency": 4,
+        "Tool Count": 5,
+        "Completeness": 5
+      },
+      "derived": {
+        "tool_mean": 4.085,
+        "tool_min": 3.1,
+        "worst_tool": "invoice_summary",
+        "definition_quality": 3.691,
+        "coherence_mean": 4.75,
+        "overall": 4.009,
+        "tier": "A"
+      }
+    },
+    "timezone-world-clock-meeting-slots-overlap-ics": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "business_days",
+          "title": "Count business days",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "contacts_list",
+          "title": "List saved contacts",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "contacts_set",
+          "title": "Save a contact&#x27;s zone",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "convert_time",
+          "title": "Convert a time between zones",
+          "grade": "B",
+          "score": 3.4,
           "dimensions": {
             "Behavior": 3,
             "Conciseness": 5,
             "Completeness": 3,
+            "Parameters": 4,
+            "Purpose": 4,
+            "Usage Guidelines": 2
+          }
+        },
+        {
+          "name": "dst_changes",
+          "title": "Daylight-saving changes",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "find_meeting_slots",
+          "title": "Find meeting slots",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "ics_create",
+          "title": "Write a calendar invite",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_status",
+          "title": "License status",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
             "Parameters": 4,
             "Purpose": 5,
             "Usage Guidelines": 4
@@ -3854,13 +6282,13 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.822,
-        "tool_min": 2.2,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.173,
+        "tool_mean": 4.033,
+        "tool_min": 3.4,
+        "worst_tool": "convert_time",
+        "definition_quality": 3.78,
         "coherence_mean": 3.75,
-        "overall": 3.346,
-        "tier": "B"
+        "overall": 3.771,
+        "tier": "A"
       }
     },
     "work-order": {
@@ -3897,43 +6325,43 @@
         {
           "name": "license_activate",
           "title": "Activate license",
-          "grade": "C",
-          "score": 2.2,
+          "grade": "A",
+          "score": 3.8,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 2,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
-            "Purpose": 2,
-            "Usage Guidelines": 2
+            "Purpose": 4,
+            "Usage Guidelines": 3
           }
         },
         {
           "name": "license_status",
           "title": "License status",
           "grade": "A",
-          "score": 3.9,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 3,
+            "Behavior": 4,
             "Conciseness": 5,
-            "Completeness": 4,
-            "Parameters": 5,
-            "Purpose": 4,
-            "Usage Guidelines": 3
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "work_order_add_line",
           "title": "Add a parts or labour line",
           "grade": "A",
-          "score": 4.2,
+          "score": 3.8,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 4,
+            "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 5,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 3
           }
         },
         {
@@ -3954,28 +6382,28 @@
           "name": "work_order_delete",
           "title": "Delete a draft work order",
           "grade": "A",
-          "score": 4.4,
+          "score": 4.5,
           "dimensions": {
-            "Behavior": 4,
+            "Behavior": 5,
             "Conciseness": 5,
-            "Completeness": 4,
+            "Completeness": 5,
             "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 5
+            "Usage Guidelines": 4
           }
         },
         {
           "name": "work_order_get",
           "title": "Show one work order",
           "grade": "A",
-          "score": 3.9,
+          "score": 4,
           "dimensions": {
             "Behavior": 3,
-            "Conciseness": 4,
+            "Conciseness": 5,
             "Completeness": 4,
-            "Parameters": 4,
+            "Parameters": 3,
             "Purpose": 5,
-            "Usage Guidelines": 3
+            "Usage Guidelines": 4
           }
         },
         {
@@ -3995,15 +6423,15 @@
         {
           "name": "work_order_list",
           "title": "List work orders",
-          "grade": "C",
-          "score": 2.8,
+          "grade": "A",
+          "score": 4,
           "dimensions": {
-            "Behavior": 2,
-            "Conciseness": 3,
-            "Completeness": 2,
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
             "Parameters": 3,
             "Purpose": 4,
-            "Usage Guidelines": 2
+            "Usage Guidelines": 4
           }
         },
         {
@@ -4024,14 +6452,14 @@
           "name": "work_order_status",
           "title": "Move a work order along",
           "grade": "A",
-          "score": 4.4,
+          "score": 4,
           "dimensions": {
             "Behavior": 4,
-            "Conciseness": 5,
-            "Completeness": 4,
+            "Conciseness": 4,
+            "Completeness": 3,
             "Parameters": 4,
             "Purpose": 5,
-            "Usage Guidelines": 4
+            "Usage Guidelines": 3
           }
         }
       ],
@@ -4046,36 +6474,47 @@
         "Completeness": 4
       },
       "derived": {
-        "tool_mean": 3.783,
-        "tool_min": 2.2,
-        "worst_tool": "license_activate",
-        "definition_quality": 3.15,
+        "tool_mean": 4.017,
+        "tool_min": 3.6,
+        "worst_tool": "work_order_create",
+        "definition_quality": 3.85,
         "coherence_mean": 4.75,
-        "overall": 3.63,
+        "overall": 4.12,
         "tier": "A"
       }
     }
   },
   "movement": {
+    "mcp-office-suite": {
+      "surface": "server",
+      "grade": "A",
+      "tdqs": 4,
+      "tool_mean": 4.04,
+      "tool_min": 2.8,
+      "worst_tool": "doc_from_markdown",
+      "overall": 3.456,
+      "coherence_mean": 3.25,
+      "freshness": "2026-09-09T10:57:35.511131Z"
+    },
     "mcp-statement-of-account": {
       "surface": "server",
-      "grade": "B",
-      "tdqs": 3.7,
-      "tool_mean": 3.7,
-      "tool_min": 2.9,
+      "grade": "A",
+      "tdqs": 4.1,
+      "tool_mean": 4.075,
+      "tool_min": 3.5,
       "worst_tool": "statement_build",
-      "overall": 3.641,
-      "coherence_mean": 4.25,
+      "overall": 4.042,
+      "coherence_mean": 4.5,
       "freshness": "2026-09-05T18:06:49.992918Z"
     },
     "amortization": {
       "surface": "connector",
       "grade": "B",
       "tdqs": 3.4,
-      "tool_mean": 3.689,
-      "tool_min": 2,
-      "worst_tool": "license_activate",
-      "overall": 3.459,
+      "tool_mean": 3.789,
+      "tool_min": 3.2,
+      "worst_tool": "loan_journal",
+      "overall": 3.837,
       "coherence_mean": 4.5,
       "freshness": "2026-09-08 09:15"
     },
@@ -4083,10 +6522,10 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.5,
-      "tool_mean": 3.7,
-      "tool_min": 2,
-      "worst_tool": "license_activate",
-      "overall": 3.539,
+      "tool_mean": 4.033,
+      "tool_min": 3.2,
+      "worst_tool": "asset_report",
+      "overall": 4.015,
       "coherence_mean": 4.75,
       "freshness": "2026-09-08 09:05"
     },
@@ -4094,21 +6533,32 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.7,
-      "tool_mean": 4.02,
-      "tool_min": 2.6,
-      "worst_tool": "license_activate",
-      "overall": 3.691,
+      "tool_mean": 4.16,
+      "tool_min": 3.6,
+      "worst_tool": "transactions_list",
+      "overall": 4.03,
       "coherence_mean": 4.25,
       "freshness": "2026-09-08 18:25"
+    },
+    "barcode-qr-code-sepa-payment-ean13": {
+      "surface": "connector",
+      "grade": "B",
+      "tdqs": 3.1,
+      "tool_mean": 4.17,
+      "tool_min": 3.8,
+      "worst_tool": "license_activate",
+      "overall": 3.865,
+      "coherence_mean": 3.5,
+      "freshness": "2026-09-08 09:16"
     },
     "billing-docs-credit-notes-purchase-orders": {
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.7,
-      "tool_mean": 3.856,
-      "tool_min": 2.7,
-      "worst_tool": "license_activate",
-      "overall": 3.651,
+      "tool_mean": 4.169,
+      "tool_min": 3.2,
+      "worst_tool": "purchase_order_create",
+      "overall": 3.922,
       "coherence_mean": 4.25,
       "freshness": "2026-09-08 18:35"
     },
@@ -4116,10 +6566,10 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.9,
-      "tool_mean": 4.145,
-      "tool_min": 3.1,
-      "worst_tool": "license_activate",
-      "overall": 3.884,
+      "tool_mean": 4.036,
+      "tool_min": 3.6,
+      "worst_tool": "free_busy",
+      "overall": 3.978,
       "coherence_mean": 4.25,
       "freshness": "2026-09-08 19:35"
     },
@@ -4127,10 +6577,10 @@
       "surface": "connector",
       "grade": "B",
       "tdqs": 3.4,
-      "tool_mean": 3.644,
-      "tool_min": 2.6,
-      "worst_tool": "license_activate",
-      "overall": 3.458,
+      "tool_mean": 3.756,
+      "tool_min": 2.9,
+      "worst_tool": "ledger_lines",
+      "overall": 3.59,
       "coherence_mean": 4,
       "freshness": "2026-09-08 19:31"
     },
@@ -4138,10 +6588,10 @@
       "surface": "connector",
       "grade": "B",
       "tdqs": 3.4,
-      "tool_mean": 3.717,
-      "tool_min": 2,
-      "worst_tool": "license_activate",
-      "overall": 3.396,
+      "tool_mean": 3.917,
+      "tool_min": 3.3,
+      "worst_tool": "catalogue_report",
+      "overall": 3.844,
       "coherence_mean": 4.25,
       "freshness": "2026-09-08 09:08"
     },
@@ -4149,21 +6599,32 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.5,
-      "tool_mean": 3.933,
-      "tool_min": 1.4,
-      "worst_tool": "license_activate",
-      "overall": 3.469,
+      "tool_mean": 4.125,
+      "tool_min": 3.5,
+      "worst_tool": "clause_update",
+      "overall": 4.138,
       "coherence_mean": 4.75,
       "freshness": "2026-09-08 09:07"
+    },
+    "currency-converter-ecb-rates-daily-keyless": {
+      "surface": "connector",
+      "grade": "C",
+      "tdqs": 2.8,
+      "tool_mean": 4.144,
+      "tool_min": 3.8,
+      "worst_tool": "fx_rates_for",
+      "overall": 3.554,
+      "coherence_mean": 2.5,
+      "freshness": "2026-09-08 08:55"
     },
     "deposits": {
       "surface": "connector",
       "grade": "B",
       "tdqs": 3.3,
-      "tool_mean": 3.636,
-      "tool_min": 1.5,
-      "worst_tool": "license_activate",
-      "overall": 3.297,
+      "tool_mean": 3.927,
+      "tool_min": 3.3,
+      "worst_tool": "deposit_balance",
+      "overall": 3.923,
       "coherence_mean": 4.5,
       "freshness": "2026-09-08 09:11"
     },
@@ -4171,10 +6632,10 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.7,
-      "tool_mean": 4.015,
-      "tool_min": 2,
-      "worst_tool": "license_activate",
-      "overall": 3.746,
+      "tool_mean": 4.162,
+      "tool_min": 3.6,
+      "worst_tool": "sheet_stats",
+      "overall": 4.256,
       "coherence_mean": 5,
       "freshness": "2026-09-08 09:11"
     },
@@ -4182,10 +6643,10 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.7,
-      "tool_mean": 3.886,
-      "tool_min": 2.9,
-      "worst_tool": "license_activate",
-      "overall": 3.719,
+      "tool_mean": 4.079,
+      "tool_min": 3.5,
+      "worst_tool": "expense_export",
+      "overall": 3.968,
       "coherence_mean": 4.25,
       "freshness": "2026-09-08 18:10"
     },
@@ -4193,10 +6654,10 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.6,
-      "tool_mean": 4,
-      "tool_min": 2.4,
-      "worst_tool": "license_activate",
-      "overall": 3.552,
+      "tool_mean": 4.08,
+      "tool_min": 3.2,
+      "worst_tool": "image_delete_upload",
+      "overall": 3.81,
       "coherence_mean": 4,
       "freshness": "2026-09-08 17:55"
     },
@@ -4204,21 +6665,43 @@
       "surface": "connector",
       "grade": "B",
       "tdqs": 3.3,
-      "tool_mean": 3.94,
-      "tool_min": 1.4,
-      "worst_tool": "license_activate",
-      "overall": 3.322,
+      "tool_mean": 4.207,
+      "tool_min": 3.6,
+      "worst_tool": "pdf_watermark_business",
+      "overall": 4.05,
       "coherence_mean": 4.25,
       "freshness": "2026-09-08 08:51"
+    },
+    "per-diem": {
+      "surface": "connector",
+      "grade": "B",
+      "tdqs": 3.1,
+      "tool_mean": 3.667,
+      "tool_min": 2.9,
+      "worst_tool": "trip_export",
+      "overall": 3.627,
+      "coherence_mean": 4.25,
+      "freshness": "2026-09-08 08:55"
+    },
+    "petty-cash": {
+      "surface": "connector",
+      "grade": "C",
+      "tdqs": 2.6,
+      "tool_mean": 3.862,
+      "tool_min": 3.5,
+      "worst_tool": "float_report",
+      "overall": 3.352,
+      "coherence_mean": 2.5,
+      "freshness": "2026-09-08 08:55"
     },
     "price-tracker-drop-alert-watch": {
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.7,
-      "tool_mean": 4.08,
-      "tool_min": 3,
+      "tool_mean": 4.34,
+      "tool_min": 3.8,
       "worst_tool": "license_activate",
-      "overall": 3.679,
+      "overall": 4.012,
       "coherence_mean": 3.75,
       "freshness": "2026-09-08 19:35"
     },
@@ -4226,10 +6709,10 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.7,
-      "tool_mean": 3.958,
-      "tool_min": 2.1,
-      "worst_tool": "license_activate",
-      "overall": 3.675,
+      "tool_mean": 3.967,
+      "tool_min": 2.7,
+      "worst_tool": "quote_create",
+      "overall": 3.847,
       "coherence_mean": 4.75,
       "freshness": "2026-09-08 19:30"
     },
@@ -4237,21 +6720,32 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.6,
-      "tool_mean": 3.8,
-      "tool_min": 2.4,
-      "worst_tool": "license_activate",
-      "overall": 3.618,
+      "tool_mean": 4.023,
+      "tool_min": 3,
+      "worst_tool": "schedule_history",
+      "overall": 3.88,
       "coherence_mean": 4.5,
       "freshness": "2026-09-08 09:11"
+    },
+    "resume-cover-letter-docx-generator": {
+      "surface": "connector",
+      "grade": "B",
+      "tdqs": 3.2,
+      "tool_mean": 4.031,
+      "tool_min": 3.2,
+      "worst_tool": "resume_to_html",
+      "overall": 3.714,
+      "coherence_mean": 3.75,
+      "freshness": "2026-09-08 09:07"
     },
     "statement-of-account": {
       "surface": "connector",
       "grade": "B",
       "tdqs": 3.4,
-      "tool_mean": 3.712,
-      "tool_min": 2.8,
-      "worst_tool": "license_activate",
-      "overall": 3.468,
+      "tool_mean": 3.938,
+      "tool_min": 3.3,
+      "worst_tool": "dunning_text",
+      "overall": 3.703,
       "coherence_mean": 3.75,
       "freshness": "2026-09-08 18:25"
     },
@@ -4259,10 +6753,10 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.6,
-      "tool_mean": 3.931,
-      "tool_min": 2,
-      "worst_tool": "license_activate",
-      "overall": 3.636,
+      "tool_mean": 4.085,
+      "tool_min": 3.1,
+      "worst_tool": "invoice_summary",
+      "overall": 4.009,
       "coherence_mean": 4.75,
       "freshness": "2026-09-08 09:10"
     },
@@ -4270,10 +6764,10 @@
       "surface": "connector",
       "grade": "B",
       "tdqs": 3.4,
-      "tool_mean": 3.822,
-      "tool_min": 2.2,
-      "worst_tool": "license_activate",
-      "overall": 3.346,
+      "tool_mean": 4.033,
+      "tool_min": 3.4,
+      "worst_tool": "convert_time",
+      "overall": 3.771,
       "coherence_mean": 3.75,
       "freshness": "2026-09-08 09:16"
     },
@@ -4281,20 +6775,13 @@
       "surface": "connector",
       "grade": "A",
       "tdqs": 3.7,
-      "tool_mean": 3.783,
-      "tool_min": 2.2,
-      "worst_tool": "license_activate",
-      "overall": 3.63,
+      "tool_mean": 4.017,
+      "tool_min": 3.6,
+      "worst_tool": "work_order_create",
+      "overall": 4.12,
       "coherence_mean": 4.75,
       "freshness": "2026-09-08 09:10"
     }
   },
-  "note": "Two pipelines. /mcp/servers is the GitHub path and Glama documents it as OAuth-submission only (glama.ai/mcp/methodology 1.1); we hold 1 unclaimed record of 33 repos and it has not been re-observed since 2026-09-05T18:06:49Z. /mcp/connectors is the official-registry mirror, needs no account, carries the same TDQS, and re-scores about daily. Measure tool-description work there. The awesome-mcp-servers CI gate matches the literal string glama.ai/mcp/servers/ and so is NOT satisfied by a connector URL. A listing is proven by the PAGE returning 200, never by the badge: the badge route answers 200 with a placeholder SVG for repos that do not exist. Publish a badge only where badges[<repo>].safe_to_publish is true.",
-  "connectors_pending_first_fetch": [
-    "barcode-qr-code-sepa-payment-ean13",
-    "currency-converter-ecb-rates-daily-keyless",
-    "per-diem",
-    "petty-cash",
-    "resume-cover-letter-docx-generator"
-  ]
+  "note": "Two pipelines. /mcp/servers is the GitHub path and Glama documents it as OAuth-submission only (glama.ai/mcp/methodology 1.1); we hold 1 unclaimed record of 33 repos and it has not been re-observed since 2026-09-05T18:06:49Z. /mcp/connectors is the official-registry mirror, needs no account, carries the same TDQS, and re-scores about daily. Measure tool-description work there. The awesome-mcp-servers CI gate matches the literal string glama.ai/mcp/servers/ and so is NOT satisfied by a connector URL. A listing is proven by the PAGE returning 200, never by the badge: the badge route answers 200 with a placeholder SVG for repos that do not exist. Publish a badge only where badges[<repo>].safe_to_publish is true."
 }

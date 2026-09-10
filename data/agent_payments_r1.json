@@ -1,0 +1,207 @@
+{
+  "generated": "2026-09-10",
+  "agent": "A4",
+  "loop": 33,
+  "report": "docs/AGENT_PAYMENTS_R1.md",
+  "deployed": false,
+
+  "verdict": {
+    "agent_native_rail_reachable_without_account": false,
+    "blocking_reasons": [
+      "demand: no mainstream MCP client settles an HTTP 402; Claude, ChatGPT and Cursor all require a separately installed, separately funded wallet bridge holding a private key",
+      "supply: accepting x402 needs a payTo wallet address; self-custody of customer funds in USDC is a financial and tax decision a person must take",
+      "price model: x402's live market median is $0.01 per call; this estate sells $19 one-time lifetime"
+    ],
+    "prior_finding_x402_only_live_rail": "CONFIRMED and strengthened - a no-account mainnet facilitator now exists"
+  },
+
+  "mcp_spec": {
+    "current_version": "2026-07-28",
+    "source": "https://modelcontextprotocol.io/specification/versioning",
+    "payment_primitive_merged": false,
+    "schema_hits_for_payment": 0,
+    "spec_text_hits": 4,
+    "spec_text_hits_location": "client/elicitation.mdx only, payment named as a use case",
+    "merged_seps_total": 43,
+    "sep_labelled_items_all_states": 223,
+    "sep_labelled_payment_related": 1,
+    "open_seps_today": 40,
+    "open_seps_payment_related": 0,
+    "all_prs_ever": 1631,
+    "prs_payment_related": 1,
+    "spec_repo_commits_matching_payment_or_x402": 0,
+    "sep_2007": {
+      "title": "Payment Support for MCP Servers",
+      "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2007",
+      "opened": "2025-12-23",
+      "labelled_sep": "2026-01-27",
+      "closed": "2026-06-24",
+      "merged": false,
+      "closure_reason": "dormant, no sponsor in 6 months; explicitly revivable",
+      "proposed_capability": "payment: { protocols: [\"x402\"] }",
+      "proposed_tool_field": "payment[] on each Tool in tools/list",
+      "proposed_error_code": -32402,
+      "proposed_retry_param": "tools/call params.payment.paymentRequest.authorization",
+      "proposed_settlement": "result.payment.paymentResponse.settlement"
+    },
+    "superseded_duplicates": [
+      { "issue": 2008, "opened": "2025-12-23", "closed": "2025-12-23" },
+      { "issue": 2009, "opened": "2025-12-23", "closed": "2025-12-27", "error_code": -32803 }
+    ],
+    "non_sep_rfc": { "issue": 3229, "opened": "2026-08-11", "closed": "2026-08-23", "error_code": -4020, "reached_sep_process": false },
+    "only_merged_payment_relevant_feature": {
+      "name": "URL mode elicitation",
+      "sep": 1036,
+      "introduced_in": "2025-11-25",
+      "live_in": "2026-07-28",
+      "params": ["mode", "message", "url"],
+      "quote": "essential for auth flows, payment processing, and other sensitive or secure operations"
+    },
+    "registry": {
+      "server_json_properties": ["$schema", "_meta", "description", "icons", "name", "packages", "remotes", "repository", "title", "version", "websiteUrl"],
+      "pricing_or_payment_fields": 0
+    },
+    "typescript_sdk_payment_code_hits": 0
+  },
+
+  "x402": {
+    "canonical_repo": "https://github.com/x402-foundation/x402",
+    "note": "coinbase/x402 is now a development fork",
+    "protocol_version": "2.0",
+    "protocol_version_dated": "2025-12-09",
+    "packages_current": { "@x402/core": "2.25.0", "@x402/mcp": "2.25.0", "published": "2026-09-03/04" },
+    "legacy_headers_v1": ["X-PAYMENT", "X-PAYMENT-RESPONSE"],
+    "current_headers_v2": ["PAYMENT-REQUIRED", "PAYMENT-SIGNATURE", "PAYMENT-RESPONSE"],
+    "challenge_fields_v2": ["x402Version", "error", "resource", "accepts", "extensions"],
+    "accepts_entry_fields_v2": ["scheme", "network", "amount", "asset", "payTo", "maxTimeoutSeconds", "extra"],
+    "networks_format_v2": "CAIP-2",
+    "mcp_is_a_first_class_transport": true,
+    "mcp_payment_meta_keys": ["x402/payment", "x402/payment-response"],
+    "facilitators_probed": [
+      { "host": "x402.org/facilitator", "http": 200, "auth_required": false, "networks": "testnet only", "verdict": "NO-ACCOUNT-POSSIBLE-TESTNET" },
+      { "host": "facilitator.payai.network", "http": 200, "auth_required": false, "networks": "Base/Polygon/Arbitrum/Solana mainnet", "verdict": "NO-ACCOUNT-POSSIBLE" },
+      { "host": "api.cdp.coinbase.com/platform/v2/x402", "http": 401, "auth_required": true, "verdict": "ACCOUNT-REQUIRED-AND-PAID" }
+    ],
+    "seller_requires": { "wallet_address": true, "facilitator_account": false, "kyc": false, "paid_service": false },
+    "buyer_requires": { "funded_wallet": true, "private_key_in_client_env": true, "account": false },
+    "mainstream_client_autopay": false,
+    "indexed_payable_resources": 28376,
+    "median_price_usd": 0.01
+  },
+
+  "other_rails": [
+    { "name": "Stripe MPP", "ga": "2026-03-18", "live": true, "verdict": "ACCOUNT-REQUIRED" },
+    { "name": "Stripe x402 (Machine payments)", "live": true, "verdict": "ACCOUNT-REQUIRED", "extra": "Stripe KYC + CDP account + stablecoin approval; non-US manual email" },
+    { "name": "ACP (OpenAI/Stripe/Meta)", "live": false, "verdict": "ANNOUNCED-NOT-LIVE" },
+    { "name": "Google AP2", "version": "0.2.0", "dated": "2026-04-28", "live": false, "verdict": "ANNOUNCED-NOT-LIVE", "note": "PSPs are mocked" },
+    { "name": "Visa TAP", "live": false, "verdict": "ANNOUNCED-NOT-LIVE", "note": "repo dead since 2025-10-28, moves no money" },
+    { "name": "Mastercard Agent Pay", "live": false, "verdict": "ANNOUNCED-NOT-LIVE" },
+    { "name": "L402 / Lightning", "live": true, "verdict": "FUNDS-REQUIRED", "note": "seller needs a funded LND node" }
+  ],
+
+  "shipped": {
+    "accept_negotiation": {
+      "defect": "Accept: */* and a missing Accept header answered HTTP 406 on initialize",
+      "root_cause": "MCP SDK literal substring test",
+      "root_cause_location": "node_modules/@modelcontextprotocol/sdk/dist/esm/server/webStandardStreamableHttp.js:468",
+      "ours_or_sdk": "sdk",
+      "approach": "wrapped, not forked",
+      "files": ["remote/src/accept.ts", "remote/src/index.ts", "remote/test/accept.test.mjs"],
+      "sse_ever_used_on_this_path": false,
+      "sse_evidence": "transport built sessionIdGenerator:undefined + enableJsonResponse:true; every answer content-type application/json; tools/list answered from module scope on all Accept variants including text/html",
+      "servers_probed": ["invoice", "cash-book", "pdf"],
+      "matrix": [
+        { "accept": "(none)", "initialize_before": 406, "initialize_after": 200, "tools_list_before": 200 },
+        { "accept": "*/*", "initialize_before": 406, "initialize_after": 200, "tools_list_before": 200 },
+        { "accept": "", "initialize_before": 406, "initialize_after": 200, "tools_list_before": 200 },
+        { "accept": "application/json", "initialize_before": 406, "initialize_after": 406, "tools_list_before": 200 },
+        { "accept": "application/json, text/event-stream", "initialize_before": 200, "initialize_after": 200, "tools_list_before": 200 },
+        { "accept": "text/html", "initialize_before": 406, "initialize_after": 406, "tools_list_before": 200 },
+        { "accept": "*/*, application/json;q=0", "initialize_before": 406, "initialize_after": 406, "tools_list_before": 200 }
+      ]
+    },
+    "payment_descriptor": {
+      "schema_id": "zovo.one/mcp-payment-descriptor/1",
+      "files": ["packages/mcp-license/src/payment.ts", "remote/src/payment.ts"],
+      "byte_identical_asserted": true,
+      "emitted_in": ["worker 429 rate_limit body (free callers only)", "license_status on both transports", "pricing://<product> resource on hosted"],
+      "declares_agent_settleable": false,
+      "declares_x402_supported": false,
+      "follows_real_convention": "elicitation block is the verbatim MCP 2026-07-28 url-mode elicitation/create parameter shape",
+      "invented_format": false
+    },
+    "resource_and_prompt": {
+      "resource_uri": "pricing://<product>",
+      "prompt_name": "upgrade_to_pro",
+      "registered_on": "hosted only (remote/src/shims/license.ts)",
+      "hosted_endpoints_covered": 30,
+      "stdio_blocked_by": "17 deepEqual list assertions under servers/*/test plus scripts/gen-spec.mjs, both outside assigned files",
+      "tool_descriptions_touched": 0
+    },
+    "build_vendor_repair": {
+      "state_at_head": "exit 1",
+      "state_now": "exit 0",
+      "failing_patches": ["clauses clause_export download", "zip zip_extract write loop publishes"],
+      "cause": "servers/clauses and servers/zip moved from mkdirSync(dirname(x),{recursive:true}) to ensureDirBounded(dirname(x)) without the vendor build being re-run",
+      "invisible_to": "npm test, which does not run build-vendor",
+      "file": "remote/build-vendor.mjs"
+    }
+  },
+
+  "verification": {
+    "build_vendor_exit": 0,
+    "remote_tests": { "pass": 51, "fail": 0, "before_this_work": 30 },
+    "license_payment_tests": { "pass": 11, "fail": 0 },
+    "root_npm_test": { "pass": 1487, "fail": 3, "baseline_before_this_work": { "pass": 1563, "fail": 0 } },
+    "root_failures_attribution": {
+      "caused_by_this_work": 0,
+      "cause": "servers/packing-list created 2026-09-10 20:58 by another agent, mid-flight",
+      "failures": [
+        "packages/mcp-license/test/bundle-link.test.mjs: SERVER_COUNT is 31 but 32 servers build a licence gate",
+        "servers/invoice/test/profile-readers.test.mjs: PROFILE_READERS drifted, packing-list grepped but not declared",
+        "servers/delivery-schedule/test/contract.test.mjs: scripts/sync-mirrors.sh does not list delivery-schedule"
+      ],
+      "one_line_fix_in_my_files": "SERVER_COUNT 31 -> 32 in packages/mcp-license/src/index.ts and remote/src/shims/license.ts; left to the agent adding that server rather than raced"
+    }
+  },
+
+  "human_gated": [
+    { "item": "accept x402", "step": "a person decides to self-custody a wallet and supplies the payTo address for USDC on Base", "cost": "no account, no KYC, no fee at low volume via facilitator.payai.network" },
+    { "item": "Stripe Machine payments / MPP", "step": "Stripe KYC + Coinbase CDP account + stablecoin approval; Poland-resident sellers email machine-payments@stripe.com" },
+    { "item": "pricing resource + upgrade_to_pro on the 31 stdio servers", "step": "copy the two registrations into packages/mcp-license/src/index.ts, update 17 deepEqual assertions under servers/*/test, re-run scripts/gen-spec.mjs" },
+    { "item": "/buy/<product> lands on a bare Stripe form", "step": "billing/src/index.js 303s straight to checkout.stripe.com with 0 bytes of context; owned by A3", "measured": "curl -sIL https://mcp.zovo.one/buy/invoice?src=probe -> 303 -> checkout.stripe.com" },
+    { "item": "revive SEP-2007", "step": "find a sponsor on PR #2007; community step, not autonomous" }
+  ],
+
+  "tokenless_endpoint": {
+    "question": "should the tokenless /mcp/<server> self-provision an anonymous tenant per session instead of 401ing",
+    "answer": "no",
+    "code_changed": false,
+    "premise_correction": {
+      "claim": "the 401 body does not name /mcp/connect",
+      "true": false,
+      "evidence": "measured live 2026-09-10: options[0].how and the connect field both name https://mcp.zovo.one/mcp/connect; the funnel agent has since also put it first in the message field"
+    },
+    "session_id_issued_today": false,
+    "session_id_evidence": "sessionIdGenerator: undefined in remote/src/index.ts; SDK webStandardStreamableHttp.js:726 'session management is disabled'; live initialize returns 200 with no mcp-session-id header",
+    "protocol_version_served": "2025-06-18",
+    "breaks": [
+      { "what": "stored data vanishes silently", "why": "state lives at ${tenant}:${server} in KV with a 30-day TTL; a session-scoped tenant is not resumable, so a ledger written today is unreachable tomorrow with no error" },
+      { "what": "abuse and cost gate disappears", "why": "TOKEN_MINTS_PER_IP=10/hour/IP is bypassed; every prober that POSTs tools/call creates a tok: record and a tenant document with a 30-day TTL, swept only after 35 idle days" },
+      { "what": "the only conversion mechanism breaks", "why": "a hosted purchase is bound as bind:<anonToken>; a tenant that dies with the session cannot be bound to, so a user who pays is on the free tier and has lost their data on the next connection", "severity": "fatal" }
+    ],
+    "undermines_licence_model": false,
+    "undermines_licence_model_note": "checked in code: decideBinding and rateLimit key off auth.tenant regardless of provenance and the free tier is already keyless; the objection is durability, not generosity",
+    "recommended_alternative": {
+      "what": "on a tokenless tools/call ONLY, mint under the existing per-IP ceiling and return ready_to_use { token, url, how } inside the same 401",
+      "why": "an offer, not a grant: still 401, nothing served, same token GET /mcp/token gives anyone; keeps the token visible, savable, portable and bindable at checkout",
+      "implemented": false,
+      "blocked_by": "the funnel agent rewrote unauthorizedBody() and its call site during this task; remote/test/unauthorized-body.test.mjs pins the exact signature unauthorizedBody(product: string) and the call-site string, so adding a parameter breaks that suite",
+      "size": "~15 lines: optional offer param spliced into the body, mint guarded by !hasCredential && rpc.method === 'tools/call'"
+    },
+    "further_notes": [
+      "the 401 body is not a JSON-RPC envelope, so a conforming client parsing it as JSON-RPC finds nothing; making it one conflicts with the existing top-level error string",
+      "www-authenticate: Bearer is already sent and is the hook the MCP authorization spec uses to start OAuth automatically - the only mechanism that truly solves one-URL-many-users for a registry; needs an authorization server, a human step"
+    ]
+  }
+}

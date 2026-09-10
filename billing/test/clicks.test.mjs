@@ -36,10 +36,10 @@ test("recordClick increments both the daily bucket and the running total", async
   await recordClick(env, "pdf.custom_stamp_text");
   await recordClick(env, "pdf.custom_stamp_text");
   await recordClick(env, "docx.business_set");
-  assert.equal(await env.REMOTE_DATA.get(`click:pdf.custom_stamp_text:${day}`), "2");
-  assert.equal(await env.REMOTE_DATA.get("click:pdf.custom_stamp_text:total"), "2");
-  assert.equal(await env.REMOTE_DATA.get(`click:docx.business_set:${day}`), "1");
-  assert.equal(await env.REMOTE_DATA.get("click:docx.business_set:total"), "1");
+  assert.equal(await env.REMOTE_DATA.get(`click:v2:pdf.custom_stamp_text:${day}`), "2");
+  assert.equal(await env.REMOTE_DATA.get("click:v2:pdf.custom_stamp_text:total"), "2");
+  assert.equal(await env.REMOTE_DATA.get(`click:v2:docx.business_set:${day}`), "1");
+  assert.equal(await env.REMOTE_DATA.get("click:v2:docx.business_set:total"), "1");
 });
 
 test("clickStats aggregates per-src totals and the trailing 7-day window, ignoring older daily buckets", async () => {
@@ -48,8 +48,8 @@ test("clickStats aggregates per-src totals and the trailing 7-day window, ignori
   await recordClick(env, "pdf.custom_stamp_text");
   // A stale daily bucket outside the 7-day window must not count toward last7d, but a
   // pre-seeded total must still be reflected verbatim.
-  await env.REMOTE_DATA.put("click:pdf.custom_stamp_text:2020-01-01", "999");
-  await env.REMOTE_DATA.put("click:pdf.custom_stamp_text:total", "50");
+  await env.REMOTE_DATA.put("click:v2:pdf.custom_stamp_text:2020-01-01", "999");
+  await env.REMOTE_DATA.put("click:v2:pdf.custom_stamp_text:total", "50");
 
   const stats = await clickStats(env);
   assert.equal(stats.by_src["pdf.custom_stamp_text"].total, 50);

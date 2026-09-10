@@ -45,8 +45,72 @@ it was a configuration error.
 
 ---
 
-## 2 and below
+---
 
-Filled in at loop close from the agents' human-gated findings, ranked the same way. Each entry
-carries the exact URL, the exact fields, and what it unblocks. An item with no measured value
-behind it does not go on this list.
+## 2. Search Console: make the service account an Owner. One click, and it converts a human step into an autonomous one.
+
+**Why it is second.** It is the only item on this list that gives an agent a capability it does
+not have. Google's Indexing API can request crawling directly instead of waiting for a ration,
+and it is currently refused:
+
+    403 PERMISSION_DENIED  "Failed to verify the URL ownership"
+
+The service account `zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com` is present on the
+property as `siteFullUser`, which can read, and the Indexing API needs `Owner`.
+
+**Why it matters right now.** A full 154-URL inspection census returns 1 indexed, 1 ever
+crawled, 115 "Discovered, currently not indexed", and every one of those with
+`lastCrawlTime: null`. Google has fetched one page of the site. It has not judged the content
+and declined it; it has never looked. Meanwhile 129 of the 429 indexed `zovo.one` pages carry a
+followed link into the host and every single one points at the bare root, which is exactly the
+one URL that got crawled.
+
+**The step.** Search Console, property `sc-domain:zovo.one`, Settings, Users and permissions,
+change that service account from Full to **Owner**.
+
+**Honest expectation.** This is not guaranteed to work. Three deep links placed a day earlier
+have live targets that are still uncrawled, and a sibling subdomain shows the same rationing
+shape, so this looks like ordinary new-host behaviour rather than something specific that can
+be unlocked. The Indexing API is worth having because it is the only lever that asks directly
+rather than waiting.
+
+---
+
+## 3. Bing Webmaster sign-in. The only route to the ChatGPT-facing index number.
+
+We now know the site IS in Brave, which is the index Claude's web search retrieves from, at a
+depth of exactly one URL of 154. Bing is the index ChatGPT search retrieves from and its number
+is **unmeasurable without a sign-in**. Scripted Bing queries cannot prove absence: it ignores
+`site:` and answers the head term only, so a zero from it means nothing and was correctly
+recorded as unmeasured rather than as absence.
+
+**The step.** `https://www.bing.com/webmasters/`, verify `mcp.zovo.one`, then Settings, API
+access, API Key. With the key an agent can read the number without further help.
+
+154 URLs were submitted to IndexNow this loop and accepted, 200 from bing.com, yandex.com,
+seznam.cz and naver. Accepted is not indexed, and the re-measure date is 2026-09-24.
+
+---
+
+## 4. A wallet address, only if you want agents to be able to pay.
+
+Agent-native payment was researched and the answer is no for now. The MCP specification has no
+payment primitive and the proposal for one closed unmerged. x402 is live and a no-account
+facilitator exists, but two things block it: it needs a `payTo` wallet address, which is a
+custody decision nobody but you can take, and decisively **no mainstream MCP client settles a
+402**, so Claude, ChatGPT and Cursor would each need a separately funded bridge, which is a
+larger human step than clicking a link. Median x402 price is a cent per call against a
+nineteen dollar one-time product.
+
+**No action recommended.** It is listed so the decision is recorded rather than rediscovered.
+
+---
+
+## 5. One editorial waiver, worth about a paragraph of thought.
+
+`punkpeye/awesome-remote-mcp-servers` is the best-fitting list found this loop: remote-only,
+which is exactly what we are, and it merges daily. It needs two things that standing rules
+forbid: a per-entry emoji marker, and a star on the repo from the submitting account.
+
+Both are cosmetic rather than paid. If you waive them it is one pull request. If not, it stays
+skipped and the rule holds. Either answer is fine; it needs to be yours.

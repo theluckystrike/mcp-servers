@@ -47,6 +47,7 @@ const src = {
   officeSuite: read(join(ROOT, "servers", "office-suite", "src", "index.ts")),
   buildMcpb: read(join(ROOT, "scripts", "build-mcpb.sh")),
   syncMirrors: read(join(ROOT, "scripts", "sync-mirrors.sh")),
+  mirrorSeo: read(join(ROOT, "scripts", "mirror-seo.py")),
   buildPages: read(join(ROOT, "scripts", "build-pages.mjs")),
   remote: read(join(ROOT, "remote", "src", "index.ts")),
 };
@@ -297,7 +298,11 @@ check("mirrors", "sync-mirrors", (s) => {
   const all = (src.syncMirrors.match(/^ALL_SERVERS="([^"]*)"/m) || [, ""])[1].split(/\s+/);
   const miss = [];
   if (!all.includes(s)) miss.push("ALL_SERVERS");
-  if (!new RegExp(`^\\s*${s}\\)\\s*echo`, "m").test(src.syncMirrors)) miss.push("topics_for");
+  // The per-server topic and capability tables moved out of the shell case statement
+  // into scripts/mirror-seo.py, which sync-mirrors.sh calls for description, topics and
+  // the README header. A server with no CAPABILITY entry there cannot be described, and
+  // mirror-seo.py refuses to generate for it, so this is still a hard registration.
+  if (!new RegExp(`^\\s*"${s}":`, "m").test(src.mirrorSeo)) miss.push("mirror-seo CAPABILITY");
   return miss.length ? `missing ${miss.join(", ")}` : true;
 });
 

@@ -1,0 +1,356 @@
+{
+  "generated_at": "2026-09-10",
+  "agent": "A3",
+  "loop": 33,
+  "scope": "registry row -> websiteUrl -> product page -> free hosted path -> cap -> upgrade message -> /buy/ -> Stripe",
+  "walk": {
+    "servers_walked": [
+      "invoice",
+      "time-tracker",
+      "spreadsheet"
+    ],
+    "registry": {
+      "rows_returned": 1394,
+      "distinct_names": 89,
+      "latest_rows": 89,
+      "active_latest": 85,
+      "deprecated_latest": 4,
+      "active_pointing_at_s_page": 81,
+      "active_pointing_at_bundle": 1,
+      "active_pointing_at_buy_route": 3,
+      "active_buy_route_names": [
+        "io.github.theluckystrike/delivery-schedule",
+        "io.github.theluckystrike/deliverable-tracker",
+        "io.github.theluckystrike/milestone-schedule"
+      ],
+      "active_buy_route_url": "https://mcp.zovo.one/buy/delivery-schedule",
+      "buy_route_is_robots_disallowed": true,
+      "source": "GET https://registry.modelcontextprotocol.io/v0/servers?search=io.github.theluckystrike&limit=100, paginated"
+    },
+    "hops": [
+      {
+        "hop": 1,
+        "from": "registry websiteUrl",
+        "to": "https://mcp.zovo.one/s/invoice",
+        "http": 200,
+        "bytes": 38335,
+        "rendered_text_lines": 636,
+        "decisions": 1
+      },
+      {
+        "hop": 2,
+        "from": "/s/invoice hero",
+        "to": "the zero-install path it names",
+        "before_fix": "https://mcp.zovo.one/mcp/invoice",
+        "outcome_before_fix": "DEAD",
+        "decisions": 1
+      },
+      {
+        "hop": 3,
+        "from": "hosted URL with a token from /mcp/connect",
+        "to": "initialize + tools/list",
+        "http": 200
+      },
+      {
+        "hop": 4,
+        "from": "invoice_create x3",
+        "to": "3 real invoices",
+        "elapsed_ms": [
+          1471,
+          1300,
+          1751
+        ]
+      },
+      {
+        "hop": 5,
+        "from": "invoice_create #4",
+        "to": "free-tier cap message with a tagged, tenant-carrying buy URL",
+        "elapsed_ms": 1321
+      },
+      {
+        "hop": 6,
+        "from": "/buy/invoice?tenant=anon_...&src=invoice.unlimited_invoices",
+        "to": "checkout.stripe.com cs_live_",
+        "http": 303
+      }
+    ],
+    "hops_to_monetisation_event": 4,
+    "decisions_to_monetisation_event": 2,
+    "tool_calls_to_cap": 4,
+    "ms_of_tool_latency_to_cap": 5843
+  },
+  "leaks": [
+    {
+      "rank": 1,
+      "name": "The zero-install path the product page leads with is dead on arrival",
+      "evidence": {
+        "measured": "POST /mcp/<id> {tools/list} -> HTTP 200 with the full tool list; POST /mcp/<id> {tools/call} -> HTTP 401 with a body that carries no `jsonrpc` key",
+        "servers_tested": 8,
+        "servers_failing": 8,
+        "www_authenticate": "Bearer realm=\"mcp.zovo.one\", error=\"invalid_token\"",
+        "oauth_discovery": {
+          "/.well-known/oauth-protected-resource": 404,
+          "/.well-known/oauth-protected-resource/mcp/invoice": 404,
+          "/.well-known/oauth-authorization-server": 404
+        },
+        "emitted_by": [
+          "billing/src/index.js:955 (the above-the-fold hero on every hosted /s/ page)",
+          "billing/src/index.js:1183 (/llms.txt, one line per catalogue entry)"
+        ],
+        "s_pages_affected": 30,
+        "llms_txt_lines_affected": 31,
+        "registry_rows_landing_on_an_affected_page": 81
+      },
+      "size": "100% of the headline free path, on 100% of the pages the registry sends humans to. Monetisation events reachable by that path: 0, structurally.",
+      "fixed": true,
+      "fix": "billing/src/index.js: the /s/ hero and /llms.txt now lead with /mcp/connect, print the /mcp/<id>/t/<token> shape, and state that the bare form answers every tool call with 401.",
+      "test": "billing/test/funnel-r1.test.mjs :: no page tells anyone to paste a hosted URL that answers every tool call with 401"
+    },
+    {
+      "rank": 2,
+      "name": "The click instrument counts crawlers; it grew 473% in three days",
+      "evidence": {
+        "v1_total_2026_09_07": 294,
+        "v1_total_2026_09_10T13_35Z": 1685,
+        "delta": 1391,
+        "delta_pct": 473.1,
+        "clicks_7d": 1688,
+        "counters_disagree": "clicks_7d (1688) exceeds total_clicks (1685)",
+        "store_setup_share": {
+          "clicks": 522,
+          "pct": 31.0,
+          "sources": 7,
+          "note": "the 7 setup-index srcs; something walked the 89 setup pages and followed every Buy Pro link"
+        },
+        "unknown_fallback_share": {
+          "clicks": 361,
+          "pct": 21.4
+        },
+        "in_product_cap_clicks_lifetime": 3,
+        "in_product_cap_share_pct": 0.18,
+        "cap_clicks_unchanged_since_2026_09_07": true,
+        "root_cause": "billing/src/index.js scripted-UA test was `/^(curl|python|node|wget|go-http|undici|axios|httpie)/i` OR `!looksLikeNavigation`, and looksLikeNavigation was satisfied by `accept: text/html`, which every crawler sends. Start-anchored, so `Mozilla/5.0 (compatible; Googlebot/2.1)` and `... HeadlessChrome/120` both walked past it.",
+        "live_control": "GET /buy/a3-nonexistent-product?src=probe.a3.googlebot with the Googlebot UA and accept: text/html, no probe header. The dead-route branch records a click and never touches Stripe, so this measures the guard with no Stripe object created. Result recorded in live_control_result below.",
+        "live_control_result": {
+          "probe_src": "probe.a3.googlebot",
+          "recorded": {
+            "total": 1,
+            "last7d": 1
+          },
+          "conclusion": "the live worker counted a Googlebot UA with accept: text/html as a human click; no x-mcp-probe header was sent and the 404 branch creates no Stripe object",
+          "snapshot_1335Z": {
+            "total_clicks": 1685,
+            "clicks_7d": 1688,
+            "sources": 257
+          },
+          "snapshot_1351Z": {
+            "total_clicks": 1690,
+            "clicks_7d": 1694,
+            "sources": 259
+          },
+          "unexplained_clicks_in_16_min": 4,
+          "stats_clicks_response_time_s": 116.98
+        }
+      },
+      "size": "1685 recorded clicks, of which the number that can be shown to be a person is 3 (0.18%). The instrument has never produced a usable number.",
+      "fixed": true,
+      "fix": "Counting is now opt-IN on the Fetch Metadata pair (sec-fetch-mode: navigate AND sec-fetch-dest: document), the UA denylists are unanchored, an untagged hit is bucketed as unattributed.<id> and excluded from the headline totals, and counters are written under a fresh `click:v2:` prefix so the contaminated v1 numbers are reported separately under `legacy` instead of being summed in.",
+      "test": "billing/test/funnel-r1.test.mjs :: CONTROL: one identifiable human click moves the counter by exactly one, and nothing else does"
+    },
+    {
+      "rank": 3,
+      "name": "Every crawler that follows a /buy/ link has a live Stripe Checkout Session created for it",
+      "evidence": {
+        "prior_measurement": "2498 Sessions in 4 days, 0 paid (docs/CONVERSION_R1.md, Stripe audit 2026-09-05)",
+        "prior_fix_2026_09_09": "required a navigation signal of every request, but accepted `accept: text/html` as that signal",
+        "why_still_open": "accept: text/html is sent by Googlebot, ClaudeBot, GPTBot and bingbot"
+      },
+      "size": "unmeasured from here without creating the objects it counts; bounded below by the 900 crawler Sessions the Stripe audit already attributed to browser-shaped UAs",
+      "fixed": true,
+      "fix": "billing/src/index.js: a UA naming a crawler or an HTTP client is scripted wherever the token sits in the string, so it is redirected to /s/<id> and never reaches createCheckout.",
+      "test": "billing/test/funnel-r1.test.mjs :: a named crawler never has a live Stripe Checkout Session created for it"
+    },
+    {
+      "rank": 4,
+      "name": "3 active registry rows still send humans to a robots-disallowed /buy/ URL",
+      "evidence": {
+        "rows": [
+          "io.github.theluckystrike/delivery-schedule",
+          "io.github.theluckystrike/deliverable-tracker",
+          "io.github.theluckystrike/milestone-schedule"
+        ],
+        "version": "0.21.0",
+        "websiteUrl": "https://mcp.zovo.one/buy/delivery-schedule",
+        "live_behaviour": "303 to checkout.stripe.com with a cs_live_ Session and no product context",
+        "robots_txt": "Disallow: /buy/",
+        "local_manifests": "servers/delivery-schedule/server*.json already say https://mcp.zovo.one/s/delivery-schedule",
+        "share_of_active_rows_pct": 3.5
+      },
+      "size": "3 of 85 active registry rows (3.5%)",
+      "fixed": false,
+      "needs": "a version bump and a republish; the registry rejects a duplicate version, so the corrected manifests cannot land under 0.21.0. Orchestrator action."
+    },
+    {
+      "rank": 5,
+      "name": "The storefront overstated a free tier",
+      "evidence": {
+        "product": "delivery-schedule",
+        "claimed": "5 open schedules, 200 deliverables each",
+        "enforced": "servers/delivery-schedule/src/index.ts:33 FREE_OPEN_SCHEDULES = 3",
+        "per_schedule_cap_in_code": null
+      },
+      "size": "1 of 31 products; a buyer met the wall 40% earlier than the page promised",
+      "fixed": true,
+      "fix": "billing/src/index.js: \"Free: 3 open schedules and the late report on every tier.\"",
+      "test": "billing/test/funnel-r1.test.mjs :: every free-tier count the storefront advertises is the number the server enforces (29 claims checked, with a positive control)"
+    },
+    {
+      "rank": 6,
+      "name": "license_status.upgradeUrl still carries no ?src=",
+      "evidence": {
+        "measured_live": "https://mcp.zovo.one/buy/invoice?tenant=anon_f6969594799eea64645a812454342b9e",
+        "file": "packages/mcp-license/src/index.ts:154"
+      },
+      "size": "every in-product upgrade click arriving from license_status is unattributable",
+      "fixed": false,
+      "needs": "one line, in a package this agent does not own. Re-reported from docs/CHECKOUT_R1.md."
+    }
+  ],
+  "free_to_paid_trigger": {
+    "verdict": "real, enforced, and fast on the tokened hosted path",
+    "measured": {
+      "server": "invoice",
+      "cap": "FREE_INVOICES_PER_MONTH = 3 (servers/invoice/src/index.ts:23)",
+      "calls_to_cap": 4,
+      "wall_ms_to_cap": 5843,
+      "message_carries_tenant": true,
+      "message_carries_src": "invoice.unlimited_invoices",
+      "message_offers_bundle": true,
+      "buy_link_from_message": "303 -> checkout.stripe.com cs_live_"
+    },
+    "caps_declared_in_code": 60,
+    "servers_with_a_count_cap": 30,
+    "note": "docs/CONVERSION_R1.md concluded the caps 'are set where a trial user never reaches them'. Measured against the code and the live endpoint, that is not the binding constraint: the invoice cap is 3 actions and was reached in 5.8 seconds of tool latency. The reason only 3 cap clicks exist in the instrument's lifetime is that almost nobody reaches the product at all, and the path the product page names cannot reach it."
+  },
+  "price": {
+    "single_server_usd": 19,
+    "single_server_terms": "one-time, lifetime, per server",
+    "sellable_servers": 31,
+    "all_singly_usd": 589,
+    "bundle_usd": 39,
+    "bundle_saving_usd": 550,
+    "bundle_saving_pct": 93.4,
+    "subscription": false,
+    "external_comparison": "UNSOURCED. billing/src/compare.js carries competitor price points ($49 a month, $4.99/month, $0.25 a call, x402 per-call figures) but cites no primary source in the code, and this round did not re-verify any of them from a free primary source. No external price comparison is asserted here."
+  },
+  "verified_no_regression": {
+    "tenant_is_the_token": {
+      "method": "minted a real key with scripts/sign-license.mjs (keys/license-private.pem), on a fresh anonymous token from GET /mcp/token",
+      "before": "tier=free, tenant=anon:f6969594799eea64645a812454342b9e",
+      "license_activate": "accepted",
+      "after": "tier=pro, same tenant",
+      "result": "PASS - a verified key binds to the caller's own anonymous token, data is not migrated, no regression"
+    },
+    "navigation_signal_required_on_buy": {
+      "result": "PRESENT but INSUFFICIENT - the signal accepted was `accept: text/html`, which every crawler sends. Tightened this round."
+    },
+    "registry_websiteUrl_repointed_to_s": {
+      "result": "PARTIAL - 81 of 85 active rows are on /s/, 1 on /bundle, 3 still on /buy/delivery-schedule"
+    }
+  },
+  "instrument_v2": {
+    "key_prefix": "click:v2:",
+    "counted_when": [
+      "sec-fetch-mode: navigate",
+      "sec-fetch-dest: document",
+      "User-Agent names no crawler and no HTTP client (unanchored match)",
+      "no x-mcp-probe header",
+      "a ?src= a live page emits"
+    ],
+    "unattributed_bucket": "unattributed.<id>, reported but excluded from total_clicks and clicks_7d",
+    "legacy_reporting": "v1 `click:` counters are reported under `legacy` and never summed into v2",
+    "self_describing": "GET /stats/clicks now returns `instrument: 2` and a `counting_rule` string",
+    "perf": "the per-key gets in a list page are now issued together; the endpoint was taking over 45 s and timing out a curl",
+    "control_test": "billing/test/funnel-r1.test.mjs drives the real request handler with a storing KV: one browser navigation moves total_clicks by exactly 1, and 8 other request shapes (Googlebot, ClaudeBot, HeadlessChrome, spoofed-Chrome curl, curl, python-requests, an explicit probe, a non-navigation fetch) each move it by exactly 0."
+  },
+  "tests": {
+    "billing_before": "107 declared, 102 pass, 5 fail",
+    "billing_after": "123 declared, 131 of 132 run (only servers/packing-list/ failing)",
+    "remote_after": "56 of 56",
+    "new_test_files": [
+      "billing/test/funnel-r1.test.mjs",
+      "remote/test/unauthorized-body.test.mjs",
+      "remote/test/connect-mint.test.mjs"
+    ],
+    "new_tests": 20
+  },
+  "needs_deploying": [
+    "remote/ worker (wrangler deploy) - the 401 message and the /mcp/connect mint guard. Deploy this before or with billing/.",
+    "billing/ worker (wrangler deploy) - the storefront hero, /llms.txt, the click instrument v2, the /s/ bundle nav link, the delivery-schedule free tier and the sitemap entry",
+    "servers/delivery-schedule version bump + registry republish (3 rows)",
+    "packages/mcp-license upgradeUrl ?src= (not this agent's file)"
+  ],
+  "not_deployed_by_this_agent": true,
+  "second_pass": {
+    "trigger": "orchestrator review",
+    "bundle_hero_test": {
+      "reported": "test/bundle.test.mjs:68 'the home hero links to /bundle' failing from the hero rewrite",
+      "actual": "not that test and not that link. The /s/ hero was rewritten; the HOME hero link was never touched (grep -c '<a href=\"/bundle\">/bundle</a>' src/index.js = 1 before and after) and bundle.test.mjs passes 8 of 8 on that assertion.",
+      "real_failure": "bundle.test.mjs:56, broken by the sitemap edit: it matched the literal ORDER of the sitemap urls array, so adding /mcp/connect after '/' failed it while /bundle was still covered.",
+      "resolution": "the assertion now reads the RENDERED sitemap for <loc>https://mcp.zovo.one/bundle</loc>. Strictly stronger; nothing deleted.",
+      "acted_on_the_underlying_point": "the /s/ nav gained 'All 31 for $39' -> /bundle, beside Buy Pro, asserted to appear before the hero",
+      "handed_over": "billing/src/content.js still says 'the nineteen-server bundle for $39' on every /s/ page; there are 31. Another agent's file and they are building figures.js for exactly this."
+    },
+    "unauthorized_message": {
+      "correction": "the body DID name /mcp/connect three times (options[0].how, connect, guide) but `message` did not, and `message` is the only field a client surfaces",
+      "before": "This endpoint needs a token. Put it in the Authorization header, or in the URL if your client cannot set headers.",
+      "after_names": [
+        "https://mcp.zovo.one/mcp/connect",
+        "https://mcp.zovo.one/mcp/<product>/t/<token>",
+        "GET https://mcp.zovo.one/mcp/token",
+        "Authorization: Bearer"
+      ],
+      "also_explains_symptom": "the bare URL answers initialize and tools/list and then refuses every tool call, which is what just happened",
+      "refactor": "extracted to an exported pure unauthorizedBody(product) in remote/src/index.ts",
+      "tests": "remote/test/unauthorized-body.test.mjs, 5 tests, incl. one that fails if a second copy of the body appears"
+    },
+    "connect_page_minting": {
+      "defect": "GET and HEAD /mcp/connect minted an anonymous token on EVERY request",
+      "cost_per_request": "1 KV read + 2 KV writes; the tok: key holds a data space for ANON_TTL = 30 days",
+      "rate_limit": "TOKEN_MINTS_PER_IP = 10 per IP per hour; the 11th returns HTTP 429",
+      "why_it_mattered_now": "this page became the hero destination of all 30 product pages and every /llms.txt line in this pass, and was about to enter the sitemap",
+      "worst_case": "a NAT, VPN exit or office proxy generating 11 loads in an hour takes the entry point to the whole free tier off the air for everyone behind that address",
+      "live_proof": {
+        "method": "two consecutive GET /mcp/connect with a Googlebot UA and no browser headers, against the live worker",
+        "tokens_minted": [
+          "anon_ed048209a21b944a2e0bacf4b987f45d",
+          "anon_ce88d47cd88eb0f23dcdc34bacbe1b53"
+        ],
+        "head_status": 200
+      },
+      "fix": "mint only for a real browser navigation (sec-fetch-mode: navigate + sec-fetch-dest: document, unanchored bot/tool UA denylist) or an explicit ?mint=1; prefetches excluded via sec-purpose; HEAD never mints and returns no body. Everything else gets the same complete page with <token> placeholders and one 'Get my free token' link.",
+      "tests": "remote/test/connect-mint.test.mjs, 6 tests",
+      "verdict": "adding /mcp/connect to the sitemap WITHOUT this fix would have been the wrong trade"
+    },
+    "sitemap": {
+      "before": {
+        "loc_count": 154,
+        "mcp_connect_present": false
+      },
+      "after_local_render": {
+        "loc_count": 164,
+        "mcp_connect_present": true
+      },
+      "generator": "billing/src/index.js:1166",
+      "other_promoted_pages": "all 30 /s/<id> pages were already listed; /llms.txt is not a page",
+      "robots_txt": "no change needed, checked not assumed: Allow: /, Disallow only /buy/, /success, /recover, /verify, /bound. A test now asserts no Disallow line is a prefix of /mcp/connect.",
+      "test": "billing/test/funnel-r1.test.mjs :: the sitemap offers the page that mints the token"
+    },
+    "suite_state": {
+      "billing": "131 of 132",
+      "remote": "56 of 56",
+      "only_failure": "checkout.test.mjs:32, another agent's untracked servers/packing-list/, left alone as instructed"
+    },
+    "deploy_order": "deploy remote/ before or with billing/: the billing sitemap starts advertising /mcp/connect to crawlers and the mint guard that makes that safe lives in remote/"
+  }
+}

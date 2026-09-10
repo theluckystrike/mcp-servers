@@ -1,0 +1,1382 @@
+{
+ "generated": "2026-09-10T14:00:14.060Z",
+ "loop": 33,
+ "agent": "A6",
+ "what": "Round 2 of the tool-description work, targeted at Glama's published rubric using GLAMA'S OWN per-tool scores rather than a local heuristic.",
+ "key_mechanism_finding": {
+  "claim": "Glama's /mcp/connectors pages score the HOSTED endpoint's tool descriptions, not the descriptions in packages/mcp-license.",
+  "evidence": "glama.ai/mcp/connectors/io.github.theluckystrike/amortization renders license_activate as 'Turn Pro on for this hosted connection using a key from checkout...', which is the string in remote/src/shims/license.ts:259-261, NOT the string in packages/mcp-license/src/index.ts:215. The same page renders loan_journal byte-identical to servers/amortization/src/index.ts, so ordinary tools DO flow from servers/*/src through remote/build-vendor.mjs.",
+  "consequence": "The 31x shared-description lever for the connector surface lives in remote/src/shims/license.ts. packages/mcp-license drives the /mcp/servers surface only, where license_activate already scores 4.3-4.4 and needs no work."
+ },
+ "score_stamp_question": {
+  "asked": "Round 1 rewrote the two shared licence descriptions; Glama showed the new text but the score stamp still read 2026-09-08. Has it re-scored?",
+  "answer": "Yes for per-tool scores, no for the aggregate. Every one of the 25 connectors still stamps 'Scored 2026-09-08' and still publishes the 2026-09-08 TDQS number, but the per-tool table has been recomputed: license_activate now scores 3.8 on 25 of 25 connectors (round 2 measured min 1.4, max 3.1, mean 2.26). The published TDQS is a cached aggregate; the rubric table underneath it is fresh.",
+  "published_tdqs_mean": 3.44,
+  "derived_overall_mean": 3.873
+ },
+ "surface_note": "A blind buyer-intent measurement cited /mcp/servers URLs 6 times and /mcp/connectors 0 times. Both surfaces use the identical rubric and share these tool definitions, so this work lands on both; but see docs/TOOL_QUALITY_R2.md section 6 for why the connector LISTING cannot be climbed with score.",
+ "formula": "TDQS = 0.6*mean(tool scores) + 0.4*min(tool scores); overall = 0.7*TDQS + 0.3*mean(4 coherence dimensions)",
+ "connectors": {
+  "amortization": {
+   "server": "amortization",
+   "published_tdqs": 3.4,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 09:15",
+   "tools": 9,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 3.789,
+    "tool_min": 3.2,
+    "definition_quality": 3.553,
+    "coherence_mean": 4.5,
+    "overall": 3.837,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "loan_journal",
+    "score": 3.2,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 3,
+     "Completeness": 2,
+     "Parameters": 4,
+     "Purpose": 5,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "loan_journal",
+    "loan_list",
+    "loans_report",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "loan_create",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 4,
+    "Tool Count": 5,
+    "Completeness": 4
+   }
+  },
+  "asset-register": {
+   "server": "asset-register",
+   "published_tdqs": 3.5,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 09:05",
+   "tools": 9,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.033,
+    "tool_min": 3.2,
+    "definition_quality": 3.7,
+    "coherence_mean": 4.75,
+    "overall": 4.015,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "asset_report",
+    "score": 3.2,
+    "dimensions": {
+     "Behavior": 3,
+     "Conciseness": 4,
+     "Completeness": 3,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "asset_report",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "asset_list",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 5,
+    "Tool Count": 5,
+    "Completeness": 4
+   }
+  },
+  "bank-statement-csv-categorize-reconcile-ledger": {
+   "server": "bank-statement",
+   "published_tdqs": 3.7,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 18:25",
+   "tools": 15,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.16,
+    "tool_min": 3.6,
+    "definition_quality": 3.936,
+    "coherence_mean": 4.25,
+    "overall": 4.03,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "transactions_list",
+    "score": 3.6,
+    "dimensions": {
+     "Behavior": 3,
+     "Conciseness": 5,
+     "Completeness": 4,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "transactions_list",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 4,
+    "Tool Count": 4,
+    "Completeness": 4
+   }
+  },
+  "barcode-qr-code-sepa-payment-ean13": {
+   "server": "barcode",
+   "published_tdqs": 3.1,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 09:16",
+   "tools": 10,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.17,
+    "tool_min": 3.8,
+    "definition_quality": 4.022,
+    "coherence_mean": 3.5,
+    "overall": 3.865,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "license_activate",
+    "score": 3.8,
+    "dimensions": {
+     "Behavior": 4,
+     "Conciseness": 5,
+     "Completeness": 4,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "qr_create",
+    "score": 3.8,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 3,
+    "Naming Consistency": 2,
+    "Tool Count": 5,
+    "Completeness": 4
+   }
+  },
+  "billing-docs-credit-notes-purchase-orders": {
+   "server": "billing-docs",
+   "published_tdqs": 3.7,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 18:35",
+   "tools": 16,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.169,
+    "tool_min": 3.2,
+    "definition_quality": 3.781,
+    "coherence_mean": 4.25,
+    "overall": 3.922,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "purchase_order_create",
+    "score": 3.2,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 4,
+     "Completeness": 2,
+     "Parameters": 2,
+     "Purpose": 5,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "purchase_order_create",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "credit_note_list",
+    "score": 3.8,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 4,
+    "Tool Count": 4,
+    "Completeness": 4
+   }
+  },
+  "calendar-ics-reader-events-freebusy-conflicts": {
+   "server": "calendar",
+   "published_tdqs": 3.9,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 19:35",
+   "tools": 11,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.036,
+    "tool_min": 3.6,
+    "definition_quality": 3.862,
+    "coherence_mean": 4.25,
+    "overall": 3.978,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "free_busy",
+    "score": 3.6,
+    "dimensions": {
+     "Behavior": 3,
+     "Conciseness": 4,
+     "Completeness": 3,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 4
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "free_busy",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 4,
+    "Naming Consistency": 3,
+    "Tool Count": 5,
+    "Completeness": 5
+   }
+  },
+  "cash-book": {
+   "server": "cash-book",
+   "published_tdqs": 3.4,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 19:31",
+   "tools": 9,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 3.756,
+    "tool_min": 2.9,
+    "definition_quality": 3.414,
+    "coherence_mean": 4,
+    "overall": 3.59,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "ledger_lines",
+    "score": 2.9,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 4,
+     "Completeness": 3,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "ledger_lines",
+    "month_close",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "trial_balance",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 4,
+    "Naming Consistency": 3,
+    "Tool Count": 5,
+    "Completeness": 4
+   }
+  },
+  "catalogue": {
+   "server": "catalogue",
+   "published_tdqs": 3.4,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 09:08",
+   "tools": 12,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 3.917,
+    "tool_min": 3.3,
+    "definition_quality": 3.67,
+    "coherence_mean": 4.25,
+    "overall": 3.844,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "catalogue_report",
+    "score": 3.3,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 3,
+     "Completeness": 3,
+     "Parameters": 3,
+     "Purpose": 5,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "catalogue_report",
+    "sku_set",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "rate_set",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 2,
+    "Tool Count": 5,
+    "Completeness": 5
+   }
+  },
+  "contract-clause-library-proposal-template-docx": {
+   "server": "clauses",
+   "published_tdqs": 3.5,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 09:07",
+   "tools": 12,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.125,
+    "tool_min": 3.5,
+    "definition_quality": 3.875,
+    "coherence_mean": 4.75,
+    "overall": 4.138,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "clause_update",
+    "score": 3.5,
+    "dimensions": {
+     "Behavior": 4,
+     "Conciseness": 5,
+     "Completeness": 3,
+     "Parameters": 2,
+     "Purpose": 4,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "clause_update",
+    "score": 3.5,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 4,
+    "Tool Count": 5,
+    "Completeness": 5
+   }
+  },
+  "currency-converter-ecb-rates-daily-keyless": {
+   "server": "currency",
+   "published_tdqs": 2.8,
+   "published_grade": "C",
+   "scored_at": "2026-09-08 08:55",
+   "tools": 9,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.144,
+    "tool_min": 3.8,
+    "definition_quality": 4.006,
+    "coherence_mean": 2.5,
+    "overall": 3.554,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "fx_rates_for",
+    "score": 3.8,
+    "dimensions": {
+     "Behavior": 3,
+     "Conciseness": 5,
+     "Completeness": 4,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 4
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "fx_rates_for",
+    "score": 3.8,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 2,
+    "Naming Consistency": 2,
+    "Tool Count": 3,
+    "Completeness": 3
+   }
+  },
+  "deposits": {
+   "server": "deposits",
+   "published_tdqs": 3.3,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 09:11",
+   "tools": 11,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 3.927,
+    "tool_min": 3.3,
+    "definition_quality": 3.676,
+    "coherence_mean": 4.5,
+    "overall": 3.923,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "deposit_balance",
+    "score": 3.3,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 5,
+     "Completeness": 3,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "deposit_balance",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "deposit_list",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 4,
+    "Naming Consistency": 4,
+    "Tool Count": 5,
+    "Completeness": 5
+   }
+  },
+  "excel-spreadsheet-xlsx-csv": {
+   "server": "spreadsheet",
+   "published_tdqs": 3.7,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 09:11",
+   "tools": 13,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.162,
+    "tool_min": 3.6,
+    "definition_quality": 3.937,
+    "coherence_mean": 5,
+    "overall": 4.256,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "sheet_stats",
+    "score": 3.6,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 5,
+     "Completeness": 4,
+     "Parameters": 3,
+     "Purpose": 5,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "sheet_stats",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 5,
+    "Tool Count": 5,
+    "Completeness": 5
+   }
+  },
+  "expense-tracker-receipts-mileage": {
+   "server": "expense-tracker",
+   "published_tdqs": 3.7,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 18:10",
+   "tools": 14,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.079,
+    "tool_min": 3.5,
+    "definition_quality": 3.847,
+    "coherence_mean": 4.25,
+    "overall": 3.968,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "expense_export",
+    "score": 3.5,
+    "dimensions": {
+     "Behavior": 4,
+     "Conciseness": 5,
+     "Completeness": 3,
+     "Parameters": 2,
+     "Purpose": 4,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "expense_export",
+    "score": 3.5,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 4,
+    "Tool Count": 4,
+    "Completeness": 4
+   }
+  },
+  "image-resize-convert-compress-watermark": {
+   "server": "image",
+   "published_tdqs": 3.6,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 17:55",
+   "tools": 15,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.08,
+    "tool_min": 3.2,
+    "definition_quality": 3.728,
+    "coherence_mean": 4,
+    "overall": 3.81,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "image_delete_upload",
+    "score": 3.2,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 5,
+     "Completeness": 3,
+     "Parameters": 1,
+     "Purpose": 5,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "image_batch_resize",
+    "license_activate",
+    "image_delete_upload"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "image_thumbnails",
+    "score": 3.7,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 4,
+    "Naming Consistency": 4,
+    "Tool Count": 4,
+    "Completeness": 4
+   }
+  },
+  "pdf-merge-split-stamp-extract-pages": {
+   "server": "pdf",
+   "published_tdqs": 3.3,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 08:51",
+   "tools": 15,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.207,
+    "tool_min": 3.6,
+    "definition_quality": 3.964,
+    "coherence_mean": 4.25,
+    "overall": 4.05,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "pdf_watermark_business",
+    "score": 3.6,
+    "dimensions": {
+     "Behavior": 3,
+     "Conciseness": 3,
+     "Completeness": 3,
+     "Parameters": 5,
+     "Purpose": 4,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "pdf_watermark_business",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 4,
+    "Naming Consistency": 4,
+    "Tool Count": 4,
+    "Completeness": 5
+   }
+  },
+  "per-diem": {
+   "server": "per-diem",
+   "published_tdqs": 3.1,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 08:55",
+   "tools": 9,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 3.667,
+    "tool_min": 2.9,
+    "definition_quality": 3.36,
+    "coherence_mean": 4.25,
+    "overall": 3.627,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "trip_export",
+    "score": 2.9,
+    "dimensions": {
+     "Behavior": 1,
+     "Conciseness": 4,
+     "Completeness": 2,
+     "Parameters": 3,
+     "Purpose": 5,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "trip_export",
+    "trip_delete",
+    "trip_record",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "perdiem_rates",
+    "score": 3.8,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 4,
+    "Naming Consistency": 4,
+    "Tool Count": 5,
+    "Completeness": 4
+   }
+  },
+  "petty-cash": {
+   "server": "petty-cash",
+   "published_tdqs": 2.6,
+   "published_grade": "C",
+   "scored_at": "2026-09-08 08:55",
+   "tools": 8,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 3.862,
+    "tool_min": 3.5,
+    "definition_quality": 3.717,
+    "coherence_mean": 2.5,
+    "overall": 3.352,
+    "tier": "B"
+   },
+   "worst_tool_before": {
+    "tool": "float_report",
+    "score": 3.5,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 5,
+     "Completeness": 3,
+     "Parameters": 3,
+     "Purpose": 5,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "float_report",
+    "score": 3.5,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 2,
+    "Naming Consistency": 2,
+    "Tool Count": 3,
+    "Completeness": 3
+   }
+  },
+  "price-tracker-drop-alert-watch": {
+   "server": "price-tracker",
+   "published_tdqs": 3.7,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 19:35",
+   "tools": 10,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.34,
+    "tool_min": 3.8,
+    "definition_quality": 4.124,
+    "coherence_mean": 3.75,
+    "overall": 4.012,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "license_activate",
+    "score": 3.8,
+    "dimensions": {
+     "Behavior": 4,
+     "Conciseness": 5,
+     "Completeness": 4,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "price_history",
+    "score": 4.2,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 3,
+    "Naming Consistency": 4,
+    "Tool Count": 5,
+    "Completeness": 3
+   }
+  },
+  "quotes-estimates-proposals-vat-win-rate": {
+   "server": "quotes",
+   "published_tdqs": 3.7,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 19:30",
+   "tools": 12,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 3.967,
+    "tool_min": 2.7,
+    "definition_quality": 3.46,
+    "coherence_mean": 4.75,
+    "overall": 3.847,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "quote_create",
+    "score": 2.7,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 4,
+     "Completeness": 2,
+     "Parameters": 2,
+     "Purpose": 4,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "quote_create",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "quote_decline",
+    "score": 3.5,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 4,
+    "Tool Count": 5,
+    "Completeness": 5
+   }
+  },
+  "recurring-invoice-scheduler-subscription-billing-due-reminders": {
+   "server": "recurring",
+   "published_tdqs": 3.6,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 09:11",
+   "tools": 13,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.023,
+    "tool_min": 3,
+    "definition_quality": 3.614,
+    "coherence_mean": 4.5,
+    "overall": 3.88,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "schedule_history",
+    "score": 3,
+    "dimensions": {
+     "Behavior": 3,
+     "Conciseness": 4,
+     "Completeness": 3,
+     "Parameters": 2,
+     "Purpose": 4,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "schedule_history",
+    "schedule_update",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "schedule_upcoming",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 4,
+    "Tool Count": 5,
+    "Completeness": 4
+   }
+  },
+  "resume-cover-letter-docx-generator": {
+   "server": "resume",
+   "published_tdqs": 3.2,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 09:07",
+   "tools": 13,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.031,
+    "tool_min": 3.2,
+    "definition_quality": 3.699,
+    "coherence_mean": 3.75,
+    "overall": 3.714,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "resume_to_html",
+    "score": 3.2,
+    "dimensions": {
+     "Behavior": 3,
+     "Conciseness": 4,
+     "Completeness": 3,
+     "Parameters": 2,
+     "Purpose": 4,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "resume_to_html",
+    "license_activate",
+    "doc_delete_upload"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "profile_get",
+    "score": 4,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 3,
+    "Tool Count": 4,
+    "Completeness": 3
+   }
+  },
+  "statement-of-account": {
+   "server": "statement-of-account",
+   "published_tdqs": 3.4,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 18:25",
+   "tools": 8,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 3.938,
+    "tool_min": 3.3,
+    "definition_quality": 3.683,
+    "coherence_mean": 3.75,
+    "overall": 3.703,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "dunning_text",
+    "score": 3.3,
+    "dimensions": {
+     "Behavior": 4,
+     "Conciseness": 3,
+     "Completeness": 3,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "dunning_text",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "statement_build",
+    "score": 3.5,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 4,
+    "Naming Consistency": 3,
+    "Tool Count": 4,
+    "Completeness": 4
+   }
+  },
+  "time-tracker-timesheet-billable-hours": {
+   "server": "time-tracker",
+   "published_tdqs": 3.6,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 09:10",
+   "tools": 13,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.085,
+    "tool_min": 3.1,
+    "definition_quality": 3.691,
+    "coherence_mean": 4.75,
+    "overall": 4.009,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "invoice_summary",
+    "score": 3.1,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 5,
+     "Completeness": 3,
+     "Parameters": 3,
+     "Purpose": 4,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "invoice_summary",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "entry_add",
+    "score": 3.8,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 4,
+    "Tool Count": 5,
+    "Completeness": 5
+   }
+  },
+  "timezone-world-clock-meeting-slots-overlap-ics": {
+   "server": "timezone",
+   "published_tdqs": 3.4,
+   "published_grade": "B",
+   "scored_at": "2026-09-08 09:16",
+   "tools": 9,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.033,
+    "tool_min": 3.4,
+    "definition_quality": 3.78,
+    "coherence_mean": 3.75,
+    "overall": 3.771,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "convert_time",
+    "score": 3.4,
+    "dimensions": {
+     "Behavior": 3,
+     "Conciseness": 5,
+     "Completeness": 3,
+     "Parameters": 4,
+     "Purpose": 4,
+     "Usage Guidelines": 2
+    }
+   },
+   "tools_rewritten_this_round": [
+    "convert_time",
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "find_meeting_slots",
+    "score": 3.8,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 4,
+    "Naming Consistency": 2,
+    "Tool Count": 5,
+    "Completeness": 4
+   }
+  },
+  "work-order": {
+   "server": "work-order",
+   "published_tdqs": 3.7,
+   "published_grade": "A",
+   "scored_at": "2026-09-08 09:10",
+   "tools": 12,
+   "derived_from_live_tool_scores": {
+    "tool_mean": 4.017,
+    "tool_min": 3.6,
+    "definition_quality": 3.85,
+    "coherence_mean": 4.75,
+    "overall": 4.12,
+    "tier": "A"
+   },
+   "worst_tool_before": {
+    "tool": "work_order_create",
+    "score": 3.6,
+    "dimensions": {
+     "Behavior": 2,
+     "Conciseness": 4,
+     "Completeness": 3,
+     "Parameters": 4,
+     "Purpose": 5,
+     "Usage Guidelines": 3
+    }
+   },
+   "tools_rewritten_this_round": [
+    "license_activate"
+   ],
+   "predicted_worst_tool_after": {
+    "tool": "work_order_create",
+    "score": 3.6,
+    "note": "Glama's own current score for the lowest tool this round did NOT rewrite. This becomes the new 40%-weight floor if every rewritten tool clears it. It is a prediction, not a measurement."
+   },
+   "coherence": {
+    "Disambiguation": 5,
+    "Naming Consistency": 5,
+    "Tool Count": 5,
+    "Completeness": 4
+   }
+  }
+ },
+ "fleet": {
+  "connectors_listed": 25,
+  "published_tdqs_mean": 3.44,
+  "published_tdqs_min": 2.6,
+  "derived_overall_mean": 3.873,
+  "derived_overall_min": 3.352,
+  "fleet_minimum_tool_before": {
+   "tool": "quote_create",
+   "server": "quotes",
+   "score": 2.7,
+   "dimensions": {
+    "Behavior": 2,
+    "Conciseness": 4,
+    "Completeness": 2,
+    "Parameters": 2,
+    "Purpose": 4,
+    "Usage Guidelines": 2
+   }
+  },
+  "fleet_minimum_tool_after_predicted": {
+   "tool": "clause_update",
+   "score": 3.5,
+   "connector": "contract-clause-library-proposal-template-docx"
+  }
+ },
+ "rewrites": [
+  {
+   "file": "remote/src/shims/license.ts",
+   "tool": "license_activate",
+   "chars_before": 204,
+   "chars_after": 219,
+   "after": "Turn Pro on for this connection with key, an MCPL1.<payload>.<signature> issued at checkout for this server or the bundle. Data under your token stays; a wrong or expired key changes nothing. license_status confirms it.",
+   "before": "Turn Pro on for this hosted connection using a key from checkout, keeping the data already stored under your current token. Pass key as MCPL1.<payload>.<signature>. A wrong or expired key changes nothing.",
+   "multiplier": "25 of 25 connectors (the vendored hosted licence shim is registered by every hosted server)",
+   "glama_score_before": 3.8,
+   "glama_dimensions_before": {
+    "Behavior": 4,
+    "Conciseness": 5,
+    "Completeness": 4,
+    "Parameters": 3,
+    "Purpose": 4,
+    "Usage Guidelines": 3
+   }
+  },
+  {
+   "file": "servers/quotes/src/index.ts",
+   "tool": "quote_create",
+   "chars_before": 202,
+   "chars_after": 216,
+   "before": "Create a quote and return its Q number and totals. unit_price is in MAJOR units; currency, VAT and the issuer come from the shared profile. It expires by itself after validity_days. Free: 5 open quotes.",
+   "after": "Store a quote for client from items and return its Q number, VAT and totals. unit_price is in MAJOR units; currency, VAT and issuer come from the shared profile. A duplicate of an open quote is refused. Free: 5 open."
+  },
+  {
+   "file": "servers/cash-book/src/index.ts",
+   "tool": "ledger_lines",
+   "chars_before": 215,
+   "chars_after": 211,
+   "before": "List the ledger lines for a period, filtered by account, source server or document id, and date. Each line carries its debit, credit and bank_ref, the same field the Pro CSV lays out as a column. Free and unlimited.",
+   "after": "List the ledger lines for a period, filtered by account, source server, source_id or date; each carries its debit, credit and bank_ref, with the totals of the rows returned. Filtered totals do not balance. Free."
+  },
+  {
+   "file": "servers/cash-book/src/index.ts",
+   "tool": "month_close",
+   "chars_before": 179,
+   "chars_after": 202,
+   "before": "List what a month leaves unposted or inconsistent, with its trial balance, then record the close as a snapshot; a later call names any drift. dry_run reports without writing. Pro.",
+   "after": "List what a month leaves unposted or unbalanced, with its trial balance and bank reconciliation, then store the close as a snapshot; a later call names any drift against it. dry_run writes nothing. Pro."
+  },
+  {
+   "file": "servers/per-diem/src/index.ts",
+   "tool": "trip_export",
+   "chars_before": 186,
+   "chars_after": 218,
+   "before": "Return the exact expense_add arguments for a saved trip, one payload per currency, ready to pass to the expense-tracker server. It writes nothing itself: see the note in the answer. Pro.",
+   "after": "Return the exact expense_add arguments for a saved trip: one payload for subsistence and, with split_lodging, one for lodging. It writes nothing in the expense-tracker server; only mark_exported changes this trip. Pro."
+  },
+  {
+   "file": "servers/per-diem/src/index.ts",
+   "tool": "trip_delete",
+   "chars_before": 197,
+   "chars_after": 214,
+   "before": "Delete one saved trip that has not been exported and has no expense booked against it, and free the free-tier slot it held that month. A trip with a dependent is refused, named. Free and unlimited.",
+   "after": "Delete one saved trip and free the free-tier slot it held that month. A trip that has been exported or has an expense booked against it is refused with the blocker named, and nothing is written. Free and unlimited."
+  },
+  {
+   "file": "servers/per-diem/src/index.ts",
+   "tool": "trip_record",
+   "chars_before": 169,
+   "chars_after": 215,
+   "before": "Calculate a trip and save it under a name, with the traveller taken from the shared business profile. Returns the TRIP-YYYY-NNNN id. Free tier: 5 trips a calendar month.",
+   "after": "Calculate a trip and save it under a name, traveller taken from the shared business profile; returns the TRIP-YYYY-NNNN id. An identical record is refused and named, spending no slot. Free: 5 trips a calendar month."
+  },
+  {
+   "file": "servers/recurring/src/index.ts",
+   "tool": "schedule_history",
+   "chars_before": 176,
+   "chars_after": 212,
+   "before": "The audit log for one schedule, oldest first: period, invoice number, dates, amount, PDF path, and whether that invoice is unpaid, paid, skipped or has since been deleted. Pro.",
+   "after": "The audit log for one schedule id, oldest first: period, invoice number, issue and due dates, amount, PDF path, and whether that invoice is unpaid, paid, skipped or since deleted. schedule_list finds the id. Pro."
+  },
+  {
+   "file": "servers/recurring/src/index.ts",
+   "tool": "schedule_update",
+   "chars_before": 198,
+   "chars_after": 220,
+   "before": "Change a schedule's client, items, currency, cadence, dates, due days, notes or auto_generate flag. Periods already invoiced are never re-issued, so changing the amount affects future invoices only.",
+   "after": "Change one schedule by id: client, items, currency, cadence, dates, due_days, notes or auto_generate. Only the fields you pass change. Periods already invoiced are never re-issued, so a new amount applies to future ones."
+  },
+  {
+   "file": "servers/time-tracker/src/index.ts",
+   "tool": "invoice_summary",
+   "chars_before": 194,
+   "chars_after": 220,
+   "before": "Turn tracked billable time into invoice line items for one project or client: hours, hourly rate, amount per task and the total, in the currency the work was logged in (EUR 225.00, not $225.00).",
+   "after": "Turn tracked billable time into invoice lines for one project: hours, hourly rate, amount per task and the total, one line per rate so two rates never average. Hours already marked billed are left out. Free: last 7 days."
+  },
+  {
+   "file": "servers/amortization/src/index.ts",
+   "tool": "loan_journal",
+   "chars_before": 190,
+   "chars_after": 218,
+   "before": "Return the double entry for one payment period or one month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Pro.",
+   "after": "Return the double entry for one payment period or month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Give period or month, not both. Pro."
+  },
+  {
+   "file": "servers/amortization/src/index.ts",
+   "tool": "loan_list",
+   "chars_before": 199,
+   "chars_after": 217,
+   "before": "List the register with terms, level payment, effective annual rate and, at a date, periods paid, balance outstanding, interest to date and the next payment, totalled per currency. Free and unlimited.",
+   "after": "List the register with terms, level payment, effective annual rate and, at as_of, periods paid, balance outstanding, interest to date and the next payment, totalled per currency. Free; loans_report is the Pro roll-up."
+  },
+  {
+   "file": "servers/amortization/src/index.ts",
+   "tool": "loans_report",
+   "chars_before": 202,
+   "chars_after": 206,
+   "before": "The debt at a date: per loan what is outstanding, whether it is settled, the next payment, and the interest and principal charged in a year, then totals per currency. It is the contractual balance. Pro.",
+   "after": "The debt at as_of: per loan what is outstanding, whether it is settled, the next payment, and the interest and principal charged in a year, then totals per currency. Contractual balance, not cash paid. Pro."
+  },
+  {
+   "file": "servers/asset-register/src/index.ts",
+   "tool": "asset_report",
+   "chars_before": 204,
+   "chars_after": 219,
+   "before": "For one year: net book value by category, scheme and currency at a date, the year's depreciation charge per currency, and every disposal with its gain or loss. Pro; asset_list and asset_schedule are free.",
+   "after": "For one year: net book value by category, scheme and currency at as_of, the year's depreciation charge per currency, and every disposal with its gain or loss. Pro; asset_list and asset_schedule are free per-asset views."
+  },
+  {
+   "file": "servers/billing-docs/src/index.ts",
+   "tool": "purchase_order_create",
+   "chars_before": 192,
+   "chars_after": 214,
+   "before": "Raise a purchase order to a supplier and return its PO number. unit_price is in MAJOR units; currency, VAT and the buyer block come from the shared profile. Free: 5 documents a calendar month.",
+   "after": "Raise a purchase order to a supplier from items and return its PO number and totals. unit_price is in MAJOR units; currency, VAT and the buyer block come from the shared profile. Free: 5 documents a calendar month."
+  },
+  {
+   "file": "servers/resume/src/index.ts",
+   "tool": "resume_to_html",
+   "chars_before": 186,
+   "chars_after": 214,
+   "before": "Call this tool to write the resume as semantic HTML with a print stylesheet and return the path; print it to PDF from a browser. Bullets are trimmed to fit max_pages. Free and unlimited.",
+   "after": "Call this tool to write the resume as semantic HTML with a print stylesheet and return where it went; print it to PDF from a browser, because there is no doc_to_pdf here. Bullets are trimmed to fit max_pages. Free."
+  },
+  {
+   "file": "servers/catalogue/src/index.ts",
+   "tool": "catalogue_report",
+   "chars_before": 197,
+   "chars_after": 214,
+   "before": "Report the catalogue: how many SKUs there are, how many price rows are in force today, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Pro.",
+   "after": "Report the catalogue as at date: how many SKUs there are, how many price rows are in force, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Reads only. Pro."
+  },
+  {
+   "file": "servers/catalogue/src/index.ts",
+   "tool": "sku_set",
+   "chars_before": 173,
+   "chars_after": 219,
+   "before": "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and a price in minor units for one currency, tier and valid-from date. Free tier: 25 SKUs.",
+   "after": "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and price_minor in whole minor units for one currency, tier and valid_from. A repriced line keeps its old rows. Free: 25 SKUs, one tier."
+  },
+  {
+   "file": "servers/deposits/src/index.ts",
+   "tool": "deposit_balance",
+   "chars_before": 182,
+   "chars_after": 217,
+   "before": "Answer \"how much of theirs am I holding?\" for one client or for everyone: received, applied to invoices, refunded and still held, one row per currency, never added across currencies.",
+   "after": "Answer \"how much of theirs am I holding?\" for one client or everyone: received, applied to invoices, refunded and still held, one row per currency, never added across them. Reads only; deposit_list shows each deposit."
+  },
+  {
+   "file": "servers/statement-of-account/src/index.ts",
+   "tool": "dunning_text",
+   "chars_before": 205,
+   "chars_after": 208,
+   "before": "Write a payment chaser at level 1 friendly, 2 firm or 3 final demand: every OVERDUE invoice with its age, the total and your bank details. Nothing overdue is refused. No interest is stated. Level 3 is Pro.",
+   "after": "Write a payment chaser at level 1 friendly, 2 firm or 3 final demand: every OVERDUE invoice with its age, the total and your bank details. Refused if nothing is overdue. No interest is stated. Level 3 is Pro."
+  },
+  {
+   "file": "servers/image/src/index.ts",
+   "tool": "image_batch_resize",
+   "chars_before": 212,
+   "chars_after": 217,
+   "before": "Call this tool to resize every image into out_dir, keeping aspect ratio, named <name>-<W>x<H>.<ext>. One of width/height lets the other follow; with both, each fits inside the box. Free: 5 files/call, up to 4 MP.",
+   "after": "Call this tool to resize every image in paths at once, keeping aspect ratio, each named <name>-<W>x<H>.<ext>. One of width/height lets the other follow; with both, each fits inside the box. Free: 5 files a call, 4 MP."
+  },
+  {
+   "file": "servers/timezone/src/index.ts",
+   "tool": "convert_time",
+   "chars_before": 219,
+   "chars_after": 209,
+   "before": "Convert a time from one place to others. The input time is read as wall-clock time in from_zone unless it carries an offset or a trailing Z. Accepts '2026-09-10 15:00', an ISO timestamp, or a phrase like '3pm tomorrow'.",
+   "after": "Convert one time from from_zone into every zone in to_zones, marking any day change, plus the UTC instant. The time is wall-clock in from_zone unless it carries an offset or a trailing Z. '3pm tomorrow' works."
+  },
+  {
+   "file": "servers/docx/src/index.ts",
+   "tool": "doc_from_markdown",
+   "chars_before": 197,
+   "chars_after": 220,
+   "before": "Call this tool to turn markdown into a .docx and return the path with a count of blocks by type. Headings, lists, GFM tables and code fences are honoured. An existing file is kept unless overwrite.",
+   "after": "Call this tool to turn markdown into a .docx, returning the file and a count of blocks by type. Headings, lists, GFM tables and code fences are honoured. Empty markdown is refused, and so is overwriting without the flag."
+  },
+  {
+   "file": "servers/invoice/src/index.ts",
+   "tool": "client_add",
+   "chars_before": 187,
+   "chars_after": 213,
+   "before": "Store a client so invoices can refer to them by name. Re-adding the same name updates the stored details; a record identical to one already stored is refused, naming the id that holds it.",
+   "after": "Store a client so invoice_create can refer to them by name. Re-adding the same name updates the stored address, email and VAT id; a record identical to a stored one is refused, naming the id that already holds it."
+  },
+  {
+   "file": "remote/src/shims/image-upload.ts",
+   "tool": "image_delete_upload",
+   "chars_before": 62,
+   "chars_after": 189,
+   "before": "Delete one image stored for your token, uploaded or generated.",
+   "after": "Delete one image stored for your token, uploaded or generated: name is the name it is stored under. image_files lists them. A name nothing is stored under is refused and nothing is deleted."
+  },
+  {
+   "file": "remote/src/shims/docx-upload.ts",
+   "tool": "doc_delete_upload",
+   "chars_before": 44,
+   "chars_after": 187,
+   "before": "Delete one document uploaded for your token.",
+   "after": "Delete one document uploaded for your token: name is the name it was uploaded under, without .docx. doc_files lists them. A name nothing is stored under is refused and nothing is deleted."
+  }
+ ],
+ "rewrites_count": 26,
+ "servers_surface_count_correction": {
+  "watcher_reported": "6 of 34 mirror repos listed at /mcp/servers",
+  "verdict": "INSTRUMENT ARTIFACT",
+  "why": "scripts/glama-watch.mjs pageExists() uses HEAD /mcp/servers/<owner>/<repo> with a negative control on the badge route only. The page route flaps: a deliberately nonexistent repo returned 404,200,404,404,404 over five consecutive requests.",
+  "authoritative": "Glama sitemap https://glama.ai/sitemaps/mcp-servers/{1..9}.xml, 85,082 URLs, positive control = the known-listed repo is present",
+  "true_listed": [
+   "bln-mcp-grammar-server",
+   "mcp-office-suite",
+   "mcp-statement-of-account"
+  ],
+  "true_count": "2 of 34 mirrors (3 repos overall), up from 1 at loop 31",
+  "action": "replace pageExists() with the 9-page sitemap sweep; every listed count in today data/glama_watch.json is inflated; the per-connector rubric data in the same file is unaffected"
+ },
+ "connector_page_reader_diff": {
+  "pages_fetched": [
+   "glama.ai/mcp/connectors/io.github.theluckystrike/amortization",
+   "glama.ai/mcp/connectors/io.github.glennl201/leaseiq-pro",
+   "glama.ai/mcp/servers/cordfuse/barcoding-mcp",
+   "glama.ai/mcp/connectors"
+  ],
+  "fields_we_control_left_empty": "none",
+  "our_dt_rows": [
+   "Status",
+   "Last Tested",
+   "Transport",
+   "URL",
+   "Repository",
+   "GitHub Stars"
+  ],
+  "rival_dt_rows": [
+   "Status",
+   "Last Tested",
+   "Transport",
+   "URL"
+  ],
+  "hosted_url_shown": true,
+  "categories": [
+   "Finance",
+   "Payments & Billing"
+  ],
+  "connector_page_prose": "one sentence, from server.json.description; no README, no install commands, no schema/source tabs (true of every connector, not just ours)",
+  "server_page_prose": "full README rendered inline plus Schema, Source, Score tabs, install commands, Maintenance panel",
+  "connectors_index": {
+   "total": 19647,
+   "updated": "2026-09-10 13:30",
+   "finance_category": 2592,
+   "sort_options": [
+    "Featured",
+    "Search Relevance",
+    "GitHub Stars",
+    "Name",
+    "Date Updated"
+   ],
+   "tdqs_is_a_sort_option": false
+  },
+  "conclusion": "Score does not rank a row on the connector listing. It changes what a reader sees once on the page. Two listing levers we do control and do not use: GitHub Stars (0 everywhere) and Date Updated (a registry version publish)."
+ },
+ "boundary_note": "Descriptions only were edited in remote/src/shims/license.ts, image-upload.ts and docx-upload.ts (A4 files). No logic touched. packages/mcp-license was read but NOT modified: its license_activate already scores 4.3-4.4 on the surface that reads it.",
+ "verification": {
+  "build_vendor": "node remote/build-vendor.mjs exit 0, before and after every batch",
+  "contract_220_char": "passes on all 32 servers; positive control: a 231-char description injected into zip_history made it fail with \"tool descriptions over 220 chars\", restored and re-ran clean",
+  "tools_scanned": 367,
+  "over_220": 0,
+  "npm_test_baseline": "34 suites, 1574 tests, 1563 pass, 0 fail, 0 not ok",
+  "npm_test_final": "34 suites, 1545 tests, 1531 pass, 3 fail",
+  "remaining_failures_owner": "A5 packing-list not yet registered estate-wide (SERVER_COUNT, estate listing, PROFILE_READERS). None is a description or length assertion."
+ }
+}

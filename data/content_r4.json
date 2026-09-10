@@ -1,0 +1,345 @@
+{
+  "round": "content_r4",
+  "date": "2026-09-10",
+  "deployed": false,
+  "thesis": "ClaudeBot holds this catalogue and Google does not, and the blind instrument named 0 of ours across 18 buyer questions. Pages are written to be answerable from, not to rank.",
+  "derived_figures": {
+    "listed_servers": 32,
+    "sold_singly": 31,
+    "hosted_endpoints": 30,
+    "server_directories": 34,
+    "own_tools_total": 290,
+    "office_suite_tools": 292,
+    "license_tools": 2,
+    "rate_limit_free_per_hour": 600,
+    "rate_limit_pro_per_hour": 6000,
+    "discovery_limit_per_hour": 120,
+    "anon_token_days": 30,
+    "sweep_after_days": 35,
+    "single_usd": 19,
+    "bundle_usd": 39,
+    "version": "0.21.0",
+    "source": "scripts/build-figures.mjs reads servers/*/src/index.ts, packages/mcp-license/src/index.ts, remote/src/index.ts, servers/*/server.json, data/facts.json and the ids array in scripts/build-pages.mjs"
+  },
+  "llms_txt": {
+    "before": {
+      "bytes": 65045,
+      "product_lines": 32,
+      "duplicate_titles": 0,
+      "office_suite_lines": 1
+    },
+    "after": {
+      "bytes": 75533,
+      "product_lines": 32,
+      "guide_lines": 98
+    },
+    "prior_defects_verified_fixed": [
+      "office-suite emitted twice under two titles for one URL",
+      "34 product lines for a 32-product catalogue"
+    ],
+    "new_defects_found_and_fixed": [
+      {
+        "defect": "hosted sentence appended to every product line, including delivery-schedule which has no endpoint",
+        "evidence": "POST https://mcp.zovo.one/mcp/delivery-schedule initialize returned 404 {\"error\":\"not_found\"} on 2026-09-10",
+        "severity": "high, this is the file assistant crawlers read"
+      },
+      {
+        "defect": "no price and no free-tier limit on any product line",
+        "fix": "both derived onto every line from PRODUCTS and data/facts.json"
+      },
+      {
+        "defect": "bundle line spelled its count out as Thirty-one-server",
+        "fix": "numeral"
+      }
+    ],
+    "fixed_by_another_agent_midround": [
+      "bare /mcp/<server> URL replaced with the /t/<token> form"
+    ]
+  },
+  "gap": {
+    "questions_examined": 20,
+    "blind_set": 18,
+    "found_by_corpus_search": 2,
+    "questions_with_no_single_page_answer": 9,
+    "questions_answered_without_an_honest_comparison": 2,
+    "pages_written": 9,
+    "gaps_left_open": [
+      {
+        "q": 4,
+        "why": "n=4, saturated half of the ranking; partly covered by page 9 naming DocuClipper, Bankstatemently and a Stirling-PDF wrapper"
+      },
+      {
+        "q": 17,
+        "why": "n=5, an incumbent (QuickBooks Online MCP, Xero MCP) is named confidently"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "slug": "which-mcp-servers-work-by-pasting-a-url",
+      "url": "https://mcp.zovo.one/guides/which-mcp-servers-work-by-pasting-a-url",
+      "band": "wedge",
+      "blind_question": 16,
+      "competing_servers_named_by_blind_run": 2,
+      "html_bytes": 11104,
+      "faq": 5
+    },
+    {
+      "slug": "paid-mcp-servers-and-how-you-pay-for-one",
+      "url": "https://mcp.zovo.one/guides/paid-mcp-servers-and-how-you-pay-for-one",
+      "band": "wedge",
+      "blind_question": 18,
+      "competing_servers_named_by_blind_run": 4,
+      "html_bytes": 8135,
+      "faq": 5
+    },
+    {
+      "slug": "fill-a-quote-or-estimate-template-from-chat",
+      "url": "https://mcp.zovo.one/guides/fill-a-quote-or-estimate-template-from-chat",
+      "band": "uncontested",
+      "blind_question": 6,
+      "competing_servers_named_by_blind_run": 1,
+      "html_bytes": 6179,
+      "faq": 5
+    },
+    {
+      "slug": "petty-cash-book-and-cash-ledger-mcp-servers",
+      "url": "https://mcp.zovo.one/guides/petty-cash-book-and-cash-ledger-mcp-servers",
+      "band": "uncontested",
+      "blind_question": 13,
+      "competing_servers_named_by_blind_run": 1,
+      "html_bytes": 7159,
+      "faq": 5
+    },
+    {
+      "slug": "currency-conversion-mcp-servers-compared",
+      "url": "https://mcp.zovo.one/guides/currency-conversion-mcp-servers-compared",
+      "band": "uncontested",
+      "blind_question": 8,
+      "competing_servers_named_by_blind_run": 2,
+      "html_bytes": 6045,
+      "faq": 5
+    },
+    {
+      "slug": "zip-and-unzip-mcp-servers-compared",
+      "url": "https://mcp.zovo.one/guides/zip-and-unzip-mcp-servers-compared",
+      "band": "uncontested",
+      "blind_question": 12,
+      "competing_servers_named_by_blind_run": 2,
+      "html_bytes": 5675,
+      "faq": 5
+    },
+    {
+      "slug": "delivery-schedule-and-work-order-documents-from-mcp",
+      "url": "https://mcp.zovo.one/guides/delivery-schedule-and-work-order-documents-from-mcp",
+      "band": "uncontested",
+      "blind_question": 14,
+      "competing_servers_named_by_blind_run": 2,
+      "html_bytes": 8989,
+      "faq": 5
+    },
+    {
+      "slug": "will-an-mcp-server-email-the-invoice-to-my-client",
+      "url": "https://mcp.zovo.one/guides/will-an-mcp-server-email-the-invoice-to-my-client",
+      "band": "gap-table",
+      "blind_question": null,
+      "competing_servers_named_by_blind_run": null,
+      "html_bytes": 5760,
+      "faq": 5
+    },
+    {
+      "slug": "can-an-mcp-server-read-a-photo-of-a-receipt",
+      "url": "https://mcp.zovo.one/guides/can-an-mcp-server-read-a-photo-of-a-receipt",
+      "band": "gap-table",
+      "blind_question": null,
+      "competing_servers_named_by_blind_run": null,
+      "html_bytes": 5402,
+      "faq": 5
+    }
+  ],
+  "guides": {
+    "before": 89,
+    "after": 98
+  },
+  "sitemap_urls": 164,
+  "home_page": {
+    "defect": "three different counts of one catalogue in one document",
+    "before": {
+      "h1": "Thirty-one local-first MCP servers",
+      "validation_line": "32 servers",
+      "table_heading": "The 31 servers",
+      "ls_servers": 32
+    },
+    "after": {
+      "h1": "32 MCP servers for Claude, for freelancers and small businesses",
+      "numerals_before_servers": [
+        32,
+        31
+      ],
+      "spelled_counts": 0,
+      "paste_in_urls": 30
+    },
+    "citability_change": "lead is now the token request plus a table of every server with its one-line description, the exact paste-in URL and its price, in the HTML; it no longer defers to /bundle for the table"
+  },
+  "same_defect_elsewhere": [
+    {
+      "surface": "all 32 generated /s/ pages",
+      "was": "the nineteen-server bundle for $39",
+      "now": "the 31-server bundle for $39",
+      "source": "scripts/build-pages.mjs"
+    },
+    {
+      "surface": "/guides/mcp-server-free-vs-pro",
+      "was": "$39 once for all four, lifetime. Saves $37",
+      "now": "derived: all 31, saves $550",
+      "note": "material misstatement of the offer on a page a buyer reads before paying"
+    },
+    {
+      "surface": "/setup and /setup/<client>",
+      "was": "twelve MCP servers, six clients",
+      "now": "derived: 31 servers, 7 clients"
+    },
+    {
+      "surface": "/bundle title",
+      "was": "Thirty-one MCP servers",
+      "now": "31 MCP servers"
+    },
+    {
+      "surface": "4 server READMEs",
+      "was": "all four servers behind one install",
+      "now": "every sibling server behind one install"
+    }
+  ],
+  "per_server_page_audit": {
+    "pages": 32,
+    "complete_on_all_five": 30,
+    "incomplete": [
+      {
+        "id": "delivery-schedule",
+        "missing": "hosted URL",
+        "correct": true,
+        "fix": "page now states there is no hosted URL and that the address 404s for it"
+      },
+      {
+        "id": "office-suite",
+        "missing": "hosted URL",
+        "correct": true,
+        "fix": "page now states why it cannot have one"
+      }
+    ],
+    "criteria": [
+      "what it does",
+      "exact hosted URL",
+      "exact stdio config",
+      "free-tier numbers",
+      "honest limits"
+    ]
+  },
+  "gates": {
+    "new_file": "billing/test/figures.test.mjs",
+    "gate_count": 18,
+    "billing_tests": {
+      "total": 134,
+      "pass": 133,
+      "fail": 1,
+      "failure": "the bundle description names the count, the one key and the saving",
+      "owner": "another agent, servers/packing-list is mid-build"
+    },
+    "build_figures_check": "pass",
+    "release_check": {
+      "estate_fails": 3,
+      "fails": [
+        "README generated sections are current",
+        "PRODUCTS.bundle names the right count and saving",
+        "test suites outside the npm workspaces are green"
+      ],
+      "all_trace_to": "servers/packing-list, a directory another agent was building during this round"
+    },
+    "build_readme_check": "README drifted in: table, counts (caused by servers/packing-list)",
+    "root_npm_test": "exit 0",
+    "why_the_old_gates_missed_it": "release-check reads manifests, guide-figures reads one guide against one round file, build-readme reads the README. None of them ever rendered a page and read a number off it, so a wrong number could sit on deployed HTML with every gate green. Two of the new gates render through the worker fetch handler.",
+    "tool_count_derivation_verified_live": {
+      "invoice": [
+        13,
+        13
+      ],
+      "kanban": [
+        17,
+        17
+      ],
+      "petty-cash": [
+        9,
+        9
+      ],
+      "barcode": [
+        10,
+        10
+      ],
+      "price-tracker": [
+        10,
+        10
+      ],
+      "zip": [
+        9,
+        12
+      ]
+    },
+    "zip_note": "the hosted wrapper adds three file-transfer tools, so TOOLS is the stdio count and every page that quotes it says stdio"
+  },
+  "humanize": {
+    "named_scanner": "~/Desktop/humanize/scan.py",
+    "named_scanner_state": "iCloud-evicted (compressed,dataless), reading it hangs; timeout 25 returned exit 124 on the known-bad control",
+    "named_scanner_trustworthy": false,
+    "scanner_used": "/Users/mike/content-pipeline/voice/humanize-scan.py",
+    "scanner_used_state": "same size, not dataless",
+    "control_known_bad_exit": 1,
+    "control_known_good_exit": 0,
+    "control_passed": true,
+    "method": "pre and code stripped before scanning, because the scanner reads a pre block as prose and HUMANIZE.md exempts code",
+    "first_pass": {
+      "files": 9,
+      "hard": 0,
+      "soft": 7,
+      "soft_kinds": [
+        "there_is_opener x6",
+        "banned_words: harness"
+      ]
+    },
+    "final_pass": {
+      "files": 9,
+      "clean": 9,
+      "hard": 0,
+      "soft": 0,
+      "exit": 0
+    },
+    "also_scanned_clean": [
+      "home page lead",
+      "llms.txt header",
+      "the no-hosted-URL sentence on a product page",
+      "/setup index",
+      "/setup/cursor"
+    ],
+    "residual": "one pre-existing soft warning on /guides/mcp-server-free-vs-pro, two there-is openers in sentences this round did not write",
+    "emoji": 0
+  },
+  "files_changed": [
+    "scripts/build-figures.mjs",
+    "billing/src/figures.js",
+    "billing/src/content.js",
+    "billing/src/index.js",
+    "billing/src/setup.js",
+    "billing/src/pages.js",
+    "scripts/build-pages.mjs",
+    "servers/invoice/README.md",
+    "servers/price-tracker/README.md",
+    "servers/spreadsheet/README.md",
+    "servers/time-tracker/README.md",
+    "billing/test/figures.test.mjs",
+    "billing/test/bundle.test.mjs",
+    "billing/test/checkout-r1.test.mjs",
+    "docs/CONTENT_R4.md",
+    "data/content_r4.json"
+  ],
+  "not_deployed": true,
+  "next_measurable_step": "re-run docs/BLIND_RECOMMENDATION_PROCEDURE.md with a fresh agent on the same 18 questions after deployment; watch Q16 and Q18; anything short of being named in the answer text is not a result"
+}
