@@ -1,22 +1,537 @@
 {
-  "published_at": "2026-09-10",
-  "url": "https://github.com/theluckystrike/mcp-ecosystem-measurements",
+ "round": "MEASUREMENTS_REPO_R1",
+ "loop": 33,
+ "agent": "A11",
+ "at": "2026-09-10",
+ "repo_url": "https://github.com/theluckystrike/mcp-ecosystem-measurements",
+ "repo": {
   "public": true,
+  "license": "MIT",
   "files": 61,
   "findings": 12,
-  "findings_with_written_notes": 9,
-  "findings_evidence_only": [
-    "01-registry-search-name-only",
-    "06-remote-endpoint-auth",
-    "07-release-download-counts"
-  ],
-  "topics": 10,
-  "homepage": "https://github.com/theluckystrike/mcp-servers",
-  "refuted_hypothesis_published": "05-vscode-gallery-selection",
-  "conflict_of_interest_disclosed": "DISCLOSURE.md, at the top",
-  "humanize": {
-    "scanner": "/Users/mike/content-pipeline/voice/humanize-scan.py",
-    "controls": "known-bad FAIL, known-good PASS",
-    "result": "0 hard, 1 soft"
+  "description_set": true,
+  "topics_set": 20,
+  "homepage": "https://github.com/theluckystrike/mcp-servers"
+ },
+ "findings_included": 12,
+ "findings_cut": 5,
+ "refutations_of_own_prior_claims": 3,
+ "findings": [
+  {
+   "n": 1,
+   "claim": "registry search matches the name substring only and is not tokenised",
+   "key": {
+    "tokens": [
+     "invoice",
+     "timesheet",
+     "barcode",
+     "kanban",
+     "payroll"
+    ],
+    "live_equals_name_set_all": true,
+    "description_only_invisible": 254,
+    "phrase_rows": {
+     "time tracker": 0,
+     "work order": 0,
+     "time-zone": 0
+    },
+    "phrase_controls": {
+     "time tracker": {
+      "time": 456,
+      "tracker": 256
+     },
+     "work order": {
+      "work": 1297,
+      "order": 66
+     },
+     "time-zone": {
+      "timezone": 43,
+      "zone": 62
+     }
+    }
+   }
+  },
+  {
+   "n": 2,
+   "claim": "byte ordered results, case insensitive matching, a capital ranks earlier",
+   "key": {
+    "pooled_median_places_gained": 16,
+    "pooled_n": 82,
+    "case_identical": true,
+    "per_token": [
+     {
+      "token": "pdf",
+      "rows": 100,
+      "names_with_uppercase": 44,
+      "median_places_gained": 22,
+      "max_places_gained": 43
+     },
+     {
+      "token": "invoice",
+      "rows": 100,
+      "names_with_uppercase": 9,
+      "median_places_gained": 24,
+      "max_places_gained": 39
+     },
+     {
+      "token": "slack",
+      "rows": 70,
+      "names_with_uppercase": 9,
+      "median_places_gained": 55,
+      "max_places_gained": 56
+     },
+     {
+      "token": "calendar",
+      "rows": 100,
+      "names_with_uppercase": 20,
+      "median_places_gained": 16,
+      "max_places_gained": 52
+     },
+     {
+      "token": "search",
+      "rows": 100,
+      "names_with_uppercase": 0
+     }
+    ]
+   }
+  },
+  {
+   "n": 3,
+   "claim": "registry population and the two counting traps",
+   "key": {
+    "distinct_servers": 30395,
+    "distinct_namespaces": 18248,
+    "remotes_only": 16665,
+    "packages_only": 11815,
+    "both": 1504,
+    "neither": 411,
+    "transports": {
+     "streamable-http": 17601,
+     "sse": 1073
+    },
+    "package_registries": {
+     "npm": 8677,
+     "oci": 900,
+     "pypi": 3684,
+     "mcpb": 1158,
+     "nuget": 111,
+     "cargo": 48
+    },
+    "status": {
+     "active": 30063,
+     "deprecated": 332
+    },
+    "with_repository_subfolder": 1853,
+    "with_repository_subfolder_pct": 6.1,
+    "top_namespaces_by_server_count": [
+     [
+      "io.github.sadri-dridi",
+      1505
+     ],
+     [
+      "io.github.pipeworx-io",
+      1321
+     ],
+     [
+      "io.github.mcp-dir",
+      1113
+     ],
+     [
+      "io.github.Evozim",
+      375
+     ],
+     [
+      "io.github.CSOAI-ORG",
+      354
+     ],
+     [
+      "ai.smithery",
+      213
+     ],
+     [
+      "io.github.codespar",
+      127
+     ],
+     [
+      "app.wishpool",
+      125
+     ]
+    ],
+    "version_sample": {
+     "n": 39,
+     "seed": 20260910,
+     "median_versions": 1,
+     "mean_versions": 2.28,
+     "max_versions": 14,
+     "max_server": "io.github.NORTHTEKDevs/ghost",
+     "servers_with_one_version": 25,
+     "implied_row_inflation": 2.28
+    },
+    "count_trap": {
+     "limit_5": {
+      "nextCursor": "app.wishpool/chile-invoice-mcp:0.1.0",
+      "count": 5
+     },
+     "limit_100": {
+      "nextCursor": "io.github.theluckystrike/invoice-pdf-billing-generator:0.13.0",
+      "count": 100
+     }
+    }
+   }
+  },
+  {
+   "n": 4,
+   "claim": "one hosted remote URL binds to exactly one server name",
+   "key": {
+    "latest_servers": 30395,
+    "latest_servers_declaring_a_remote": 18169,
+    "distinct_remote_urls": 18584,
+    "urls_claimed_by_more_than_one_name": 1,
+    "urls_shared_by_more_than_one_ACTIVE_name": 0,
+    "names_declaring_more_than_one_remote": 409,
+    "status_of_shared_url_names": {
+     "https://mcp.law.ai": {
+      "ai.law.mcp/lawyer-search": "active",
+      "ai.law/lawyer-search": "deprecated"
+     }
+    }
+   }
+  },
+  {
+   "n": 5,
+   "claim": "vs code gallery holds 0.83 percent of the registry; subfolder hypothesis refuted",
+   "refutes": "docs/VSCODE_GALLERY_R1.md",
+   "key": {
+    "gallery_servers": 252,
+    "registry_servers": 30395,
+    "gallery_share_of_registry_pct": 0.83,
+    "gallery_repository_fields": [
+     "id",
+     "source",
+     "url"
+    ],
+    "gallery_names_found_in_registry": 223,
+    "gallery_names_absent_from_registry": 29,
+    "matched_with_subfolder": 14,
+    "expected_subfolders_among_matched": 13.6,
+    "registry_not_in_gallery_subfolder_rate": 0.061
+   }
+  },
+  {
+   "n": 6,
+   "claim": "a third of listed hosted endpoints refuse an unauthenticated initialize",
+   "key": {
+    "pool_size": 17342,
+    "sample_size": 120,
+    "seed": 20260910,
+    "verdicts": {
+     "auth required": 41,
+     "open": 65,
+     "other 308": 1,
+     "other 0": 9,
+     "other 404": 1,
+     "other 400": 2,
+     "other 307": 1
+    },
+    "auth_required": 41,
+    "auth_required_pct_of_sample": 34.2,
+    "accept_probe": {
+     "n": 40,
+     "verdicts": {
+      "open": 28,
+      "406 accept": 11,
+      "other 400": 1
+     }
+    }
+   }
+  },
+  {
+   "n": 7,
+   "claim": "download counts on other people's MCP repos are heavy tailed, not a uniform sweep",
+   "refutes": "loop brief rule on download_count uniformity",
+   "key": {
+    "repos_sampled": 60,
+    "repos_with_release_assets": 12,
+    "mcp_pooled": {
+     "label": "MCP registry repos, pooled",
+     "assets": 588,
+     "total": 2248,
+     "min": 0,
+     "max": 139,
+     "mean": 3.82,
+     "median": 1.0,
+     "stdev": 13.75,
+     "cv": 3.596,
+     "top_decile_share_pct": 69.0,
+     "max_over_median": 139.0
+    },
+    "controls": [
+     {
+      "label": "control cli/cli",
+      "assets": 110,
+      "total": 7080110,
+      "min": 26,
+      "max": 1259340,
+      "mean": 64364.64,
+      "median": 3834.5,
+      "stdev": 166216.36,
+      "cv": 2.582,
+      "top_decile_share_pct": 70.5,
+      "max_over_median": 328.4
+     },
+     {
+      "label": "control jqlang/jq",
+      "assets": 139,
+      "total": 99656423,
+      "min": 139,
+      "max": 21889303,
+      "mean": 716952.68,
+      "median": 2484,
+      "stdev": 2783456.52,
+      "cv": 3.882,
+      "top_decile_share_pct": 85.2,
+      "max_over_median": 8812.1
+     },
+     {
+      "label": "control sharkdp/bat",
+      "assets": 97,
+      "total": 2480583,
+      "min": 926,
+      "max": 689358,
+      "mean": 25573.02,
+      "median": 3822,
+      "stdev": 76818.23,
+      "cv": 3.004,
+      "top_decile_share_pct": 66.6,
+      "max_over_median": 180.4
+     }
+    ]
+   }
+  },
+  {
+   "n": 8,
+   "claim": "glama score badge returns 200 with a placeholder for repositories that do not exist",
+   "key": {
+    "distinct_badge_status_codes": [
+     "200"
+    ],
+    "distinct_badge_bodies": 2,
+    "badge_status_is_informative": false,
+    "rows": [
+     {
+      "case": "invented owner and repo, control A",
+      "slug": "zzz-not-a-real-owner-20260910/zzz-not-a-real-repo",
+      "surface": "badge",
+      "http": "200",
+      "bytes": 2880,
+      "sha256_16": "f2700b3d017dfd9e"
+     },
+     {
+      "case": "invented owner and repo, control B",
+      "slug": "qqq-nobody-9911/qqq-nothing-here",
+      "surface": "badge",
+      "http": "200",
+      "bytes": 2880,
+      "sha256_16": "f2700b3d017dfd9e"
+     },
+     {
+      "case": "listed and scored",
+      "slug": "cordfuse/barcoding-mcp",
+      "surface": "badge",
+      "http": "200",
+      "bytes": 4530,
+      "sha256_16": "154126ce7eca6d49"
+     },
+     {
+      "case": "listed, profile page returns 200",
+      "slug": "integrations/xero",
+      "surface": "badge",
+      "http": "200",
+      "bytes": 2880,
+      "sha256_16": "f2700b3d017dfd9e"
+     },
+     {
+      "case": "profile page returns 404",
+      "slug": "punkpeye/fastmcp",
+      "surface": "badge",
+      "http": "200",
+      "bytes": 2880,
+      "sha256_16": "f2700b3d017dfd9e"
+     }
+    ]
+   }
+  },
+  {
+   "n": 9,
+   "claim": "registry description capped at 100 characters and publishers pile up at the wall",
+   "key": {
+    "max_lengths": {
+     "description": 100,
+     "name": 200,
+     "title": 100,
+     "version": 255
+    },
+    "latest_servers": 30395,
+    "median_length": 88,
+    "max_length_observed": 100,
+    "over_cap": 0,
+    "at_cap": 1692,
+    "at_cap_pct": 5.6,
+    "within_5_of_cap_pct": 26.2,
+    "no_end_punctuation_pct": 24.8
+   }
+  },
+  {
+   "n": 10,
+   "claim": "github repo search reads name, description and topics and not files",
+   "key": {
+    "repos_tested": 15,
+    "tally": {
+     "topic_match": 15,
+     "readme_miss": 15,
+     "hyphen_whole_match": 7,
+     "hyphen_half_miss": 6,
+     "hyphen_half_match": 1
+    },
+    "discovery_query": "mcp-server in:name topics:>2"
+   }
+  },
+  {
+   "n": 11,
+   "claim": "stars do not gate github search results for MCP queries",
+   "key": {
+    "queries": 18,
+    "rank1_stars_median": 7.5,
+    "rank1_stars_zero": 6,
+    "rank1_stars_max": 20899,
+    "top5_pooled_repos": 78,
+    "top5_stars_median": 2.0,
+    "top5_stars_zero": 29,
+    "lists_sorted_by_stars_descending": 8,
+    "lists_total": 18,
+    "rank1_slots_held_by_the_author": 3,
+    "rank1_stars_median_excluding_author": 9,
+    "rank1_stars_zero_excluding_author": 3,
+    "name_shapes_in_top5": {
+     "no mcp in the name": 26,
+     "other": 10,
+     "mcp-<capability>": 10,
+     "<capability>-mcp": 27,
+     "<capability>-mcp-server": 5
+    }
+   }
+  },
+  {
+   "n": 12,
+   "claim": "assistants cite github 21, glama 7, official registry 0",
+   "script_reproducible": false,
+   "key": {
+    "run_date": "2026-09-10",
+    "questions": 18,
+    "cited_urls": 54,
+    "distinct_hosts": 22,
+    "official_registry_citations": 0,
+    "github_citations": 21,
+    "github_owner_repo": 21,
+    "github_awesome_lists": 1,
+    "github_name_shapes": {
+     "<capability>-mcp": 9,
+     "<capability>-mcp-server": 7,
+     "mcp-server-<capability>": 3,
+     "mcp-<capability>": 1,
+     "other": 1
+    },
+    "glama_citations": 7,
+    "glama_servers_path": 6,
+    "glama_connectors_path": 0,
+    "distinct_servers_named": 47,
+    "top_hosts": {
+     "github.com": 21,
+     "glama.ai": 7,
+     "apify.com": 4,
+     "mcpservers.org": 3,
+     "mcpbundles.com": 2,
+     "invco.pro": 1
+    }
+   }
   }
+ ],
+ "cut": [
+  {
+   "what": "vs code gallery has zero monorepo subfolders",
+   "why": "artefact, the gallery repository object has no subfolder key at all",
+   "status": "refuted and republished as finding 5"
+  },
+  {
+   "what": "MCP release download counts are near uniform therefore a crawler",
+   "why": "true of our own 597 assets only; third party CV is 3.60",
+   "status": "refuted and republished as finding 7"
+  },
+  {
+   "what": "the registry holds 2211 servers",
+   "why": "earlier run stopped at 6000 rows; full pagination gives 30395",
+   "status": "corrected inside finding 3"
+  },
+  {
+   "what": "smithery useCount, mcp.so issue queue, npm search totals",
+   "why": "need an account or a fee, both forbidden",
+   "status": "cut, stated in the repo README"
+  },
+  {
+   "what": "our own clone traffic, referrals, glama coverage, namespace gains",
+   "why": "measurements of us, not of the world",
+   "status": "cut"
+  }
+ ],
+ "contradictions_for_the_estate": [
+  {
+   "doc": "docs/VSCODE_GALLERY_R1.md",
+   "was": "0 of 252 gallery entries carry a subfolder vs 19% of the registry, p 9e-24",
+   "now": "14 of 223 matched vs 13.6 expected; base rate 6.1%",
+   "action": "correct the doc"
+  },
+  {
+   "doc": "docs/CONTENT_R2.md",
+   "was": "2211 distinct servers",
+   "now": "30395 distinct servers",
+   "action": "correct the doc and anything computed on the 2211 denominator"
+  },
+  {
+   "doc": "docs/LOOP33_BRIEF.md evidence rules",
+   "was": "download_count is near uniform mean 8.90 CV 0.417 therefore a sweep",
+   "now": "true of our repos, false across third party repos, CV 3.60",
+   "action": "narrow the rule to our own assets"
+  },
+  {
+   "doc": "docs/CONTENT_R3.md",
+   "was": "25.4% of remote endpoints require auth",
+   "now": "34.2% of 120 sampled, 95% CI 26 to 43",
+   "action": "cite both with methods"
+  },
+  {
+   "doc": "docs/REGISTRY_VISIBILITY_R1.md and NAMESPACE_R1.md",
+   "was": "a capital letter costs places",
+   "now": "a capital ranks EARLIER, median 16 places gained",
+   "action": "check the direction wherever it is used"
+  }
+ ],
+ "humanize": {
+  "scanner": "~/Desktop/humanize/scan.py is iCloud dataless and exits 0 printing nothing",
+  "applied": "by hand from ~/humanize-durable/HUMANIZE.md with a re-implementation of the hard gate",
+  "control": "deliberately bad string failed with 6 hard and 12 soft",
+  "result": "17 prose files, 0 hard 0 soft; one soft hit remains in docs/MEASUREMENTS_REPO_R1.md and it is the repo name inside a URL"
+ },
+ "external_calls": {
+  "registry": "about 400 pagination pages plus 90 probes",
+  "github_api": "about 130",
+  "glama": 10,
+  "third_party_mcp_endpoints": 160,
+  "paid_apis": 0
+ },
+ "not_done": [
+  "no deploy",
+  "no push to mcp-servers or any mirror",
+  "no account created",
+  "no payment"
+ ]
 }

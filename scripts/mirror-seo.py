@@ -305,22 +305,34 @@ def header(name, demo, monorepo, raw):
     L = [START, ""]
     L.append("**MCP server for %s.** %s" % (cap, tagline))
     L.append("")
-    L.append("Works with Claude Desktop, Claude Code, Cursor and any Model Context "
-             "Protocol client. Runs on your own machine, or hosted with no install.")
+    # The hosted paragraph is emitted ONLY for servers that actually have an endpoint. The
+    # gemini_extension path already guarded on hosted(); this one did not, so the first two
+    # stdio-only mirrors went out advertising https://mcp.zovo.one/mcp/<name> for servers
+    # where that URL answers 404 to both GET and initialize. That is the same defect this
+    # estate spent a loop removing everywhere else: an install path printed on the surface a
+    # reader trusts, that fails the moment they try it.
+    if hosted(name):
+        L.append("Works with Claude Desktop, Claude Code, Cursor and any Model Context "
+                 "Protocol client. Runs on your own machine, or hosted with no install.")
+    else:
+        L.append("Works with Claude Desktop, Claude Code, Cursor and any Model Context "
+                 "Protocol client. Runs on your own machine: this one has no hosted "
+                 "endpoint, so install it from the bundle or from source.")
     L.append("")
     L.append("## Install")
     L.append("")
-    L.append("**Hosted, nothing to install.** Get a token from "
-             "<https://mcp.zovo.one/mcp/connect> (the connect page) or "
-             "<https://mcp.zovo.one/mcp/token> (the same token as JSON); a free anonymous "
-             "one is issued on the spot and a Pro key works the same way. Then point an "
-             "MCP client at `https://mcp.zovo.one/mcp/%s` over streamable-http and send "
-             "the token as `Authorization: Bearer <token>`." % name)
-    L.append("")
-    L.append("If your client cannot set headers, put the token in the path instead: "
-             "`https://mcp.zovo.one/mcp/%s/t/<token>`. Both forms work. The bare URL "
-             "with no token answers 401 on `tools/call`, so the token is not optional." % name)
-    L.append("")
+    if hosted(name):
+        L.append("**Hosted, nothing to install.** Get a token from "
+                 "<https://mcp.zovo.one/mcp/connect> (the connect page) or "
+                 "<https://mcp.zovo.one/mcp/token> (the same token as JSON); a free anonymous "
+                 "one is issued on the spot and a Pro key works the same way. Then point an "
+                 "MCP client at `https://mcp.zovo.one/mcp/%s` over streamable-http and send "
+                 "the token as `Authorization: Bearer <token>`." % name)
+        L.append("")
+        L.append("If your client cannot set headers, put the token in the path instead: "
+                 "`https://mcp.zovo.one/mcp/%s/t/<token>`. Both forms work. The bare URL "
+                 "with no token answers 401 on `tools/call`, so the token is not optional." % name)
+        L.append("")
     L.append("**Claude Desktop, one click.** Download `%s.mcpb` from the "
              "[latest release](%s/releases/latest) and double-click it." % (name, monorepo))
     L.append("")
