@@ -8,8 +8,10 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
+import { negotiatedHeaders } from "./accept.js";
 import { STORE, type RequestCtx, type Download } from "./shims/ctx.js";
-import { PRICE_BUNDLE_USD, SERVER_COUNT } from "./shims/license.js";
+import { PRICE_BUNDLE_USD, PRICE_SINGLE_USD, SERVER_COUNT } from "./shims/license.js";
+import { paymentDescriptor } from "./payment.js";
 import { TMP_RE, recount } from "./shims/fs.js";
 import { createServer as createTimeTracker } from "./vendor/time-tracker/index.js";
 import { createServer as createPriceTracker } from "./vendor/price-tracker/index.js";
@@ -667,27 +669,80 @@ async function verifyLicense(key: string, product: string): Promise<{ ok: boolea
  * The header wins when both are present. A token in a URL is a URL that grants access, so
  * it is treated exactly like a bearer: same tiers, same rate limits, same tenants.
  */
+export const CONNECT_URL = "https://mcp.zovo.one/mcp/connect";
+
+/** Crawlers and HTTP clients, matched anywhere in the User-Agent, never at position 0 only. */
+const NOT_A_PERSON_UA = /(googlebot|bingbot|claudebot|gptbot|oai-searchbot|chatgpt-user|perplexitybot|ccbot|bytespider|amazonbot|applebot|ahrefsbot|semrushbot|mj12bot|dotbot|petalbot|duckduckbot|baiduspider|yandexbot|facebookexternalhit|slackbot|twitterbot|discordbot|telegrambot|linkedinbot|whatsapp|headlesschrome|phantomjs|puppeteer|playwright|selenium|scrapy|crawler|spider|slurp|\bbot\b|bot\/|curl|libcurl|wget|python-requests|python-urllib|node-fetch|undici|axios|httpie|go-http-client|okhttp|java\/|apache-httpclient|libwww|powershell|postmanruntime|insomnia)/i;
+
+/**
+ * Is this a person opening this URL in a browser?
+ *
+ * Every top-level browser navigation since Chrome 76, Firefox 90 and Safari 16.4 sends both
+ * `sec-fetch-mode: navigate` and `sec-fetch-dest: document`. No crawler sends them and no
+ * HTTP library sends them unless told to, one header at a time. A prefetch is excluded too:
+ * it arrives as `sec-purpose: prefetch`, and a prefetch that minted a token would hand the
+ * reader a data space they never asked for and then throw the URL away.
+ *
+ * A browser that strips these headers gets the page with a one-click mint link rather than
+ * a token, which costs one click. Getting it wrong the other way costs a 30-day tenant per
+ * robot and a 429 for everyone behind a shared address.
+ */
+export function isBrowserNavigation(headers: Headers): boolean {
+  const ua = headers.get("user-agent") ?? "";
+  if (!ua || NOT_A_PERSON_UA.test(ua)) return false;
+  if ((headers.get("sec-purpose") ?? "").includes("prefetch")) return false;
+  return (headers.get("sec-fetch-mode") ?? "").toLowerCase() === "navigate"
+    && (headers.get("sec-fetch-dest") ?? "").toLowerCase() === "document";
+}
+
+/**
+ * The body of the 401 a tokenless request gets.
+ *
+ * `message` is the only field that reliably reaches a person. An MCP client receiving this
+ * 401 does not render the JSON: it surfaces a tool or transport error, and whatever text it
+ * shows comes from the top of the payload if it shows any at all. Until 2026-09-10 that one
+ * string said where to PUT a token and never where to GET one, so the three places this
+ * body does name `/mcp/connect` (`options[0].how`, `connect`, and the guide) were all
+ * nested where nothing surfaces them.
+ *
+ * That mattered more than it looks, because the storefront was telling people to paste the
+ * tokenless URL: `https://mcp.zovo.one/mcp/<server>` answers `initialize` and `tools/list`
+ * with 200 and the full tool list, so the client connects and every tool appears, and then
+ * every `tools/call` lands here. The symptom is a server that connected fine and refuses to
+ * do anything, which explains itself to nobody. The storefront copy is fixed
+ * (docs/FUNNEL_R1.md); this is the last line of defence behind it, so it names the
+ * acquisition URL first and explains the symptom the reader is looking at.
+ */
+export function unauthorizedBody(product: string) {
+  return {
+    error: "unauthorized",
+    message:
+      `This endpoint needs a token and it is free. Open ${CONNECT_URL} in a browser: it mints one and prints a ready URL, ` +
+      `https://mcp.zovo.one/mcp/${product}/t/<token>, which you can paste straight into a client that cannot set headers. ` +
+      `Or GET https://mcp.zovo.one/mcp/token and send it as \`Authorization: Bearer <token>\`. ` +
+      `The bare https://mcp.zovo.one/mcp/${product} answers initialize and tools/list without a token and then refuses every ` +
+      `tool call, which is what just happened.`,
+    forms: [
+      { form: "header", how: "Authorization: Bearer <token>" },
+      { form: "url path", how: `https://mcp.zovo.one/mcp/${product}/t/<token>`, note: "for clients that accept only a URL (Claude.ai and Claude Desktop custom connectors, several IDE pickers)" },
+      { form: "url query", how: `https://mcp.zovo.one/mcp/${product}?token=<token>` },
+    ],
+    options: [
+      { kind: "anonymous", how: `GET https://mcp.zovo.one/mcp/token, or open ${CONNECT_URL} for ready-made URLs`, tier: "free", limits: "600 calls/hour, free-tier server limits, data kept 30 days" },
+      { kind: "pro", how: "Buy a key at https://mcp.zovo.one/buy/" + product + " and send it as the token", tier: "pro", limits: "6000 calls/hour, no server limits" },
+    ],
+    connect: CONNECT_URL,
+    guide: GUIDE,
+  };
+}
+
 async function authenticate(req: Request, env: Env, product: string, urlToken = "", urlTokenForm: Auth["via"] = "URL path segment (/mcp/<server>/t/<token>)"): Promise<Auth | Response> {
   const header = req.headers.get("authorization") ?? "";
   const fromHeader = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
   const token = fromHeader || urlToken.trim();
   const via: Auth["via"] = fromHeader ? "Authorization: Bearer" : urlTokenForm;
   if (!token) {
-    return json({
-      error: "unauthorized",
-      message: "This endpoint needs a token. Put it in the Authorization header, or in the URL if your client cannot set headers.",
-      forms: [
-        { form: "header", how: "Authorization: Bearer <token>" },
-        { form: "url path", how: `https://mcp.zovo.one/mcp/${product}/t/<token>`, note: "for clients that accept only a URL (Claude.ai and Claude Desktop custom connectors, several IDE pickers)" },
-        { form: "url query", how: `https://mcp.zovo.one/mcp/${product}?token=<token>` },
-      ],
-      options: [
-        { kind: "anonymous", how: "GET https://mcp.zovo.one/mcp/token, or open https://mcp.zovo.one/mcp/connect for ready-made URLs", tier: "free", limits: "600 calls/hour, free-tier server limits, data kept 30 days" },
-        { kind: "pro", how: "Buy a key at https://mcp.zovo.one/buy/" + product + " and send it as the token", tier: "pro", limits: "6000 calls/hour, no server limits" },
-      ],
-      connect: "https://mcp.zovo.one/mcp/connect",
-      guide: GUIDE,
-    }, 401, { "www-authenticate": `Bearer realm="mcp.zovo.one", error="invalid_token"` });
+    return json(unauthorizedBody(product), 401, { "www-authenticate": `Bearer realm="mcp.zovo.one", error="invalid_token"` });
   }
   if (token.startsWith("MCPL1.")) {
     const r = await verifyLicense(token, product);
@@ -753,6 +808,23 @@ async function rateLimit(env: Env, auth: Auth, ctx: ExecutionContext, product?: 
       // The bundle link is its own src tag, `<product>.rate_limit.bundle`, so a click on
       // the $39 offer is never counted as a click on the $19 one.
       bundleUrl: auth.isPro ? undefined : `https://mcp.zovo.one/buy/bundle${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit.bundle`,
+      // The same offer as fields rather than prose, so a client can branch on it instead
+      // of reading `note`. It reports agent_settleable: false on purpose - see payment.ts.
+      // A Pro caller who is merely over the hourly ceiling is not being asked for money,
+      // so no descriptor is attached to that case at all.
+      payment: auth.isPro ? undefined : paymentDescriptor({
+        product: product ?? "bundle",
+        reason: "rate_limit",
+        feature: `more than ${auth.limit} calls an hour`,
+        checkoutUrl: `https://mcp.zovo.one/buy/${product ?? "bundle"}${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit`,
+        bundleUrl: `https://mcp.zovo.one/buy/bundle${tenantQ}${tenantQ ? "&" : "?"}src=${product ?? "bundle"}.rate_limit.bundle`,
+        guideUrl: GUIDE,
+        priceUsd: PRICE_SINGLE_USD,
+        bundlePriceUsd: PRICE_BUNDLE_USD,
+        serverCount: SERVER_COUNT,
+        tokenBound: Boolean(auth.anonToken),
+        tier: "free",
+      }),
       guide: GUIDE,
     }, 429, { "retry-after": String(retryAfter) });
   }
@@ -1142,7 +1214,7 @@ function indexDoc(base: string) {
         name: "per-diem", url: `${base}/mcp/per-diem`, tools: TOOLS["per-diem"],
         mode: "bundled rate tables",
         how: "perdiem_rates lists a scheme's rates with the authority, instrument, source URL and effective date they came from; perdiem_calc prices one trip; trip_record saves it. Start and end are instants: either ISO 8601 carrying its own offset, or a local datetime plus an IANA timezone, so a trip across a clock change is 23 or 25 hours and not 24. The traveller's name comes from the shared business profile (business_set on /mcp/invoice).",
-        outputs: "JSON only. There is no document to render and nothing is written outside your own trip store. trip_export returns the exact expense_add ARGUMENTS for a trip, one payload per currency, to pass to /mcp/expense-tracker yourself: this endpoint never appends to that ledger, because the expense server's id counter, category rules and VAT split all live inside its own expense_add handler.",
+        outputs: "JSON only. There is no document to render and nothing is written outside your own trip store. trip_export returns the exact expense_add ARGUMENTS for a trip, one payload for subsistence and, with split_lodging, a second for lodging, to pass to /mcp/expense-tracker yourself: this endpoint never appends to that ledger, because the expense server's id counter, category rules and VAT split all live inside its own expense_add handler.",
         free_limits: "5 trips recorded per calendar month; perdiem_rates, perdiem_calc and trip_list are free and unlimited on every tier, because a per diem rate is public information published by a tax authority. trip_export and perdiem_report are Pro",
         notes: "the rates are BUNDLED tables, not a feed: pl (Dz.U. 2022 poz. 2302), uk (HMRC benchmark scale rates) and us (GSA CONUS). Nothing is fetched, so the same trip prices the same way on every run, and every answer carries the header saying which instrument the figure came from and when it was read. A rate that could not be stated with confidence from the published text was OMITTED rather than guessed, so a destination that is not bundled is REFUSED by name and sent to the source instead of being priced from a near-match. Currencies are never added together: there is no exchange rate in this endpoint",
       },
@@ -1465,7 +1537,8 @@ td.u{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break
 .tok{background:#f0efec;border:1px solid #e0dedb;border-radius:6px;padding:10px 12px;word-break:break-all}
 .note{color:#5a5a5a;font-size:13px}
 a{color:#1a4fd6}
-@media (prefers-color-scheme:dark){body{background:#16161a;color:#e8e8e6}pre,th,.tok{background:#202027;border-color:#33333c}td,th{border-color:#33333c}.note{color:#a3a3a8}a{color:#8ab4ff}}`;
+a.mint{display:inline-block;background:#1a4fd6;color:#fff;text-decoration:none;border-radius:6px;padding:9px 16px;font-weight:600;margin:6px 0}
+@media (prefers-color-scheme:dark){body{background:#16161a;color:#e8e8e6}pre,th,.tok{background:#202027;border-color:#33333c}td,th{border-color:#33333c}.note{color:#a3a3a8}a{color:#8ab4ff}a.mint{background:#2b5fe0;color:#fff}}`;
 
 const esc = (x: string) => x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -1497,24 +1570,38 @@ serve a different asking price and watch an alert fire.</p>
 </main></body></html>`;
 }
 
+/**
+ * `token` may be the empty string. Minting is a KV write and a 30-day tenant, so it does
+ * NOT happen for a crawler, a prefetch or a HEAD (see the /mcp/connect route). Those get
+ * this same page with `<token>` where the token would be and one link that mints. That is
+ * what makes the page safe to put in the sitemap, which it needs to be now that it is the
+ * hero destination of every product page and of /llms.txt (docs/FUNNEL_R1.md).
+ */
 function connectPage(base: string, token: string): string {
+  const shown = token || "&lt;token&gt;";
   const rows = Object.keys(SERVERS).map((n) =>
-    `<tr><td>${n}</td><td class="u">${esc(`${base}/mcp/${n}/t/${token}`)}</td></tr>`).join("\n");
+    `<tr><td>${n}</td><td class="u">${token ? esc(`${base}/mcp/${n}/t/${token}`) : `${esc(`${base}/mcp/${n}/t/`)}&lt;token&gt;`}</td></tr>`).join("\n");
   const first = Object.keys(SERVERS)[0];
-  const ready = `${base}/mcp/${first}/t/${token}`;
+  const ready = token ? `${base}/mcp/${first}/t/${token}` : `${base}/mcp/${first}/t/<token>`;
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Connect to mcp.zovo.one</title><style>${CONNECT_CSS}</style></head><body><main>
 <h1>Connect an MCP client</h1>
-<p>Every URL below already carries a free anonymous token, so there is no header to set and
-nothing to install. Paste one into your client and it works.</p>
+<p>Every URL below carries a free anonymous token, so there is no header to set, no account
+and nothing to install. Paste one into your client and it works.</p>
 
 <h2>Your token</h2>
-<p class="tok">${esc(token)}</p>
-<p class="note">Free tier: 600 calls an hour, free-tier server limits, data kept 30 days and
+<p class="tok">${token ? esc(token) : shown}</p>
+${token ? `<p class="note">Free tier: 600 calls an hour, free-tier server limits, data kept 30 days and
 refreshed for another 30 on every write. Anyone holding this token holds your data space, so
 treat the URLs as private. Reloading this page mints a new token and a new, empty data space;
-keep this one to keep your data.</p>
+keep this one to keep your data.</p>` : `<p><a class="mint" href="${base}/mcp/connect?mint=1">Get my free token</a> &mdash; one click, no account, nothing to fill in.</p>
+<p class="note">A token is minted for you when you open this page in a browser. This copy was
+served without one, which happens for crawlers, prefetches and HEAD requests, because minting
+stores a data space for 30 days and doing that for a robot would fill the store with tenants
+nobody owns. Free tier: 600 calls an hour, free-tier server limits, data kept 30 days and
+refreshed for another 30 on every write. Anyone holding your token holds your data space, so
+treat the URLs as private.</p>`}
 
 <h2>Ready URLs</h2>
 <table><thead><tr><th>Server</th><th>URL</th></tr></thead><tbody>
@@ -1680,14 +1767,27 @@ export default {
       // Reusing a token that was passed in is deliberate: a reload with ?token= keeps the
       // caller's data space instead of quietly stranding it behind a fresh one.
       let token = /^anon_[0-9a-f]{32}$/.test(urlToken) ? urlToken : "";
-      if (!token) {
+      // Minting is not free: it is a KV read plus two KV writes, one of them a `tok:` key
+      // that holds a data space for 30 days, and it is rate limited to
+      // TOKEN_MINTS_PER_IP per IP per hour. Before 2026-09-10 every single GET or HEAD
+      // minted. That was survivable while nothing linked here; it is not now, because this
+      // page is the hero destination of all 30 product pages and of /llms.txt
+      // (docs/FUNNEL_R1.md) and is going into the sitemap. Two consequences, both real:
+      // a crawler left a 30-day junk tenant per fetch, and 11 loads in an hour from one
+      // address returned HTTP 429 - so a NAT, a VPN exit or an office proxy could take the
+      // entry point to the whole free tier off the air for everyone behind it.
+      // A token is therefore minted only for a request that is actually a person opening
+      // the page, or for one that explicitly asks. Everything else gets the same page with
+      // `<token>` in it and a link that mints.
+      if (!token && req.method === "GET" && (url.searchParams.get("mint") === "1" || isBrowserNavigation(req.headers))) {
         const minted = await mintAnonToken(req, env);
         if (typeof minted !== "string") return minted;
         token = minted;
       }
-      return new Response(connectPage(base, token), {
-        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
-      });
+      const html = connectPage(base, token);
+      const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" };
+      // A HEAD must not differ from the GET it describes, and must not mint either.
+      return new Response(req.method === "HEAD" ? null : html, { headers });
     }
 
     if (path === "/mcp/whoami") {
@@ -1804,7 +1904,13 @@ export default {
         }, 400);
       }
       bodyText = body;
-      request = new Request(req.url, { method: "POST", headers: req.headers, body });
+      // Content negotiation before the SDK transport sees the request. `Accept: */*` and
+      // a missing Accept both admit application/json and text/event-stream, but the SDK
+      // tests the header with a literal substring match and answered both 406 - and `*/*`
+      // is what curl sends by default, so every naive prober read these endpoints as
+      // broken. negotiatedHeaders() rewrites only a header that genuinely admits both
+      // types; `Accept: text/html` is still refused by the SDK, unchanged. See accept.ts.
+      request = new Request(req.url, { method: "POST", headers: negotiatedHeaders(req.headers), body });
     }
 
     const rpc = rpcEnvelope(bodyText);
