@@ -30,7 +30,16 @@
     "hosted": 30
   },
   "agents": [],
-  "shipped": [],
+  "shipped": [
+    "The advertised zero-install URL is corrected everywhere it is printed. The product-page hero and every llms.txt line now lead with /mcp/connect and print the /mcp/<server>/t/<token> shape, and the 401 body now leads with where to GET a token rather than only where to put one.",
+    "/mcp/connect minted a token on EVERY request including HEAD, at 1 KV read and 2 writes each with a 30-day tenant, against a cap of 10 mints per IP per hour. Two consecutive Googlebot-agent GETs returned two different tokens. Pointing 30 product pages and every llms.txt line at it would have returned 429 to the eleventh visitor behind any NAT, VPN exit or office proxy, taking the free tier entry point off the air for everyone behind that address. Minting is now gated on a real browser navigation or an explicit action; everyone else gets the same page with placeholders and a button.",
+    "The hosted endpoints answered HTTP 406 to Accept: */*, to a missing Accept header and to an empty one, which is what curl sends by default and what naive health probers send. Root cause is the SDK testing the header with a literal substring match rather than content negotiation. Fixed by wrapping the SDK, not forking it, per RFC 9110. Measured across seven Accept variants on three servers: three cases go 406 to 200 and the three that genuinely exclude both media types still 406.",
+    "remote/build-vendor.mjs was exiting 1 at HEAD, so the hosted worker could not be built or deployed at all, and nothing said so because neither npm test nor release-check ever ran it. Fixed, and a test now asserts it exits 0.",
+    "The fleet-wide minimum tool description moved from quote_create at 2.7 to a predicted clause_update at 3.5. 26 descriptions rewritten, no tool, parameter or schema field renamed, all within the 220-character contract, verified with a positive control that a 231-character injection fails the gate.",
+    "A machine-readable payment descriptor now rides on the 429 body, with a pricing resource and an upgrade prompt on all 30 hosted endpoints, declaring honestly that the price cannot be settled by an agent.",
+    "Two factual defects in shipped descriptions corrected: trip_export claimed one payload per currency when it emits subsistence and optional lodging in one currency, and delivery-schedule claimed a free tier of 5 open schedules when the code enforces 3.",
+    "The upgrade-click counter was rebuilt. v1 counted crawlers and our own probes; a Googlebot user agent on a dead product id was recorded as a click, and the counter moved 1,685 to 1,690 in 16 unattended minutes. v2 counts opt-in on a browser navigation signal and starts at zero."
+  ],
   "human_gated": [],
   "open": [],
   "dead_advertised_path": {
@@ -44,5 +53,15 @@
     "was_lying": "Proved unconfounded: a Googlebot user agent with Accept text/html, no probe header, on a dead product id was recorded as a click. The counter also moved 1,685 to 1,690 in 16 unattended minutes.",
     "in_product": "In-product cap clicks stand at 3 of 1,685, which is 0.18 percent, and have not moved since 2026-09-07.",
     "now": "A v2 counter starts at zero, counts opt-in on a browser navigation signal, buckets untagged hits out of the totals, and keeps v1 under a legacy key. Never quote v1."
-  }
+  },
+  "corrections_to_prior_beliefs": [
+    "Loop 32 concluded Glama connectors beat the Glama servers directory because connectors are free, need no account and re-score daily. Both halves were true and the conclusion was still wrong: being scored is not being read. 6 of 7 Glama citations are servers-directory pages and none are connector pages. Worse, the connectors index holds 19,647 entries and its sort options are Featured, Search Relevance, GitHub Stars, Name and Date Updated. Tool quality score is not among them, so the score does not rank us anywhere.",
+    "The servers directory was recorded as an unenterable queue. It is not: we are on it with 2 of 34 mirrors and the discriminator appears to be head-of-queue residency in GitHub recently-pushed list. office-suite is last in the sync script and is the one that got in, which also explains lags previously recorded as 33 minutes for one repo and about 120 days for another.",
+    "A watcher reported 6 of 34 mirrors indexed on Glama. That was an artifact: its HEAD probe flaps, and a nonexistent repo returned 404, 200, 404, 404, 404 on repeat. The sitemap gives the true figure of 2.",
+    "Stars were assumed to be why our repos do not rank in GitHub search. Measured, they are not. Across 87 competitor repos captured in top-five results the median is 1 star and 35 have zero, and the top result for three separate buyer queries had zero, zero and three stars with no topics at all."
+  ],
+  "answered_no": [
+    "An agent-native payment rail is not reachable without a human step. The MCP specification has no payment primitive; the proposal for one closed unmerged. x402 is live and a no-account facilitator exists, but it needs a wallet address, which is a custody decision only the operator can take, and decisively no mainstream MCP client settles a 402, so every one of them would need a separately funded bridge. Median x402 price is a cent per call against a nineteen dollar one-time product.",
+    "The tokenless endpoint should NOT self-provision a tenant. The transport issues no session id, so a session-scoped tenant would silently lose stored documents, bypass the mint rate limit, and break the binding that lets a buyer keep their data, meaning someone who paid would land back on the free tier with nothing."
+  ]
 }

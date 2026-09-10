@@ -158,6 +158,8 @@ ${l33.dead_advertised_path ? `<p class="dim"><b>The advertised zero-install URL 
 <p class="dim"><b>Why it hid.</b> ${esc(l33.dead_advertised_path.why_it_hid)} ${esc(l33.dead_advertised_path.lesson)}</p>` : ""}
 ${l33.click_instrument ? `<p class="dim"><b>The upgrade-click counter was lying, and now is not.</b> ${esc(l33.click_instrument.was_lying)} ${esc(l33.click_instrument.in_product)} ${esc(l33.click_instrument.now)}</p>` : ""}
 ${(l33.shipped||[]).length ? `<p class="dim"><b>Shipped this loop.</b></p><ul class="dim">${(l33.shipped||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+${(l33.corrections_to_prior_beliefs||[]).length ? `<p class="dim"><b>Beliefs this loop corrected.</b></p><ul class="dim">${(l33.corrections_to_prior_beliefs||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+${(l33.answered_no||[]).length ? `<p class="dim"><b>Questions answered no, with the reason.</b></p><ul class="dim">${(l33.answered_no||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
 ${(l33.human_gated||[]).length ? `<p class="dim"><b>Human-gated, ranked. Nothing below can be done by an agent.</b></p><ol class="dim">${(l33.human_gated||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ol>` : ""}
 ${(l33.open||[]).length ? `<p class="dim"><b>Open and unresolved.</b></p><ul class="dim">${(l33.open||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
 </div>` : ""}
