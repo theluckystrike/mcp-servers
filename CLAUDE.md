@@ -35,6 +35,28 @@ instrument cited: github.com 21, glama.ai 7, ours 4, apify.com 4, mcpservers.org
 - The official registry's job is as an UPSTREAM that `api.mcp.github.com` and Glama consume.
   It is not a destination anyone reads. Do not spend another round on registry ranking.
 
+## What ranks on GitHub, split by field size
+
+Measured 2026-09-11, `docs/GH_SEARCH_R2.md`. Repository search reads name, description and
+topics only, and query-term coverage is the gate ON SMALL FIELDS. Split by field size:
+
+- **Small fields, 14 to 91 results.** Stars do not gate. Rank-one median is 7.5 stars and 6 of
+  18 have zero. Coverage wins, and it did: 22 to 32 of 34 queries surfacing, 15 at rank one.
+- **Contested fields, median 648 results.** Rank-one median is **998 stars and none has zero**.
+  **Not winnable in the near term. Stop spending on them.**
+
+The `mcp-<capability>` naming hypothesis is REFUTED as stated: our mean name-term coverage is
+0.64 against 0.38 for the repositories beating us. Do not rename the fleet.
+
+Open, at n=2 and not acted on: on the two smallest fields the winners carry the FULL query
+phrase in the repo name at zero stars while we sit at 0.50. And `mcp-currency` has every term
+of `mcp currency converter`, is freshly reindexed, and is still absent from a 35-result top
+ten, so coverage is necessary and provably not sufficient.
+
+**The strategy that follows:** stop fighting contested queries, keep winning small-field ones,
+and make more uncontested questions exist. That is the same answer the blind recommendation
+test reaches from the other direction.
+
 ## Traps that have each cost a loop
 
 1. **The advertised hosted URL was missing its prerequisite.** `/mcp/<server>` needs a token.
