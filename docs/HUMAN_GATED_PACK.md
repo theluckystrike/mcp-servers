@@ -520,7 +520,7 @@ one at a time:
 https://github.com/theluckystrike/mcp-time-tracker
 https://github.com/theluckystrike/mcp-price-tracker
 https://github.com/theluckystrike/mcp-spreadsheet
-https://github.com/theluckystrike/mcp-invoice
+https://github.com/theluckystrike/mcp-invoice-generator
 ```
 
 Nothing else needs preparing. All four already carry, verified by `curl` on 2026-09-07:
@@ -690,7 +690,7 @@ required field is a GitHub repo URL — it scrapes everything else itself.
 
 ```
 https://github.com/theluckystrike/mcp-office-suite
-https://github.com/theluckystrike/mcp-invoice
+https://github.com/theluckystrike/mcp-invoice-generator
 https://github.com/theluckystrike/mcp-time-tracker
 https://github.com/theluckystrike/mcp-spreadsheet
 https://github.com/theluckystrike/mcp-price-tracker
@@ -703,7 +703,7 @@ Do **not** submit `https://github.com/theluckystrike/mcp-servers` as the first o
 monorepo and the scraper will read it as a single server. Submit the per-server mirrors.
 
 **Verify it landed:** search `https://mcp.directory/` for `theluckystrike` after 24 hours, or
-try `https://mcp.directory/servers/theluckystrike/mcp-invoice`.
+try `https://mcp.directory/servers/theluckystrike/mcp-invoice-generator`.
 
 ---
 
@@ -750,7 +750,7 @@ https://github.com/theluckystrike/mcp-statement-of-account   category: Finance &
 https://github.com/theluckystrike/mcp-spreadsheet            category: Data Platforms
 https://github.com/theluckystrike/mcp-pdf                    category: File Systems
 https://github.com/theluckystrike/mcp-barcode                category: Developer Tools
-https://github.com/theluckystrike/mcp-invoice                category: Finance & Fintech
+https://github.com/theluckystrike/mcp-invoice-generator                category: Finance & Fintech
 https://github.com/theluckystrike/mcp-office-suite           category: Workplace & Productivity
 ```
 
@@ -884,7 +884,7 @@ your call to make.
 name, description, GitHub URL, category → Submit.
 
 **What to paste:** name `Zovo Invoice`; description from the section 0 table; GitHub
-`https://github.com/theluckystrike/mcp-invoice`; homepage `https://mcp.zovo.one/s/invoice`.
+`https://github.com/theluckystrike/mcp-invoice-generator`; homepage `https://mcp.zovo.one/s/invoice`.
 
 **Verify it landed:** search `cursor.directory` for `zovo`.
 

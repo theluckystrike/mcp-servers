@@ -74,6 +74,17 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OWNER = "theluckystrike"
 
+
+def repo_name(name):
+    """The GitHub repo a server is mirrored to. Default mcp-<name>;
+    data/mirror_repo_overrides.json overrides it for a renamed repo (rename experiment
+    R1 maps invoice -> mcp-invoice-generator). Missing file means no overrides."""
+    try:
+        with open(os.path.join(ROOT, "data", "mirror_repo_overrides.json")) as fh:
+            return json.load(fh).get(name, "mcp-%s" % name)
+    except Exception:
+        return "mcp-%s" % name
+
 # The capability, in the words a buyer types. Each is a statement about what the server
 # does, taken from its manifest and README -- not a positioning claim.
 CAPABILITY = {
@@ -301,7 +312,7 @@ def header(name, demo, monorepo, raw):
     body of the README to be read as an npx recommendation."""
     tagline = facts(name)["tagline"]
     cap = CAPABILITY[name]
-    repo = "mcp-%s" % name
+    repo = repo_name(name)
     L = [START, ""]
     L.append("**MCP server for %s.** %s" % (cap, tagline))
     L.append("")

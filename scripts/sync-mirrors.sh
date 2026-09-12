@@ -188,7 +188,10 @@ for k in (p.get("dependencies") or {}):
 for NAME in $SERVERS; do
   SRC="$ROOT/servers/$NAME"
   [ -d "$SRC" ] || { echo "FATAL: no servers/$NAME" >&2; exit 1; }
-  REPO="mcp-$NAME"
+  # The repo name defaults to mcp-<name>; data/mirror_repo_overrides.json overrides it
+  # for a renamed repo (rename experiment R1: invoice -> mcp-invoice-generator), so a
+  # sync after the rename targets the NEW name instead of creating a fresh mcp-invoice.
+  REPO="$(python3 -c 'import json, os, sys; p = os.path.join(os.environ["ROOT"], "data", "mirror_repo_overrides.json"); o = json.load(open(p)) if os.path.exists(p) else {}; print(o.get(sys.argv[1], "mcp-" + sys.argv[1]))' "$NAME")"
   MIRROR="$(mktemp -d "${TMPDIR:-/tmp}/mirror-$NAME.XXXXXX")"
   echo "=== $REPO  ($MIRROR)"
 

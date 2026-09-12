@@ -37,6 +37,16 @@ const MONOREPO = `https://github.com/${OWNER}/mcp-servers`;
 const RAW = `https://raw.githubusercontent.com/${OWNER}/mcp-servers/main`;
 const SEO = join(ROOT, "scripts", "mirror-seo.py");
 
+// data/mirror_repo_overrides.json maps a server name to a renamed mirror repo
+// (rename experiment R1: invoice -> mcp-invoice-generator). Missing file = no overrides.
+const OVERRIDES = (() => {
+  try {
+    return JSON.parse(readFileSync(join(ROOT, "data", "mirror_repo_overrides.json"), "utf8"));
+  } catch {
+    return {};
+  }
+})();
+
 const DRY = process.argv.includes("--dry-run");
 const STAGGER_MIN = process.argv.includes("--stagger")
   ? Number(process.argv[process.argv.indexOf("--stagger") + 1])
@@ -71,7 +81,7 @@ const tmp = mkdtempSync(join(tmpdir(), "mirror-seo-"));
 const report = [];
 
 for (const name of servers) {
-  const repo = `mcp-${name}`;
+  const repo = OVERRIDES[name] ?? `mcp-${name}`;
   const full = `${OWNER}/${repo}`;
   const row = { server: name, repo, description: false, topics: false, homepage: false, readme: false };
   let live;
