@@ -1,0 +1,57 @@
+{
+  "name": "@theluckystrike/mcp-job-card",
+  "version": "0.21.0",
+  "description": "Job cards for trades and field service: log hours and materials against a job, move it from open to invoiced, print the card for client sign-off.",
+  "type": "module",
+  "bin": {
+    "mcp-job-card": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --declaration && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "job-card",
+    "field-service",
+    "trades",
+    "timesheet",
+    "materials",
+    "job-tracking"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/job-card"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/job-card",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-license": "^0.21.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "@theluckystrike/mcp-bill-of-sale",
+  "version": "0.21.0",
+  "description": "Record a sale of equipment, a vehicle or stock and get a printable bill of sale with signature lines: draft it, finalize it, render Markdown and self-contained HTML. Everything stays on your machine.",
+  "type": "module",
+  "bin": {
+    "mcp-bill-of-sale": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "bill-of-sale",
+    "receipt",
+    "sale",
+    "vehicle",
+    "equipment",
+    "as-is",
+    "freelance"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/bill-of-sale"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/bill-of-sale",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-license": "^0.21.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}
