@@ -2080,6 +2080,73 @@ const PROBES = {
       tier === "pro" ? lines600 === 601 : (lines600 === 0 && !w6.isError && /Nothing was written/.test(w6.text) && /mcp\.zovo\.one/.test(w6.text)),
       `${lines600} lines`);
   },
+  "bill-of-sale": async (c, tmp, tier, ok) => {
+    const mk = await c.tool("sale_create", { seller_name: "Nova Studio", buyer_name: "Acme GmbH", item_description: "2019 Honda Civic 1.5 petrol, grey", vin: "SHHRE4567YU123456", price_minor: 120000, currency: "USD", date: "2026-09-01" });
+    const mkId = (mk.text.match(/BOS-\d{4}-\d{4}/) || [""])[0];
+    ok(`${tier}: sale_create records the draft with the VIN and the as-is clause on by default`, !mk.isError && /^BOS-\d{4}-\d{4}$/.test(mkId) && /SHHRE4567YU123456/.test(mk.text) && /"as_is": true/.test(mk.text), mk.text.replace(/\s+/g, " ").slice(0, 140));
+    const rd = await c.tool("sale_render", { sale: mkId, format: "html" });
+    ok(`${tier}: a draft render carries the DRAFT watermark`, !rd.isError && /watermark/.test(rd.text) && /DRAFT/.test(rd.text), rd.text.replace(/\s+/g, " ").slice(0, 110));
+    const fin = await c.tool("sale_finalize", { sale: mkId });
+    ok(`${tier}: sale_finalize freezes the document`, !fin.isError && /"status": "final"/.test(fin.text), fin.text.replace(/\s+/g, " ").slice(0, 110));
+    const rd2 = await c.tool("sale_render", { sale: mkId, format: "html" });
+    ok(`${tier}: the signing copy drops the watermark entirely`, !rd2.isError && !/watermark/.test(rd2.text), rd2.text.replace(/\s+/g, " ").slice(0, 90));
+    const late = await c.tool("sale_update", { sale: mkId, notes: "too late" });
+    ok(`${tier}: a finalized document refuses sale_update by name`, late.isError && /finalized/.test(late.text), late.text.replace(/\s+/g, " ").slice(0, 110));
+    const dup = await c.tool("sale_create", { seller_name: "Nova Studio", buyer_name: "Acme GmbH", item_description: "2019 Honda Civic 1.5 petrol, grey", price_minor: 120000, currency: "USD", date: "2026-09-01" });
+    ok(`${tier}: a byte-identical repeat sale is refused with the stored id`, dup.isError && mkId && new RegExp(mkId).test(dup.text), dup.text.replace(/\s+/g, " ").slice(0, 130));
+    const sum = await c.tool("sale_summary", {});
+    ok(`${tier}: sale_summary totals per currency`, !sum.isError && /1,200\.00 USD/.test(sum.text), sum.text.replace(/\s+/g, " ").slice(0, 120));
+  },
+  "credit-note": async (c, tmp, tier, ok) => {
+    const cn = await c.tool("credit_note_create", { recipient: "Acme GmbH", reason: "overcharge", currency: "EUR", reason_detail: "Billed 10 seats, used 7", lines: [{ description: "Returned: 3 seats", quantity: 3, unit_price_minor: 10420, tax_rate: 23 }] });
+    const cnId = (cn.text.match(/CN-DRAFT-\d{4}-\d{4}/) || [""])[0];
+    ok(`${tier}: credit_note_create drafts the note with half-up line tax (3 x 104.20 + 23% = 384.50 EUR)`, !cn.isError && /^CN-DRAFT-\d{4}-\d{4}$/.test(cnId) && /384\.50|38450/.test(cn.text), cn.text.replace(/\s+/g, " ").slice(0, 140));
+    const fin = await c.tool("credit_note_finalize", { id: cnId });
+    ok(`${tier}: credit_note_finalize burns the final CN number and freezes`, !fin.isError && /CN-2026-\d{4}/.test(fin.text) && /"status": "final"/.test(fin.text), fin.text.replace(/\s+/g, " ").slice(0, 130));
+    const edit = await c.tool("credit_note_update", { id: cnId, notes: "too late" });
+    ok(`${tier}: a finalized note refuses edits`, edit.isError, edit.text.replace(/\s+/g, " ").slice(0, 90));
+    const del = await c.tool("credit_note_delete", { id: cnId });
+    ok(`${tier}: a finalized note refuses delete by name`, del.isError && /final|cannot/i.test(del.text), del.text.replace(/\s+/g, " ").slice(0, 110));
+    const md = await c.tool("credit_note_render", { id: cnId, format: "markdown" });
+    ok(`${tier}: the render names the recipient, the reason and the line`, !md.isError && /Acme GmbH/.test(md.text) && /[Oo]vercharge/.test(md.text) && /Returned: 3 seats/.test(md.text), md.text.replace(/\s+/g, " ").slice(0, 120));
+    const sum = await c.tool("credit_note_summary", {});
+    ok(`${tier}: credit_note_summary totals what was credited per currency`, !sum.isError && /384\.50|38450/.test(sum.text) && /EUR/.test(sum.text), sum.text.replace(/\s+/g, " ").slice(0, 120));
+  },
+  "job-card": async (c, tmp, tier, ok) => {
+    const jc = await c.tool("job_card_create", { client: "Acme Ltd", site: "14 Mill Lane", description: "Rewire the workshop", currency: "USD", scheduled_date: "2026-09-15" });
+    const jcId = (jc.text.match(/JC-\d{4}-\d{4}/) || [""])[0];
+    ok(`${tier}: job_card_create opens the card`, !jc.isError && /^JC-\d{4}-\d{4}$/.test(jcId) && /"status": "open"/.test(jc.text), jc.text.replace(/\s+/g, " ").slice(0, 120));
+    const lb = await c.tool("job_card_log_labor", { card: jcId, worker: "Ada", date: "2026-09-11", hours: 2.5, rate_cents: 8000 });
+    ok(`${tier}: labor logs 2.5h at 80.00/h as 200.00`, !lb.isError && /200\.00|20000/.test(lb.text), lb.text.replace(/\s+/g, " ").slice(0, 120));
+    const mt = await c.tool("job_card_log_material", { card: jcId, item: "6mm2 cable", date: "2026-09-11", qty: 3, unit_cost_cents: 1500 });
+    ok(`${tier}: materials log 3 x 15.00 as 45.00`, !mt.isError && /45\.00|4500/.test(mt.text), mt.text.replace(/\s+/g, " ").slice(0, 120));
+    const get = await c.tool("job_card_get", { card: jcId });
+    ok(`${tier}: running totals are sums of stored lines and can never drift (245.00)`, !get.isError && /245\.00|24500/.test(get.text), get.text.replace(/\s+/g, " ").slice(0, 130));
+    const fwd = await c.tool("job_card_update_status", { card: jcId, status: "in_progress" });
+    const back = await c.tool("job_card_update_status", { card: jcId, status: "open" });
+    ok(`${tier}: the status machine moves one step forward and refuses backwards`, !fwd.isError && back.isError, `${fwd.isError} ${back.text.replace(/\s+/g, " ").slice(0, 90)}`);
+    const del = await c.tool("job_card_delete", { card: jcId });
+    ok(`${tier}: a card holding work refuses delete and names what it holds`, del.isError && /labor|material|archive/i.test(del.text), del.text.replace(/\s+/g, " ").slice(0, 120));
+    const sum = await c.tool("job_card_summary", { date: "2026-09-11" });
+    ok(`${tier}: the daily summary counts the hours and the value`, !sum.isError && /2\.5/.test(sum.text) && /245\.00|24500/.test(sum.text), sum.text.replace(/\s+/g, " ").slice(0, 130));
+  },
+  "dunning-letters": async (c, tmp, tier, ok) => {
+    const rg = await c.tool("invoice_register", { client: "Late Pay Ltd", reference: "INV-1042", amount_minor: 125000, currency: "USD", due: "2026-08-01", late_fee_percent_per_month: 2 });
+    const dId = (rg.text.match(/DUN-\d{4}-\d{4}/) || [""])[0];
+    ok(`${tier}: invoice_register opens the chase with the ladder anchored to the due date`, !rg.isError && /^DUN-\d{4}-\d{4}$/.test(dId) && /1,250\.00/.test(rg.text), rg.text.replace(/\s+/g, " ").slice(0, 130));
+    const l1 = await c.tool("letter_render", { invoice: dId, format: "markdown" });
+    ok(`${tier}: letter 1 is the polite reminder carrying the amount and the reference`, !l1.isError && /Late Pay Ltd/.test(l1.text) && /1,250\.00/.test(l1.text) && /INV-1042/.test(l1.text), l1.text.replace(/\s+/g, " ").slice(0, 130));
+    const sent = await c.tool("letter_sent", { invoice: dId, sent: "2026-09-01" });
+    const l2 = await c.tool("letter_render", { invoice: dId, format: "markdown" });
+    ok(`${tier}: recording the send advances the ladder rather than the schedule`, !sent.isError && !l2.isError && l2.text !== l1.text, l2.text.replace(/\s+/g, " ").slice(0, 120));
+    const pay = await c.tool("payment_record", { invoice: dId, amount_minor: 50000, date: "2026-09-10" });
+    ok(`${tier}: a part payment lowers the ask to USD 750.00`, !pay.isError && /750\.00/.test(pay.text), pay.text.replace(/\s+/g, " ").slice(0, 120));
+    const ag = await c.tool("aging_summary", { on: "2026-09-12" });
+    ok(`${tier}: the aging buckets what is outstanding`, !ag.isError && /750\.00/.test(ag.text), ag.text.replace(/\s+/g, " ").slice(0, 120));
+    const extra = [];
+    for (const ref of ["INV-2", "INV-3", "INV-4"]) extra.push(await c.tool("invoice_register", { client: `Cap Co ${ref}`, reference: ref, amount_minor: 100, currency: "USD", due: "2026-09-01" }));
+    ok(`${tier}: the fourth active chase is ${tier === "pro" ? "registered" : "refused at the free cap with the buy link"}`, tier === "pro" ? !extra[2].isError : extra[2].isError && /mcp\.zovo\.one\/buy\/dunning-letters/.test(extra[2].text), extra[2].text.replace(/\s+/g, " ").slice(0, 130));
+  },
   invoice: async (c, tmp, tier, ok) => {
     const b = await c.tool("business_set", { name: "Validator Ltd", default_currency: "EUR", default_tax_rate: 23 }); ok(`${tier}: business_set`, !b.isError, b.text);
     const cl = await c.tool("client_add", { name: "Acme" }); ok(`${tier}: client_add`, !cl.isError, cl.text);
@@ -2105,7 +2172,7 @@ async function remote() {
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order", "bill-of-sale", "credit-note", "job-card", "dunning-letters"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -2861,6 +2928,114 @@ async function remote() {
       codBody.includes("Approved for the client by") && /Value today\s+EUR 21650\.00/.test(codBody) && /Net delta\s+\+EUR 1650\.00/.test(codBody) &&
       codocT.includes("CHANGE ORDER\n") && codocT.includes("Download (.txt, valid 1 hour)"),
       `${codRes?.headers.get("content-type")} ${codRes?.headers.get("content-disposition")} ${codBody.length} bytes`);
+    // Extension 22: /mcp/bill-of-sale, /mcp/credit-note, /mcp/job-card and
+    // /mcp/dunning-letters. The four loop-34 endpoints. None of them reads a sibling
+    // DOCUMENT (the shared business profile travels the licence shim, and this tenant has
+    // one from the business_set probes above), and only bill-of-sale writes a file at all:
+    // sale_render. What is asserted per endpoint is the shape a hosted build can get
+    // silently wrong - the tool set, the profile reaching the seller or the sender, the
+    // render coming back as a one-hour download under a bare NAME rather than a path, and
+    // the finalize and status rules that make the stdio store a ledger rather than a list.
+    const l34 = Date.now().toString(36).toUpperCase();
+    const bosC = await rpc("bill-of-sale", { jsonrpc: "2.0", id: 160, method: "tools/call", params: { name: "sale_create", arguments: { buyer_name: `Probe Buyer ${l34}`, seller_name: "Probe Seller", item_description: "2019 Honda Civic 1.5 petrol, grey", vin: "SHHRE4567YU123456", price_minor: 120000, currency: "USD", date: "2026-09-01" } } });
+    let boC = {}; try { boC = JSON.parse(bosC.result.content[0].text); } catch { boC = {}; }
+    const boId = boC.recorded?.id;
+    ok("hosted sale_create records the draft at USD 1,200.00 with the explicit seller and the as-is clause on by default",
+      /^BOS-\d{4}-\d{4}$/.test(boId || "") && boC.recorded?.price === "1,200.00 USD" && boC.recorded?.as_is === true &&
+      boC.recorded?.seller?.name === "Probe Seller" && boC.recorded?.status === "draft",
+      `${boId} ${boC.recorded?.price}`);
+    const boR = await rpc("bill-of-sale", { jsonrpc: "2.0", id: 161, method: "tools/call", params: { name: "sale_render", arguments: { sale: boId, format: "both" } } });
+    const boRT = JSON.stringify(boR).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const boLinks = boRT.match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/g) || [];
+    // The fs shim's MIME table has no .md entry, so the markdown download is served
+    // application/octet-stream; identify the two bodies by their content, not their type.
+    const boBodies = [];
+    for (const u of boLinks) { const r = await fetch(u); boBodies.push({ ct: r.headers.get("content-type") || "", body: await r.text() }); }
+    const boHtml = boBodies.find((b) => b.ct.startsWith("text/html"))?.body || "";
+    const boMd = boBodies.find((b) => b.body.startsWith("# BILL OF SALE"))?.body || "";
+    ok("hosted sale_render publishes BOTH renderings as one-hour downloads under the bare document id, the HTML served text/html with the DRAFT watermark and signature lines, the markdown carrying the same document - and the inline markdown and html are in the answer too, exactly as over stdio",
+      boLinks.length === 2 && boHtml.startsWith("<!doctype html") && boHtml.includes(`Bill of Sale ${boId}`) &&
+      boHtml.includes("watermark") && boHtml.includes("Signature") && boMd.includes("AS IS, WHERE IS") &&
+      boRT.includes('"format": "markdown"') && boRT.includes('"format": "html"'),
+      `${boLinks.length} links html:${boHtml.length}b md:${boMd.length}b`);
+    const boF = await rpc("bill-of-sale", { jsonrpc: "2.0", id: 162, method: "tools/call", params: { name: "sale_finalize", arguments: { sale: boId } } });
+    const boR2 = await rpc("bill-of-sale", { jsonrpc: "2.0", id: 163, method: "tools/call", params: { name: "sale_render", arguments: { sale: boId, format: "html" } } });
+    // The finalize and render answers travel as pretty-printed JSON INSIDE the JSON-RPC text
+    // payload, so a stringify of the parsed envelope shows them escaped (\"status\": \"final\").
+    // Unescape first, the same pattern boRT uses above, or the regex can never match.
+    const boFT = JSON.stringify(boF).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const boR2T = JSON.stringify(boR2).replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    ok("hosted sale_finalize freezes the signing copy and the next render drops the DRAFT watermark, and a finalized document refuses sale_update by name - the immutability rule is the hosted one too",
+      /"status": "final"/.test(boFT) && !boR2T.includes("watermark") &&
+      (await rpc("bill-of-sale", { jsonrpc: "2.0", id: 164, method: "tools/call", params: { name: "sale_update", arguments: { sale: boId, notes: "too late" } } })).result?.isError === true,
+      `${boId} finalized`);
+    const boP = await rpc("bill-of-sale", { jsonrpc: "2.0", id: 165, method: "tools/call", params: { name: "sale_create", arguments: { buyer_name: `Profile Probe ${l34}`, item_description: "MacBook Pro 14-inch 2021", price_minor: 90000, currency: "USD", date: "2026-09-01" } } });
+    let boPr = {}; try { boPr = JSON.parse(boP.result.content[0].text); } catch { boPr = {}; }
+    ok("hosted sale_create without seller_name takes the seller from the SHARED business profile behind this token (business_set on /mcp/invoice) and says so in the notes rather than inventing a seller",
+      (boPr.recorded?.seller?.name || "").length > 0 && (boPr.notes || []).some((n) => /came from the shared business profile/.test(n)),
+      `seller ${boPr.recorded?.seller?.name}`);
+    const cnC = await rpc("credit-note", { jsonrpc: "2.0", id: 166, method: "tools/call", params: { name: "credit_note_create", arguments: { recipient: `Acme GmbH ${l34}`, reason: "overcharge", currency: "EUR", reason_detail: "Client was billed 10 seats, used 7", lines: [{ description: "Returned: 3 seats", quantity: 3, unit_price_minor: 10420, tax_rate: 23 }] } } });
+    let cnJ = {}; try { cnJ = JSON.parse(cnC.result.content[0].text); } catch { cnJ = {}; }
+    const cnId = cnJ.created?.id;
+    const cnDup = await rpc("credit-note", { jsonrpc: "2.0", id: 167, method: "tools/call", params: { name: "credit_note_create", arguments: { recipient: `Acme GmbH ${l34}`, reason: "overcharge", currency: "EUR", reason_detail: "Client was billed 10 seats, used 7", lines: [{ description: "Returned: 3 seats", quantity: 3, unit_price_minor: 10420, tax_rate: 23 }] } } });
+    ok("hosted credit_note_create prices 3 x 104.20 + 23% per line as EUR 384.50 (tax rounded half-up ONCE per line, never recomputed at the total), and a byte-identical re-issue is refused naming the draft rather than double-crediting the client",
+      /^CN-DRAFT-\d{4}-\d{4}$/.test(cnId || "") && cnJ.created?.total_minor === 38450 && cnJ.created?.status === "draft" &&
+      cnDup.result?.isError === true && /is already this credit note/.test(cnDup.result?.content?.[0]?.text || "") && /Nothing was written/.test(cnDup.result?.content?.[0]?.text || ""),
+      `${cnId} total ${cnJ.created?.total_minor} | ${(cnDup.result?.content?.[0]?.text || "").slice(0, 60)}`);
+    const cnF = await rpc("credit-note", { jsonrpc: "2.0", id: 168, method: "tools/call", params: { name: "credit_note_finalize", arguments: { id: cnId } } });
+    let cnFJ = {}; try { cnFJ = JSON.parse(cnF.result.content[0].text); } catch { cnFJ = {}; }
+    const cnR = await rpc("credit-note", { jsonrpc: "2.0", id: 169, method: "tools/call", params: { name: "credit_note_render", arguments: { id: cnId, format: "markdown" } } });
+    const cnRT = cnR.result?.content?.[0]?.text || "";
+    ok("hosted credit_note_finalize burns the final CN number and credit_note_render returns the document INLINE - nothing is written and no download link exists on this endpoint, so the answer IS the document, titled CREDIT NOTE with the recipient and the total",
+      /^CN-\d{4}-\d{4}$/.test(cnFJ.finalized?.number || "") && cnRT.includes(`# CREDIT NOTE ${cnFJ.finalized?.number}`) &&
+      cnRT.includes(`Acme GmbH ${l34}`) && cnRT.includes("384.50") && !/mcp\/download\//.test(cnRT),
+      `${cnFJ.finalized?.number} ${cnRT.length} bytes`);
+    const jcC = await rpc("job-card", { jsonrpc: "2.0", id: 170, method: "tools/call", params: { name: "job_card_create", arguments: { client: `Kowalski bathroom refit ${l34}`, site: "14 Nowa Street, flat 3", description: "Replace the consumer unit and certify", currency: "EUR", scheduled_date: "2026-09-14" } } });
+    let jcJ = {}; try { jcJ = JSON.parse(jcC.result.content[0].text); } catch { jcJ = {}; }
+    const jcId = jcJ.created?.id;
+    const jcL = await rpc("job-card", { jsonrpc: "2.0", id: 171, method: "tools/call", params: { name: "job_card_log_labor", arguments: { card: jcId, worker: "Anna", date: "2026-09-01", hours: 2.5, rate_cents: 4500 } } });
+    const jcM = await rpc("job-card", { jsonrpc: "2.0", id: 172, method: "tools/call", params: { name: "job_card_log_material", arguments: { card: jcId, item: "Consumer unit 10-way", date: "2026-09-01", qty: 1, unit_cost_cents: 12999 } } });
+    let jcLJ = {}; try { jcLJ = JSON.parse(jcL.result.content[0].text); } catch { jcLJ = {}; }
+    let jcMJ = {}; try { jcMJ = JSON.parse(jcM.result.content[0].text); } catch { jcMJ = {}; }
+    ok("hosted job_card_log_labor values 2.5 h at 45.00 as 11,250 cents ONCE at log time and job_card_log_material adds 12,999, so the running grand total is 24,249 - a total derived from the stored lines, never a stored figure",
+      /^JC-\d{4}-\d{4}$/.test(jcId || "") && jcLJ.logged?.value_cents === 11250 && jcMJ.logged?.value_cents === 12999 &&
+      jcMJ.card?.grand_total_cents === 24249 && jcMJ.card?.hours === 2.5,
+      `${jcId} labor ${jcLJ.logged?.value_cents} grand ${jcMJ.card?.grand_total_cents}`);
+    const jcSkip = await rpc("job-card", { jsonrpc: "2.0", id: 173, method: "tools/call", params: { name: "job_card_update_status", arguments: { card: jcId, status: "done", date: "2026-09-01" } } });
+    const jcStep = await rpc("job-card", { jsonrpc: "2.0", id: 174, method: "tools/call", params: { name: "job_card_update_status", arguments: { card: jcId, status: "in_progress", date: "2026-09-01" } } });
+    const jcP = await rpc("job-card", { jsonrpc: "2.0", id: 175, method: "tools/call", params: { name: "job_card_print", arguments: { card: jcId, format: "markdown" } } });
+    const jcPT = jcP.result?.content?.[0]?.text || "";
+    let jcSJ = {}; try { jcSJ = JSON.parse(jcStep.result.content[0].text); } catch { jcSJ = {}; }
+    ok("hosted job_card_update_status refuses a skipped step naming the one that IS next, then walks the card to in_progress, and job_card_print returns the signable card INLINE as markdown with the EUR 242.49 total - nothing is written and no download link exists on this endpoint",
+      jcSkip.result?.isError === true && /the only step from here is in_progress/.test(jcSkip.result?.content?.[0]?.text || "") &&
+      jcSJ.card?.status === "in_progress" && jcPT.includes(`# Job card ${jcId}`) && jcPT.includes("Total due: EUR 242.49") &&
+      jcPT.includes("Client signature") && !/mcp\/download\//.test(jcPT),
+      `${jcId} ${jcSJ.card?.status} ${jcPT.length} bytes`);
+    const dlC = await rpc("dunning-letters", { jsonrpc: "2.0", id: 176, method: "tools/call", params: { name: "invoice_register", arguments: { client: `Acme Ltd ${l34}`, reference: `INV-L34-${l34}`, amount_minor: 125000, currency: "USD", due: "2026-08-01", gaps: [7, 14, 21] } } });
+    let dlJ = {}; try { dlJ = JSON.parse(dlC.result.content[0].text); } catch { dlJ = {}; }
+    const dlId = dlJ.registered?.id;
+    ok("hosted invoice_register anchors the ladder to the DUE date and never to a letter: reminder 1 at 2026-08-08, reminder 2 at 2026-08-15, the final notice at 2026-08-22, with the whole USD 1,250.00 outstanding and no letter sent",
+      /^DUN-\d{4}-\d{4}$/.test(dlId || "") && dlJ.registered?.outstanding_minor === 125000 &&
+      (dlJ.registered?.schedule || []).map((s) => s.date).join(",") === "2026-08-08,2026-08-15,2026-08-22" &&
+      dlJ.registered?.next_action?.stage === 1,
+      `${dlId} ${(dlJ.registered?.schedule || []).map((s) => s.date).join(",")}`);
+    const dlL = await rpc("dunning-letters", { jsonrpc: "2.0", id: 177, method: "tools/call", params: { name: "letter_render", arguments: { invoice: dlId } } });
+    let dlLJ = {}; try { dlLJ = JSON.parse(dlL.result.content[0].text); } catch { dlLJ = {}; }
+    const dlLeap = await rpc("dunning-letters", { jsonrpc: "2.0", id: 178, method: "tools/call", params: { name: "letter_sent", arguments: { invoice: dlId, stage: 2, sent: "2026-09-05" } } });
+    ok("hosted letter_render writes reminder 1 naming the invoice, the amount and the shared profile's sender - nothing is emailed, the answer IS the letter - and letter_sent at stage 2 before stage 1 is refused, because a later letter never leapfrogs an unsent earlier one",
+      dlLJ.stage === 1 && dlLJ.subject === `Payment reminder: invoice INV-L34-${l34} for USD 1,250.00` &&
+      (dlLJ.letter || "").includes(`Acme Ltd ${l34}`) && /sending it is your act|sending it -- by email/.test(dlLJ.honesty || "") &&
+      dlLeap.result?.isError === true && /letters go out in order/.test(dlLeap.result?.content?.[0]?.text || ""),
+      `${dlId} stage ${dlLJ.stage} | ${dlLJ.subject}`);
+    const dlS = await rpc("dunning-letters", { jsonrpc: "2.0", id: 179, method: "tools/call", params: { name: "letter_sent", arguments: { invoice: dlId, stage: 1, sent: "2026-09-05" } } });
+    const dlP = await rpc("dunning-letters", { jsonrpc: "2.0", id: 180, method: "tools/call", params: { name: "payment_record", arguments: { invoice: dlId, amount_minor: 25000, date: "2026-09-05" } } });
+    let dlPJ = {}; try { dlPJ = JSON.parse(dlP.result.content[0].text); } catch { dlPJ = {}; }
+    const dlI = await rpc("dunning-letters", { jsonrpc: "2.0", id: 181, method: "tools/call", params: { name: "invoice_status", arguments: { invoice: dlId } } });
+    let dlIJ = {}; try { dlIJ = JSON.parse(dlI.result.content[0].text); } catch { dlIJ = {}; }
+    ok("hosted letter_sent records stage 1 and payment_record drops the chase to USD 1,000.00 - NO balance is stored, so invoice_status derives the outstanding figure from the amount and the payments, marks reminder 1 sent and reminder 2 due",
+      dlS.result?.content && dlPJ.outstanding_minor === 100000 && dlIJ.outstanding_minor === 100000 &&
+      dlIJ.schedule?.[0]?.state === "sent" && dlIJ.schedule?.[1]?.state === "due" && dlIJ.status === "open",
+      `${dlId} outstanding ${dlIJ.outstanding_minor}`);
     // Extension 10: the `url` alternative on every upload shim. One fetch per shim from
     // raw.githubusercontent.com (D-R73: the worker cannot fetch its own zone), one refusal.
     const RAWFX = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main/remote/fixtures";

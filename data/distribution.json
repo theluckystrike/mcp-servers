@@ -728,6 +728,58 @@
       "mcpb": "built: bundles/checklist.mcpb, 7067652 bytes, sha256 c004888c0418a0ddaa4c96a659e082551c3a00dbfd36f980456deb891c84a3d4, written into all three manifests by scripts/manifest-sha256.mjs; unpacked and verified to initialize and answer a tool call. Pending: the orchestrator attaches it to the existing v0.21.0 release.",
       "github-mirror": "pending",
       "registry-name": "pending 0.21.0 (io.github.theluckystrike/snag-list-defect-handover-signoff, io.github.theluckystrike/onboarding-checklist-inspection-runs)"
+    },
+    "bill-of-sale": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/bill-of-sale",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending: bundles/bill-of-sale.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.21.0 (io.github.theluckystrike/bill-of-sale-generator)"
+    },
+    "credit-note": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/credit-note",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending: bundles/credit-note.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.21.0 (io.github.theluckystrike/credit-memo)"
+    },
+    "job-card": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/job-card",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending: bundles/job-card.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.21.0 (io.github.theluckystrike/job-card-template)"
+    },
+    "dunning-letters": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/dunning-letters",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending: bundles/dunning-letters.mcpb not built, server.mcpb.json fileSha256 is TBD",
+      "github-mirror": "pending",
+      "registry-name": "pending 0.21.0 (io.github.theluckystrike/overdue-invoice-reminder)"
     }
   }
 }

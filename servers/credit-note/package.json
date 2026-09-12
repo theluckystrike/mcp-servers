@@ -1,7 +1,7 @@
 {
   "name": "@theluckystrike/mcp-credit-note",
   "version": "0.21.0",
-  "description": "Credit notes (credit memos) against an invoice or standalone: drafts, finalization, rendering, totals.",
+  "description": "Credit notes against an invoice or standalone: drafts, finalization, rendering, totals.",
   "type": "module",
   "bin": {
     "mcp-credit-note": "dist/index.js"

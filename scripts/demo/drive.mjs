@@ -1433,6 +1433,251 @@ async function run(name) {
     toolLine("milestone_payload", { schedule: id });
     resultLine(await c.call("milestone_payload", { schedule: id }));
   }
+  if (name === "bill-of-sale") {
+    // The record of a sale: draft, DRAFT-watermarked review copy, finalize, signing copy.
+    // The free caps are never hit here; the refusal shown is the duplicate guard.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ A bill of sale for a used van: draft it, proof it, freeze it, print the signing copy.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const create = { buyer_name: "Kowalski Transport", item_description: "2019 Ford Transit 2.0 diesel panel van, white", vin: "WF0XXXTTGXKC12345", condition: "used, good working order", price_minor: 1850000, currency: "EUR", date: "2026-03-10", seller_name: "Nova Studio" };
+    toolLine("sale_create", create);
+    const made = pick(await c.call("sale_create", create));
+    resultLine(`${made.recorded.id}  ${made.recorded.item?.description ?? "van"}  EUR 18,500.00  draft`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("sale_render", { sale: made.recorded.id, format: "markdown" });
+    const r1 = pick(await c.call("sale_render", { sale: made.recorded.id, format: "markdown" }));
+    resultLine(`rendered ${r1.files.map((f) => f.path.split("/").pop()).join(", ")}  DRAFT watermark on every draft copy`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("sale_create", create);
+    resultLine(await c.call("sale_create", create));
+    resultLine("  refused before the free cap is read: the same sale to the byte, naming the id already stored");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("sale_finalize", { sale: made.recorded.id });
+    resultLine(await c.call("sale_finalize", { sale: made.recorded.id }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("sale_update", { sale: made.recorded.id, price_minor: 1 });
+    resultLine(await c.call("sale_update", { sale: made.recorded.id, price_minor: 1 }));
+    resultLine("  a finalized bill of sale is frozen: the buyer may already hold it");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("sale_render", { sale: made.recorded.id });
+    const r2 = pick(await c.call("sale_render", { sale: made.recorded.id }));
+    resultLine(`signing copy, no watermark: ${r2.files.map((f) => f.path.split("/").pop()).join(", ")}`);
+  }
+  if (name === "credit-note") {
+    // The worked note the unit suite recomputes by hand: 3 x 2499 @23%, 1 x 999 @23%,
+    // 1 x 1200 untaxed; subtotal 9,696, tax 1,954, total 11,650.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ A credit note against an invoice: draft, render, finalize burns the final number.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const create = {
+      recipient: "Acme GmbH", reason: "returned_goods", currency: "EUR",
+      invoice_ref: "INV-2026-0042", reason_detail: "Two cables returned unopened", issue_date: "2026-03-05",
+      lines: [
+        { description: "Returned: USB-C cable", quantity: 3, unit_price_minor: 2499, tax_rate: 23 },
+        { description: "Returned: cable adapter", quantity: 1, unit_price_minor: 999, tax_rate: 23 },
+        { description: "Express shipping refunded", quantity: 1, unit_price_minor: 1200 },
+      ],
+    };
+    toolLine("credit_note_create", create);
+    const made = pick(await c.call("credit_note_create", create));
+    resultLine(`${made.created.id}  draft  subtotal EUR 96.96  tax EUR 19.54  total EUR 116.50`);
+    resultLine("  round half-up per line, then sum: the printed note reproduces on a calculator");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("credit_note_render", { id: made.created.id, format: "markdown" });
+    const r1 = await c.call("credit_note_render", { id: made.created.id, format: "markdown" });
+    resultLine(r1.split("\n").slice(0, 8).join("\n"));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("credit_note_finalize", { id: made.created.id });
+    const fin = pick(await c.call("credit_note_finalize", { id: made.created.id }));
+    resultLine(`${fin.finalized.number}  burned at finalize, never before; the final series never has a gap`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("credit_note_delete", { id: fin.finalized.number });
+    resultLine(await c.call("credit_note_delete", { id: fin.finalized.number }));
+    resultLine("  a finalized note is a document the client may have seen");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("credit_note_summary", {});
+    resultLine(await c.call("credit_note_summary", {}));
+  }
+  if (name === "job-card") {
+    // One card per job: log hours and materials, one-step status moves, print for sign-off.
+    // 7.5 h at 4,500 cents is 33,750; 1 unit at 18,999; grand total 52,749.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ One card per job, the way the paper one on the dashboard works.\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("job_card_create", { client: "Kowalski bathroom refit", site: "14 Nowa Street, flat 3", description: "Replace the consumer unit and certify", currency: "EUR", scheduled_date: "2026-03-09" });
+    const made = pick(await c.call("job_card_create", { client: "Kowalski bathroom refit", site: "14 Nowa Street, flat 3", description: "Replace the consumer unit and certify", currency: "EUR", scheduled_date: "2026-03-09" }));
+    resultLine(`${made.created.id}  open`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("job_card_log_labor", { card: made.created.id, worker: "Anna", date: "2026-03-09", hours: 7.5, rate_cents: 4500, note: "First fix, new unit" });
+    const lab = pick(await c.call("job_card_log_labor", { card: made.created.id, worker: "Anna", date: "2026-03-09", hours: 7.5, rate_cents: 4500, note: "First fix, new unit" }));
+    resultLine(`7.5 h at EUR 45.00 = EUR 337.50  rounded half-up once, when it is logged`);
+    await sleep(600);
+    toolLine("job_card_log_material", { card: made.created.id, item: "Consumer unit, 10-way RCBO", date: "2026-03-09", qty: 1, unit_cost_cents: 18999 });
+    await c.call("job_card_log_material", { card: made.created.id, item: "Consumer unit, 10-way RCBO", date: "2026-03-09", qty: 1, unit_cost_cents: 18999 });
+    resultLine(`1 x EUR 189.99  running totals: labor 337.50 + materials 189.99 = EUR 527.49`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("job_card_update_status", { card: made.created.id, status: "done", date: "2026-03-09" });
+    resultLine(await c.call("job_card_update_status", { card: made.created.id, status: "done", date: "2026-03-09" }));
+    resultLine("  refused: a card moves exactly one step at a time, and this one is open");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("job_card_update_status", { card: made.created.id, status: "in_progress", date: "2026-03-09" });
+    resultLine(await c.call("job_card_update_status", { card: made.created.id, status: "in_progress", date: "2026-03-09" }));
+    await sleep(600);
+    toolLine("job_card_update_status", { card: made.created.id, status: "done", date: "2026-03-10" });
+    resultLine(await c.call("job_card_update_status", { card: made.created.id, status: "done", date: "2026-03-10" }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("job_card_print", { card: made.created.id });
+    const pr = await c.call("job_card_print", { card: made.created.id });
+    resultLine(pr.split("\n").slice(0, 10).join("\n"));
+  }
+  if (name === "dunning-letters") {
+    // The worked chase the unit suite recomputes: USD 1,250.00 due 2026-06-01, default gaps,
+    // letters due 06-08 / 06-15 / 06-22 anchored to the due date, never to the last letter.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Chasing an overdue invoice: a ladder anchored to the due date. Nothing is emailed.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const reg = { client: "Acme Ltd", reference: "INV-1042", amount_minor: 125000, currency: "USD", due: "2026-06-01", issued: "2026-05-15", late_fee_percent_per_month: 2 };
+    toolLine("invoice_register", reg);
+    const made = pick(await c.call("invoice_register", reg));
+    resultLine(`${made.registered.id}  USD 1,250.00 due 2026-06-01  ladder: 06-08, 06-15, 06-22`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("letter_render", { invoice: made.registered.id, on: "2026-06-08" });
+    const l1 = pick(await c.call("letter_render", { invoice: made.registered.id, on: "2026-06-08" }));
+    resultLine(String(l1.markdown ?? l1.letter ?? JSON.stringify(l1)).split("\n").slice(0, 8).join("\n"));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("letter_sent", { invoice: made.registered.id, stage: 1, sent: "2026-06-20" });
+    const sent = pick(await c.call("letter_sent", { invoice: made.registered.id, stage: 1, sent: "2026-06-20" }));
+    resultLine(`reminder 1 recorded sent 2026-06-20, twelve days late`);
+    resultLine(`  the schedule does not move: the final notice still falls due 2026-06-22, anchored to the due date`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("payment_record", { invoice: made.registered.id, amount_minor: 50000, date: "2026-06-20" });
+    const pay = pick(await c.call("payment_record", { invoice: made.registered.id, amount_minor: 50000, date: "2026-06-20" }));
+    resultLine(`paid 500.00, outstanding ${pay.outstanding}  the next letter asks for what remains`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("letter_render", { invoice: made.registered.id, on: "2026-07-01" });
+    const l2 = pick(await c.call("letter_render", { invoice: made.registered.id, on: "2026-07-01" }));
+    resultLine("reminder 2, firm: fee 2% a month pro-rata on a 30-day month, on the 75,000 outstanding = 1,500 exactly");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("chase_today", { on: "2026-07-01" });
+    resultLine(await c.call("chase_today", { on: "2026-07-01" }));
+  }
+  if (name === "checklist") {
+    // The worked pre-delivery vehicle check from the contract suite: six steps, two sections,
+    // and a run that is not signable on two counts, said by name rather than by status.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ A checklist you build once and run every time a van leaves the yard.\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("checklist_create", { name: "Pre-delivery vehicle check", category: "Pre delivery" });
+    const cl = pick(await c.call("checklist_create", { name: "Pre-delivery vehicle check", category: "Pre delivery" }));
+    const clId = cl.created.id;
+    resultLine(`${clId} created`);
+    const items = [
+      { text: "Tyre pressures checked and recorded", section: "Exterior", required: true },
+      { text: "Lights and indicators working", section: "Exterior", required: true },
+      { text: "Load secured and strapped", section: "Load", required: true },
+      { text: "Weight within plated limit", section: "Load", required: true },
+    ];
+    toolLine("checklist_item_add", { checklist: clId, ...items[0] });
+    for (const it of items) await c.call("checklist_item_add", { checklist: clId, ...it });
+    resultLine(`${items.length} required steps in two sections`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("run_start", { checklist: clId, title: "Van BX21 KLM, February service", reference: "WO-2026-0044", date: "2026-02-14" });
+    const run = pick(await c.call("run_start", { checklist: clId, title: "Van BX21 KLM, February service", reference: "WO-2026-0044", date: "2026-02-14" }));
+    const runId = run.started.id;
+    resultLine(`${runId} started: the run COPIES the checklist's steps, so editing the list never rewrites a run under way`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("run_check", { run: runId, item: "I01", state: "pass", by: "Ada" });
+    await c.call("run_check", { run: runId, item: "I01", state: "pass", by: "Ada" });
+    await c.call("run_check", { run: runId, item: "I02", state: "pass", by: "Ada" });
+    await c.call("run_check", { run: runId, item: "I03", state: "pass", by: "Ben" });
+    resultLine("I01 pass, I02 pass, I03 pass");
+    toolLine("run_check", { run: runId, item: "I04", state: "fail", by: "Ben", note: "Plated 3500 kg, weighed 3620 kg" });
+    resultLine(await c.call("run_check", { run: runId, item: "I04", state: "fail", by: "Ben", note: "Plated 3500 kg, weighed 3620 kg" }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("run_sign_off", { run: runId, by: "Cara" });
+    resultLine(await c.call("run_sign_off", { run: runId, by: "Cara" }));
+    resultLine("  refused on the reasons: a required step failed, and that is why required exists");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("run_report", { run: runId });
+    const rep = pick(await c.call("run_report", { run: runId }));
+    resultLine(String(rep.report ?? JSON.stringify(rep)).split("\n").slice(0, 10).join("\n"));
+  }
+  if (name === "packing-list") {
+    // The slip carries no prices. The chargeable weight is the measured point: 20.000 kg at
+    // divisor 5000 and 20.400 kg at 4000 on the worked shipment.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ A packing list against an order: what is in each carton, what it weighs, what is still to pack.\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("packing_list_create", { reference: "WO-2026-0044", consignee: "Harbour Cafe", ship_to: "12 Dock Road, Bristol", date: "2026-04-02" });
+    const made = pick(await c.call("packing_list_create", { reference: "WO-2026-0044", consignee: "Harbour Cafe", ship_to: "12 Dock Road, Bristol", date: "2026-04-02" }));
+    const plId = made.created?.id ?? made.packing_list ?? "PL-2026-0001";
+    resultLine(`${plId} open against WO-2026-0044`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("packing_expect", { packing_list: plId, description: "Oak shelf 900mm", quantity: 12 });
+    await c.call("packing_expect", { packing_list: plId, description: "Oak shelf 900mm", quantity: 12 });
+    resultLine("order declares 12 oak shelves");
+    await sleep(600);
+
+    toolLine("carton_add", { packing_list: plId, label: "Box 1", tare_grams: 800, length_cm: 40, width_cm: 30, height_cm: 25 });
+    const box = pick(await c.call("carton_add", { packing_list: plId, label: "Box 1", tare_grams: 800, length_cm: 40, width_cm: 30, height_cm: 25 }));
+    const cartonId = box.carton?.id ?? "C01";
+    resultLine(`${cartonId} 40x30x25, tare 800 g`);
+    await sleep(600);
+
+    toolLine("pack_item", { packing_list: plId, carton: cartonId, description: "Oak shelf 900mm", quantity: 8, unit_grams: 1250 });
+    resultLine(await c.call("pack_item", { packing_list: plId, carton: cartonId, description: "Oak shelf 900mm", quantity: 8, unit_grams: 1250 }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("packing_shortfall", { packing_list: plId });
+    const short = pick(await c.call("packing_shortfall", { packing_list: plId }));
+    resultLine("shortfall: 4 of 12 shelves still to pack, matched on the description");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("carton_report", { packing_list: plId });
+    resultLine(await c.call("carton_report", { packing_list: plId }));
+    resultLine("  chargeable weight is max(gross, volumetric) at the divisor you name: a tariff term, not a constant");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("packing_slip", { packing_list: plId });
+    const slip = pick(await c.call("packing_slip", { packing_list: plId }));
+    resultLine(String(slip.slip ?? JSON.stringify(slip)).split("\n").slice(0, 10).join("\n"));
+    resultLine("  no currency symbol reaches the slip: the invoice against the same order is a different document");
+  }
   await sleep(STEP_DELAY_MS);
   c.close();
   if (ecb) ecb.close();

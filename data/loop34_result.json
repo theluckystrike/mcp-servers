@@ -1,0 +1,87 @@
+{
+ "loop": 34,
+ "date": "2026-09-12",
+ "headline": "Four new servers shipped end to end in one loop (bill-of-sale, credit-note, job-card, dunning-letters), hosted coverage 30 -> 34, validation 1028 -> 1135 green, registry 91 -> 97 names, and the rename experiment's T0: mcp-invoice-generator moved rank 6 -> 2 on its field within minutes of reindex.",
+ "primary_kpi": {
+  "name": "Named by a blind assistant",
+  "value": "0 of 18 buyer questions (R2, unchanged)",
+  "how": "docs/BLIND_RECOMMENDATION_R2.md; fresh agent, 18 frozen questions. Failure shape changed: our Glama connector was retrieved on Q1 and Q16 (the wedge questions) and passed over - a citation-surface gap, not pure indexation. Glama /mcp/servers/ census: 1 of 34 mirrors (docs/DISTRIBUTION_R3B.md); ingestion is OAuth-gated, operator pack item 1.",
+  "why": "The buyer asks an assistant and installs what it names."
+ },
+ "shipped": {
+  "servers": [
+   "bill-of-sale",
+   "credit-note",
+   "job-card",
+   "dunning-letters"
+  ],
+  "fields": {
+   "bill-of-sale": 0,
+   "credit-note": 3,
+   "job-card": 2,
+   "dunning-letters": 7
+  },
+  "hosted_endpoints": "34 of 37 live, verified by real tools/call through the advertised URL",
+  "registry_names": 8,
+  "mirrors_created": 4,
+  "mcpb_assets_on_release": 38,
+  "catalogue_prs_opened": 5,
+  "validation": "1135/1135",
+  "billing_tests": "134/134",
+  "release_check": "exit 0"
+ },
+ "rename_experiment": {
+  "treatment": "mcp-invoice -> mcp-invoice-generator",
+  "baseline_rank": 6,
+  "t0_rank": 2,
+  "field": 11,
+  "controls": {
+   "mcp quotes": 69,
+   "mcp deposits": 3
+  },
+  "criterion": "rank <= 3 at T+7d and T+14d",
+  "remeasure": "MEASURE_ONLY=t7d scripts/rename-invoice-test.sh"
+ },
+ "kpis": {
+  "registry_latest": {
+   "was": 91,
+   "now": 97
+  },
+  "hosted": {
+   "was": 30,
+   "now": 34
+  },
+  "validation": {
+   "was": "1028/1028",
+   "now": "1135/1135"
+  },
+  "tenants": {
+   "was": 583,
+   "now": 616
+  },
+  "anon_tokens": {
+   "was": 123,
+   "now": 130
+  },
+  "blind_named": {
+   "was": 0,
+   "now": 0
+  },
+  "paid": {
+   "was": 0,
+   "now": 0
+  }
+ },
+ "docs": [
+  "docs/LOOP34_RESULT.md",
+  "docs/LOOP34_FIELDS_R1.md",
+  "docs/RENAME_TEST_PLAN_R1.md",
+  "docs/BLIND_RECOMMENDATION_R2.md",
+  "docs/DISTRIBUTION_R3.md",
+  "docs/DISTRIBUTION_R3B.md",
+  "docs/GEMINI_EXT_R1.md",
+  "docs/WIRING_LOOP34.md",
+  "docs/HOSTED_LOOP34.md",
+  "docs/OPERATOR_ACTIONS_LOOP34.md"
+ ]
+}

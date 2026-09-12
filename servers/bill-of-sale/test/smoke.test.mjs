@@ -1,6 +1,6 @@
-// The server over real stdio JSON-RPC: initialize, tools/list, and a full sale lifecycle —
+// The server over real stdio JSON-RPC: initialize, tools/list, and a full sale lifecycle --
 // create, get, update, render (draft watermark), finalize, render (signing copy), the
-// refusal of edits after finalize, summary, delete — then the free-tier caps on drafts and
+// refusal of edits after finalize, summary, delete -- then the free-tier caps on drafts and
 // finalized documents, and the same calls passing in Pro.
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -121,7 +121,7 @@ test("stdio: initialize, tools/list, and the full sale lifecycle", async (t) => 
   assert.ok(existsSync(mdPath), mdPath);
   assert.ok(existsSync(htmlPath), htmlPath);
   const md = readFileSync(mdPath, "utf8");
-  assert.match(md, /DRAFT — NOT FINALIZED/);
+  assert.match(md, /DRAFT -- NOT FINALIZED/);
   assert.match(md, /SHHFC1340KU203456/);
   assert.match(md, /66,000\.00 PLN/);
   assert.match(md, /Signature \| _+/);

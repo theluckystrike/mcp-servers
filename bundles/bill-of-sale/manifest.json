@@ -1,0 +1,90 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-bill-of-sale",
+  "display_name": "Bill of Sale",
+  "version": "0.21.0",
+  "description": "Bills of sale for equipment, vehicles and stock: draft, finalize, print with signature lines.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "sale_create",
+      "description": "Record a sale and generate the bill of sale: who sold, who bought, what item (with VIN, serial or IMEI where it has one), the price in minor units and the date. Returns the BOS-YYYY-NNNN number of the draft. The draft can still be changed with sale_update; sale_finalize freezes it into the signing copy and sale_render prints it. Free tier: 10 drafts."
+    },
+    {
+      "name": "sale_update",
+      "description": "Change anything on a bill of sale that is not finalized yet: price, buyer, seller, item details, identifiers, the as-is clause, warranty or notes. Pass an empty string to clear an optional field. A finalized document cannot be edited."
+    },
+    {
+      "name": "sale_finalize",
+      "description": "Finalize a bill of sale so it is ready to sign: the document is frozen from this call on, sale_update refuses it, and every later render is the signing copy without the DRAFT watermark. Free tier: 5 finalized documents."
+    },
+    {
+      "name": "sale_list",
+      "description": "List every bill of sale, drafts and finalized, newest first: id, status, date, item, buyer, seller and price. Filter to drafts or finalized documents with status."
+    },
+    {
+      "name": "sale_get",
+      "description": "Read one bill of sale in full by its BOS number: both parties, the item and its identifiers, price, terms, and whether it is still a draft or the finalized signing copy."
+    },
+    {
+      "name": "sale_delete",
+      "description": "Delete a bill of sale by its BOS number. A draft goes outright. A finalized document needs confirm_finalized true, because it is the local copy of a record the buyer may hold. The BOS number is never reissued, so a gap in the series is the record that a document was deleted."
+    },
+    {
+      "name": "sale_render",
+      "description": "Render a bill of sale as a clean printable document: Markdown, a self-contained HTML file ready for print-to-PDF, or both, with signature lines for seller and buyer. Drafts render with a DRAFT watermark so a review copy cannot be signed by mistake. Files default to the server's documents folder; pass out_path to choose. Free."
+    },
+    {
+      "name": "sale_summary",
+      "description": "Summarize the book: how many drafts and finalized documents, and the total sold value per currency, drafts separate from finalized. Currencies are never added together. Free."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "bill-of-sale",
+    "sales-receipt",
+    "vehicle-sale",
+    "proof-of-purchase",
+    "as-is"
+  ]
+}

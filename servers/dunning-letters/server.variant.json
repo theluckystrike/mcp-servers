@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/overdue-invoice-reminder",
+  "description": "Overdue invoice chasers: reminder 1, reminder 2, the final notice, and the day's chase list.",
+  "version": "0.21.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/dunning-letters"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/dunning-letters",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/dunning-letters.mcpb",
+      "version": "0.21.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "fcef83dcba122d24ac1936b7ba8cd229b2eed345dc204f3696cc936064cd87af"
+    }
+  ]
+}

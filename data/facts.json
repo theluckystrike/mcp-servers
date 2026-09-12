@@ -262,7 +262,7 @@
   },
   "office-suite": {
    "title": "MCP Office Suite (bundle server)",
-   "tagline": "One install that exposes every tool of all 33 servers, 318 of them.",
+   "tagline": "One install that exposes every tool of all 37 servers, 352 of them.",
    "does": "A stdio proxy that starts every sibling server in this repository as a child process and exposes all their tools, resources and prompts under one server, with a single license_status and license_activate. Measured on the running v0.21.0 bundle on 2026-09-10: tools/list returns 318 distinct tools and the suite reports proxying 33 children, 316 of those tools coming from the children and 2 being its own licence pair. Four colliding child tool names are renamed and the renames are published in office://tools_map. Measured reason for existing: the most-used server in this category is an aggregator, so one install beats thirty-three.",
    "for": "Anyone who wants the whole back-office workflow in one config line instead of thirty-one.",
    "example": "\"Start a timer for Acme\" ... \"Invoice Acme for this week's hours plus the USB hub receipt.\"",
@@ -549,6 +549,46 @@
    "free": "Three checklists, and UNLIMITED RUNS of them on every tier, because capping the running of a checklist would cap the only thing a checklist is for. Up to 500 steps on a checklist on every tier. Every read, every count, the failures, the outstanding list and the run report TEXT are free. Deleting a checklist frees its slot, and the runs already made from it stay readable, because each run carries its own copy of the steps.",
    "pro": "Unlimited checklists, and run_report writing the report to a .txt file at a path you name. The path goes through a bounded ancestor walk rather than mkdirSync with recursive, so a caller-supplied path under /proc, /sys or /dev fails in milliseconds instead of retrying forever; a URL is refused by name before any resolution, so the refusal never leaks the server's working directory; and an existing file is refused unless overwrite is passed.",
    "storage": "~/.local/share/mcp-servers/checklist/"
+  },
+  "bill-of-sale": {
+   "title": "MCP Bill of Sale",
+   "tagline": "Record a sale of equipment, a vehicle or stock and get a printable bill of sale with signature lines.",
+   "does": "Records who sold, who bought, what the item is (with the VIN, serial number or IMEI where it has one), the price in integer minor units and the date, and writes the document: parties, item, price, an as-is clause for second-hand sales, any warranty in the seller's own words, and signature lines for both sides. A sale starts as a draft that can be revised and deleted; sale_finalize freezes it into the signing copy, and from there sale_update refuses it and every render prints without the DRAFT watermark. Rendering prints Markdown or a single self-contained HTML file that prints to PDF from any browser with no assets beside it. A VIN that is not 17 characters or an IMEI that is not 15 digits is stored as given but flagged in the response, because those are the two identifiers a buyer most often misreads. A byte-identical repeat sale is refused before the free cap is consulted and names the id already stored; duplicate_ok is the way through for a genuine repeat. sale_delete on a finalized document needs confirm_finalized, and the BOS number is never reissued, so a gap in the series is the record of a deletion. Currencies are never added together: sale_summary reports the total value per currency. No total is stored; every figure is derived on the call.",
+   "for": "Side-business and small-business sales of physical goods: used vehicles, plant and equipment, electronics, and stock, where both parties want a signed record of what changed hands, in what condition, for how much and on what day.",
+   "example": "\"Record a sale: Kowalski Transport buys my 2019 Ford Transit, VIN WF0XXXTTGXKC12345, EUR 18,500, as-is, dated 2026-03-10.\" ... \"Print the draft so they can read it.\" ... \"They spotted the price: it is 18,200. Fix it and finalize.\" ... \"Now print the signing copy as HTML.\"",
+   "free": "Ten open drafts and five finalized documents, with rendering to Markdown and HTML unlimited on every tier: the document itself is never metered, because whether you hold a signed record of the sale is the question this server exists to answer. Read, list, summary and delete are free, so a draft typed in twice costs nothing to remove.",
+   "pro": "Unlimited drafts and unlimited finalized documents.",
+   "storage": "~/.local/share/mcp-servers/bill-of-sale/"
+  },
+  "credit-note": {
+   "title": "MCP Credit Note",
+   "tagline": "Credit notes against an invoice or standalone: drafts, finalization, rendering and totals, all in integer minor units.",
+   "does": "Issues a credit note (credit memo) against an invoice or standalone: the recipient, the reason (returned goods, overcharge, discount correction, service issue, other), line items with quantity, unit price and tax rate, and the currency. Every credit note starts as a draft with a CN-DRAFT id no client sees; credit_note_finalize burns the final CN-YYYY-NNNN number in the issue date's year and freezes the note, because a finalized credit note is a document the client may have seen. The counter is written before the record, so a crash burns a number rather than reusing one, and because drafts never hold a final number and finalized notes cannot be deleted, the final series never has a gap. The line math is documented so the printed document reproduces on a calculator: the unit price enters as integer minor units, the line gross is quantity times unit price rounded half-up once, tax is per line rounded half-up per line on its own base, and the note totals are plain integer sums of the already-rounded line values, so a total can never drift from the printed lines. Rendering returns Markdown to paste into an email or a self-contained printable HTML page, and credit_note_summary totals what was credited per currency, reason and month.",
+   "for": "Freelancers and small businesses issuing a credit after the invoice has gone out: returned goods, an overcharge, a discount correction or a service issue, where the correction has to be a document rather than a quiet edit.",
+   "example": "\"Issue a credit note to Acme GmbH against INV-2026-0042: two USB-C cables returned unopened, 3 at 24.99 plus one adapter at 9.99, 23% VAT, and refund the 12.00 express shipping.\" ... \"Render it as Markdown so I can paste it into the email.\" ... \"Finalize it.\" ... \"What did I credit in March, by reason?\"",
+   "free": "Ten finalized credit notes, lifetime, on free. Drafts, edits, deletion of drafts, listing, reading, rendering and the totals summary are free and unlimited on every tier: finalizing is the metered act because that is what turns a draft into the document the client sees. Free renders carry a one-line footer.",
+   "pro": "Unlimited finalized credit notes and renders without the footer line.",
+   "storage": "~/.local/share/mcp-servers/credit-note/"
+  },
+  "job-card": {
+   "title": "MCP Job Card",
+   "tagline": "One card per job: hours and materials logged against it, a status machine from open to invoiced, and the printed card for client sign-off.",
+   "does": "Opens a job card for the client, the site, what the job is, the currency and the scheduled date, returning a JC-YYYY-NNNN id. Labor entries log the hours each worker puts in at their rate and material entries the items that went into the job, each line valued and rounded half-up to the cent once at the moment it is logged and stored on the entry, so the running totals are plain sums of stored line values and can never drift from the lines. Hours are carried as integer hundredths and quantities as integer thousandths, so 2.5 hours at 4,999 cents an hour is 12,498 cents, never 12,497.499999. The status machine moves exactly one step at a time, open to in_progress to done to invoiced to archived, stamping date and note into the card's history, and a skipped or backwards step is refused. job_card_print renders the card with a signature line for client sign-off, as Markdown or self-contained HTML. A card holding labor or materials cannot be deleted, because that card is the record of work done; it is archived instead, and the JC number is never reissued. job_card_summary answers a day or a week: cards touched, hours per worker, labor and materials value per currency, with currencies never added together.",
+   "for": "Trades and field service: the card on the van's dashboard, kept where the office can read it, with the crew's hours and the materials on one record the client signs at the end.",
+   "example": "\"Open a job card for the Kowalski bathroom refit, 14 Nowa Street flat 3: replace the consumer unit and certify, EUR, scheduled 2026-03-09.\" ... \"Anna logged 7.5 hours at 45.00 an hour on the 9th, first fix.\" ... \"One 10-way RCBO consumer unit at 189.99 went in.\" ... \"Print the card for the client to sign.\"",
+   "free": "Ten active job cards, with labor and material entries unlimited per card and the running totals, list, get, the printable card and the daily and weekly summaries all free on every tier. A card stops counting the moment it is archived, so the record is never metered.",
+   "pro": "Unlimited active job cards.",
+   "storage": "~/.local/share/mcp-servers/job-card/"
+  },
+  "dunning-letters": {
+   "title": "MCP Dunning Letters",
+   "tagline": "Chase overdue invoices on a ladder anchored to the due date: reminder 1, reminder 2, the final notice, with the aging and the day's chase list.",
+   "does": "Registers an unpaid invoice (client, reference, amount in integer minor units, currency, due date) and runs the escalation ladder: reminder 1 at due + 7 days, reminder 2 at due + 14 and the final notice at due + 21, the gaps configurable per invoice. The ladder is anchored to the due date, not to the last letter: a reminder that actually goes out twelve days late does not push the final notice back, because the client's obligation was fixed by the due date, and recording a sending moves only which stage is next, never the schedule. The letters go out strictly in order, so an invoice 60 days late with nothing sent is still owed reminder 1, because a final notice that no polite letter preceded reads as a threat, not a chase. The late fee is simple interest, pro-rata on a 30-day month, on the amount outstanding on the day the letter is written, rounded once to the minor unit. letter_render generates the letter for the current stage as Markdown or self-contained printable HTML; letter_sent records that it actually went out; payment_record lowers what the next letter asks for, and covering the balance closes the ladder. overdue_list is every unpaid invoice past due, worst first; aging_summary buckets the register current, 1-30, 31-60, 61-90, 91+; chase_today answers what has to go out today. Nothing is emailed or sent anywhere: the server produces the letter text and sending it is the user's act.",
+   "for": "Freelancers and small businesses with late payers: the polite reminder, the firm one and the final notice, each dated, each recorded, so the paper trail is complete before a collections agency or a court ever sees it.",
+   "example": "\"Register INV-1042 to Acme Ltd, USD 1,250.00, due 2026-06-01, issued 2026-05-15, late fees at 2% a month.\" ... \"What do I need to send today?\" ... \"Render the reminder for Acme.\" ... \"They paid 500 on the 20th; record it and show me the final notice when it falls due.\"",
+   "free": "Three unpaid invoices chased at once, with all three letters in both formats, the aging summary, the day's chase list and payment recording free on every tier. An invoice that gets paid frees its slot, because the cap is on how many chases run at once, never on the letters or the aging.",
+   "pro": "Unlimited concurrent chases.",
+   "storage": "~/.local/share/mcp-servers/dunning-letters/"
   }
  },
  "version": "0.1.1",
@@ -723,6 +763,98 @@
    ],
    "note": "Searched the official MCP registry search API for each token on 2026-09-06. All four return 0 rows, and so does the two-word form change order. The run carried a control, because a search API that has broken returns zero for everything: service returns 100 rows on the same API in the same minute, so the four zeroes are the registry answering rather than the search failing. What the tokens do not turn up is a server that HOLDS a change order as a record: added, removed and changed lines against a quote or work order, a status machine where every step carries its own date, and a running contract value that counts only what the client approved. The rows the control surfaces are a different object: service discovery, name services and pay-per-call trading tools, none of which records a variation to a contract or states what a contract is worth after it. None were called: probing a remote endpoint someone else meters is a paid API call. Nothing in the registry carries the thing this server exists for: a changed line emitted as a reversal and a revised item rather than one net item, and the approved delta in both sibling scales at once, invoice_create's MAJOR units and quote_create's MINOR units, asserted exactly 100x apart from each payload's own items. A comparison table would have to compare this against an email thread and a spreadsheet column called extras, and the measured result of that comparison is the guide /guides/change-orders-and-contract-value-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever. See docs/DIST_R23_RESULT.md.",
    "guide": "change-orders-and-contract-value-from-chat",
+   "ttl_days": 30
+  },
+  "bill-of-sale": {
+   "date": "2026-09-12",
+   "tokens": [
+    "bill-of-sale",
+    "bill of sale",
+    "sale-receipt",
+    "proof-of-purchase",
+    "vehicle-sale"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-12. All five return 0 rows. The run carried a control: service returns 30 rows on the same API in the same minute, so the five zeroes are the registry answering rather than the search failing. Nothing in the registry records a sale as a document: seller, buyer, the item with its VIN, serial number or IMEI, the price, the as-is clause, and signature lines. The nearest objects are e-commerce connectors that READ a product out of somebody else's shop, which is a different act from writing the record of a sale that already happened. A comparison table would have to compare this against a Word template, and the measured result of that comparison is the guide /guides/bill-of-sale-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever.",
+   "guide": "bill-of-sale-from-chat",
+   "ttl_days": 30
+  },
+  "credit-note": {
+   "date": "2026-09-12",
+   "tokens": [
+    "credit-note",
+    "credit note",
+    "credit-memo",
+    "credit memo"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-12. credit-note returns 24 rows and every one of them is this estate's own: io.github.theluckystrike/billing-docs-credit-notes-purchase-orders and io.github.theluckystrike/credit-note at versions 0.10.0 through 0.13.0, the two names the billing-docs server was published under. The other three tokens return 0 rows. The control, service, returns 30 rows on the same API in the same minute. Nothing outside this estate writes a credit note. Note for whoever publishes this server: the name io.github.theluckystrike/credit-note is already taken by this estate's own earlier publication, so 0.21.0 continues that name rather than minting it. A comparison table would have to compare this against retyping a credit note in Word, and the measured result of that comparison is the guide /guides/credit-notes-and-purchase-orders-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever.",
+   "guide": "credit-notes-and-purchase-orders-from-chat",
+   "ttl_days": 30
+  },
+  "job-card": {
+   "date": "2026-09-12",
+   "tokens": [
+    "job-card",
+    "job card",
+    "field-service",
+    "field service",
+    "trades"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-12. job-card returns exactly 1 row, io.github.theluckystrike/job-card, which is this estate's own mcp-work-order published under its second registry name; the same caution as credit-note applies, the name already exists at 0.20.0 and 0.21.0 continues it. job card, field-service and field service return 0 rows each. trades returns 13 rows and every one is the other meaning of the word: congressional and insider stock-trade trackers, MT5 trading connectors, trade-seo agency lead pages and a directory of Australian trades providers. None of them holds a card per job with hours and materials. The control, service, returns 30 rows on the same API in the same minute. What has no row at all is the thing this server exists for: one card per job, a line value rounded half-up to the cent once when it is logged, and totals that are plain sums of the stored lines. A comparison table would have to compare this against the paper docket book, and the measured result of that comparison is the guide /guides/work-orders-and-job-cards-from-chat rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever.",
+   "guide": "work-orders-and-job-cards-from-chat",
+   "ttl_days": 30
+  },
+  "dunning-letters": {
+   "date": "2026-09-12",
+   "tokens": [
+    "dunning",
+    "debt-collection",
+    "debt collection",
+    "payment-reminder",
+    "payment reminder",
+    "overdue-invoices",
+    "overdue invoice"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-12. Five of the seven return 0 rows: debt collection, payment-reminder, payment reminder, overdue-invoices and overdue invoice. dunning returns exactly 1 row, io.github.theluckystrike/dunning, which is this estate's own mcp-statement-of-account under its second registry name. debt-collection returns exactly 1 row, io.github.Evozim/debt-collection-bot-mcp, and it is not a server this estate can write a comparison page against: it is one of that publisher's generated wrappers, its whole description is \"Premium agentic endpoint for debt-collection-bot-mcp\", it is a remote metered endpoint, and it was NOT called, because probing a metered remote endpoint is a paid API call. Nothing in the registry runs a dunning ladder: stage dates anchored to the invoice's due date rather than to the last letter, letters that go out strictly in order, and a late fee that is simple interest on what is outstanding the day the letter is written. The control, service, returns 30 rows on the same API in the same minute. A comparison table would have to compare this against a calendar reminder and a template folder, and the measured result of that comparison is the guide /guides/chase-unpaid-invoices-without-a-crm rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever.",
+   "guide": "chase-unpaid-invoices-without-a-crm",
+   "ttl_days": 30
+  },
+  "checklist": {
+   "date": "2026-09-12",
+   "tokens": [
+    "checklist",
+    "check-list",
+    "snag-list",
+    "snag list",
+    "inspection",
+    "handover",
+    "sign-off"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-12. Three of the seven return 0 rows: check-list, snag list and, as a checklist runner, the rest. checklist returns 8 rows: three are this estate's own (checklist, onboarding-checklist-inspection-runs, and snag-list-defect-handover-signoff under snag-list), and the rest are a different object in each direction: CASP Checklist, the Grant Readiness Checklist and soschecklist-net are site-enquiry wrappers, access-review-checklist creates one fixed access-review checklist rather than reusable ones (its repository 404s today, checked 2026-09-12), checklist-day is a Python library registry matching on a substring, and ehr-migration-checklist is a fixed HL7/FHIR migration audit. handover returns 3 rows: ours, sh.handover/handover (shared context publishing, not a checklist), and io.github.CSOAI-ORG/meok-vehicle-handover-mcp, which is the nearest genuine row and is still not a checklist engine: it is a FIXED vehicle-handover compliance workflow for UK car-transport operators, 8 tools hardwired to NAMA grading, BVRLA fair-wear-and-tear and RHA liability caps, installable (pypi, MIT, v1.0.4), and it neither holds a reusable checklist nor runs one against a job with a sign-off, so a side-by-side table against a reusable checklist runner would mislead a reader about both. sign-off returns 1 row, DottedSign's e-signature connector, which signs documents rather than checklist runs. inspection returns 2 rows: ours and a racking-inspection cost page. The control, service, returns 30 rows on the same API in the same minute. Nothing in the registry holds a checklist you build once and run many times with a dated, signed record of each run. The note expires in 30 days so the gap is re-probed rather than excused forever.",
+   "ttl_days": 30
+  },
+  "packing-list": {
+   "date": "2026-09-12",
+   "tokens": [
+    "packing-list",
+    "packing list",
+    "packing-slip",
+    "packing slip"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-12. packing-list returns exactly 1 row, io.github.theluckystrike/packing-list, and packing-slip exactly 1, io.github.theluckystrike/packing-slip-cartons-shipment-weights; both are this estate's own names for this server. The two-word forms return 0 rows each. The control, service, returns 30 rows on the same API in the same minute. Nothing in the registry keeps a packing list: cartons with tare weights and dimensions, goods packed a line at a time, a shortfall report against the order, and a chargeable weight worked out at the carrier's divisor. The nearest objects are shipping-rate and tracking connectors, which quote or follow a carrier rather than record what went into which box. A comparison table would have to compare this against the warehouse's carbon slip pad, and no guide yet measures that comparison. The note expires in 30 days so the gap is re-probed rather than excused forever.",
+   "guide": "delivery-schedule-and-work-order-documents-from-mcp",
+   "ttl_days": 30
+  },
+  "delivery-schedule": {
+   "date": "2026-09-12",
+   "tokens": [
+    "delivery-schedule",
+    "delivery schedule",
+    "deliverables",
+    "milestones",
+    "due-dates"
+   ],
+   "note": "Searched the official MCP registry search API for each token on 2026-09-12. Four of the five return 0 rows: delivery schedule, deliverables, milestones-as-tracking and due-dates. delivery-schedule returns 2 rows and both are this estate's own: io.github.theluckystrike/delivery-schedule and com.bestremotetools/delivery-schedule-milestones-late-report, the second pointing at this estate's repository, bundle sha and website, so it is the same server published under a second namespace rather than a competitor. milestones returns 1 row, that same second-namespace row. The control, service, returns 30 rows on the same API in the same minute. Nothing in the registry holds dated deliverables against a quote or work order with a late report as at a date the caller names. A comparison table would have to compare this against a spreadsheet column of dates, and the measured result of that comparison is the guide /guides/delivery-schedule-and-work-order-documents-from-mcp rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever.",
+   "guide": "delivery-schedule-and-work-order-documents-from-mcp",
    "ttl_days": 30
   }
  }

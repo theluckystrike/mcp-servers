@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-10T15:41:20.425Z",
+  "generated_at": "2026-09-12T03:41:08.443Z",
   "session": {
-    "count": 75,
+    "count": 77,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -302,6 +302,14 @@
       {
         "at": "2026-09-09T12:09:23.356Z",
         "note": "Loop close: 443 registry places gained across ten contested tokens, three new deep inbound links on indexed pages, and the discovery that impressions are not indexation"
+      },
+      {
+        "at": "2026-09-12T03:39:22.785Z",
+        "note": "loop 34: +4 servers, hosted 34/37, validation 1135/1135, registry 97, rename T0 rank 2"
+      },
+      {
+        "at": "2026-09-12T03:41:08.260Z",
+        "note": "loop 34 close: tests 1816/1827, validation 1135/1135"
       }
     ]
   },
@@ -439,6 +447,43 @@
       "test_summary": "- `cd servers/barcode && node --test test/*.test.mjs` -> `# tests 38 / # pass 38 / # fail 0 / duration_ms 2825`.",
       "result_status": "DONE",
       "loc": 1357,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "bill-of-sale",
+      "npm_name": "@theluckystrike/mcp-bill-of-sale",
+      "version": "0.21.0",
+      "dir": "servers/bill-of-sale",
+      "tools": [
+        "sale_create",
+        "sale_update",
+        "sale_finalize",
+        "sale_list",
+        "sale_get",
+        "sale_delete",
+        "sale_render",
+        "sale_summary"
+      ],
+      "tool_count": 8,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# tests 2  # pass 2  # fail 0  # duration_ms 460.433208 / ## failures",
+      "result_status": "DONE",
+      "loc": 922,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -732,6 +777,43 @@
       }
     },
     {
+      "id": "credit-note",
+      "npm_name": "@theluckystrike/mcp-credit-note",
+      "version": "0.21.0",
+      "dir": "servers/credit-note",
+      "tools": [
+        "credit_note_create",
+        "credit_note_update",
+        "credit_note_finalize",
+        "credit_note_list",
+        "credit_note_get",
+        "credit_note_delete",
+        "credit_note_render",
+        "credit_note_summary"
+      ],
+      "tool_count": 8,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "- node --test test/*.test.mjs: # tests 16 / # pass 16 / # fail 0 (2.53s)",
+      "result_status": "DONE",
+      "loc": 979,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
       "version": "0.21.0",
@@ -884,6 +966,44 @@
       }
     },
     {
+      "id": "dunning-letters",
+      "npm_name": "@theluckystrike/mcp-dunning-letters",
+      "version": "0.21.0",
+      "dir": "servers/dunning-letters",
+      "tools": [
+        "invoice_register",
+        "payment_record",
+        "letter_render",
+        "letter_sent",
+        "overdue_list",
+        "aging_summary",
+        "chase_today",
+        "invoice_status",
+        "invoice_delete"
+      ],
+      "tool_count": 9,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "- node --test test/*.test.mjs: # tests 1 / # pass 1 / # fail 0; duration_ms 222; 1s wall",
+      "result_status": "DONE",
+      "loc": 1049,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
       "version": "0.21.0",
@@ -1004,6 +1124,44 @@
       }
     },
     {
+      "id": "job-card",
+      "npm_name": "@theluckystrike/mcp-job-card",
+      "version": "0.21.0",
+      "dir": "servers/job-card",
+      "tools": [
+        "job_card_create",
+        "job_card_log_labor",
+        "job_card_log_material",
+        "job_card_update_status",
+        "job_card_list",
+        "job_card_get",
+        "job_card_print",
+        "job_card_delete",
+        "job_card_summary"
+      ],
+      "tool_count": 9,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 7 / # fail 0",
+      "result_status": "DONE",
+      "loc": 906,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "kanban",
       "npm_name": "@theluckystrike/mcp-kanban",
       "version": "0.21.0",
@@ -1059,7 +1217,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 437,
+      "loc": 441,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1648,6 +1806,11 @@
         "url": "https://mcp.zovo.one/buy/barcode"
       },
       {
+        "id": "bill-of-sale",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/bill-of-sale"
+      },
+      {
         "id": "billing-docs",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/billing-docs"
@@ -1683,6 +1846,11 @@
         "url": "https://mcp.zovo.one/buy/clauses"
       },
       {
+        "id": "credit-note",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/credit-note"
+      },
+      {
         "id": "currency",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/currency"
@@ -1703,6 +1871,11 @@
         "url": "https://mcp.zovo.one/buy/docx"
       },
       {
+        "id": "dunning-letters",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/dunning-letters"
+      },
+      {
         "id": "expense-tracker",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/expense-tracker"
@@ -1716,6 +1889,11 @@
         "id": "invoice",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/invoice"
+      },
+      {
+        "id": "job-card",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/job-card"
       },
       {
         "id": "kanban",
@@ -1879,6 +2057,10 @@
     {
       "file": "docs/BLIND_RECOMMENDATION_R1.md",
       "first_line": "Blind MCP Recommendation Run — R1"
+    },
+    {
+      "file": "docs/BLIND_RECOMMENDATION_R2.md",
+      "first_line": "Blind Recommendation Run R2 — 18 Buyer Questions"
     },
     {
       "file": "docs/CALENDAR_AUDIT.md",
@@ -2093,6 +2275,14 @@
       "first_line": "Distribution round 2: new surfaces (2026-09-10)"
     },
     {
+      "file": "docs/DISTRIBUTION_R3.md",
+      "first_line": "Distribution round 3: the four surfaces round 2 marked submittable (2026-09-12)"
+    },
+    {
+      "file": "docs/DISTRIBUTION_R3B.md",
+      "first_line": "Distribution round 3B: loop-33 readback, plugin marketplaces, ToolHive preflight, Glama census (2026-09-12)"
+    },
+    {
       "file": "docs/DISTRIBUTION_RESULT.md",
       "first_line": "status: DONE"
     },
@@ -2217,8 +2407,16 @@
       "first_line": "Funnel round 1: discovery to money, walked end to end (loop 33, 2026-09-10)"
     },
     {
+      "file": "docs/GEMINI_EXT_R1.md",
+      "first_line": "GEMINI_EXT_R1 -- Gemini CLI extension gallery: verification of the shipped unlock"
+    },
+    {
       "file": "docs/GH_SEARCH_R1.md",
       "first_line": "GitHub as the front door: clone traffic, repo search rank, and what the mirrors changed"
+    },
+    {
+      "file": "docs/GH_SEARCH_R2.md",
+      "first_line": "What actually ranks on a GitHub query, split by field size"
     },
     {
       "file": "docs/GLAMA_R1.md",
@@ -2243,6 +2441,10 @@
     {
       "file": "docs/HONESTY_GATES_R1.md",
       "first_line": "Honesty gates, round 1"
+    },
+    {
+      "file": "docs/HOSTED_LOOP34.md",
+      "first_line": "HOSTED_LOOP34 - hosted endpoints for bill-of-sale, credit-note, job-card, dunning-letters"
     },
     {
       "file": "docs/HUMAN_GATED_PACK.md",
@@ -2357,6 +2559,18 @@
       "first_line": "Three instruments, one conclusion"
     },
     {
+      "file": "docs/LOOP34_BRIEF.md",
+      "first_line": "LOOP 34 BRIEF — distribution, surfaces, and the rename test"
+    },
+    {
+      "file": "docs/LOOP34_FIELDS_R1.md",
+      "first_line": "Loop 34: candidate new-server fields, round 1"
+    },
+    {
+      "file": "docs/LOOP34_RESULT.md",
+      "first_line": "LOOP 34 RESULT — 2026-09-12"
+    },
+    {
       "file": "docs/MARKETPLACES_RESULT.md",
       "first_line": "Marketplaces: Docker MCP catalog + Cline marketplace"
     },
@@ -2419,6 +2633,10 @@
     {
       "file": "docs/OPERATOR_ACTIONS_LOOP33.md",
       "first_line": "Operator actions, loop 33"
+    },
+    {
+      "file": "docs/OPERATOR_ACTIONS_LOOP34.md",
+      "first_line": "Operator actions, loop 34"
     },
     {
       "file": "docs/ORGANIC_R2.md",
@@ -2681,6 +2899,10 @@
       "first_line": "REMOTE_RESULT.md - hosted streamable-HTTP endpoints (INTEL R1)"
     },
     {
+      "file": "docs/RENAME_TEST_PLAN_R1.md",
+      "first_line": "RENAME TEST R1 - mcp-invoice -> mcp-invoice-generator"
+    },
+    {
       "file": "docs/REPO_SIGNALS_R1.md",
       "first_line": "Repository signals round 1 — Glama Maintenance, and what a mirror is allowed to claim"
     },
@@ -2907,6 +3129,10 @@
     {
       "file": "docs/WEEKLY_2026-09-06.md",
       "first_line": "Weekly digest, 2026-09-06"
+    },
+    {
+      "file": "docs/WIRING_LOOP34.md",
+      "first_line": "WIRING_LOOP34 - wiring close-out for bill-of-sale, credit-note, job-card, dunning-letters"
     },
     {
       "file": "docs/WORK_ORDER_AUDIT.md",

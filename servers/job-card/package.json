@@ -1,7 +1,7 @@
 {
   "name": "@theluckystrike/mcp-job-card",
   "version": "0.21.0",
-  "description": "Job cards for trades and field service: log hours and materials against a job, move it from open to invoiced, print the card for client sign-off.",
+  "description": "Job cards for trades and field service: hours and materials per job, open to invoiced.",
   "type": "module",
   "bin": {
     "mcp-job-card": "dist/index.js"

@@ -43,6 +43,10 @@ import { createServer as createPettyCash } from "./vendor/petty-cash/index.js";
 import { createServer as createWorkOrder } from "./vendor/work-order/index.js";
 import { createServer as createCatalogue } from "./vendor/catalogue/index.js";
 import { createServer as createChangeOrder } from "./vendor/change-order/index.js";
+import { createServer as createBillOfSale } from "./vendor/bill-of-sale/index.js";
+import { createServer as createCreditNote } from "./vendor/credit-note/index.js";
+import { createServer as createJobCard } from "./vendor/job-card/index.js";
+import { createServer as createDunningLetters } from "./vendor/dunning-letters/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -80,7 +84,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-06.1";
+const BUILD_VERSION = "2026-09-12.1";
 
 /** Where the one-click .mcpb bundles live. The install path that works today. */
 const RELEASES = "https://github.com/theluckystrike/mcp-servers/releases/latest";
@@ -571,6 +575,63 @@ const SERVERS: Record<string, ServerCfg> = {
     publish: (p) => p.startsWith("/out/"),
     strip: ["/out/"],
   },
+  "bill-of-sale": {
+    // NO sharedDoc and no borrowed engine: the money and date primitives are this server's
+    // own lib.ts, and the only shared state is the business profile behind
+    // readSharedProfile, hydrated for every endpoint and never a sharedDoc. A bill of sale
+    // names its seller and buyer in full and opens no other server's book.
+    //
+    // sale_render is the one tool that writes files: the vendored build reduces out_path
+    // to a bare document NAME and writes both renderings under /out/, where the tmp +
+    // rename of the store's own writeFileAtomic lets the fs shim publish each as a
+    // one-hour download link. publish() is the /out/ prefix and nothing else, so the
+    // download endpoint only ever serves a rendered document and NEVER the JSON store -
+    // sales.json and counter.json stay under the homedir shim, the /mcp/expense-tracker
+    // rule. persistPublished stays off: a rendered bill of sale is a transient download,
+    // not tenant state. The default 512 KB cap: the store grows one row per sale and no
+    // total is ever stored, because the price is on the record.
+    factory: createBillOfSale as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+  },
+  "credit-note": {
+    // The amortization and petty-cash entry for the third time. NO sharedDoc: this server
+    // reads no sibling book and borrows no sibling engine - the money is its own money.ts
+    // and the model its own note.ts. No publish() and no strip: NO TOOL WRITES A FILE.
+    // credit_note_render returns the document INLINE as Markdown or HTML, and its
+    // description says "Writes nothing", which is true on both transports, so there is no
+    // /out/ here at all. The store is notes.json and counter.json, one document per token
+    // under the homedir shim, written tmp + rename, with the corrupt-store quarantine in
+    // the vendored jsonstore.ts. The default 512 KB cap, unargued: a credit note holds its
+    // lines, and the totals, though stored, are recomputed from the lines at every write.
+    factory: createCreditNote as () => McpServer,
+  },
+  "job-card": {
+    // The same entry for the fourth time. NO sharedDoc: reads no sibling book, borrows no
+    // sibling engine. No publish() and no strip: NO TOOL WRITES A FILE - job_card_print
+    // returns the card inline as Markdown or HTML, and logging, the running totals and the
+    // daily and weekly summary all answer in JSON. The store is cards.json and
+    // counter.json, one document per token under the homedir shim, written tmp + rename.
+    // The default 512 KB cap: every line value is computed once at log time and stored, and
+    // every total is the sum of the stored lines derived on the call, so the document grows
+    // with the entries actually logged and never with the questions asked about them.
+    factory: createJobCard as () => McpServer,
+  },
+  "dunning-letters": {
+    // NO sharedDoc: the register is this server's own book. It borrows two sibling ENGINES
+    // rather than two sibling stores - formatMoney from @theluckystrike/mcp-asset-register/lib
+    // (which is why the money on a hosted letter is the same string the stdio letter carries)
+    // and readJsonFile with its corrupt-store quarantine from @theluckystrike/mcp-timezone/lib
+    // - and borrowing CODE hydrates nothing. The sender comes from the SHARED business
+    // profile through readSharedProfile, which travels the licence shim exactly as on every
+    // other endpoint. No publish() and no strip: NO TOOL WRITES A FILE. letter_render
+    // returns the letter INLINE, because the stdio honesty rule - nothing is emailed, the
+    // user sends it - is also the hosted one, so there is no /out/ here either. The
+    // register is invoices.json and counter.json under the homedir shim, tmp + rename, and
+    // NO BALANCE IS STORED: what is still owed is derived from the amount and the recorded
+    // payments on every call, so the 512 KB default holds a long chase list.
+    factory: createDunningLetters as () => McpServer,
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -1031,6 +1092,10 @@ const TOOLS: Record<string, string[]> = {
   "work-order": ["work_order_create", "work_order_add_line", "work_order_status", "work_order_get", "work_order_list", "work_order_delete", "completion_report_text", "completion_report_pdf", "work_order_invoice_payload", "work_orders_report", "license_status", "license_activate"],
   "catalogue": ["sku_set", "sku_get", "sku_list", "sku_delete", "rate_set", "rate_get", "lines_resolve", "price_list_text", "price_list_pdf", "catalogue_report", "license_status", "license_activate"],
   "change-order": ["change_order_create", "change_order_add_line", "change_order_status", "change_order_get", "change_order_list", "change_order_delete", "contract_value", "change_order_document", "change_order_invoice_payload", "license_status", "license_activate"],
+  "bill-of-sale": ["sale_create", "sale_update", "sale_finalize", "sale_list", "sale_get", "sale_delete", "sale_render", "sale_summary", "license_status", "license_activate"],
+  "credit-note": ["credit_note_create", "credit_note_update", "credit_note_finalize", "credit_note_list", "credit_note_get", "credit_note_delete", "credit_note_render", "credit_note_summary", "license_status", "license_activate"],
+  "job-card": ["job_card_create", "job_card_log_labor", "job_card_log_material", "job_card_update_status", "job_card_list", "job_card_get", "job_card_print", "job_card_delete", "job_card_summary", "license_status", "license_activate"],
+  "dunning-letters": ["invoice_register", "payment_record", "letter_render", "letter_sent", "overdue_list", "aging_summary", "chase_today", "invoice_status", "invoice_delete", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -1285,6 +1350,42 @@ function indexDoc(base: string) {
         free_limits: "5 OPEN change orders (draft and sent), counted on the pile the client has not answered rather than on the calendar, so approving, rejecting or voiding one frees its slot, and change_order_delete on a draft with no lines is free on every tier; contract_value is free and unlimited, because the running value is the question this endpoint exists for. change_order_document and change_order_invoice_payload are Pro",
         storage: `${DEFAULT_MAX_BYTES / 1024} KB of change orders per token`,
         notes: "the original contract value is stated ONCE per reference and inherited by every later change order against it; a call that states a different figure is refused, because a contract with two original values has two running values and the customer sees whichever was typed last. NO DELTA AND NO RUNNING VALUE IS STORED: the lines and the status history decide both on every call. The running value is the original plus APPROVED deltas only; draft and sent deltas are shown as pending and never added in, and rejected and void ones count for nothing. A changed line becomes TWO items on the invoice payload, a reversal of the old quantity at the old price and the new quantity at the new price, never one net item, so both figures reproduce on a calculator; a removed line is a negative quantity at the price it was booked at. The two payloads are in DIFFERENT SCALES on purpose: invoice_create takes unit_price in MAJOR units and quote_create takes unit_price_minor in MINOR units, and swapping them misprices the delta by 100x; quote_create.ready is false whenever any quantity is not positive, because that server refuses one. Lines are added only while a change order is a draft, a draft cannot be approved unsent, and every status date must follow the last. This endpoint opens neither the quotes store nor the work-order store, creates NO invoice and NO quote, and the money arithmetic is /mcp/invoice's own computeTotals, imported rather than copied",
+      },
+      {
+        name: "bill-of-sale", url: `${base}/mcp/bill-of-sale`, tools: TOOLS["bill-of-sale"],
+        mode: "your own sales book",
+        how: "sale_create records the sale - buyer, seller, the item with its VIN, serial or IMEI where it has one, the price in whole MINOR units (120000 is USD 1,200.00) and the date - and returns the BOS-YYYY-NNNN number of the draft; sale_update changes anything on the draft; sale_finalize freezes it into the signing copy; sale_render prints it as Markdown, self-contained HTML or both, with signature lines for seller and buyer; sale_summary totals the book per currency. The seller defaults to the shared business profile (business_set on /mcp/invoice).",
+        outputs: "sale_render returns both renderings in the answer AND as download links valid for one hour, the HTML laid out for print-to-PDF; out_path is a NAME here, not a path: it is only the stem the downloaded files carry. Drafts render with a DRAFT watermark so a review copy cannot be signed by mistake.",
+        free_limits: "10 drafts and 5 finalized documents, so a real side-business year rather than a trial; rendering, reading, listing and deleting are never metered",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of bills of sale per token`,
+        notes: "a byte-identical sale to the same buyer is refused unless duplicate_ok says the same item really was sold twice. A finalized document cannot be edited and sale_delete on one needs confirm_finalized true, because the finalized copy is the local copy of a record the buyer may already hold; the BOS number is never reissued, so a gap in the series is the record that a document was deleted. The as-is clause is on by default - the norm for second-hand sales - and a warranty passed alongside it stands, because the clause reads 'except as stated in this document'. The document is a generic template, not legal advice, and says so on its face. Currencies are never added together",
+      },
+      {
+        name: "credit-note", url: `${base}/mcp/credit-note`, tools: TOOLS["credit-note"],
+        mode: "your own credit note book",
+        how: "credit_note_create issues the note against an invoice reference or standalone - recipient, reason (returned_goods, overcharge, discount_correction, service_issue, other), lines with quantity, unit price in whole MINOR units and tax rate, and the currency - and returns a DRAFT with a draft id no client sees; credit_note_update revises the draft; credit_note_finalize burns the final CN-YYYY-NNNN number and freezes the note; credit_note_render returns the document inline as Markdown or as a self-contained printable HTML page; credit_note_summary totals what you have credited per currency, per reason and per month.",
+        outputs: "JSON and the inline document. NO tool here writes a file, so there is nothing to download and nothing is published: credit_note_render's answer IS the document.",
+        free_limits: "10 finalized credit notes, lifetime. Drafts, edits, deletion of drafts, listing, rendering and the totals are free and unlimited, because a free tier that withholds the rendered document is a demo. The free tier stamps a one-line footer on the render",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of credit notes per token`,
+        notes: "the number is burned only at finalize, so the final series never has a gap from a discarded draft, and a finalized note can neither be edited nor deleted - it is the document the client may have seen. A credit note that credits a total of zero is refused. A byte-identical note is refused unless duplicate_ok says the same credit really is issued twice. The line gross is quantity x unit price rounded half-up once, tax is rounded half-up per line, and the totals are plain sums of the rounded lines, so the printed lines always reproduce the total. Currencies are never added together",
+      },
+      {
+        name: "job-card", url: `${base}/mcp/job-card`, tools: TOOLS["job-card"],
+        mode: "your own board of job cards",
+        how: "job_card_create opens a card for one job - client, site, what the job is, the currency, the scheduled date - and returns its JC-YYYY-NNNN number; job_card_log_labor records a worker's day (hours to the hundredth, the hourly rate in whole cents) and job_card_log_material records what went in (quantity to the thousandth, the unit cost in whole cents), each line valued once at log time, hours x rate or quantity x unit cost, rounded half-up to the cent; job_card_update_status walks the card open to in_progress to done to invoiced to archived, one dated step at a time; job_card_print renders the card with a client signature line; job_card_summary totals a day or a Monday-to-Sunday week, per currency.",
+        outputs: "JSON, plus the printable card: job_card_print returns it INLINE as Markdown or as self-contained HTML that references nothing external. NO tool writes a file, so there is nothing to download.",
+        free_limits: "10 active cards; archiving a finished job frees its slot. Logging, the running totals, the printable card and the summaries are never metered: the card is the record of what the job cost",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of job cards per token`,
+        notes: "every line value is computed ONCE, when the entry is logged, and totals are the sums of the stored lines, so a total can never drift from the lines it is made of. A skipped or backwards status step is refused naming the step that IS next, because every step carries its own date; a card with labor or materials logged cannot be deleted - archive it, which keeps the record and frees the slot. A future-dated entry is refused: work cannot have been done yet. The JC number is never reissued. Currencies are never added together",
+      },
+      {
+        name: "dunning-letters", url: `${base}/mcp/dunning-letters`, tools: TOOLS["dunning-letters"],
+        mode: "your own chase register",
+        how: "invoice_register starts chasing an unpaid invoice - client, invoice reference, the amount in whole MINOR units (125000 is USD 1,250.00), the currency and the due date - and returns the three-letter escalation schedule: reminder 1 falls due at due + the first gap, reminder 2 at due + the second, the final notice at due + the third (default 7, 14, 21 days), due-anchored and sequential, so a later letter never leapfrogs an unsent earlier one. letter_render writes the letter for the stage currently due as Markdown or self-contained printable HTML; letter_sent records that you sent it; payment_record logs money received and closes the ladder when the balance is covered; chase_today, overdue_list, aging_summary and invoice_status read the register.",
+        outputs: "JSON and the inline letter. NO tool writes a file, so there is nothing to download: letter_render's answer IS the letter, and NOTHING is emailed or sent anywhere - this server renders the letter text, and sending it is your act.",
+        free_limits: "3 active unpaid invoices chased at once; an invoice that gets paid frees its slot. The letters, the aging and the history are never metered: the cap is on how many chases run at once",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of chase register per token`,
+        notes: "NO BALANCE IS STORED: what is still owed is derived from the invoice amount and the recorded payments on every call. The sender's name and email come from the shared business profile (business_set on /mcp/invoice); without one the letters are signed [Your name] and say so. A late fee is stated only when you register late_fee_percent_per_month, and then as simple interest, pro-rata on a 30-day month, rounded once to the minor unit - no letter invents a fee, an interest rate or a legal cost, and the final notice says plainly that what a before-action letter must contain varies by jurisdiction. The money formatting is /mcp/asset-register's own formatMoney, imported rather than copied. Currencies are never added together",
       },
     ],
     limits: {

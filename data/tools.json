@@ -1348,5 +1348,181 @@
    "name": "license_activate",
    "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
   }
+ ],
+ "bill-of-sale": [
+  {
+   "name": "sale_create",
+   "description": "Record a sale and generate the bill of sale: who sold, who bought, what item (with VIN, serial or IMEI where it has one), the price in minor units and the date. Returns the BOS-YYYY-NNNN number of the draft. The draft can still be changed with sale_update; sale_finalize freezes it into the signing copy and sale_render prints it. Free tier: 10 drafts."
+  },
+  {
+   "name": "sale_update",
+   "description": "Change anything on a bill of sale that is not finalized yet: price, buyer, seller, item details, identifiers, the as-is clause, warranty or notes. Pass an empty string to clear an optional field. A finalized document cannot be edited."
+  },
+  {
+   "name": "sale_finalize",
+   "description": "Finalize a bill of sale so it is ready to sign: the document is frozen from this call on, sale_update refuses it, and every later render is the signing copy without the DRAFT watermark. Free tier: 5 finalized documents."
+  },
+  {
+   "name": "sale_list",
+   "description": "List every bill of sale, drafts and finalized, newest first: id, status, date, item, buyer, seller and price. Filter to drafts or finalized documents with status."
+  },
+  {
+   "name": "sale_get",
+   "description": "Read one bill of sale in full by its BOS number: both parties, the item and its identifiers, price, terms, and whether it is still a draft or the finalized signing copy."
+  },
+  {
+   "name": "sale_delete",
+   "description": "Delete a bill of sale by its BOS number. A draft goes outright. A finalized document needs confirm_finalized true, because it is the local copy of a record the buyer may hold. The BOS number is never reissued, so a gap in the series is the record that a document was deleted."
+  },
+  {
+   "name": "sale_render",
+   "description": "Render a bill of sale as a clean printable document: Markdown, a self-contained HTML file ready for print-to-PDF, or both, with signature lines for seller and buyer. Drafts render with a DRAFT watermark so a review copy cannot be signed by mistake. Files default to the server's documents folder; pass out_path to choose. Free."
+  },
+  {
+   "name": "sale_summary",
+   "description": "Summarize the book: how many drafts and finalized documents, and the total sold value per currency, drafts separate from finalized. Currencies are never added together. Free."
+  },
+  {
+   "name": "license_status",
+   "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+  }
+ ],
+ "credit-note": [
+  {
+   "name": "credit_note_create",
+   "description": "Issue a credit note against an invoice, or standalone: the recipient, the reason (returned goods, overcharge, discount correction, service issue, other), line items with quantity, unit price and tax rate, and the currency. Returns a draft you can still revise; credit_note_finalize burns the final CN number."
+  },
+  {
+   "name": "credit_note_update",
+   "description": "Change a draft credit note while it is still a draft: recipient, reason, lines, currency, invoice reference, issue date or notes. Pass only what changes; new lines replace all old ones. A finalized note is immutable and is refused by name."
+  },
+  {
+   "name": "credit_note_finalize",
+   "description": "Finalize a draft: burn the final CN-YYYY-NNNN number and freeze the note. From here it cannot be edited or deleted, only rendered and listed, because it is now the document the client sees. Free tier: 10 finalized credit notes; Pro removes the limit."
+  },
+  {
+   "name": "credit_note_list",
+   "description": "List credit notes: number or draft id, recipient, reason, status, issue date and total. Filter by recipient (a part of the name is enough), by reason, by status draft or final, and by issue-date period with from and to."
+  },
+  {
+   "name": "credit_note_get",
+   "description": "Return one credit note by its CN number or draft id: every line with quantity, unit price and tax, the totals per tax rate, the reason, the invoice it credits, and the notes. Reads only; use credit_note_list for the ids."
+  },
+  {
+   "name": "credit_note_delete",
+   "description": "Delete a draft credit note entered wrongly, by its draft id. A finalized note is refused by name: it is a document the client may have seen, and deleting it would leave their copy pointing at nothing."
+  },
+  {
+   "name": "credit_note_render",
+   "description": "Turn a credit note into the document: Markdown to paste into an email or ticket, or a self-contained printable HTML page with every style inline. Drafts render with a DRAFT banner so a half-finished credit cannot be sent by mistake. Writes nothing. Free; the free tier stamps a one-line footer."
+  },
+  {
+   "name": "credit_note_summary",
+   "description": "How much you have credited: totals per currency over finalized credit notes, broken down by reason and by month, in an optional issue-date period. Drafts count for nothing until they are finalized. Currencies are never added together."
+  },
+  {
+   "name": "license_status",
+   "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+  }
+ ],
+ "job-card": [
+  {
+   "name": "job_card_create",
+   "description": "Open a job card for a job your crew is taking on and return its JC-YYYY-NNNN number: the client, the site, what the job is, the currency and when it is scheduled. Free tier: 10 active cards; archiving a finished job frees its slot."
+  },
+  {
+   "name": "job_card_log_labor",
+   "description": "Log hours worked on a job card: who did the work, the day, the hours and the hourly rate in whole cents, with a note on what was done. The line value is hours times rate, rounded half-up to the cent, fixed the moment it is logged."
+  },
+  {
+   "name": "job_card_log_material",
+   "description": "Log materials used on a job card: the item, the day it went in, the quantity and the unit cost in whole cents. The line value is quantity times unit cost, rounded half-up to the cent, fixed the moment it is logged."
+  },
+  {
+   "name": "job_card_update_status",
+   "description": "Move one job card exactly one step: open, in_progress, done, invoiced, archived, stamping the date and an optional note into its history. A skipped or backwards step is refused and nothing is written. Archiving a finished job frees a free-tier slot."
+  },
+  {
+   "name": "job_card_list",
+   "description": "List job cards newest first: client, site, status, hours logged, and the labor, materials and grand totals in cents. Filter by status and by client. Totals are kept per currency, never mixed."
+  },
+  {
+   "name": "job_card_get",
+   "description": "Read one job card in full by JC number or client: every labor entry and every material used, the hours per worker, and the running totals -- labor, materials and grand total -- as integer cents with formatted amounts. Reads only."
+  },
+  {
+   "name": "job_card_print",
+   "description": "Render a job card ready to print and hand to the client: the labor, the materials, the totals and a signature line for client sign-off. Markdown, or self-contained HTML that needs nothing from the network. Writes nothing."
+  },
+  {
+   "name": "job_card_delete",
+   "description": "Delete a job card entered by mistake. One with labor or materials logged is refused, naming what it holds, because deleting it would lose the record of work done: archive it instead. The JC number is never reissued."
+  },
+  {
+   "name": "job_card_summary",
+   "description": "Hours and value for a day or a week: the job cards touched, the hours per worker, and the labor, materials and total value, kept per currency. A week runs Monday to Sunday. Touched means a labor or material entry dated inside the window."
+  },
+  {
+   "name": "license_status",
+   "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+  }
+ ],
+ "dunning-letters": [
+  {
+   "name": "invoice_register",
+   "description": "Start chasing an unpaid invoice: register the client, the invoice reference, the amount in integer cents, the currency and the due date, and get the three-letter escalation schedule (reminder 1, reminder 2, final notice) with the date each falls due. Free tier: 3 unpaid invoices chased at once."
+  },
+  {
+   "name": "payment_record",
+   "description": "Record money received against a chased invoice, in whole MINOR units: a part payment lowers what is still chased, a payment that covers the balance closes the ladder and frees the free-tier slot. Returns the outstanding amount."
+  },
+  {
+   "name": "letter_render",
+   "description": "Chase an unpaid invoice: generate the letter for the current stage of the ladder -- reminder 1 (polite), reminder 2 (firm, with the late fees note) or the final notice (before-action wording) -- as Markdown or as self-contained printable HTML. Nothing is emailed or sent anywhere: this server produces the letter text, and sending it is your act. Record the sending with letter_sent so the ladder advances."
+  },
+  {
+   "name": "letter_sent",
+   "description": "Record that a chase letter was actually sent, with its date, so the ladder advances to the next stage. Letters go out in order: reminder 2 cannot be recorded before reminder 1. Returns what is due next and when."
+  },
+  {
+   "name": "overdue_list",
+   "description": "Every unpaid invoice past its due date: how many days late, what is still owed, which letters have gone out, and what is due next and when. Sorted by days late, worst first."
+  },
+  {
+   "name": "aging_summary",
+   "description": "The aging summary across every unpaid invoice: current, 1-30, 31-60, 61-90 and 91+ day buckets, with counts and totals in integer cents, per currency. This is the answer to \"how much am I owed, and how stale is it\"."
+  },
+  {
+   "name": "chase_today",
+   "description": "The day's chase list: which invoices cross an escalation threshold today, which letter to send each and how long it has been waiting, what falls due in the next few days, and which invoices have had all three letters and need a decision outside this server."
+  },
+  {
+   "name": "invoice_status",
+   "description": "One chased invoice in full: what was billed, what has been paid and what is still owed, every letter sent with its date, the escalation schedule with each stage's state, and what happens next and when."
+  },
+  {
+   "name": "invoice_delete",
+   "description": "Delete an invoice entered wrongly, by id or reference: the record, its payments and its letter history. The id is not reissued, so a gap in the DUN series is the record that a deletion happened."
+  },
+  {
+   "name": "license_status",
+   "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+  },
+  {
+   "name": "license_activate",
+   "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+  }
  ]
 }

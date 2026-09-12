@@ -29,6 +29,7 @@ const l30 = js("data/loop30_result.json", null);
 const l31 = js("data/loop31_result.json", null);
 const l32 = js("data/loop32_result.json", null);
 const l33 = js("data/loop33_result.json", null);
+const l34 = js("data/loop34_result.json", null);
 const cov29 = (traffic && traffic.crawler_url_coverage) || {};
 const covN = (n) => (cov29[n] && cov29[n].urls_fetched != null ? cov29[n].urls_fetched : null);
 const uv = js("data/user_value.json", null);
@@ -142,6 +143,17 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="tabs"><button class="on" data-tab="truth">Reality check</button><button data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation database${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic distribution (${orgHeadline}/100)</button><button data-tab="sprints">Sprint log${slog ? ` (${slog.sessions})` : ""}</button><button data-tab="kpi">KPIs${kpi ? ` (${kpi.kpis.filter(k => k.status === "met").length}/${kpi.kpis.length} met)` : ""}</button></div>
 <div class="tab on" id="tab-truth">
 <div class="card"><b>What this panel is for.</b> Every number here was measured on 2026-09-07 by a command named beside it. It exists because the dashboard previously reported 5,105 bundle downloads against a target of 1,000 and read that as met, when those fetches are automated. Read this tab before any other.</div>
+${l34 ? `<div class="card"><b>Loop 34, ${esc(l34.date)}.</b> ${esc(l34.headline)}
+<div class="tw" style="margin-top:10px"><table><tr><th>Measure</th><th>Reading</th></tr>
+<tr><td>${esc(l34.primary_kpi.name)}</td><td><b>${esc(l34.primary_kpi.value)}</b>. ${esc(l34.primary_kpi.how)}</td></tr>
+<tr><td>Shipped this loop</td><td>${esc(l34.shipped.servers.join(", "))} - GitHub field sizes ${Object.entries(l34.shipped.fields).map(([k, v]) => `${k}: ${v}`).join(", ")} results; ${esc(l34.shipped.hosted_endpoints)}</td></tr>
+<tr><td>Rename experiment, T0</td><td>${esc(l34.rename_experiment.treatment)}: rank ${l34.rename_experiment.baseline_rank} &rarr; ${l34.rename_experiment.t0_rank} on a field of ${l34.rename_experiment.field}; controls flat (mcp quotes ${l34.rename_experiment.controls["mcp quotes"]}, mcp deposits ${l34.rename_experiment.controls["mcp deposits"]}). Re-measure: ${esc(l34.rename_experiment.remeasure)}</td></tr>
+<tr><td>Registry names at latest</td><td>${l34.kpis.registry_latest.was} &rarr; ${l34.kpis.registry_latest.now}; 8 new names verified at 0.21.0 by exact GET</td></tr>
+<tr><td>Validation</td><td>live ${esc(l34.shipped.validation)}, billing ${esc(l34.shipped.billing_tests)}, release-check ${esc(l34.shipped.release_check)}</td></tr>
+<tr><td>Catalogue PRs</td><td>${l34.shipped.catalogue_prs_opened} opened and verified OPEN (Chat2AnyLLM #22, Zencoder #31, jaw9c #769, Appnova #614, composio-community #465); loop-33 Sagargupta16 #88 confirmed merged</td></tr>
+</table></div>
+<p class="dim"><b>Where the audience number actually sits.</b> Still 0 of 18 named, but the failure shape moved: the blind instrument retrieved our Glama connector on both wedge questions (Q16 paste-a-URL, Q18 paid servers) and passed it over. The surface that gets cited is Glama /mcp/servers/, where 1 of 34 mirrors has a page; ingestion is GitHub-OAuth gated and tops docs/OPERATOR_ACTIONS_LOOP34.md.</p>
+</div>` : ""}
 ${l33 ? `<div class="card"><b>Loop 33, ${esc(l33.date)}.</b> ${esc(l33.headline)}
 <div class="tw" style="margin-top:10px"><table><tr><th>Measure</th><th>Reading</th></tr>
 <tr><td>${esc(l33.primary_kpi.name)}</td><td><b>${esc(l33.primary_kpi.value)}</b>. ${esc(l33.primary_kpi.how)}</td></tr>

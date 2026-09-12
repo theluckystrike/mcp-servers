@@ -41,7 +41,7 @@ mkdir -p "$BUNDLES"
 MCPB="npx -y @anthropic-ai/mcpb"
 LIC_SRC="$ROOT/packages/mcp-license"
 
-SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule packing-list checklist"
+SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule packing-list checklist bill-of-sale credit-note job-card dunning-letters"
 
 declare -A DISPLAY_NAME=(
   [time-tracker]="Time Tracker"
@@ -77,6 +77,10 @@ declare -A DISPLAY_NAME=(
   [delivery-schedule]="Delivery Schedule"
   [packing-list]="Packing List"
   [checklist]="Checklist"
+  [bill-of-sale]="Bill of Sale"
+  [credit-note]="Credit Note"
+  [job-card]="Job Card"
+  [dunning-letters]="Dunning Letters"
 )
 
 declare -A KEYWORDS=(
@@ -113,6 +117,10 @@ declare -A KEYWORDS=(
   [delivery-schedule]='["mcp","model-context-protocol","delivery-schedule","deliverables","milestones","due-dates","acceptance","invoicing"]'
   [packing-list]='["mcp","model-context-protocol","packing-list","packing-slip","cartons","chargeable-weight","shipping","logistics"]'
   [checklist]='["mcp","model-context-protocol","checklist","snag-list","handover","sign-off","inspection","onboarding"]'
+  [bill-of-sale]='["mcp","model-context-protocol","bill-of-sale","sales-receipt","vehicle-sale","proof-of-purchase","as-is"]'
+  [credit-note]='["mcp","model-context-protocol","credit-note","credit-memo","accounts-receivable","invoice","accounting"]'
+  [job-card]='["mcp","model-context-protocol","job-card","field-service","trades","labour","materials","sign-off"]'
+  [dunning-letters]='["mcp","model-context-protocol","dunning","debt-collection","overdue-invoices","accounts-receivable","payment-reminder"]'
 )
 
 # ------------------------------------------------------------------ helpers

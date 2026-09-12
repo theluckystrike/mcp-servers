@@ -1,0 +1,94 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-dunning-letters",
+  "display_name": "Dunning Letters",
+  "version": "0.21.0",
+  "description": "Chase overdue invoices: reminder 1, reminder 2, final notice, escalation dates, aging.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "invoice_register",
+      "description": "Start chasing an unpaid invoice: register the client, the invoice reference, the amount in integer cents, the currency and the due date, and get the three-letter escalation schedule (reminder 1, reminder 2, final notice) with the date each falls due. Free tier: 3 unpaid invoices chased at once."
+    },
+    {
+      "name": "payment_record",
+      "description": "Record money received against a chased invoice, in whole MINOR units: a part payment lowers what is still chased, a payment that covers the balance closes the ladder and frees the free-tier slot. Returns the outstanding amount."
+    },
+    {
+      "name": "letter_render",
+      "description": "Chase an unpaid invoice: generate the letter for the current stage of the ladder -- reminder 1 (polite), reminder 2 (firm, with the late fees note) or the final notice (before-action wording) -- as Markdown or as self-contained printable HTML. Nothing is emailed or sent anywhere: this server produces the letter text, and sending it is your act. Record the sending with letter_sent so the ladder advances."
+    },
+    {
+      "name": "letter_sent",
+      "description": "Record that a chase letter was actually sent, with its date, so the ladder advances to the next stage. Letters go out in order: reminder 2 cannot be recorded before reminder 1. Returns what is due next and when."
+    },
+    {
+      "name": "overdue_list",
+      "description": "Every unpaid invoice past its due date: how many days late, what is still owed, which letters have gone out, and what is due next and when. Sorted by days late, worst first."
+    },
+    {
+      "name": "aging_summary",
+      "description": "The aging summary across every unpaid invoice: current, 1-30, 31-60, 61-90 and 91+ day buckets, with counts and totals in integer cents, per currency. This is the answer to \"how much am I owed, and how stale is it\"."
+    },
+    {
+      "name": "chase_today",
+      "description": "The day's chase list: which invoices cross an escalation threshold today, which letter to send each and how long it has been waiting, what falls due in the next few days, and which invoices have had all three letters and need a decision outside this server."
+    },
+    {
+      "name": "invoice_status",
+      "description": "One chased invoice in full: what was billed, what has been paid and what is still owed, every letter sent with its date, the escalation schedule with each stage's state, and what happens next and when."
+    },
+    {
+      "name": "invoice_delete",
+      "description": "Delete an invoice entered wrongly, by id or reference: the record, its payments and its letter history. The id is not reissued, so a gap in the DUN series is the record that a deletion happened."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "dunning",
+    "debt-collection",
+    "overdue-invoices",
+    "accounts-receivable",
+    "payment-reminder"
+  ]
+}

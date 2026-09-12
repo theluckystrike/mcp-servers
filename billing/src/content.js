@@ -2643,6 +2643,20 @@ out is a new work order and the history of the first one has to stay true. A cha
 requested date, or before the step already recorded, is refused for the same reason: the history has to read
 as a timeline.</p>
 
+<h2>A second server for the same job, without the invoice machinery</h2>
+<p>The work order server prices the job the way the invoice will, which is exactly what you want when the
+job ends as an invoice, and more machinery than you want when it does not. A card on the van's dashboard
+is a simpler record: no client record to look up, no VAT, no payload, just the hours, the materials and a
+signature line. The <a href="/s/job-card">MCP Job Card</a> server (<code>mcp-job-card</code>) is that
+record: <code>job_card_create</code> opens a card with a client name, a site and a currency,
+<code>job_card_log_labor</code> and <code>job_card_log_material</code> fill it, and
+<code>job_card_print</code> renders it for the client to sign. The same rule about money holds there:
+every line is rounded half-up to the cent once, when it is logged, and the card's totals are the sums of
+those stored line values, so 2.5 hours at 4,999 cents an hour is 12,498 cents and a total can never drift
+from its lines. Its free tier holds ten active cards and stops counting a card the moment it is archived.
+It has no hosted endpoint, so it installs from the bundle or a clone, and it reads no client records, so
+a card can name a client the invoice server has never heard of.</p>
+
 <h2>Nothing is stored twice</h2>
 <p>An order record holds its client, its lines and its status history. The value, the hours, the materials
 and the VAT are derived on every call. A stored total is a second copy of what the lines already decide, and
@@ -3200,6 +3214,21 @@ per currency, and every delivery past its date. There is a <code>chase_deliverie
 <code>INV-YYYY-NNNN</code> and <code>Q-YYYY-NNNN</code>. A counter that resets every January collides with
 last January's document, so the year is in the id. The counter is written before the row, so a crash burns an
 id rather than reusing one, and existing ids are scanned first so a restored store cannot reissue one.</p>
+
+<h2>When the invoice is not in the invoice server</h2>
+<p>Everything above assumes the invoice being credited lives in the MCP Invoice store, because that is
+what lets the credit copy the invoice's own rates. Sometimes it does not: the invoice went out from a
+different system, or the credit is standalone and reverses nothing on file. The
+<a href="/s/credit-note">MCP Credit Note</a> server (<code>mcp-credit-note</code>) covers that case. It
+opens no sibling store: <code>credit_note_create</code> takes the recipient, a reason, the lines and a
+currency, and the invoice it credits is a reference string rather than a record it reads. The numbering
+rule is the same one: drafts carry a <code>CN-DRAFT-YYYY-NNNN</code> id no client sees, the final
+<code>CN-YYYY-NNNN</code> number is burned only at finalize, and a finalized note cannot be edited or
+deleted. The line math is round half-up per line then sum, so the printed note reproduces on a
+calculator. Free is ten finalized notes, lifetime, with drafts, edits, rendering and the totals summary
+unlimited. It has no hosted endpoint, so it installs from the bundle or a clone. When the invoice IS in
+the invoice server, stay with the billing-docs route: copying the stored rates is the thing a standalone
+note cannot do.</p>
 
 <h2>Free tier and Pro</h2>
 <p>Free gives 5 documents a calendar month, credit notes and purchase orders together, counted by issue date.
@@ -4424,6 +4453,17 @@ past due with days overdue and outstanding totals per currency, and it is free t
 <p><code>dunning_text</code>. Friendly and firm are free. The level 3 final demand is Pro, along with
 the A4 statement PDF and <code>statements_report</code>, which ranks every client by what is overdue
 rather than by what is large and names the oldest overdue invoice in the whole book.</p>
+<p>When the chase is a ladder rather than a one-off letter, the dedicated
+<a href="/s/dunning-letters">MCP Dunning Letters</a> server (<code>mcp-dunning-letters</code>) keeps it.
+<code>invoice_register</code> starts the chase with the due date, and the three stages fall due at plus 7,
+plus 14 and plus 21 days from that date whether or not anything was sent: the schedule is anchored to the
+due date, so a reminder that goes out twelve days late does not push the final notice back.
+<code>letter_render</code> produces the letter for the stage that is due, <code>letter_sent</code> records
+that it went out, and <code>chase_today</code> answers the Monday-morning question. The late fee, when
+your terms allow one, is simple interest pro-rata on a 30-day month on what is outstanding the day the
+letter is written. Free is three unpaid invoices chased at once, with every letter and the aging free on
+every tier. It has no hosted endpoint, so it installs from the bundle or a clone, and it sends nothing
+anywhere: the letters come back as text and sending them is your act.</p>
 
 <h2>The document that ends the argument</h2>
 <pre class="prompt">Build Acme's statement of account for the year to date and give me the text version.</pre>
@@ -4448,6 +4488,51 @@ ${FOOT}`,
       { q: "What counts as a distinct statement against the free cap of five?", a: "A combination of client, period and currency. Rebuilding a statement already in the register costs nothing on any tier, so regenerating the same document after a payment lands is free. Five genuinely different statements a calendar month is the limit." },
       { q: "Can I age as at a past date?", a: "Yes, statement_aging takes the as-at date. Ageing as at the last day of a quarter is the usual reason, and it produces different buckets from ageing today, which is the point." },
       { q: "Which tools here are free?", a: "statement_aging for everyone, statement_text, dunning_text at friendly and firm, and the invoice server's overdue_report. Pro buys the PDF on your invoice layout, the final demand, and statements_report across all clients. Figures from data/facts.json." },
+    ],
+  },
+  "bill-of-sale-from-chat": {
+    title: "A bill of sale from chat, with the identifiers checked and the signature lines printed",
+    description: "Record a sale of equipment, a vehicle or stock, work on the draft, finalize it, and print the signing copy as Markdown or self-contained HTML. Why the draft watermark and the frozen final document exist.",
+    html: `<h1>A bill of sale from chat</h1>
+<pre class="prompt">Record a sale: Kowalski Transport buys my 2019 Ford Transit, VIN WF0XXXTTGXKC12345, EUR 18,500, as-is, dated 2026-03-10.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p>That is <code>sale_create</code> on the <a href="/s/bill-of-sale">MCP Bill of Sale</a> server
+(<code>mcp-bill-of-sale</code>). It stores the parties, the item, the price in whole minor units and the
+date, and returns a <code>BOS-YYYY-NNNN</code> id. The seller defaults to the shared business profile's
+name, so the seller block is typed once for the whole suite. Everything stays on your machine; there is
+no account and no network call in the server at all.</p>
+
+<h2>Proof it as a draft, then freeze it</h2>
+<pre class="prompt">Print the draft so they can read it. They spotted the price: it is 18,200. Fix it and finalize.</pre>
+<p class="muted">Paste this into Claude with the server connected.</p>
+<p><code>sale_render</code> prints the draft with a DRAFT watermark on both the Markdown and the HTML, so
+a review copy cannot be signed by mistake. <code>sale_update</code> changes anything while it is a draft,
+and <code>sale_finalize</code> freezes it: from there the edit tool refuses it by name, the watermark is
+gone, and the render is the signing copy. A finalized document needs <code>confirm_finalized</code> to
+delete, and the BOS number is never reissued, so a gap in the series is the record of a deletion.</p>
+
+<h2>The identifiers are checked, not refused</h2>
+<p>A VIN is 17 characters and an IMEI is 15 digits. A value that fails either check is stored as given
+and flagged in the response, because those are the two identifiers a buyer most often misreads, and a
+warning on the record beats a typo nobody was told about. A byte-identical repeat sale is refused before
+the free cap is consulted and names the id already stored; <code>duplicate_ok</code> is the way through
+for a genuine second sale of the same item.</p>
+
+<h2>Free tier and price</h2>
+<p>Ten open drafts and five finalized documents on free, with rendering, listing, reading, the summary and
+deleting unlimited on every tier. The document itself is never metered, because whether you hold a signed
+record of the sale is the question this server exists to answer. Pro is $19 once for unlimited drafts and
+finalized documents, or $39 for the whole collection.</p>
+<p>It has no hosted endpoint, so it installs from the <code>bill-of-sale.mcpb</code> bundle on
+<a href="${RELEASES}">the latest release</a> or from a clone and build, and the document it renders is a
+generic template, not legal advice: bills of sale for vehicles, boats and regulated goods can have
+statutory form or filing requirements where the sale happens.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does the bill of sale leave my machine?", a: "No. The server makes no network call anywhere, the store is two JSON files under your home directory, and rendering writes to the server's own documents folder or a path you name. You hand the printed page or the HTML file to the buyer yourself." },
+      { q: "What is the difference between the draft and the finalized copy?", a: "The draft renders with a DRAFT watermark and can still be changed with sale_update. Finalizing freezes the document, removes the watermark and refuses every later edit, because the finalized copy is the one the buyer may hold. sale_delete on a finalized document needs confirm_finalized." },
+      { q: "Why is a bad VIN stored instead of refused?", a: "Because a 16-character VIN is a misreading, not a different vehicle, and the buyer checking the record against the plate is exactly when the flag in the response matters. The check warns; it does not pretend the identifier is invalid when it is only mis-copied." },
+      { q: "Can two people sign different versions?", a: "The finalized copy is frozen, so the version printed is the version stored. The protection against an honest mix-up is the DRAFT watermark on every pre-finalization render: a review copy cannot be signed by mistake." },
     ],
   },
   "price-a-job-with-a-rate-card-and-a-change-order": {
@@ -8182,6 +8267,19 @@ January. <code>milestone_payload</code> turns a completed milestone into an invo
 <p>One thing to know before you plan around it. Delivery schedule is one of the two servers here with no
 hosted endpoint, so there is no URL to paste. It runs from the bundle or a clone.</p>
 ${install("delivery-schedule")}
+
+<h2>When the deliverable is a physical shipment</h2>
+<p>A delivery schedule tracks that a shipment is owed and when. What goes into the cartons is a different
+record, kept by the <a href="/s/packing-list">MCP Packing List</a> server (<code>mcp-packing-list</code>):
+a packing list raised against the same order, with each carton's tare weight in whole grams and outside
+dimensions in whole centimetres, goods packed a line at a time, and <code>packing_shortfall</code>
+answering what is still to pack. <code>carton_report</code> works out the chargeable weight per carton and
+for the shipment at a divisor of 4000, 5000 or 6000 cm3 per kg, because the divisor is a carrier tariff
+term rather than a constant: on the worked shipment the chargeable weight is 20.000 kg at 5000 and 20.400
+kg at 4000. The slip carries no prices at all, and no currency symbol reaches the render, because the
+invoice against the same order is a different document. Free is three open packing lists with unlimited
+cartons and lines; marking one shipped frees its slot. It has no hosted endpoint either, so it installs
+from the bundle or a clone.</p>
 
 <h2>Free tier and price</h2>
 <p>Work order: ${freeText("work-order")}</p>

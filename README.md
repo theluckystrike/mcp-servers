@@ -11,7 +11,7 @@ Every server runs locally over stdio, keeps all data on your machine, and has a 
 Pro unlocks the limits for a one-time payment: $19 per server or $39 for the bundle, lifetime.
 
 <!-- gen:counts -->
-33 servers plus the office-suite aggregator, 30 of them also reachable as a hosted endpoint with no install.
+37 servers plus the office-suite aggregator, 34 of them also reachable as a hosted endpoint with no install.
 <!-- /gen:counts -->
 
 <!-- gen:install -->
@@ -36,22 +36,26 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-asset-register](servers/asset-register/README.md) | ![asset-register](assets/demo-asset-register.gif) | A fixed asset register that depreciates on the rates the tax authorities actually publish, with the schedule, the journal and the gain on sale. | `asset-register.mcpb` |
 | [mcp-bank-statement](servers/bank-statement/README.md) | ![bank-statement](assets/demo-bank-statement.gif) | Bank CSV exports categorised, summarised and reconciled with expenses. | `bank-statement.mcpb` |
 | [mcp-barcode](servers/barcode/README.md) | ![barcode](assets/demo-barcode.gif) | QR codes and barcodes drawn on your machine, with no upload and no network call. | `barcode.mcpb` |
+| [mcp-bill-of-sale](servers/bill-of-sale/README.md) | ![bill-of-sale](assets/demo-bill-of-sale.gif) | Record a sale of equipment, a vehicle or stock and get a printable bill of sale with signature lines. | `bill-of-sale.mcpb` |
 | [mcp-billing-docs](servers/billing-docs/README.md) | ![billing-docs](assets/demo-billing-docs.gif) | Credit notes and purchase orders, on the same engine as your invoices. | `billing-docs.mcpb` |
 | [mcp-calendar](servers/calendar/README.md) | ![calendar](assets/demo-calendar.gif) | Read .ics calendars: events, free and busy, conflicts, exports. | `calendar.mcpb` |
 | [mcp-cash-book](servers/cash-book/README.md) | ![cash-book](assets/demo-cash-book.gif) | One double-entry ledger derived from the books you already keep, proved to the minor unit. | `cash-book.mcpb` |
 | [mcp-catalogue](servers/catalogue/README.md) | ![catalogue](assets/demo-catalogue.gif) | One price list and one rate card, kept where the invoice and the quote can both read them. | `catalogue.mcpb` |
 | [mcp-change-order](servers/change-order/README.md) | ![change-order](assets/demo-change-order.gif) | Change orders against a quote or a work order, with the running contract value derived from what the client approved. | `change-order.mcpb` |
-| [mcp-checklist](servers/checklist/README.md) |  | Checklists you build once and run many times, and the dated record of each run that somebody signs. | `checklist.mcpb` |
+| [mcp-checklist](servers/checklist/README.md) | ![checklist](assets/demo-checklist.gif) | Checklists you build once and run many times, and the dated record of each run that somebody signs. | `checklist.mcpb` |
 | [mcp-clauses](servers/clauses/README.md) | ![clauses](assets/demo-clauses.gif) | Reusable contract clauses, searched and assembled into Word. | `clauses.mcpb` |
+| [mcp-credit-note](servers/credit-note/README.md) | ![credit-note](assets/demo-credit-note.gif) | Credit notes against an invoice or standalone: drafts, finalization, rendering and totals, all in integer minor units. | `credit-note.mcpb` |
 | [mcp-currency](servers/currency/README.md) | ![currency](assets/demo-currency.gif) | ECB reference rates: convert, history, and fx_rates for rebilling. | `currency.mcpb` |
 | [mcp-delivery-schedule](servers/delivery-schedule/README.md) | ![delivery-schedule](assets/demo-delivery-schedule.gif) | Dated deliverables against a quote or a work order, and what is late as at any date you name. | `delivery-schedule.mcpb` |
 | [mcp-deposits](servers/deposits/README.md) | ![deposits](assets/demo-deposits.gif) | Security and retainer deposits, held per client, on the same engine as your invoices. | `deposits.mcpb` |
 | [mcp-docx](servers/docx/README.md) | ![docx](assets/demo-docx.gif) | Real Word documents from chat: proposals, contracts, quotes. | `docx.mcpb` |
+| [mcp-dunning-letters](servers/dunning-letters/README.md) | ![dunning-letters](assets/demo-dunning-letters.gif) | Chase overdue invoices on a ladder anchored to the due date: reminder 1, reminder 2, the final notice, with the aging and the day's chase list. | `dunning-letters.mcpb` |
 | [mcp-expense-tracker](servers/expense-tracker/README.md) | ![expense-tracker](assets/demo-expense-tracker.gif) | Receipts, mileage and expenses that turn into invoice lines. | `expense-tracker.mcpb` |
 | [mcp-image](servers/image/README.md) | ![image](assets/demo-image.gif) | Resize, convert, compress and watermark images, pure JavaScript. | `image.mcpb` |
 | [mcp-invoice](servers/invoice/README.md) | ![invoice](assets/demo-invoice.gif) | Numbered invoices with tax lines, rendered to a professional PDF. | `invoice.mcpb` |
+| [mcp-job-card](servers/job-card/README.md) | ![job-card](assets/demo-job-card.gif) | One card per job: hours and materials logged against it, a status machine from open to invoiced, and the printed card for client sign-off. | `job-card.mcpb` |
 | [mcp-kanban](servers/kanban/README.md) | ![kanban](assets/demo-kanban.gif) | A task board per project that hands off to the time tracker. | `kanban.mcpb` |
-| [mcp-packing-list](servers/packing-list/README.md) |  | Packing slips that carry no prices: what is in each carton, what it weighs, and what is still to pack. | `packing-list.mcpb` |
+| [mcp-packing-list](servers/packing-list/README.md) | ![packing-list](assets/demo-packing-list.gif) | Packing slips that carry no prices: what is in each carton, what it weighs, and what is still to pack. | `packing-list.mcpb` |
 | [mcp-pdf](servers/pdf/README.md) | ![pdf](assets/demo-pdf.gif) | Merge, split, stamp and read PDFs, pure JavaScript. | `pdf.mcpb` |
 | [mcp-per-diem](servers/per-diem/README.md) | ![per-diem](assets/demo-per-diem.gif) | Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them. | `per-diem.mcpb` |
 | [mcp-petty-cash](servers/petty-cash/README.md) | ![petty-cash](assets/demo-petty-cash.gif) | A petty cash float on the imprest system, reconciled to the minor unit. | `petty-cash.mcpb` |
@@ -65,7 +69,7 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-timezone](servers/timezone/README.md) | ![timezone](assets/demo-timezone.gif) | Find meeting slots inside everyone's working hours. | `timezone.mcpb` |
 | [mcp-work-order](servers/work-order/README.md) | ![work-order](assets/demo-work-order.gif) | Job orders for trades and field work, priced the way the invoice will be. | `work-order.mcpb` |
 | [mcp-zip](servers/zip/README.md) | ![zip](assets/demo-zip.gif) | Make a zip, look inside one, and unpack one, entirely on your machine. | `zip.mcpb` |
-| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that exposes every tool of all 33 servers, 318 of them. | `office-suite.mcpb` |
+| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that exposes every tool of all 37 servers, 352 of them. | `office-suite.mcpb` |
 <!-- /gen:table -->
 
 Or clone and build: `git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers`,

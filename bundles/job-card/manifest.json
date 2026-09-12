@@ -1,0 +1,95 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-job-card",
+  "display_name": "Job Card",
+  "version": "0.21.0",
+  "description": "Job cards for trades and field service: hours and materials per job, open to invoiced.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "job_card_create",
+      "description": "Open a job card for a job your crew is taking on and return its JC-YYYY-NNNN number: the client, the site, what the job is, the currency and when it is scheduled. Free tier: 10 active cards; archiving a finished job frees its slot."
+    },
+    {
+      "name": "job_card_log_labor",
+      "description": "Log hours worked on a job card: who did the work, the day, the hours and the hourly rate in whole cents, with a note on what was done. The line value is hours times rate, rounded half-up to the cent, fixed the moment it is logged."
+    },
+    {
+      "name": "job_card_log_material",
+      "description": "Log materials used on a job card: the item, the day it went in, the quantity and the unit cost in whole cents. The line value is quantity times unit cost, rounded half-up to the cent, fixed the moment it is logged."
+    },
+    {
+      "name": "job_card_update_status",
+      "description": "Move one job card exactly one step: open, in_progress, done, invoiced, archived, stamping the date and an optional note into its history. A skipped or backwards step is refused and nothing is written. Archiving a finished job frees a free-tier slot."
+    },
+    {
+      "name": "job_card_list",
+      "description": "List job cards newest first: client, site, status, hours logged, and the labor, materials and grand totals in cents. Filter by status and by client. Totals are kept per currency, never mixed."
+    },
+    {
+      "name": "job_card_get",
+      "description": "Read one job card in full by JC number or client: every labor entry and every material used, the hours per worker, and the running totals -- labor, materials and grand total -- as integer cents with formatted amounts. Reads only."
+    },
+    {
+      "name": "job_card_print",
+      "description": "Render a job card ready to print and hand to the client: the labor, the materials, the totals and a signature line for client sign-off. Markdown, or self-contained HTML that needs nothing from the network. Writes nothing."
+    },
+    {
+      "name": "job_card_delete",
+      "description": "Delete a job card entered by mistake. One with labor or materials logged is refused, naming what it holds, because deleting it would lose the record of work done: archive it instead. The JC number is never reissued."
+    },
+    {
+      "name": "job_card_summary",
+      "description": "Hours and value for a day or a week: the job cards touched, the hours per worker, and the labor, materials and total value, kept per currency. A week runs Monday to Sunday. Touched means a labor or material entry dated inside the window."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "job-card",
+    "field-service",
+    "trades",
+    "labour",
+    "materials",
+    "sign-off"
+  ]
+}

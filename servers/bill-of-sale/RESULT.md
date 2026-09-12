@@ -1,4 +1,4 @@
-# RESULT — mcp-bill-of-sale
+# RESULT -- mcp-bill-of-sale
 
 status: DONE
 
@@ -23,18 +23,18 @@ ok 2 - free tier: the 11th draft and the 6th finalized document are refused, Pro
 node --test  0.46s user 0.10s system 115% cpu 0.489 total
 ```
 
-The smoke test spawns dist/index.js three times over stdio JSON-RPC: initialize, tools/list (all 10 tools asserted), then real tools/call flows — create/get/update/render/finalize/re-render/delete lifecycle with on-disk file assertions (DRAFT watermark present before finalize, absent after; signature lines present; finalized edit refused; finalized delete refused without confirm_finalized), the 10-draft and 5-finalized free-tier caps refused with the https://mcp.zovo.one/buy/bill-of-sale link, and the same calls passing under a Pro key minted by scripts/sign-license.mjs.
+The smoke test spawns dist/index.js three times over stdio JSON-RPC: initialize, tools/list (all 10 tools asserted), then real tools/call flows -- create/get/update/render/finalize/re-render/delete lifecycle with on-disk file assertions (DRAFT watermark present before finalize, absent after; signature lines present; finalized edit refused; finalized delete refused without confirm_finalized), the 10-draft and 5-finalized free-tier caps refused with the https://mcp.zovo.one/buy/bill-of-sale link, and the same calls passing under a Pro key minted by scripts/sign-license.mjs.
 
 ## artifacts
 
-- /Users/mike/mcp-servers/servers/bill-of-sale/src/index.ts — 8 domain tools (sale_create, sale_update, sale_finalize, sale_list, sale_get, sale_delete, sale_render, sale_summary) + license_status/license_activate via gate.registerTools
-- /Users/mike/mcp-servers/servers/bill-of-sale/src/store.ts — JSON store, atomic tmp+rename writes, bounded-ancestor-walk mkdir (trap 7), BOS-YYYY-NNNN id series
-- /Users/mike/mcp-servers/servers/bill-of-sale/src/lib.ts — minor-unit money, ISO-decimal table, real-date check, VIN/IMEI soft checks
-- /Users/mike/mcp-servers/servers/bill-of-sale/src/render.ts — Markdown + self-contained HTML with signature lines, DRAFT watermark on drafts
+- /Users/mike/mcp-servers/servers/bill-of-sale/src/index.ts -- 8 domain tools (sale_create, sale_update, sale_finalize, sale_list, sale_get, sale_delete, sale_render, sale_summary) + license_status/license_activate via gate.registerTools
+- /Users/mike/mcp-servers/servers/bill-of-sale/src/store.ts -- JSON store, atomic tmp+rename writes, bounded-ancestor-walk mkdir (trap 7), BOS-YYYY-NNNN id series
+- /Users/mike/mcp-servers/servers/bill-of-sale/src/lib.ts -- minor-unit money, ISO-decimal table, real-date check, VIN/IMEI soft checks
+- /Users/mike/mcp-servers/servers/bill-of-sale/src/render.ts -- Markdown + self-contained HTML with signature lines, DRAFT watermark on drafts
 - /Users/mike/mcp-servers/servers/bill-of-sale/src/version.ts
 - /Users/mike/mcp-servers/servers/bill-of-sale/test/smoke.test.mjs
-- /Users/mike/mcp-servers/servers/bill-of-sale/package.json, tsconfig.json, README.md, LICENSE (MIT, verbatim from petty-cash), server.json, smithery.yaml, Dockerfile (builds mcp-timezone, mcp-license, mcp-bill-of-sale only — the actual dep closure)
-- /Users/mike/mcp-servers/servers/bill-of-sale/dist/ — compiled
+- /Users/mike/mcp-servers/servers/bill-of-sale/package.json, tsconfig.json, README.md, LICENSE (MIT, verbatim from petty-cash), server.json, smithery.yaml, Dockerfile (builds mcp-timezone, mcp-license, mcp-bill-of-sale only -- the actual dep closure)
+- /Users/mike/mcp-servers/servers/bill-of-sale/dist/ -- compiled
 
 ## cost
 
@@ -50,4 +50,4 @@ The smoke test spawns dist/index.js three times over stdio JSON-RPC: initialize,
 
 ## insight
 
-A full locked write cycle — file lock acquire, JSON read, atomic tmp+rename write, lock release — costs about 15 ms: the Pro cap test does 24 such writes (12 creates + 12 finalizes) plus renders in 294 ms including process spawn. The free-tier cap checks are reads of the same store, so metering adds no measurable latency to a write path that is already lock-bound.
+A full locked write cycle -- file lock acquire, JSON read, atomic tmp+rename write, lock release -- costs about 15 ms: the Pro cap test does 24 such writes (12 creates + 12 finalizes) plus renders in 294 ms including process spawn. The free-tier cap checks are reads of the same store, so metering adds no measurable latency to a write path that is already lock-bound.

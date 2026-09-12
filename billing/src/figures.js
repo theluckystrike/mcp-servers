@@ -14,6 +14,7 @@ export const SERVER_IDS = [
   "asset-register",
   "bank-statement",
   "barcode",
+  "bill-of-sale",
   "billing-docs",
   "calendar",
   "cash-book",
@@ -21,13 +22,16 @@ export const SERVER_IDS = [
   "change-order",
   "checklist",
   "clauses",
+  "credit-note",
   "currency",
   "delivery-schedule",
   "deposits",
   "docx",
+  "dunning-letters",
   "expense-tracker",
   "image",
   "invoice",
+  "job-card",
   "kanban",
   "office-suite",
   "packing-list",
@@ -52,6 +56,7 @@ export const CHILD_IDS = [
   "asset-register",
   "bank-statement",
   "barcode",
+  "bill-of-sale",
   "billing-docs",
   "calendar",
   "cash-book",
@@ -59,13 +64,16 @@ export const CHILD_IDS = [
   "change-order",
   "checklist",
   "clauses",
+  "credit-note",
   "currency",
   "delivery-schedule",
   "deposits",
   "docx",
+  "dunning-letters",
   "expense-tracker",
   "image",
   "invoice",
+  "job-card",
   "kanban",
   "packing-list",
   "pdf",
@@ -114,7 +122,11 @@ export const HOSTED_IDS = [
   "petty-cash",
   "work-order",
   "catalogue",
-  "change-order"
+  "change-order",
+  "bill-of-sale",
+  "credit-note",
+  "job-card",
+  "dunning-letters"
 ];
 
 /** stdio tools each server registers, excluding the shared license pair. */
@@ -123,6 +135,7 @@ export const TOOLS = {
   "asset-register": 7,
   "bank-statement": 10,
   "barcode": 8,
+  "bill-of-sale": 8,
   "billing-docs": 14,
   "calendar": 10,
   "cash-book": 7,
@@ -130,13 +143,16 @@ export const TOOLS = {
   "change-order": 9,
   "checklist": 14,
   "clauses": 10,
+  "credit-note": 8,
   "currency": 8,
   "delivery-schedule": 10,
   "deposits": 9,
   "docx": 9,
+  "dunning-letters": 9,
   "expense-tracker": 12,
   "image": 10,
   "invoice": 11,
+  "job-card": 9,
   "kanban": 15,
   "office-suite": 0,
   "packing-list": 12,
@@ -159,12 +175,12 @@ export const TOOLS = {
 export const LICENSE_TOOLS = 2;
 
 /** Sum of TOOLS over CHILD_IDS. */
-export const OWN_TOOLS_TOTAL = 316;
+export const OWN_TOOLS_TOTAL = 350;
 
 /** Distinct tool names office-suite exposes: every child's own tools, plus the shared
  * license pair once. Reconciles with the independently measured OFFICE_SUITE_TOOLS in
  * billing/src/index.js, taken over stdio from the running bundle on 2026-09-07. */
-export const OFFICE_SUITE_TOOLS = 318;
+export const OFFICE_SUITE_TOOLS = 352;
 
 /** Servers the site actually lists, i.e. those with a README that becomes a /s/ page. */
 export const LISTED_IDS = [
@@ -172,6 +188,7 @@ export const LISTED_IDS = [
   "asset-register",
   "bank-statement",
   "barcode",
+  "bill-of-sale",
   "billing-docs",
   "calendar",
   "cash-book",
@@ -179,13 +196,16 @@ export const LISTED_IDS = [
   "change-order",
   "checklist",
   "clauses",
+  "credit-note",
   "currency",
   "delivery-schedule",
   "deposits",
   "docx",
+  "dunning-letters",
   "expense-tracker",
   "image",
   "invoice",
+  "job-card",
   "kanban",
   "office-suite",
   "packing-list",
@@ -208,6 +228,7 @@ export const LISTED_CHILD_IDS = [
   "asset-register",
   "bank-statement",
   "barcode",
+  "bill-of-sale",
   "billing-docs",
   "calendar",
   "cash-book",
@@ -215,13 +236,16 @@ export const LISTED_CHILD_IDS = [
   "change-order",
   "checklist",
   "clauses",
+  "credit-note",
   "currency",
   "delivery-schedule",
   "deposits",
   "docx",
+  "dunning-letters",
   "expense-tracker",
   "image",
   "invoice",
+  "job-card",
   "kanban",
   "packing-list",
   "pdf",
@@ -241,11 +265,11 @@ export const LISTED_CHILD_IDS = [
 
 /** Counts, computed so prose cannot go stale. LISTED_COUNT is the one a visitor should
  * ever see: SERVER_DIR_COUNT can be ahead of it while a new server is being built. */
-export const LISTED_COUNT = 34;
-export const LISTED_CHILD_COUNT = 33;
-export const SERVER_DIR_COUNT = 34;
-export const CHILD_COUNT = 33;
-export const HOSTED_COUNT = 30;
+export const LISTED_COUNT = 38;
+export const LISTED_CHILD_COUNT = 37;
+export const SERVER_DIR_COUNT = 38;
+export const CHILD_COUNT = 37;
+export const HOSTED_COUNT = 34;
 
 /** Hosted limits, read from remote/src/index.ts. */
 export const RATE_LIMIT_FREE = 600;
@@ -268,6 +292,7 @@ export const FREE = {
   "asset-register": "Depreciation schedules are unlimited on every tier: the rates are public information a tax authority published, and metering the reading of a regulation would be charging for the government's work. The cap is on the SIZE of the register, 10 assets, plus unlimited asset_list and asset_dispose.",
   "bank-statement": "2 accounts, 12 months of transactions, 5 rules, summary and search, reconciliation 31 days at a time, recurring detection over the last 3 months (5 charges).",
   "barcode": "20 codes per calendar month, SVG output at any size, every symbology, EPC SEPA payment codes, WiFi and vCard codes, and the local register.",
+  "bill-of-sale": "Ten open drafts and five finalized documents, with rendering to Markdown and HTML unlimited on every tier: the document itself is never metered, because whether you hold a signed record of the sale is the question this server exists to answer. Read, list, summary and delete are free, so a draft typed in twice costs nothing to remove.",
   "billing-docs": "5 documents per calendar month, credit notes and purchase orders together, counted by issue date, with full, partial and per-line credit notes, VAT, multiple currencies and receiving orders all included, and both text exports never metered.",
   "calendar": "2 calendars, windows up to 31 days, exports up to 50 events, conflict checks answered over the first 31 days of any window.",
   "cash-book": "trial_balance and ledger_lines are free and unlimited on every tier: whether the books add up is the question this server exists for, and a free tier that hides the answer is a demo. The meter is on the PERIOD, three distinct periods a calendar month, keyed by from, to and currency, so rebuilding one already in the register is free forever on every tier.",
@@ -275,13 +300,16 @@ export const FREE = {
   "change-order": "Five OPEN change orders, draft and sent, and 200 lines each on every tier. The cap counts the ones the client has not answered rather than the ones ever raised, so approving, rejecting or voiding one frees its slot, and change_order_delete on a draft with no lines is free on every tier, because a way back that only a Pro key can reach is not a way back. contract_value is free on every tier: the running value is the thing the change orders exist to answer, and withholding it would withhold the record. A byte-identical change order is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade, and burns neither a slot nor a CO number.",
   "checklist": "Three checklists, and UNLIMITED RUNS of them on every tier, because capping the running of a checklist would cap the only thing a checklist is for. Up to 500 steps on a checklist on every tier. Every read, every count, the failures, the outstanding list and the run report TEXT are free. Deleting a checklist frees its slot, and the runs already made from it stay readable, because each run carries its own copy of the steps.",
   "clauses": "Starter set plus 10 own clauses, search with the jurisdiction filter, assembly up to 8 clauses, markdown export.",
+  "credit-note": "Ten finalized credit notes, lifetime, on free. Drafts, edits, deletion of drafts, listing, reading, rendering and the totals summary are free and unlimited on every tier: finalizing is the metered act because that is what turns a draft into the document the client sees. Free renders carry a one-line footer.",
   "currency": "Latest rates, convert, convert_many, fx_rates_for, history up to 90 days (a wider window is shortened and answered, not refused).",
   "delivery-schedule": "Three OPEN delivery schedules, and 200 deliverables on each on every tier. The cap counts the jobs that still owe something rather than the jobs ever run, so accepting the last deliverable completes a schedule and frees its slot without deleting the record, and delivery_schedule_delete on an empty one is free on every tier, because a way back that only a Pro key can reach is not a way back. late_report is free on every tier: what is late is the question the server exists for, and withholding it would withhold the one answer the client is going to ask for. A second schedule against a reference that already has one is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade.",
   "deposits": "5 deposits recorded per calendar month, counted by received date, with applying to invoices, refunds, lists, balances and the text statement all unlimited on every tier: a cap that trapped a client's deposit would be a limit on their money rather than on yours.",
   "docx": "Create, convert and read documents without limit; 3 proposals or contracts per calendar month; templates up to 10 placeholders.",
+  "dunning-letters": "Three unpaid invoices chased at once, with all three letters in both formats, the aging summary, the day's chase list and payment recording free on every tier. An invoice that gets paid frees its slot, because the cap is on how many chases run at once, never on the letters or the aging.",
   "expense-tracker": "Unlimited logging; list and summary cover the last 30 days; 3 projects; 5 rules; CSV export up to 200 rows, never partial.",
   "image": "Info, resize, convert, compress, crop, strip metadata on images up to 4 MP; batches of 5.",
   "invoice": "3 invoices per calendar month; overdue report free; PDF carries a small footer line.",
+  "job-card": "Ten active job cards, with labor and material entries unlimited per card and the running totals, list, get, the printable card and the daily and weekly summaries all free on every tier. A card stops counting the moment it is archived, so the record is never metered.",
   "kanban": "3 projects, 200 open tasks, default columns.",
   "office-suite": "Each child's free tier.",
   "packing-list": "Three OPEN packing lists, draft and packed, with unlimited cartons, packed lines and declared order lines on every tier. The cap counts shipments in flight rather than shipments ever made, so marking one shipped or cancelling it frees its slot, and deleting a draft is free on every tier, because a way back that only a Pro key can reach is not a way back. carton_report, packing_shortfall, packing_list_show and the packing slip TEXT are free on every tier: those are the questions this server exists to answer, and a free tier that withheld them would withhold the reason to install it.",
@@ -306,6 +334,7 @@ export const PRO = {
   "asset-register": "Unlimited assets in the register, the monthly journal entry with its ready-made expense_add payload (one per currency, no vat_rate because depreciation is a book charge), and the report of net book value by category and currency with the year's charge and every disposal in it.",
   "bank-statement": "Unlimited accounts, history and rules, reconciliation over any range, every recurring charge, export.",
   "barcode": "Unlimited codes, PNG output from 32 to 4000 px, and barcode_batch for up to 500 codes in one call.",
+  "bill-of-sale": "Unlimited drafts and unlimited finalized documents.",
   "billing-docs": "Unlimited documents, both A4 PDFs with your logo and no footer credit, and the billing_docs_report of credited, on-order and overdue deliveries.",
   "calendar": "Unlimited calendars, any window, unlimited exports, URL refresh.",
   "cash-book": "Unlimited periods, month_close with its trial balance snapshot and its list of what the month leaves unposted or inconsistent, ledger_export_csv as RFC 4180 text with no file written, and ledger_report with the movement and closing balance per account plus the purchase commitments held as a memo.",
@@ -313,13 +342,16 @@ export const PRO = {
   "change-order": "Unlimited open change orders, change_order_document as a plain-text document with every line, its reason, the contract value before and after and an approval block for the client to sign, and change_order_invoice_payload: the approved delta as invoice_create items in MAJOR units and quote_create items in MINOR units at once, with VAT at the shared profile rate and rounding_drift_minor asserted to zero.",
   "checklist": "Unlimited checklists, and run_report writing the report to a .txt file at a path you name. The path goes through a bounded ancestor walk rather than mkdirSync with recursive, so a caller-supplied path under /proc, /sys or /dev fails in milliseconds instead of retrying forever; a URL is refused by name before any resolution, so the refusal never leaks the server's working directory; and an existing file is refused unless overwrite is passed.",
   "clauses": "Unlimited clauses, tag filters, JSON import and export, unlimited assembly, clause versions.",
+  "credit-note": "Unlimited finalized credit notes and renders without the footer line.",
   "currency": "Full history back to 1999, any-date rates, unlimited history windows.",
   "delivery-schedule": "Unlimited open schedules, delivery_schedule_document as a plain-text document with every deliverable, its due date, its status, the delivered and accepted dates, the counts as at a date and a sign-off block for the client, and milestone_payload: the delivered-and-accepted deliverables as invoice_create items in MAJOR units and quote_create items in MINOR units at once, with VAT at the shared profile rate, rounding_drift_minor asserted to zero, and anything left out listed by name under excluded rather than billed as zero.",
   "deposits": "Unlimited deposits recorded, the A4 deposit statement PDF with your logo and no footer credit, and the deposits_report of held per currency, oldest held and what has sat unapplied.",
   "docx": "Unlimited proposals and contracts, letterhead with logo and colours, unlimited template fills.",
+  "dunning-letters": "Unlimited concurrent chases.",
   "expense-tracker": "Full history, unlimited projects and rules, xlsx export, unlimited rebill items with markup.",
   "image": "Unlimited size and batches, custom watermark text, dominant colours.",
   "invoice": "Unlimited invoices, no branding, logo, custom prefix.",
+  "job-card": "Unlimited active job cards.",
   "kanban": "Unlimited projects and tasks, custom columns, weekly review history, estimates versus actuals.",
   "office-suite": "The $39 bundle key unlocks every child.",
   "packing-list": "Unlimited open packing lists, and packing_slip writing the slip to a .txt file at a path you name. The path goes through a bounded ancestor walk rather than mkdirSync with recursive, so a caller-supplied path under /proc, /sys or /dev fails in milliseconds instead of retrying forever; a URL is refused by name before any resolution, so the refusal never leaks the server's working directory; and an existing file is refused unless overwrite is passed.",

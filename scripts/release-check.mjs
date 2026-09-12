@@ -427,7 +427,8 @@ check("contract", "contract test", (s) =>
 // through the self-expiring `data/facts.json` compare_none note, not a waiver here: a
 // waiver never re-checks itself, and a competitor showing up next month would sit
 // unnoticed forever. See the `compare` check above.
-const WAIVERS = [];
+const WAIVERS = [
+];
 const waived = new Map(); // "server:check" -> why
 for (const w of WAIVERS) for (const s of w.servers) waived.set(`${s}:${w.check}`, w.why);
 
@@ -453,7 +454,7 @@ global_("PRODUCTS.bundle names the right count and saving", () => {
   const saving = n * PRODUCTS[SERVERS[0]].usd - b.usd;
   const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
     "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
-    "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty", "thirty-one", "thirty-two", "thirty-three", "thirty-four", "thirty-five", "thirty-six"];
+    "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty", "thirty-one", "thirty-two", "thirty-three", "thirty-four", "thirty-five", "thirty-six", "thirty-seven", "thirty-eight", "thirty-nine", "forty"];
   const bad = [];
   const prices = new Set(SERVERS.map((s) => PRODUCTS[s]?.usd));
   if (prices.size !== 1) bad.push(`per-server prices are not uniform: ${[...prices].join(", ")}`);

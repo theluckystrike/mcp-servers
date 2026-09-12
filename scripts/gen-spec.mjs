@@ -28,6 +28,7 @@ const SERVERS = [
   "expense-tracker", "image", "invoice", "kanban", "pdf", "per-diem", "petty-cash", "price-tracker", "recurring",
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone", "work-order",
   "packing-list", "checklist",
+  "bill-of-sale", "credit-note", "job-card", "dunning-letters",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -188,6 +189,92 @@ const CURATED = {
       "NO SIBLING STORE IS OPENED. The job a run is against is a name and nothing more, so a run raised against a work order created on another machine still exists here.",
       "THERE IS NO MONEY ANYWHERE. A checklist has no amounts: `@theluckystrike/mcp-invoice` is not a dependency, no money function name appears in non-comment source, and no currency symbol appears in src. The contract suite asserts all three.",
       "THIS SERVER IS STDIO AND .MCPB ONLY, and it ships THREE registry names on one bundle: `checklist`, `snag-list-defect-handover-signoff` and `onboarding-checklist-inspection-runs`. Registry search matches a substring of the full name and never the description, so more names is the only way to be findable on more tokens; the measured landing ranks are 7, 2, 3 and 7 on checklist, snag, handover and onboarding (docs/TOKEN_DEMAND_R1.md). A contract test asserts the tokens are actually present in the names, because a name that lost its token in an edit is a server that silently stops being findable.",
+    ],
+  },
+  "bill-of-sale": {
+    summary: "Bills of sale for equipment, vehicles and stock, kept the way the signed paper is kept. A sale records seller, buyer, the item with its VIN, serial number or IMEI where it has one, the price in integer minor units and the date, and starts as a draft that can be revised and deleted. Finalizing freezes it into the signing copy. Rendering prints the document as Markdown or as a single self-contained HTML file with signature lines, drafts watermarked DRAFT. A byte-identical repeat sale is refused unless confirmed. No total is stored; every figure is derived on the call.",
+    storageFiles: [
+      ["sales.json", "the bills of sale, each carrying the parties, the item, its identifiers, the price and the date, the as-is clause and warranty text, and its status, and nothing derived from them"],
+      ["counter.json", "the BOS number series, per year of the sale date"],
+      ["documents/", "rendered Markdown and HTML documents written by sale_render when no out_path is given"],
+    ],
+    primaryFile: "sales.json",
+    caps: [
+      "`FREE_DRAFTS` = 10 open drafts and `FREE_FINALIZED` = 5 finalized documents on free. Rendering, listing, reading and deleting are free and unlimited on every tier, so the document itself is never metered and a draft typed in twice costs nothing to remove.",
+      "The refusal of a capped `sale_create` or `sale_finalize` is an answer, not a protocol error, and nothing is written.",
+      "`MAX_NAME` = 200 characters per name field; `MAX_TEXT` = 4,000 per text field; `MAX_MINOR` = 999,999,999,999 per price field; `MAX_ROWS` = 500 rows returned by one `sale_list` answer.",
+    ],
+    extra: [
+      "A FINALIZED BILL OF SALE IS FROZEN. `sale_update` refuses it by name and `sale_delete` needs `confirm_finalized: true`, because a finalized document is one the buyer may already hold. The number is never reissued, so a gap in the BOS series is the record of a deletion.",
+      "A DRAFT PRINTS WITH A DRAFT WATERMARK on both the Markdown and the HTML, so a review copy cannot be signed by mistake. The watermark goes away at finalize and nowhere else.",
+      "A VIN THAT IS NOT 17 CHARACTERS OR AN IMEI THAT IS NOT 15 DIGITS IS STORED AS GIVEN AND FLAGGED IN THE RESPONSE, rather than refused, because those are the two identifiers a buyer most often misreads and a typo in the record is worse than a warning on it.",
+      "A BYTE-IDENTICAL REPEAT SALE IS REFUSED BEFORE THE FREE CAP IS CONSULTED and names the id already stored; `duplicate_ok: true` is the way through for a genuine second sale of the same item.",
+      "CURRENCIES ARE NEVER ADDED TOGETHER. `sale_summary` reports total value per currency, because this server holds no exchange rate and one figure over a EUR sale and a USD one would be invented.",
+      "THE SELLER DEFAULTS TO THE SHARED BUSINESS PROFILE'S NAME, read-only and best-effort; the profile file is never written from here.",
+      "THIS SERVER IS STDIO AND .MCPB ONLY: no manifest advertises a remote, because no hosted endpoint exists for it.",
+    ],
+  },
+  "credit-note": {
+    summary: "Credit notes (credit memos) against an invoice or standalone: recipient, reason (returned goods, overcharge, discount correction, service issue, other), line items with quantity, unit price in integer minor units and tax rate, and currency. Every credit note starts as a draft that can be revised and deleted; finalizing burns the final CN-YYYY-NNNN number and freezes it. Rendering returns Markdown or a self-contained printable HTML page, and the summary totals what was credited per currency, reason and month. Round half-up per line, then sum.",
+    storageFiles: [
+      ["notes.json", "the credit notes, drafts and finalized, each carrying its recipient, reason, lines, currency and notes, and nothing derived from them"],
+      ["counter.json", "the draft and final CN number series, per year of the issue date"],
+    ],
+    primaryFile: "notes.json",
+    caps: [
+      "`FREE_FINALS` = 10 finalized credit notes lifetime on free. Drafts, edits, deletion of drafts, listing, reading, rendering and the totals summary are free and unlimited on every tier, because finalizing is the act that turns a draft into the document the client sees.",
+      "The refusal of a capped `credit_note_finalize` is an answer, not a protocol error, and nothing is written.",
+      "`MAX_LINES` = 100 lines on one credit note; `MAX_NAME` = 200 characters per name field; `MAX_TEXT` = 2,000 per text field; `MAX_MINOR` = 1e14 per money field; `MAX_ROWS` = 2,000 rows returned by one `credit_note_list` answer.",
+    ],
+    extra: [
+      "THE FINAL NUMBER IS ASSIGNED ONLY AT FINALIZE, in the issue date's year, and the counter is written before the record, so a crash burns a number rather than reusing one. Drafts carry a CN-DRAFT id no client sees, and finalized notes cannot be deleted, so the final series never has a gap.",
+      "A FINALIZED CREDIT NOTE CANNOT BE EDITED OR DELETED, because it is a document the client may have seen. The correction is a new document, never a quiet edit.",
+      "THE LINE MATH IS DOCUMENTED SO THE PRINTED DOCUMENT REPRODUCES ON A CALCULATOR: the unit price enters as integer minor units, the line gross is quantity times unit price rounded half-up ONCE, tax is per line rounded half-up per line on its own base, and the note totals are plain integer sums of the already-rounded line values. A total can never drift from the printed lines by more than the rounding already visible on those lines.",
+      "A DRAFT RENDERS WITH A DRAFT BANNER, and free-tier renders carry a one-line footer that Pro removes; the document text itself is never metered.",
+      "NO SIBLING STORE IS OPENED. A credit against an invoice names the invoice by its reference and nothing more, so a credit against an invoice raised on another machine still records here.",
+      "THIS SERVER IS STDIO AND .MCPB ONLY: no manifest advertises a remote, because no hosted endpoint exists for it.",
+    ],
+  },
+  "job-card": {
+    summary: "One card per job, the way the paper one on the dashboard works. A card holds the client, the site, what the job is, the currency and the scheduled date; labor entries log the hours each worker puts in at their rate and material entries the items that went into the job, and the card keeps the running totals in integer cents. The status machine moves open to in_progress to done to invoiced to archived, one step at a time, stamping date and note into the card's history. Printing renders the card with a signature line for client sign-off. The summary answers a day or a week: cards touched, hours per worker, value per currency.",
+    storageFiles: [
+      ["cards.json", "the job cards, each carrying its client, site, description, currency, labor and material entries and dated status history, and nothing derived from them"],
+      ["counter.json", "the JC number series, per year of the card date"],
+    ],
+    primaryFile: "cards.json",
+    caps: [
+      "`FREE_ACTIVE_CARDS` = 10 active job cards on free. A card stops counting the moment it is archived, and logging, totals, printing and the summaries are free and unlimited on every tier, because the record is never metered.",
+      "The refusal of a capped `job_card_create` is an answer, not a protocol error, and nothing is written.",
+      "`MAX_ENTRIES` = 2,000 entries per card, labor and materials each; `MAX_HOURS` = 24 on one labor entry, because one labor entry is one worker's day at most; `MAX_QTY` = 1,000,000; `MAX_CENTS` = 1e14 per money field; `MAX_NAME` = 200 characters per name field; `MAX_TEXT` = 2,000 per text field.",
+    ],
+    extra: [
+      "EVERY AMOUNT IS AN INTEGER NUMBER OF CENTS. A labor line is hours times the hourly rate and a materials line is quantity times the unit cost, each rounded half-up to the cent ONCE at the moment it is logged and stored on the entry, and totals are the sums of those stored line values, so a total can never drift from its lines. Hours are carried as integer hundredths and quantities as integer thousandths, so 2.5 hours at 4,999 cents an hour is 12,498 cents and never 12,497.499999.",
+      "THE STATUS MACHINE MOVES ONE STEP AT A TIME and every step carries its own date and note in the card's history, so a skipped step is refused rather than stamped over.",
+      "A CARD HOLDING LABOR OR MATERIALS CANNOT BE DELETED, because that card is the record of work done; it is archived instead. Only a card entered by mistake, holding nothing, deletable.",
+      "CURRENCIES ARE NEVER ADDED TOGETHER. The daily and weekly summaries report value per currency, because this server holds no exchange rate.",
+      "THIS SERVER IS STDIO AND .MCPB ONLY: no manifest advertises a remote, because no hosted endpoint exists for it.",
+    ],
+  },
+  "dunning-letters": {
+    summary: "Chasing overdue invoices on an escalation ladder anchored to the due date: reminder 1 at due + 7 days, reminder 2 at due + 14, the final notice at due + 21, the gaps configurable per invoice. Registering an unpaid invoice returns a DUN-YYYY-NNNN id with its three escalation dates. Rendering generates the letter for the current stage as Markdown or self-contained printable HTML, with the late fee at simple interest pro-rata on a 30-day month on the amount outstanding that day. Recording what was sent and what was paid advances the ladder and lowers the ask. Nothing is emailed or sent anywhere: the server produces the letter text and sending it is the user's act.",
+    storageFiles: [
+      ["invoices.json", "the chased invoices, each carrying its client, reference, amount, currency, due date, its escalation gaps, every letter sent and every payment recorded, and nothing derived from them"],
+      ["counter.json", "the DUN number series, per year of the registration date"],
+    ],
+    primaryFile: "invoices.json",
+    caps: [
+      "`FREE_ACTIVE_UNPAID` = 3 unpaid invoices chased at once on free. All three letters in both formats, the aging summary, the day's chase list and payment recording are free on every tier, and an invoice that gets paid frees its slot.",
+      "The refusal of a capped `invoice_register` is an answer, not a protocol error, and nothing is written.",
+      "`MAX_NAME` = 200 characters per name field; `MAX_TEXT` = 2,000 per text field; `MAX_MINOR` = 1e14 per money field; `MAX_ROWS` = 2,000 rows returned by one `overdue_list` answer.",
+    ],
+    extra: [
+      "THE LADDER IS ANCHORED TO THE DUE DATE, NOT TO THE LAST LETTER, and the two drift apart exactly when chasing is going badly. A reminder that actually goes out twelve days late does not push the final notice back: the client's obligation was fixed by the due date, not by when the letter was written. Recording a sending moves only which stage is next; it never moves the schedule.",
+      "LETTERS GO OUT IN ORDER. An invoice 60 days late with nothing sent is still owed reminder 1, because a final notice that no polite letter preceded reads as a threat, not a chase.",
+      "THE LATE FEE IS MEASURED ONCE: simple interest, pro-rata on a 30-day month, on the amount outstanding on the day the letter is written, rounded once to the minor unit. A part payment lowers what the next letter asks for and no invented figure more.",
+      "A PART PAYMENT IS A FACT, NOT A WRITE-OFF: covering the balance closes the ladder, and the invoice stays readable with every letter and every payment on it.",
+      "NOTHING IS SENT. The letters are rendered to text for the user to send; the server holds no mail credentials and wants none, so no chaser goes out because a model decided it should.",
+      "THE SENDER BLOCK ON THE LETTERS comes from the shared business profile, read-only and best-effort; the profile file is never written from here.",
+      "THIS SERVER IS STDIO AND .MCPB ONLY: no manifest advertises a remote, because no hosted endpoint exists for it.",
     ],
   },
   "change-order": {

@@ -1,7 +1,7 @@
 {
   "name": "@theluckystrike/mcp-bill-of-sale",
   "version": "0.21.0",
-  "description": "Record a sale of equipment, a vehicle or stock and get a printable bill of sale with signature lines: draft it, finalize it, render Markdown and self-contained HTML. Everything stays on your machine.",
+  "description": "Bills of sale for equipment, vehicles and stock: draft, finalize, print with signature lines.",
   "type": "module",
   "bin": {
     "mcp-bill-of-sale": "dist/index.js"

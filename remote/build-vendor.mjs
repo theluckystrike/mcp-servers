@@ -200,6 +200,45 @@ const SERVERS = {
   // so the next server that reads a change order resolves here rather than to a module that
   // cannot load.
   "change-order": ["index.ts", "version.ts", "lib.ts", "order.ts", "store.ts"],
+  // Every source file. Reads NO sibling document and borrows NO sibling engine: the money
+  // and date primitives are its own lib.ts, and the only shared state is the business
+  // profile behind readSharedProfile, which travels the licence shim exactly as on every
+  // other endpoint (sale_create defaults the seller to it). The one tool that writes files
+  // is sale_render, whose out_path collapses to a bare document NAME with both renderings
+  // under /out/ - rendered documents only, never the store, which is sales.json and
+  // counter.json, one document per token under the homedir shim, written tmp + rename.
+  // lib.ts is vendored for the reason the last ten servers' are: it is this engine as a
+  // public API.
+  "bill-of-sale": ["index.ts", "version.ts", "lib.ts", "render.ts", "store.ts"],
+  // Every source file, lib.ts included. NO tool here writes a file: credit_note_render
+  // returns the document INLINE as Markdown or HTML and its description says "Writes
+  // nothing", which is true in both worlds, so there is no out_path to reduce to a name,
+  // nothing under /out/, no publish rule and no EXTRA_IMPORTS entry - the credit-note
+  // counterpart of the amortization entry. No sibling engine or document is read either:
+  // the money is its own money.ts and the model its own note.ts. The store is notes.json
+  // and counter.json, one document per token under the homedir shim, written tmp + rename;
+  // jsonstore.ts is the corrupt-store quarantine and is vendored unchanged.
+  "credit-note": ["index.ts", "version.ts", "jsonstore.ts", "lib.ts", "money.ts", "note.ts", "render.ts", "store.ts"],
+  // Every source file. The credit-note case again: NO tool writes a file (job_card_print
+  // returns the card inline as Markdown or HTML), no out_path exists, and no sibling
+  // engine or document is read - the card arithmetic is its own card.ts and the status
+  // flow lives there too. The store is cards.json and counter.json under the homedir
+  // shim, tmp + rename, with its own corrupt-store quarantine inside store.ts rather than
+  // in a jsonstore.ts.
+  "job-card": ["index.ts", "version.ts", "card.ts", "store.ts"],
+  // Every source file. The one of these four that borrows sibling ENGINES:
+  // @theluckystrike/mcp-asset-register/lib for formatMoney, reached from index.ts AND from
+  // letters.ts, and @theluckystrike/mcp-timezone/lib for readJsonFile and its
+  // corrupt-store quarantine, reached from store.ts and nothing else - so LIB_RESOLUTIONS
+  // below carries both and checks them on the bytes that were written, because an
+  // index-only check would have passed a build that could not resolve the money on the
+  // letters or the quarantine keeping an unreadable register from reading as an empty one.
+  // The sender on a letter comes from the SHARED business profile through readSharedProfile,
+  // which travels the licence shim as it does on every other endpoint; NO SIBLING DOCUMENT
+  // is opened, so SERVERS["dunning-letters"] in remote/src/index.ts carries no sharedDoc.
+  // NO tool writes a file: letter_render returns the letter INLINE, and the register
+  // (invoices.json, counter.json) is one document per token under the homedir shim.
+  "dunning-letters": ["index.ts", "version.ts", "engine.ts", "letters.ts", "lib.ts", "store.ts"],
 };
 
 /**
@@ -2889,6 +2928,106 @@ function patchChangeOrderIndex(src) {
   return src;
 }
 
+/**
+ * bill-of-sale. The hosted endpoint has no disk. What moves:
+ *   1. sale_render is the one tool that writes files, and out_path collapses to a bare
+ *      document NAME (the statement-of-account rule, down to the 1-64 character alphabet):
+ *      both renderings land under /out/, and the tmp + rename of writeFileAtomic is kept
+ *      exactly as it is, because the fs shim publishes on the rename - the worker then
+ *      substitutes the one-hour download URL for the virtual path in the response body.
+ *   2. outputPath's default target was join(dataDir(), "documents", <id>) - a directory no
+ *      caller can open - and is /out/<id> here; the explicit-path exclusive create and the
+ *      derived-name -2, -3 dedupe survive unchanged, because both are still the right
+ *      answers when a second render of the same sale happens in one request.
+ *   3. The seller refusal named a local install ("in the invoice server"); hosted, the
+ *      shared business profile is set on the caller's own /mcp/invoice endpoint.
+ * The store needs no patch: sales.json and counter.json are one document per token under
+ * the homedir shim, written tmp + rename, exactly kanban's shape, and readSharedProfile
+ * travels the licence shim as it does on every endpoint that reads the shared profile.
+ */
+function patchBillOfSaleIndex(src) {
+  // The patched outputPath makes /out with mkdirSync, which the stdio source never
+  // imported: add it to the fs import before the hoist rewrites the specifier.
+  src = must(src,
+    'import { closeSync, existsSync, openSync, renameSync, unlinkSync, writeFileSync } from "node:fs";',
+    'import { closeSync, existsSync, mkdirSync, openSync, renameSync, unlinkSync, writeFileSync } from "node:fs";',
+    "bill-of-sale fs imports");
+  // out_path is a name here, and the only thing it decides is what the downloads are called.
+  src = must(src,
+    "function expandPath(p: string): string {\n" +
+    "  const s = p.startsWith(\"~\") ? join(homedir(), p.slice(1)) : p;\n" +
+    "  return isAbsolute(s) ? s : resolvePath(process.cwd(), s);\n" +
+    "}",
+    `function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.(md|markdown|html?)$/i, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the stem the downloaded files are named with, 1-64 characters of letters, digits, \` +
+      \`underscore or dash, with any .md or .html extension dropped.\`);
+  }
+  return m[1];
+}`, "bill-of-sale expandPath");
+  src = must(src,
+    "function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {\n" +
+    "  const p = expandPath(out ?? join(dataDir(), \"documents\", fallbackName));\n" +
+    "  const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;\n" +
+    "  ensureDirBounded(dirname(withExt));",
+    "function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite = false): string {\n" +
+    "  const p = `/out/${expandPath(out ?? fallbackName)}`;\n" +
+    "  const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;\n" +
+    "  mkdirSync(\"/out\", { recursive: true });",
+    "bill-of-sale outputPath target");
+  src = must(src,
+    "      throw new Error(`${withExt} already exists and nothing was written. Pass overwrite: true to replace it, or give a different out_path.`);",
+    "      throw new Error(`a file named ${withExt.slice(5)} was already produced in this request and nothing was written. Pass overwrite: true to replace it, or give a different out_path.`);",
+    "bill-of-sale outputPath occupied message");
+  // The descriptions that promised a documents folder on a disk the caller does not have.
+  src = must(src,
+    "Drafts render with a DRAFT watermark so a review copy cannot be signed by mistake. Files default to the server's documents folder; pass out_path to choose. Free.\",",
+    "Drafts render with a DRAFT watermark so a review copy cannot be signed by mistake. Every file comes back as a download link valid for one hour, and out_path is only the stem the files are named with. Free.\",",
+    "bill-of-sale sale_render description");
+  src = must(src,
+    'out_path: str("out_path", 1000).optional().describe("Where to write. With format both this is a stem and .md / .html are appended. Default: the server\'s documents folder under the data directory"),',
+    'out_path: str("out_path", 1000).optional().describe("Name for the downloaded files, e.g. civic-sale; with format both, .md and .html are appended to the stem. Default: the document id. Each file comes back as a download link valid for one hour"),',
+    "bill-of-sale out_path description");
+  // The seller fallback named a local install rather than the caller's own endpoint.
+  src = must(src,
+    'throw new Error("who is selling? Pass seller_name, or run business_set {name} in the invoice server once and every later bill of sale carries it. Nothing was written.");',
+    'throw new Error("who is selling? Pass seller_name, or run business_set {name} on your https://mcp.zovo.one/mcp/invoice endpoint once and every later bill of sale carries it. Nothing was written.");',
+    "bill-of-sale seller profile note");
+  return src;
+}
+
+/**
+ * dunning-letters. No tool writes a file and no path argument exists, so there is nothing
+ * to publish and nothing to reduce to a name. What moves is the D-R60 species: the
+ * dunning://ladder resource reported dataDir(), which hosted is the worker's virtual
+ * homedir - a path no caller has and none can reach - and a sender note that named a local
+ * install rather than the caller's own /mcp/invoice endpoint. store.ts needs no patch:
+ * invoices.json and counter.json are one document per token under the homedir shim,
+ * written tmp + rename, and readJsonFile comes from the vendored timezone engine.
+ */
+function patchDunningIndex(src) {
+  src = must(src,
+    '      writes: [{ store: "dunning-letters", dir: dataDir(), files: ["invoices.json", "counter.json"] }],',
+    '      writes: [{ store: "dunning-letters", dir: "not a directory on this endpoint: the chase register is one document held " +\n' +
+    '        "per token, and a letter is never stored - letter_render hands the text back and sending it is your act",\n' +
+    '        files: ["invoices.json", "counter.json"] }],',
+    "dunning-letters ladder resource writes dir");
+  src = must(src,
+    'description: "The three stages, when each falls due, what each letter says, the free tier, and the one directory this server writes.",',
+    'description: "The three stages, when each falls due, what each letter says, the free tier, and the one document this server writes.",',
+    "dunning-letters ladder resource description");
+  src = must(src,
+    'Run business_set {name} in the invoice server once and every later letter is signed.',
+    'Run business_set {name} on your https://mcp.zovo.one/mcp/invoice endpoint once and every later letter is signed.',
+    "dunning-letters sender profile note");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -2930,6 +3069,9 @@ const EXTRA_IMPORTS = {
     'import { registerZipUpload } from "../../shims/zip-upload.js";',
     'import { publishFile } from "../../shims/fs.js";',
   ],
+  // Buffer.byteLength measures the renderings and is not imported anywhere in the stdio
+  // source; the fs shim is what publishes the rendered documents, on the rename.
+  "bill-of-sale": ['import { Buffer } from "node:buffer";'],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -2999,6 +3141,8 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "work-order") src = patchWorkOrderIndex(src);
     if (name === "catalogue") src = patchCatalogueIndex(src);
     if (name === "change-order") src = patchChangeOrderIndex(src);
+    if (name === "bill-of-sale") src = patchBillOfSaleIndex(src);
+    if (name === "dunning-letters") src = patchDunningIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -3096,6 +3240,12 @@ const LIB_RESOLUTIONS = {
   // arithmetic that decides the delta, the VAT and both payloads' figures - and that
   // resolution is checked on the same concatenated bytes rather than assumed from the index.
   "change-order": ["invoice", "quotes", "timezone"],
+  // Two, and only ONE of them (asset-register) is reachable from index.ts: store.ts
+  // imports the timezone engine's readJsonFile and letters.ts imports the asset-register
+  // formatMoney, so an index-only check would have passed a build that could not resolve
+  // either the corrupt-store quarantine that keeps an unreadable register from reading as
+  // an empty one or the money formatting on the letters themselves.
+  "dunning-letters": ["asset-register", "timezone"],
 };
 for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
   const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");

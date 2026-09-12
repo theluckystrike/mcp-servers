@@ -1,6 +1,6 @@
 # mcp-bill-of-sale
 
-Record a sale and get a signed-paper-ready bill of sale. Tell your assistant who sold, who bought, what the item is — with the VIN, serial number or IMEI where it has one — the price and the date, and the server writes the document: parties, item, price, an as-is clause for second-hand sales, any warranty in your own words, and signature lines for both sides. Work on it as a draft, finalize it into the frozen signing copy, and print it as Markdown or as a single self-contained HTML file that prints to PDF from any browser with no assets beside it. Everything stays on your machine; there is no account and no network call in this server at all.
+Record a sale and get a signed-paper-ready bill of sale. Tell your assistant who sold, who bought, what the item is -- with the VIN, serial number or IMEI where it has one -- the price and the date, and the server writes the document: parties, item, price, an as-is clause for second-hand sales, any warranty in your own words, and signature lines for both sides. Work on it as a draft, finalize it into the frozen signing copy, and print it as Markdown or as a single self-contained HTML file that prints to PDF from any browser with no assets beside it. Everything stays on your machine; there is no account and no network call in this server at all.
 
 Built by theluckystrike.
 

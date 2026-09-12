@@ -48,7 +48,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OWNER="theluckystrike"
 MONOREPO="https://github.com/${OWNER}/mcp-servers"
 RAW="https://raw.githubusercontent.com/${OWNER}/mcp-servers/main"
-ALL_SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule checklist packing-list office-suite"
+ALL_SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule checklist packing-list bill-of-sale credit-note job-card dunning-letters office-suite"
 DRY_RUN="${DRY_RUN:-0}"
 SQUASH="${SQUASH:-0}"
 NO_RELEASE="${NO_RELEASE:-0}"
@@ -191,7 +191,7 @@ for NAME in $SERVERS; do
   # The repo name defaults to mcp-<name>; data/mirror_repo_overrides.json overrides it
   # for a renamed repo (rename experiment R1: invoice -> mcp-invoice-generator), so a
   # sync after the rename targets the NEW name instead of creating a fresh mcp-invoice.
-  REPO="$(python3 -c 'import json, os, sys; p = os.path.join(os.environ["ROOT"], "data", "mirror_repo_overrides.json"); o = json.load(open(p)) if os.path.exists(p) else {}; print(o.get(sys.argv[1], "mcp-" + sys.argv[1]))' "$NAME")"
+  REPO="$(python3 -c 'import json, os, sys; p = sys.argv[2]; o = json.load(open(p)) if os.path.exists(p) else {}; print(o.get(sys.argv[1], "mcp-" + sys.argv[1]))' "$NAME" "$ROOT/data/mirror_repo_overrides.json")"
   MIRROR="$(mktemp -d "${TMPDIR:-/tmp}/mirror-$NAME.XXXXXX")"
   echo "=== $REPO  ($MIRROR)"
 
